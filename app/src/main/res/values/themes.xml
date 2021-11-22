@@ -17,4 +17,17 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
+<!--    Dark mode-->
+    <style name="Theme.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/color_app_dark</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+
+        <item name="colorPrimaryDark">?attr/colorPrimary</item>
+        <item name="colorSecondary">?attr/colorPrimary</item>
+        <item name="colorOnSecondary">?attr/colorOnPrimary</item>
+        <item name="colorControlActivated">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorControlNormal</item>
+    </style>
 </resources>

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">数据备份</string>
+    <string name="root_grant">单击重新获取</string>
+    <string name="root_state">未获取Root权限</string>
 </resources>

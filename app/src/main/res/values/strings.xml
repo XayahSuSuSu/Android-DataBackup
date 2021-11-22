@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DataBackup</string>
+    <string name="root_grant">Click to grant Root</string>
+    <string name="root_state">Root denied</string>
 </resources>
