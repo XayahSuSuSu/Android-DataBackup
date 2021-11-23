@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
                     android:theme="@style/Theme.Dark"
-                    app:cardBackgroundColor="@color/green_wait"
+                    app:cardBackgroundColor="@{backupNum>0 ? @color/green_wait : @color/red_denied}"
                     app:icon="@drawable/ic_outline_backup"
                     app:subtext='@{@string/backup_num(backupNum)}'
                     app:text="@string/backup_start" />
@@ -79,7 +79,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                    app:icon="@drawable/ic_outline_add"
+                    app:icon="@drawable/ic_outline_apps"
                     app:subtext='@{@string/backup_num_total(backupNumTotal)}'
                     app:text="@string/backup_select" />
             </LinearLayout>
