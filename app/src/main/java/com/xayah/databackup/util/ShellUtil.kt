@@ -1,5 +1,6 @@
 package com.xayah.databackup.util
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.topjohnwu.superuser.Shell
@@ -24,6 +25,8 @@ class ShellUtil(private val mContext: Context) {
     private val sdcardPath: String =
         filesPath.replace("/Android/data/com.xayah.databackup/files", "")
     private val scriptPath: String = "$sdcardPath/DataBackup/scripts"
+
+    val appListFilePath = "$scriptPath/$appListFileName"
 
     fun extractAssets() {
         try {
@@ -72,6 +75,10 @@ class ShellUtil(private val mContext: Context) {
     fun onGenerateAppList() {
         val intent = Intent(mContext, ConsoleActivity::class.java)
         intent.putExtra("type", "generateAppList")
-        mContext.startActivity(intent)
+        (mContext as Activity).startActivityForResult(intent, 1)
+    }
+
+    fun countLine(path: String): Int {
+        return Shell.su("wc -l $path").exec().out.joinToString().split(" ")[0].toInt()
     }
 }

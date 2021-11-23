@@ -1,5 +1,6 @@
 package com.xayah.databackup
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -59,6 +60,10 @@ class ConsoleActivity : AppCompatActivity() {
                 runOnUiThread {
                     setTitle(R.string.title_finished)
                 }
+                val intent = Intent()
+                intent.putExtra("appNum", mShell.countLine(mShell.appListFilePath) - 2)
+                setResult(1, intent)
+
             } catch (e: ConcurrentModificationException) {
                 e.printStackTrace()
                 generateAppList()
