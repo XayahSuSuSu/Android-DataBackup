@@ -3,4 +3,8 @@
     <string name="app_name">数据备份</string>
     <string name="root_grant">单击重新获取</string>
     <string name="root_state">未获取Root权限</string>
+    <string name="backup_start">开始备份</string>
+    <string name="backup_num">当前选择：%1$s个应用</string>
+    <string name="backup_num_total">总共：%1$s个</string>
+    <string name="backup_select">选择应用</string>
 </resources>

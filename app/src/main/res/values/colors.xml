@@ -9,4 +9,5 @@
     <color name="color_app_dark">#1976d2</color>
 
     <color name="red_denied">#e72d2c</color>
+    <color name="green_wait">#03d568</color>
 </resources>

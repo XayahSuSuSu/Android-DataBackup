@@ -7,6 +7,14 @@
             name="isRoot"
             type="boolean" />
 
+        <variable
+            name="backupNum"
+            type="int" />
+
+        <variable
+            name="backupNumTotal"
+            type="int" />
+
         <import type="android.view.View" />
     </data>
 
@@ -56,6 +64,24 @@
                     app:icon="@drawable/ic_outline_wrong_circle"
                     app:subtext="@string/root_grant"
                     app:text="@string/root_state" />
+
+                <com.xayah.databackup.view.LargeActionCard
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/main_card_margin_vertical"
+                    android:theme="@style/Theme.Dark"
+                    app:cardBackgroundColor="@color/green_wait"
+                    app:icon="@drawable/ic_outline_backup"
+                    app:subtext='@{@string/backup_num(backupNum)}'
+                    app:text="@string/backup_start" />
+
+                <com.xayah.databackup.view.LargeActionCard
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/main_card_margin_vertical"
+                    app:icon="@drawable/ic_outline_add"
+                    app:subtext='@{@string/backup_num_total(backupNumTotal)}'
+                    app:text="@string/backup_select" />
             </LinearLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
