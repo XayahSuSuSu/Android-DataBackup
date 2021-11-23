@@ -7,4 +7,7 @@
     <string name="backup_num">当前选择：%1$s个应用</string>
     <string name="backup_num_total">总共：%1$s个</string>
     <string name="backup_select">选择应用</string>
+    <string name="title_generateAppList">生成应用列表中...</string>
+    <string name="title_finished">完成！</string>
+    <string name="button_return">返回</string>
 </resources>

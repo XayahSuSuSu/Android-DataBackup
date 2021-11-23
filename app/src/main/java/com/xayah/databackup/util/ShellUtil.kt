@@ -68,5 +68,10 @@ class ShellUtil(private val mContext: Context) {
                     .exec().isSuccess
         }
     }
+
+    fun onGenerateAppList() {
+        val intent = Intent(mContext, ConsoleActivity::class.java)
+        intent.putExtra("type", "generateAppList")
+        mContext.startActivity(intent)
     }
 }
