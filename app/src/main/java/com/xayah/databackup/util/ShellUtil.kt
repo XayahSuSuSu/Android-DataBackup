@@ -81,4 +81,40 @@ class ShellUtil(private val mContext: Context) {
     fun countLine(path: String): Int {
         return Shell.su("wc -l $path").exec().out.joinToString().split(" ")[0].toInt()
     }
+
+    fun getAppPackages(): MutableList<String> {
+        return Shell.su("tail -n +3 $appListFilePath").exec().out
+    }
+
+    fun readLine(line: Int, path: String): String {
+        return Shell.su("sed -n '${line}p' $path").exec().out.joinToString()
+    }
+
+    fun writeLine(line: Int, content: String, path: String): Boolean {
+        return Shell.su("sed -i \"${line}c $content\" $path").exec().isSuccess
+    }
+
+    fun banAppByIndex(line: Int): Boolean {
+        val oldLine = readLine(line + 3, appListFilePath)
+        val newLine = "#$oldLine"
+        return writeLine(line + 3, newLine, appListFilePath)
+    }
+
+    fun allowAppByIndex(line: Int): Boolean {
+        val oldLine = readLine(line + 3, appListFilePath)
+        val newLine = oldLine.replace("#", "")
+        return writeLine(line + 3, newLine, appListFilePath)
+    }
+
+    fun limitAppByIndex(line: Int): Boolean {
+        val oldLine = readLine(line + 3, appListFilePath).split(" ")
+        val newLine = oldLine.joinToString(separator = "! ")
+        return writeLine(line + 3, newLine, appListFilePath)
+    }
+
+    fun unLimitAppByIndex(line: Int): Boolean {
+        val oldLine = readLine(line + 3, appListFilePath)
+        val newLine = oldLine.replace("!", "")
+        return writeLine(line + 3, newLine, appListFilePath)
+    }
 }
