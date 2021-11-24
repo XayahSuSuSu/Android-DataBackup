@@ -10,6 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DataBackup">
         <activity
+            android:name=".SelectActivity"
+            android:exported="false"
+            android:theme="@style/Theme.DataBackup.WithActionBar" />
+        <activity
             android:name=".ConsoleActivity"
             android:exported="false"
             android:theme="@style/Theme.DataBackup.WithActionBar" />

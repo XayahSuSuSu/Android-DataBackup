@@ -9,4 +9,5 @@
     <string name="title_generateAppList">Generating app lists...</string>
     <string name="title_finished">Finished!</string>
     <string name="button_return">Return</string>
+    <string name="title_SelectApps">Select apps</string>
 </resources>

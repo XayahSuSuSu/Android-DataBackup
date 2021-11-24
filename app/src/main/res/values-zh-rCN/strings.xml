@@ -10,4 +10,5 @@
     <string name="title_generateAppList">生成应用列表中...</string>
     <string name="title_finished">完成！</string>
     <string name="button_return">返回</string>
+    <string name="title_SelectApps">选择应用</string>
 </resources>
