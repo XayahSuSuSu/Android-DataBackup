@@ -1,6 +1,7 @@
 package com.xayah.databackup
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
@@ -49,6 +50,8 @@ class SelectActivity : AppCompatActivity() {
             }
             R.id.menu_refresh -> {
                 Toast.makeText(this, "刷新", Toast.LENGTH_SHORT).show()
+                adapter.appList = mutableListOf()
+                mShell.onGenerateAppList()
             }
             R.id.menu_backup_only_app -> {
                 item.isChecked = !item.isChecked
@@ -58,6 +61,14 @@ class SelectActivity : AppCompatActivity() {
             }
         }
         return false
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == 1) {
+            adapter.notifyDataSetChanged()
+            init()
+        }
     }
 
     private fun binding() {
@@ -72,8 +83,8 @@ class SelectActivity : AppCompatActivity() {
         GlobalScope.launch {
             val appPackages = mShell.getAppPackages()
             for (i in appPackages) {
-                val app = i.split(" ")[0]
-                val packageName = i.split(" ")[1]
+                val app = i.substring(0, i.lastIndexOf(" "))
+                val packageName = i.substring(i.lastIndexOf(" ") + 1)
                 try {
                     val (appIcon, appName, appPackage) = DataUtil.getAppInfo(mContext, packageName)
                     val appInfo = AppInfo(
