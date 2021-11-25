@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +24,7 @@ class SelectActivity : AppCompatActivity() {
     lateinit var mContext: Context
     lateinit var binding: ActivitySelectBinding
     lateinit var adapter: AppListAdapter
+    lateinit var mShell: ShellUtil
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select)
@@ -38,14 +41,32 @@ class SelectActivity : AppCompatActivity() {
         inflater.inflate(R.menu.select_apps_menu, menu)
         return true
     }
-    
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_save -> {
+                mShell.saveAppList(adapter.appList)
+            }
+            R.id.menu_refresh -> {
+                Toast.makeText(this, "刷新", Toast.LENGTH_SHORT).show()
+            }
+            R.id.menu_backup_only_app -> {
+                item.isChecked = !item.isChecked
+            }
+            R.id.menu_backup_all -> {
+                item.isChecked = !item.isChecked
+            }
+        }
+        return false
+    }
+
     private fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_select)
     }
 
     private fun init() {
         adapter = AppListAdapter(this)
-        val mShell = ShellUtil(this)
+        mShell = ShellUtil(this)
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerViewAppList.layoutManager = layoutManager
         GlobalScope.launch {

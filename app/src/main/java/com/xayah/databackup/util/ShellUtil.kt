@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.ConsoleActivity
+import com.xayah.databackup.model.AppInfo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -116,5 +117,19 @@ class ShellUtil(private val mContext: Context) {
         val oldLine = readLine(line + 3, appListFilePath)
         val newLine = oldLine.replace("!", "")
         return writeLine(line + 3, newLine, appListFilePath)
+    }
+
+    fun writeFile(content: String, path: String): Boolean {
+        return Shell.su("echo \"$content\" > $path").exec().isSuccess
+    }
+
+    fun saveAppList(appList: MutableList<AppInfo>) {
+        var outPut = mutableListOf<String>()
+        for (i in appList) {
+            outPut.add((if (i.ban) "#" else "") + i.appName + (if (i.onlyApp) "!" else "") + " " + i.appPackage)
+        }
+        val head = Shell.su("head -2 $appListFilePath").exec().out
+        outPut = (head + outPut) as MutableList<String>
+        writeFile(outPut.joinToString(separator = "\n"), appListFilePath)
     }
 }
