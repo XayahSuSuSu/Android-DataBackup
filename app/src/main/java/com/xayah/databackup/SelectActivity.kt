@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -85,6 +84,7 @@ class SelectActivity : AppCompatActivity() {
     }
 
     private fun init() {
+        setResult(2, intent)
         adapter = AppListAdapter(this)
         mShell = ShellUtil(this)
         val layoutManager = LinearLayoutManager(this)

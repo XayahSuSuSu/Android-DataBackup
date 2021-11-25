@@ -81,7 +81,7 @@
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
                     android:id="@+id/largeActionCard_select_apps"
                     app:icon="@drawable/ic_outline_apps"
-                    app:subtext='@{@string/backup_num_total(backupNumTotal)}'
+                    app:subtext="@string/backup_select_subtext"
                     app:text="@string/backup_select" />
             </LinearLayout>
         </ScrollView>

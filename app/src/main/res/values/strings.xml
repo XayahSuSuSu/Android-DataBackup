@@ -4,9 +4,8 @@
     <string name="root_state">Root denied</string>
     <string name="backup_start">Start backup</string>
     <string name="backup_num">Selected: %1$s Apps</string>
-    <string name="backup_num_total">In total: %1$s Apps</string>
     <string name="backup_select">Select apps</string>
-    <string name="title_generateAppList">Generating app lists...</string>
+    <string name="title_generateAppList">Generating app lists…</string>
     <string name="title_finished">Finished!</string>
     <string name="button_return">Return</string>
     <string name="title_SelectApps">Select apps</string>
@@ -14,4 +13,5 @@
     <string name="menu_backup_only_app">Reverse: Only apps</string>
     <string name="menu_backup_all">Reverse: Whether backup this app</string>
     <string name="menu_save">Save</string>
+    <string name="backup_select_subtext">Click to select</string>
 </resources>

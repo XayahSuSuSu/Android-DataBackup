@@ -132,4 +132,9 @@ class ShellUtil(private val mContext: Context) {
         outPut = (head + outPut) as MutableList<String>
         writeFile(outPut.joinToString(separator = "\n"), appListFilePath)
     }
+
+    fun countSelected(): Int {
+        val appList = Shell.su("tail -n +3 $appListFilePath").exec().out
+        return countLine(appListFilePath) - 2 - appList.joinToString().count { it == '#' }
+    }
 }
