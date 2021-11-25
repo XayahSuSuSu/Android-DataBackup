@@ -16,6 +16,8 @@
         <item name="android:textColor">?attr/colorControlNormal</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
+
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 
     <style name="Theme.DataBackup.WithActionBar" parent="Theme.MaterialComponents.DayNight">
@@ -34,6 +36,8 @@
         <item name="android:textColor">?attr/colorControlNormal</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
+
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 
     <!--    Dark mode-->
@@ -47,6 +51,8 @@
         <item name="colorOnSecondary">?attr/colorOnPrimary</item>
         <item name="colorControlActivated">?attr/colorPrimary</item>
         <item name="android:textColor">?attr/colorControlNormal</item>
+
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 
     <style name="WidgetFoundation.Card" parent="Widget.MaterialComponents.CardView">
@@ -54,5 +60,7 @@
         <item name="cardCornerRadius">8dp</item>
         <item name="cardElevation">0dp</item>
         <item name="cardPreventCornerOverlap">false</item>
+
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 </resources>
