@@ -11,7 +11,7 @@
     <string name="button_return">Return</string>
     <string name="title_SelectApps">Select apps</string>
     <string name="menu_refresh">Refresh</string>
-    <string name="menu_backup_only_app">Backup only apps</string>
-    <string name="menu_backup_all">Backup all</string>
+    <string name="menu_backup_only_app">Reverse: Only apps</string>
+    <string name="menu_backup_all">Reverse: Whether backup this app</string>
     <string name="menu_save">Save</string>
 </resources>

@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.xayah.databackup.databinding.AdapterAppListBinding
 import com.xayah.databackup.model.AppInfo
-import com.xayah.databackup.util.ShellUtil
 
 
 class AppListAdapter(private val mContext: Context) :
@@ -28,8 +27,8 @@ class AppListAdapter(private val mContext: Context) :
         binding.adapterIcon.setImageDrawable(current.appIcon)
         binding.adapterName.text = current.appName
         binding.adapterPackage.text = current.appPackage
-        binding.adapterBan.isChecked = !appList[position].ban
-        binding.adapterOnlyApp.isChecked = appList[position].onlyApp
+        binding.adapterBan.isChecked = !current.ban
+        binding.adapterOnlyApp.isChecked = current.onlyApp
 
         binding.adapterBan.setOnCheckedChangeListener { _, _ ->
             appList[position].ban = !appList[position].ban
@@ -46,5 +45,23 @@ class AppListAdapter(private val mContext: Context) :
     fun addApp(appInfo: AppInfo) {
         appList.add(appInfo)
         notifyItemInserted(0)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
+    fun reverseOnlyApp(position: Int) {
+        appList[position].onlyApp = !appList[position].onlyApp
+        notifyItemChanged(position)
+    }
+
+    fun reverseBan(position: Int) {
+        appList[position].ban = !appList[position].ban
+        notifyItemChanged(position)
     }
 }

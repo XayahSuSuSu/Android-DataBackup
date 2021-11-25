@@ -49,15 +49,24 @@ class SelectActivity : AppCompatActivity() {
                 mShell.saveAppList(adapter.appList)
             }
             R.id.menu_refresh -> {
-                Toast.makeText(this, "刷新", Toast.LENGTH_SHORT).show()
                 adapter.appList = mutableListOf()
                 mShell.onGenerateAppList()
             }
             R.id.menu_backup_only_app -> {
                 item.isChecked = !item.isChecked
+                GlobalScope.launch {
+                    for (i in adapter.appList.indices) {
+                        adapter.reverseOnlyApp(i)
+                    }
+                }
             }
             R.id.menu_backup_all -> {
                 item.isChecked = !item.isChecked
+                GlobalScope.launch {
+                    for (i in adapter.appList.indices) {
+                        adapter.reverseBan(i)
+                    }
+                }
             }
         }
         return false

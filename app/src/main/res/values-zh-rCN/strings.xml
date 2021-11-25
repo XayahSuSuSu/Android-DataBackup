@@ -12,7 +12,7 @@
     <string name="button_return">返回</string>
     <string name="title_SelectApps">选择应用</string>
     <string name="menu_refresh">刷新</string>
-    <string name="menu_backup_only_app">备份所有应用</string>
-    <string name="menu_backup_all">备份所有应用+数据</string>
+    <string name="menu_backup_only_app">反选：仅备份应用</string>
+    <string name="menu_backup_all">反选：是否备份此应用</string>
     <string name="menu_save">保存</string>
 </resources>
