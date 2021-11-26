@@ -80,7 +80,13 @@ class ShellUtil(private val mContext: Context) {
     }
 
     fun countLine(path: String): Int {
-        return Shell.su("wc -l $path").exec().out.joinToString().split(" ")[0].toInt()
+        var out = 2
+        try {
+            out = Shell.su("wc -l $path").exec().out.joinToString().split(" ")[0].toInt()
+        } catch (e: NumberFormatException) {
+            e.printStackTrace()
+        }
+        return out
     }
 
     fun getAppPackages(): MutableList<String> {
