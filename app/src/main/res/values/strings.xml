@@ -15,4 +15,6 @@
     <string name="menu_save">Save</string>
     <string name="backup_select_subtext">Click to select</string>
     <string name="title_backup">Backuping…</string>
+    <string name="restore_num">Total: %1$s</string>
+    <string name="restore">Restore</string>
 </resources>

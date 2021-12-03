@@ -41,6 +41,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SelectActivity::class.java)
             startActivityForResult(intent, 2)
         }
+        binding.largeActionCardRestore.setOnClickListener {
+            val intent = Intent(this, RestoreActivity::class.java)
+            startActivity(intent)
+        }
         binding.largeActionCardBackup.setOnClickListener {
             mShell.onBackup()
         }

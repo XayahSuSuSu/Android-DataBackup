@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.xayah.databackup">
 
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <application
         android:allowBackup="true"
@@ -11,6 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DataBackup">
+        <activity
+            android:name=".RestoreActivity"
+            android:exported="false"
+            android:theme="@style/Theme.DataBackup.WithActionBar" />
         <activity
             android:name=".SelectActivity"
             android:exported="false"

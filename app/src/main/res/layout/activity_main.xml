@@ -15,6 +15,10 @@
             name="backupNumTotal"
             type="int" />
 
+        <variable
+            name="restoreNum"
+            type="int" />
+
         <import type="android.view.View" />
     </data>
 
@@ -84,6 +88,15 @@
                     app:icon="@drawable/ic_outline_apps"
                     app:subtext="@string/backup_select_subtext"
                     app:text="@string/backup_select" />
+
+                <com.xayah.databackup.view.LargeActionCard
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/main_card_margin_vertical"
+                    android:id="@+id/largeActionCard_restore"
+                    app:icon="@drawable/ic_outline_restore"
+                    app:subtext="@{@string/restore_num(restoreNum)}"
+                    app:text="@string/restore" />
             </LinearLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
