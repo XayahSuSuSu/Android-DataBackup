@@ -44,10 +44,15 @@ class ShellUtil(private val mContext: Context) {
                 inputStream.close()
                 outStream.close()
             }
-            unzip("$filesPath/$scriptVersion.zip", "$sdcardPath/DataBackup/scripts")
+            if (!ls("$sdcardPath/DataBackup/scripts"))
+                unzip("$filesPath/$scriptVersion.zip", "$sdcardPath/DataBackup/scripts")
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    fun ls(path: String): Boolean {
+        return Shell.su("ls -i $path").exec().isSuccess
     }
 
     fun unzip(filePath: String, out: String) {
@@ -56,7 +61,7 @@ class ShellUtil(private val mContext: Context) {
     }
 
     fun mkdir(path: String): Boolean {
-        return Shell.su("mkdir $path").exec().isSuccess
+        return Shell.su("mkdir -p $path").exec().isSuccess
     }
 
     fun rm(path: String): Boolean {
