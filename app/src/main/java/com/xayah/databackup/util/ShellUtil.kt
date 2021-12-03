@@ -17,10 +17,11 @@ class ShellUtil(private val mContext: Context) {
     private val appListFileName = "应用列表.txt"
     private val logFileName = "执行状态日志.txt"
     private val generateAppListScriptName = "生成应用列表.sh"
+    private val backupScriptName = "备份应用.sh"
 
     var isSuccess = false
 
-    val console = mutableListOf<String>()
+    var console = mutableListOf<String>()
 
     private val filesPath: String = mContext.getExternalFilesDir(null)!!.absolutePath
     private val sdcardPath: String =
@@ -28,6 +29,7 @@ class ShellUtil(private val mContext: Context) {
     private val scriptPath: String = "$sdcardPath/DataBackup/scripts"
 
     val appListFilePath = "$scriptPath/$appListFileName"
+    val backupFilePath = "$scriptPath/$backupScriptName"
 
     fun extractAssets() {
         try {
@@ -147,5 +149,19 @@ class ShellUtil(private val mContext: Context) {
     fun countSelected(): Int {
         val appList = Shell.su("tail -n +3 $appListFilePath").exec().out
         return countLine(appListFilePath) - 2 - appList.joinToString().count { it == '#' }
+    }
+
+    fun backup() {
+        GlobalScope.launch() {
+            console =
+                Shell.su("sh $backupFilePath")
+                    .exec().out
+        }
+    }
+
+    fun onBackup() {
+        val intent = Intent(mContext, ConsoleActivity::class.java)
+        intent.putExtra("type", "backup")
+        (mContext as Activity).startActivityForResult(intent, 1)
     }
 }

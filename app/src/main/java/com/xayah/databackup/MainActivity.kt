@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SelectActivity::class.java)
             startActivityForResult(intent, 2)
         }
+        binding.largeActionCardBackup.setOnClickListener {
+            mShell.onBackup()
+        }
     }
 
     private fun init() {

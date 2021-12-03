@@ -38,6 +38,11 @@ class ConsoleActivity : AppCompatActivity() {
                 mShell.generateAppList()
                 generateAppList()
             }
+            "backup"->{
+                setTitle("备份中...")
+                mShell.backup()
+                generateAppList()
+            }
         }
     }
 

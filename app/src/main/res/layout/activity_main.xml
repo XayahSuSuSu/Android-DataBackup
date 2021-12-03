@@ -68,6 +68,7 @@
                 <com.xayah.databackup.view.LargeActionCard
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/largeActionCard_backup"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
                     android:theme="@style/Theme.Dark"
                     app:cardBackgroundColor="@{backupNum>0 ? @color/green_wait : @color/red_denied}"
