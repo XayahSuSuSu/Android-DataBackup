@@ -56,5 +56,9 @@ class ShellUtil(private val mContext: Context) {
         fun replace(oldString: String, newString: String, filePath: String): Boolean {
             return Shell.su("sed -i 's/$oldString/$newString/g' $filePath").exec().isSuccess
         }
+
+        fun rename(oldName: String, newName: String, path: String): Boolean {
+            return Shell.su("mv $path/$oldName $path/$newName").exec().isSuccess
+        }
     }
 }

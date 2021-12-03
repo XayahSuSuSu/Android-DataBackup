@@ -29,7 +29,7 @@ class Shell(private val mContext: Context) {
     private val SDCARD_PATH: String =
         FILE_PATH.replace("/Android/data/com.xayah.databackup/files", "")
 
-    private val SCRIPT_PATH: String = "$SDCARD_PATH/DataBackup/scripts"
+    val SCRIPT_PATH: String = "$SDCARD_PATH/DataBackup/scripts"
 
     val APP_LIST_FILE_PATH = "$SCRIPT_PATH/$APP_LIST_FILE_NAME"
 

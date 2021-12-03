@@ -71,6 +71,11 @@ class ConsoleActivity : AppCompatActivity() {
                         runOnUiThread {
                             setTitle(R.string.title_finished)
                         }
+                        ShellUtil.rename(
+                            "Backup_zstd",
+                            "Backup_${System.currentTimeMillis()}",
+                            mShell.SCRIPT_PATH
+                        )
                     }
                 })
             }
