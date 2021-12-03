@@ -33,8 +33,6 @@ class Shell(private val mContext: Context) {
 
     val APP_LIST_FILE_PATH = "$SCRIPT_PATH/$APP_LIST_FILE_NAME"
 
-    val BACKUP_FILE_PATH = "$SCRIPT_PATH/$BACKUP_SCRIPT_NAME"
-
     fun extractAssets() {
         try {
             val assets = File(FILE_PATH, "$SCRIPT_VERSION.zip")
@@ -109,6 +107,7 @@ class Shell(private val mContext: Context) {
         finishedEvent: (Boolean?) -> Unit
     ) {
         ShellUtil.rm("$SCRIPT_PATH/$LOG_FILE_NAME")
+        ShellUtil.replace("}&","}","$SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
         val callbackList: CallbackList<String> = object : CallbackList<String>() {
             override fun onAddElement(mString: String?) {
                 if (mString != null) {

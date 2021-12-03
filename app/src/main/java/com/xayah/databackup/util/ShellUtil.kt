@@ -52,5 +52,9 @@ class ShellUtil(private val mContext: Context) {
             val appList = Shell.su("tail -n +3 $appListFilePath").exec().out
             return countLine(appListFilePath) - 2 - appList.joinToString().count { it == '#' }
         }
+
+        fun replace(oldString: String, newString: String, filePath: String): Boolean {
+            return Shell.su("sed -i 's/$oldString/$newString/g' $filePath").exec().isSuccess
+        }
     }
 }
