@@ -14,4 +14,5 @@
     <string name="menu_backup_all">Reverse: Whether backup this app</string>
     <string name="menu_save">Save</string>
     <string name="backup_select_subtext">Click to select</string>
+    <string name="title_backup">Backuping…</string>
 </resources>

@@ -15,4 +15,5 @@
     <string name="menu_backup_all">反选：是否备份此应用</string>
     <string name="menu_save">保存</string>
     <string name="backup_select_subtext">单击进入选择</string>
+    <string name="title_backup">备份中…</string>
 </resources>

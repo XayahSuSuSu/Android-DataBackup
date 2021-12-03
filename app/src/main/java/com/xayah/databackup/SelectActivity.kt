@@ -13,10 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.databinding.ActivitySelectBinding
 import com.xayah.databackup.model.AppInfo
-import com.xayah.databackup.util.DataUtil
-import com.xayah.databackup.util.ShellUtil
-import com.xayah.databackup.util.WindowUtil
-import com.xayah.databackup.util.resolveThemedBoolean
+import com.xayah.databackup.util.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -24,7 +21,7 @@ class SelectActivity : AppCompatActivity() {
     lateinit var mContext: Context
     lateinit var binding: ActivitySelectBinding
     lateinit var adapter: AppListAdapter
-    lateinit var mShell: ShellUtil
+    lateinit var mShell: Shell
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select)
@@ -86,11 +83,11 @@ class SelectActivity : AppCompatActivity() {
     private fun init() {
         setResult(2, intent)
         adapter = AppListAdapter(this)
-        mShell = ShellUtil(this)
+        mShell = Shell(this)
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerViewAppList.layoutManager = layoutManager
         GlobalScope.launch {
-            val appPackages = mShell.getAppPackages()
+            val appPackages = ShellUtil.getAppPackages(mShell.APP_LIST_FILE_PATH)
             for (i in appPackages) {
                 val app = i.substring(0, i.lastIndexOf(" "))
                 val packageName = i.substring(i.lastIndexOf(" ") + 1)

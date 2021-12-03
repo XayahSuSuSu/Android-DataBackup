@@ -10,9 +10,21 @@ import com.xayah.databackup.util.ShellUtil
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
 
+
 class MainActivity : AppCompatActivity() {
+    companion object {
+        init {
+            Shell.enableVerboseLogging = BuildConfig.DEBUG;
+            Shell.setDefaultBuilder(
+                Shell.Builder.create()
+                    .setFlags(Shell.FLAG_REDIRECT_STDERR)
+                    .setTimeout(10)
+            )
+        }
+    }
+
     lateinit var binding: ActivityMainBinding
-    lateinit var mShell: ShellUtil
+    lateinit var mShell: com.xayah.databackup.util.Shell
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,15 +47,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        mShell = ShellUtil(this)
+        mShell = com.xayah.databackup.util.Shell(this)
         mShell.extractAssets()
-        binding.backupNum = mShell.countSelected()
+        binding.backupNum = ShellUtil.countSelected(mShell.APP_LIST_FILE_PATH)
+        Shell.getShell()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == 2) {
-            binding.backupNum = mShell.countSelected()
+            binding.backupNum = ShellUtil.countSelected(mShell.APP_LIST_FILE_PATH)
         }
     }
 }
