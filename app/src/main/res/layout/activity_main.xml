@@ -15,10 +15,6 @@
             name="backupNumTotal"
             type="int" />
 
-        <variable
-            name="restoreNum"
-            type="int" />
-
         <import type="android.view.View" />
     </data>
 
@@ -95,7 +91,7 @@
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
                     android:id="@+id/largeActionCard_restore"
                     app:icon="@drawable/ic_outline_restore"
-                    app:subtext="@{@string/restore_num(restoreNum)}"
+                    app:subtext="@string/restore_subtitle"
                     app:text="@string/restore" />
             </LinearLayout>
         </ScrollView>

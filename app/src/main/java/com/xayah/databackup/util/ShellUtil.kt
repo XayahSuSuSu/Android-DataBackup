@@ -60,5 +60,10 @@ class ShellUtil(private val mContext: Context) {
         fun rename(oldName: String, newName: String, path: String): Boolean {
             return Shell.su("mv $path/$oldName $path/$newName").exec().isSuccess
         }
+        
+        fun countFiles(path: String): MutableList<String> {
+            val files = Shell.su("ls $path").exec().out
+            return files
+        }
     }
 }
