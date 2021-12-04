@@ -113,7 +113,8 @@ class Shell(private val mContext: Context) {
         finishedEvent: (Boolean?) -> Unit
     ) {
         ShellUtil.rm("$SCRIPT_PATH/$LOG_FILE_NAME")
-        ShellUtil.replace("}&","}","$SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
+        ShellUtil.replace("}&", "}", "$SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
+        ShellUtil.replace("pv", "pv -f", "$SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
         val callbackList: CallbackList<String> = object : CallbackList<String>() {
             override fun onAddElement(mString: String?) {
                 if (mString != null) {
@@ -138,6 +139,7 @@ class Shell(private val mContext: Context) {
         finishedEvent: (Boolean?) -> Unit
     ) {
         ShellUtil.replace("} &", "}", "$BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
+        ShellUtil.replace("pv", "pv -f", "$BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
         val callbackList: CallbackList<String> = object : CallbackList<String>() {
             override fun onAddElement(mString: String?) {
                 if (mString != null) {
