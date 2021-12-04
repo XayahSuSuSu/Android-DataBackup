@@ -17,4 +17,17 @@
     <string name="title_backup">Backuping…</string>
     <string name="restore_subtitle">Click to restore</string>
     <string name="restore">Restore</string>
+    <string name="settings">Settings</string>
+    <string name="credits">Credits</string>
+    <string name="about">About</string>
+    <string name="author">Author</string>
+    <string name="coolapk_1394294">CoolApk @XayahSuSuSu</string>
+    <string name="backup_scripts">Backup Scripts</string>
+    <string name="coolapk_2277637">CoolApk @落叶凄凉TEL</string>
+    <string name="simplify_scripts">Simplify Scripts</string>
+    <string name="github_petit_abba">GitHub @Petit-Abba</string>
+    <string name="design_inspiration">Design Inspiration</string>
+    <string name="clash_for_android">Clash For Android</string>
+    <string name="part_components">Part Components</string>
+    <string name="magisk">Magisk</string>
 </resources>

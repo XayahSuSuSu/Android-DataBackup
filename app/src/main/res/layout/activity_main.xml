@@ -93,7 +93,32 @@
                     app:icon="@drawable/ic_outline_restore"
                     app:subtext="@string/restore_subtitle"
                     app:text="@string/restore" />
+
+                <com.xayah.databackup.view.LargeActionLabel
+                    android:id="@+id/largeActionLabel_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/main_label_margin_vertical"
+                    app:icon="@drawable/ic_baseline_settings"
+                    app:text="@string/settings" />
+
+                <com.xayah.databackup.view.LargeActionLabel
+                    android:id="@+id/largeActionLabel_credits"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/main_label_margin_vertical"
+                    app:icon="@drawable/ic_outline_favorite_border"
+                    app:text="@string/credits" />
+
+                <com.xayah.databackup.view.LargeActionLabel
+                    android:id="@+id/largeActionLabel_about"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/main_label_margin_vertical"
+                    app:icon="@drawable/ic_baseline_info"
+                    app:text="@string/about" />
             </LinearLayout>
+
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

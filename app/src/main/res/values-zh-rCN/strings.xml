@@ -18,4 +18,17 @@
     <string name="title_backup">备份中…</string>
     <string name="restore_subtitle">单击进入备份还原</string>
     <string name="restore">还原备份</string>
+    <string name="settings">设置</string>
+    <string name="credits">鸣谢</string>
+    <string name="about">关于</string>
+    <string name="author">作者</string>
+    <string name="coolapk_1394294">酷安 @XayahSuSuSu</string>
+    <string name="backup_scripts">备份脚本</string>
+    <string name="coolapk_2277637">酷安 @落叶凄凉TEL</string>
+    <string name="simplify_scripts">脚本简化</string>
+    <string name="github_petit_abba">GitHub @Petit-Abba</string>
+    <string name="design_inspiration">设计灵感</string>
+    <string name="clash_for_android">Clash For Android</string>
+    <string name="part_components">部分组件</string>
+    <string name="magisk">Magisk</string>
 </resources>

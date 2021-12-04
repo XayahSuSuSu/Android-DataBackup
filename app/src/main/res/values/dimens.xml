@@ -22,4 +22,14 @@
     <dimen name="large_item_header_layout_size">70dp</dimen>
     <dimen name="large_item_tailing_margin_horizontal">20dp</dimen>
     <dimen name="large_item_text_margin">5dp</dimen>
+
+    <!-- Dialog -->
+    <dimen name="dialog_padding">20dp</dimen>
+    <dimen name="dialog_button_margin">5dp</dimen>
+    <dimen name="dialog_menu_min_width">150dp</dimen>
+    <dimen name="dialog_text_margin">5dp</dimen>
+
+    <!-- About Design -->
+    <dimen name="about_icon_size">50dp</dimen>
+    <dimen name="about_text_margin">15dp</dimen>
 </resources>

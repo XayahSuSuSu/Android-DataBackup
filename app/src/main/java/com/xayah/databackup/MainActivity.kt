@@ -2,10 +2,13 @@ package com.xayah.databackup
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.databinding.ActivityMainBinding
+import com.xayah.databackup.databinding.DialogAboutBinding
+import com.xayah.databackup.databinding.DialogCreditsBinding
 import com.xayah.databackup.util.ShellUtil
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
@@ -47,6 +50,26 @@ class MainActivity : AppCompatActivity() {
         }
         binding.largeActionCardBackup.setOnClickListener {
             mShell.onBackup()
+        }
+        binding.largeActionLabelCredits.setOnClickListener {
+            val dialogBinding = DialogCreditsBinding.inflate(this.layoutInflater).apply {
+            }
+
+            AlertDialog.Builder(this)
+                .setView(dialogBinding.root)
+                .show()
+        }
+        binding.largeActionLabelAbout.setOnClickListener {
+            val dialogBinding = DialogAboutBinding.inflate(this.layoutInflater).apply {
+                this.versionName = packageManager.getPackageInfo(packageName, 0).versionName
+            }
+//            val uri = Uri.parse("https://github.com/XayahSuSuSu/Android-DataBackup")
+//            val intent = Intent(Intent.ACTION_VIEW, uri)
+//            startActivity(intent)
+
+            AlertDialog.Builder(this)
+                .setView(dialogBinding.root)
+                .show()
         }
     }
 
