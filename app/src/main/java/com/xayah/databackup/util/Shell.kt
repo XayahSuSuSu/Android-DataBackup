@@ -31,6 +31,8 @@ class Shell(private val mContext: Context) {
 
     val SCRIPT_PATH: String = "$SDCARD_PATH/DataBackup/scripts"
 
+    val BACKUP_PATH: String = "$SDCARD_PATH/DataBackup/backups"
+
     val APP_LIST_FILE_PATH = "$SCRIPT_PATH/$APP_LIST_FILE_NAME"
 
     fun extractAssets() {
@@ -50,6 +52,8 @@ class Shell(private val mContext: Context) {
             }
             if (!ShellUtil.ls("$SDCARD_PATH/DataBackup/scripts"))
                 ShellUtil.unzip("$FILE_PATH/$SCRIPT_VERSION.zip", "$SDCARD_PATH/DataBackup/scripts")
+            if (!ShellUtil.ls("$SDCARD_PATH/DataBackup/backups"))
+                ShellUtil.mkdir("$SDCARD_PATH/DataBackup/backups")
         } catch (e: IOException) {
             e.printStackTrace()
         }
