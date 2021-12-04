@@ -22,6 +22,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
+        android:id="@+id/constraintLayout_main"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
@@ -58,6 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
+                    android:id="@+id/largeActionCard_root"
                     android:theme="@style/Theme.Dark"
                     android:visibility="@{isRoot ? View.GONE : View.VISIBLE}"
                     app:cardBackgroundColor="@color/red_denied"

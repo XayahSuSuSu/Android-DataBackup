@@ -30,4 +30,5 @@
     <string name="clash_for_android">Clash For Android</string>
     <string name="part_components">Part Components</string>
     <string name="magisk">Magisk</string>
+    <string name="wip">Work in progress…</string>
 </resources>

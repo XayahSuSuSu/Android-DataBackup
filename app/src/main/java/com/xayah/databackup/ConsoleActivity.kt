@@ -84,7 +84,7 @@ class ConsoleActivity : AppCompatActivity() {
                 })
             }
             "restore" -> {
-                title = "恢复"
+                title = getString(R.string.restore)
                 binding.logs = ""
                 val name = intent.getStringExtra("name")
                 if (name != null) {

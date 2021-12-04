@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.snackbar.Snackbar
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.databinding.ActivityMainBinding
 import com.xayah.databackup.databinding.DialogAboutBinding
@@ -40,17 +41,30 @@ class MainActivity : AppCompatActivity() {
     private fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.isRoot = Shell.getShell().isRoot
+
+        binding.largeActionCardRoot.setOnClickListener {
+            binding.isRoot = Shell.getShell().isRoot
+        }
+
         binding.largeActionCardSelectApps.setOnClickListener {
             val intent = Intent(this, SelectActivity::class.java)
             startActivityForResult(intent, 2)
         }
+
         binding.largeActionCardRestore.setOnClickListener {
             val intent = Intent(this, RestoreActivity::class.java)
             startActivity(intent)
         }
+
         binding.largeActionCardBackup.setOnClickListener {
             mShell.onBackup()
         }
+
+        binding.largeActionLabelSettings.setOnClickListener {
+            Snackbar.make(binding.constraintLayoutMain, getString(R.string.wip), Snackbar.LENGTH_SHORT)
+                .show()
+        }
+
         binding.largeActionLabelCredits.setOnClickListener {
             val dialogBinding = DialogCreditsBinding.inflate(this.layoutInflater).apply {
             }
@@ -59,6 +73,7 @@ class MainActivity : AppCompatActivity() {
                 .setView(dialogBinding.root)
                 .show()
         }
+
         binding.largeActionLabelAbout.setOnClickListener {
             val dialogBinding = DialogAboutBinding.inflate(this.layoutInflater).apply {
                 this.versionName = packageManager.getPackageInfo(packageName, 0).versionName
