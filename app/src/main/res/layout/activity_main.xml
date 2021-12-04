@@ -67,6 +67,7 @@
 
                 <com.xayah.databackup.view.LargeActionCard
                     android:layout_width="match_parent"
+                    android:clickable="@{isRoot}"
                     android:layout_height="wrap_content"
                     android:id="@+id/largeActionCard_backup"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
@@ -81,6 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
                     android:id="@+id/largeActionCard_select_apps"
+                    android:clickable="@{isRoot}"
                     app:icon="@drawable/ic_outline_apps"
                     app:subtext="@string/backup_select_subtext"
                     app:text="@string/backup_select" />
@@ -89,6 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
+                    android:clickable="@{isRoot}"
                     android:id="@+id/largeActionCard_restore"
                     app:icon="@drawable/ic_outline_restore"
                     app:subtext="@string/restore_subtitle"
@@ -98,6 +101,7 @@
                     android:id="@+id/largeActionLabel_settings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clickable="@{isRoot}"
                     android:layout_marginVertical="@dimen/main_label_margin_vertical"
                     app:icon="@drawable/ic_baseline_settings"
                     app:text="@string/settings" />
