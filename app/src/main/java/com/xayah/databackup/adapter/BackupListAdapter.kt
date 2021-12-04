@@ -21,7 +21,7 @@ class BackupListAdapter(private val mContext: Context) :
         )
     }
 
-    private var chosenIndex = 0
+    var chosenIndex = 0
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val current = backupList[position]
         val binding = holder.binding

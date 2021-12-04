@@ -83,6 +83,27 @@ class ConsoleActivity : AppCompatActivity() {
                     }
                 })
             }
+            "restore" -> {
+                title = "恢复"
+                binding.logs = ""
+                val name = intent.getStringExtra("name")
+                if (name != null) {
+                    mShell.restore(name, {
+                        binding.logs += it.replace("\u001B[0m", "").replace("  -", " -")
+                            .replace("(.*?)m -".toRegex(), " -") + "\n"
+                        runOnUiThread {
+                            binding.nestedScrollViewConsole.fullScroll(View.FOCUS_DOWN);
+                        }
+                    }, {
+                        if (it == true) {
+                            binding.isFinished = true
+                            runOnUiThread {
+                                setTitle(R.string.title_finished)
+                            }
+                        }
+                    })
+                }
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.xayah.databackup
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -31,14 +32,21 @@ class RestoreActivity : AppCompatActivity() {
 
     private fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_restore)
+        binding.extendedFloatingActionButton.setOnClickListener {
+            val intent = Intent(mContext, ConsoleActivity::class.java)
+            intent.putExtra("type", "restore")
+            intent.putExtra("name", files[adapter.chosenIndex])
+            startActivity(intent)
+        }
     }
 
+    lateinit var files: MutableList<String>
     private fun init() {
         mShell = Shell(this)
         adapter = BackupListAdapter(this)
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerViewBackupList.layoutManager = layoutManager
-        val files = ShellUtil.countFiles(mShell.BACKUP_PATH)
+        files = ShellUtil.countFiles(mShell.BACKUP_PATH)
         for ((index, i) in files.withIndex()) {
             val backupInfo = BackupInfo("备份存档${index + 1}", DataUtil.getFormatDate(i.split("_")[1].toLong()))
             adapter.addBackup(backupInfo)

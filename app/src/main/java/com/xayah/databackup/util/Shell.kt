@@ -24,6 +24,8 @@ class Shell(private val mContext: Context) {
 
     private val BACKUP_SCRIPT_NAME = "备份应用.sh"
 
+    private val RESTORE_SCRIPT_NAME = "还原备份.sh"
+
     private val FILE_PATH: String = mContext.getExternalFilesDir(null)!!.absolutePath
 
     private val SDCARD_PATH: String =
@@ -121,6 +123,30 @@ class Shell(private val mContext: Context) {
         }
         GlobalScope.launch() {
             Shell.su("cd $SCRIPT_PATH; sh $SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
+                .to(callbackList)
+                .submit { result: Shell.Result? ->
+                    if (result != null) {
+                        finishedEvent(result.isSuccess)
+                    }
+                }
+        }
+    }
+
+    fun restore(
+        backupDir: String,
+        event: (String) -> Unit,
+        finishedEvent: (Boolean?) -> Unit
+    ) {
+        ShellUtil.replace("} &", "}", "$BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
+        val callbackList: CallbackList<String> = object : CallbackList<String>() {
+            override fun onAddElement(mString: String?) {
+                if (mString != null) {
+                    event(mString)
+                }
+            }
+        }
+        GlobalScope.launch() {
+            Shell.su("cd $BACKUP_PATH; sh $BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
                 .to(callbackList)
                 .submit { result: Shell.Result? ->
                     if (result != null) {
