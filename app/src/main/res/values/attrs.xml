@@ -9,6 +9,12 @@
         <attr name="icon" />
     </declare-styleable>
 
+    <declare-styleable name="LargeActionLabel">
+        <attr name="text" />
+        <attr name="subtext" />
+        <attr name="icon" />
+    </declare-styleable>
+
     <declare-styleable name="Clickable">
         <attr name="android:focusable" />
         <attr name="android:clickable" />
