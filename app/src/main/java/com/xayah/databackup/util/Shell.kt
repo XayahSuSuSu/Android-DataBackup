@@ -124,7 +124,7 @@ class Shell(private val mContext: Context) {
         }
         GlobalScope.launch() {
             Shell.su("cd $SCRIPT_PATH; sh $SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
-                .to(callbackList)
+                .to(callbackList, callbackList)
                 .submit { result: Shell.Result? ->
                     if (result != null) {
                         finishedEvent(result.isSuccess)
