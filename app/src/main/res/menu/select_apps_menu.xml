@@ -12,13 +12,4 @@
         android:icon="@drawable/ic_outline_refresh"
         android:title="@string/menu_refresh"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:checkable="true"
-        android:id="@+id/menu_backup_only_app"
-        android:title="@string/menu_backup_only_app" />
-    <item
-        android:checkable="true"
-        android:id="@+id/menu_backup_all"
-        android:title="@string/menu_backup_all" />
 </menu>

@@ -48,22 +48,6 @@ class SelectActivity : AppCompatActivity() {
                 adapter.appList = mutableListOf()
                 mShell.onGenerateAppList()
             }
-            R.id.menu_backup_only_app -> {
-                item.isChecked = !item.isChecked
-                GlobalScope.launch {
-                    for (i in adapter.appList.indices) {
-                        adapter.reverseOnlyApp(i)
-                    }
-                }
-            }
-            R.id.menu_backup_all -> {
-                item.isChecked = !item.isChecked
-                GlobalScope.launch {
-                    for (i in adapter.appList.indices) {
-                        adapter.reverseBan(i)
-                    }
-                }
-            }
         }
         return false
     }
@@ -78,6 +62,18 @@ class SelectActivity : AppCompatActivity() {
 
     private fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_select)
+        binding.chipOnlyApp.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked)
+                adapter.selectAll(0, 1)
+            else
+                adapter.selectAll(0, 0)
+        }
+        binding.chipBackup.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked)
+                adapter.selectAll(1, 1)
+            else
+                adapter.selectAll(1, 0)
+        }
     }
 
     private fun init() {

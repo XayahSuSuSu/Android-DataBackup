@@ -64,4 +64,17 @@ class AppListAdapter(private val mContext: Context) :
         appList[position].ban = !appList[position].ban
         notifyItemChanged(position)
     }
+
+    fun selectAll(type: Int, state: Int) {
+        if (type == 0) {
+            for (i in appList)
+                i.onlyApp = state == 1
+            notifyDataSetChanged()
+        } else {
+            for (i in appList)
+                i.ban = state == 0
+            notifyDataSetChanged()
+        }
+
+    }
 }

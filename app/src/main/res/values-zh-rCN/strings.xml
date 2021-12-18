@@ -11,8 +11,6 @@
     <string name="button_return">返回</string>
     <string name="title_SelectApps">选择应用</string>
     <string name="menu_refresh">刷新</string>
-    <string name="menu_backup_only_app">反选：仅备份应用</string>
-    <string name="menu_backup_all">反选：是否备份此应用</string>
     <string name="menu_save">保存</string>
     <string name="backup_select_subtext">单击进入选择</string>
     <string name="title_backup">备份中…</string>
@@ -32,4 +30,6 @@
     <string name="part_components">部分组件</string>
     <string name="magisk">Magisk</string>
     <string name="wip">施工中…</string>
+    <string name="select_all_only_app">全选：仅应用</string>
+    <string name="select_all_backup">全选：是否备份</string>
 </resources>
