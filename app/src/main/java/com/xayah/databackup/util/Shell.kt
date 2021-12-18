@@ -95,7 +95,12 @@ class Shell(private val mContext: Context) {
     fun saveAppList(appList: MutableList<AppInfo>) {
         var outPut = mutableListOf<String>()
         for (i in appList) {
-            outPut.add((if (i.ban) "#" else "") + i.appName + (if (i.onlyApp) "!" else "") + " " + i.appPackage)
+            outPut.add(
+                (if (i.ban) "#" else "") + i.appName.replace(
+                    " ",
+                    ""
+                ) + (if (i.onlyApp) "!" else "") + " " + i.appPackage
+            )
         }
         val head = Shell.su("head -2 $APP_LIST_FILE_PATH").exec().out
         outPut = (head + outPut) as MutableList<String>
