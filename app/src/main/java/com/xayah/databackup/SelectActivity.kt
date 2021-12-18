@@ -103,6 +103,16 @@ class SelectActivity : AppCompatActivity() {
             }
             runOnUiThread {
                 binding.recyclerViewAppList.adapter = adapter
+                var onlyAppAll = true
+                var backupAll = true
+                for (i in adapter.appList) {
+                    if (!i.onlyApp)
+                        onlyAppAll = false
+                    if (i.ban)
+                        backupAll = false
+                }
+                binding.chipOnlyApp.isChecked = onlyAppAll
+                binding.chipBackup.isChecked = backupAll
             }
         }
     }
