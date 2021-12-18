@@ -22,6 +22,7 @@ class AppListAdapter(private val mContext: Context) :
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
+        holder.setIsRecyclable(false)
         val current = appList[position]
         val binding = holder.binding
         binding.adapterIcon.setImageDrawable(current.appIcon)
