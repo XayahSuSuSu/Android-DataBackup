@@ -10,4 +10,7 @@
 
     <color name="red_denied">#e72d2c</color>
     <color name="green_wait">#03d568</color>
+
+<!--    Clash-->
+    <color name="clash">#1e4376</color>
 </resources>
