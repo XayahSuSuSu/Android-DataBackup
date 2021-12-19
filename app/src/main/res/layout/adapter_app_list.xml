@@ -65,8 +65,8 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:theme="@style/Theme.Dark"
-                    android:layout_marginRight="10dp"
-                    android:text="仅应用"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/only_app"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/adapter_ban"
                     app:layout_constraintTop_toTopOf="parent" />

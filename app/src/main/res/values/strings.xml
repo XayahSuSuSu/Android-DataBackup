@@ -31,4 +31,5 @@
     <string name="wip">Work in progress…</string>
     <string name="select_all_only_app">Select all：only app</string>
     <string name="select_all_backup">Select all：backup</string>
+    <string name="only_app">Only app</string>
 </resources>

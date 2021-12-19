@@ -32,4 +32,5 @@
     <string name="wip">施工中…</string>
     <string name="select_all_only_app">全选：仅应用</string>
     <string name="select_all_backup">全选：是否备份</string>
+    <string name="only_app">仅应用</string>
 </resources>
