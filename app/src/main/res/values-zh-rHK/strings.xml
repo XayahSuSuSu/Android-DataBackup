@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">數據備份</string>
+    <string name="root_grant">單擊重新獲取</string>
+    <string name="root_state">未獲取Root權限</string>
+    <string name="backup_start">開始備份</string>
+    <string name="backup_num">當前選擇：%1$s個應用</string>
+    <string name="backup_select">選擇應用</string>
+    <string name="title_generateAppList">生成應用列表中…</string>
+    <string name="title_finished">完成！</string>
+    <string name="button_return">返回</string>
+    <string name="title_SelectApps">選擇應用</string>
+    <string name="menu_refresh">刷新</string>
+    <string name="menu_save">保存</string>
+    <string name="backup_select_subtext">單擊進入選擇</string>
+    <string name="title_backup">備份中…</string>
+    <string name="restore_subtitle">單擊進入備份還原</string>
+    <string name="restore">還原備份</string>
+    <string name="settings">設置</string>
+    <string name="credits">鳴謝</string>
+    <string name="about">關於</string>
+    <string name="author">作者</string>
+    <string name="coolapk_1394294">酷安 @XayahSuSuSu</string>
+    <string name="backup_scripts">備份腳本</string>
+    <string name="coolapk_2277637">酷安 @落叶凄凉TEL</string>
+    <string name="simplify_scripts">腳本簡化</string>
+    <string name="github_petit_abba">GitHub @Petit-Abba</string>
+    <string name="design_inspiration">設計靈感</string>
+    <string name="clash_for_android">Clash For Android</string>
+    <string name="part_components">部分組件</string>
+    <string name="magisk">Magisk</string>
+    <string name="wip">施工中…</string>
+    <string name="select_all_only_app">全選：僅應用</string>
+    <string name="select_all_backup">全選：是否備份</string>
+    <string name="only_app">僅應用</string>
+    <string name="script_app_list">應用列表.txt</string>
+    <string name="script_log">執行狀態日誌.txt</string>
+    <string name="script_generate_app_list">生成應用列表.sh</string>
+    <string name="script_backup">備份應用.sh</string>
+    <string name="script_restore">還原備份.sh</string>
+    <string name="script_version">V11.9_rT</string>
+</resources>

@@ -6,6 +6,7 @@ import android.content.Intent
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.ConsoleActivity
+import com.xayah.databackup.R
 import com.xayah.databackup.model.AppInfo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -14,17 +15,17 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 class Shell(private val mContext: Context) {
-    private val SCRIPT_VERSION = "V11.9"
+    private val SCRIPT_VERSION = mContext.getString(R.string.script_version)
 
-    private val APP_LIST_FILE_NAME = "应用列表.txt"
+    private val APP_LIST_FILE_NAME = mContext.getString(R.string.script_app_list)
 
-    private val LOG_FILE_NAME = "执行状态日志.txt"
+    private val LOG_FILE_NAME = mContext.getString(R.string.script_log)
 
-    private val GENERATE_APP_LIST_SCRIPT_NAME = "生成应用列表.sh"
+    private val GENERATE_APP_LIST_SCRIPT_NAME = mContext.getString(R.string.script_generate_app_list)
 
-    private val BACKUP_SCRIPT_NAME = "备份应用.sh"
+    private val BACKUP_SCRIPT_NAME = mContext.getString(R.string.script_backup)
 
-    private val RESTORE_SCRIPT_NAME = "还原备份.sh"
+    private val RESTORE_SCRIPT_NAME = mContext.getString(R.string.script_restore)
 
     private val FILE_PATH: String = mContext.getExternalFilesDir(null)!!.absolutePath
 

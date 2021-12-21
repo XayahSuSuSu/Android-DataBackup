@@ -32,4 +32,10 @@
     <string name="select_all_only_app">Select all：only app</string>
     <string name="select_all_backup">Select all：backup</string>
     <string name="only_app">Only app</string>
+    <string name="script_app_list">应用列表.txt</string>
+    <string name="script_log">执行状态日志.txt</string>
+    <string name="script_generate_app_list">生成应用列表.sh</string>
+    <string name="script_backup">备份应用.sh</string>
+    <string name="script_restore">还原备份.sh</string>
+    <string name="script_version">V11.9</string>
 </resources>
