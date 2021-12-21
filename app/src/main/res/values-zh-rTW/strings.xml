@@ -38,5 +38,5 @@
     <string name="script_generate_app_list">生成應用列表.sh</string>
     <string name="script_backup">備份應用.sh</string>
     <string name="script_restore">還原備份.sh</string>
-    <string name="script_version">V11.9_rT</string>
+    <string name="script_version">V12.8-fix_rT</string>
 </resources>
