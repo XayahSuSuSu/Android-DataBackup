@@ -21,7 +21,8 @@ class Shell(private val mContext: Context) {
 
     private val LOG_FILE_NAME = mContext.getString(R.string.script_log)
 
-    private val GENERATE_APP_LIST_SCRIPT_NAME = mContext.getString(R.string.script_generate_app_list)
+    private val GENERATE_APP_LIST_SCRIPT_NAME =
+        mContext.getString(R.string.script_generate_app_list)
 
     private val BACKUP_SCRIPT_NAME = mContext.getString(R.string.script_backup)
 
@@ -29,10 +30,12 @@ class Shell(private val mContext: Context) {
 
     private val FILE_PATH: String = mContext.getExternalFilesDir(null)!!.absolutePath
 
+    private val DATA_PATH: String = mContext.filesDir.path.replace("/files", "")
+
     private val SDCARD_PATH: String =
         FILE_PATH.replace("/Android/data/com.xayah.databackup/files", "")
 
-    val SCRIPT_PATH: String = "$SDCARD_PATH/DataBackup/scripts"
+    val SCRIPT_PATH: String = "$DATA_PATH/scripts"
 
     val BACKUP_PATH: String = "$SDCARD_PATH/DataBackup/backups"
 
@@ -53,8 +56,8 @@ class Shell(private val mContext: Context) {
                 inputStream.close()
                 outStream.close()
             }
-            if (!ShellUtil.ls("$SDCARD_PATH/DataBackup/scripts"))
-                ShellUtil.unzip("$FILE_PATH/$SCRIPT_VERSION.zip", "$SDCARD_PATH/DataBackup/scripts")
+            if (!ShellUtil.ls("$DATA_PATH/scripts"))
+                ShellUtil.unzip("$FILE_PATH/$SCRIPT_VERSION.zip", "$DATA_PATH/scripts")
             if (!ShellUtil.ls("$SDCARD_PATH/DataBackup/backups"))
                 ShellUtil.mkdir("$SDCARD_PATH/DataBackup/backups")
         } catch (e: IOException) {
