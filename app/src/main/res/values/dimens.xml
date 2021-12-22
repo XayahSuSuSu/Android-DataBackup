@@ -32,4 +32,14 @@
     <!-- About Design -->
     <dimen name="about_icon_size">50dp</dimen>
     <dimen name="about_text_margin">15dp</dimen>
+
+    <!--  Preference Item  -->
+    <dimen name="item_min_height">75dp</dimen>
+    <dimen name="item_header_component_size">30dp</dimen>
+    <dimen name="item_header_margin">17.5dp</dimen>
+    <dimen name="item_tailing_component_size">30dp</dimen>
+    <dimen name="item_tailing_margin">17.5dp</dimen>
+    <dimen name="item_padding_vertical">16dp</dimen>
+    <dimen name="item_text_margin">5dp</dimen>
+    <dimen name="item_midden_margin">10dp</dimen>
 </resources>

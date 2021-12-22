@@ -13,4 +13,7 @@
 
 <!--    Clash-->
     <color name="clash">#1e4376</color>
+
+<!--    Activated-->
+    <color name="color__activated">#1e4376</color>
 </resources>
