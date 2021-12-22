@@ -1,6 +1,7 @@
 package com.xayah.databackup
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -67,6 +68,26 @@ class MainActivity : AppCompatActivity() {
 
         binding.largeActionLabelCredits.setOnClickListener {
             val dialogBinding = DialogCreditsBinding.inflate(this.layoutInflater).apply {
+                this.linearLayoutScriptAuthor.setOnClickListener {
+                    val uri = Uri.parse("http://www.coolapk.com/u/2277637")
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    startActivity(intent)
+                }
+                this.linearLayoutScriptSimplify.setOnClickListener {
+                    val uri = Uri.parse("https://github.com/Petit-Abba")
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    startActivity(intent)
+                }
+                this.linearLayoutClash.setOnClickListener {
+                    val uri = Uri.parse("https://github.com/Kr328/ClashForAndroid")
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    startActivity(intent)
+                }
+                this.linearLayoutMagisk.setOnClickListener {
+                    val uri = Uri.parse("https://github.com/topjohnwu/Magisk")
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    startActivity(intent)
+                }
             }
 
             AlertDialog.Builder(this)
@@ -77,10 +98,17 @@ class MainActivity : AppCompatActivity() {
         binding.largeActionLabelAbout.setOnClickListener {
             val dialogBinding = DialogAboutBinding.inflate(this.layoutInflater).apply {
                 this.versionName = packageManager.getPackageInfo(packageName, 0).versionName
+                this.linearLayoutApp.setOnClickListener {
+                    val uri = Uri.parse("https://github.com/XayahSuSuSu/Android-DataBackup")
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    startActivity(intent)
+                }
+                this.linearLayoutAuthor.setOnClickListener {
+                    val uri = Uri.parse("http://www.coolapk.com/u/1394294")
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    startActivity(intent)
+                }
             }
-//            val uri = Uri.parse("https://github.com/XayahSuSuSu/Android-DataBackup")
-//            val intent = Intent(Intent.ACTION_VIEW, uri)
-//            startActivity(intent)
 
             AlertDialog.Builder(this)
                 .setView(dialogBinding.root)
