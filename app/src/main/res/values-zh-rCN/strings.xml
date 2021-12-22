@@ -33,10 +33,4 @@
     <string name="select_all_only_app">全选：仅应用</string>
     <string name="select_all_backup">全选：是否备份</string>
     <string name="only_app">仅应用</string>
-    <string name="script_app_list">应用列表.txt</string>
-    <string name="script_log">执行状态日志.txt</string>
-    <string name="script_generate_app_list">生成应用列表.sh</string>
-    <string name="script_backup">备份应用.sh</string>
-    <string name="script_restore">还原备份.sh</string>
-    <string name="script_version">V12.8-fix</string>
 </resources>
