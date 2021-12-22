@@ -19,7 +19,7 @@ class ShellUtil(private val mContext: Context) {
         }
 
         fun rm(path: String): Boolean {
-            return Shell.su("rm $path").exec().isSuccess
+            return Shell.su("rm -rf $path").exec().isSuccess
         }
 
         fun countLine(path: String): Int {

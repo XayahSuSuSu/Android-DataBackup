@@ -56,10 +56,15 @@ class Shell(private val mContext: Context) {
                 inputStream.close()
                 outStream.close()
             }
-            if (!ShellUtil.ls("$DATA_PATH/scripts"))
+            val currentVersion =
+                mContext.packageManager.getPackageInfo(mContext.packageName, 0).versionName
+            val version = ShellUtil.readLine(0, "$DATA_PATH/version")
+            if (version == "" || version != currentVersion) {
+                ShellUtil.rm("$DATA_PATH/scripts")
                 ShellUtil.unzip("$FILE_PATH/$SCRIPT_VERSION.zip", "$DATA_PATH/scripts")
-            if (!ShellUtil.ls("$SDCARD_PATH/DataBackup/backups"))
-                ShellUtil.mkdir("$SDCARD_PATH/DataBackup/backups")
+                writeVersion()
+            }
+
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -165,5 +170,15 @@ class Shell(private val mContext: Context) {
                     }
                 }
         }
+    }
+
+    fun writeVersion(): Boolean {
+        val versionName =
+            mContext.packageManager.getPackageInfo(mContext.packageName, 0).versionName
+        return ShellUtil.writeFile(versionName, "$DATA_PATH/version")
+    }
+
+    fun readVersion(): String {
+        return ShellUtil.readLine(0, "$DATA_PATH/version")
     }
 }
