@@ -3,6 +3,7 @@ package com.xayah.databackup
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.xayah.databackup.databinding.ActivitySettingsBinding
@@ -26,7 +27,6 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         WindowUtil.setWindowMode(!resolveThemedBoolean(android.R.attr.windowLightStatusBar), window)
-        setTitle(getString(R.string.title_Settings))
         mContext = this
         binding()
         init()
@@ -45,6 +45,8 @@ class SettingsActivity : AppCompatActivity() {
 
     fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_settings)
+        binding.topAppBar.setNavigationOnClickListener { finish() }
+        binding.topAppBar.title = getString(R.string.title_settings)
         GlobalScope.launch {
             runOnUiThread {
                 val screen = preferenceScreen(mContext) {
@@ -124,6 +126,5 @@ class SettingsActivity : AppCompatActivity() {
                 binding.content.addView(screen.root)
             }
         }
-
     }
 }

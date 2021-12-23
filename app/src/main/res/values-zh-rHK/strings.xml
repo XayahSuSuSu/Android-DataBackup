@@ -9,7 +9,7 @@
     <string name="title_generateAppList">生成應用列表中…</string>
     <string name="title_finished">完成！</string>
     <string name="button_return">返回</string>
-    <string name="title_SelectApps">選擇應用</string>
+    <string name="title_select_apps">選擇應用</string>
     <string name="menu_refresh">刷新</string>
     <string name="menu_save">保存</string>
     <string name="backup_select_subtext">單擊進入選擇</string>
@@ -33,7 +33,7 @@
     <string name="select_all_only_app">全選：僅應用</string>
     <string name="select_all_backup">全選：是否備份</string>
     <string name="only_app">僅應用</string>
-    <string name="title_Settings">設置</string>
+    <string name="title_settings">設置</string>
     <string name="settings_backup_setttings">備份設置</string>
     <string name="settings_title_lo">啟用音量鍵</string>
     <string name="settings_summary_lo">是否在每次執行備份腳本使用音量鍵詢問備份需求</string>

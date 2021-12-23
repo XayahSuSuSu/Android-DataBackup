@@ -23,7 +23,6 @@ class RestoreActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_restore)
         WindowUtil.setWindowMode(!resolveThemedBoolean(android.R.attr.windowLightStatusBar), window)
-        setTitle(R.string.restore)
         mContext = this
 
         binding()
@@ -38,6 +37,8 @@ class RestoreActivity : AppCompatActivity() {
             intent.putExtra("name", files[adapter.chosenIndex])
             startActivity(intent)
         }
+        binding.topAppBar.setNavigationOnClickListener { finish() }
+        binding.topAppBar.title = getString(R.string.restore)
     }
 
     lateinit var files: MutableList<String>

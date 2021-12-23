@@ -9,7 +9,7 @@
     <string name="title_generateAppList">生成应用列表中…</string>
     <string name="title_finished">完成！</string>
     <string name="button_return">返回</string>
-    <string name="title_SelectApps">选择应用</string>
+    <string name="title_select_apps">选择应用</string>
     <string name="menu_refresh">刷新</string>
     <string name="menu_save">保存</string>
     <string name="backup_select_subtext">单击进入选择</string>
@@ -33,7 +33,7 @@
     <string name="select_all_only_app">全选：仅应用</string>
     <string name="select_all_backup">全选：是否备份</string>
     <string name="only_app">仅应用</string>
-    <string name="title_Settings">设置</string>
+    <string name="title_settings">设置</string>
     <string name="settings_backup_setttings">备份设置</string>
     <string name="settings_title_lo">启用音量键</string>
     <string name="settings_summary_lo">是否在每次执行备份脚本使用音量键询问备份需求</string>

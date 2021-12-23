@@ -4,9 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,30 +23,9 @@ class SelectActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select)
         WindowUtil.setWindowMode(!resolveThemedBoolean(android.R.attr.windowLightStatusBar), window)
-        setTitle(R.string.title_SelectApps)
         mContext = this
-
         binding()
         init()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.select_apps_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_save -> {
-                mShell.saveAppList(adapter.appList)
-            }
-            R.id.menu_refresh -> {
-                adapter.appList = mutableListOf()
-                mShell.onGenerateAppList()
-            }
-        }
-        return false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -73,6 +49,22 @@ class SelectActivity : AppCompatActivity() {
                 adapter.selectAll(1, 1)
             else
                 adapter.selectAll(1, 0)
+        }
+        binding.topAppBar.setNavigationOnClickListener { finish() }
+        binding.topAppBar.title = getString(R.string.title_select_apps)
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                    R.id.menu_save -> {
+                        mShell.saveAppList(adapter.appList)
+                        true
+                    }
+                    R.id.menu_refresh -> {
+                        adapter.appList = mutableListOf()
+                        mShell.onGenerateAppList()
+                        true
+                    }
+                else -> false
+            }
         }
     }
 

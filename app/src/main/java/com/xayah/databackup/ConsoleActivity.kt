@@ -33,7 +33,7 @@ class ConsoleActivity : AppCompatActivity() {
         mShell = Shell(this)
         when (intent.getStringExtra("type")) {
             "generateAppList" -> {
-                setTitle(R.string.title_generateAppList)
+                binding.topAppBar.title = getString(R.string.title_generateAppList)
                 binding.logs = ""
                 mShell.generateAppList({
                     binding.logs += it.replace("\u001B[0m", "").replace("  -", " -")
@@ -45,7 +45,7 @@ class ConsoleActivity : AppCompatActivity() {
                     if (it == true) {
                         binding.isFinished = true
                         runOnUiThread {
-                            setTitle(R.string.title_finished)
+                            binding.topAppBar.title = getString(R.string.title_finished)
                         }
                         val intent = Intent()
                         intent.putExtra(
@@ -57,7 +57,7 @@ class ConsoleActivity : AppCompatActivity() {
                 })
             }
             "backup"->{
-                title = getString(R.string.title_backup)
+                binding.topAppBar.title  = getString(R.string.title_backup)
                 binding.logs = ""
                 mShell.backup({
                     binding.logs += it.replace("\u001B[0m", "").replace("  -", " -")
@@ -69,7 +69,7 @@ class ConsoleActivity : AppCompatActivity() {
                     if (it == true) {
                         binding.isFinished = true
                         runOnUiThread {
-                            setTitle(R.string.title_finished)
+                            binding.topAppBar.title = getString(R.string.title_finished)
                         }
 //                        ShellUtil.mv(
 //                            "${mShell.SCRIPT_PATH}/Backup_zstd",
@@ -84,7 +84,7 @@ class ConsoleActivity : AppCompatActivity() {
                 })
             }
             "restore" -> {
-                title = getString(R.string.restore)
+                binding.topAppBar.title  = getString(R.string.restore)
                 binding.logs = ""
                 val name = intent.getStringExtra("name")
                 if (name != null) {
@@ -98,7 +98,7 @@ class ConsoleActivity : AppCompatActivity() {
                         if (it == true) {
                             binding.isFinished = true
                             runOnUiThread {
-                                setTitle(R.string.title_finished)
+                                binding.topAppBar.title = getString(R.string.title_finished)
                             }
                         }
                     })
