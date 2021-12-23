@@ -39,7 +39,7 @@ class Shell(private val mContext: Context) {
 
     val SCRIPT_PATH: String = "$DATA_PATH/scripts"
 
-    val BACKUP_PATH: String = "$SDCARD_PATH/DataBackup/backups"
+    val BACKUP_PATH: String = "/storage/emulated/0/Download"
 
     val APP_LIST_FILE_PATH = "$SCRIPT_PATH/$APP_LIST_FILE_NAME"
 

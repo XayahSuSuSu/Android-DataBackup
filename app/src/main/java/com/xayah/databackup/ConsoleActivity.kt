@@ -71,15 +71,15 @@ class ConsoleActivity : AppCompatActivity() {
                         runOnUiThread {
                             setTitle(R.string.title_finished)
                         }
-                        ShellUtil.mv(
-                            "${mShell.SCRIPT_PATH}/Backup_zstd",
-                            "${mShell.BACKUP_PATH}/Backup_zstd"
-                        )
-                        ShellUtil.rename(
-                            "Backup_zstd",
-                            "Backup_${System.currentTimeMillis()}",
-                            mShell.BACKUP_PATH
-                        )
+//                        ShellUtil.mv(
+//                            "${mShell.SCRIPT_PATH}/Backup_zstd",
+//                            "${mShell.BACKUP_PATH}/Backup_zstd"
+//                        )
+//                        ShellUtil.rename(
+//                            "Backup_zstd",
+//                            "Backup_${System.currentTimeMillis()}",
+//                            mShell.BACKUP_PATH
+//                        )
                     }
                 })
             }

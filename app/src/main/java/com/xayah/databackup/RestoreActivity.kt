@@ -47,10 +47,12 @@ class RestoreActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerViewBackupList.layoutManager = layoutManager
         files = ShellUtil.countFiles(mShell.BACKUP_PATH)
-        for ((index, i) in files.withIndex()) {
-            val backupInfo = BackupInfo("备份存档${index + 1}", DataUtil.getFormatDate(i.split("_")[1].toLong()))
-            adapter.addBackup(backupInfo)
-        }
+//        for ((index, i) in files.withIndex()) {
+//            val backupInfo = BackupInfo("备份存档${index + 1}", DataUtil.getFormatDate(i.split("_")[1].toLong()))
+//            adapter.addBackup(backupInfo)
+//        }
+        val backupInfo = BackupInfo("备份存档", "暂不可用")
+        adapter.addBackup(backupInfo)
         binding.recyclerViewBackupList.adapter = adapter
         (binding.recyclerViewBackupList.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
             false
