@@ -62,8 +62,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.largeActionLabelSettings.setOnClickListener {
-            Snackbar.make(binding.constraintLayoutMain, getString(R.string.wip), Snackbar.LENGTH_SHORT)
-                .show()
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
 
         binding.largeActionLabelCredits.setOnClickListener {

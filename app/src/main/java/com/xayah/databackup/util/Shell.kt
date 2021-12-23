@@ -28,6 +28,8 @@ class Shell(private val mContext: Context) {
 
     private val RESTORE_SCRIPT_NAME = mContext.getString(R.string.script_restore)
 
+    private val BACKUP_SETTINGS = "backup_settings.conf"
+
     private val FILE_PATH: String = mContext.getExternalFilesDir(null)!!.absolutePath
 
     private val DATA_PATH: String = mContext.filesDir.path.replace("/files", "")
@@ -180,5 +182,25 @@ class Shell(private val mContext: Context) {
 
     fun readVersion(): String {
         return ShellUtil.readLine(0, "$DATA_PATH/version")
+    }
+
+    fun saveSettings() {
+        val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val contentList = mutableListOf<String>()
+        contentList.add("Lo=${prefs.getInt("Lo", 0)}")
+        contentList.add("Output_path=/storage/emulated/0/Download")
+        contentList.add("USBdefault=${prefs.getInt("USBdefault", 0)}")
+        contentList.add("Splist=${prefs.getInt("Splist", 0)}")
+        contentList.add("Backup_user_data=${prefs.getInt("Backup_user_data", 1)}")
+        contentList.add("Backup_obb_data=${prefs.getInt("Backup_obb_data", 1)}")
+        contentList.add("backup_media=${prefs.getInt("backup_media", 0)}")
+        contentList.add(
+            "Custom_path="
+        )
+        contentList.add("Compression_method=zstd")
+        ShellUtil.writeFile(
+            contentList.joinToString(separator = "\n"),
+            "$SCRIPT_PATH/$BACKUP_SETTINGS"
+        )
     }
 }

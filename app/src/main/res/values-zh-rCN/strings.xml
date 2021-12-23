@@ -33,4 +33,22 @@
     <string name="select_all_only_app">全选：仅应用</string>
     <string name="select_all_backup">全选：是否备份</string>
     <string name="only_app">仅应用</string>
+    <string name="title_Settings">设置</string>
+    <string name="settings_backup_setttings">备份设置</string>
+    <string name="settings_title_lo">启用音量键</string>
+    <string name="settings_summary_lo">是否在每次执行备份脚本使用音量键询问备份需求</string>
+    <string name="settings_title_usbdefault">启用OTG</string>
+    <string name="settings_summary_usbdefault">假设如果存在OTG是否默认使用OTG</string>
+    <string name="settings_title_splist">仅备份Split Apk</string>
+    <string name="settings_summary_splist">启用则仅备份Split Apk，否则混合备份</string>
+    <string name="settings_title_backup_user_data">备份USER数据</string>
+    <string name="settings_summary_backup_user_data">是否备份USER数据，包含用户登录信息等</string>
+    <string name="settings_title_backup_obb_data">备份OBB数据</string>
+    <string name="settings_summary_backup_obb_data">是否备份OBB数据，例如原神的数据包</string>
+    <string name="settings_title_backup_media">备份自定义目录</string>
+    <string name="settings_summary_backup_media">是否在应用数据备份好后备份自定义目录</string>
+    <string name="settings_title_output_path">备份路径（暂不可用）</string>
+    <string name="settings_path">路径设置</string>
+    <string name="settings_title_custom_path">自定义备份路径（暂不可用）</string>
+    <string name="settings_summary_custom_path">单击添加路径</string>
 </resources>

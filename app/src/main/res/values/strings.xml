@@ -38,4 +38,23 @@
     <string name="script_backup">backup.sh</string>
     <string name="script_restore">Restorebackup.sh</string>
     <string name="script_version">V12.9fix</string>
+    <string name="title_Settings">Settings</string>
+    <string name="settings_backup_setttings">Backup settings</string>
+    <string name="settings_title_lo">Enable volume button</string>
+    <string name="settings_summary_lo">Whether to use the volume key to choose backup requirements</string>
+    <string name="settings_title_usbdefault">Enable OTG</string>
+    <string name="settings_summary_usbdefault">Whether to use OTG by default</string>
+    <string name="settings_title_splist">Backup only Split Apk</string>
+    <string name="settings_summary_splist">If enabled, only split apk will be backed up, otherwise mixed backup</string>
+    <string name="settings_title_backup_user_data">Backup USER data</string>
+    <string name="settings_summary_backup_user_data">Whether to back up USER data, including user login information, etc</string>
+    <string name="settings_title_backup_obb_data">Backup OBB data</string>
+    <string name="settings_summary_backup_obb_data">Whether to backup OBB data, such as Genshin data package</string>
+    <string name="settings_title_backup_media">Back up custom directories</string>
+    <string name="settings_summary_backup_media">Whether to back up the custom directory after the application data is backed up</string>
+    <string name="settings_title_output_path">Backup path(Unavailable)</string>
+    <string name="settings_sumarry_output_path">/storage/emulated/0/Download</string>
+    <string name="settings_path">Path settings</string>
+    <string name="settings_title_custom_path">Custom backup path</string>
+    <string name="settings_summary_custom_path">Click to add path</string>
 </resources>
