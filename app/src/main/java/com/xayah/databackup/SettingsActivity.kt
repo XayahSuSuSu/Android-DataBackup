@@ -11,6 +11,7 @@ import com.xayah.databackup.preference.category
 import com.xayah.databackup.preference.preferenceScreen
 import com.xayah.databackup.preference.switch
 import com.xayah.databackup.util.Shell
+import com.xayah.databackup.util.ShellUtil
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
 import kotlinx.coroutines.GlobalScope
@@ -50,6 +51,17 @@ class SettingsActivity : AppCompatActivity() {
         GlobalScope.launch {
             runOnUiThread {
                 val screen = preferenceScreen(mContext) {
+                    category(R.string.settings_update_setttings)
+                    switch(
+                        {
+                            mShell.autoUpdate(it)
+                        },
+                        {
+                            it.switchView.isChecked = mShell.checkAutoUpdate()
+                        },
+                        title = R.string.settings_title_auto_update,
+                        summary = R.string.settings_summary_auto_update,
+                    )
                     category(R.string.settings_backup_setttings)
                     switch(
                         {

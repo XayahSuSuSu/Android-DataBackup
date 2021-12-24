@@ -51,4 +51,7 @@
     <string name="settings_path">路径设置</string>
     <string name="settings_title_custom_path">自定义备份路径（暂不可用）</string>
     <string name="settings_summary_custom_path">单击添加路径</string>
+    <string name="settings_update_setttings">更新设置</string>
+    <string name="settings_title_auto_update">启用自动更新</string>
+    <string name="settings_summary_auto_update">是否启用脚本自动更新</string>
 </resources>

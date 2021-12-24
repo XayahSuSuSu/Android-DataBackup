@@ -69,5 +69,9 @@ class ShellUtil(private val mContext: Context) {
         fun mv(oldPath: String, newPath: String): Boolean {
             return Shell.su("mv $oldPath $newPath").exec().isSuccess
         }
+
+        fun touch(path:String): Boolean {
+            return Shell.su("touch $path").exec().isSuccess
+        }
     }
 }

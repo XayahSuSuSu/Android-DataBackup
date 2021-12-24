@@ -203,4 +203,15 @@ class Shell(private val mContext: Context) {
             "$SCRIPT_PATH/$BACKUP_SETTINGS"
         )
     }
+
+    fun autoUpdate(allow:Boolean){
+        if (allow)
+            ShellUtil.touch("$SCRIPT_PATH/tools/bin/update")
+        else
+            ShellUtil.rm("$SCRIPT_PATH/tools/bin/update")
+    }
+
+    fun checkAutoUpdate():Boolean{
+        return ShellUtil.ls("$SCRIPT_PATH/tools/bin/update")
+    }
 }

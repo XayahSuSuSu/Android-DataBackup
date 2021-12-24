@@ -57,4 +57,7 @@
     <string name="settings_path">Path settings</string>
     <string name="settings_title_custom_path">Custom backup path</string>
     <string name="settings_summary_custom_path">Click to add path</string>
+    <string name="settings_update_setttings">Update settings</string>
+    <string name="settings_title_auto_update">Enable auto-update</string>
+    <string name="settings_summary_auto_update">Whether to enable automatic script update</string>
 </resources>
