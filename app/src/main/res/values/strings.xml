@@ -60,4 +60,7 @@
     <string name="settings_update_setttings">Update settings</string>
     <string name="settings_title_auto_update">Enable auto-update</string>
     <string name="settings_summary_auto_update">Whether to enable automatic script update</string>
+    <string name="dialog_positive">Confirm</string>
+    <string name="dialog_negative">Cancel</string>
+    <string name="dialog_neutral">Reset</string>
 </resources>

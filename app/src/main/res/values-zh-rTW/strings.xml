@@ -54,4 +54,7 @@
     <string name="settings_update_setttings">更新設置</string>
     <string name="settings_title_auto_update">啟用自動更新</string>
     <string name="settings_summary_auto_update">是否啟用腳本自動更新</string>
+    <string name="dialog_positive">確認</string>
+    <string name="dialog_negative">取消</string>
+    <string name="dialog_neutral">重置</string>
 </resources>
