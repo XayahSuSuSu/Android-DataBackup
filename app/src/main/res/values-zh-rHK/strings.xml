@@ -47,14 +47,14 @@
     <string name="settings_summary_backup_obb_data">是否備份OBB數據，例如原神的數據包</string>
     <string name="settings_title_backup_media">備份自定義目錄</string>
     <string name="settings_summary_backup_media">是否在應用數據備份好後備份自定義目錄</string>
-    <string name="settings_title_output_path">備份路徑（暫不可用）</string>
+    <string name="settings_title_output_path">備份路徑</string>
     <string name="settings_path">路徑設置</string>
-    <string name="settings_title_custom_path">自定義備份路徑（暫不可用）</string>
-    <string name="settings_summary_custom_path">單擊添加路徑</string>
+    <string name="settings_title_custom_path">自定義備份路徑</string>
     <string name="settings_update_setttings">更新設置</string>
     <string name="settings_title_auto_update">啟用自動更新</string>
     <string name="settings_summary_auto_update">是否啟用腳本自動更新</string>
     <string name="dialog_positive">確認</string>
     <string name="dialog_negative">取消</string>
     <string name="dialog_neutral">重置</string>
+    <string name="settings_title_custom_path_hint">(以回車分隔)</string>
 </resources>

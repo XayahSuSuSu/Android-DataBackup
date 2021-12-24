@@ -45,7 +45,7 @@ class ShellUtil(private val mContext: Context) {
         }
 
         fun writeFile(content: String, path: String): Boolean {
-            return Shell.su("echo \"$content\" > $path").exec().isSuccess
+            return Shell.su("echo \'$content\' > $path").exec().isSuccess
         }
 
         fun countSelected(appListFilePath: String): Int {

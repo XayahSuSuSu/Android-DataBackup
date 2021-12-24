@@ -188,14 +188,25 @@ class Shell(private val mContext: Context) {
         val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
         val contentList = mutableListOf<String>()
         contentList.add("Lo=${prefs.getInt("Lo", 0)}")
-        contentList.add("Output_path=/storage/emulated/0/Download")
+        contentList.add(
+            "Output_path=${
+                prefs.getString(
+                    "Output_path",
+                    mContext.getString(R.string.settings_sumarry_output_path)
+                )
+            }"
+        )
         contentList.add("USBdefault=${prefs.getInt("USBdefault", 0)}")
         contentList.add("Splist=${prefs.getInt("Splist", 0)}")
         contentList.add("Backup_user_data=${prefs.getInt("Backup_user_data", 1)}")
         contentList.add("Backup_obb_data=${prefs.getInt("Backup_obb_data", 1)}")
         contentList.add("backup_media=${prefs.getInt("backup_media", 0)}")
         contentList.add(
-            "Custom_path="
+            "Custom_path=\"\n" + prefs.getString(
+                "Custom_path",
+                mContext.getString(R.string.settings_summary_custom_path)
+            )
+                    + "\n\""
         )
         contentList.add("Compression_method=zstd")
         ShellUtil.writeFile(

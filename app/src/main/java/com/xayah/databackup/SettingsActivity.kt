@@ -3,15 +3,14 @@ package com.xayah.databackup
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.xayah.databackup.databinding.ActivitySettingsBinding
 import com.xayah.databackup.preference.category
+import com.xayah.databackup.preference.editableText
 import com.xayah.databackup.preference.preferenceScreen
 import com.xayah.databackup.preference.switch
 import com.xayah.databackup.util.Shell
-import com.xayah.databackup.util.ShellUtil
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
 import kotlinx.coroutines.GlobalScope
@@ -124,15 +123,57 @@ class SettingsActivity : AppCompatActivity() {
                         summary = R.string.settings_summary_usbdefault,
                     )
                     category(R.string.settings_path)
-                    switch(
-                        onShowSwitch = false,
+                    editableText(
+                        onCreated = {
+                            it.textField.setText(
+                                prefs.getString(
+                                    "Output_path",
+                                    getString(R.string.settings_sumarry_output_path)
+                                )
+                            )
+                        },
+                        onPositiveEvent = {
+                            editor.putString("Output_path", it.textField.text.toString()).apply()
+                        },
+                        onNeutralEvent = {
+                            it.textField.setText(getString(R.string.settings_sumarry_output_path))
+                            editor.putString(
+                                "Output_path",
+                                getString(R.string.settings_sumarry_output_path)
+                            ).apply()
+                        },
                         title = R.string.settings_title_output_path,
-                        summary = R.string.settings_sumarry_output_path,
+                        summary = prefs.getString(
+                            "Output_path",
+                            getString(R.string.settings_sumarry_output_path)
+                        )
                     )
-                    switch(
-                        onShowSwitch = false,
+                    editableText(
+                        onCreated = {
+                            it.textField.setText(
+                                prefs.getString(
+                                    "Custom_path",
+                                    getString(R.string.settings_summary_custom_path)
+                                )
+                            )
+                            it.textLayout.hint =
+                                getString(R.string.settings_title_custom_path) + getString(R.string.settings_title_custom_path_hint)
+                        },
+                        onPositiveEvent = {
+                            editor.putString("Custom_path", it.textField.text.toString()).apply()
+                        },
+                        onNeutralEvent = {
+                            it.textField.setText(getString(R.string.settings_summary_custom_path))
+                            editor.putString(
+                                "Custom_path",
+                                getString(R.string.settings_summary_custom_path)
+                            ).apply()
+                        },
                         title = R.string.settings_title_custom_path,
-                        summary = R.string.settings_summary_custom_path,
+                        summary = prefs.getString(
+                            "Custom_path",
+                            getString(R.string.settings_summary_custom_path)
+                        )
                     )
                 }
                 binding.content.addView(screen.root)
