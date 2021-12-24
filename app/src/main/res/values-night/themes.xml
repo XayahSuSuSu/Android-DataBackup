@@ -1,32 +1,4 @@
 <resources>
     <!-- Base application dark theme. -->
-    <style name="Theme.DataBackup" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/color_dark_background</item>
-        <item name="android:ambientShadowAlpha">0.08</item>
-        <item name="android:spotShadowAlpha">0.08</item>
-
-        <item name="colorPrimary">@color/color_app_dark</item>
-        <item name="colorOnPrimary">@android:color/white</item>
-        <item name="colorControlNormal">@android:color/white</item>
-
-        <item name="colorPrimaryDark">?attr/colorPrimary</item>
-        <item name="colorSecondary">?attr/colorPrimary</item>
-        <item name="colorOnSecondary">?attr/colorOnPrimary</item>
-        <item name="colorControlActivated">?attr/colorPrimary</item>
-        <item name="android:textColor">?attr/colorControlNormal</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
-    </style>
-
-    <!--    Dark mode-->
-    <style name="Theme.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorControlNormal">@android:color/white</item>
-    </style>
-
-    <style name="WidgetFoundation.Card" parent="Widget.MaterialComponents.CardView">
-        <item name="cardBackgroundColor">#171717</item>
-        <item name="cardCornerRadius">8dp</item>
-        <item name="cardElevation">0dp</item>
-        <item name="cardPreventCornerOverlap">false</item>
-    </style>
+    <style name="Theme.DataBackup" parent="Theme.DataBackup.Dark"/>
 </resources>

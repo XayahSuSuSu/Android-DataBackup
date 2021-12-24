@@ -63,7 +63,7 @@ class LargeActionCard @JvmOverloads constructor(
 
         minimumHeight = getPixels(R.dimen.large_action_card_min_height)
         radius = getPixels(R.dimen.large_action_card_radius).toFloat()
-        elevation = getPixels(R.dimen.large_action_card_elevation).toFloat()
+//        elevation = getPixels(R.dimen.large_action_card_elevation).toFloat()
     }
 
     private fun getPixels(@DimenRes resId: Int): Int {

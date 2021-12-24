@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/WidgetFoundation.Card"
+        style="?attr/materialCardViewFilledStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/color_light_background_shallow"
         android:layout_marginHorizontal="10dp"
         android:layout_marginBottom="10dp"
         android:focusable="false"
