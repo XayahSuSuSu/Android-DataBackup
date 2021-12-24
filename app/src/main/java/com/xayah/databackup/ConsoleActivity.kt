@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.databinding.ActivityConsoleBinding
 import com.xayah.databackup.util.Shell
 import com.xayah.databackup.util.ShellUtil
@@ -20,6 +21,17 @@ class ConsoleActivity : AppCompatActivity() {
         WindowUtil.setWindowMode(!resolveThemedBoolean(android.R.attr.windowLightStatusBar), window)
         binding()
         init()
+    }
+
+    override fun onBackPressed() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.dialog_query_tips))
+            .setMessage(getString(R.string.dialog_query_return))
+            .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
+            .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
+                finish()
+            }
+            .show()
     }
 
     override fun onDestroy() {

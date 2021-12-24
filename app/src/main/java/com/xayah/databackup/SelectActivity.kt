@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.databinding.ActivitySelectBinding
 import com.xayah.databackup.model.AppInfo
@@ -65,8 +66,15 @@ class SelectActivity : AppCompatActivity() {
                         true
                     }
                     R.id.menu_refresh -> {
-                        adapter.appList = mutableListOf()
-                        mShell.onGenerateAppList()
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle(getString(R.string.dialog_query_tips))
+                            .setMessage(getString(R.string.dialog_query_app_list))
+                            .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
+                            .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
+                                adapter.appList = mutableListOf()
+                                mShell.onGenerateAppList()
+                            }
+                            .show()
                         true
                     }
                 else -> false

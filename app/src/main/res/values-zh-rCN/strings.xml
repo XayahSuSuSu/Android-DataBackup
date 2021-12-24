@@ -57,4 +57,10 @@
     <string name="dialog_negative">取消</string>
     <string name="dialog_neutral">重置</string>
     <string name="settings_title_custom_path_hint">(以回车分隔)</string>
+    <string name="dialog_query_tips">提示</string>
+    <string name="dialog_query_backup">是否备份所选应用？</string>
+    <string name="dialog_query_negative">再想想</string>
+    <string name="dialog_query_positive">确定</string>
+    <string name="dialog_query_app_list">是否生成应用列表？</string>
+    <string name="dialog_query_return">确认返回？</string>
 </resources>

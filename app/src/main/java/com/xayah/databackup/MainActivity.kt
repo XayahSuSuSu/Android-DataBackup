@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.databinding.ActivityMainBinding
 import com.xayah.databackup.databinding.DialogAboutBinding
@@ -63,7 +63,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.largeActionCardBackup.setOnClickListener {
-            mShell.onBackup()
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.dialog_query_tips))
+                .setMessage(getString(R.string.dialog_query_backup))
+                .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
+                .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ -> mShell.onBackup() }
+                .show()
         }
 
         binding.largeActionLabelSettings.setOnClickListener {
