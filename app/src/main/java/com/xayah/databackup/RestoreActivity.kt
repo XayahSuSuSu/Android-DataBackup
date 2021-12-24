@@ -29,6 +29,11 @@ class RestoreActivity : AppCompatActivity() {
         init()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mShell.close()
+    }
+
     private fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_restore)
         binding.extendedFloatingActionButton.setOnClickListener {

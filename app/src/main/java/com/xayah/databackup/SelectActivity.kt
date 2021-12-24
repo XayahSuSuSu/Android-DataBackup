@@ -19,6 +19,7 @@ class SelectActivity : AppCompatActivity() {
     lateinit var binding: ActivitySelectBinding
     lateinit var adapter: AppListAdapter
     lateinit var mShell: Shell
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select)
@@ -26,6 +27,11 @@ class SelectActivity : AppCompatActivity() {
         mContext = this
         binding()
         init()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mShell.close()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -22,6 +22,11 @@ class ConsoleActivity : AppCompatActivity() {
         init()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mShell.close()
+    }
+
     private fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_console)
         binding.extendedFloatingActionButton.setOnClickListener {

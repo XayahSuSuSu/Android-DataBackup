@@ -39,6 +39,11 @@ class MainActivity : AppCompatActivity() {
         init()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mShell.close()
+    }
+
     private fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.isRoot = Shell.getShell().isRoot
