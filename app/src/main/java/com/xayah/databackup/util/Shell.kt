@@ -39,8 +39,6 @@ class Shell(private val mContext: Context) {
 
     val SCRIPT_PATH: String = "$DATA_PATH/scripts"
 
-    val BACKUP_PATH: String = "/storage/emulated/0/Download"
-
     val APP_LIST_FILE_PATH = "$SCRIPT_PATH/$APP_LIST_FILE_NAME"
 
     fun extractAssets() {
@@ -154,6 +152,11 @@ class Shell(private val mContext: Context) {
         event: (String) -> Unit,
         finishedEvent: (Boolean?) -> Unit
     ) {
+        val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val BACKUP_PATH = prefs.getString(
+            "Output_path",
+            mContext.getString(R.string.settings_sumarry_output_path)
+        )
         ShellUtil.replace("} &", "}", "$BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
         ShellUtil.replace("pv", "pv -f", "$BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
         val callbackList: CallbackList<String> = object : CallbackList<String>() {

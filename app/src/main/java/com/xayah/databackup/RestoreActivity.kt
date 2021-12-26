@@ -39,25 +39,19 @@ class RestoreActivity : AppCompatActivity() {
         binding.extendedFloatingActionButton.setOnClickListener {
             val intent = Intent(mContext, ConsoleActivity::class.java)
             intent.putExtra("type", "restore")
-            intent.putExtra("name", files[adapter.chosenIndex])
+            intent.putExtra("name", "Backup_zstd")
             startActivity(intent)
         }
         binding.topAppBar.setNavigationOnClickListener { finish() }
         binding.topAppBar.title = getString(R.string.restore)
     }
 
-    lateinit var files: MutableList<String>
     private fun init() {
         mShell = Shell(this)
         adapter = BackupListAdapter(this)
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerViewBackupList.layoutManager = layoutManager
-        files = ShellUtil.countFiles(mShell.BACKUP_PATH)
-//        for ((index, i) in files.withIndex()) {
-//            val backupInfo = BackupInfo("备份存档${index + 1}", DataUtil.getFormatDate(i.split("_")[1].toLong()))
-//            adapter.addBackup(backupInfo)
-//        }
-        val backupInfo = BackupInfo("备份存档", "暂不可用")
+        val backupInfo = BackupInfo("备份存档", "时间显示暂不可用")
         adapter.addBackup(backupInfo)
         binding.recyclerViewBackupList.adapter = adapter
         (binding.recyclerViewBackupList.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
