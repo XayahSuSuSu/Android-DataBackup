@@ -4,10 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.transition.MaterialSharedAxis
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.databinding.ActivitySelectBinding
 import com.xayah.databackup.model.AppInfo
@@ -116,6 +120,19 @@ class SelectActivity : AppCompatActivity() {
                         onlyAppAll = false
                     if (i.ban)
                         backupAll = false
+                }
+                val materialSharedAxis = MaterialSharedAxis(MaterialSharedAxis.X, true)
+                TransitionManager.beginDelayedTransition(
+                    window.decorView as ViewGroup,
+                    materialSharedAxis
+                )
+                binding.linearProgressIndicator.visibility = View.GONE
+                if (adapter.appList.isEmpty()) {
+                    binding.content.visibility = View.GONE
+                    binding.textViewEmpty.visibility = View.VISIBLE
+                } else {
+                    binding.content.visibility = View.VISIBLE
+                    binding.textViewEmpty.visibility = View.GONE
                 }
                 binding.chipOnlyApp.isChecked = onlyAppAll
                 binding.chipBackup.isChecked = backupAll

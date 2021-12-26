@@ -63,4 +63,5 @@
     <string name="dialog_query_positive">确定</string>
     <string name="dialog_query_app_list">是否生成应用列表？</string>
     <string name="dialog_query_return">确认返回？</string>
+    <string name="textView_empty">空空如也~\n请单击右上角刷新按钮生成应用列表</string>
 </resources>
