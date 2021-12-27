@@ -35,7 +35,6 @@ class SettingsActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mShell.saveSettings()
-        mShell.close()
     }
 
     fun init() {

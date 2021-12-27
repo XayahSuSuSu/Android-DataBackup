@@ -36,7 +36,6 @@ class SelectActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mShell.close()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
