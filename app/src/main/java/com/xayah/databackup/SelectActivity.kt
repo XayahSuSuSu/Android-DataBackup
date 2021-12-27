@@ -109,7 +109,6 @@ class SelectActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menu_refresh -> {
-                    adapter.isChanged = true
                     MaterialAlertDialogBuilder(this)
                         .setTitle(getString(R.string.dialog_query_tips))
                         .setMessage(getString(R.string.dialog_query_app_list))
@@ -117,6 +116,7 @@ class SelectActivity : AppCompatActivity() {
                         .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
                             adapter.appList = mutableListOf()
                             mShell.onGenerateAppList()
+                            adapter.isChanged = true
                         }
                         .show()
                     true
