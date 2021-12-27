@@ -163,6 +163,7 @@ class SelectActivity : AppCompatActivity() {
                 }
                 binding.chipOnlyApp.isChecked = onlyAppAll
                 binding.chipBackup.isChecked = backupAll
+                adapter.isChanged = false
             }
         }
     }
