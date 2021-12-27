@@ -89,10 +89,19 @@ class SelectActivity : AppCompatActivity() {
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_save -> {
-                    adapter.isChanged = false
-                    mShell.saveAppList(adapter.appList)
-                    Snackbar.make(binding.coordinatorLayout, "保存成功！", Snackbar.LENGTH_SHORT)
-                        .show()
+                    if (adapter.appList.isEmpty()) {
+                        Snackbar.make(
+                            binding.coordinatorLayout,
+                            "请先点击右上角生成应用列表！",
+                            Snackbar.LENGTH_SHORT
+                        )
+                            .show()
+                    } else {
+                        adapter.isChanged = false
+                        mShell.saveAppList(adapter.appList)
+                        Snackbar.make(binding.coordinatorLayout, "保存成功！", Snackbar.LENGTH_SHORT)
+                            .show()
+                    }
                     true
                 }
                 R.id.menu_refresh -> {
