@@ -6,11 +6,13 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.databinding.ActivitySelectBinding
@@ -34,6 +36,26 @@ class SelectActivity : AppCompatActivity() {
         init()
     }
 
+    override fun onBackPressed() {
+        if (adapter.isChanged) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.dialog_query_tips))
+                .setMessage(getString(R.string.dialog_query_save))
+                .setNegativeButton(getString(R.string.dialog_query_no)) { _, _ ->
+                    finish()
+                }
+                .setPositiveButton(getString(R.string.dialog_query_yes)) { _, _ ->
+                    mShell.saveAppList(adapter.appList)
+                    Toast.makeText(mContext, getString(R.string.dialog_query_save_successfully), Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                .setNeutralButton(getString(R.string.dialog_query_cancel)) { _, _ -> }
+                .show()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
     }
@@ -48,13 +70,15 @@ class SelectActivity : AppCompatActivity() {
 
     private fun binding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_select)
-        binding.chipOnlyApp.setOnCheckedChangeListener { buttonView, isChecked ->
+        binding.chipOnlyApp.setOnCheckedChangeListener { _, isChecked ->
+            adapter.isChanged = true
             if (isChecked)
                 adapter.selectAll(0, 1)
             else
                 adapter.selectAll(0, 0)
         }
-        binding.chipBackup.setOnCheckedChangeListener { buttonView, isChecked ->
+        binding.chipBackup.setOnCheckedChangeListener { _, isChecked ->
+            adapter.isChanged = true
             if (isChecked)
                 adapter.selectAll(1, 1)
             else
@@ -64,22 +88,26 @@ class SelectActivity : AppCompatActivity() {
         binding.topAppBar.title = getString(R.string.title_select_apps)
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                    R.id.menu_save -> {
-                        mShell.saveAppList(adapter.appList)
-                        true
-                    }
-                    R.id.menu_refresh -> {
-                        MaterialAlertDialogBuilder(this)
-                            .setTitle(getString(R.string.dialog_query_tips))
-                            .setMessage(getString(R.string.dialog_query_app_list))
-                            .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
-                            .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
-                                adapter.appList = mutableListOf()
-                                mShell.onGenerateAppList()
-                            }
-                            .show()
-                        true
-                    }
+                R.id.menu_save -> {
+                    adapter.isChanged = false
+                    mShell.saveAppList(adapter.appList)
+                    Snackbar.make(binding.coordinatorLayout, "保存成功！", Snackbar.LENGTH_SHORT)
+                        .show()
+                    true
+                }
+                R.id.menu_refresh -> {
+                    adapter.isChanged = true
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.dialog_query_tips))
+                        .setMessage(getString(R.string.dialog_query_app_list))
+                        .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
+                        .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
+                            adapter.appList = mutableListOf()
+                            mShell.onGenerateAppList()
+                        }
+                        .show()
+                    true
+                }
                 else -> false
             }
         }

@@ -71,4 +71,9 @@
     <string name="dialog_query_app_list">Do you want to generate a list of apps?</string>
     <string name="dialog_query_return">Do you want to return?</string>
     <string name="textView_empty">It is empty here~\nPlease click on the refresh button at the top-right of the toolbar to generate an application list</string>
+    <string name="dialog_query_save">Changes not saved yet, do you want to exit and saving?</string>
+    <string name="dialog_query_no">No</string>
+    <string name="dialog_query_yes">Yes</string>
+    <string name="dialog_query_save_successfully">Saved successfully</string>
+    <string name="dialog_query_cancel">Cancel</string>
 </resources>

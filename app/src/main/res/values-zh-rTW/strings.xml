@@ -64,4 +64,9 @@
     <string name="dialog_query_app_list">是否生成應用列表？</string>
     <string name="dialog_query_return">確認返回？</string>
     <string name="textView_empty">空空如也~\n請單擊右上角刷新按鈕生成應用列表</string>
+    <string name="dialog_query_save">更改尚未保存，是否退出並保存？</string>
+    <string name="dialog_query_no">否</string>
+    <string name="dialog_query_yes">是</string>
+    <string name="dialog_query_save_successfully">保存成功！</string>
+    <string name="dialog_query_cancel">再想想</string>
 </resources>

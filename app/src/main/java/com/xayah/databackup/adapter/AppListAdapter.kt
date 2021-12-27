@@ -13,6 +13,7 @@ class AppListAdapter(private val mContext: Context) :
     class Holder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
 
     var appList: MutableList<AppInfo> = mutableListOf()
+    var isChanged = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(
@@ -32,9 +33,11 @@ class AppListAdapter(private val mContext: Context) :
         binding.adapterOnlyApp.isChecked = current.onlyApp
 
         binding.adapterBan.setOnCheckedChangeListener { _, _ ->
+            isChanged = true
             appList[position].ban = !appList[position].ban
         }
         binding.adapterOnlyApp.setOnCheckedChangeListener { _, _ ->
+            isChanged = true
             appList[position].onlyApp = !appList[position].onlyApp
         }
     }
