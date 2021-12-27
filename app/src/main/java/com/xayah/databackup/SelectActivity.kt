@@ -92,14 +92,18 @@ class SelectActivity : AppCompatActivity() {
                     if (adapter.appList.isEmpty()) {
                         Snackbar.make(
                             binding.coordinatorLayout,
-                            "请先点击右上角生成应用列表！",
+                            getString(R.string.snackbar_no_apps),
                             Snackbar.LENGTH_SHORT
                         )
                             .show()
                     } else {
                         adapter.isChanged = false
                         mShell.saveAppList(adapter.appList)
-                        Snackbar.make(binding.coordinatorLayout, "保存成功！", Snackbar.LENGTH_SHORT)
+                        Snackbar.make(
+                            binding.coordinatorLayout,
+                            getString(R.string.dialog_query_save_successfully),
+                            Snackbar.LENGTH_SHORT
+                        )
                             .show()
                     }
                     true

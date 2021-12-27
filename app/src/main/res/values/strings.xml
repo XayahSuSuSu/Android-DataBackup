@@ -76,4 +76,5 @@
     <string name="dialog_query_yes">Yes</string>
     <string name="dialog_query_save_successfully">Saved successfully</string>
     <string name="dialog_query_cancel">Cancel</string>
+    <string name="snackbar_no_apps">Please click on the refresh button to generate the app list first!</string>
 </resources>
