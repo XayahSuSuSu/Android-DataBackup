@@ -59,7 +59,7 @@ class Shell(private val mContext: Context) {
             val currentVersion =
                 mContext.packageManager.getPackageInfo(mContext.packageName, 0).versionName
             val version = ShellUtil.readLine(0, "$DATA_PATH/version")
-            if (version == "" || version != currentVersion) {
+            if (version == "" /*|| version != currentVersion*/) {
                 ShellUtil.rm("$DATA_PATH/scripts")
                 ShellUtil.unzip("$FILE_PATH/$SCRIPT_VERSION.zip", "$DATA_PATH/scripts")
                 writeVersion()
