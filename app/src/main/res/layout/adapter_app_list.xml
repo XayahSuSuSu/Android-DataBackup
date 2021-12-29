@@ -57,7 +57,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/adapter_icon"
                     app:layout_constraintTop_toBottomOf="@+id/adapter_name"
-                    tools:text="com.topjohnwu.magisk" />
+                    android:ellipsize="end"
+                    android:maxEms="13"
+                    android:maxLines="1" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/adapter_only_app"
