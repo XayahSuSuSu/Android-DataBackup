@@ -2,6 +2,7 @@
 <resources>
     <color name="color_light_background">@color/cardview_dark_background</color>
     <color name="color_light_background_shallow">@color/cardview_dark_background</color>
+    <color name="color_light_background_white">@color/color_dark_background_white</color>
 
     <!--    Clash-->
     <color name="clash">#ffffff</color>

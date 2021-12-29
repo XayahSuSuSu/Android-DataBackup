@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.xayah.databackup.R
 import com.xayah.databackup.databinding.AdapterAppListBinding
 import com.xayah.databackup.model.AppInfo
 
@@ -31,6 +32,15 @@ class AppListAdapter(private val mContext: Context) :
         binding.adapterPackage.text = current.appPackage
         binding.adapterBan.isChecked = !current.ban
         binding.adapterOnlyApp.isChecked = current.onlyApp
+        if (binding.adapterOnlyApp.isChecked) {
+            binding.materialCardView.setCardBackgroundColor(
+                mContext.getColor(R.color.color_light_background_white)
+            )
+        } else {
+            binding.materialCardView.setCardBackgroundColor(
+                mContext.getColor(R.color.color_light_background_shallow)
+            )
+        }
 
         binding.adapterBan.setOnCheckedChangeListener { _, _ ->
             isChanged = true
@@ -39,6 +49,15 @@ class AppListAdapter(private val mContext: Context) :
         binding.adapterOnlyApp.setOnCheckedChangeListener { _, _ ->
             isChanged = true
             appList[position].onlyApp = !appList[position].onlyApp
+            if (binding.adapterOnlyApp.isChecked) {
+                binding.materialCardView.setCardBackgroundColor(
+                    mContext.getColor(R.color.color_light_background_white)
+                )
+            } else {
+                binding.materialCardView.setCardBackgroundColor(
+                    mContext.getColor(R.color.color_light_background_shallow)
+                )
+            }
         }
     }
 
