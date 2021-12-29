@@ -29,6 +29,7 @@ class SelectActivity : AppCompatActivity() {
     lateinit var menuSave: MenuItem
     lateinit var menuRefresh: MenuItem
     lateinit var menuConsole: MenuItem
+    lateinit var menuSearch: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,6 +134,7 @@ class SelectActivity : AppCompatActivity() {
                             TransitionUtil.TransitionX(window.decorView as ViewGroup)
                             menuSave.isVisible = false
                             menuRefresh.isVisible = false
+                            menuSearch.isVisible = false
 
                             binding.content.visibility = View.GONE
                             binding.progress.isVisible = true
@@ -203,8 +205,10 @@ class SelectActivity : AppCompatActivity() {
         menuSave = menu.findItem(R.id.menu_save)
         menuRefresh = menu.findItem(R.id.menu_refresh)
         menuConsole = menu.findItem(R.id.menu_console)
+        menuSearch = menu.findItem(R.id.menu_search)
         binding.progress.isVisible = true
         menuSave.isVisible = true
+        menuSearch.isVisible = true
         menuRefresh.isVisible = true
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerViewAppList.layoutManager = layoutManager
