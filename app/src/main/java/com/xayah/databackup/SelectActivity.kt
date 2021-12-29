@@ -188,7 +188,6 @@ class SelectActivity : AppCompatActivity() {
         menuSave = menu.findItem(R.id.menu_save)
         menuRefresh = menu.findItem(R.id.menu_refresh)
         menuConsole = menu.findItem(R.id.menu_console)
-        TransitionUtil.TransitionX(window.decorView as ViewGroup)
         binding.progress.isVisible = true
         menuSave.isVisible = true
         menuRefresh.isVisible = true
