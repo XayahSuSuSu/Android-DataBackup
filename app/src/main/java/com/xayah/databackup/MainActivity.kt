@@ -1,5 +1,6 @@
 package com.xayah.databackup
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -24,7 +25,17 @@ class MainActivity : AppCompatActivity() {
                 Shell.Builder.create()
                     .setFlags(Shell.FLAG_MOUNT_MASTER)
                     .setTimeout(10)
+                    .setInitializers(ScriptInitializer::class.java)
             )
+        }
+    }
+
+    class ScriptInitializer : Shell.Initializer() {
+        override fun onInit(context: Context, shell: Shell): Boolean {
+            shell.newJob()
+                .add("export APP_ENV=1")
+                .exec()
+            return true
         }
     }
 
