@@ -71,4 +71,5 @@
     <string name="dialog_query_cancel">再想想</string>
     <string name="snackbar_no_apps">请先点击右上角刷新按钮生成应用列表！</string>
     <string name="title_console">控制台</string>
+    <string name="menu_search">搜索</string>
 </resources>

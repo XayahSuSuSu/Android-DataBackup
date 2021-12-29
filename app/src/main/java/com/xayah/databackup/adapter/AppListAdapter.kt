@@ -3,6 +3,8 @@ package com.xayah.databackup.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.xayah.databackup.R
 import com.xayah.databackup.databinding.AdapterAppListBinding
@@ -10,10 +12,14 @@ import com.xayah.databackup.model.AppInfo
 
 
 class AppListAdapter(private val mContext: Context) :
-    RecyclerView.Adapter<AppListAdapter.Holder>() {
+    RecyclerView.Adapter<AppListAdapter.Holder>(), Filterable {
     class Holder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
 
     var appList: MutableList<AppInfo> = mutableListOf()
+
+    var appListBackup: MutableList<AppInfo> = mutableListOf()
+
+    var isFiltered = false
     var isChanged = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -99,5 +105,34 @@ class AppListAdapter(private val mContext: Context) :
             notifyDataSetChanged()
         }
 
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                if (!isFiltered) {
+                    appListBackup = appList
+                }
+                if (constraint!!.isEmpty()) {
+                    appList = appListBackup
+                } else {
+                    val tmp: MutableList<AppInfo> = mutableListOf()
+                    for (i in appListBackup) {
+                        if (i.appName.contains(constraint, true)) {
+                            tmp.add(i)
+                        }
+                    }
+                    appList = tmp
+                }
+                val filterResults = FilterResults()
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                isFiltered = true
+                notifyDataSetChanged()
+            }
+
+        }
     }
 }

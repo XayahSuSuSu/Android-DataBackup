@@ -78,4 +78,5 @@
     <string name="dialog_query_cancel">Cancel</string>
     <string name="snackbar_no_apps">Please click on the refresh button to generate the app list first!</string>
     <string name="title_console">Console</string>
+    <string name="menu_search">Search</string>
 </resources>

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -173,6 +174,20 @@ class SelectActivity : AppCompatActivity() {
                         binding.console.isVisible = false
                         binding.linearLayoutMain.visibility = View.VISIBLE
                     }
+                    true
+                }
+                R.id.menu_search -> {
+                    val searchView = menuItem.actionView as SearchView
+                    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                        override fun onQueryTextSubmit(string: String): Boolean {
+                            return false
+                        }
+
+                        override fun onQueryTextChange(string: String): Boolean {
+                            adapter.filter.filter(string)
+                            return false
+                        }
+                    })
                     true
                 }
                 else -> false
