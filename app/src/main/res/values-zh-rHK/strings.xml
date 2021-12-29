@@ -70,4 +70,5 @@
     <string name="dialog_query_save_successfully">保存成功！</string>
     <string name="dialog_query_cancel">再想想</string>
     <string name="snackbar_no_apps">請先點擊右上角刷新按鈕生成應用列表！</string>
+    <string name="title_console">控制台</string>
 </resources>

@@ -4,16 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.transition.MaterialSharedAxis
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.databinding.ActivitySelectBinding
 import com.xayah.databackup.model.AppInfo
@@ -26,6 +25,9 @@ class SelectActivity : AppCompatActivity() {
     lateinit var binding: ActivitySelectBinding
     lateinit var adapter: AppListAdapter
     lateinit var mShell: Shell
+    lateinit var menuSave: MenuItem
+    lateinit var menuRefresh: MenuItem
+    lateinit var menuConsole: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,11 +44,21 @@ class SelectActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.dialog_query_tips))
                 .setMessage(getString(R.string.dialog_query_save))
                 .setNegativeButton(getString(R.string.dialog_query_no)) { _, _ ->
+                    if (!menuSave.isVisible)
+                        mShell.close()
                     finish()
                 }
                 .setPositiveButton(getString(R.string.dialog_query_yes)) { _, _ ->
-                    mShell.saveAppList(adapter.appList)
-                    Toast.makeText(mContext, getString(R.string.dialog_query_save_successfully), Toast.LENGTH_SHORT).show()
+                    if (!menuSave.isVisible) {
+                        mShell.close()
+                    } else {
+                        mShell.saveAppList(adapter.appList)
+                        Toast.makeText(
+                            mContext,
+                            getString(R.string.dialog_query_save_successfully),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                     finish()
                 }
                 .setNeutralButton(getString(R.string.dialog_query_cancel)) { _, _ -> }
@@ -115,10 +127,52 @@ class SelectActivity : AppCompatActivity() {
                         .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
                         .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
                             adapter.appList = mutableListOf()
-                            mShell.onGenerateAppList()
+//                            mShell.onGenerateAppList()
+
+                            TransitionUtil.TransitionX(window.decorView as ViewGroup)
+                            menuSave.isVisible = false
+                            menuRefresh.isVisible = false
+
+                            binding.content.visibility = View.GONE
+                            binding.progress.isVisible = true
+                            binding.empty.isVisible = false
+                            binding.console.logs = ""
+
+                            mShell.generateAppList({
+                                val content = it.replace("\u001B[0m", "").replace("  -", " -")
+                                    .replace("(.*?)m -".toRegex(), " -") + "\n"
+                                binding.progress.textViewProgress.text = content
+
+                                binding.console.logs += content
+                                runOnUiThread {
+                                    binding.nestedScrollView.fullScroll(View.FOCUS_DOWN);
+                                }
+                            }, {
+                                if (it == true) {
+                                    adapter.notifyDataSetChanged()
+                                    binding.topAppBar.title = getString(R.string.title_select_apps)
+                                    binding.console.isVisible = false
+                                    binding.linearLayoutMain.visibility = View.VISIBLE
+                                    init()
+                                }
+                            })
                             adapter.isChanged = true
+
                         }
                         .show()
+                    true
+                }
+                R.id.menu_console -> {
+                    TransitionUtil.TransitionX(window.decorView as ViewGroup)
+                    if (!binding.console.isVisible) {
+                        binding.topAppBar.title = getString(R.string.title_console)
+                        binding.console.isVisible = true
+                        binding.linearLayoutMain.visibility = View.GONE
+                    } else {
+                        binding.topAppBar.title = getString(R.string.title_select_apps)
+                        binding.console.isVisible = false
+                        binding.linearLayoutMain.visibility = View.VISIBLE
+                    }
                     true
                 }
                 else -> false
@@ -130,6 +184,14 @@ class SelectActivity : AppCompatActivity() {
         setResult(2, intent)
         adapter = AppListAdapter(this)
         mShell = Shell(this)
+        val menu = binding.topAppBar.menu
+        menuSave = menu.findItem(R.id.menu_save)
+        menuRefresh = menu.findItem(R.id.menu_refresh)
+        menuConsole = menu.findItem(R.id.menu_console)
+        TransitionUtil.TransitionX(window.decorView as ViewGroup)
+        binding.progress.isVisible = true
+        menuSave.isVisible = true
+        menuRefresh.isVisible = true
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerViewAppList.layoutManager = layoutManager
         GlobalScope.launch {
@@ -161,18 +223,14 @@ class SelectActivity : AppCompatActivity() {
                     if (i.ban)
                         backupAll = false
                 }
-                val materialSharedAxis = MaterialSharedAxis(MaterialSharedAxis.X, true)
-                TransitionManager.beginDelayedTransition(
-                    window.decorView as ViewGroup,
-                    materialSharedAxis
-                )
-                binding.linearProgressIndicator.visibility = View.GONE
+                TransitionUtil.TransitionX(window.decorView as ViewGroup)
+                binding.progress.isVisible = false
                 if (adapter.appList.isEmpty()) {
                     binding.content.visibility = View.GONE
-                    binding.textViewEmpty.visibility = View.VISIBLE
+                    binding.empty.isVisible = true
                 } else {
                     binding.content.visibility = View.VISIBLE
-                    binding.textViewEmpty.visibility = View.GONE
+                    binding.empty.isVisible = false
                 }
                 binding.chipOnlyApp.isChecked = onlyAppAll
                 binding.chipBackup.isChecked = backupAll

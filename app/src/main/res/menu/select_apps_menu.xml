@@ -12,4 +12,10 @@
         android:icon="@drawable/ic_outline_refresh"
         android:title="@string/menu_refresh"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_console"
+        android:icon="@drawable/ic_outline_article"
+        android:title="@string/title_console"
+        app:showAsAction="ifRoom" />
 </menu>

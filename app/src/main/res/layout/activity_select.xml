@@ -22,75 +22,77 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:orientation="vertical">
 
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/linearProgressIndicator"
-                    android:layout_width="match_parent"
-                    android:layout_marginHorizontal="80dp"
-                    android:layout_height="wrap_content"
-                    android:indeterminate="true" />
-
                 <LinearLayout
-                    android:id="@+id/content"
+                    android:id="@+id/linearLayout_main"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:orientation="vertical">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/constraintLayout_bar"
+                    <include
+                        android:id="@+id/progress"
+                        layout="@layout/component_progress" />
+
+                    <include
+                        android:id="@+id/empty"
+                        layout="@layout/component_empty" />
+
+                    <LinearLayout
+                        android:id="@+id/content"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip_only_app"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/select_all_only_app"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/constraintLayout_bar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip_backup"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/select_all_backup"
-                            app:layout_constraintLeft_toRightOf="@id/chip_only_app"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_only_app"
+                                style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:text="@string/select_all_only_app"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView_app_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_backup"
+                                style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:text="@string/select_all_backup"
+                                app:layout_constraintLeft_toRightOf="@id/chip_only_app"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerView_app_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textView_empty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
-                    android:gravity="center_horizontal"
-                    android:text="@string/textView_empty"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    app:drawableTopCompat="@drawable/ic_empty" />
+                <include
+                    android:id="@+id/console"
+                    layout="@layout/component_console" />
+
 
             </LinearLayout>
 
