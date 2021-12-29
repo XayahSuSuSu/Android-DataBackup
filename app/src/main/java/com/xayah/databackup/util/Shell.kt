@@ -85,7 +85,7 @@ class Shell(private val mContext: Context) {
         }
         GlobalScope.launch() {
             Shell.su("cd $SCRIPT_PATH; sh $SCRIPT_PATH/$GENERATE_APP_LIST_SCRIPT_NAME")
-                .to(callbackList)
+                .to(callbackList, callbackList)
                 .submit { result: Shell.Result? ->
                     if (result != null) {
                         finishedEvent(result.isSuccess)
@@ -168,7 +168,7 @@ class Shell(private val mContext: Context) {
         }
         GlobalScope.launch() {
             Shell.su("cd $BACKUP_PATH; sh $BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
-                .to(callbackList)
+                .to(callbackList, callbackList)
                 .submit { result: Shell.Result? ->
                     if (result != null) {
                         finishedEvent(result.isSuccess)
