@@ -83,4 +83,6 @@
     <string name="title_choose_backup_dir">Choose a backup folder</string>
     <string name="dialog_query_choose_dir">Are you sure to select this folder?</string>
     <string name="dialog_query_choose_right_dir">Please select the correct backup folder</string>
+    <string name="settings_sumarry_info">My backup</string>
+    <string name="settings_title_info">Backup name</string>
 </resources>

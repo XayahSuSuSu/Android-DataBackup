@@ -76,4 +76,6 @@
     <string name="title_choose_backup_dir">選擇備份文件夾</string>
     <string name="dialog_query_choose_dir">確定選擇該文件夾嗎？</string>
     <string name="dialog_query_choose_right_dir">請選擇正確的備份文件夾</string>
+    <string name="settings_sumarry_info">我的備份</string>
+    <string name="settings_title_info">備份名稱</string>
 </resources>

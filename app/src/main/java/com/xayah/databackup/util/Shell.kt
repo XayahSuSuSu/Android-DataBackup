@@ -142,6 +142,7 @@ class Shell(private val mContext: Context) {
                 .submit { result: Shell.Result? ->
                     if (result != null) {
                         finishedEvent(result.isSuccess)
+                        writeInfo()
                     }
                 }
         }
@@ -235,5 +236,21 @@ class Shell(private val mContext: Context) {
 
     fun checkRestoreScript(path: String): Boolean {
         return ShellUtil.ls(path + RESTORE_SCRIPT_NAME)
+    }
+
+    fun writeInfo(): Boolean {
+        val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        return ShellUtil.writeFile(
+            "${
+                prefs.getString(
+                    "info",
+                    mContext.getString(R.string.settings_sumarry_info)
+                )
+            }_${System.currentTimeMillis()}",
+            prefs.getString(
+                "Output_path",
+                mContext.getString(R.string.settings_sumarry_output_path)
+            ) + "/Backup_zstd/.config"
+        )
     }
 }

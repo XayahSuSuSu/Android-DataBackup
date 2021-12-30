@@ -122,6 +122,31 @@ class SettingsActivity : AppCompatActivity() {
                         title = R.string.settings_title_usbdefault,
                         summary = R.string.settings_summary_usbdefault,
                     )
+                    editableText(
+                        onCreated = {
+                            it.textField.setText(
+                                prefs.getString(
+                                    "info",
+                                    getString(R.string.settings_sumarry_info)
+                                )
+                            )
+                        },
+                        onPositiveEvent = {
+                            editor.putString("info", it.textField.text.toString()).apply()
+                        },
+                        onNeutralEvent = {
+                            it.textField.setText(getString(R.string.settings_sumarry_info))
+                            editor.putString(
+                                "info",
+                                getString(R.string.settings_sumarry_info)
+                            ).apply()
+                        },
+                        title = R.string.settings_title_info,
+                        summary = prefs.getString(
+                            "info",
+                            getString(R.string.settings_sumarry_info)
+                        )
+                    )
                     category(R.string.settings_path)
                     editableText(
                         onCreated = {
