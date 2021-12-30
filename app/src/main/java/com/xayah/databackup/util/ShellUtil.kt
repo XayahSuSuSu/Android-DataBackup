@@ -2,6 +2,7 @@ package com.xayah.databackup.util
 
 import android.content.Context
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.model.FileInfo
 
 class ShellUtil(private val mContext: Context) {
     companion object {
@@ -70,8 +71,22 @@ class ShellUtil(private val mContext: Context) {
             return Shell.su("mv $oldPath $newPath").exec().isSuccess
         }
 
-        fun touch(path:String): Boolean {
+        fun touch(path: String): Boolean {
             return Shell.su("touch $path").exec().isSuccess
+        }
+
+        fun getFile(path: String): MutableList<FileInfo> {
+            val out = Shell.su("ls -AF $path").exec().out
+            val folders = mutableListOf<FileInfo>()
+            val files = mutableListOf<FileInfo>()
+            for (i in out) {
+                if (i.contains("/")) {
+                    folders.add(FileInfo(i.replace("/",""), true))
+                } else {
+                    files.add(FileInfo(i, false))
+                }
+            }
+            return (folders + files) as MutableList<FileInfo>
         }
     }
 }

@@ -79,4 +79,8 @@
     <string name="snackbar_no_apps">Please click on the refresh button to generate the app list first!</string>
     <string name="title_console">Console</string>
     <string name="menu_search">Search</string>
+    <string name="menu_choose">Choose</string>
+    <string name="title_choose_backup_dir">Choose a backup folder</string>
+    <string name="dialog_query_choose_dir">Are you sure to select this folder?</string>
+    <string name="dialog_query_choose_right_dir">Please select the correct backup folder</string>
 </resources>

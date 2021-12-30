@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DataBackup">
         <activity
+            android:name=".FileActivity"
+            android:exported="false" />
+        <activity
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity

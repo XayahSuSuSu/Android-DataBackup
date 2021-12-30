@@ -232,4 +232,8 @@ class Shell(private val mContext: Context) {
     fun close() {
         Shell.getShell().close()
     }
+
+    fun checkRestoreScript(path: String): Boolean {
+        return ShellUtil.ls(path + RESTORE_SCRIPT_NAME)
+    }
 }

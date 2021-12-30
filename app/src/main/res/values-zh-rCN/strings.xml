@@ -72,4 +72,8 @@
     <string name="snackbar_no_apps">请先点击右上角刷新按钮生成应用列表！</string>
     <string name="title_console">控制台</string>
     <string name="menu_search">搜索</string>
+    <string name="menu_choose">选择</string>
+    <string name="title_choose_backup_dir">选择备份文件夹</string>
+    <string name="dialog_query_choose_dir">确定选择该文件夹吗？</string>
+    <string name="dialog_query_choose_right_dir">请选择正确的备份文件夹</string>
 </resources>
