@@ -212,7 +212,14 @@ class Shell(private val mContext: Context) {
             )
                     + "\n\""
         )
-        contentList.add("Compression_method=zstd")
+        contentList.add(
+            "Compression_method=${
+                prefs.getString(
+                    "Compression_method",
+                    mContext.getString(R.string.settings_summary_compression_method_zstd)
+                ).toString().replace(Regex("\\((.+?)\\)"), "")
+            }"
+        )
         ShellUtil.writeFile(
             contentList.joinToString(separator = "\n"),
             "$SCRIPT_PATH/$BACKUP_SETTINGS"

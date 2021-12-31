@@ -6,10 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.xayah.databackup.databinding.ActivitySettingsBinding
-import com.xayah.databackup.preference.category
-import com.xayah.databackup.preference.editableText
-import com.xayah.databackup.preference.preferenceScreen
-import com.xayah.databackup.preference.switch
+import com.xayah.databackup.preference.*
 import com.xayah.databackup.util.Shell
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
@@ -120,7 +117,33 @@ class SettingsActivity : AppCompatActivity() {
                             it.switchView.isChecked = prefs.getInt("USBdefault", 0) == 1
                         },
                         title = R.string.settings_title_usbdefault,
-                        summary = R.string.settings_summary_usbdefault,
+                        summary = R.string.settings_summary_usbdefault
+                    )
+                    selectableList(
+                        onPositiveEvent = {
+                            editor.putString("Compression_method", it).apply()
+                        },
+                        defaultItem = arrayOf(
+                            getString(R.string.settings_summary_compression_method_zstd),
+                            getString(R.string.settings_summary_compression_method_lz4),
+                            getString(R.string.settings_summary_compression_method_tar)
+                        ).indexOf(
+                            prefs.getString(
+                                "Compression_method",
+                                getString(R.string.settings_summary_compression_method_zstd)
+                            )
+                        ),
+                        items = arrayOf(
+                            getString(R.string.settings_summary_compression_method_zstd),
+                            getString(R.string.settings_summary_compression_method_lz4),
+                            getString(R.string.settings_summary_compression_method_tar)
+                        ),
+                        title = R.string.settings_title_compression_method,
+                        summary = prefs.getString(
+                            "Compression_method",
+                            getString(R.string.settings_summary_compression_method_zstd)
+                        )
+
                     )
                     editableText(
                         onCreated = {

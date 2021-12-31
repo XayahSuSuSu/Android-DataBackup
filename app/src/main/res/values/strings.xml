@@ -85,4 +85,8 @@
     <string name="dialog_query_choose_right_dir">Please select the correct backup folder</string>
     <string name="settings_sumarry_info">My backup</string>
     <string name="settings_title_info">Backup name</string>
+    <string name="settings_title_compression_method">Compression algorithm</string>
+    <string name="settings_summary_compression_method_zstd">zstd (Balanced compression ratio and speed)</string>
+    <string name="settings_summary_compression_method_lz4">lz4 (Fastest compression)</string>
+    <string name="settings_summary_compression_method_tar">tar (Package only)</string>
 </resources>

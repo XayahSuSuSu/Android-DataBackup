@@ -78,4 +78,8 @@
     <string name="dialog_query_choose_right_dir">请选择正确的备份文件夹</string>
     <string name="settings_sumarry_info">我的备份</string>
     <string name="settings_title_info">备份名称</string>
+    <string name="settings_title_compression_method">压缩算法</string>
+    <string name="settings_summary_compression_method_zstd">zstd(均衡压缩率与速度)</string>
+    <string name="settings_summary_compression_method_lz4">lz4(压缩最快)</string>
+    <string name="settings_summary_compression_method_tar">tar(仅打包)</string>
 </resources>
