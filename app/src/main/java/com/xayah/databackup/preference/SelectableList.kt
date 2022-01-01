@@ -13,7 +13,7 @@ fun PreferenceScreen.selectableList(
     onPositiveEvent: (String) -> Unit = {},
     @StringRes title: Int,
     items: Array<String>,
-    defaultItem: Int,
+    defaultItem: (Int) -> Int,
     summary: CharSequence? = null,
     @DrawableRes icon: Int? = null,
     configure: SelectableListPreference.() -> Unit = {},
@@ -28,12 +28,13 @@ fun PreferenceScreen.selectableList(
     var chooseIndex = 0
 
     impl.clicked {
+        val index = defaultItem(0)
         MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setCancelable(true)
             .setSingleChoiceItems(
                 items,
-                defaultItem
+                index
             ) { _, which ->
                 chooseIndex = which
             }

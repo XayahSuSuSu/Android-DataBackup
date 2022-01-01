@@ -123,16 +123,18 @@ class SettingsActivity : AppCompatActivity() {
                         onPositiveEvent = {
                             editor.putString("Compression_method", it).apply()
                         },
-                        defaultItem = arrayOf(
-                            getString(R.string.settings_summary_compression_method_zstd),
-                            getString(R.string.settings_summary_compression_method_lz4),
-                            getString(R.string.settings_summary_compression_method_tar)
-                        ).indexOf(
-                            prefs.getString(
-                                "Compression_method",
-                                getString(R.string.settings_summary_compression_method_zstd)
+                        defaultItem = {
+                            arrayOf(
+                                getString(R.string.settings_summary_compression_method_zstd),
+                                getString(R.string.settings_summary_compression_method_lz4),
+                                getString(R.string.settings_summary_compression_method_tar)
+                            ).indexOf(
+                                prefs.getString(
+                                    "Compression_method",
+                                    getString(R.string.settings_summary_compression_method_zstd)
+                                )
                             )
-                        ),
+                        },
                         items = arrayOf(
                             getString(R.string.settings_summary_compression_method_zstd),
                             getString(R.string.settings_summary_compression_method_lz4),
