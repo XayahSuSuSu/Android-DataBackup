@@ -82,4 +82,10 @@
     <string name="settings_summary_compression_method_zstd">zstd(均衡压缩率与速度)</string>
     <string name="settings_summary_compression_method_lz4">lz4(压缩最快)</string>
     <string name="settings_summary_compression_method_tar">tar(仅打包)</string>
+    <string name="add_backup">添加备份</string>
+    <string name="dialog_query_restore">是否还原备份？</string>
+    <string name="select_all_restore">全选：是否恢复</string>
+    <string name="toast_restore_successfully">还原成功！</string>
+    <string name="restore_not_named">未命名备份</string>
+    <string name="restore_not_timed">无时间信息</string>
 </resources>

@@ -24,6 +24,9 @@
             android:name=".SelectActivity"
             android:exported="false" />
         <activity
+            android:name=".SelectRestoreActivity"
+            android:exported="false" />
+        <activity
             android:name=".ConsoleActivity"
             android:exported="false" />
         <activity

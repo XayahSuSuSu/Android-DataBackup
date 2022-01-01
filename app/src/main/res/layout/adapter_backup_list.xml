@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
@@ -57,14 +58,6 @@
                     app:layout_constraintStart_toEndOf="@+id/adapter_icon"
                     app:layout_constraintTop_toBottomOf="@+id/adapter_name"
                     tools:text="" />
-
-                <RadioButton
-                    android:id="@+id/adapter_check"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

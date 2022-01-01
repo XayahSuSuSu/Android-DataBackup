@@ -38,11 +38,11 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="20dp"
             android:layout_marginBottom="20dp"
-            android:text="@string/restore"
+            android:text="@string/add_backup"
             android:textAllCaps="false"
             android:textColor="?colorOnPrimary"
             android:textStyle="bold"
-            app:icon="@drawable/ic_outline_restore"
+            app:icon="@drawable/ic_outline_add"
             app:iconTint="?colorOnPrimary" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

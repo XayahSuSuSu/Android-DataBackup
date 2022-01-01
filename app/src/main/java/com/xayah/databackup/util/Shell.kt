@@ -8,6 +8,7 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.ConsoleActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.model.AppInfo
+import com.xayah.databackup.model.BackupInfo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -17,7 +18,7 @@ import java.io.IOException
 class Shell(private val mContext: Context) {
     private val SCRIPT_VERSION = mContext.getString(R.string.script_version)
 
-    private val APP_LIST_FILE_NAME = mContext.getString(R.string.script_app_list)
+    val APP_LIST_FILE_NAME = mContext.getString(R.string.script_app_list)
 
     private val LOG_FILE_NAME = mContext.getString(R.string.script_log)
 
@@ -116,6 +117,21 @@ class Shell(private val mContext: Context) {
         ShellUtil.writeFile(outPut.joinToString(separator = "\n"), APP_LIST_FILE_PATH)
     }
 
+    fun saveBackupAppList(path: String, appList: MutableList<AppInfo>) {
+        var outPut = mutableListOf<String>()
+        for (i in appList) {
+            outPut.add(
+                (if (i.ban) "#" else "") + i.appName.replace(
+                    " ",
+                    ""
+                ) + (if (i.onlyApp) "!" else "") + " " + i.appPackage
+            )
+        }
+        val head = Shell.su("head -2 ${path}/${APP_LIST_FILE_NAME}").exec().out
+        outPut = (head + outPut) as MutableList<String>
+        ShellUtil.writeFile(outPut.joinToString(separator = "\n"), "${path}/${APP_LIST_FILE_NAME}")
+    }
+
     fun onBackup() {
         val intent = Intent(mContext, ConsoleActivity::class.java)
         intent.putExtra("type", "backup")
@@ -149,17 +165,13 @@ class Shell(private val mContext: Context) {
     }
 
     fun restore(
-        backupDir: String,
+        backupPath: String,
         event: (String) -> Unit,
         finishedEvent: (Boolean?) -> Unit
     ) {
         val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
-        val BACKUP_PATH = prefs.getString(
-            "Output_path",
-            mContext.getString(R.string.settings_sumarry_output_path)
-        )
-        ShellUtil.replace("} &", "}", "$BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
-        ShellUtil.replace("pv", "pv -f", "$BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
+        ShellUtil.replace("} &", "}", "$backupPath/$RESTORE_SCRIPT_NAME")
+        ShellUtil.replace("pv", "pv -f", "$backupPath/$RESTORE_SCRIPT_NAME")
         val callbackList: CallbackList<String> = object : CallbackList<String>() {
             override fun onAddElement(mString: String?) {
                 if (mString != null) {
@@ -168,7 +180,7 @@ class Shell(private val mContext: Context) {
             }
         }
         GlobalScope.launch() {
-            Shell.su("cd $BACKUP_PATH; sh $BACKUP_PATH/$backupDir/$RESTORE_SCRIPT_NAME")
+            Shell.su("cd $backupPath; sh $backupPath/$RESTORE_SCRIPT_NAME")
                 .to(callbackList, callbackList)
                 .submit { result: Shell.Result? ->
                     if (result != null) {
@@ -264,5 +276,20 @@ class Shell(private val mContext: Context) {
                 ).toString().replace(Regex("\\((.+?)\\)"), "")
             }/.config"
         )
+    }
+
+    fun getInfo(path: String): BackupInfo {
+        val info = ShellUtil.readLine(0, "$path/.config").split("_")
+        if (info.size == 1) {
+            return BackupInfo(
+                mContext.getString(R.string.restore_not_named),
+                mContext.getString(R.string.restore_not_timed),
+                path
+            )
+        } else {
+            val name = info[0]
+            val time = DataUtil.getFormatDate(info[1].toLong())
+            return BackupInfo(name, time, path)
+        }
     }
 }

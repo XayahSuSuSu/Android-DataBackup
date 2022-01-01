@@ -1,9 +1,11 @@
 package com.xayah.databackup.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.xayah.databackup.SelectRestoreActivity
 import com.xayah.databackup.databinding.AdapterBackupListBinding
 import com.xayah.databackup.model.BackupInfo
 
@@ -21,16 +23,15 @@ class BackupListAdapter(private val mContext: Context) :
         )
     }
 
-    var chosenIndex = 0
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val current = backupList[position]
         val binding = holder.binding
-        binding.adapterName.text = current.backupName
-        binding.adapterTime.text = current.backupTime
-        binding.adapterCheck.isChecked = (position == chosenIndex)
-        binding.adapterCheck.setOnClickListener {
-            chosenIndex = position
-            notifyItemRangeChanged(0, backupList.size)
+        binding.adapterName.text = current.name
+        binding.adapterTime.text = current.time
+        binding.materialCardView.setOnClickListener {
+            val intent = Intent(mContext, SelectRestoreActivity::class.java)
+            intent.putExtra("path", current.path)
+            mContext.startActivity(intent)
         }
     }
 
