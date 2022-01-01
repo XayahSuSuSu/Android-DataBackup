@@ -257,7 +257,12 @@ class Shell(private val mContext: Context) {
             prefs.getString(
                 "Output_path",
                 mContext.getString(R.string.settings_sumarry_output_path)
-            ) + "/Backup_zstd/.config"
+            ) + "/Backup_${
+                prefs.getString(
+                    "Compression_method",
+                    mContext.getString(R.string.settings_summary_compression_method_zstd)
+                ).toString().replace(Regex("\\((.+?)\\)"), "")
+            }/.config"
         )
     }
 }
