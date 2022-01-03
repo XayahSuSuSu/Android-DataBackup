@@ -33,5 +33,5 @@
 
 7. 若欲**恢复数据**，**默认设置下**则将备份的**数据**复制到`SD卡根目录/Download`，打开软件**还原备份**。
 
-## 免责声明
-本项目遵循[GNU General Public License v3.0协议](./LICENSE)。
+## 许可证
+本项目遵循 [GNU General Public License v3.0](./LICENSE) 协议。
