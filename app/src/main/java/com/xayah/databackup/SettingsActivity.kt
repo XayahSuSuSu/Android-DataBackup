@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.xayah.databackup.databinding.ActivitySettingsBinding
-import com.xayah.databackup.preference.*
+import com.xayah.databackup.view.preference.*
 import com.xayah.databackup.util.Shell
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean

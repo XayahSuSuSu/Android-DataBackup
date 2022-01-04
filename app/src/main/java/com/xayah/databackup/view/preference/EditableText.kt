@@ -1,4 +1,4 @@
-package com.xayah.databackup.preference
+package com.xayah.databackup.view.preference
 
 import android.app.Activity
 import androidx.annotation.DrawableRes

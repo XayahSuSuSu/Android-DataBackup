@@ -1,4 +1,4 @@
-package com.xayah.databackup.preference
+package com.xayah.databackup.view.preference
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
