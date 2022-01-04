@@ -36,6 +36,7 @@
 
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/color_light_background_shallow</item>
     </style>
 
     <style name="Theme.DataBackup.Dark" parent="Theme.Material3.Dark.NoActionBar">
@@ -70,6 +71,7 @@
 
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/color_light_background_shallow</item>
     </style>
 
 </resources>
