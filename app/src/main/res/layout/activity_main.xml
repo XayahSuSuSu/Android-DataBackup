@@ -2,18 +2,9 @@
 <layout>
 
     <data>
-
         <variable
-            name="isRoot"
-            type="boolean" />
-
-        <variable
-            name="backupNum"
-            type="int" />
-
-        <variable
-            name="backupNumTotal"
-            type="int" />
+            name="viewModel"
+            type="com.xayah.databackup.viewModel.MainViewModel" />
 
         <import type="android.view.View" />
     </data>
@@ -22,7 +13,6 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:id="@+id/constraintLayout_main"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
@@ -59,10 +49,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                    android:id="@+id/largeActionCard_root"
                     style="?attr/materialCardViewFilledStyle"
                     android:theme="@style/Theme.DataBackup.Dark"
-                    android:visibility="@{isRoot ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{viewModel.isRoot ? View.GONE : View.VISIBLE}"
                     app:cardBackgroundColor="@color/red_denied"
                     app:icon="@drawable/ic_outline_wrong_circle"
                     app:subtext="@string/root_grant"
@@ -70,25 +59,25 @@
 
                 <com.xayah.databackup.view.LargeActionCard
                     android:layout_width="match_parent"
-                    android:clickable="@{isRoot}"
+                    android:clickable="@{viewModel.isRoot}"
                     android:layout_height="wrap_content"
-                    android:id="@+id/largeActionCard_backup"
+                    android:onClick="@{(v) -> viewModel.onBackup(v)}"
                     style="?attr/materialCardViewFilledStyle"
                     android:theme="@style/Theme.DataBackup.Dark"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                    app:cardBackgroundColor="@{backupNum>0 ? @color/green_wait : @color/red_denied}"
+                    app:cardBackgroundColor="@{viewModel.backupNum>0 ? @color/green_wait : @color/red_denied}"
                     app:icon="@drawable/ic_outline_backup"
-                    app:subtext='@{@string/backup_num(backupNum)}'
+                    app:subtext='@{@string/backup_num(viewModel.backupNum)}'
                     app:text="@string/backup_start" />
 
                 <com.xayah.databackup.view.LargeActionCard
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                    android:id="@+id/largeActionCard_select_apps"
+                    android:clickable="@{viewModel.isRoot}"
                     style="?attr/materialCardViewFilledStyle"
                     app:cardBackgroundColor="?attr/colorOnPrimary"
-                    android:clickable="@{isRoot}"
+                    android:onClick="@{(v) -> viewModel.toSelectActivity(v)}"
                     app:icon="@drawable/ic_outline_apps"
                     app:subtext="@string/backup_select_subtext"
                     app:text="@string/backup_select" />
@@ -97,8 +86,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                    android:clickable="@{isRoot}"
-                    android:id="@+id/largeActionCard_restore"
+                    android:clickable="@{viewModel.isRoot}"
+                    android:onClick="@{(v) -> viewModel.toRestoreActivity(v)}"
                     style="?attr/materialCardViewFilledStyle"
                     app:cardBackgroundColor="?attr/colorOnPrimary"
                     app:icon="@drawable/ic_outline_restore"
@@ -106,26 +95,26 @@
                     app:text="@string/restore" />
 
                 <com.xayah.databackup.view.LargeActionLabel
-                    android:id="@+id/largeActionLabel_settings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="@{isRoot}"
+                    android:clickable="@{viewModel.isRoot}"
+                    android:onClick="@{(v) -> viewModel.toSettingsActivity(v)}"
                     android:layout_marginVertical="@dimen/main_label_margin_vertical"
                     app:icon="@drawable/ic_baseline_settings"
                     app:text="@string/settings" />
 
                 <com.xayah.databackup.view.LargeActionLabel
-                    android:id="@+id/largeActionLabel_credits"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="@{(v) -> viewModel.toCreditsDialog(v)}"
                     android:layout_marginVertical="@dimen/main_label_margin_vertical"
                     app:icon="@drawable/ic_outline_favorite_border"
                     app:text="@string/credits" />
 
                 <com.xayah.databackup.view.LargeActionLabel
-                    android:id="@+id/largeActionLabel_about"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="@{(v) -> viewModel.toAboutDialog(v)}"
                     android:layout_marginVertical="@dimen/main_label_margin_vertical"
                     app:icon="@drawable/ic_baseline_info"
                     app:text="@string/about" />
