@@ -15,7 +15,7 @@
     <string name="backup_select_subtext">單擊進入選擇</string>
     <string name="title_backup">備份中…</string>
     <string name="restore_subtitle">單擊進入備份還原</string>
-    <string name="restore">還原備份</string>
+    <string name="restore">還原</string>
     <string name="settings">設置</string>
     <string name="credits">鳴謝</string>
     <string name="about">關於</string>
@@ -88,4 +88,6 @@
     <string name="toast_restore_successfully">還原成功！</string>
     <string name="restore_not_named">未命名備份</string>
     <string name="restore_not_timed">無時間信息</string>
+    <string name="home">主頁</string>
+    <string name="backup">備份</string>
 </resources>

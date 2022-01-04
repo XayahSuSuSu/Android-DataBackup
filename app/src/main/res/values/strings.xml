@@ -95,4 +95,6 @@
     <string name="toast_restore_successfully">Restored successfully!</string>
     <string name="restore_not_named">Not named</string>
     <string name="restore_not_timed">Not timed</string>
+    <string name="home">Home</string>
+    <string name="backup">Backup</string>
 </resources>
