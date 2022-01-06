@@ -90,4 +90,10 @@
     <string name="restore_not_timed">无时间信息</string>
     <string name="home">主页</string>
     <string name="backup">备份</string>
+    <string name="root">Root权限</string>
+    <string name="granted">已授权</string>
+    <string name="not_granted">未授权</string>
+    <string name="get_error">获取失败</string>
+    <string name="title_script_in_app">内置脚本</string>
+    <string name="title_storage_space">存储空间</string>
 </resources>

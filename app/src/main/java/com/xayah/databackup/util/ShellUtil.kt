@@ -2,6 +2,7 @@ package com.xayah.databackup.util
 
 import android.content.Context
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.R
 import com.xayah.databackup.model.FileInfo
 
 class ShellUtil(private val mContext: Context) {
@@ -81,12 +82,33 @@ class ShellUtil(private val mContext: Context) {
             val files = mutableListOf<FileInfo>()
             for (i in out) {
                 if (i.contains("/")) {
-                    folders.add(FileInfo(i.replace("/",""), true))
+                    folders.add(FileInfo(i.replace("/", ""), true))
                 } else {
                     files.add(FileInfo(i, false))
                 }
             }
             return (folders + files) as MutableList<FileInfo>
+        }
+
+        fun cat(path: String): MutableList<String> {
+            return Shell.su("cat $path").exec().out
+        }
+
+        fun getScriptVersion(mContext: Context): String {
+            val pathUtil = PathUtil(mContext)
+            val content = cat(pathUtil.BIN_SH_PATH)
+            for (i in content) {
+                if (i.contains("backup_version")) {
+                    val split = i.split("=")
+                    return split[1].replace("\"", "")
+                }
+            }
+            return mContext.getString(R.string.get_error)
+        }
+
+        fun getStorageSpace(): List<String> {
+            return Shell.su("df -h | grep /dev/fuse").exec().out.toString().replace("[", "")
+                .replace("]", "").replace("\\s+".toRegex(), " ").split(" ")
         }
     }
 }

@@ -97,4 +97,11 @@
     <string name="restore_not_timed">Not timed</string>
     <string name="home">Home</string>
     <string name="backup">Backup</string>
+    <string name="root">Root</string>
+    <string name="granted">Granted</string>
+    <string name="not_granted">Not granted</string>
+    <string name="storage_space">%1$s GB/%2$s GB</string>
+    <string name="get_error">Error</string>
+    <string name="title_script_in_app">Script</string>
+    <string name="title_storage_space">Storage space</string>
 </resources>

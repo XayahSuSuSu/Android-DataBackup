@@ -2,10 +2,15 @@ package com.xayah.databackup
 
 import android.content.Context
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.databinding.ActivityMainBinding
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
+import com.xayah.databackup.viewModel.MainViewModel
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +37,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        val binding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         WindowUtil.setWindowMode(!resolveThemedBoolean(android.R.attr.windowLightStatusBar), window)
+
+        val model: MainViewModel by viewModels()
+        binding.viewModel = model
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment?
+        val navController = navHostFragment!!.navController
+        NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
     }
 }
