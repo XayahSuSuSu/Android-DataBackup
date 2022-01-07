@@ -48,77 +48,77 @@ class SettingsActivity : AppCompatActivity() {
             runOnUiThread {
                 val screen = preferenceScreen(mContext) {
 //                    category(R.string.settings_update_setttings)
-                    switch(
-                        {
-                            mShell.autoUpdate(it)
-                        },
-                        {
-                            it.switchView.isChecked = mShell.checkAutoUpdate()
-                        },
-                        title = R.string.settings_title_auto_update,
-                        summary = R.string.settings_summary_auto_update,
-                    )
-//                    category(R.string.settings_backup_setttings)
-                    switch(
-                        {
-                            editor.putInt("Lo", if (it) 1 else 0).apply()
-                        },
-                        {
-                            it.switchView.isChecked = prefs.getInt("Lo", 0) == 1
-                        },
-                        title = R.string.settings_title_lo,
-                        summary = R.string.settings_summary_lo,
-                    )
-                    switch(
-                        {
-                            editor.putInt("Splist", if (it) 1 else 0).apply()
-                        },
-                        {
-                            it.switchView.isChecked = prefs.getInt("Splist", 0) == 1
-                        },
-                        title = R.string.settings_title_splist,
-                        summary = R.string.settings_summary_splist,
-                    )
-                    switch(
-                        {
-                            editor.putInt("Backup_user_data", if (it) 1 else 0).apply()
-                        },
-                        {
-                            it.switchView.isChecked = prefs.getInt("Backup_user_data", 1) == 1
-                        },
-                        title = R.string.settings_title_backup_user_data,
-                        summary = R.string.settings_summary_backup_user_data,
-                    )
-                    switch(
-                        {
-                            editor.putInt("Backup_obb_data", if (it) 1 else 0).apply()
-                        },
-                        {
-                            it.switchView.isChecked = prefs.getInt("Backup_obb_data", 1) == 1
-                        },
-                        title = R.string.settings_title_backup_obb_data,
-                        summary = R.string.settings_summary_backup_obb_data,
-                    )
-                    switch(
-                        {
-                            editor.putInt("backup_media", if (it) 1 else 0).apply()
-                        },
-                        {
-                            it.switchView.isChecked = prefs.getInt("backup_media", 0) == 1
-                        },
-                        title = R.string.settings_title_backup_media,
-                        summary = R.string.settings_summary_backup_media,
-                    )
-                    switch(
-                        {
-                            editor.putInt("USBdefault", if (it) 1 else 0).apply()
-                        },
-                        {
-                            it.switchView.isChecked = prefs.getInt("USBdefault", 0) == 1
-                        },
-                        title = R.string.settings_title_usbdefault,
-                        summary = R.string.settings_summary_usbdefault
-                    )
+//                    switch(
+//                        {
+//                            mShell.autoUpdate(it)
+//                        },
+//                        {
+//                            it.switchView.isChecked = mShell.checkAutoUpdate()
+//                        },
+//                        title = R.string.settings_title_auto_update,
+//                        summary = R.string.settings_summary_auto_update,
+//                    )
+////                    category(R.string.settings_backup_setttings)
+//                    switch(
+//                        {
+//                            editor.putInt("Lo", if (it) 1 else 0).apply()
+//                        },
+//                        {
+//                            it.switchView.isChecked = prefs.getInt("Lo", 0) == 1
+//                        },
+//                        title = R.string.settings_title_lo,
+//                        summary = R.string.settings_summary_lo,
+//                    )
+//                    switch(
+//                        {
+//                            editor.putInt("Splist", if (it) 1 else 0).apply()
+//                        },
+//                        {
+//                            it.switchView.isChecked = prefs.getInt("Splist", 0) == 1
+//                        },
+//                        title = R.string.settings_title_splist,
+//                        summary = R.string.settings_summary_splist,
+//                    )
+//                    switch(
+//                        {
+//                            editor.putInt("Backup_user_data", if (it) 1 else 0).apply()
+//                        },
+//                        {
+//                            it.switchView.isChecked = prefs.getInt("Backup_user_data", 1) == 1
+//                        },
+//                        title = R.string.settings_title_backup_user_data,
+//                        summary = R.string.settings_summary_backup_user_data,
+//                    )
+//                    switch(
+//                        {
+//                            editor.putInt("Backup_obb_data", if (it) 1 else 0).apply()
+//                        },
+//                        {
+//                            it.switchView.isChecked = prefs.getInt("Backup_obb_data", 1) == 1
+//                        },
+//                        title = R.string.settings_title_backup_obb_data,
+//                        summary = R.string.settings_summary_backup_obb_data,
+//                    )
+//                    switch(
+//                        {
+//                            editor.putInt("backup_media", if (it) 1 else 0).apply()
+//                        },
+//                        {
+//                            it.switchView.isChecked = prefs.getInt("backup_media", 0) == 1
+//                        },
+//                        title = R.string.settings_title_backup_media,
+//                        summary = R.string.settings_summary_backup_media,
+//                    )
+//                    switch(
+//                        {
+//                            editor.putInt("USBdefault", if (it) 1 else 0).apply()
+//                        },
+//                        {
+//                            it.switchView.isChecked = prefs.getInt("USBdefault", 0) == 1
+//                        },
+//                        title = R.string.settings_title_usbdefault,
+//                        summary = R.string.settings_summary_usbdefault
+//                    )
                     selectableList(
                         onPositiveEvent = {
                             editor.putString("Compression_method", it).apply()

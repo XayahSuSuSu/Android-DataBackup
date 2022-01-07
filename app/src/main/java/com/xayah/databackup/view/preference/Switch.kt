@@ -1,93 +1,71 @@
 package com.xayah.databackup.view.preference
 
+import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
-import androidx.core.view.isGone
+import android.widget.CompoundButton
+import android.widget.FrameLayout
+import androidx.annotation.AttrRes
+import androidx.annotation.StyleRes
+import com.xayah.databackup.R
 import com.xayah.databackup.databinding.PreferenceSwitchBinding
 
-interface SwitchPreference : Preference {
+class Switch @JvmOverloads constructor(
+    context: Context,
+    attributeSet: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = 0,
+    @StyleRes defStyleRes: Int = 0
+) : FrameLayout(context, attributeSet, defStyleAttr, defStyleRes) {
+    private val binding = PreferenceSwitchBinding
+        .inflate(LayoutInflater.from(context), this, true)
+
     var icon: Drawable?
+        get() = binding.iconView.background
+        set(value) {
+            binding.iconView.background = value
+        }
+
     var title: CharSequence?
+        get() = binding.titleView.text
+        set(value) {
+            binding.titleView.text = value
+        }
+
     var summary: CharSequence?
-    var listener: OnChangedListener?
-}
+        get() = binding.summaryView.text
+        set(value) {
+            binding.summaryView.text = value
+            binding.summaryView.visibility = if (value == null) View.GONE else View.VISIBLE
+        }
 
-fun PreferenceScreen.switch(
-    onSwitchEvent: (Boolean) -> Unit = {},
-    onCreated: (PreferenceSwitchBinding) -> Unit = {},
-    onShowSwitch: Boolean = true,
-    @DrawableRes icon: Int? = null,
-    @StringRes title: Int? = null,
-    @StringRes summary: Int? = null,
-    configure: SwitchPreference.() -> Unit = {},
-): SwitchPreference {
-    val binding = PreferenceSwitchBinding
-        .inflate(LayoutInflater.from(context), root, false)
+    override fun setOnClickListener(l: OnClickListener?) {
+        binding.root.setOnClickListener(l)
+    }
 
-    val impl = object : SwitchPreference {
-        override val view: View
-            get() = binding.root
-        override var icon: Drawable?
-            get() = binding.iconView.background
-            set(value) {
-                binding.iconView.background = value
+    fun setOnCheckedChangeListener(listener: ((buttonView: CompoundButton, isChecked: Boolean) -> Unit)) {
+        binding.switchView.setOnCheckedChangeListener(listener)
+    }
+
+    init {
+        binding.root.setOnClickListener {
+            binding.switchView.performClick()
+        }
+
+        context.theme.obtainStyledAttributes(
+            attributeSet,
+            R.styleable.Switch,
+            defStyleAttr,
+            defStyleRes
+        ).apply {
+            try {
+                icon = getDrawable(R.styleable.Switch_icon)
+                title = getString(R.styleable.Switch_title)
+                summary = getString(R.styleable.Switch_summary)
+            } finally {
+                recycle()
             }
-        override var title: CharSequence?
-            get() = binding.titleView.text
-            set(value) {
-                binding.titleView.text = value
-            }
-        override var summary: CharSequence?
-            get() = binding.summaryView.text
-            set(value) {
-                binding.summaryView.text = value
-            }
-        override var listener: OnChangedListener? = null
-        override var enabled: Boolean
-            get() = binding.root.isEnabled
-            set(value) {
-                binding.root.isEnabled = value
-                binding.root.isFocusable = value
-                binding.root.isClickable = value
-                binding.root.alpha = if (value) 1.0f else 0.33f
-            }
-
+        }
     }
-
-    if (icon != null) {
-        impl.icon = ContextCompat.getDrawable(context, icon)
-    }
-
-    if (title != null) {
-        impl.title = context.getString(title)
-    }
-
-    if (summary != null) {
-        impl.summary = context.getString(summary)
-    }
-
-    impl.configure()
-
-    addElement(impl)
-
-    onCreated(binding)
-
-    binding.switchView.isGone = !onShowSwitch
-
-    binding.root.setOnClickListener {
-        binding.switchView.isChecked = !binding.switchView.isChecked
-        onSwitchEvent(binding.switchView.isChecked)
-        impl.listener?.onChanged()
-    }
-
-    binding.switchView.setOnCheckedChangeListener { _, isChecked ->
-        onSwitchEvent(isChecked)
-        impl.listener?.onChanged()
-    }
-
-    return impl
 }
