@@ -47,7 +47,7 @@ class SettingsActivity : AppCompatActivity() {
         GlobalScope.launch {
             runOnUiThread {
                 val screen = preferenceScreen(mContext) {
-                    category(R.string.settings_update_setttings)
+//                    category(R.string.settings_update_setttings)
                     switch(
                         {
                             mShell.autoUpdate(it)
@@ -58,7 +58,7 @@ class SettingsActivity : AppCompatActivity() {
                         title = R.string.settings_title_auto_update,
                         summary = R.string.settings_summary_auto_update,
                     )
-                    category(R.string.settings_backup_setttings)
+//                    category(R.string.settings_backup_setttings)
                     switch(
                         {
                             editor.putInt("Lo", if (it) 1 else 0).apply()
@@ -172,7 +172,7 @@ class SettingsActivity : AppCompatActivity() {
                             getString(R.string.settings_sumarry_info)
                         )
                     )
-                    category(R.string.settings_path)
+//                    category(R.string.settings_path)
                     editableText(
                         onCreated = {
                             it.textField.setText(

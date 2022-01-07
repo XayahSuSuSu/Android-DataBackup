@@ -1,25 +1,41 @@
 package com.xayah.databackup.view.preference
 
+import android.content.Context
+import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
-import androidx.annotation.StringRes
+import android.widget.FrameLayout
+import androidx.annotation.AttrRes
+import androidx.annotation.StyleRes
+import com.xayah.databackup.R
 import com.xayah.databackup.databinding.PreferenceCategoryBinding
 
-fun PreferenceScreen.category(
-    @StringRes text: Int,
-) {
-    val binding = PreferenceCategoryBinding
-        .inflate(LayoutInflater.from(context), root, false)
+class Category @JvmOverloads constructor(
+    context: Context,
+    attributeSet: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = 0,
+    @StyleRes defStyleRes: Int = 0
+) : FrameLayout(context, attributeSet, defStyleAttr, defStyleRes) {
+    private val binding = PreferenceCategoryBinding
+        .inflate(LayoutInflater.from(context), this, true)
 
-    binding.textView.text = context.getString(text)
+    var text: CharSequence?
+        get() = binding.textView.text
+        set(value) {
+            binding.textView.text = value
+        }
 
-    addElement(object : Preference {
-        override val view: View
-            get() = binding.root
-        override var enabled: Boolean
-            get() = binding.root.isEnabled
-            set(value) {
-                binding.root.isEnabled = value
+    init {
+        context.theme.obtainStyledAttributes(
+            attributeSet,
+            R.styleable.Category,
+            defStyleAttr,
+            defStyleRes
+        ).apply {
+            try {
+                text = getString(R.styleable.Category_text)
+            } finally {
+                recycle()
             }
-    })
+        }
+    }
 }

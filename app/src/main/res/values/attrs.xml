@@ -27,4 +27,8 @@
         <attr name="subtext" />
         <attr name="icon" />
     </declare-styleable>
+
+    <declare-styleable name="Category">
+        <attr name="text" />
+    </declare-styleable>
 </resources>
