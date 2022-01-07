@@ -96,4 +96,5 @@
     <string name="get_error">獲取失敗</string>
     <string name="title_script_in_app">內置腳本</string>
     <string name="title_storage_space">存儲空間</string>
+    <string name="more">更多</string>
 </resources>

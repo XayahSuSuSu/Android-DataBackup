@@ -16,8 +16,8 @@
         android:icon="@drawable/ic_outline_restore"
         android:title="@string/restore" />
     <item
-        android:id="@+id/page_about"
+        android:id="@+id/page_more"
         android:enabled="true"
-        android:icon="@drawable/ic_round_help_outline"
-        android:title="@string/about" />
+        android:icon="@drawable/ic_outline_apps"
+        android:title="@string/more" />
 </menu>

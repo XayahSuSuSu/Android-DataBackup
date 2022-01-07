@@ -1,7 +1,6 @@
 package com.xayah.databackup.fragment.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +9,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.databinding.FragmentHomeBinding
 import com.xayah.databackup.util.Shell
 import com.xayah.databackup.util.ShellUtil
-import android.os.Environment
-
-import android.os.StatFs
-
-
 
 
 class HomeFragment : Fragment() {

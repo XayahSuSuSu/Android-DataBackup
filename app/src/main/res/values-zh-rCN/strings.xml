@@ -96,4 +96,5 @@
     <string name="get_error">获取失败</string>
     <string name="title_script_in_app">内置脚本</string>
     <string name="title_storage_space">存储空间</string>
+    <string name="more">更多</string>
 </resources>

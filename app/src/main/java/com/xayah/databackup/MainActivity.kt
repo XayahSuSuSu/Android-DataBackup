@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.databinding.ActivityMainBinding
 import com.xayah.databackup.util.WindowUtil
@@ -46,8 +46,9 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel = model
 
         val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment?
-        val navController = navHostFragment!!.navController
-        NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
+            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHostFragment.navController
+        binding.bottomNavigation.setupWithNavController(navController)
+        binding.bottomNavigation.setOnNavigationItemReselectedListener {  }
     }
 }

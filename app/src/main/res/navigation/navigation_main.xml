@@ -9,6 +9,10 @@
         android:id="@+id/page_home"
         android:name="com.xayah.databackup.fragment.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home">
-    </fragment>
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/page_more"
+        android:name="com.xayah.databackup.fragment.more.MoreFragment"
+        android:label="fragment_more"
+        tools:layout="@layout/fragment_more" />
 </navigation>
