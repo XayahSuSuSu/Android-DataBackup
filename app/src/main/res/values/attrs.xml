@@ -21,4 +21,10 @@
         <attr name="android:background" />
         <attr name="android:foreground" />
     </declare-styleable>
+
+    <declare-styleable name="ActionLabel">
+        <attr name="text" />
+        <attr name="subtext" />
+        <attr name="icon" />
+    </declare-styleable>
 </resources>
