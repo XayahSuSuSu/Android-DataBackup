@@ -80,7 +80,7 @@ class SelectableList @JvmOverloads constructor(
                     choice = which
                 }
                 .setPositiveButton(context.getString(R.string.dialog_positive)) { _, _ ->
-                    summary = items[choice]
+                    refreshSummary()
                     if (::onConfirmListener.isInitialized)
                         onConfirmListener.invoke(choice)
                 }
