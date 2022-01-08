@@ -5,6 +5,7 @@
     <attr name="title" format="string" />
     <attr name="summary" format="string" />
     <attr name="defaultValue" format="string" />
+    <attr name="choice" format="integer" />
 
     <declare-styleable name="LargeActionCard">
         <attr name="text" />
@@ -45,6 +46,13 @@
         <attr name="title" />
         <attr name="summary" />
         <attr name="defaultValue" />
+        <attr name="icon" />
+    </declare-styleable>
+
+    <declare-styleable name="SelectableList">
+        <attr name="title" />
+        <attr name="summary" />
+        <attr name="choice" />
         <attr name="icon" />
     </declare-styleable>
 </resources>

@@ -119,34 +119,34 @@ class SettingsActivity : AppCompatActivity() {
 //                        title = R.string.settings_title_usbdefault,
 //                        summary = R.string.settings_summary_usbdefault
 //                    )
-                    selectableList(
-                        onPositiveEvent = {
-                            editor.putString("Compression_method", it).apply()
-                        },
-                        defaultItem = {
-                            arrayOf(
-                                getString(R.string.settings_summary_compression_method_zstd),
-                                getString(R.string.settings_summary_compression_method_lz4),
-                                getString(R.string.settings_summary_compression_method_tar)
-                            ).indexOf(
-                                prefs.getString(
-                                    "Compression_method",
-                                    getString(R.string.settings_summary_compression_method_zstd)
-                                )
-                            )
-                        },
-                        items = arrayOf(
-                            getString(R.string.settings_summary_compression_method_zstd),
-                            getString(R.string.settings_summary_compression_method_lz4),
-                            getString(R.string.settings_summary_compression_method_tar)
-                        ),
-                        title = R.string.settings_title_compression_method,
-                        summary = prefs.getString(
-                            "Compression_method",
-                            getString(R.string.settings_summary_compression_method_zstd)
-                        )
-
-                    )
+//                    selectableList(
+//                        onPositiveEvent = {
+//                            editor.putString("Compression_method", it).apply()
+//                        },
+//                        defaultItem = {
+//                            arrayOf(
+//                                getString(R.string.settings_summary_compression_method_zstd),
+//                                getString(R.string.settings_summary_compression_method_lz4),
+//                                getString(R.string.settings_summary_compression_method_tar)
+//                            ).indexOf(
+//                                prefs.getString(
+//                                    "Compression_method",
+//                                    getString(R.string.settings_summary_compression_method_zstd)
+//                                )
+//                            )
+//                        },
+//                        items = arrayOf(
+//                            getString(R.string.settings_summary_compression_method_zstd),
+//                            getString(R.string.settings_summary_compression_method_lz4),
+//                            getString(R.string.settings_summary_compression_method_tar)
+//                        ),
+//                        title = R.string.settings_title_compression_method,
+//                        summary = prefs.getString(
+//                            "Compression_method",
+//                            getString(R.string.settings_summary_compression_method_zstd)
+//                        )
+//
+//                    )
 //                    editableText(
 //                        onCreated = {
 //                            it.textField.setText(
