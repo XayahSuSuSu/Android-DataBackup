@@ -1,73 +1,62 @@
 package com.xayah.databackup.view.preference
 
+import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
+import android.widget.FrameLayout
+import androidx.annotation.AttrRes
+import androidx.annotation.StyleRes
+import com.xayah.databackup.R
 import com.xayah.databackup.databinding.PreferenceClickableBinding
 
-interface ClickablePreference : Preference {
-    var title: CharSequence
+class Clickable @JvmOverloads constructor(
+    context: Context,
+    attributeSet: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = 0,
+    @StyleRes defStyleRes: Int = 0
+) : FrameLayout(context, attributeSet, defStyleAttr, defStyleRes) {
+    private val binding = PreferenceClickableBinding
+        .inflate(LayoutInflater.from(context), this, true)
 
     var icon: Drawable?
-    var summary: CharSequence?
+        get() = binding.iconView.background
+        set(value) {
+            binding.iconView.background = value
+        }
 
-    fun clicked(clicked: () -> Unit)
-}
+    var title: CharSequence?
+        get() = binding.titleView.text
+        set(value) {
+            binding.titleView.text = value
+        }
 
-fun PreferenceScreen.clickable(
-    @StringRes title: Int,
-    @DrawableRes icon: Int? = null,
-    @StringRes summary: Int? = null,
-    configure: ClickablePreference.() -> Unit = {}
-): ClickablePreference {
-    val binding = PreferenceClickableBinding
-        .inflate(LayoutInflater.from(context), root, false)
+    private var summary: CharSequence?
+        get() = binding.summaryView.text
+        set(value) {
+            binding.summaryView.text = value
+            binding.summaryView.visibility = if (value == null) View.GONE else View.VISIBLE
+        }
 
-    val impl = object : ClickablePreference {
-        override var icon: Drawable?
-            get() = binding.iconView.background
-            set(value) {
-                binding.iconView.background = value
-            }
-        override var title: CharSequence
-            get() = binding.titleView.text
-            set(value) {
-                binding.titleView.text = value
-            }
-        override var summary: CharSequence?
-            get() = binding.summaryView.text
-            set(value) {
-                binding.summaryView.text = value
-                binding.summaryView.visibility = if (value == null) View.GONE else View.VISIBLE
-            }
-        override val view: View
-            get() = binding.root
+    override fun setOnClickListener(l: OnClickListener?) {
+        binding.root.setOnClickListener(l)
+    }
 
-        override fun clicked(clicked: () -> Unit) {
-            binding.root.setOnClickListener {
-                clicked()
+    init {
+        context.theme.obtainStyledAttributes(
+            attributeSet,
+            R.styleable.ClickableView,
+            defStyleAttr,
+            defStyleRes
+        ).apply {
+            try {
+                icon = getDrawable(R.styleable.ClickableView_icon)
+                title = getString(R.styleable.ClickableView_title)
+                summary = getString(R.styleable.ClickableView_summary)
+            } finally {
+                recycle()
             }
         }
     }
-
-    impl.title = context.getText(title)
-
-    if (icon != null) {
-        impl.icon = ContextCompat.getDrawable(context, icon)
-    }
-
-    if (summary != null) {
-        impl.summary = context.getText(summary)
-    } else {
-        impl.summary = null
-    }
-
-    impl.configure()
-
-    addElement(impl)
-
-    return impl
 }

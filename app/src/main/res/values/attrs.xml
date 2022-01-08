@@ -55,4 +55,10 @@
         <attr name="choice" />
         <attr name="icon" />
     </declare-styleable>
+
+    <declare-styleable name="ClickableView">
+        <attr name="title" />
+        <attr name="summary" />
+        <attr name="icon" />
+    </declare-styleable>
 </resources>
