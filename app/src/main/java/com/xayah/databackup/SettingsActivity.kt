@@ -6,10 +6,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.xayah.databackup.databinding.ActivitySettingsBinding
-import com.xayah.databackup.view.preference.*
 import com.xayah.databackup.util.Shell
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
+import com.xayah.databackup.view.preference.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -58,7 +58,7 @@ class SettingsActivity : AppCompatActivity() {
 //                        title = R.string.settings_title_auto_update,
 //                        summary = R.string.settings_summary_auto_update,
 //                    )
-////                    category(R.string.settings_backup_setttings)
+//                    category(R.string.settings_backup_setttings)
 //                    switch(
 //                        {
 //                            editor.putInt("Lo", if (it) 1 else 0).apply()
@@ -147,84 +147,84 @@ class SettingsActivity : AppCompatActivity() {
                         )
 
                     )
-                    editableText(
-                        onCreated = {
-                            it.textField.setText(
-                                prefs.getString(
-                                    "info",
-                                    getString(R.string.settings_sumarry_info)
-                                )
-                            )
-                        },
-                        onPositiveEvent = {
-                            editor.putString("info", it.textField.text.toString()).apply()
-                        },
-                        onNeutralEvent = {
-                            it.textField.setText(getString(R.string.settings_sumarry_info))
-                            editor.putString(
-                                "info",
-                                getString(R.string.settings_sumarry_info)
-                            ).apply()
-                        },
-                        title = R.string.settings_title_info,
-                        summary = prefs.getString(
-                            "info",
-                            getString(R.string.settings_sumarry_info)
-                        )
-                    )
+//                    editableText(
+//                        onCreated = {
+//                            it.textField.setText(
+//                                prefs.getString(
+//                                    "info",
+//                                    getString(R.string.settings_sumarry_info)
+//                                )
+//                            )
+//                        },
+//                        onPositiveEvent = {
+//                            editor.putString("info", it.textField.text.toString()).apply()
+//                        },
+//                        onNeutralEvent = {
+//                            it.textField.setText(getString(R.string.settings_sumarry_info))
+//                            editor.putString(
+//                                "info",
+//                                getString(R.string.settings_sumarry_info)
+//                            ).apply()
+//                        },
+//                        title = R.string.settings_title_info,
+//                        summary = prefs.getString(
+//                            "info",
+//                            getString(R.string.settings_sumarry_info)
+//                        )
+//                    )
 //                    category(R.string.settings_path)
-                    editableText(
-                        onCreated = {
-                            it.textField.setText(
-                                prefs.getString(
-                                    "Output_path",
-                                    getString(R.string.settings_sumarry_output_path)
-                                )
-                            )
-                        },
-                        onPositiveEvent = {
-                            editor.putString("Output_path", it.textField.text.toString()).apply()
-                        },
-                        onNeutralEvent = {
-                            it.textField.setText(getString(R.string.settings_sumarry_output_path))
-                            editor.putString(
-                                "Output_path",
-                                getString(R.string.settings_sumarry_output_path)
-                            ).apply()
-                        },
-                        title = R.string.settings_title_output_path,
-                        summary = prefs.getString(
-                            "Output_path",
-                            getString(R.string.settings_sumarry_output_path)
-                        )
-                    )
-                    editableText(
-                        onCreated = {
-                            it.textField.setText(
-                                prefs.getString(
-                                    "Custom_path",
-                                    getString(R.string.settings_summary_custom_path)
-                                )
-                            )
-                            it.textLayout.hint =
-                                getString(R.string.settings_title_custom_path) + getString(R.string.settings_title_custom_path_hint)
-                        },
-                        onPositiveEvent = {
-                            editor.putString("Custom_path", it.textField.text.toString()).apply()
-                        },
-                        onNeutralEvent = {
-                            it.textField.setText(getString(R.string.settings_summary_custom_path))
-                            editor.putString(
-                                "Custom_path",
-                                getString(R.string.settings_summary_custom_path)
-                            ).apply()
-                        },
-                        title = R.string.settings_title_custom_path,
-                        summary = prefs.getString(
-                            "Custom_path",
-                            getString(R.string.settings_summary_custom_path)
-                        )
-                    )
+//                    editableText(
+//                        onCreated = {
+//                            it.textField.setText(
+//                                prefs.getString(
+//                                    "Output_path",
+//                                    getString(R.string.settings_sumarry_output_path)
+//                                )
+//                            )
+//                        },
+//                        onPositiveEvent = {
+//                            editor.putString("Output_path", it.textField.text.toString()).apply()
+//                        },
+//                        onNeutralEvent = {
+//                            it.textField.setText(getString(R.string.settings_sumarry_output_path))
+//                            editor.putString(
+//                                "Output_path",
+//                                getString(R.string.settings_sumarry_output_path)
+//                            ).apply()
+//                        },
+//                        title = R.string.settings_title_output_path,
+//                        summary = prefs.getString(
+//                            "Output_path",
+//                            getString(R.string.settings_sumarry_output_path)
+//                        )
+//                    )
+//                    editableText(
+//                        onCreated = {
+//                            it.textField.setText(
+//                                prefs.getString(
+//                                    "Custom_path",
+//                                    getString(R.string.settings_summary_custom_path)
+//                                )
+//                            )
+//                            it.textLayout.hint =
+//                                getString(R.string.settings_title_custom_path) + getString(R.string.settings_title_custom_path_hint)
+//                        },
+//                        onPositiveEvent = {
+//                            editor.putString("Custom_path", it.textField.text.toString()).apply()
+//                        },
+//                        onNeutralEvent = {
+//                            it.textField.setText(getString(R.string.settings_summary_custom_path))
+//                            editor.putString(
+//                                "Custom_path",
+//                                getString(R.string.settings_summary_custom_path)
+//                            ).apply()
+//                        },
+//                        title = R.string.settings_title_custom_path,
+//                        summary = prefs.getString(
+//                            "Custom_path",
+//                            getString(R.string.settings_summary_custom_path)
+//                        )
+//                    )
                 }
                 binding.content.addView(screen.root)
             }

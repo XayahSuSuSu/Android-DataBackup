@@ -4,6 +4,7 @@
     <attr name="subtext" format="string" />
     <attr name="title" format="string" />
     <attr name="summary" format="string" />
+    <attr name="defaultValue" format="string" />
 
     <declare-styleable name="LargeActionCard">
         <attr name="text" />
@@ -37,6 +38,13 @@
     <declare-styleable name="Switch">
         <attr name="title" />
         <attr name="summary" />
+        <attr name="icon" />
+    </declare-styleable>
+
+    <declare-styleable name="EditableText">
+        <attr name="title" />
+        <attr name="summary" />
+        <attr name="defaultValue" />
         <attr name="icon" />
     </declare-styleable>
 </resources>
