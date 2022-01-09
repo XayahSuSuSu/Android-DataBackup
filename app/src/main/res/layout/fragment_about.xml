@@ -70,5 +70,28 @@
             app:summary="@string/coolapk_2277637"
             app:title="@string/script_author" />
 
+        <com.xayah.databackup.view.preference.Category
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:text="@string/opensource_libs" />
+
+        <com.xayah.databackup.view.preference.Clickable
+            isRound="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->viewModel.toClashGitHub(v)}"
+            app:icon="@drawable/ic_clash"
+            app:summary="https://github.com/Kr328/ClashForAndroid"
+            app:title="@string/clash_for_android" />
+
+        <com.xayah.databackup.view.preference.Clickable
+            isRound="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->viewModel.toMagiskGitHub(v)}"
+            app:icon="@drawable/ic_magisk"
+            app:summary="https://github.com/topjohnwu/Magisk"
+            app:title="@string/magisk" />
+
     </LinearLayout>
 </layout>

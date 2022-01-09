@@ -109,4 +109,5 @@
     <string name="about_author">About author</string>
     <string name="app_author">APP author</string>
     <string name="script_author">Script author</string>
+    <string name="opensource_libs">Open source library</string>
 </resources>

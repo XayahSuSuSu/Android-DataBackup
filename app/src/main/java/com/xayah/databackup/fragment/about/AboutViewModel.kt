@@ -35,4 +35,16 @@ class AboutViewModel : ViewModel() {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         v.context.startActivity(intent)
     }
+
+    fun toClashGitHub(v: View) {
+        val uri = Uri.parse("https://github.com/Kr328/ClashForAndroid")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        v.context.startActivity(intent)
+    }
+
+    fun toMagiskGitHub(v: View) {
+        val uri = Uri.parse("https://github.com/topjohnwu/Magisk")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        v.context.startActivity(intent)
+    }
 }

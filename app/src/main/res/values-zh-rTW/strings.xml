@@ -101,4 +101,5 @@
     <string name="about_author">關於作者</string>
     <string name="app_author">APP作者</string>
     <string name="script_author">腳本作者</string>
+    <string name="opensource_libs">開源庫</string>
 </resources>
