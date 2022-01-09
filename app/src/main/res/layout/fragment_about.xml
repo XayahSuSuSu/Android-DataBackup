@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.xayah.databackup.fragment.about.AboutViewModel" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.xayah.databackup.view.preference.Category
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:text="@string/about_app" />
+
+        <com.xayah.databackup.view.preference.Clickable
+            isRound="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->viewModel.toAppGitHub(v)}"
+            app:icon="@mipmap/ic_launcher"
+            app:summary="https://github.com/XayahSuSuSu/Android-DataBackup"
+            app:title="@string/app_name" />
+
+        <com.xayah.databackup.view.preference.Clickable
+            isRound="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->viewModel.toScriptGitHub(v)}"
+            app:icon="@drawable/ic_github"
+            app:summary="https://github.com/YAWAsau/backup_script"
+            app:title="@string/backup_scripts" />
+
+        <com.xayah.databackup.view.preference.Clickable
+            isRound="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->viewModel.toSimpleScriptGitHub(v)}"
+            app:icon="@drawable/ic_github"
+            app:summary="https://github.com/Petit-Abba/backup_script_zh-CN"
+            app:title="@string/simplify_scripts" />
+
+        <com.xayah.databackup.view.preference.Category
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:text="@string/about_author" />
+
+        <com.xayah.databackup.view.preference.Clickable
+            isRound="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->viewModel.toAppAuthorCoolapk(v)}"
+            app:icon="@drawable/coolapk_1394294"
+            app:summary="@string/coolapk_1394294"
+            app:title="@string/app_author" />
+
+        <com.xayah.databackup.view.preference.Clickable
+            isRound="@{true}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{(v)->viewModel.toScriptAuthorCoolapk(v)}"
+            app:icon="@drawable/coolapk_2277637"
+            app:summary="@string/coolapk_2277637"
+            app:title="@string/script_author" />
+
+    </LinearLayout>
+</layout>

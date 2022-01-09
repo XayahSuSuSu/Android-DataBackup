@@ -1,4 +1,4 @@
-package com.xayah.databackup.fragment.more
+package com.xayah.databackup.fragment.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,29 +6,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.xayah.databackup.databinding.FragmentMoreBinding
+import com.xayah.databackup.databinding.FragmentSettingsBinding
 
-class MoreFragment : Fragment() {
+class SettingsFragment : Fragment() {
 
     companion object {
-        fun newInstance() = MoreFragment()
+        fun newInstance() = SettingsFragment()
     }
 
-    private lateinit var binding: FragmentMoreBinding
+    private lateinit var binding: FragmentSettingsBinding
 
-    private lateinit var viewModel: MoreViewModel
+    private lateinit var viewModel: SettingsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMoreBinding.inflate(inflater, container, false)
+        binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MoreViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
         binding.viewModel = viewModel
     }
 

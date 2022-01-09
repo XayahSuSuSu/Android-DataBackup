@@ -105,4 +105,8 @@
     <string name="title_script_in_app">Script</string>
     <string name="title_storage_space">Storage space</string>
     <string name="more">More</string>
+    <string name="about_app">About app</string>
+    <string name="about_author">About author</string>
+    <string name="app_author">APP author</string>
+    <string name="script_author">Script author</string>
 </resources>

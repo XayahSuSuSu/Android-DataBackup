@@ -23,7 +23,7 @@
     <string name="coolapk_1394294">酷安 @XayahSuSuSu</string>
     <string name="backup_scripts">備份腳本</string>
     <string name="coolapk_2277637">酷安 @落叶凄凉TEL</string>
-    <string name="simplify_scripts">腳本簡化</string>
+    <string name="simplify_scripts">簡化腳本</string>
     <string name="github_petit_abba">GitHub @Petit-Abba</string>
     <string name="design_inspiration">設計靈感</string>
     <string name="clash_for_android">Clash For Android</string>
@@ -97,4 +97,8 @@
     <string name="title_script_in_app">內置腳本</string>
     <string name="title_storage_space">存儲空間</string>
     <string name="more">更多</string>
+    <string name="about_app">關於應用</string>
+    <string name="about_author">關於作者</string>
+    <string name="app_author">APP作者</string>
+    <string name="script_author">腳本作者</string>
 </resources>

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+<data>
 
+    <variable
+        name="viewModel"
+        type="com.xayah.databackup.fragment.more.MoreViewModel" />
+</data>
     <LinearLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -10,12 +15,14 @@
 
         <com.xayah.databackup.view.ActionLabel
             android:layout_width="match_parent"
+            android:onClick="@{(v)->viewModel.toSettingsFragment(v)}"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_baseline_settings"
             app:text="@string/settings" />
 
         <com.xayah.databackup.view.ActionLabel
             android:layout_width="match_parent"
+            android:onClick="@{(v)->viewModel.toAboutFragment(v)}"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_baseline_info"
             app:text="@string/about" />

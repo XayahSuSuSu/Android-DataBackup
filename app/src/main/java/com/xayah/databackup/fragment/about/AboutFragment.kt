@@ -1,4 +1,4 @@
-package com.xayah.databackup.fragment.more
+package com.xayah.databackup.fragment.about
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,29 +6,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.xayah.databackup.databinding.FragmentMoreBinding
+import com.xayah.databackup.databinding.FragmentAboutBinding
 
-class MoreFragment : Fragment() {
+class AboutFragment : Fragment() {
 
     companion object {
-        fun newInstance() = MoreFragment()
+        fun newInstance() = AboutFragment()
     }
 
-    private lateinit var binding: FragmentMoreBinding
+    private lateinit var binding: FragmentAboutBinding
 
-    private lateinit var viewModel: MoreViewModel
+    private lateinit var viewModel: AboutViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMoreBinding.inflate(inflater, container, false)
+        binding = FragmentAboutBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MoreViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(AboutViewModel::class.java)
         binding.viewModel = viewModel
     }
 
