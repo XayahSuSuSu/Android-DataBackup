@@ -12,7 +12,7 @@
         android:paddingVertical="@dimen/item_padding_vertical"
         android:paddingEnd="@dimen/item_tailing_margin">
 
-        <View
+        <androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/icon_view"
             android:layout_width="@dimen/item_header_component_size"
             android:layout_height="@dimen/item_header_component_size"

@@ -1,6 +1,7 @@
 package com.xayah.databackup.view.adapter
 
 import androidx.databinding.BindingAdapter
+import com.xayah.databackup.view.preference.Clickable
 import com.xayah.databackup.view.preference.SelectableList
 
 class ViewAdapter {
@@ -11,6 +12,12 @@ class ViewAdapter {
             if (array != null) {
                 v.setItems(array)
             }
+        }
+
+        @BindingAdapter("isRound")
+        @JvmStatic
+        fun setRound(view: Clickable, isRound: Boolean) {
+            view.setRound(isRound)
         }
     }
 }

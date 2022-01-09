@@ -39,6 +39,13 @@ class Clickable @JvmOverloads constructor(
             binding.summaryView.visibility = if (value == null) View.GONE else View.VISIBLE
         }
 
+    fun setRound(isRound: Boolean) {
+        if (isRound)
+            binding.iconView.roundPercent = 1F
+        else
+            binding.iconView.roundPercent = 0F
+    }
+
     override fun setOnClickListener(l: OnClickListener?) {
         binding.root.setOnClickListener(l)
     }
