@@ -8,12 +8,12 @@
     <fragment
         android:id="@+id/page_home"
         android:name="com.xayah.databackup.fragment.home.HomeFragment"
-        android:label="fragment_home"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/page_more"
         android:name="com.xayah.databackup.fragment.more.MoreFragment"
-        android:label="fragment_more"
+        android:label="@string/more"
         tools:layout="@layout/fragment_more">
         <action
             android:id="@+id/action_page_more_to_page_settings"
@@ -33,12 +33,12 @@
     <fragment
         android:id="@+id/page_settings"
         android:name="com.xayah.databackup.fragment.settings.SettingsFragment"
-        android:label="fragment_settings"
+        android:label="@string/settings"
         tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/page_about"
         android:name="com.xayah.databackup.fragment.about.AboutFragment"
-        android:label="fragment_about"
+        android:label="@string/about"
         tools:layout="@layout/fragment_about" />
 
 </navigation>
