@@ -76,4 +76,9 @@ dependencies {
     def nav_version = "2.3.5"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+
+    // Termux
+    implementation project(":terminal-emulator")
+    implementation project(":terminal-view")
+    implementation project(":termux-shared")
 }
