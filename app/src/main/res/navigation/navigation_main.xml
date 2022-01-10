@@ -40,5 +40,9 @@
         android:name="com.xayah.databackup.fragment.about.AboutFragment"
         android:label="@string/about"
         tools:layout="@layout/fragment_about" />
+    <fragment
+        android:id="@+id/page_console"
+        android:name="com.xayah.databackup.fragment.console.ConsoleFragment"
+        android:label="@string/title_console" />
 
 </navigation>
