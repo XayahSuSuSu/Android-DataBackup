@@ -44,5 +44,17 @@
         android:id="@+id/page_console"
         android:name="com.xayah.databackup.fragment.console.ConsoleFragment"
         android:label="@string/title_console" />
+    <fragment
+        android:id="@+id/page_backup"
+        android:name="com.xayah.databackup.fragment.backup.BackupFragment"
+        android:label="@string/backup">
+        <action
+            android:id="@+id/action_page_backup_to_page_console"
+            app:destination="@id/page_console"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+    </fragment>
 
 </navigation>
