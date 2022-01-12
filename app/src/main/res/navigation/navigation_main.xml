@@ -56,5 +56,18 @@
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
     </fragment>
+    <fragment
+        android:id="@+id/page_restore"
+        android:name="com.xayah.databackup.fragment.restore.RestoreFragment"
+        android:label="@string/restore">
+
+        <action
+            android:id="@+id/action_page_restore_to_page_console"
+            app:destination="@id/page_console"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+    </fragment>
 
 </navigation>
