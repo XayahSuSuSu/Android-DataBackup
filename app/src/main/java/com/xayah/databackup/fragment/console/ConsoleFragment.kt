@@ -1,5 +1,7 @@
 package com.xayah.databackup.fragment.console
 
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +30,15 @@ class ConsoleFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ConsoleViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
+        binding.viewModel = viewModel
+
+        viewModel.initialize(binding.terminalView, requireActivity())
+        binding.terminalView.setTerminalViewClient(viewModel.mTermuxTerminalViewClient)
+        binding.terminalView.setBackgroundColor(Color.BLACK)
+        binding.terminalView.setTextSize(30)
+        binding.terminalView.setTypeface(Typeface.MONOSPACE)
+        binding.terminalView.attachSession(viewModel.session)
     }
 
 }
