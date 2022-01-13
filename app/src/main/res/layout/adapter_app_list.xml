@@ -26,7 +26,7 @@
                 android:background="?selectableItemBackground">
 
                 <ImageView
-                    android:id="@+id/adapter_icon"
+                    android:id="@+id/appIcon"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_margin="16dp"
@@ -36,7 +36,7 @@
                     app:layout_constraintVertical_bias="0" />
 
                 <TextView
-                    android:id="@+id/adapter_name"
+                    android:id="@+id/appName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -44,26 +44,26 @@
                     android:singleLine="true"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/adapter_package"
-                    app:layout_constraintStart_toEndOf="@+id/adapter_icon"
+                    app:layout_constraintBottom_toTopOf="@+id/appPackage"
+                    app:layout_constraintStart_toEndOf="@+id/appIcon"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
-                    android:id="@+id/adapter_package"
+                    android:id="@+id/appPackage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/adapter_icon"
-                    app:layout_constraintTop_toBottomOf="@+id/adapter_name"
+                    app:layout_constraintStart_toEndOf="@+id/appIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/appName"
                     android:ellipsize="end"
                     android:maxEms="13"
                     android:maxLines="1" />
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/adapter_only_app"
+                    android:id="@+id/isOnly"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,12 +71,12 @@
                     android:layout_marginEnd="10dp"
                     android:text="@string/only_app"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toLeftOf="@id/adapter_ban"
+                    app:layout_constraintRight_toLeftOf="@id/isSelected"
                     app:layout_constraintTop_toTopOf="parent" />
 
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/adapter_ban"
+                    android:id="@+id/isSelected"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"

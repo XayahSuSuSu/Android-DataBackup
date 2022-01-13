@@ -33,38 +33,38 @@ class AppListAdapter(private val mContext: Context) :
         holder.setIsRecyclable(false)
         val current = appList[position]
         val binding = holder.binding
-        binding.adapterIcon.setImageDrawable(current.appIcon)
-        binding.adapterName.text = current.appName
-        binding.adapterPackage.text = current.appPackage
-        binding.adapterBan.isChecked = !current.ban
-        binding.adapterOnlyApp.isChecked = current.onlyApp
-        if (binding.adapterOnlyApp.isChecked) {
-            binding.materialCardView.setCardBackgroundColor(
-                mContext.getColor(R.color.color_light_background_white)
-            )
-        } else {
-            binding.materialCardView.setCardBackgroundColor(
-                mContext.getColor(R.color.color_light_background_shallow)
-            )
-        }
-
-        binding.adapterBan.setOnCheckedChangeListener { _, _ ->
-            isChanged = true
-            appList[position].ban = !appList[position].ban
-        }
-        binding.adapterOnlyApp.setOnCheckedChangeListener { _, _ ->
-            isChanged = true
-            appList[position].onlyApp = !appList[position].onlyApp
-            if (binding.adapterOnlyApp.isChecked) {
-                binding.materialCardView.setCardBackgroundColor(
-                    mContext.getColor(R.color.color_light_background_white)
-                )
-            } else {
-                binding.materialCardView.setCardBackgroundColor(
-                    mContext.getColor(R.color.color_light_background_shallow)
-                )
-            }
-        }
+//        binding.adapterIcon.setImageDrawable(current.appIcon)
+//        binding.adapterName.text = current.appName
+//        binding.adapterPackage.text = current.appPackage
+//        binding.adapterBan.isChecked = !current.ban
+//        binding.adapterOnlyApp.isChecked = current.onlyApp
+//        if (binding.adapterOnlyApp.isChecked) {
+//            binding.materialCardView.setCardBackgroundColor(
+//                mContext.getColor(R.color.color_light_background_white)
+//            )
+//        } else {
+//            binding.materialCardView.setCardBackgroundColor(
+//                mContext.getColor(R.color.color_light_background_shallow)
+//            )
+//        }
+//
+//        binding.adapterBan.setOnCheckedChangeListener { _, _ ->
+//            isChanged = true
+//            appList[position].ban = !appList[position].ban
+//        }
+//        binding.adapterOnlyApp.setOnCheckedChangeListener { _, _ ->
+//            isChanged = true
+//            appList[position].onlyApp = !appList[position].onlyApp
+//            if (binding.adapterOnlyApp.isChecked) {
+//                binding.materialCardView.setCardBackgroundColor(
+//                    mContext.getColor(R.color.color_light_background_white)
+//                )
+//            } else {
+//                binding.materialCardView.setCardBackgroundColor(
+//                    mContext.getColor(R.color.color_light_background_shallow)
+//                )
+//            }
+//        }
     }
 
     override fun getItemCount(): Int {
