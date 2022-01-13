@@ -85,4 +85,7 @@ dependencies {
     implementation project(":terminal-emulator")
     implementation project(":terminal-view")
     implementation project(":termux-shared")
+
+    // MultiType
+    implementation 'com.drakeet.multitype:multitype:4.3.0'
 }
