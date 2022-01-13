@@ -14,7 +14,9 @@ public class TermuxTerminalSessionClient extends TermuxTerminalSessionClientBase
 
     @Override
     public void onTextChanged(TerminalSession changedSession) {
-        if (mTerminalView.getCurrentSession() == changedSession) mTerminalView.onScreenUpdated();
+        if (mTerminalView != null)
+            if (mTerminalView.getCurrentSession() == changedSession)
+                mTerminalView.onScreenUpdated();
     }
 
 }
