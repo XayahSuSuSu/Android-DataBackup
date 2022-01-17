@@ -26,8 +26,8 @@ class ConsoleViewModel : ViewModel() {
             )
 
             session = TerminalSession(
-                "/system/bin/sh", Environment.getExternalStorageDirectory().path,
-                arrayOf("/system/bin/sh"),
+                "/system/bin/su", Environment.getExternalStorageDirectory().path,
+                arrayOf("/system/bin/su"),
                 environment, 24,
                 mTermuxTerminalSessionClient
             )
