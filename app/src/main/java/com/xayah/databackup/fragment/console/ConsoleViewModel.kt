@@ -28,10 +28,10 @@ class ConsoleViewModel : ViewModel() {
             session = TerminalSession(
                 "/system/bin/sh", Environment.getExternalStorageDirectory().path,
                 arrayOf("/system/bin/sh"),
-                environment, 10,
+                environment, 24,
                 mTermuxTerminalSessionClient
             )
-            session.initializeEmulator(10, 10)
+            session.initializeEmulator(80, 24)
             isInitialized = true
         } else {
             session.updateTerminalSessionClient(mTermuxTerminalSessionClient)
