@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.xayah.databackup.R
 import com.xayah.databackup.databinding.FragmentConsoleBinding
 
 class ConsoleFragment : Fragment() {
@@ -36,7 +35,7 @@ class ConsoleFragment : Fragment() {
 
         viewModel.initialize(binding.terminalView, requireActivity())
         binding.terminalView.setTerminalViewClient(viewModel.mTermuxTerminalViewClient)
-        binding.terminalView.setBackgroundColor(requireContext().getColor(R.color.color_light_background))
+        binding.terminalView.setBackgroundColor(Color.BLACK)
         binding.terminalView.setTextSize(30)
         binding.terminalView.setTypeface(Typeface.MONOSPACE)
         binding.terminalView.attachSession(viewModel.session)

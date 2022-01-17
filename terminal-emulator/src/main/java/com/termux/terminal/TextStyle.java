@@ -1,7 +1,5 @@
 package com.termux.terminal;
 
-import android.graphics.Color;
-
 /**
  * <p>
  * Encodes effects, foreground and background colors into a 64 bit long, which are stored for each cell in a terminal
@@ -38,8 +36,8 @@ public final class TextStyle {
     /** If true (24-bit) color is used for the cell for foreground. */
     private final static int CHARACTER_ATTRIBUTE_TRUECOLOR_BACKGROUND= 1 << 10;
 
-    public final static int COLOR_INDEX_FOREGROUND = 257;
-    public final static int COLOR_INDEX_BACKGROUND = 256;
+    public final static int COLOR_INDEX_FOREGROUND = 256;
+    public final static int COLOR_INDEX_BACKGROUND = 257;
     public final static int COLOR_INDEX_CURSOR = 258;
 
     /** The 256 standard color entries and the three special (foreground, background and cursor) ones. */
