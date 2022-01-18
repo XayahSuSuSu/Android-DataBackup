@@ -27,11 +27,13 @@ class ConsoleViewModel : ViewModel() {
             val environment: Array<String> = shellEnvironmentClient.buildEnvironment(
                 activity.applicationContext, true, Environment.getExternalStorageDirectory().path
             )
+            val environmentList = environment.toMutableList()
+            environmentList.add("APP_ENV=1")
 
             session = TerminalSession(
                 "/system/bin/su", Environment.getExternalStorageDirectory().path,
                 arrayOf("/system/bin/su"),
-                environment, 24,
+                environmentList.toTypedArray(), 24,
                 mTermuxTerminalSessionClient
             )
             session.initializeEmulator(80, 24)
