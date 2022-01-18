@@ -35,7 +35,7 @@ class ConsoleFragment : Fragment() {
 
         viewModel.initialize(binding.terminalView, requireActivity())
         binding.terminalView.setTerminalViewClient(viewModel.mTermuxTerminalViewClient)
-        binding.terminalView.setBackgroundColor(Color.BLACK)
+        binding.terminalView.setBackgroundColor(Color.rgb(33, 33, 33))
         binding.terminalView.setTextSize(30)
         binding.terminalView.setTypeface(Typeface.MONOSPACE)
         binding.terminalView.attachSession(viewModel.session)
