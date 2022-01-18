@@ -82,9 +82,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-        val consoleViewModel = ViewModelProvider(this).get(ConsoleViewModel::class.java)
-        consoleViewModel.initialize(null, this)
     }
 
     override fun onSupportNavigateUp(): Boolean {
