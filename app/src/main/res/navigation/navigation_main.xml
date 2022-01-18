@@ -43,7 +43,12 @@
     <fragment
         android:id="@+id/page_console"
         android:name="com.xayah.databackup.fragment.console.ConsoleFragment"
-        android:label="@string/title_console" />
+        android:label="@string/title_console">
+        <argument
+            android:name="command"
+            android:defaultValue=""
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/page_backup"
         android:name="com.xayah.databackup.fragment.backup.BackupFragment"

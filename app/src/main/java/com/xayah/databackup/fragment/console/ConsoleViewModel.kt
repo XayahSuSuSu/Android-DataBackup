@@ -5,9 +5,12 @@ import android.os.Environment
 import androidx.lifecycle.ViewModel
 import com.termux.terminal.TerminalSession
 import com.termux.view.TerminalView
+import com.topjohnwu.superuser.Shell
 
 class ConsoleViewModel : ViewModel() {
     var isInitialized = false
+
+    var pid = -1
 
     lateinit var mTermuxTerminalSessionClient: TermuxTerminalSessionClient
 
@@ -33,6 +36,8 @@ class ConsoleViewModel : ViewModel() {
             )
             session.initializeEmulator(80, 24)
             isInitialized = true
+            Shell.su("kill $pid").exec()
+            pid = session.pid
         } else {
             session.updateTerminalSessionClient(mTermuxTerminalSessionClient)
         }

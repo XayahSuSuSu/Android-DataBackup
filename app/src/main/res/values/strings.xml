@@ -110,4 +110,5 @@
     <string name="app_author">APP author</string>
     <string name="script_author">Script author</string>
     <string name="opensource_libs">Open source library</string>
+    <string name="dialog_query_force_excute">The command is being executed, are you sure you want to force re-execution?</string>
 </resources>

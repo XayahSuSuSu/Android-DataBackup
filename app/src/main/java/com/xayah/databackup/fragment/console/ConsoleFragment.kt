@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import com.xayah.databackup.databinding.FragmentConsoleBinding
 
 class ConsoleFragment : Fragment() {
@@ -19,6 +20,8 @@ class ConsoleFragment : Fragment() {
     private lateinit var binding: FragmentConsoleBinding
 
     private lateinit var viewModel: ConsoleViewModel
+
+    val args: ConsoleFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +42,11 @@ class ConsoleFragment : Fragment() {
         binding.terminalView.setTextSize(30)
         binding.terminalView.setTypeface(Typeface.MONOSPACE)
         binding.terminalView.attachSession(viewModel.session)
+
+        binding.terminalView.post {
+            if (args.command.isNotEmpty())
+                viewModel.write(args.command)
+        }
     }
 
 }
