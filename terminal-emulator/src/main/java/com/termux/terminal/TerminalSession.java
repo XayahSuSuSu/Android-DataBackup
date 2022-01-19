@@ -363,10 +363,21 @@ public final class TerminalSession extends TerminalOutput {
                 mEmulator.append(bytesToWrite, bytesToWrite.length);
                 notifyScreenUpdate();
 
+                mProcessCompletedListener.onProcessCompleted();
+
                 mClient.onSessionFinished(TerminalSession.this);
             }
         }
 
     }
 
+    public interface onProcessCompletedListener {
+        void onProcessCompleted();
+    }
+
+    public void setOnProcessCompletedListener(onProcessCompletedListener listener) {
+        mProcessCompletedListener = listener;
+    }
+
+    private onProcessCompletedListener mProcessCompletedListener = null;
 }
