@@ -5,11 +5,16 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.R
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.fragment.console.ConsoleViewModel
 import com.xayah.databackup.util.PathUtil
+import com.xayah.databackup.util.TransitionUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class BackupFragment : Fragment() {
 
@@ -20,6 +25,8 @@ class BackupFragment : Fragment() {
     private lateinit var binding: FragmentBackupBinding
 
     private lateinit var viewModel: BackupViewModel
+
+    private lateinit var pathUtil: PathUtil
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +41,21 @@ class BackupFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(BackupViewModel::class.java)
         binding.viewModel = viewModel
         setHasOptionsMenu(true)
+
+        pathUtil = PathUtil(requireContext())
+
+        viewModel.initialize(requireContext(), pathUtil.APP_LIST_FILE_PATH) {
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.recyclerView.adapter = viewModel.adapter
+                val layoutManager = LinearLayoutManager(requireContext())
+                binding.recyclerView.layoutManager = layoutManager
+                TransitionUtil.TransitionX(requireActivity().window.decorView as ViewGroup)
+                binding.linearProgressIndicator.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+            }
+        }
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -50,7 +72,6 @@ class BackupFragment : Fragment() {
                 navController.navigate(BackupFragmentDirections.actionPageBackupToPageConsole())
             }
             R.id.menu_refresh -> {
-                val pathUtil = PathUtil(requireContext())
                 val refreshCommand =
                     "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.SCRIPT_PATH}/${pathUtil.GENERATE_APP_LIST_SCRIPT_NAME}; exit"
                 val consoleViewModel =
