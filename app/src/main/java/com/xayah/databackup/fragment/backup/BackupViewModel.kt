@@ -20,7 +20,7 @@ class BackupViewModel : ViewModel() {
                 mContext,
                 AppDatabase::class.java, "app"
             ).build()
-            val appEntityList = db.appDao().getAllUsers()
+            val appEntityList = db.appDao().getAllApps()
             adapter.register(AppListDelegate(mContext))
             for ((index, i) in appEntityList.withIndex()) {
                 val (appIcon, appName, appPackage) = DataUtil.getAppInfo(mContext, i.appPackage)

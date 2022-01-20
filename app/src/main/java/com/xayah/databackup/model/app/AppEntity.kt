@@ -11,8 +11,8 @@ data class AppEntity(
     @PrimaryKey(autoGenerate = true) var uid: Int = 0,
     @ColumnInfo(name = "appName") var appName: String,
     @ColumnInfo(name = "appPackage") var appPackage: String,
-    @ColumnInfo(name = "isOnly") val isOnly: Boolean = false,
-    @ColumnInfo(name = "isSelected") val isSelected: Boolean = true,
+    @ColumnInfo(name = "isOnly") var isOnly: Boolean = false,
+    @ColumnInfo(name = "isSelected") var isSelected: Boolean = true,
 ) {
     @Ignore
     var appIcon: Drawable? = null

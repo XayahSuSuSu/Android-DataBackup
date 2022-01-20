@@ -15,8 +15,14 @@ interface AppDao {
     fun deleteAll(appEntity: List<AppEntity>)
 
     @Query("SELECT * FROM appEntity")
-    fun getAllUsers(): List<AppEntity>
+    fun getAllApps(): List<AppEntity>
+
+    @Query("UPDATE appEntity set isOnly=:isOnly")
+    fun selectAllIsOnly(isOnly: Boolean)
+
+    @Query("UPDATE appEntity set isSelected=:isSelected")
+    fun selectAllIsSelected(isSelected: Boolean)
 
     @Update
-    fun updateUser(appEntity: AppEntity)
+    fun updateApp(appEntity: AppEntity)
 }

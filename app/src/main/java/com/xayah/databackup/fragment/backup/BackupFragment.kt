@@ -15,11 +15,7 @@ import com.xayah.databackup.model.app.AppDatabase
 import com.xayah.databackup.model.app.AppEntity
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.ShellUtil
-import com.xayah.databackup.util.TransitionUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class BackupFragment : Fragment() {
 
@@ -34,6 +30,8 @@ class BackupFragment : Fragment() {
     private lateinit var pathUtil: PathUtil
 
     private lateinit var consoleViewModel: ConsoleViewModel
+
+    private lateinit var db: AppDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +49,8 @@ class BackupFragment : Fragment() {
 
         pathUtil = PathUtil(requireContext())
 
+        db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "app").build()
+
         viewModel.initialize(requireContext()) {
             CoroutineScope(Dispatchers.Main).launch {
                 binding.recyclerView.adapter = viewModel.adapter
@@ -67,10 +67,6 @@ class BackupFragment : Fragment() {
             ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
         consoleViewModel.onProcessCompletedListener = {
             CoroutineScope(Dispatchers.IO).launch {
-                val db = Room.databaseBuilder(
-                    requireContext(),
-                    AppDatabase::class.java, "app"
-                ).build()
                 val appListFile = ShellUtil.cat(pathUtil.APP_LIST_FILE_PATH)
                 ShellUtil.rm(pathUtil.APP_LIST_FILE_PATH)
                 for (i in appListFile) {
@@ -79,6 +75,30 @@ class BackupFragment : Fragment() {
                         val appEntity = AppEntity(0, info[0], info[1])
                         db.appDao().insertAll(appEntity)
                     }
+                }
+            }
+        }
+
+        binding.chipIsOnly.setOnCheckedChangeListener { _, isChecked ->
+            CoroutineScope(Dispatchers.IO).launch {
+                db.appDao().selectAllIsOnly(isChecked)
+                for (i in viewModel.adapter.items as List<AppEntity>) {
+                    i.isOnly = isChecked
+                }
+                withContext(Dispatchers.Main) {
+                    viewModel.adapter.notifyDataSetChanged()
+                }
+            }
+        }
+
+        binding.chipIsSelected.setOnCheckedChangeListener { _, isChecked ->
+            CoroutineScope(Dispatchers.IO).launch {
+                db.appDao().selectAllIsSelected(isChecked)
+                for (i in viewModel.adapter.items as List<AppEntity>) {
+                    i.isSelected = isChecked
+                }
+                withContext(Dispatchers.Main) {
+                    viewModel.adapter.notifyDataSetChanged()
                 }
             }
         }
