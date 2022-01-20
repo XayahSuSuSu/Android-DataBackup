@@ -2,6 +2,7 @@ package com.xayah.databackup.fragment.backup
 
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.R
+import com.xayah.databackup.adapter.AppListDelegate
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.fragment.console.ConsoleViewModel
 import com.xayah.databackup.model.app.AppDatabase
@@ -33,6 +35,8 @@ class BackupFragment : Fragment() {
 
     private lateinit var db: AppDatabase
 
+    private lateinit var appListDelegate: AppListDelegate
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,7 +55,9 @@ class BackupFragment : Fragment() {
 
         db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "app").build()
 
-        viewModel.initialize(requireContext()) {
+        appListDelegate = AppListDelegate(requireContext())
+
+        viewModel.initialize(requireContext(), appListDelegate) {
             CoroutineScope(Dispatchers.Main).launch {
                 binding.recyclerView.adapter = viewModel.adapter
                 val layoutManager = LinearLayoutManager(requireContext())
@@ -102,6 +108,17 @@ class BackupFragment : Fragment() {
                 }
             }
         }
+
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(string: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(string: String): Boolean {
+                appListDelegate.filter.filter(string)
+                return false
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

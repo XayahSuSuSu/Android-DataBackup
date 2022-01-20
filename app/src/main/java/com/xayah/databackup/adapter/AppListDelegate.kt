@@ -3,6 +3,8 @@ package com.xayah.databackup.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.drakeet.multitype.ItemViewDelegate
@@ -14,9 +16,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AppListDelegate(val mContext: Context) :
-    ItemViewDelegate<AppEntity, AppListDelegate.ViewHolder>() {
+    ItemViewDelegate<AppEntity, AppListDelegate.ViewHolder>(), Filterable {
 
     var appList: MutableList<AppEntity> = mutableListOf()
+
+    var isFiltered = false
 
     val db = Room.databaseBuilder(mContext, AppDatabase::class.java, "app").build()
 
@@ -50,5 +54,33 @@ class AppListDelegate(val mContext: Context) :
             AdapterAppListBinding
                 .inflate(LayoutInflater.from(mContext), parent, false)
         )
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                if (!isFiltered) {
+                    appList = adapterItems as MutableList<AppEntity>
+                }
+                if (constraint!!.isEmpty()) {
+                    adapterItems = appList
+                } else {
+                    val tmp: MutableList<AppEntity> = mutableListOf()
+                    for (i in appList) {
+                        if (i.appName.contains(constraint, true)) {
+                            tmp.add(i)
+                        }
+                    }
+                    adapterItems = tmp
+                }
+                return FilterResults()
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                isFiltered = true
+                adapter.notifyDataSetChanged()
+            }
+
+        }
     }
 }

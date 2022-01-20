@@ -14,14 +14,14 @@ import kotlinx.coroutines.launch
 class BackupViewModel : ViewModel() {
     val adapter = MultiTypeAdapter()
 
-    fun initialize(mContext: Context, onInitialized: () -> Unit) {
+    fun initialize(mContext: Context, appListDelegate: AppListDelegate, onInitialized: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val db = Room.databaseBuilder(
                 mContext,
                 AppDatabase::class.java, "app"
             ).build()
             val appEntityList = db.appDao().getAllApps()
-            adapter.register(AppListDelegate(mContext))
+            adapter.register(appListDelegate)
             for ((index, i) in appEntityList.withIndex()) {
                 val (appIcon, appName, appPackage) = DataUtil.getAppInfo(mContext, i.appPackage)
                 appEntityList[index].appIcon = appIcon
