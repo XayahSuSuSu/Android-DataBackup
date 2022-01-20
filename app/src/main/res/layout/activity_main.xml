@@ -36,21 +36,15 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fillViewport="true"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/fragmentContainerView"
                     android:name="androidx.navigation.fragment.NavHostFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:defaultNavHost="true"
+                    android:fillViewport="true"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     app:navGraph="@navigation/navigation_main" />
-
-            </androidx.core.widget.NestedScrollView>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
