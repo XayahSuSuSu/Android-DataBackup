@@ -9,8 +9,8 @@ import androidx.room.PrimaryKey
 @Entity
 data class AppEntity(
     @PrimaryKey(autoGenerate = true) var uid: Int = 0,
-    @ColumnInfo(name = "appName") val appName: String,
-    @ColumnInfo(name = "appPackage") val appPackage: String,
+    @ColumnInfo(name = "appName") var appName: String,
+    @ColumnInfo(name = "appPackage") var appPackage: String,
     @ColumnInfo(name = "isOnly") val isOnly: Boolean = false,
     @ColumnInfo(name = "isSelected") val isSelected: Boolean = true,
 ) {

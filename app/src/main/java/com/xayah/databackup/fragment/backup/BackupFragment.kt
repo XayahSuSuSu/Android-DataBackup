@@ -6,14 +6,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.R
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.fragment.console.ConsoleViewModel
+import com.xayah.databackup.model.app.AppDatabase
+import com.xayah.databackup.model.app.AppEntity
 import com.xayah.databackup.util.PathUtil
+import com.xayah.databackup.util.ShellUtil
 import com.xayah.databackup.util.TransitionUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class BackupFragment : Fragment() {
@@ -27,6 +32,8 @@ class BackupFragment : Fragment() {
     private lateinit var viewModel: BackupViewModel
 
     private lateinit var pathUtil: PathUtil
+
+    private lateinit var consoleViewModel: ConsoleViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,18 +51,37 @@ class BackupFragment : Fragment() {
 
         pathUtil = PathUtil(requireContext())
 
-        viewModel.initialize(requireContext(), pathUtil.APP_LIST_FILE_PATH) {
+        viewModel.initialize(requireContext()) {
             CoroutineScope(Dispatchers.Main).launch {
                 binding.recyclerView.adapter = viewModel.adapter
                 val layoutManager = LinearLayoutManager(requireContext())
                 binding.recyclerView.layoutManager = layoutManager
+                delay(1000)
                 TransitionUtil.TransitionX(requireActivity().window.decorView as ViewGroup)
                 binding.linearProgressIndicator.visibility = View.GONE
                 binding.recyclerView.visibility = View.VISIBLE
             }
         }
 
-
+        consoleViewModel =
+            ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
+        consoleViewModel.onProcessCompletedListener = {
+            CoroutineScope(Dispatchers.IO).launch {
+                val db = Room.databaseBuilder(
+                    requireContext(),
+                    AppDatabase::class.java, "app"
+                ).build()
+                val appListFile = ShellUtil.cat(pathUtil.APP_LIST_FILE_PATH)
+                ShellUtil.rm(pathUtil.APP_LIST_FILE_PATH)
+                for (i in appListFile) {
+                    val info = i.split(" ")
+                    if (info.size == 2) {
+                        val appEntity = AppEntity(0, info[0], info[1])
+                        db.appDao().insertAll(appEntity)
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -74,8 +100,6 @@ class BackupFragment : Fragment() {
             R.id.menu_refresh -> {
                 val refreshCommand =
                     "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.SCRIPT_PATH}/${pathUtil.GENERATE_APP_LIST_SCRIPT_NAME}; exit"
-                val consoleViewModel =
-                    ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
                 if (consoleViewModel.isInitialized) {
                     if (consoleViewModel.session.isRunning) {
                         MaterialAlertDialogBuilder(requireContext())

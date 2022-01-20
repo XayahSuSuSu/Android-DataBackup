@@ -18,6 +18,8 @@ class ConsoleViewModel : ViewModel() {
 
     lateinit var session: TerminalSession
 
+    var onProcessCompletedListener: () -> Unit = {}
+
     fun initialize(terminalView: TerminalView?, activity: Activity) {
         mTermuxTerminalSessionClient = TermuxTerminalSessionClient(terminalView)
         mTermuxTerminalViewClient =
@@ -40,6 +42,7 @@ class ConsoleViewModel : ViewModel() {
             isInitialized = true
             Shell.su("kill $pid").exec()
             pid = session.pid
+            session.setOnProcessCompletedListener { onProcessCompletedListener() }
         } else {
             session.updateTerminalSessionClient(mTermuxTerminalSessionClient)
         }
