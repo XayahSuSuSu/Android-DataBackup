@@ -57,7 +57,7 @@ class BackupFragment : Fragment() {
                 val layoutManager = LinearLayoutManager(requireContext())
                 binding.recyclerView.layoutManager = layoutManager
                 delay(1000)
-                TransitionUtil.TransitionX(requireActivity().window.decorView as ViewGroup)
+//                TransitionUtil.TransitionX(requireActivity().window.decorView as ViewGroup)
                 binding.linearProgressIndicator.visibility = View.GONE
                 binding.constraintLayout.visibility = View.VISIBLE
             }
