@@ -59,7 +59,7 @@ class BackupFragment : Fragment() {
                 delay(1000)
                 TransitionUtil.TransitionX(requireActivity().window.decorView as ViewGroup)
                 binding.linearProgressIndicator.visibility = View.GONE
-                binding.recyclerView.visibility = View.VISIBLE
+                binding.constraintLayout.visibility = View.VISIBLE
             }
         }
 
