@@ -75,10 +75,13 @@ class BackupFragment : Fragment() {
             CoroutineScope(Dispatchers.IO).launch {
                 val appListFile = ShellUtil.cat(pathUtil.APP_LIST_FILE_PATH)
                 ShellUtil.rm(pathUtil.APP_LIST_FILE_PATH)
+                db.appDao().deleteAll(db.appDao().getAllApps())
                 for (i in appListFile) {
                     val info = i.split(" ")
                     if (info.size == 2) {
                         val appEntity = AppEntity(0, info[0], info[1])
+                        appEntity.isSelected = !i.contains("#")
+                        appEntity.isOnly = i.contains("!")
                         db.appDao().insertAll(appEntity)
                     }
                 }
@@ -135,6 +138,18 @@ class BackupFragment : Fragment() {
                 navController.navigate(BackupFragmentDirections.actionPageBackupToPageConsole())
             }
             R.id.menu_refresh -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val appList = db.appDao().getAllApps()
+                    var content = ""
+                    for (i in appList) {
+                        content +=
+                            (if (!i.isSelected) "#" else "") + i.appName.replace(
+                                " ",
+                                ""
+                            ) + (if (i.isOnly) "!" else "") + " " + i.appPackage + "\n"
+                    }
+                    ShellUtil.writeFile(content, pathUtil.APP_LIST_FILE_PATH)
+                }
                 val refreshCommand =
                     "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.SCRIPT_PATH}/${pathUtil.GENERATE_APP_LIST_SCRIPT_NAME}; exit"
                 if (consoleViewModel.isInitialized) {
