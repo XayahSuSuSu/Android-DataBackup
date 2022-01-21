@@ -5,16 +5,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
-import com.termux.view.TerminalView
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.databinding.ActivityMainBinding
-import com.xayah.databackup.fragment.console.ConsoleViewModel
+import com.xayah.databackup.util.SettingsPreferencesDataStore
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
 import com.xayah.databackup.viewModel.MainViewModel
@@ -55,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         WindowUtil.setWindowMode(!resolveThemedBoolean(android.R.attr.windowLightStatusBar), window)
 
+        SettingsPreferencesDataStore.initialize(this)
         val model: MainViewModel by viewModels()
         binding.viewModel = model
 

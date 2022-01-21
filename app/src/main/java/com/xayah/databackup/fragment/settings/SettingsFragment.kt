@@ -30,6 +30,7 @@ class SettingsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
         binding.viewModel = viewModel
+        viewModel.initialize(requireContext())
     }
 
 }

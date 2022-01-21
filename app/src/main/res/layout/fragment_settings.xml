@@ -27,6 +27,8 @@
             <com.xayah.databackup.view.preference.Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                onCheckedChange="@{viewModel.onAutoUpdate}"
+                app:checked="@{viewModel.autoUpdate}"
                 app:summary="@string/settings_summary_auto_update"
                 app:title="@string/settings_title_auto_update" />
 
@@ -38,42 +40,56 @@
             <com.xayah.databackup.view.preference.Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                onCheckedChange="@{viewModel.onLo}"
+                app:checked="@{viewModel.lo}"
                 app:summary="@string/settings_summary_lo"
                 app:title="@string/settings_title_lo" />
 
             <com.xayah.databackup.view.preference.Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                onCheckedChange="@{viewModel.onSplist}"
+                app:checked="@{viewModel.splist}"
                 app:summary="@string/settings_summary_splist"
                 app:title="@string/settings_title_splist" />
 
             <com.xayah.databackup.view.preference.Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                onCheckedChange="@{viewModel.onBackupUserData}"
+                app:checked="@{viewModel.backupUserData}"
                 app:summary="@string/settings_summary_backup_user_data"
                 app:title="@string/settings_title_backup_user_data" />
 
             <com.xayah.databackup.view.preference.Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                onCheckedChange="@{viewModel.onBackupObbData}"
+                app:checked="@{viewModel.backupObbData}"
                 app:summary="@string/settings_summary_backup_obb_data"
                 app:title="@string/settings_title_backup_obb_data" />
 
             <com.xayah.databackup.view.preference.Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                onCheckedChange="@{viewModel.onBackupMedia}"
+                app:checked="@{viewModel.backupMedia}"
                 app:summary="@string/settings_summary_backup_media"
                 app:title="@string/settings_title_backup_media" />
 
             <com.xayah.databackup.view.preference.Switch
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                onCheckedChange="@{viewModel.onUsbdefault}"
+                app:checked="@{viewModel.usbDefault}"
                 app:summary="@string/settings_summary_usbdefault"
                 app:title="@string/settings_title_usbdefault" />
 
 
             <com.xayah.databackup.view.preference.SelectableList
-                items="@{viewModel.compression_method_items}"
+                items="@{viewModel.compressionMethodItems}"
+                onConfirm="@{viewModel.onCompressionMethod}"
+                app:choice="@{viewModel.compressionMethodIndex}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:title="@string/settings_title_compression_method" />
@@ -81,7 +97,9 @@
             <com.xayah.databackup.view.preference.EditableText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:summary="@string/settings_sumarry_info"
+                onConfirm="@{viewModel.onInfo}"
+                app:summary="@{viewModel.info}"
+                app:defaultValue="@string/settings_sumarry_info"
                 app:title="@string/settings_title_info" />
 
             <com.xayah.databackup.view.preference.Category
@@ -92,13 +110,17 @@
             <com.xayah.databackup.view.preference.EditableText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:summary="@string/settings_sumarry_output_path"
+                onConfirm="@{viewModel.onOutputPath}"
+                app:summary="@{viewModel.outputPath}"
+                app:defaultValue="@string/settings_sumarry_output_path"
                 app:title="@string/settings_title_output_path" />
 
             <com.xayah.databackup.view.preference.EditableText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:summary="@string/settings_summary_custom_path"
+                onConfirm="@{viewModel.onCustomPath}"
+                app:summary="@{viewModel.customPath}"
+                app:defaultValue="@string/settings_summary_custom_path"
                 app:title="@string/settings_title_custom_path" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
