@@ -49,9 +49,9 @@ class EditableText @JvmOverloads constructor(
         binding.root.setOnClickListener(l)
     }
 
-    private lateinit var onConfirmListener: (content: CharSequence?) -> Unit
+    private lateinit var onConfirmListener: (v: EditableText, content: CharSequence?) -> Unit
 
-    fun setOnConfirmListener(listener: ((content: CharSequence?) -> Unit)) {
+    fun setOnConfirmListener(listener: ((v: EditableText, content: CharSequence?) -> Unit)) {
         onConfirmListener = listener
     }
 
@@ -68,12 +68,12 @@ class EditableText @JvmOverloads constructor(
                 .setPositiveButton(context.getString(R.string.dialog_positive)) { _, _ ->
                     summary = bindingDialogTextField.textField.text
                     if (::onConfirmListener.isInitialized)
-                        onConfirmListener.invoke(summary)
+                        onConfirmListener.invoke(this, summary)
                 }
                 .setNegativeButton(context.getString(R.string.dialog_negative)) { _, _ -> }
                 .setNeutralButton(context.getString(R.string.dialog_neutral)) { _, _ ->
                     summary = defaultValue
-                    onConfirmListener.invoke(summary)
+                    onConfirmListener.invoke(this, summary)
                 }
                 .show()
         }

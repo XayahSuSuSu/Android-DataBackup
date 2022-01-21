@@ -21,7 +21,7 @@ class ViewAdapter {
         @JvmStatic
         fun setSelectableListOnConfirmListener(
             v: SelectableList,
-            listener: ((choice: Int) -> Unit)
+            listener: ((v: SelectableList, choice: Int) -> Unit)
         ) {
             v.setOnConfirmListener(listener)
         }
@@ -30,7 +30,7 @@ class ViewAdapter {
         @JvmStatic
         fun setEditableTextOnConfirmListener(
             v: EditableText,
-            listener: ((content: CharSequence?) -> Unit)
+            listener: ((v: EditableText, content: CharSequence?) -> Unit)
         ) {
             v.setOnConfirmListener(listener)
         }

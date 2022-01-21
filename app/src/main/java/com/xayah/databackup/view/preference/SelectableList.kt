@@ -44,9 +44,9 @@ class SelectableList @JvmOverloads constructor(
         binding.root.setOnClickListener(l)
     }
 
-    private lateinit var onConfirmListener: (choice: Int) -> Unit
+    private lateinit var onConfirmListener: (v: SelectableList, choice: Int) -> Unit
 
-    fun setOnConfirmListener(listener: ((choice: Int) -> Unit)) {
+    fun setOnConfirmListener(listener: ((v: SelectableList, choice: Int) -> Unit)) {
         onConfirmListener = listener
     }
 
@@ -82,7 +82,7 @@ class SelectableList @JvmOverloads constructor(
                 .setPositiveButton(context.getString(R.string.dialog_positive)) { _, _ ->
                     refreshSummary()
                     if (::onConfirmListener.isInitialized)
-                        onConfirmListener.invoke(choice)
+                        onConfirmListener.invoke(this, choice)
                 }
                 .show()
         }
