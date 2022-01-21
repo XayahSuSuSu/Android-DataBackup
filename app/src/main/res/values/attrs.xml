@@ -6,6 +6,7 @@
     <attr name="summary" format="string" />
     <attr name="defaultValue" format="string" />
     <attr name="choice" format="integer" />
+    <attr name="checked" format="boolean" />
 
     <declare-styleable name="LargeActionCard">
         <attr name="text" />
@@ -40,6 +41,7 @@
         <attr name="title" />
         <attr name="summary" />
         <attr name="icon" />
+        <attr name="checked" />
     </declare-styleable>
 
     <declare-styleable name="EditableText">

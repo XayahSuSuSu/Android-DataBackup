@@ -40,6 +40,12 @@ class Switch @JvmOverloads constructor(
             binding.summaryView.visibility = if (value == null) View.GONE else View.VISIBLE
         }
 
+    var checked: Boolean
+        get() = binding.switchView.isChecked
+        set(value) {
+            binding.switchView.isChecked = value
+        }
+
     override fun setOnClickListener(l: OnClickListener?) {
         binding.root.setOnClickListener(l)
     }
@@ -63,6 +69,7 @@ class Switch @JvmOverloads constructor(
                 icon = getDrawable(R.styleable.Switch_icon)
                 title = getString(R.styleable.Switch_title)
                 summary = getString(R.styleable.Switch_summary)
+                checked = getBoolean(R.styleable.Switch_checked, false)
             } finally {
                 recycle()
             }
