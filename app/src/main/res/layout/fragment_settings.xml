@@ -3,97 +3,104 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.xayah.databackup.fragment.settings.SettingsViewModel" />
     </data>
 
-    <LinearLayout
-        android:id="@+id/content"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <com.xayah.databackup.view.preference.Category
+        <LinearLayout
+            android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:text="@string/settings_update_setttings" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <com.xayah.databackup.view.preference.Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_summary_auto_update"
-            app:title="@string/settings_title_auto_update" />
+            <com.xayah.databackup.view.preference.Category
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:text="@string/settings_update_setttings" />
 
-        <com.xayah.databackup.view.preference.Category
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:text="@string/settings_backup_setttings" />
+            <com.xayah.databackup.view.preference.Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_summary_auto_update"
+                app:title="@string/settings_title_auto_update" />
 
-        <com.xayah.databackup.view.preference.Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_summary_lo"
-            app:title="@string/settings_title_lo" />
+            <com.xayah.databackup.view.preference.Category
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:text="@string/settings_backup_setttings" />
 
-        <com.xayah.databackup.view.preference.Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_summary_splist"
-            app:title="@string/settings_title_splist" />
+            <com.xayah.databackup.view.preference.Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_summary_lo"
+                app:title="@string/settings_title_lo" />
 
-        <com.xayah.databackup.view.preference.Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_summary_backup_user_data"
-            app:title="@string/settings_title_backup_user_data" />
+            <com.xayah.databackup.view.preference.Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_summary_splist"
+                app:title="@string/settings_title_splist" />
 
-        <com.xayah.databackup.view.preference.Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_summary_backup_obb_data"
-            app:title="@string/settings_title_backup_obb_data" />
+            <com.xayah.databackup.view.preference.Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_summary_backup_user_data"
+                app:title="@string/settings_title_backup_user_data" />
 
-        <com.xayah.databackup.view.preference.Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_summary_backup_media"
-            app:title="@string/settings_title_backup_media" />
+            <com.xayah.databackup.view.preference.Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_summary_backup_obb_data"
+                app:title="@string/settings_title_backup_obb_data" />
 
-        <com.xayah.databackup.view.preference.Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_summary_usbdefault"
-            app:title="@string/settings_title_usbdefault" />
+            <com.xayah.databackup.view.preference.Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_summary_backup_media"
+                app:title="@string/settings_title_backup_media" />
+
+            <com.xayah.databackup.view.preference.Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_summary_usbdefault"
+                app:title="@string/settings_title_usbdefault" />
 
 
-        <com.xayah.databackup.view.preference.SelectableList
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            items="@{viewModel.compression_method_items}"
-            app:title="@string/settings_title_compression_method" />
+            <com.xayah.databackup.view.preference.SelectableList
+                items="@{viewModel.compression_method_items}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="@string/settings_title_compression_method" />
 
-        <com.xayah.databackup.view.preference.EditableText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_sumarry_info"
-            app:title="@string/settings_title_info" />
+            <com.xayah.databackup.view.preference.EditableText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_sumarry_info"
+                app:title="@string/settings_title_info" />
 
-        <com.xayah.databackup.view.preference.Category
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:text="@string/settings_path" />
+            <com.xayah.databackup.view.preference.Category
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:text="@string/settings_path" />
 
-        <com.xayah.databackup.view.preference.EditableText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_sumarry_output_path"
-            app:title="@string/settings_title_output_path" />
+            <com.xayah.databackup.view.preference.EditableText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_sumarry_output_path"
+                app:title="@string/settings_title_output_path" />
 
-        <com.xayah.databackup.view.preference.EditableText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:summary="@string/settings_summary_custom_path"
-            app:title="@string/settings_title_custom_path" />
-    </LinearLayout>
+            <com.xayah.databackup.view.preference.EditableText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summary="@string/settings_summary_custom_path"
+                app:title="@string/settings_title_custom_path" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
 </layout>

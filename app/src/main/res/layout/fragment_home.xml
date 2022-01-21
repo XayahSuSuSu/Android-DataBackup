@@ -9,47 +9,51 @@
             type="com.xayah.databackup.fragment.home.HomeViewModel" />
     </data>
 
-
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/main_padding_horizontal"
-        android:paddingTop="@dimen/main_padding_top"
-        android:paddingBottom="@dimen/main_padding_bottom">
+        android:layout_height="match_parent">
 
-        <com.xayah.databackup.view.LargeActionCard
-            style="?attr/materialCardViewFilledStyle"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/main_card_margin_vertical"
-            app:cardBackgroundColor="@color/color_light_background_shallow"
-            app:icon="@drawable/ic_round_key"
-            app:subtext="@{viewModel.isRoot ? @string/granted : @string/not_granted}"
-            app:text="@string/root" />
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/main_padding_horizontal"
+            android:paddingTop="@dimen/main_padding_top"
+            android:paddingBottom="@dimen/main_padding_bottom">
+
+            <com.xayah.databackup.view.LargeActionCard
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/main_card_margin_vertical"
+                app:cardBackgroundColor="@color/color_light_background_shallow"
+                app:icon="@drawable/ic_round_key"
+                app:subtext="@{viewModel.isRoot ? @string/granted : @string/not_granted}"
+                app:text="@string/root" />
 
 
-        <com.xayah.databackup.view.LargeActionCard
-            style="?attr/materialCardViewFilledStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/main_card_margin_vertical"
-            app:cardBackgroundColor="@color/color_light_background_shallow"
-            app:icon="@drawable/ic_round_code"
-            app:subtext="@{viewModel.scriptVersion}"
-            app:text="@string/title_script_in_app" />
+            <com.xayah.databackup.view.LargeActionCard
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/main_card_margin_vertical"
+                app:cardBackgroundColor="@color/color_light_background_shallow"
+                app:icon="@drawable/ic_round_code"
+                app:subtext="@{viewModel.scriptVersion}"
+                app:text="@string/title_script_in_app" />
 
-        <com.xayah.databackup.view.LargeActionCard
-            style="?attr/materialCardViewFilledStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/main_card_margin_vertical"
-            app:cardBackgroundColor="@color/color_light_background_shallow"
-            app:icon="@drawable/ic_round_trending"
-            app:subtext="@{@string/storage_space(viewModel.spaceUsed, viewModel.spaceTotal)}"
-            app:text="@string/title_storage_space" />
+            <com.xayah.databackup.view.LargeActionCard
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/main_card_margin_vertical"
+                app:cardBackgroundColor="@color/color_light_background_shallow"
+                app:icon="@drawable/ic_round_trending"
+                app:subtext="@{@string/storage_space(viewModel.spaceUsed, viewModel.spaceTotal)}"
+                app:text="@string/title_storage_space" />
 
 
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>
