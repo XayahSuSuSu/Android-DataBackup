@@ -1,12 +1,12 @@
 package com.xayah.databackup.fragment.restore
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.snackbar.Snackbar
 import com.xayah.databackup.R
-import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 
 class RestoreFragment : Fragment() {
@@ -32,6 +32,13 @@ class RestoreFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(RestoreViewModel::class.java)
         binding.viewModel = viewModel
         setHasOptionsMenu(true)
+
+        Snackbar.make(
+            requireContext(),
+            binding.constraintLayout,
+            getString(R.string.wip),
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
