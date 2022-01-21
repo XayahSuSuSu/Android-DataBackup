@@ -94,4 +94,7 @@ dependencies {
 
     // MultiType
     implementation 'com.drakeet.multitype:multitype:4.3.0'
+
+    // Datastore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
