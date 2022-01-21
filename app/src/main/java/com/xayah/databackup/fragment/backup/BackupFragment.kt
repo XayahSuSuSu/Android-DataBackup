@@ -17,6 +17,7 @@ import com.xayah.databackup.fragment.console.ConsoleViewModel
 import com.xayah.databackup.model.app.AppDatabase
 import com.xayah.databackup.model.app.AppEntity
 import com.xayah.databackup.util.PathUtil
+import com.xayah.databackup.util.SettingsPreferencesDataStore
 import com.xayah.databackup.util.ShellUtil
 import kotlinx.coroutines.*
 
@@ -161,6 +162,7 @@ class BackupFragment : Fragment() {
                 generateAppList()
                 val backupCommand =
                     "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.BACKUP_SCRIPT_PATH}; exit"
+                SettingsPreferencesDataStore.generateConfigFile(requireContext())
                 toConsoleFragment(backupCommand)
             }
         }

@@ -11,6 +11,7 @@ import com.xayah.databackup.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -78,6 +79,74 @@ object SettingsPreferencesDataStore {
         CoroutineScope(Dispatchers.IO).launch {
             saveCustomPath(mContext, mContext.getString(R.string.settings_summary_custom_path))
         }
+    }
+
+    fun generateConfigFile(mContext: Context) {
+        val content = mutableListOf<String>()
+        val pathUtil = PathUtil(mContext)
+        CoroutineScope(Dispatchers.IO).launch {
+            getAutoUpdate(mContext).collect {
+                if (it)
+                    ShellUtil.touch("${pathUtil.SCRIPT_PATH}/tools/bin/update")
+                else
+                    ShellUtil.rm("${pathUtil.SCRIPT_PATH}/tools/bin/update")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getLo(mContext).collect {
+                content.add(if (it) "Lo=1" else "Lo=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getSplist(mContext).collect {
+                content.add(if (it) "Splist=1" else "Splist=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getBackupUserData(mContext).collect {
+                content.add(if (it) "Backup_user_data=1" else "Backup_user_data=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getBackupObbData(mContext).collect {
+                content.add(if (it) "Backup_obb_data=1" else "Backup_obb_data=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getBackupMedia(mContext).collect {
+                content.add(if (it) "backup_media=1" else "backup_media=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getUsbDefault(mContext).collect {
+                content.add(if (it) "USBdefault=1" else "USBdefault=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch {
+                getCompressionMethod(mContext).collect {
+                    content.add("Compression_method=$it")
+                }
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getInfo(mContext).collect {
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getOutputPath(mContext).collect {
+                content.add("Output_path=$it")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getCustomPath(mContext).collect {
+                content.add(
+                    "Custom_path=\"\n" + it + "\n\""
+                )
+            }
+        }
+        ShellUtil.rm(pathUtil.BACKUP_SETTINGS_PATH)
+        ShellUtil.writeFile(content.joinToString(separator = "\n"), pathUtil.BACKUP_SETTINGS_PATH)
     }
 
     suspend fun saveAutoUpdate(context: Context, value: Boolean) {
