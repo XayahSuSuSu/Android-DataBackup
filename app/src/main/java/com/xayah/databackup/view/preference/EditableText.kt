@@ -73,6 +73,7 @@ class EditableText @JvmOverloads constructor(
                 .setNegativeButton(context.getString(R.string.dialog_negative)) { _, _ -> }
                 .setNeutralButton(context.getString(R.string.dialog_neutral)) { _, _ ->
                     summary = defaultValue
+                    onConfirmListener.invoke(summary)
                 }
                 .show()
         }
