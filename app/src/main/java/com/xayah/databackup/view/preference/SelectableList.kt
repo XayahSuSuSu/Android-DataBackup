@@ -62,7 +62,7 @@ class SelectableList @JvmOverloads constructor(
             summary = items[choice]
     }
 
-    private var choice = 0
+     var choice = 0
         set(value) {
             field = value
             refreshSummary()
