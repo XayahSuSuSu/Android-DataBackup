@@ -104,4 +104,5 @@
     <string name="opensource_libs">開源庫</string>
     <string name="dialog_query_force_excute">正在執行指令，確定強制重新執行嗎？</string>
     <string name="search_apps">搜索應用…</string>
+    <string name="confirm">確認</string>
 </resources>

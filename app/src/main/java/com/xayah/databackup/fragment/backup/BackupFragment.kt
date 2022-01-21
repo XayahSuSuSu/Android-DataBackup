@@ -5,6 +5,7 @@ import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
@@ -37,6 +38,10 @@ class BackupFragment : Fragment() {
 
     private lateinit var appListDelegate: AppListDelegate
 
+    lateinit var navHostFragment: NavHostFragment
+
+    lateinit var navController: NavController
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,15 +52,8 @@ class BackupFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(BackupViewModel::class.java)
-        binding.viewModel = viewModel
-        setHasOptionsMenu(true)
 
-        pathUtil = PathUtil(requireContext())
-
-        db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "app").build()
-
-        appListDelegate = AppListDelegate(requireContext())
+        init()
 
         viewModel.initialize(requireContext(), appListDelegate) {
             CoroutineScope(Dispatchers.Main).launch {
@@ -69,8 +67,7 @@ class BackupFragment : Fragment() {
             }
         }
 
-        consoleViewModel =
-            ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
+
         consoleViewModel.onProcessCompletedListener = {
             CoroutineScope(Dispatchers.IO).launch {
                 val appListFile = ShellUtil.cat(pathUtil.APP_LIST_FILE_PATH)
@@ -124,66 +121,91 @@ class BackupFragment : Fragment() {
         })
     }
 
+    private fun init() {
+        viewModel = ViewModelProvider(this).get(BackupViewModel::class.java)
+        binding.viewModel = viewModel
+        setHasOptionsMenu(true)
+
+        pathUtil = PathUtil(requireContext())
+
+        db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "app").build()
+
+        navHostFragment =
+            requireActivity().supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+
+        navController = navHostFragment.navController
+
+        appListDelegate = AppListDelegate(requireContext())
+
+        consoleViewModel =
+            ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.topbar_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val navHostFragment =
-            requireActivity().supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-        val navController = navHostFragment.navController
         when (item.itemId) {
             R.id.menu_console -> {
                 navController.navigate(BackupFragmentDirections.actionPageBackupToPageConsole())
             }
             R.id.menu_refresh -> {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val appList = db.appDao().getAllApps()
-                    var content = ""
-                    for (i in appList) {
-                        content +=
-                            (if (!i.isSelected) "#" else "") + i.appName.replace(
-                                " ",
-                                ""
-                            ) + (if (i.isOnly) "!" else "") + " " + i.appPackage + "\n"
-                    }
-                    ShellUtil.writeFile(content, pathUtil.APP_LIST_FILE_PATH)
-                }
+                generateAppList()
                 val refreshCommand =
-                    "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.SCRIPT_PATH}/${pathUtil.GENERATE_APP_LIST_SCRIPT_NAME}; exit"
-                if (consoleViewModel.isInitialized) {
-                    if (consoleViewModel.session.isRunning) {
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(getString(R.string.dialog_query_tips))
-                            .setMessage(getString(R.string.dialog_query_force_excute))
-                            .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
-                            .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
-                                consoleViewModel.isInitialized = false
-                                navController.navigate(
-                                    BackupFragmentDirections.actionPageBackupToPageConsole(
-                                        refreshCommand
-                                    )
-                                )
-                            }
-                            .show()
-                    } else {
-                        consoleViewModel.isInitialized = false
-                        navController.navigate(
-                            BackupFragmentDirections.actionPageBackupToPageConsole(
-                                refreshCommand
-                            )
-                        )
-                    }
-                } else {
-                    navController.navigate(
-                        BackupFragmentDirections.actionPageBackupToPageConsole(
-                            refreshCommand
-                        )
-                    )
-                }
+                    "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.GENERATE_APP_LIST_SCRIPT_PATH}; exit"
+                toConsoleFragment(refreshCommand)
+            }
+            R.id.menu_confirm -> {
+                generateAppList()
+                val backupCommand =
+                    "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.BACKUP_SCRIPT_PATH}; exit"
+                toConsoleFragment(backupCommand)
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun generateAppList() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val appList = db.appDao().getAllApps()
+            var content = ""
+            for (i in appList) {
+                content +=
+                    (if (!i.isSelected) "#" else "") + i.appName.replace(
+                        " ",
+                        ""
+                    ) + (if (i.isOnly) "!" else "") + " " + i.appPackage + "\n"
+            }
+            ShellUtil.writeFile(content, pathUtil.APP_LIST_FILE_PATH)
+        }
+    }
+
+    private fun toConsoleFragment(command: String) {
+        if (consoleViewModel.isInitialized) {
+            if (consoleViewModel.session.isRunning) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.dialog_query_tips))
+                    .setMessage(getString(R.string.dialog_query_force_excute))
+                    .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
+                    .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
+                        consoleViewModel.isInitialized = false
+                        navController.navigate(
+                            BackupFragmentDirections.actionPageBackupToPageConsole(command)
+                        )
+                    }
+                    .show()
+            } else {
+                consoleViewModel.isInitialized = false
+                navController.navigate(
+                    BackupFragmentDirections.actionPageBackupToPageConsole(command)
+                )
+            }
+        } else {
+            navController.navigate(
+                BackupFragmentDirections.actionPageBackupToPageConsole(command)
+            )
+        }
     }
 }

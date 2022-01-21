@@ -12,4 +12,10 @@
         android:icon="@drawable/ic_outline_article"
         android:title="@string/title_console"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_confirm"
+        android:icon="@drawable/ic_outline_check"
+        android:title="@string/confirm"
+        app:showAsAction="ifRoom" />
 </menu>
