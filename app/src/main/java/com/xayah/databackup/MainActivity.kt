@@ -57,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         val model: MainViewModel by viewModels()
         binding.viewModel = model
 
+        model.versionName = this.packageManager.getPackageInfo(this.packageName, 0).versionName
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController
