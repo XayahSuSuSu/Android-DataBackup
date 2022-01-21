@@ -105,4 +105,5 @@
     <string name="dialog_query_force_excute">正在执行指令，确定强制重新执行吗？</string>
     <string name="search_apps">搜索应用…</string>
     <string name="confirm">确认</string>
+    <string name="termux">Termux</string>
 </resources>

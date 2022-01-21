@@ -47,4 +47,10 @@ class AboutViewModel : ViewModel() {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         v.context.startActivity(intent)
     }
+
+    fun toTermuxGitHub(v: View) {
+        val uri = Uri.parse("https://github.com/termux/termux-app")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        v.context.startActivity(intent)
+    }
 }

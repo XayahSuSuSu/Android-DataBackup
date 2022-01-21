@@ -97,6 +97,15 @@
                 app:summary="https://github.com/topjohnwu/Magisk"
                 app:title="@string/magisk" />
 
+            <com.xayah.databackup.view.preference.Clickable
+                isRound="@{true}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{(v)->viewModel.toTermuxGitHub(v)}"
+                app:icon="@drawable/ic_termux"
+                app:summary="https://github.com/termux/termux-app"
+                app:title="@string/termux" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
