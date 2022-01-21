@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.adapter.FileListAdapter
 import com.xayah.databackup.databinding.ActivityFileBinding
-import com.xayah.databackup.util.Shell
 import com.xayah.databackup.util.ShellUtil
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
@@ -17,7 +16,7 @@ import com.xayah.databackup.util.resolveThemedBoolean
 class FileActivity : AppCompatActivity() {
     lateinit var binding: ActivityFileBinding
     lateinit var adapter: FileListAdapter
-    lateinit var mShell: Shell
+//    lateinit var mShell: Shell
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,33 +51,33 @@ class FileActivity : AppCompatActivity() {
         binding.topAppBar.setNavigationOnClickListener { finish() }
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.menu_choose -> {
-                    if (mShell.checkRestoreScript("${adapter.pathToString()}/")) {
-                        MaterialAlertDialogBuilder(this)
-                            .setTitle(getString(R.string.dialog_query_tips))
-                            .setMessage(getString(R.string.dialog_query_choose_dir))
-                            .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
-                            .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
-                                val intent =
-                                    Intent().apply { putExtra("path", adapter.pathToString()) }
-                                setResult(Activity.RESULT_OK, intent)
-                                finish()
-                            }
-                            .show()
-                    } else {
-                        MaterialAlertDialogBuilder(this)
-                            .setTitle(getString(R.string.dialog_query_tips))
-                            .setMessage(getString(R.string.dialog_query_choose_right_dir))
-                            .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ -> }
-                            .show()
-                    }
-                }
+//                R.id.menu_choose -> {
+//                    if (mShell.checkRestoreScript("${adapter.pathToString()}/")) {
+//                        MaterialAlertDialogBuilder(this)
+//                            .setTitle(getString(R.string.dialog_query_tips))
+//                            .setMessage(getString(R.string.dialog_query_choose_dir))
+//                            .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
+//                            .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
+//                                val intent =
+//                                    Intent().apply { putExtra("path", adapter.pathToString()) }
+//                                setResult(Activity.RESULT_OK, intent)
+//                                finish()
+//                            }
+//                            .show()
+//                    } else {
+//                        MaterialAlertDialogBuilder(this)
+//                            .setTitle(getString(R.string.dialog_query_tips))
+//                            .setMessage(getString(R.string.dialog_query_choose_right_dir))
+//                            .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ -> }
+//                            .show()
+//                    }
+//                }
             }
             true
         }
     }
 
     private fun init() {
-        mShell = Shell(this)
+//        mShell = Shell(this)
     }
 }

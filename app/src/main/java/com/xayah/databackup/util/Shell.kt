@@ -5,10 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
-import com.xayah.databackup.ConsoleActivity
 import com.xayah.databackup.R
-import com.xayah.databackup.model.AppInfo
-import com.xayah.databackup.model.BackupInfo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -71,125 +68,6 @@ class Shell(private val mContext: Context) {
         }
     }
 
-    fun generateAppList(
-        event: (String) -> Unit,
-        finishedEvent: (Boolean?) -> Unit
-    ) {
-//        ShellUtil.rm("$SCRIPT_PATH/$APP_LIST_FILE_NAME")
-//        ShellUtil.rm("$SCRIPT_PATH/$LOG_FILE_NAME")
-        val callbackList: CallbackList<String> = object : CallbackList<String>() {
-            override fun onAddElement(mString: String?) {
-                if (mString != null) {
-                    event(mString)
-                }
-            }
-        }
-        GlobalScope.launch() {
-            Shell.su("cd $SCRIPT_PATH; sh $SCRIPT_PATH/$GENERATE_APP_LIST_SCRIPT_NAME")
-                .to(callbackList, callbackList)
-                .submit { result: Shell.Result? ->
-                    if (result != null) {
-                        finishedEvent(result.isSuccess)
-                    }
-                }
-        }
-    }
-
-    fun onGenerateAppList() {
-        val intent = Intent(mContext, ConsoleActivity::class.java)
-        intent.putExtra("type", "generateAppList")
-        (mContext as Activity).startActivityForResult(intent, 1)
-    }
-
-
-    fun saveAppList(appList: MutableList<AppInfo>) {
-        var outPut = mutableListOf<String>()
-        for (i in appList) {
-            outPut.add(
-                (if (i.ban) "#" else "") + i.appName.replace(
-                    " ",
-                    ""
-                ) + (if (i.onlyApp) "!" else "") + " " + i.appPackage
-            )
-        }
-        val head = Shell.su("head -2 $APP_LIST_FILE_PATH").exec().out
-        outPut = (head + outPut) as MutableList<String>
-        ShellUtil.writeFile(outPut.joinToString(separator = "\n"), APP_LIST_FILE_PATH)
-    }
-
-    fun saveBackupAppList(path: String, appList: MutableList<AppInfo>) {
-        var outPut = mutableListOf<String>()
-        for (i in appList) {
-            outPut.add(
-                (if (i.ban) "#" else "") + i.appName.replace(
-                    " ",
-                    ""
-                ) + (if (i.onlyApp) "!" else "") + " " + i.appPackage
-            )
-        }
-        val head = Shell.su("head -2 ${path}/${APP_LIST_FILE_NAME}").exec().out
-        outPut = (head + outPut) as MutableList<String>
-        ShellUtil.writeFile(outPut.joinToString(separator = "\n"), "${path}/${APP_LIST_FILE_NAME}")
-    }
-
-    fun onBackup() {
-        val intent = Intent(mContext, ConsoleActivity::class.java)
-        intent.putExtra("type", "backup")
-        (mContext as Activity).startActivityForResult(intent, 1)
-    }
-
-    fun backup(
-        event: (String) -> Unit,
-        finishedEvent: (Boolean?) -> Unit
-    ) {
-//        ShellUtil.rm("$SCRIPT_PATH/$LOG_FILE_NAME")
-        ShellUtil.replace("}&", "}", "$SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
-        ShellUtil.replace("pv", "pv -f", "$SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
-        val callbackList: CallbackList<String> = object : CallbackList<String>() {
-            override fun onAddElement(mString: String?) {
-                if (mString != null) {
-                    event(mString)
-                }
-            }
-        }
-        GlobalScope.launch() {
-            Shell.su("cd $SCRIPT_PATH; sh $SCRIPT_PATH/$BACKUP_SCRIPT_NAME")
-                .to(callbackList, callbackList)
-                .submit { result: Shell.Result? ->
-                    if (result != null) {
-                        finishedEvent(result.isSuccess)
-                        writeInfo()
-                    }
-                }
-        }
-    }
-
-    fun restore(
-        backupPath: String,
-        event: (String) -> Unit,
-        finishedEvent: (Boolean?) -> Unit
-    ) {
-        val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
-        ShellUtil.replace("} &", "}", "$backupPath/$RESTORE_SCRIPT_NAME")
-        ShellUtil.replace("pv", "pv -f", "$backupPath/$RESTORE_SCRIPT_NAME")
-        val callbackList: CallbackList<String> = object : CallbackList<String>() {
-            override fun onAddElement(mString: String?) {
-                if (mString != null) {
-                    event(mString)
-                }
-            }
-        }
-        GlobalScope.launch() {
-            Shell.su("cd $backupPath; sh $backupPath/$RESTORE_SCRIPT_NAME")
-                .to(callbackList, callbackList)
-                .submit { result: Shell.Result? ->
-                    if (result != null) {
-                        finishedEvent(result.isSuccess)
-                    }
-                }
-        }
-    }
-
     fun writeVersion(): Boolean {
         val versionName =
             mContext.packageManager.getPackageInfo(mContext.packageName, 0).versionName
@@ -200,55 +78,6 @@ class Shell(private val mContext: Context) {
         return ShellUtil.readLine(0, "$DATA_PATH/version")
     }
 
-    fun saveSettings() {
-        val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
-        val contentList = mutableListOf<String>()
-        contentList.add("Lo=${prefs.getInt("Lo", 0)}")
-        contentList.add(
-            "Output_path=${
-                prefs.getString(
-                    "Output_path",
-                    mContext.getString(R.string.settings_sumarry_output_path)
-                )
-            }"
-        )
-        contentList.add("USBdefault=${prefs.getInt("USBdefault", 0)}")
-        contentList.add("Splist=${prefs.getInt("Splist", 0)}")
-        contentList.add("Backup_user_data=${prefs.getInt("Backup_user_data", 1)}")
-        contentList.add("Backup_obb_data=${prefs.getInt("Backup_obb_data", 1)}")
-        contentList.add("backup_media=${prefs.getInt("backup_media", 0)}")
-        contentList.add(
-            "Custom_path=\"\n" + prefs.getString(
-                "Custom_path",
-                mContext.getString(R.string.settings_summary_custom_path)
-            )
-                    + "\n\""
-        )
-        contentList.add(
-            "Compression_method=${
-                prefs.getString(
-                    "Compression_method",
-                    mContext.getString(R.string.settings_summary_compression_method_zstd)
-                ).toString().replace(Regex("\\((.+?)\\)"), "")
-            }"
-        )
-        ShellUtil.writeFile(
-            contentList.joinToString(separator = "\n"),
-            "$SCRIPT_PATH/$BACKUP_SETTINGS"
-        )
-    }
-
-    fun autoUpdate(allow: Boolean) {
-        if (allow)
-            ShellUtil.touch("$SCRIPT_PATH/tools/bin/update")
-        else
-            ShellUtil.rm("$SCRIPT_PATH/tools/bin/update")
-    }
-
-    fun checkAutoUpdate(): Boolean {
-        return ShellUtil.ls("$SCRIPT_PATH/tools/bin/update")
-    }
-
     fun close() {
         Shell.getShell().close()
     }
@@ -257,39 +86,39 @@ class Shell(private val mContext: Context) {
         return ShellUtil.ls(path + RESTORE_SCRIPT_NAME)
     }
 
-    fun writeInfo(): Boolean {
-        val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
-        return ShellUtil.writeFile(
-            "${
-                prefs.getString(
-                    "info",
-                    mContext.getString(R.string.settings_sumarry_info)
-                )
-            }_${System.currentTimeMillis()}",
-            prefs.getString(
-                "Output_path",
-                mContext.getString(R.string.settings_sumarry_output_path)
-            ) + "/Backup_${
-                prefs.getString(
-                    "Compression_method",
-                    mContext.getString(R.string.settings_summary_compression_method_zstd)
-                ).toString().replace(Regex("\\((.+?)\\)"), "")
-            }/.config"
-        )
-    }
+//    fun writeInfo(): Boolean {
+//        val prefs = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+//        return ShellUtil.writeFile(
+//            "${
+//                prefs.getString(
+//                    "info",
+//                    mContext.getString(R.string.settings_sumarry_info)
+//                )
+//            }_${System.currentTimeMillis()}",
+//            prefs.getString(
+//                "Output_path",
+//                mContext.getString(R.string.settings_sumarry_output_path)
+//            ) + "/Backup_${
+//                prefs.getString(
+//                    "Compression_method",
+//                    mContext.getString(R.string.settings_summary_compression_method_zstd)
+//                ).toString().replace(Regex("\\((.+?)\\)"), "")
+//            }/.config"
+//        )
+//    }
 
-    fun getInfo(path: String): BackupInfo {
-        val info = ShellUtil.readLine(0, "$path/.config").split("_")
-        if (info.size == 1) {
-            return BackupInfo(
-                mContext.getString(R.string.restore_not_named),
-                mContext.getString(R.string.restore_not_timed),
-                path
-            )
-        } else {
-            val name = info[0]
-            val time = DataUtil.getFormatDate(info[1].toLong())
-            return BackupInfo(name, time, path)
-        }
-    }
+//    fun getInfo(path: String): BackupInfo {
+//        val info = ShellUtil.readLine(0, "$path/.config").split("_")
+//        if (info.size == 1) {
+//            return BackupInfo(
+//                mContext.getString(R.string.restore_not_named),
+//                mContext.getString(R.string.restore_not_timed),
+//                path
+//            )
+//        } else {
+//            val name = info[0]
+//            val time = DataUtil.getFormatDate(info[1].toLong())
+//            return BackupInfo(name, time, path)
+//        }
+//    }
 }
