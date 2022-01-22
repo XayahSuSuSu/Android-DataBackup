@@ -106,4 +106,6 @@
     <string name="search_apps">搜索应用…</string>
     <string name="confirm">确认</string>
     <string name="termux">Termux</string>
+    <string name="crash_title">Oops，程序发生崩溃了！</string>
+    <string name="crash_content">崩溃日志已保存于%1$s，请将其发送给维护者！</string>
 </resources>

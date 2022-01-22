@@ -114,4 +114,6 @@
     <string name="search_apps">Search apps…</string>
     <string name="confirm">Confirm</string>
     <string name="termux">Termux</string>
+    <string name="crash_title">Oops, it\'s crashed!</string>
+    <string name="crash_content">Crash log saved in %1$s, please send it to maintainer!</string>
 </resources>
