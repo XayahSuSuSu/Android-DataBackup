@@ -10,6 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.xayah.databackup.databinding.FragmentConsoleBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ConsoleFragment : Fragment() {
 
@@ -44,8 +48,11 @@ class ConsoleFragment : Fragment() {
         binding.terminalView.attachSession(viewModel.session)
 
         binding.terminalView.post {
-            if (args.command.isNotEmpty())
-                viewModel.write(args.command)
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(1000)
+                if (args.command.isNotEmpty())
+                    viewModel.write(args.command)
+            }
         }
     }
 
