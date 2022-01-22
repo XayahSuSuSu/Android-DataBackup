@@ -15,21 +15,6 @@
             android:name=".FileActivity"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RestoreActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SelectActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SelectRestoreActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ConsoleActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
