@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.content.Context
+import android.os.Environment
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.R
 import com.xayah.databackup.model.FileInfo
@@ -106,9 +107,16 @@ class ShellUtil(private val mContext: Context) {
             return mContext.getString(R.string.get_error)
         }
 
-        fun getStorageSpace(): List<String> {
-            return Shell.su("df -h | grep /dev/fuse").exec().out.toString().replace("[", "")
-                .replace("]", "").replace("\\s+".toRegex(), " ").split(" ")
+        fun getStorageSpace(mContext: Context): String {
+            val exec = Shell.su(
+                "echo \"\$(df -h ${
+                    Environment.getExternalStorageDirectory().path
+                } | sed -n 's|% /.*|%|p' | awk '{print \$(NF-3),\$(NF-1),\$(NF)}' | sed 's/G//g' | awk 'END{print \"\"\$2\" GB/\"\$1\" GB \"\$3}')\""
+            ).exec()
+            if (exec.isSuccess) {
+                return exec.out.joinToString()
+            }
+            return mContext.getString(R.string.get_error)
         }
     }
 }

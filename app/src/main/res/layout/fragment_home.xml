@@ -50,7 +50,7 @@
                 android:layout_marginVertical="@dimen/main_card_margin_vertical"
                 app:cardBackgroundColor="@color/color_light_background_shallow"
                 app:icon="@drawable/ic_round_trending"
-                app:subtext="@{@string/storage_space(viewModel.spaceUsed, viewModel.spaceTotal)}"
+                app:subtext="@{viewModel.storageSpace}"
                 app:text="@string/title_storage_space" />
 
 

@@ -34,5 +34,6 @@ class HomeFragment : Fragment() {
         val mShell = Shell(requireContext())
         mShell.extractAssets()
         model.scriptVersion= ShellUtil.getScriptVersion(requireContext())
+        model.storageSpace= ShellUtil.getStorageSpace(requireContext())
     }
 }
