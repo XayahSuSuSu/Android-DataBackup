@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.termux.terminal.TerminalSession
 import com.termux.view.TerminalView
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.util.ShellUtil
 
 class ConsoleViewModel : ViewModel() {
     var isInitialized = false
@@ -32,9 +33,11 @@ class ConsoleViewModel : ViewModel() {
             val environmentList = environment.toMutableList()
             environmentList.add("APP_ENV=1")
 
+            val suPath = ShellUtil.getSuPath()
+
             session = TerminalSession(
-                "/system/bin/su", Environment.getExternalStorageDirectory().path,
-                arrayOf("/system/bin/su"),
+                suPath, Environment.getExternalStorageDirectory().path,
+                arrayOf(suPath),
                 environmentList.toTypedArray(), 24,
                 mTermuxTerminalSessionClient
             )

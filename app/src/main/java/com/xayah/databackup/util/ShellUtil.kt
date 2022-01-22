@@ -118,5 +118,11 @@ class ShellUtil(private val mContext: Context) {
             }
             return mContext.getString(R.string.get_error)
         }
+
+        fun getSuPath(): String {
+            val path = Shell.su("which su").exec().out
+            if (path.size == 0) return "/system/bin/sh"
+            else return path[0]
+        }
     }
 }
