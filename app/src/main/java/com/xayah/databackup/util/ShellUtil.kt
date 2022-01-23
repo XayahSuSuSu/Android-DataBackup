@@ -111,7 +111,7 @@ class ShellUtil(private val mContext: Context) {
             val exec = Shell.su(
                 "echo \"\$(df -h ${
                     Environment.getExternalStorageDirectory().path
-                } | sed -n 's|% /.*|%|p' | awk '{print \$(NF-3),\$(NF-1),\$(NF)}' | sed 's/G//g' | awk 'END{print \"\"\$2\" GB/\"\$1\" GB \"\$3}')\""
+                } | sed -n 's|% /.*|%|p' | awk '{print \$(NF-3),\$(NF-2),\$(NF)}' | sed 's/G//g' | awk 'END{print \"\"\$2\" GB/\"\$1\" GB \"\$3}')\""
             ).exec()
             if (exec.isSuccess) {
                 return exec.out.joinToString()
