@@ -156,6 +156,7 @@ class BackupFragment : Fragment() {
                 generateAppList()
                 val refreshCommand =
                     "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.GENERATE_APP_LIST_SCRIPT_PATH}; exit"
+                SettingsPreferencesDataStore.generateConfigFile(requireContext())
                 toConsoleFragment(refreshCommand)
             }
             R.id.menu_confirm -> {
