@@ -37,7 +37,7 @@ class ConsoleViewModel : ViewModel() {
 
             session = TerminalSession(
                 suPath, Environment.getExternalStorageDirectory().path,
-                arrayOf(suPath),
+                arrayOf(suPath, "--mount-master"),
                 environmentList.toTypedArray(), 24,
                 mTermuxTerminalSessionClient
             )
