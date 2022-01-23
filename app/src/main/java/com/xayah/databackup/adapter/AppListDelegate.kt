@@ -22,6 +22,8 @@ class AppListDelegate(val mContext: Context) :
 
     var isFiltered = false
 
+    var isRestore = false
+
     val db = Room.databaseBuilder(mContext, AppDatabase::class.java, "app").build()
 
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
@@ -35,16 +37,25 @@ class AppListDelegate(val mContext: Context) :
         binding.isOnly.isChecked = item.isOnly
 
         binding.isOnly.setOnCheckedChangeListener { _, isChecked ->
-            CoroutineScope(Dispatchers.IO).launch {
+            if (isRestore) {
                 (adapterItems[holder.bindingAdapterPosition] as AppEntity).isOnly = isChecked
-                db.appDao().updateApp(item)
+            } else {
+                CoroutineScope(Dispatchers.IO).launch {
+                    (adapterItems[holder.bindingAdapterPosition] as AppEntity).isOnly = isChecked
+                    db.appDao().updateApp(item)
+                }
             }
         }
 
         binding.isSelected.setOnCheckedChangeListener { _, isChecked ->
-            CoroutineScope(Dispatchers.IO).launch {
+            if (isRestore) {
                 (adapterItems[holder.bindingAdapterPosition] as AppEntity).isSelected = isChecked
-                db.appDao().updateApp(item)
+            } else {
+                CoroutineScope(Dispatchers.IO).launch {
+                    (adapterItems[holder.bindingAdapterPosition] as AppEntity).isSelected =
+                        isChecked
+                    db.appDao().updateApp(item)
+                }
             }
         }
     }

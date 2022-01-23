@@ -7,7 +7,7 @@ class PathUtil(private val mContext: Context) {
     private val GENERATE_APP_LIST_SCRIPT_NAME =
         mContext.getString(R.string.script_generate_app_list)
     private val BACKUP_SCRIPT_NAME = mContext.getString(R.string.script_backup)
-    private val APP_LIST_FILE_NAME = mContext.getString(R.string.script_app_list)
+    val APP_LIST_FILE_NAME = mContext.getString(R.string.script_app_list)
     private val BACKUP_SETTINGS_NAME = "backup_settings.conf"
 
     val DATA_PATH: String = mContext.filesDir.path.replace("/files", "")

@@ -108,4 +108,7 @@
     <string name="termux">Termux</string>
     <string name="crash_title">Oops，程序发生崩溃了！</string>
     <string name="crash_content">崩溃日志已保存于%1$s，请将其发送给维护者！</string>
+    <string name="choose_backup">选择备份</string>
+    <string name="switch_backup">切换备份</string>
+    <string name="delete_backup">删除备份</string>
 </resources>

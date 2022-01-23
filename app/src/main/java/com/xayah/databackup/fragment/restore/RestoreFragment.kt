@@ -1,13 +1,18 @@
 package com.xayah.databackup.fragment.restore
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.snackbar.Snackbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.xayah.databackup.FileActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.databinding.FragmentRestoreBinding
+import com.xayah.databackup.model.app.AppEntity
 
 class RestoreFragment : Fragment() {
 
@@ -19,6 +24,8 @@ class RestoreFragment : Fragment() {
 
     private lateinit var viewModel: RestoreViewModel
 
+    lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,16 +36,52 @@ class RestoreFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(RestoreViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(RestoreViewModel::class.java)
         binding.viewModel = viewModel
         setHasOptionsMenu(true)
 
-        Snackbar.make(
-            requireContext(),
-            binding.constraintLayout,
-            getString(R.string.wip),
-            Snackbar.LENGTH_SHORT
-        ).show()
+        binding.button.setOnClickListener {
+            activityResultLauncher.launch(Intent(context, FileActivity::class.java))
+        }
+
+        if (!viewModel.isInitialized && viewModel.appEntityList.size == 0) {
+            binding.button.visibility = View.VISIBLE
+            binding.linearLayout.visibility = View.GONE
+        } else {
+            binding.button.visibility = View.GONE
+            binding.linearLayout.visibility = View.VISIBLE
+        }
+
+        binding.recyclerView.adapter = viewModel.adapter
+        val layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.layoutManager = layoutManager
+
+        binding.chipIsOnly.setOnCheckedChangeListener { _, isChecked ->
+            for (i in viewModel.adapter.items as List<AppEntity>) {
+                i.isOnly = isChecked
+            }
+            viewModel.adapter.notifyDataSetChanged()
+        }
+
+        binding.chipIsSelected.setOnCheckedChangeListener { _, isChecked ->
+            for (i in viewModel.adapter.items as List<AppEntity>) {
+                i.isSelected = isChecked
+            }
+            viewModel.adapter.notifyDataSetChanged()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activityResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                val path = it.data?.getStringExtra("path")
+                if (path != null) {
+                    binding.button.visibility = View.GONE
+                    binding.linearLayout.visibility = View.VISIBLE
+                    viewModel.initialize(requireContext(), path)
+                }
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
