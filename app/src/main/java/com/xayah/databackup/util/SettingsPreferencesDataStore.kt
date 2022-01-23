@@ -44,40 +44,60 @@ object SettingsPreferencesDataStore {
 
     fun initialize(mContext: Context) {
         CoroutineScope(Dispatchers.IO).launch {
-            saveAutoUpdate(mContext, false)
+            getAutoUpdate(mContext).collect {
+                saveAutoUpdate(mContext, it)
+            }
         }
         CoroutineScope(Dispatchers.IO).launch {
-            saveLo(mContext, false)
+            getLo(mContext).collect {
+                saveLo(mContext, it)
+            }
         }
         CoroutineScope(Dispatchers.IO).launch {
-            saveSplist(mContext, false)
+            getSplist(mContext).collect {
+                saveSplist(mContext, it)
+            }
         }
         CoroutineScope(Dispatchers.IO).launch {
-            saveBackupUserData(mContext, true)
+            getBackupUserData(mContext).collect {
+                saveBackupUserData(mContext, it)
+            }
         }
         CoroutineScope(Dispatchers.IO).launch {
-            saveBackupObbData(mContext, true)
+            getBackupObbData(mContext).collect {
+                saveBackupObbData(mContext, it)
+            }
         }
         CoroutineScope(Dispatchers.IO).launch {
-            saveBackupMedia(mContext, false)
+            getBackupMedia(mContext).collect {
+                saveBackupMedia(mContext, it)
+            }
         }
         CoroutineScope(Dispatchers.IO).launch {
-            saveUsbDefault(mContext, false)
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            saveCompressionMethod(mContext, "zstd")
+            getUsbDefault(mContext).collect {
+                saveUsbDefault(mContext, it)
+            }
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            saveInfo(mContext, mContext.getString(R.string.settings_sumarry_info))
+            getCompressionMethod(mContext).collect {
+                saveCompressionMethod(mContext, it)
+            }
         }
-
         CoroutineScope(Dispatchers.IO).launch {
-            saveOutputPath(mContext, mContext.getString(R.string.settings_sumarry_output_path))
+            getInfo(mContext).collect {
+                saveInfo(mContext, it)
+            }
         }
-
         CoroutineScope(Dispatchers.IO).launch {
-            saveCustomPath(mContext, mContext.getString(R.string.settings_summary_custom_path))
+            getOutputPath(mContext).collect {
+                saveOutputPath(mContext, it)
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getCustomPath(mContext).collect {
+                saveCustomPath(mContext, it)
+            }
         }
     }
 
