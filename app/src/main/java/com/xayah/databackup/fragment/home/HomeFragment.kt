@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.databinding.FragmentHomeBinding
-import com.xayah.databackup.util.Shell
 import com.xayah.databackup.util.ShellUtil
 
 
@@ -31,8 +30,6 @@ class HomeFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         val model = ViewModelProvider(this).get(HomeViewModel::class.java)
         binding.viewModel =model
-        val mShell = Shell(requireContext())
-        mShell.extractAssets()
         model.scriptVersion= ShellUtil.getScriptVersion(requireContext())
         model.storageSpace= ShellUtil.getStorageSpace(requireContext())
     }

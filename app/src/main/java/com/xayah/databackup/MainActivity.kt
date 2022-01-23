@@ -1,6 +1,5 @@
 package com.xayah.databackup
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -10,36 +9,13 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
-import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.databinding.ActivityMainBinding
-import com.xayah.databackup.util.SettingsPreferencesDataStore
 import com.xayah.databackup.util.WindowUtil
 import com.xayah.databackup.util.resolveThemedBoolean
 import com.xayah.databackup.viewModel.MainViewModel
 
 
 class MainActivity : AppCompatActivity() {
-    companion object {
-        init {
-            Shell.enableVerboseLogging = BuildConfig.DEBUG;
-            Shell.setDefaultBuilder(
-                Shell.Builder.create()
-                    .setFlags(Shell.FLAG_MOUNT_MASTER)
-                    .setTimeout(10)
-                    .setInitializers(ScriptInitializer::class.java)
-            )
-        }
-    }
-
-    class ScriptInitializer : Shell.Initializer() {
-        override fun onInit(context: Context, shell: Shell): Boolean {
-            shell.newJob()
-                .add("export APP_ENV=1")
-                .exec()
-            return true
-        }
-    }
-
     lateinit var navController: NavController
 
     lateinit var appBarConfiguration: AppBarConfiguration
@@ -53,7 +29,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         WindowUtil.setWindowMode(!resolveThemedBoolean(android.R.attr.windowLightStatusBar), window)
 
-        SettingsPreferencesDataStore.initialize(this)
         val model: MainViewModel by viewModels()
         binding.viewModel = model
 
