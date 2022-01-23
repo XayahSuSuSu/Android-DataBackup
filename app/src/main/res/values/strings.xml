@@ -37,7 +37,7 @@
     <string name="script_generate_app_list">Getlist.sh</string>
     <string name="script_backup">backup.sh</string>
     <string name="script_restore">Restorebackup.sh</string>
-    <string name="script_version">V13.9</string>
+    <string name="script_version">V13.9fix</string>
     <string name="title_settings">Settings</string>
     <string name="settings_backup_setttings">Backup settings</string>
     <string name="settings_title_lo">Enable volume button</string>
