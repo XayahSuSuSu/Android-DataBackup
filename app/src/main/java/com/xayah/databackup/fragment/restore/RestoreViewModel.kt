@@ -11,17 +11,19 @@ import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.ShellUtil
 
 class RestoreViewModel : ViewModel() {
-    var appEntityList = mutableListOf<AppEntity>()
+    val appEntityList = mutableListOf<AppEntity>()
     val adapter = MultiTypeAdapter()
     lateinit var appListDelegate: AppListDelegate
 
     var isInitialized = false
 
+    var backupPath = ""
+
     fun initialize(mContext: Context, path: String) {
         appListDelegate = AppListDelegate(mContext)
         val pathUtil = PathUtil(mContext)
         if (!isInitialized) {
-            appEntityList = mutableListOf()
+            appEntityList.clear()
             val appListFile = ShellUtil.cat(path + "/" + pathUtil.APP_LIST_FILE_NAME)
             for (i in appListFile) {
                 val info = i.split(" ")

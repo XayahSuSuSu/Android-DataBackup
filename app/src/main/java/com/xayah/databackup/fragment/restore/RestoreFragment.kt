@@ -7,12 +7,16 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.FileActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.databinding.FragmentRestoreBinding
+import com.xayah.databackup.fragment.console.ConsoleViewModel
 import com.xayah.databackup.model.app.AppEntity
+import com.xayah.databackup.util.PathUtil
 
 class RestoreFragment : Fragment() {
 
@@ -25,6 +29,14 @@ class RestoreFragment : Fragment() {
     private lateinit var viewModel: RestoreViewModel
 
     lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+
+    private lateinit var pathUtil: PathUtil
+
+    private lateinit var consoleViewModel: ConsoleViewModel
+
+    lateinit var navHostFragment: NavHostFragment
+
+    lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +52,16 @@ class RestoreFragment : Fragment() {
         binding.viewModel = viewModel
         setHasOptionsMenu(true)
 
+        pathUtil = PathUtil(requireContext())
+
+        consoleViewModel =
+            ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
+
+        navHostFragment =
+            requireActivity().supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+
+        navController = navHostFragment.navController
+
         binding.button.setOnClickListener {
             activityResultLauncher.launch(Intent(context, FileActivity::class.java))
         }
@@ -50,6 +72,10 @@ class RestoreFragment : Fragment() {
         } else {
             binding.button.visibility = View.GONE
             binding.linearLayout.visibility = View.VISIBLE
+            if (viewModel.backupPath != "") {
+                viewModel.isInitialized = false
+                viewModel.initialize(requireContext(), viewModel.backupPath)
+            }
         }
 
         binding.recyclerView.adapter = viewModel.adapter
@@ -80,6 +106,7 @@ class RestoreFragment : Fragment() {
                     binding.button.visibility = View.GONE
                     binding.linearLayout.visibility = View.VISIBLE
                     viewModel.initialize(requireContext(), path)
+                    viewModel.backupPath = path
                 }
             }
     }
@@ -97,8 +124,49 @@ class RestoreFragment : Fragment() {
             R.id.menu_console -> {
                 navController.navigate(R.id.action_page_restore_to_page_console)
             }
+            R.id.menu_refresh -> {
+                if (viewModel.backupPath != "") {
+                    val refreshCommand =
+                        "cd ${viewModel.backupPath}; sh ${viewModel.backupPath}/${pathUtil.DUMP_NAME}; exit"
+                    toConsoleFragment(refreshCommand)
+                }
+            }
+            R.id.menu_confirm -> {
+                if (viewModel.backupPath != "") {
+                    val restoreCommand =
+                        "cd ${viewModel.backupPath}; sh ${viewModel.backupPath}/${pathUtil.RESTORE_BACKUP_NAME}; exit"
+                    toConsoleFragment(restoreCommand)
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun toConsoleFragment(command: String) {
+        if (consoleViewModel.isInitialized) {
+            if (consoleViewModel.session.isRunning) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.dialog_query_tips))
+                    .setMessage(getString(R.string.dialog_query_force_excute))
+                    .setNegativeButton(getString(R.string.dialog_query_negative)) { _, _ -> }
+                    .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ ->
+                        consoleViewModel.isInitialized = false
+                        navController.navigate(
+                            RestoreFragmentDirections.actionPageRestoreToPageConsole(command)
+                        )
+                    }
+                    .show()
+            } else {
+                consoleViewModel.isInitialized = false
+                navController.navigate(
+                    RestoreFragmentDirections.actionPageRestoreToPageConsole(command)
+                )
+            }
+        } else {
+            navController.navigate(
+                RestoreFragmentDirections.actionPageRestoreToPageConsole(command)
+            )
+        }
     }
 
 }
