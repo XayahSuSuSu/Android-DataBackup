@@ -17,6 +17,10 @@ import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.fragment.console.ConsoleViewModel
 import com.xayah.databackup.model.app.AppEntity
 import com.xayah.databackup.util.PathUtil
+import com.xayah.databackup.util.ShellUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class RestoreFragment : Fragment() {
 
@@ -133,6 +137,7 @@ class RestoreFragment : Fragment() {
             }
             R.id.menu_confirm -> {
                 if (viewModel.backupPath != "") {
+                    generateAppList()
                     val restoreCommand =
                         "cd ${viewModel.backupPath}; sh ${viewModel.backupPath}/${pathUtil.RESTORE_BACKUP_NAME}; exit"
                     toConsoleFragment(restoreCommand)
@@ -166,6 +171,21 @@ class RestoreFragment : Fragment() {
             navController.navigate(
                 RestoreFragmentDirections.actionPageRestoreToPageConsole(command)
             )
+        }
+    }
+
+    private fun generateAppList() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val appList = viewModel.adapter.items as List<AppEntity>
+            var content = ""
+            for (i in appList) {
+                content +=
+                    (if (!i.isSelected) "#" else "") + i.appName.replace(
+                        " ",
+                        ""
+                    ) + (if (i.isOnly) "!" else "") + " " + i.appPackage + "\n"
+            }
+            ShellUtil.writeFile(content, "${viewModel.backupPath}/${pathUtil.APP_LIST_FILE_NAME}")
         }
     }
 
