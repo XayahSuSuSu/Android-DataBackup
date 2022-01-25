@@ -17,7 +17,7 @@ class FileListAdapter(private val mContext: Context) :
     class Holder(val binding: AdapterFileBinding) : RecyclerView.ViewHolder(binding.root)
 
     var fileList: MutableList<FileInfo> = mutableListOf()
-    var path = mutableListOf<String>("", "storage", "emulated", "0")
+    var path = mutableListOf<String>("", "storage", "emulated", "0", "Download")
     lateinit var activityBinding: ActivityFileBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
