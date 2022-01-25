@@ -1,6 +1,7 @@
 package com.xayah.databackup.fragment.backup
 
 import android.os.Bundle
+import android.os.Looper
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -16,10 +17,12 @@ import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.fragment.console.ConsoleViewModel
 import com.xayah.databackup.model.app.AppDatabase
 import com.xayah.databackup.model.app.AppEntity
+import com.xayah.databackup.util.GuideDataStore
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SettingsPreferencesDataStore
 import com.xayah.databackup.util.ShellUtil
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 
 class BackupFragment : Fragment() {
 
@@ -121,6 +124,26 @@ class BackupFragment : Fragment() {
                 return false
             }
         })
+
+        CoroutineScope(Dispatchers.IO).launch {
+            GuideDataStore.getBackupGuide(requireContext()).collect {
+                if (!it) {
+                    Looper.prepare()
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.dialog_query_tips))
+                        .setMessage(getString(R.string.backup_guide))
+                        .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ -> }
+                        .setNeutralButton(getString(R.string.igonre)) { _, _ ->
+                            CoroutineScope(Dispatchers.IO).launch {
+                                GuideDataStore.saveBackupGuide(requireContext(), true)
+                            }
+                        }
+                        .show()
+                    Looper.loop()
+                }
+            }
+        }
+
     }
 
     private fun init() {

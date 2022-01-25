@@ -2,6 +2,7 @@ package com.xayah.databackup.fragment.restore
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Looper
 import android.view.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,10 +17,12 @@ import com.xayah.databackup.R
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.fragment.console.ConsoleViewModel
 import com.xayah.databackup.model.app.AppEntity
+import com.xayah.databackup.util.GuideDataStore
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.ShellUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class RestoreFragment : Fragment() {
@@ -113,6 +116,25 @@ class RestoreFragment : Fragment() {
                     viewModel.backupPath = path
                 }
             }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            GuideDataStore.getRestoreGuide(requireContext()).collect {
+                if (!it) {
+                    Looper.prepare()
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.dialog_query_tips))
+                        .setMessage(getString(R.string.restore_guide))
+                        .setPositiveButton(getString(R.string.dialog_query_positive)) { _, _ -> }
+                        .setNeutralButton(getString(R.string.igonre)) { _, _ ->
+                            CoroutineScope(Dispatchers.IO).launch {
+                                GuideDataStore.saveRestoreGuide(requireContext(), true)
+                            }
+                        }
+                        .show()
+                    Looper.loop()
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

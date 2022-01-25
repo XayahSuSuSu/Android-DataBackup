@@ -119,4 +119,7 @@
     <string name="choose_backup">Choose backup</string>
     <string name="switch_backup">Switch backup</string>
     <string name="delete_backup">Delete backup</string>
+    <string name="igonre">Ignore</string>
+    <string name="restore_guide">Usage:\n1. Click the middle button to select the backup folder path\n2. Select the application you want to restore\n3. Click the check button in the upper right corner to start the restoration\n\nTips: The refresh button in the upper right corner is to regenerate the list of applications to be restored</string>
+    <string name="backup_guide">Usage:\n1. Click the refresh button in the upper right corner to generate the application list\n2. Choose the apps you want to back up\n3. Click the check button in the upper right corner to start the backup</string>
 </resources>

@@ -111,4 +111,7 @@
     <string name="choose_backup">選擇備份</string>
     <string name="switch_backup">切換備份</string>
     <string name="delete_backup">刪除備份</string>
+    <string name="igonre">不再提醒</string>
+    <string name="restore_guide">使用方法：\n1. 點擊中間的按鈕選擇備份文件夾路徑\n2. 選擇想要恢復的應用\n3. 點擊右上角確定按鈕開始恢復\n\nTips: 右上角刷新按鈕為重新生成待恢復應用列表</string>
+    <string name="backup_guide">使用方法：\n1. 點擊右上角刷新按鈕生成應用列表\n2. 選擇想要備份的應用\n3. 點擊右上角確定按鈕開始備份</string>
 </resources>
