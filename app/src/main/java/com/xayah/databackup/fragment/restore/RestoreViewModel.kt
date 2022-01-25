@@ -28,7 +28,8 @@ class RestoreViewModel : ViewModel() {
             for (i in appListFile) {
                 val info = i.split(" ")
                 if (info.size == 2) {
-                    val appEntity = AppEntity(0, info[0], info[1])
+                    val appEntity =
+                        AppEntity(0, info[0].replace("[#\\/:*?\"<>|]".toRegex(), ""), info[1])
                     appEntity.isSelected = !i.contains("#")
                     appEntity.isOnly = i.contains("!")
                     appEntity.appIcon = AppCompatResources.getDrawable(
