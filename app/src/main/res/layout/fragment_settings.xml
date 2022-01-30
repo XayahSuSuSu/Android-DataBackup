@@ -25,12 +25,20 @@
                 app:text="@string/settings_update_setttings" />
 
             <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onUpdate}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onCheckedChange="@{viewModel.onAutoUpdate}"
-                app:checked="@{viewModel.autoUpdate}"
-                app:summary="@string/settings_summary_auto_update"
-                app:title="@string/settings_title_auto_update" />
+                app:checked="@{viewModel.update}"
+                app:summary="@string/settings_summary_update"
+                app:title="@string/settings_title_update" />
+
+            <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onUpdateBehavior}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:checked="@{viewModel.updateBehavior}"
+                app:summary="@string/settings_summary_update_behavior"
+                app:title="@string/settings_title_update_behavior" />
 
             <com.xayah.databackup.view.preference.Category
                 android:layout_width="match_parent"
@@ -38,49 +46,65 @@
                 app:text="@string/settings_backup_setttings" />
 
             <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onToastInfo}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:checked="@{viewModel.toastInfo}"
+                app:summary="@string/settings_summary_toast_info"
+                app:title="@string/settings_title_toast_info" />
+
+            <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onSystemName}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:checked="@{viewModel.systemName}"
+                app:summary="@string/settings_summary_system_name"
+                app:title="@string/settings_title_system_name" />
+
+            <com.xayah.databackup.view.preference.Switch
                 onCheckedChange="@{viewModel.onLo}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 app:checked="@{viewModel.lo}"
                 app:summary="@string/settings_summary_lo"
                 app:title="@string/settings_title_lo" />
 
             <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onSplist}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onCheckedChange="@{viewModel.onSplist}"
                 app:checked="@{viewModel.splist}"
                 app:summary="@string/settings_summary_splist"
                 app:title="@string/settings_title_splist" />
 
             <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onBackupUserData}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onCheckedChange="@{viewModel.onBackupUserData}"
                 app:checked="@{viewModel.backupUserData}"
                 app:summary="@string/settings_summary_backup_user_data"
                 app:title="@string/settings_title_backup_user_data" />
 
             <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onBackupObbData}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onCheckedChange="@{viewModel.onBackupObbData}"
                 app:checked="@{viewModel.backupObbData}"
                 app:summary="@string/settings_summary_backup_obb_data"
                 app:title="@string/settings_title_backup_obb_data" />
 
             <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onBackupMedia}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onCheckedChange="@{viewModel.onBackupMedia}"
                 app:checked="@{viewModel.backupMedia}"
                 app:summary="@string/settings_summary_backup_media"
                 app:title="@string/settings_title_backup_media" />
 
             <com.xayah.databackup.view.preference.Switch
+                onCheckedChange="@{viewModel.onUsbdefault}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onCheckedChange="@{viewModel.onUsbdefault}"
                 app:checked="@{viewModel.usbDefault}"
                 app:summary="@string/settings_summary_usbdefault"
                 app:title="@string/settings_title_usbdefault" />
@@ -89,17 +113,17 @@
             <com.xayah.databackup.view.preference.SelectableList
                 items="@{viewModel.compressionMethodItems}"
                 onConfirm="@{viewModel.onCompressionMethod}"
-                app:choice="@{viewModel.compressionMethodIndex}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:choice="@{viewModel.compressionMethodIndex}"
                 app:title="@string/settings_title_compression_method" />
 
             <com.xayah.databackup.view.preference.EditableText
+                onConfirm="@{viewModel.onInfo}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onConfirm="@{viewModel.onInfo}"
-                app:summary="@{viewModel.info}"
                 app:defaultValue="@string/settings_sumarry_info"
+                app:summary="@{viewModel.info}"
                 app:title="@string/settings_title_info" />
 
             <com.xayah.databackup.view.preference.Category
@@ -108,19 +132,19 @@
                 app:text="@string/settings_path" />
 
             <com.xayah.databackup.view.preference.EditableText
+                onConfirm="@{viewModel.onOutputPath}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onConfirm="@{viewModel.onOutputPath}"
-                app:summary="@{viewModel.outputPath}"
                 app:defaultValue="@string/settings_sumarry_output_path"
+                app:summary="@{viewModel.outputPath}"
                 app:title="@string/settings_title_output_path" />
 
             <com.xayah.databackup.view.preference.EditableText
+                onConfirm="@{viewModel.onCustomPath}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                onConfirm="@{viewModel.onCustomPath}"
-                app:summary="@{viewModel.customPath}"
                 app:defaultValue="@string/settings_summary_custom_path"
+                app:summary="@{viewModel.customPath}"
                 app:title="@string/settings_title_custom_path" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -51,8 +51,8 @@
     <string name="settings_path">路径设置</string>
     <string name="settings_title_custom_path">自定义备份路径</string>
     <string name="settings_update_setttings">更新设置</string>
-    <string name="settings_title_auto_update">启用自动更新</string>
-    <string name="settings_summary_auto_update">是否启用脚本自动更新</string>
+    <string name="settings_title_update">启用脚本更新检测</string>
+    <string name="settings_summary_update">是否启用脚本更新检测</string>
     <string name="dialog_positive">确认</string>
     <string name="dialog_negative">取消</string>
     <string name="dialog_neutral">重置</string>
@@ -114,4 +114,10 @@
     <string name="igonre">不再提醒</string>
     <string name="restore_guide">使用方法：\n1. 点击中间的按钮选择备份文件夹路径\n2. 选择想要恢复的应用\n3. 点击右上角确定按钮开始恢复\n\nTips: 右上角刷新按钮为重新生成待恢复应用列表</string>
     <string name="backup_guide">使用方法：\n1. 点击右上角刷新按钮生成应用列表\n2. 选择想要备份的应用\n3. 点击右上角确定按钮开始备份</string>
+    <string name="settings_summary_update_behavior">开启则跳转到浏览器，关闭则复制到剪切板</string>
+    <string name="settings_title_update_behavior">更新行为</string>
+    <string name="settings_title_toast_info">启用脚本级通知</string>
+    <string name="settings_summary_toast_info">开启则备份与恢复遭遇异常或是结束后发送通知(Toast与通知栏)</string>
+    <string name="settings_summary_system_name">是否检测系统应用</string>
+    <string name="settings_title_system_name">检测系统应用</string>
 </resources>

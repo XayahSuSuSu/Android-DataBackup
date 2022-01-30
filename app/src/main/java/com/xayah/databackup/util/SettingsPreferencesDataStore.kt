@@ -20,7 +20,13 @@ val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(na
 
 object SettingsPreferencesDataStore {
 
-    private val autoUpdate = booleanPreferencesKey("Auto_update")
+    private val systemName = booleanPreferencesKey("System_name")
+
+    private val toastInfo = booleanPreferencesKey("Toast_info")
+
+    private val update = booleanPreferencesKey("Update")
+
+    private val updateBehavior = booleanPreferencesKey("Update_behavior")
 
     private val lo = booleanPreferencesKey("Lo")
 
@@ -44,8 +50,23 @@ object SettingsPreferencesDataStore {
 
     fun initialize(mContext: Context) {
         CoroutineScope(Dispatchers.IO).launch {
-            getAutoUpdate(mContext).collect {
-                saveAutoUpdate(mContext, it)
+            getSystemName(mContext).collect {
+                saveSystemName(mContext, it)
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getToastInfo(mContext).collect {
+                saveToastInfo(mContext, it)
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getUpdate(mContext).collect {
+                saveUpdate(mContext, it)
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getUpdateBehavior(mContext).collect {
+                saveUpdateBehavior(mContext, it)
             }
         }
         CoroutineScope(Dispatchers.IO).launch {
@@ -105,11 +126,23 @@ object SettingsPreferencesDataStore {
         val content = mutableListOf<String>()
         val pathUtil = PathUtil(mContext)
         CoroutineScope(Dispatchers.IO).launch {
-            getAutoUpdate(mContext).collect {
-                if (it)
-                    ShellUtil.touch("${pathUtil.SCRIPT_PATH}/tools/bin/update")
-                else
-                    ShellUtil.rm("${pathUtil.SCRIPT_PATH}/tools/bin/update")
+            getSystemName(mContext).collect {
+                content.add(if (it) "system_name=1" else "system_name=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getToastInfo(mContext).collect {
+                content.add(if (it) "toast_info=1" else "toast_info=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getUpdate(mContext).collect {
+                content.add(if (it) "update=1" else "update=0")
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            getUpdateBehavior(mContext).collect {
+                content.add(if (it) "update_behavior=1" else "update_behavior=0")
             }
         }
         CoroutineScope(Dispatchers.IO).launch {
@@ -169,9 +202,27 @@ object SettingsPreferencesDataStore {
         ShellUtil.writeFile(content.joinToString(separator = "\n"), pathUtil.BACKUP_SETTINGS_PATH)
     }
 
-    suspend fun saveAutoUpdate(context: Context, value: Boolean) {
+    suspend fun saveSystemName(context: Context, value: Boolean) {
         context.settingsDataStore.edit { setting ->
-            setting[autoUpdate] = value
+            setting[systemName] = value
+        }
+    }
+
+    suspend fun saveToastInfo(context: Context, value: Boolean) {
+        context.settingsDataStore.edit { setting ->
+            setting[toastInfo] = value
+        }
+    }
+
+    suspend fun saveUpdate(context: Context, value: Boolean) {
+        context.settingsDataStore.edit { setting ->
+            setting[update] = value
+        }
+    }
+
+    suspend fun saveUpdateBehavior(context: Context, value: Boolean) {
+        context.settingsDataStore.edit { setting ->
+            setting[updateBehavior] = value
         }
     }
 
@@ -235,8 +286,20 @@ object SettingsPreferencesDataStore {
         }
     }
 
-    fun getAutoUpdate(context: Context): Flow<Boolean> {
-        return context.settingsDataStore.data.map { setting -> setting[autoUpdate] ?: false }
+    fun getSystemName(context: Context): Flow<Boolean> {
+        return context.settingsDataStore.data.map { setting -> setting[systemName] ?: false }
+    }
+
+    fun getToastInfo(context: Context): Flow<Boolean> {
+        return context.settingsDataStore.data.map { setting -> setting[toastInfo] ?: false }
+    }
+
+    fun getUpdate(context: Context): Flow<Boolean> {
+        return context.settingsDataStore.data.map { setting -> setting[update] ?: false }
+    }
+
+    fun getUpdateBehavior(context: Context): Flow<Boolean> {
+        return context.settingsDataStore.data.map { setting -> setting[updateBehavior] ?: false }
     }
 
     fun getLo(context: Context): Flow<Boolean> {

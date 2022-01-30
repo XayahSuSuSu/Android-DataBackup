@@ -12,7 +12,13 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class SettingsViewModel : ViewModel() {
-    var autoUpdate = false
+    var systemName = false
+
+    var toastInfo = false
+
+    var update = false
+
+    var updateBehavior = false
 
     var lo = false
 
@@ -40,8 +46,23 @@ class SettingsViewModel : ViewModel() {
 
      fun initialize(mContext: Context) {
          CoroutineScope(Dispatchers.IO).launch {
-             SettingsPreferencesDataStore.getAutoUpdate(mContext).collect {
-                 autoUpdate = it
+             SettingsPreferencesDataStore.getSystemName(mContext).collect {
+                 systemName = it
+             }
+         }
+         CoroutineScope(Dispatchers.IO).launch {
+             SettingsPreferencesDataStore.getToastInfo(mContext).collect {
+                 toastInfo = it
+             }
+         }
+         CoroutineScope(Dispatchers.IO).launch {
+             SettingsPreferencesDataStore.getUpdate(mContext).collect {
+                 update = it
+             }
+         }
+         CoroutineScope(Dispatchers.IO).launch {
+             SettingsPreferencesDataStore.getUpdateBehavior(mContext).collect {
+                 updateBehavior = it
              }
          }
          CoroutineScope(Dispatchers.IO).launch {
@@ -97,9 +118,27 @@ class SettingsViewModel : ViewModel() {
          }
      }
 
-    val onAutoUpdate: (buttonView: CompoundButton, isChecked: Boolean) -> Unit = { v, isChecked ->
+    val onSystemName: (buttonView: CompoundButton, isChecked: Boolean) -> Unit = { v, isChecked ->
         CoroutineScope(Dispatchers.IO).launch {
-            SettingsPreferencesDataStore.saveAutoUpdate(v.context, isChecked)
+            SettingsPreferencesDataStore.saveSystemName(v.context, isChecked)
+        }
+    }
+
+    val onToastInfo: (buttonView: CompoundButton, isChecked: Boolean) -> Unit = { v, isChecked ->
+        CoroutineScope(Dispatchers.IO).launch {
+            SettingsPreferencesDataStore.saveToastInfo(v.context, isChecked)
+        }
+    }
+
+    val onUpdate: (buttonView: CompoundButton, isChecked: Boolean) -> Unit = { v, isChecked ->
+        CoroutineScope(Dispatchers.IO).launch {
+            SettingsPreferencesDataStore.saveUpdate(v.context, isChecked)
+        }
+    }
+
+    val onUpdateBehavior: (buttonView: CompoundButton, isChecked: Boolean) -> Unit = { v, isChecked ->
+        CoroutineScope(Dispatchers.IO).launch {
+            SettingsPreferencesDataStore.saveUpdateBehavior(v.context, isChecked)
         }
     }
 

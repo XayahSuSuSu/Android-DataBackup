@@ -58,8 +58,8 @@
     <string name="settings_title_custom_path">Custom backup path</string>
     <string name="settings_summary_custom_path">/storage/emulated/0/Pictures\n/storage/emulated/0/Download\n/storage/emulated/0/Music\n/storage/emulated/0/DCIM</string>
     <string name="settings_update_setttings">Update settings</string>
-    <string name="settings_title_auto_update">Enable auto-update</string>
-    <string name="settings_summary_auto_update">Whether to enable automatic script update</string>
+    <string name="settings_title_update">Enable script update checking</string>
+    <string name="settings_summary_update">Whether to enable script update checking</string>
     <string name="dialog_positive">Confirm</string>
     <string name="dialog_negative">Cancel</string>
     <string name="dialog_neutral">Reset</string>
@@ -122,4 +122,10 @@
     <string name="igonre">Ignore</string>
     <string name="restore_guide">Usage:\n1. Click the middle button to select the backup folder path\n2. Select the application you want to restore\n3. Click the check button in the upper right corner to start the restoration\n\nTips: The refresh button in the upper right corner is to regenerate the list of applications to be restored</string>
     <string name="backup_guide">Usage:\n1. Click the refresh button in the upper right corner to generate the application list\n2. Choose the apps you want to back up\n3. Click the check button in the upper right corner to start the backup</string>
+    <string name="settings_summary_update_behavior">Jump to the browser if enabled, or copy to the clipboard</string>
+    <string name="settings_title_update_behavior">Update behavior</string>
+    <string name="settings_title_toast_info">Enable notification</string>
+    <string name="settings_summary_toast_info">When enabled, the backup and restore encounter an exception or send a notification after the end (Toast and notification bar)</string>
+    <string name="settings_summary_system_name">Whether to detect system applications</string>
+    <string name="settings_title_system_name">Detect system application</string>
 </resources>
