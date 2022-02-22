@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--    Light-->
-    <color name="color_light_background">#EAE5CF</color>
-    <color name="color_light_background_shallow">#FFFBF1</color>
+    <color name="color_light_background">#FDFDF5</color>
+    <color name="color_light_background_deep">#EDF1E4</color>
     <color name="color_light_background_white">#FFFFFF</color>
     <color name="color_app_light">#1e4376</color>
 

@@ -14,9 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.FileActivity
 import com.xayah.databackup.R
+import com.xayah.databackup.adapter.AppListDelegate
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.fragment.console.ConsoleViewModel
-import com.xayah.databackup.model.app.AppEntity
+import com.xayah.databackup.model.AppInfo
 import com.xayah.databackup.util.GuideDataStore
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.ShellUtil
@@ -24,12 +25,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RestoreFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = RestoreFragment()
-    }
 
     private lateinit var binding: FragmentRestoreBinding
 
@@ -44,6 +42,8 @@ class RestoreFragment : Fragment() {
     lateinit var navHostFragment: NavHostFragment
 
     lateinit var navController: NavController
+
+    private lateinit var appListDelegate: AppListDelegate
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,11 +69,13 @@ class RestoreFragment : Fragment() {
 
         navController = navHostFragment.navController
 
+        appListDelegate = AppListDelegate(requireContext())
+
         binding.button.setOnClickListener {
             activityResultLauncher.launch(Intent(context, FileActivity::class.java))
         }
 
-        if (!viewModel.isInitialized && viewModel.appEntityList.size == 0) {
+        if (!viewModel.isInitialized) {
             binding.button.visibility = View.VISIBLE
             binding.linearLayout.visibility = View.GONE
         } else {
@@ -81,7 +83,9 @@ class RestoreFragment : Fragment() {
             binding.linearLayout.visibility = View.VISIBLE
             if (viewModel.backupPath != "") {
                 viewModel.isInitialized = false
-                viewModel.initialize(requireContext(), viewModel.backupPath)
+                val appListFile =
+                    ShellUtil.cat(viewModel.backupPath + "/" + pathUtil.APP_LIST_FILE_NAME)
+                viewModel.initialize(requireContext(), appListFile, appListDelegate)
             }
         }
 
@@ -89,18 +93,61 @@ class RestoreFragment : Fragment() {
         val layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.layoutManager = layoutManager
 
-        binding.chipIsOnly.setOnCheckedChangeListener { _, isChecked ->
-            for (i in viewModel.adapter.items as List<AppEntity>) {
-                i.isOnly = isChecked
-            }
-            viewModel.adapter.notifyDataSetChanged()
+        binding.textButtonReverse.setOnClickListener {
+            val items: Array<String> =
+                arrayOf(getString(R.string.reverse_only_app), getString(R.string.reverse_backup))
+            var choice = 0
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.reverse_apps))
+                .setCancelable(true)
+                .setSingleChoiceItems(
+                    items,
+                    choice
+                ) { _, which ->
+                    choice = which
+                }
+                .setPositiveButton(getString(R.string.dialog_positive)) { _, _ ->
+                    when (choice) {
+                        0 -> {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                for (i in viewModel.adapter.items as List<AppInfo>) {
+                                    i.isOnly = !i.isOnly
+                                }
+                                withContext(Dispatchers.Main) {
+                                    viewModel.adapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                        1 -> {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                for (i in viewModel.adapter.items as List<AppInfo>) {
+                                    i.isSelected = !i.isSelected
+                                }
+                                withContext(Dispatchers.Main) {
+                                    viewModel.adapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                    }
+                }
+                .show()
         }
 
-        binding.chipIsSelected.setOnCheckedChangeListener { _, isChecked ->
-            for (i in viewModel.adapter.items as List<AppEntity>) {
-                i.isSelected = isChecked
+        binding.textButtonRefresh.setOnClickListener {
+            if (viewModel.backupPath != "") {
+                val refreshCommand =
+                    "cd ${viewModel.backupPath}; sh ${viewModel.backupPath}/${pathUtil.DUMP_NAME}; exit"
+                toConsoleFragment(refreshCommand)
             }
-            viewModel.adapter.notifyDataSetChanged()
+        }
+
+        binding.filledButtonRestore.setOnClickListener {
+            if (viewModel.backupPath != "") {
+                generateAppList()
+                val restoreCommand =
+                    "cd ${viewModel.backupPath}; sh ${viewModel.backupPath}/${pathUtil.RESTORE_BACKUP_NAME}; exit"
+                toConsoleFragment(restoreCommand)
+            }
         }
     }
 
@@ -112,7 +159,9 @@ class RestoreFragment : Fragment() {
                 if (path != null) {
                     binding.button.visibility = View.GONE
                     binding.linearLayout.visibility = View.VISIBLE
-                    viewModel.initialize(requireContext(), path)
+                    val appListFile =
+                        ShellUtil.cat(path + "/" + pathUtil.APP_LIST_FILE_NAME)
+                    viewModel.initialize(requireContext(), appListFile, appListDelegate)
                     viewModel.backupPath = path
                 }
             }
@@ -150,21 +199,6 @@ class RestoreFragment : Fragment() {
             R.id.menu_console -> {
                 navController.navigate(R.id.action_page_restore_to_page_console)
             }
-            R.id.menu_refresh -> {
-                if (viewModel.backupPath != "") {
-                    val refreshCommand =
-                        "cd ${viewModel.backupPath}; sh ${viewModel.backupPath}/${pathUtil.DUMP_NAME}; exit"
-                    toConsoleFragment(refreshCommand)
-                }
-            }
-            R.id.menu_confirm -> {
-                if (viewModel.backupPath != "") {
-                    generateAppList()
-                    val restoreCommand =
-                        "cd ${viewModel.backupPath}; sh ${viewModel.backupPath}/${pathUtil.RESTORE_BACKUP_NAME}; exit"
-                    toConsoleFragment(restoreCommand)
-                }
-            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -198,14 +232,14 @@ class RestoreFragment : Fragment() {
 
     private fun generateAppList() {
         CoroutineScope(Dispatchers.IO).launch {
-            val appList = viewModel.adapter.items as List<AppEntity>
+            val appList = viewModel.adapter.items as List<AppInfo>
             var content = ""
             for (i in appList) {
                 content +=
                     (if (!i.isSelected) "#" else "") + i.appName.replace(
                         " ",
                         ""
-                    ) + (if (i.isOnly) "!" else "") + " " + i.appPackage + "\n"
+                    ) + (if (i.isOnly) "!" else "") + " " + i.appPackage + " " + i.appType + "\n"
             }
             ShellUtil.writeFile(content, "${viewModel.backupPath}/${pathUtil.APP_LIST_FILE_NAME}")
         }

@@ -8,15 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.room.Room
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListDelegate
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.fragment.console.ConsoleViewModel
-import com.xayah.databackup.model.app.AppDatabase
-import com.xayah.databackup.model.app.AppEntity
+import com.xayah.databackup.model.AppInfo
 import com.xayah.databackup.util.GuideDataStore
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SettingsPreferencesDataStore
@@ -25,11 +23,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 
 class BackupFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = BackupFragment()
-    }
-
     private lateinit var binding: FragmentBackupBinding
 
     private lateinit var viewModel: BackupViewModel
@@ -37,8 +30,6 @@ class BackupFragment : Fragment() {
     private lateinit var pathUtil: PathUtil
 
     private lateinit var consoleViewModel: ConsoleViewModel
-
-    private lateinit var db: AppDatabase
 
     private lateinit var appListDelegate: AppListDelegate
 
@@ -59,61 +50,6 @@ class BackupFragment : Fragment() {
 
         init()
 
-        viewModel.initialize(requireContext(), appListDelegate) {
-            CoroutineScope(Dispatchers.Main).launch {
-                binding.recyclerView.adapter = viewModel.adapter
-                val layoutManager = LinearLayoutManager(requireContext())
-                binding.recyclerView.layoutManager = layoutManager
-                delay(1000)
-//                TransitionUtil.TransitionX(requireActivity().window.decorView as ViewGroup)
-                binding.linearProgressIndicator.visibility = View.GONE
-                binding.constraintLayout.visibility = View.VISIBLE
-            }
-        }
-
-
-        consoleViewModel.onProcessCompletedListener = {
-            CoroutineScope(Dispatchers.IO).launch {
-                val appListFile = ShellUtil.cat(pathUtil.APP_LIST_FILE_PATH)
-                ShellUtil.rm(pathUtil.APP_LIST_FILE_PATH)
-                db.appDao().deleteAll(db.appDao().getAllApps())
-                for (i in appListFile) {
-                    val info = i.split(" ")
-                    if (info.size == 2) {
-                        val appEntity =
-                            AppEntity(0, info[0].replace("[#\\/:*?\"<>|]".toRegex(), ""), info[1])
-                        appEntity.isSelected = !i.contains("#")
-                        appEntity.isOnly = i.contains("!")
-                        db.appDao().insertAll(appEntity)
-                    }
-                }
-            }
-        }
-
-        binding.chipIsOnly.setOnCheckedChangeListener { _, isChecked ->
-            CoroutineScope(Dispatchers.IO).launch {
-                db.appDao().selectAllIsOnly(isChecked)
-                for (i in viewModel.adapter.items as List<AppEntity>) {
-                    i.isOnly = isChecked
-                }
-                withContext(Dispatchers.Main) {
-                    viewModel.adapter.notifyDataSetChanged()
-                }
-            }
-        }
-
-        binding.chipIsSelected.setOnCheckedChangeListener { _, isChecked ->
-            CoroutineScope(Dispatchers.IO).launch {
-                db.appDao().selectAllIsSelected(isChecked)
-                for (i in viewModel.adapter.items as List<AppEntity>) {
-                    i.isSelected = isChecked
-                }
-                withContext(Dispatchers.Main) {
-                    viewModel.adapter.notifyDataSetChanged()
-                }
-            }
-        }
-
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(string: String): Boolean {
                 return false
@@ -124,6 +60,96 @@ class BackupFragment : Fragment() {
                 return false
             }
         })
+
+        binding.textButtonReverse.setOnClickListener {
+            val items: Array<String> =
+                arrayOf(getString(R.string.reverse_only_app), getString(R.string.reverse_backup))
+            var choice = 0
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.reverse_apps))
+                .setCancelable(true)
+                .setSingleChoiceItems(
+                    items,
+                    choice
+                ) { _, which ->
+                    choice = which
+                }
+                .setPositiveButton(getString(R.string.dialog_positive)) { _, _ ->
+                    when (choice) {
+                        0 -> {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                for (i in viewModel.adapter.items as List<AppInfo>) {
+                                    i.isOnly = !i.isOnly
+                                }
+                                withContext(Dispatchers.Main) {
+                                    viewModel.adapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                        1 -> {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                for (i in viewModel.adapter.items as List<AppInfo>) {
+                                    i.isSelected = !i.isSelected
+                                }
+                                withContext(Dispatchers.Main) {
+                                    viewModel.adapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                    }
+                }
+                .show()
+
+        }
+
+        binding.textButtonRefresh.setOnClickListener {
+            generateAppList()
+            val refreshCommand =
+                "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.GENERATE_APP_LIST_SCRIPT_PATH}; exit"
+            SettingsPreferencesDataStore.generateConfigFile(requireContext())
+            toConsoleFragment(refreshCommand)
+        }
+
+        binding.filledButtonBackup.setOnClickListener {
+            generateAppList()
+            val backupCommand =
+                "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.BACKUP_SCRIPT_PATH}; exit"
+            SettingsPreferencesDataStore.generateConfigFile(requireContext())
+            toConsoleFragment(backupCommand)
+        }
+
+
+    }
+
+    private fun init() {
+        viewModel = ViewModelProvider(this).get(BackupViewModel::class.java)
+        binding.viewModel = viewModel
+        setHasOptionsMenu(true)
+
+        pathUtil = PathUtil(requireContext())
+
+        navHostFragment =
+            requireActivity().supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+
+        navController = navHostFragment.navController
+
+        appListDelegate = AppListDelegate(requireContext())
+
+        consoleViewModel =
+            ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
+
+        val appListFile = ShellUtil.cat(pathUtil.APP_LIST_FILE_PATH)
+        viewModel.initialize(requireContext(), appListFile, appListDelegate) {
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.recyclerView.adapter = viewModel.adapter
+                val layoutManager = GridLayoutManager(requireContext(), 1)
+                binding.recyclerView.layoutManager = layoutManager
+                delay(1000)
+//                TransitionUtil.TransitionX(requireActivity().window.decorView as ViewGroup)
+                binding.linearProgressIndicator.visibility = View.GONE
+                binding.constraintLayout.visibility = View.VISIBLE
+            }
+        }
 
         CoroutineScope(Dispatchers.IO).launch {
             GuideDataStore.getBackupGuide(requireContext()).collect {
@@ -143,27 +169,6 @@ class BackupFragment : Fragment() {
                 }
             }
         }
-
-    }
-
-    private fun init() {
-        viewModel = ViewModelProvider(this).get(BackupViewModel::class.java)
-        binding.viewModel = viewModel
-        setHasOptionsMenu(true)
-
-        pathUtil = PathUtil(requireContext())
-
-        db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "app").build()
-
-        navHostFragment =
-            requireActivity().supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-
-        navController = navHostFragment.navController
-
-        appListDelegate = AppListDelegate(requireContext())
-
-        consoleViewModel =
-            ViewModelProvider(requireActivity()).get(ConsoleViewModel::class.java)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -176,34 +181,20 @@ class BackupFragment : Fragment() {
             R.id.menu_console -> {
                 navController.navigate(BackupFragmentDirections.actionPageBackupToPageConsole())
             }
-            R.id.menu_refresh -> {
-                generateAppList()
-                val refreshCommand =
-                    "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.GENERATE_APP_LIST_SCRIPT_PATH}; exit"
-                SettingsPreferencesDataStore.generateConfigFile(requireContext())
-                toConsoleFragment(refreshCommand)
-            }
-            R.id.menu_confirm -> {
-                generateAppList()
-                val backupCommand =
-                    "cd ${pathUtil.SCRIPT_PATH}; sh ${pathUtil.BACKUP_SCRIPT_PATH}; exit"
-                SettingsPreferencesDataStore.generateConfigFile(requireContext())
-                toConsoleFragment(backupCommand)
-            }
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun generateAppList() {
         CoroutineScope(Dispatchers.IO).launch {
-            val appList = db.appDao().getAllApps()
+            val appList = appListDelegate.adapterItems as MutableList<AppInfo>
             var content = ""
             for (i in appList) {
                 content +=
                     (if (!i.isSelected) "#" else "") + i.appName.replace(
                         " ",
                         ""
-                    ) + (if (i.isOnly) "!" else "") + " " + i.appPackage + "\n"
+                    ) + (if (i.isOnly) "!" else "") + " " + i.appPackage + " " + i.appType + "\n"
             }
             ShellUtil.writeFile(content, pathUtil.APP_LIST_FILE_PATH)
         }

@@ -6,29 +6,24 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.drakeet.multitype.ItemViewDelegate
 import com.xayah.databackup.databinding.AdapterAppListBinding
-import com.xayah.databackup.model.app.AppDatabase
-import com.xayah.databackup.model.app.AppEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.xayah.databackup.model.AppInfo
 
 class AppListDelegate(val mContext: Context) :
-    ItemViewDelegate<AppEntity, AppListDelegate.ViewHolder>(), Filterable {
+    ItemViewDelegate<AppInfo, AppListDelegate.ViewHolder>(), Filterable {
 
-    var appList: MutableList<AppEntity> = mutableListOf()
+    var appList: MutableList<AppInfo> = mutableListOf()
 
     var isFiltered = false
 
-    var isRestore = false
+    var isAttached = false
 
-    val db = Room.databaseBuilder(mContext, AppDatabase::class.java, "app").build()
+    var isRestore = false
 
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
 
-    override fun onBindViewHolder(holder: ViewHolder, item: AppEntity) {
+    override fun onBindViewHolder(holder: ViewHolder, item: AppInfo) {
         val binding = holder.binding
         binding.appIcon.setImageDrawable(item.appIcon)
         binding.appName.text = item.appName
@@ -37,26 +32,11 @@ class AppListDelegate(val mContext: Context) :
         binding.isOnly.isChecked = item.isOnly
 
         binding.isOnly.setOnCheckedChangeListener { _, isChecked ->
-            if (isRestore) {
-                (adapterItems[holder.bindingAdapterPosition] as AppEntity).isOnly = isChecked
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    (adapterItems[holder.bindingAdapterPosition] as AppEntity).isOnly = isChecked
-                    db.appDao().updateApp(item)
-                }
-            }
+            (adapterItems[holder.bindingAdapterPosition] as AppInfo).isOnly = isChecked
         }
 
         binding.isSelected.setOnCheckedChangeListener { _, isChecked ->
-            if (isRestore) {
-                (adapterItems[holder.bindingAdapterPosition] as AppEntity).isSelected = isChecked
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    (adapterItems[holder.bindingAdapterPosition] as AppEntity).isSelected =
-                        isChecked
-                    db.appDao().updateApp(item)
-                }
-            }
+            (adapterItems[holder.bindingAdapterPosition] as AppInfo).isSelected = isChecked
         }
     }
 
@@ -71,12 +51,12 @@ class AppListDelegate(val mContext: Context) :
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 if (!isFiltered) {
-                    appList = adapterItems as MutableList<AppEntity>
+                    appList = adapterItems as MutableList<AppInfo>
                 }
                 if (constraint!!.isEmpty()) {
                     adapterItems = appList
                 } else {
-                    val tmp: MutableList<AppEntity> = mutableListOf()
+                    val tmp: MutableList<AppInfo> = mutableListOf()
                     for (i in appList) {
                         if (i.appName.contains(constraint, true)) {
                             tmp.add(i)
@@ -89,7 +69,8 @@ class AppListDelegate(val mContext: Context) :
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 isFiltered = true
-                adapter.notifyDataSetChanged()
+                if (isAttached)
+                    adapter.notifyDataSetChanged()
             }
 
         }

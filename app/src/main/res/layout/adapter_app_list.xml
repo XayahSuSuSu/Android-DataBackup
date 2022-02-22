@@ -8,10 +8,10 @@
         style="?attr/materialCardViewFilledStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/color_light_background_shallow"
         android:layout_marginHorizontal="10dp"
         android:layout_marginBottom="10dp"
         android:focusable="false"
+        app:cardBackgroundColor="@color/color_light_background"
         tools:layout_gravity="center"
         tools:layout_marginBottom="16dp">
 
@@ -54,22 +54,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
+                    android:ellipsize="end"
+                    android:maxEms="13"
+                    android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/appIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/appName"
-                    android:ellipsize="end"
-                    android:maxEms="13"
-                    android:maxLines="1" />
+                    app:layout_constraintTop_toBottomOf="@+id/appName" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/isOnly"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:layout_marginEnd="10dp"
                     android:text="@string/only_app"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/isSelected"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -81,12 +81,17 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="64dp"
+                android:background="@color/color_light_background_deep"
+                android:orientation="vertical" />
         </LinearLayout>
 
 

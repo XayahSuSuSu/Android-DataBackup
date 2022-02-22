@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                app:cardBackgroundColor="@color/color_light_background_shallow"
+                app:cardBackgroundColor="@color/color_light_background_deep"
                 app:icon="@drawable/ic_round_key"
                 app:subtext="@{viewModel.isRoot ? @string/granted : @string/not_granted}"
                 app:text="@string/root" />
@@ -38,7 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                app:cardBackgroundColor="@color/color_light_background_shallow"
+                app:cardBackgroundColor="@color/color_light_background_deep"
                 app:icon="@drawable/ic_round_code"
                 app:subtext="@{viewModel.scriptVersion}"
                 app:text="@string/title_script_in_app" />
@@ -48,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                app:cardBackgroundColor="@color/color_light_background_shallow"
+                app:cardBackgroundColor="@color/color_light_background_deep"
                 app:icon="@drawable/ic_round_trending"
                 app:subtext="@{viewModel.storageSpace}"
                 app:text="@string/title_storage_space" />

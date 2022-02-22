@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:ns2="http://schemas.android.com/apk/res-auto">
     <!-- Base application light theme. -->
-    <style name="Theme.DataBackup" parent="Theme.DataBackup.Light"/>
+    <style name="Theme.DataBackup" parent="Theme.DataBackup.Light" />
 
     <style name="Theme.DataBackup.Light" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:windowBackground">@color/color_light_background</item>
@@ -36,7 +36,7 @@
 
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:navigationBarColor">@color/color_light_background_shallow</item>
+        <item name="android:navigationBarColor">@color/color_light_background_deep</item>
     </style>
 
     <style name="Theme.DataBackup.Dark" parent="Theme.Material3.Dark.NoActionBar">
@@ -71,7 +71,14 @@
 
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/color_light_background_shallow</item>
+        <item name="android:navigationBarColor">@color/color_light_background_deep</item>
+    </style>
+
+    <style name="Theme.DataBackup.Button" parent="Widget.Material3.Button">
+        <item name="android:stateListAnimator" ns2:ignore="NewApi">
+            @animator/mtrl_btn_unelevated_state_list_anim
+        </item>
+        <item name="elevation">0dp</item>
     </style>
 
 </resources>

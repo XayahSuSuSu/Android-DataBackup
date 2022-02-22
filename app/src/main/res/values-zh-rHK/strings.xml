@@ -30,8 +30,8 @@
     <string name="part_components">部分組件</string>
     <string name="magisk">Magisk</string>
     <string name="wip">施工中…</string>
-    <string name="select_all_only_app">全選：僅應用（不含數據）</string>
-    <string name="select_all_backup">全選：是否備份</string>
+    <string name="reverse_only_app">反選：僅應用（不含數據）</string>
+    <string name="reverse_backup">反選：是否備份</string>
     <string name="only_app">僅應用</string>
     <string name="title_settings">設置</string>
     <string name="settings_backup_setttings">備份設置</string>
@@ -120,4 +120,7 @@
     <string name="settings_summary_toast_info">開啟則備份與恢復遭遇異常或是結束後發送通知(Toast與通知欄)</string>
     <string name="settings_summary_system_name">是否檢測系統應用</string>
     <string name="settings_title_system_name">檢測系統應用</string>
+    <string name="reverse_apps">反選應用</string>
+    <string name="refresh_list">刷新列表</string>
+    <string name="restore_backup">還原備份</string>
 </resources>

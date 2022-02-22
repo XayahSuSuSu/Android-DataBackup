@@ -2,10 +2,9 @@ package com.xayah.databackup.fragment.backup
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.room.Room
 import com.drakeet.multitype.MultiTypeAdapter
 import com.xayah.databackup.adapter.AppListDelegate
-import com.xayah.databackup.model.app.AppDatabase
+import com.xayah.databackup.model.AppInfo
 import com.xayah.databackup.util.DataUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,21 +13,40 @@ import kotlinx.coroutines.launch
 class BackupViewModel : ViewModel() {
     val adapter = MultiTypeAdapter()
 
-    fun initialize(mContext: Context, appListDelegate: AppListDelegate, onInitialized: () -> Unit) {
+    fun initialize(
+        mContext: Context,
+        appListFile: MutableList<String>,
+        appListDelegate: AppListDelegate,
+        onInitialized: () -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
-            val db = Room.databaseBuilder(
-                mContext,
-                AppDatabase::class.java, "app"
-            ).build()
-            val appEntityList = db.appDao().getAllApps()
-            adapter.register(appListDelegate)
-            for ((index, i) in appEntityList.withIndex()) {
-                val (appIcon, appName, appPackage) = DataUtil.getAppInfo(mContext, i.appPackage)
-                appEntityList[index].appIcon = appIcon
-                appEntityList[index].appName = appName
-                appEntityList[index].appPackage = appPackage
+            val appList: MutableList<AppInfo> = mutableListOf()
+            for (i in appListFile) {
+                try {
+                    val info = i.split(" ")
+                    if (!info[0].contains("#不需要")) {
+                        val appInfo = AppInfo(
+                            info[0].replace("[#\\/:*?\"<>|!]".toRegex(), ""),
+                            info[1],
+                            info[2],
+                            i.contains("!"),
+                            !i.contains("#")
+                        )
+                        val (appIcon, _, _) = DataUtil.getAppInfo(
+                            mContext,
+                            appInfo.appPackage
+                        )
+                        appInfo.appIcon = appIcon
+                        appList.add(appInfo)
+                    }
+                } catch (e: IndexOutOfBoundsException) {
+                    e.printStackTrace()
+                }
             }
-            adapter.items = appEntityList
+
+            adapter.register(appListDelegate)
+            appListDelegate.isAttached = true
+            adapter.items = appList
             onInitialized()
         }
     }
