@@ -20,8 +20,8 @@ android {
         applicationId "com.xayah.databackup"
         minSdk 24
         targetSdk 31
-        versionCode 18
-        versionName "Beta-2.1.1"
+        versionCode 19
+        versionName "Beta-2.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
