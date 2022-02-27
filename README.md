@@ -3,6 +3,7 @@
 </div>
 
 # 数据备份
+[![GitHub release](https://img.shields.io/github/v/release/XayahSuSuSu/Android-DataBackup?color=orange)](https://github.com/XayahSuSuSu/Android-DataBackup/releases) [![License](https://img.shields.io/github/license/XayahSuSuSu/Android-DataBackup?color=ff69b4)](./LICENSE)
 
 > 基于 [酷安@落叶凄凉TEL](http://www.coolapk.com/u/2277637) 制作的[脚本](https://github.com/YAWAsau/backup_script)
 >
