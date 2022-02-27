@@ -56,7 +56,7 @@
     <string name="settings_sumarry_output_path">/storage/emulated/0/Download</string>
     <string name="settings_path">Path settings</string>
     <string name="settings_title_custom_path">Custom backup path</string>
-    <string name="settings_summary_custom_path">/storage/emulated/0/Pictures\n/storage/emulated/0/Download\n/storage/emulated/0/Music\n/storage/emulated/0/DCIM</string>
+    <string name="settings_summary_custom_path">/storage/emulated/0/Pictures\n#/storage/emulated/0/Download\n#/storage/emulated/0/Music\n#/storage/emulated/0/DCIM</string>
     <string name="settings_update_setttings">Update settings</string>
     <string name="settings_title_update">Enable script update checking</string>
     <string name="settings_summary_update">Whether to enable script update checking</string>
