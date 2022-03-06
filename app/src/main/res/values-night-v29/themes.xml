@@ -1,6 +1,0 @@
-<resources>
-    <!-- Base application dark theme. -->
-    <style name="Theme.DataBackup" parent="Theme.DataBackup.Dark">
-        <item name="android:forceDarkAllowed">false</item>
-    </style>
-</resources>

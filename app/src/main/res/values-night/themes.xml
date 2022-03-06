@@ -1,4 +1,7 @@
 <resources>
-    <!-- Base application dark theme. -->
-    <style name="Theme.DataBackup" parent="Theme.DataBackup.Dark"/>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DataBackup" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    </style>
 </resources>

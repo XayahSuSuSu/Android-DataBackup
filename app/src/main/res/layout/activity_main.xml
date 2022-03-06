@@ -9,25 +9,20 @@
             type="com.xayah.databackup.viewModel.MainViewModel" />
     </data>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
 
             <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true">
 
                 <com.google.android.material.appbar.MaterialToolbar
                     android:id="@+id/topAppBar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:background="@color/color_light_background"
                     app:subtitle="@{viewModel.versionName}"
                     app:subtitleCentered="true"
                     app:title="@string/app_name"
@@ -36,26 +31,36 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragmentContainerView"
-                android:name="androidx.navigation.fragment.NavHostFragment"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fillViewport="true"
-                app:defaultNavHost="true"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:navGraph="@navigation/navigation_main" />
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/fragmentContainerView"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:defaultNavHost="true"
+                    app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:navGraph="@navigation/navigation_main" />
+
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/bottom_navigation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:labelVisibilityMode="labeled"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:menu="@menu/bottom_navigation" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:backgroundTint="@color/color_light_background_deep"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_navigation" />
-
-    </LinearLayout>
 
 </layout>

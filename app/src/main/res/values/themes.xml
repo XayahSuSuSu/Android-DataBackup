@@ -1,78 +1,11 @@
 <resources xmlns:ns2="http://schemas.android.com/apk/res-auto">
-    <!-- Base application light theme. -->
-    <style name="Theme.DataBackup" parent="Theme.DataBackup.Light" />
-
-    <style name="Theme.DataBackup.Light" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:windowBackground">@color/color_light_background</item>
-
-        <item name="colorPrimary">@color/md_theme_light_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
-        <item name="colorControlNormal">@android:color/black</item>
-        <item name="android:textColor">?attr/colorControlNormal</item>
-        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/md_theme_light_secondary</item>
-        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
-        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
-        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
-        <item name="colorError">@color/md_theme_light_error</item>
-        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
-        <item name="colorOnError">@color/md_theme_light_onError</item>
-        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
-        <item name="android:colorBackground">@color/md_theme_light_background</item>
-        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
-        <item name="colorSurface">@color/md_theme_light_surface</item>
-        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
-        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
-        <item name="colorOutline">@color/md_theme_light_outline</item>
-        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/md_theme_light_primaryInverse</item>
-
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:navigationBarColor">@color/color_light_background_deep</item>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DataBackup" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.DataBackup.Dark" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">@color/md_theme_dark_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
-        <item name="colorControlNormal">@android:color/white</item>
-        <item name="android:textColor">?attr/colorControlNormal</item>
-        <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
-        <item name="colorOnSecondary">@color/md_theme_dark_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/md_theme_dark_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/md_theme_dark_onSecondaryContainer</item>
-        <item name="colorTertiary">@color/md_theme_dark_tertiary</item>
-        <item name="colorOnTertiary">@color/md_theme_dark_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_dark_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_dark_onTertiaryContainer</item>
-        <item name="colorError">@color/md_theme_dark_error</item>
-        <item name="colorErrorContainer">@color/md_theme_dark_errorContainer</item>
-        <item name="colorOnError">@color/md_theme_dark_onError</item>
-        <item name="colorOnErrorContainer">@color/md_theme_dark_onErrorContainer</item>
-        <item name="android:colorBackground">@color/md_theme_dark_background</item>
-        <item name="colorOnBackground">@color/md_theme_dark_onBackground</item>
-        <item name="colorSurface">@color/md_theme_dark_surface</item>
-        <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
-        <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/md_theme_dark_onSurfaceVariant</item>
-        <item name="colorOutline">@color/md_theme_dark_outline</item>
-        <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/md_theme_dark_primaryInverse</item>
-
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/color_light_background_deep</item>
-    </style>
+    <style name="Theme.DataBackup" parent="Base.Theme.DataBackup" />
 
     <style name="Theme.DataBackup.Button" parent="Widget.Material3.Button">
         <item name="android:stateListAnimator" ns2:ignore="NewApi">
