@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.R
+import com.xayah.databackup.model.AppInfo
 
 class Command {
     companion object {
@@ -17,6 +18,21 @@ class Command {
                 return exec.out.joinToString()
             }
             return mContext.getString(R.string.error)
+        }
+
+        fun getAppList(context: Context): MutableList<AppInfo> {
+            val appList: MutableList<AppInfo> = mutableListOf()
+
+            val packageManager = context.packageManager
+            val packages = packageManager.getInstalledPackages(0)
+            for (i in packages) {
+                val appIcon = i.applicationInfo.loadIcon(packageManager)
+                val appName = i.applicationInfo.loadLabel(packageManager).toString()
+                val packageName = i.packageName
+                val appInfo = AppInfo(appIcon, appName, packageName)
+                appList.add(appInfo)
+            }
+            return appList
         }
     }
 }

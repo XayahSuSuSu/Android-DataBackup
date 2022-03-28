@@ -9,4 +9,6 @@
     <string name="granted">已授權</string>
     <string name="not_granted">未授權</string>
     <string name="error">錯誤</string>
+    <string name="application">應用</string>
+    <string name="data">數據</string>
 </resources>

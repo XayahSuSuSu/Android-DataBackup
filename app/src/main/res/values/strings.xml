@@ -11,4 +11,6 @@
     <string name="granted">Granted</string>
     <string name="not_granted">Not granted</string>
     <string name="error">Error</string>
+    <string name="application">Application</string>
+    <string name="data">Data</string>
 </resources>
