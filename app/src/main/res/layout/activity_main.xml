@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.xayah.databackup.MainViewModel" />
+    </data>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -17,7 +24,13 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:layout_height="?attr/actionBarSize"
+                app:subtitle="@{viewModel.versionName}"
+                app:subtitleCentered="true"
+                app:title="@string/app_name"
+                app:titleCentered="true"
+                app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -42,6 +55,7 @@
                 android:id="@+id/bottom_navigation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:menu="@menu/bottom_navigation"
                 app:labelVisibilityMode="labeled"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent" />

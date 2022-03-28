@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">数据备份</string>
+    <string name="backup">备份</string>
+    <string name="more">更多</string>
+    <string name="restore">恢复</string>
+    <string name="home">主页</string>
+</resources>

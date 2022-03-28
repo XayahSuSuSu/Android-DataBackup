@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">DataBackup</string>
+    <string name="backup">Backup</string>
+    <string name="more">More</string>
+    <string name="restore">Restore</string>
+    <string name="home">Home</string>
 </resources>
