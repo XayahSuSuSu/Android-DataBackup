@@ -65,4 +65,7 @@ dependencies {
     implementation "com.github.topjohnwu.libsu:io:${libsuVersion}"
     // Optional: Bundle prebuilt BusyBox binaries
     implementation "com.github.topjohnwu.libsu:busybox:${libsuVersion}"
+
+    // MultiType
+    implementation 'com.drakeet.multitype:multitype:4.3.0'
 }
