@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_positive">确认</string>
+    <string name="dialog_negative">取消</string>
+    <string name="dialog_neutral">重置</string>
+</resources>

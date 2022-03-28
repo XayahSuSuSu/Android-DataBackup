@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="text" format="string" />
+    <attr name="subtext" format="string" />
+    <attr name="title" format="string" />
+    <attr name="summary" format="string" />
+    <attr name="defaultValue" format="string" />
+    <attr name="choice" format="integer" />
+    <attr name="checked" format="boolean" />
+
+    <declare-styleable name="LargeActionCard">
+        <attr name="text" />
+        <attr name="subtext" />
+        <attr name="icon" />
+    </declare-styleable>
+
+    <declare-styleable name="LargeActionLabel">
+        <attr name="text" />
+        <attr name="subtext" />
+        <attr name="icon" />
+    </declare-styleable>
+
+    <declare-styleable name="Clickable">
+        <attr name="android:focusable" />
+        <attr name="android:clickable" />
+        <attr name="android:background" />
+        <attr name="android:foreground" />
+    </declare-styleable>
+
+    <declare-styleable name="ActionLabel">
+        <attr name="text" />
+        <attr name="subtext" />
+        <attr name="icon" />
+    </declare-styleable>
+
+    <declare-styleable name="Category">
+        <attr name="text" />
+    </declare-styleable>
+
+    <declare-styleable name="Switch">
+        <attr name="title" />
+        <attr name="summary" />
+        <attr name="icon" />
+        <attr name="checked" />
+    </declare-styleable>
+
+    <declare-styleable name="EditableText">
+        <attr name="title" />
+        <attr name="summary" />
+        <attr name="defaultValue" />
+        <attr name="icon" />
+    </declare-styleable>
+
+    <declare-styleable name="SelectableList">
+        <attr name="title" />
+        <attr name="summary" />
+        <attr name="choice" />
+        <attr name="icon" />
+    </declare-styleable>
+
+    <declare-styleable name="ClickableView">
+        <attr name="title" />
+        <attr name="summary" />
+        <attr name="icon" />
+    </declare-styleable>
+</resources>
