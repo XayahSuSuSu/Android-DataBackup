@@ -4,4 +4,9 @@
     <string name="more">更多</string>
     <string name="restore">恢復</string>
     <string name="home">主頁</string>
+    <string name="script">脚本</string>
+    <string name="storage_space">存儲空間</string>
+    <string name="granted">已授權</string>
+    <string name="not_granted">未授權</string>
+    <string name="error">錯誤</string>
 </resources>

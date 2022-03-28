@@ -4,4 +4,11 @@
     <string name="more">More</string>
     <string name="restore">Restore</string>
     <string name="home">Home</string>
+    <string name="script_version" translatable="false">14.3</string>
+    <string name="root" translatable="false">Root</string>
+    <string name="script">Script</string>
+    <string name="storage_space">Storage space</string>
+    <string name="granted">Granted</string>
+    <string name="not_granted">Not granted</string>
+    <string name="error">Error</string>
 </resources>

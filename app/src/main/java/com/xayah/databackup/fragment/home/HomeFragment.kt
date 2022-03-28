@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.xayah.databackup.R
 import com.xayah.databackup.databinding.FragmentHomeBinding
+import com.xayah.databackup.util.Command
 
 
 class HomeFragment : Fragment() {
@@ -23,7 +25,11 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        val viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        binding.viewModel = viewModel
+
+        viewModel.scriptVersion = getString(R.string.script_version)
+        viewModel.storageSpace = Command.getStorageSpace(requireContext())
     }
 
     override fun onDestroyView() {
