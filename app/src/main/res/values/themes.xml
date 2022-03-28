@@ -1,4 +1,4 @@
-<resources xmlns:ns2="http://schemas.android.com/apk/res-auto">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.DataBackup" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
@@ -6,12 +6,4 @@
     </style>
 
     <style name="Theme.DataBackup" parent="Base.Theme.DataBackup" />
-
-    <style name="Theme.DataBackup.Button" parent="Widget.Material3.Button">
-        <item name="android:stateListAnimator" ns2:ignore="NewApi">
-            @animator/mtrl_btn_unelevated_state_list_anim
-        </item>
-        <item name="elevation">0dp</item>
-    </style>
-
 </resources>

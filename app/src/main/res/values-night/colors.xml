@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!--    Clash-->
-    <color name="clash">#ffffff</color>
-
-    <!--    Activated-->
-    <color name="color__activated">#1976d2</color>
-</resources>

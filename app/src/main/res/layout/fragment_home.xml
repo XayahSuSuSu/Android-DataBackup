@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout>
 
     <data>
 
@@ -9,48 +8,26 @@
             type="com.xayah.databackup.fragment.home.HomeViewModel" />
     </data>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="true"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/main_padding_horizontal"
-            android:paddingTop="@dimen/main_padding_top"
-            android:paddingBottom="@dimen/main_padding_bottom">
+            android:layout_height="match_parent">
 
-            <com.xayah.databackup.view.LargeActionCard
-                style="?attr/materialCardViewFilledStyle"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                app:icon="@drawable/ic_round_key"
-                app:subtext="@{viewModel.isRoot ? @string/granted : @string/not_granted}"
-                app:text="@string/root" />
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                android:paddingHorizontal="30dp"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp">
+
+            </LinearLayout>
 
 
-            <com.xayah.databackup.view.LargeActionCard
-                style="?attr/materialCardViewFilledStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                app:icon="@drawable/ic_round_code"
-                app:subtext="@{viewModel.scriptVersion}"
-                app:text="@string/title_script_in_app" />
-
-            <com.xayah.databackup.view.LargeActionCard
-                style="?attr/materialCardViewFilledStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                app:icon="@drawable/ic_round_trending"
-                app:subtext="@{viewModel.storageSpace}"
-                app:text="@string/title_storage_space" />
-
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>
