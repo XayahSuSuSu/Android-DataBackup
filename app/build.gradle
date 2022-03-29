@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.xayah.databackup"
-        minSdk 26
+        minSdk 28
         targetSdk 32
         versionCode 20
         versionName "Beta-3.0.0"
