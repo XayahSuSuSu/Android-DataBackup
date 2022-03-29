@@ -73,7 +73,8 @@ class BackupFragment : Fragment() {
             delay(1000)
             withContext(Dispatchers.Main) {
                 linearProgressIndicator.visibility = View.GONE
-                binding.recyclerView.visibility = View.VISIBLE
+                if (_binding != null)
+                    binding.recyclerView.visibility = View.VISIBLE
             }
         }
     }
