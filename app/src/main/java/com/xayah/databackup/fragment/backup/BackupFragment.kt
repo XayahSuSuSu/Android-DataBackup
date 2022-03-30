@@ -22,7 +22,10 @@ import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Room
 import com.xayah.databackup.util.dp
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class BackupFragment : Fragment() {
@@ -74,6 +77,9 @@ class BackupFragment : Fragment() {
                 items = appList
                 withContext(Dispatchers.Main) {
                     notifyDataSetChanged()
+                    linearProgressIndicator.visibility = View.GONE
+                    if (_binding != null)
+                        binding.recyclerView.visibility = View.VISIBLE
                 }
             }
         }
@@ -81,7 +87,7 @@ class BackupFragment : Fragment() {
             adapter = mAdapter
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             layoutManager = GridLayoutManager(mContext, 1)
-            visibility = View.GONE
+            visibility = View.INVISIBLE
             layoutAnimation = LayoutAnimationController(
                 loadAnimation(
                     context,
@@ -92,14 +98,7 @@ class BackupFragment : Fragment() {
                 delay = 0.3F
             }
         }
-        CoroutineScope(Dispatchers.IO).launch {
-            delay(1000)
-            withContext(Dispatchers.Main) {
-                linearProgressIndicator.visibility = View.GONE
-                if (_binding != null)
-                    binding.recyclerView.visibility = View.VISIBLE
-            }
-        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
