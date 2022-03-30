@@ -22,4 +22,5 @@
         <item>反选：数据</item>
     </string-array>
     <string name="backup_apk_processing">备份APK中…</string>
+    <string name="backup_success">备份完成！</string>
 </resources>

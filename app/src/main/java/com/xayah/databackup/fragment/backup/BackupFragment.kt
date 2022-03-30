@@ -5,11 +5,13 @@ import android.view.*
 import android.view.ViewGroup.LayoutParams
 import android.view.animation.AnimationUtils.loadAnimation
 import android.view.animation.LayoutAnimationController
-import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.airbnb.lottie.LottieAnimationView
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -55,15 +57,16 @@ class BackupFragment : Fragment() {
 
         val linearProgressIndicator = LinearProgressIndicator(mContext).apply {
             layoutParams =
-                LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+                RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                     .apply {
+                        addRule(RelativeLayout.CENTER_IN_PARENT)
                         marginStart = 100.dp
                         marginEnd = 100.dp
                     }
             trackCornerRadius = 3.dp
             isIndeterminate = true
         }
-        binding.linearLayout.addView(linearProgressIndicator)
+        binding.relativeLayout.addView(linearProgressIndicator)
         mAdapter = MultiTypeAdapter().apply {
             register(AppListAdapter(room))
             CoroutineScope(Dispatchers.IO).launch {
@@ -105,11 +108,12 @@ class BackupFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val mContext = requireContext()
         when (item.itemId) {
             R.id.backup_reverse -> {
                 val items: Array<String> = resources.getStringArray(R.array.reverse_array)
                 var choice = 0
-                MaterialAlertDialogBuilder(requireContext())
+                MaterialAlertDialogBuilder(mContext)
                     .setTitle(getString(R.string.choose))
                     .setCancelable(true)
                     .setSingleChoiceItems(
@@ -221,6 +225,30 @@ class BackupFragment : Fragment() {
                             appList.removeAt(0)
                             mAdapter.notifyItemRemoved(0)
                         }
+                    }
+                    withContext(Dispatchers.Main) {
+                        val lottieAnimationView = LottieAnimationView(context)
+                        lottieAnimationView.apply {
+                            layoutParams =
+                                RelativeLayout.LayoutParams(
+                                    LayoutParams.MATCH_PARENT,
+                                    LayoutParams.MATCH_PARENT
+                                ).apply {
+                                    addRule(RelativeLayout.CENTER_IN_PARENT)
+                                }
+                            setAnimation(R.raw.success)
+                            playAnimation()
+                            addAnimatorUpdateListener { animation ->
+                                if (animation.animatedFraction == 1.0F) {
+                                    Toast.makeText(
+                                        mContext,
+                                        context.getString(R.string.backup_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                        binding.relativeLayout.addView(lottieAnimationView)
                     }
                 }
             }
