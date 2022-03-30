@@ -147,7 +147,7 @@ class Command {
             ShellUtils.fastCmd("apk_path=\"\$(pm path \"${packageName}\" | cut -f2 -d ':')\"")
             val apkPath = ShellUtils.fastCmd("echo \${apk_path%/*}")
             ShellUtils.fastCmd("cd $apkPath")
-            val apks = Shell.cmd("ls").exec().out
+            val apks = Shell.cmd("ls *.apk").exec().out
             if (apks.size == 1) {
                 // 暂时仅支持非Split Apk
                 var cmd = ""
