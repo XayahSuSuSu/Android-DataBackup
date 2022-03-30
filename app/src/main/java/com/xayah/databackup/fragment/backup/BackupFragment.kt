@@ -62,7 +62,7 @@ class BackupFragment : Fragment() {
             layoutAnimation = LayoutAnimationController(
                 loadAnimation(
                     context,
-                    androidx.appcompat.R.anim.abc_fade_in
+                    androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom
                 )
             ).apply {
                 order = LayoutAnimationController.ORDER_NORMAL
