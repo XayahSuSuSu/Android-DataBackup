@@ -168,15 +168,21 @@ class BackupFragment : Fragment() {
                 binding.recyclerView.scrollToPosition(0)
                 val mAppList = mutableListOf<AppEntity>()
                 mAppList.addAll(appList)
+                for (i in mAppList) {
+                    if (!i.backupApp && !i.backupData) {
+                        appList.remove(i)
+                    } else {
+                        appList[appList.indexOf(i)].isProcessing = true
+                    }
+                }
+                mAdapter.notifyDataSetChanged()
+                mAppList.clear()
+                mAppList.addAll(appList)
                 CoroutineScope(Dispatchers.IO).launch {
                     for (i in mAppList) {
                         val compressionType = "lz4"
                         val packageName = i.packageName
                         val outPut = "/data/local/tmp/DataBackup/${packageName}"
-                        withContext(Dispatchers.Main) {
-                            appList[0].isProcessing = true
-                            mAdapter.notifyItemChanged(0)
-                        }
                         if (appList[0].backupApp) {
                             withContext(Dispatchers.Main) {
                                 appList[0].onBackupApp = true
