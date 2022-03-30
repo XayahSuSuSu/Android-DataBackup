@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Environment
 import com.topjohnwu.superuser.CallbackList
@@ -48,11 +49,13 @@ class Command {
             val packageManager = context.packageManager
             val packages = packageManager.getInstalledPackages(0)
             for (i in packages) {
-                val appIcon = i.applicationInfo.loadIcon(packageManager)
-                val appName = i.applicationInfo.loadLabel(packageManager).toString()
-                val packageName = i.packageName
-                val appInfo = AppInfo(appIcon, appName, packageName)
-                appList.add(appInfo)
+                if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
+                    val appIcon = i.applicationInfo.loadIcon(packageManager)
+                    val appName = i.applicationInfo.loadLabel(packageManager).toString()
+                    val packageName = i.packageName
+                    val appInfo = AppInfo(appIcon, appName, packageName)
+                    appList.add(appInfo)
+                }
             }
             return appList
         }
