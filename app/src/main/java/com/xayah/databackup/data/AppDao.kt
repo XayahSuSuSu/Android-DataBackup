@@ -25,7 +25,7 @@ interface AppDao {
     @Query("UPDATE AppEntity SET backupData = :mBoolean ")
     fun selectAllData(mBoolean: Boolean)
 
-    @Query("UPDATE AppEntity SET backupApp = NOT backupData ")
+    @Query("UPDATE AppEntity SET backupApp = NOT backupApp ")
     fun reverseAllApp()
 
     @Query("UPDATE AppEntity SET backupData = NOT backupData ")
