@@ -21,4 +21,5 @@
         <item>反选：应用</item>
         <item>反选：数据</item>
     </string-array>
+    <string name="backup_apk_processing">备份APK中…</string>
 </resources>

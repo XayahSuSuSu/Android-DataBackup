@@ -17,6 +17,7 @@
     <string name="reverse">Reverse</string>
     <string name="search">Search</string>
     <string name="choose">Choose</string>
+    <string name="backup_apk_processing">Backup apk…</string>
     <string-array name="reverse_array">
         <item>All: Application</item>
         <item>All: Data</item>

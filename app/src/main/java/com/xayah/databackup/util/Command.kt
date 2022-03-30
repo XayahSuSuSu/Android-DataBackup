@@ -45,7 +45,6 @@ class Command {
 
         fun getAppList(context: Context, room: Room): MutableList<AppEntity> {
             val appList: MutableList<AppEntity> = mutableListOf()
-
             val packageManager = context.packageManager
             val packages = packageManager.getInstalledPackages(0)
             for (i in packages) {
@@ -94,25 +93,26 @@ class Command {
             return ""
         }
 
-        private fun compress(
+        fun compress(
             compressionType: String,
             dataType: String,
             packageName: String,
             outPut: String,
             onCallback: (line: String) -> Unit = {}
         ) {
+            mkdir(outPut)
             val dataPath: String
             var cmd: String
             when (dataType) {
                 "user" -> {
                     dataPath = "/data/data"
                     cmd =
-                        "tar --exclude=\"${packageName}/.ota\" --exclude=\"${packageName}/cache\" --exclude=\"${packageName}/lib\" -cpf - -C \"${dataPath}\" \"${packageName}\" | pv -f"
+                        "tar --exclude=\"${packageName}/.ota\" --exclude=\"${packageName}/cache\" --exclude=\"${packageName}/lib\" -cpf - -C \"${dataPath}\" \"${packageName}\" | pv -f -t -r -b"
                 }
                 else -> {
                     dataPath = "/data/media/0/Android/${dataType}"
                     cmd =
-                        "tar --exclude=\"Backup_\"* --exclude=\"${packageName}/cache\" -cPpf - \"${dataPath}/${packageName}\" | pv -f"
+                        "tar --exclude=\"Backup_\"* --exclude=\"${packageName}/cache\" -cPpf - \"${dataPath}/${packageName}\" | pv -f -t -r -b"
                 }
             }
             when (compressionType) {
@@ -138,12 +138,13 @@ class Command {
             }
         }
 
-        private fun compressAPK(
+        fun compressAPK(
             compressionType: String,
             packageName: String,
             outPut: String,
             onCallback: (line: String) -> Unit = {}
         ) {
+            mkdir(outPut)
             ShellUtils.fastCmd("apk_path=\"\$(pm path \"${packageName}\" | cut -f2 -d ':')\"")
             val apkPath = ShellUtils.fastCmd("echo \${apk_path%/*}")
             ShellUtils.fastCmd("cd $apkPath")
@@ -183,7 +184,7 @@ class Command {
             onCallback: (line: String) -> Unit = {}
         ) {
             val dataPath: String
-            var cmd = "pv -f \"${inputPath}\" | tar --recursive-unlink"
+            var cmd = "pv -f -t -r -b \"${inputPath}\" | tar --recursive-unlink"
             when (dataType) {
                 "user" -> {
                     dataPath = "/data/data"
@@ -264,10 +265,10 @@ class Command {
                     var cmd = ""
                     when (getCompressionTypeByName(i)) {
                         "tar" -> {
-                            cmd = "pv -f \"${i}\" | tar -xmpf - -C \"${tmpDir}\""
+                            cmd = "pv -f -t -r -b \"${i}\" | tar -xmpf - -C \"${tmpDir}\""
                         }
                         "zstd", "lz4" -> {
-                            cmd = "pv -f \"${i}\" | tar -I zstd -xmpf - -C \"${tmpDir}\""
+                            cmd = "pv -f -t -r -b \"${i}\" | tar -I zstd -xmpf - -C \"${tmpDir}\""
                         }
                     }
                     if (cmd.isNotEmpty()) {

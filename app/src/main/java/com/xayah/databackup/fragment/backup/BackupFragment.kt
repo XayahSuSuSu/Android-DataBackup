@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -68,10 +69,14 @@ class BackupFragment : Fragment() {
             CoroutineScope(Dispatchers.IO).launch {
                 appList = Command.getAppList(mContext, room)
                 items = appList
+                withContext(Dispatchers.Main) {
+                    notifyDataSetChanged()
+                }
             }
         }
         binding.recyclerView.apply {
             adapter = mAdapter
+            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             layoutManager = GridLayoutManager(mContext, 1)
             visibility = View.GONE
             layoutAnimation = LayoutAnimationController(
@@ -154,6 +159,70 @@ class BackupFragment : Fragment() {
                         }
                     }
                     .show()
+            }
+            R.id.backup_confirm -> {
+                binding.recyclerView.scrollToPosition(0)
+                val mAppList = mutableListOf<AppEntity>()
+                mAppList.addAll(appList)
+                CoroutineScope(Dispatchers.IO).launch {
+                    for (i in mAppList) {
+                        val compressionType = "lz4"
+                        val packageName = i.packageName
+                        val outPut = "/data/local/tmp/DataBackup/${packageName}"
+                        withContext(Dispatchers.Main) {
+                            appList[0].isProcessing = true
+                            mAdapter.notifyItemChanged(0)
+                        }
+                        if (appList[0].backupApp) {
+                            withContext(Dispatchers.Main) {
+                                appList[0].onBackupApp = true
+                                mAdapter.notifyItemChanged(0)
+                                appList[0].progress = getString(R.string.backup_apk_processing)
+                                mAdapter.notifyItemChanged(0)
+                            }
+                            Command.compressAPK(compressionType, packageName, outPut)
+                            withContext(Dispatchers.Main) {
+                                appList[0].onBackupApp = false
+                                appList[0].backupApp = false
+                                mAdapter.notifyItemChanged(0)
+                            }
+                        }
+                        if (appList[0].backupData) {
+                            withContext(Dispatchers.Main) {
+                                appList[0].onBackupData = true
+                                mAdapter.notifyItemChanged(0)
+                            }
+                            Command.compress(compressionType, "user", packageName, outPut) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    if (appList.isNotEmpty()) {
+                                        appList[0].progress = it
+                                        mAdapter.notifyItemChanged(0)
+                                    }
+                                }
+                            }
+                            Command.compress(compressionType, "data", packageName, outPut) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    if (appList.isNotEmpty()) {
+                                        appList[0].progress = it
+                                        mAdapter.notifyItemChanged(0)
+                                    }
+                                }
+                            }
+                            Command.compress(compressionType, "obb", packageName, outPut) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    if (appList.isNotEmpty()) {
+                                        appList[0].progress = it
+                                        mAdapter.notifyItemChanged(0)
+                                    }
+                                }
+                            }
+                        }
+                        withContext(Dispatchers.Main) {
+                            appList.removeAt(0)
+                            mAdapter.notifyItemRemoved(0)
+                        }
+                    }
+                }
             }
         }
         return super.onOptionsItemSelected(item)

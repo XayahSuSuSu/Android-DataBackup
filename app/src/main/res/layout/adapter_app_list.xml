@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         android:focusable="false">
 
         <LinearLayout
@@ -33,9 +33,10 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:orientation="vertical"
                     android:layout_marginEnd="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -45,28 +46,23 @@
                     <TextView
                         android:id="@+id/appName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:ellipsize="end"
+                        android:layout_weight="1"
                         android:maxLines="1"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toTopOf="@+id/appPackage"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_chainStyle="packed" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/appPackage"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/appName" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -83,6 +79,7 @@
                     android:checked="true"
                     android:text="@string/application"
                     app:chipStrokeWidth="0dp"
+                    app:chipIconEnabled="true"
                     app:layout_constraintEnd_toStartOf="@id/chip_data"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -95,12 +92,11 @@
                     android:checked="true"
                     android:text="@string/data"
                     app:chipStrokeWidth="0dp"
+                    app:chipIconEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </LinearLayout>
-
 
     </com.google.android.material.card.MaterialCardView>
 

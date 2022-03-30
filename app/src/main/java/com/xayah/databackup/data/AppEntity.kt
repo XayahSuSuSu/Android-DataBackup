@@ -16,4 +16,22 @@ data class AppEntity(
 ) {
     @Ignore
     var icon: Drawable? = null
+
+    @Ignore
+    var onBackupApp: Boolean = false
+
+    @Ignore
+    var onBackupData: Boolean = false
+
+    @Ignore
+    var onBackupAppFinished: Boolean = false
+
+    @Ignore
+    var onBackupDataFinished: Boolean = false
+
+    @Ignore
+    var isProcessing: Boolean = false
+
+    @Ignore
+    var progress: String = ""
 }
