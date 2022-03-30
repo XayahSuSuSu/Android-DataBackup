@@ -54,4 +54,20 @@ class Room(context: Context) {
             update(appEntity)
         }
     }
+
+    fun selectAllApp() {
+        db.appDao().selectAllApp(true)
+    }
+
+    fun selectAllData() {
+        db.appDao().selectAllData(true)
+    }
+
+    fun reverseAllApp() {
+        db.appDao().reverseAllApp()
+    }
+
+    fun reverseAllData() {
+        db.appDao().reverseAllData()
+    }
 }

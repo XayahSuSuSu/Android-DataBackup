@@ -43,8 +43,7 @@ class Command {
             return mContext.getString(R.string.error)
         }
 
-        fun getAppList(context: Context): MutableList<AppEntity> {
-            val room = Room(context)
+        fun getAppList(context: Context, room: Room): MutableList<AppEntity> {
             val appList: MutableList<AppEntity> = mutableListOf()
 
             val packageManager = context.packageManager
@@ -65,7 +64,6 @@ class Command {
                     appList.add(appEntity)
                 }
             }
-            room.close()
             return appList
         }
 

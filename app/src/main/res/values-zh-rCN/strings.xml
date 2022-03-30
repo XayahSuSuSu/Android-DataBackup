@@ -11,4 +11,14 @@
     <string name="error">错误</string>
     <string name="application">应用</string>
     <string name="data">数据</string>
+    <string name="confirm">确定</string>
+    <string name="reverse">反选</string>
+    <string name="search">搜索</string>
+    <string name="choose">选择</string>
+    <string-array name="reverse_array">
+        <item>全选：应用</item>
+        <item>全选：数据</item>
+        <item>反选：应用</item>
+        <item>反选：数据</item>
+    </string-array>
 </resources>

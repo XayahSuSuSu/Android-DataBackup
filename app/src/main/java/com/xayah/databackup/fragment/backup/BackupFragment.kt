@@ -1,9 +1,7 @@
 package com.xayah.databackup.fragment.backup
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.ViewGroup.LayoutParams
 import android.view.animation.AnimationUtils.loadAnimation
 import android.view.animation.LayoutAnimationController
@@ -12,10 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.drakeet.multitype.MultiTypeAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
+import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.Room
 import com.xayah.databackup.util.dp
 import kotlinx.coroutines.*
 
@@ -25,7 +27,11 @@ class BackupFragment : Fragment() {
 
     private val binding get() = _binding!!
 
-    private var appListAdapter = AppListAdapter()
+    lateinit var room: Room
+
+    lateinit var mAdapter: MultiTypeAdapter
+
+    lateinit var appList: MutableList<AppEntity>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -43,6 +49,8 @@ class BackupFragment : Fragment() {
 
     private fun initialize() {
         val mContext = requireContext()
+        room = Room(mContext)
+        setHasOptionsMenu(true)
 
         val linearProgressIndicator = LinearProgressIndicator(mContext).apply {
             layoutParams =
@@ -55,10 +63,11 @@ class BackupFragment : Fragment() {
             isIndeterminate = true
         }
         binding.linearLayout.addView(linearProgressIndicator)
-        val mAdapter = MultiTypeAdapter().apply {
-            register(appListAdapter)
+        mAdapter = MultiTypeAdapter().apply {
+            register(AppListAdapter(room))
             CoroutineScope(Dispatchers.IO).launch {
-                items = Command.getAppList(mContext)
+                appList = Command.getAppList(mContext, room)
+                items = appList
             }
         }
         binding.recyclerView.apply {
@@ -85,9 +94,74 @@ class BackupFragment : Fragment() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.backup, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.backup_reverse -> {
+                val items: Array<String> = resources.getStringArray(R.array.reverse_array)
+                var choice = 0
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.choose))
+                    .setCancelable(true)
+                    .setSingleChoiceItems(
+                        items,
+                        choice
+                    ) { _, which ->
+                        choice = which
+                    }
+                    .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                        when (choice) {
+                            0 -> {
+                                for ((index, _) in appList.withIndex()) {
+                                    appList[index].backupApp = true
+                                }
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    room.selectAllApp()
+                                }
+                                mAdapter.notifyDataSetChanged()
+                            }
+                            1 -> {
+                                for ((index, _) in appList.withIndex()) {
+                                    appList[index].backupData = true
+                                }
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    room.selectAllData()
+                                }
+                                mAdapter.notifyDataSetChanged()
+                            }
+                            2 -> {
+                                for ((index, _) in appList.withIndex()) {
+                                    appList[index].backupApp = !appList[index].backupApp
+                                }
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    room.reverseAllApp()
+                                }
+                                mAdapter.notifyDataSetChanged()
+                            }
+                            3 -> {
+                                for ((index, _) in appList.withIndex()) {
+                                    appList[index].backupData = !appList[index].backupData
+                                }
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    room.reverseAllData()
+                                }
+                                mAdapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                    .show()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        appListAdapter.room.close()
+        room.close()
     }
 }

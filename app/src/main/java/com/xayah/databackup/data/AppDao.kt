@@ -18,4 +18,16 @@ interface AppDao {
 
     @Query("SELECT * FROM AppEntity WHERE packageName = :packageName ")
     fun findByPackage(packageName: String): List<AppEntity>
+
+    @Query("UPDATE AppEntity SET backupApp = :mBoolean ")
+    fun selectAllApp(mBoolean: Boolean)
+
+    @Query("UPDATE AppEntity SET backupData = :mBoolean ")
+    fun selectAllData(mBoolean: Boolean)
+
+    @Query("UPDATE AppEntity SET backupApp = NOT backupData ")
+    fun reverseAllApp()
+
+    @Query("UPDATE AppEntity SET backupData = NOT backupData ")
+    fun reverseAllData()
 }

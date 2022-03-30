@@ -14,11 +14,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AppListAdapter : ItemViewDelegate<AppEntity, AppListAdapter.ViewHolder>() {
-    lateinit var room: Room
+class AppListAdapter(private val room: Room) :
+    ItemViewDelegate<AppEntity, AppListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
-        room = Room(context)
         return ViewHolder(
             AdapterAppListBinding.inflate(
                 LayoutInflater.from(context),

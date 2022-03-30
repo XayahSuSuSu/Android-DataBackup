@@ -13,4 +13,14 @@
     <string name="error">Error</string>
     <string name="application">Application</string>
     <string name="data">Data</string>
+    <string name="confirm">Confirm</string>
+    <string name="reverse">Reverse</string>
+    <string name="search">Search</string>
+    <string name="choose">Choose</string>
+    <string-array name="reverse_array">
+        <item>All: Application</item>
+        <item>All: Data</item>
+        <item>Reverse: Application</item>
+        <item>Reverse: Data</item>
+    </string-array>
 </resources>
