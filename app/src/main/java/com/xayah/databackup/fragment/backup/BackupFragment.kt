@@ -25,6 +25,8 @@ class BackupFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    private var appListAdapter = AppListAdapter()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -40,7 +42,9 @@ class BackupFragment : Fragment() {
     }
 
     private fun initialize() {
-        val linearProgressIndicator = LinearProgressIndicator(requireContext()).apply {
+        val mContext = requireContext()
+
+        val linearProgressIndicator = LinearProgressIndicator(mContext).apply {
             layoutParams =
                 LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                     .apply {
@@ -52,12 +56,14 @@ class BackupFragment : Fragment() {
         }
         binding.linearLayout.addView(linearProgressIndicator)
         val mAdapter = MultiTypeAdapter().apply {
-            register(AppListAdapter())
-            items = Command.getAppList(requireContext())
+            register(appListAdapter)
+            CoroutineScope(Dispatchers.IO).launch {
+                items = Command.getAppList(mContext)
+            }
         }
         binding.recyclerView.apply {
             adapter = mAdapter
-            layoutManager = GridLayoutManager(requireContext(), 1)
+            layoutManager = GridLayoutManager(mContext, 1)
             visibility = View.GONE
             layoutAnimation = LayoutAnimationController(
                 loadAnimation(
@@ -82,5 +88,6 @@ class BackupFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        appListAdapter.room.close()
     }
 }

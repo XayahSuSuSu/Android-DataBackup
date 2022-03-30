@@ -6,13 +6,19 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
+import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.AdapterAppListBinding
-import com.xayah.databackup.model.AppInfo
+import com.xayah.databackup.util.Room
 import com.xayah.databackup.util.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class AppListAdapter : ItemViewDelegate<AppInfo, AppListAdapter.ViewHolder>() {
+class AppListAdapter : ItemViewDelegate<AppEntity, AppListAdapter.ViewHolder>() {
+    lateinit var room: Room
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
+        room = Room(context)
         return ViewHolder(
             AdapterAppListBinding.inflate(
                 LayoutInflater.from(context),
@@ -22,11 +28,35 @@ class AppListAdapter : ItemViewDelegate<AppInfo, AppListAdapter.ViewHolder>() {
         )
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, item: AppInfo) {
+    override fun onBindViewHolder(holder: ViewHolder, item: AppEntity) {
         val binding = holder.binding
         binding.appIcon.setImageDrawable(item.icon)
         binding.appName.text = item.appName
         binding.appPackage.text = item.packageName
+        binding.chipApplication.apply {
+            isChecked = item.backupApp
+            setOnCheckedChangeListener { _, checked ->
+                (adapterItems[holder.bindingAdapterPosition] as AppEntity).backupApp = checked
+                CoroutineScope(Dispatchers.IO).launch {
+                    room.findByPackage(item.packageName) {
+                        it.backupApp = checked
+                        room.update(it)
+                    }
+                }
+            }
+        }
+        binding.chipData.apply {
+            isChecked = item.backupData
+            setOnCheckedChangeListener { _, checked ->
+                (adapterItems[holder.bindingAdapterPosition] as AppEntity).backupData = checked
+                CoroutineScope(Dispatchers.IO).launch {
+                    room.findByPackage(item.packageName) {
+                        it.backupData = checked
+                        room.update(it)
+                    }
+                }
+            }
+        }
         if (holder.bindingAdapterPosition == 0) {
             binding.materialCardView.apply {
                 layoutParams =

@@ -8,7 +8,7 @@ import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.R
-import com.xayah.databackup.model.AppInfo
+import com.xayah.databackup.data.AppEntity
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -43,8 +43,9 @@ class Command {
             return mContext.getString(R.string.error)
         }
 
-        fun getAppList(context: Context): MutableList<AppInfo> {
-            val appList: MutableList<AppInfo> = mutableListOf()
+        fun getAppList(context: Context): MutableList<AppEntity> {
+            val room = Room(context)
+            val appList: MutableList<AppEntity> = mutableListOf()
 
             val packageManager = context.packageManager
             val packages = packageManager.getInstalledPackages(0)
@@ -53,10 +54,18 @@ class Command {
                     val appIcon = i.applicationInfo.loadIcon(packageManager)
                     val appName = i.applicationInfo.loadLabel(packageManager).toString()
                     val packageName = i.packageName
-                    val appInfo = AppInfo(appIcon, appName, packageName)
-                    appList.add(appInfo)
+                    var appEntity = room.findByPackage(packageName)
+                    if (appEntity == null) {
+                        appEntity = AppEntity(0, appName, packageName)
+                    } else {
+                        appEntity.appName = appName
+                    }
+                    room.insertOrUpdate(appEntity)
+                    appEntity.icon = appIcon
+                    appList.add(appEntity)
                 }
             }
+            room.close()
             return appList
         }
 
