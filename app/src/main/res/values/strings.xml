@@ -19,6 +19,7 @@
     <string name="choose">Choose</string>
     <string name="backup_apk_processing">Backup apk…</string>
     <string name="backup_success">Successfully!</string>
+    <string name="choose_backup">Choose backup</string>
     <string-array name="reverse_array">
         <item>All: Application</item>
         <item>All: Data</item>

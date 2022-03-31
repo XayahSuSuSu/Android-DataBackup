@@ -23,4 +23,5 @@
     </string-array>
     <string name="backup_apk_processing">備份APK中…</string>
     <string name="backup_success">備份完成！</string>
+    <string name="choose_backup">選擇備份</string>
 </resources>
