@@ -323,7 +323,7 @@ class Command {
 
         fun restore(packageName: String, inPath: String, onCallback: (line: String) -> Unit = {}) {
             installAPK(inPath, packageName)
-            val fileList = Shell.cmd("ls $inPath").exec().out
+            val fileList = Shell.cmd("ls $inPath | grep -v apk.*").exec().out
             for (i in fileList) {
                 val item = i.split(".")
                 val dataType = item[0]
