@@ -29,4 +29,7 @@
     </string-array>
     <string name="choose_right_backup">Please choose the right backup folder!</string>
     <string name="settings">Settings</string>
+    <string name="default_backup_save_path" translatable="false">/storage/emulated/0/DataBackup</string>
+    <string name="backup_dir">Backup directory</string>
+    <string name="compression_type">Compression type</string>
 </resources>

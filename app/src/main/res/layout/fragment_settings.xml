@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -20,14 +20,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
-                android:orientation="vertical"
-                android:paddingHorizontal="30dp"
-                android:paddingTop="30dp"
-                android:paddingBottom="30dp">
+                android:orientation="vertical">
+
+                <com.xayah.design.preference.Category
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:text="@string/backup" />
+
+                <com.xayah.design.preference.SelectableList
+                    items="@{viewModel.CompressionTypeItems}"
+                    onConfirm="@{viewModel.changeCompressionType}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:choice="@{viewModel.compressionTypeIndex}"
+                    app:title="@string/compression_type" />
+
+                <com.xayah.design.preference.EditableText
+                    onConfirm="@{viewModel.changeBackupSavePath}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:defaultValue="@string/default_backup_save_path"
+                    app:summary="@{viewModel.backupSavePath}"
+                    app:title="@string/backup_dir" />
 
             </LinearLayout>
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>

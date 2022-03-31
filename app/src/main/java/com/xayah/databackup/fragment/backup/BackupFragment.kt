@@ -22,6 +22,7 @@ import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Room
 import com.xayah.databackup.util.dp
+import com.xayah.databackup.util.readPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -179,9 +180,11 @@ class BackupFragment : Fragment() {
                 mAppList.addAll(appList)
                 CoroutineScope(Dispatchers.IO).launch {
                     for (i in mAppList) {
-                        val compressionType = "lz4"
+                        val compressionType = mContext.readPreferences("compression_type") ?: "lz4"
                         val packageName = i.packageName
-                        val outPut = "/data/local/tmp/DataBackup/${packageName}"
+                        val outPut =
+                            "${mContext.readPreferences("backup_save_path") ?: mContext.getString(R.string.default_backup_save_path)}/${packageName}"
+
                         if (appList[0].backupApp) {
                             withContext(Dispatchers.Main) {
                                 appList[0].onBackupApp = true

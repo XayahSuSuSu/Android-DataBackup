@@ -27,4 +27,6 @@
     <string name="install_apk_processing">安装APK中…</string>
     <string name="choose_right_backup">请选择正确的备份文件夹！</string>
     <string name="settings">设置</string>
+    <string name="backup_dir">备份目录</string>
+    <string name="compression_type">压缩方式</string>
 </resources>
