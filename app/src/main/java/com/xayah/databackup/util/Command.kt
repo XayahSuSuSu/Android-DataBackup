@@ -48,21 +48,27 @@ class Command {
             val packageManager = context.packageManager
             val packages = packageManager.getInstalledPackages(0)
             for (i in packages) {
-                if (i.packageName == "com.xayah.databackup")
-                    continue
-                if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
-                    val appIcon = i.applicationInfo.loadIcon(packageManager)
-                    val appName = i.applicationInfo.loadLabel(packageManager).toString()
-                    val packageName = i.packageName
-                    var appEntity = room.findByPackage(packageName)
-                    if (appEntity == null) {
-                        appEntity = AppEntity(0, appName, packageName, getAppVersion(packageName))
-                    } else {
-                        appEntity.appName = appName
+                try {
+                    if (i.packageName == "com.xayah.databackup")
+                        continue
+                    if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
+                        val appIcon = i.applicationInfo.loadIcon(packageManager)
+                        val appName = i.applicationInfo.loadLabel(packageManager).toString()
+                        val packageName = i.packageName
+                        var appEntity = room.findByPackage(packageName)
+                        if (appEntity == null) {
+                            appEntity =
+                                AppEntity(0, appName, packageName, getAppVersion(packageName))
+                        } else {
+                            appEntity.appName = appName
+                        }
+                        room.insertOrUpdate(appEntity)
+                        appEntity.icon = appIcon
+                        appList.add(appEntity)
                     }
-                    room.insertOrUpdate(appEntity)
-                    appEntity.icon = appIcon
-                    appList.add(appEntity)
+                } catch (e: IllegalStateException) {
+                    e.printStackTrace()
+                    break
                 }
             }
             return appList
