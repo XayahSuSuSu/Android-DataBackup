@@ -323,7 +323,7 @@ class Command {
 
         fun restore(packageName: String, inPath: String, onCallback: (line: String) -> Unit = {}) {
             installAPK(inPath, packageName)
-            val fileList = Shell.cmd("ls $inPath | grep -v apk.*").exec().out
+            val fileList = Shell.cmd("ls $inPath | grep -v apk.* | grep .tar").exec().out
             for (i in fileList) {
                 val item = i.split(".")
                 val dataType = item[0]
@@ -343,6 +343,18 @@ class Command {
                         setOwnerAndSELinux(packageName, "${path}/${packageName}")
                 }
             }
+        }
+
+        private fun getAppVersion(packageName: String): String {
+            return ShellUtils.fastCmd("dumpsys package \"${packageName}\" | awk '/versionName=/{print \$1}' | cut -f2 -d '=' | head")
+        }
+
+        fun generateAppInfo(appName: String, packageName: String, outPut: String) {
+            var content = ""
+            content += "appName=${appName}" + "\n"
+            content += "packageName=${packageName}" + "\n"
+            content += "version=${getAppVersion(packageName)}" + "\n"
+            ShellUtils.fastCmd("echo \"$content\" > ${outPut}/info")
         }
     }
 }

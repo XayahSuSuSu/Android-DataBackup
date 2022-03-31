@@ -230,6 +230,7 @@ class BackupFragment : Fragment() {
                             appList.removeAt(0)
                             mAdapter.notifyItemRemoved(0)
                         }
+                        Command.generateAppInfo(i.appName, i.packageName, outPut)
                     }
                     withContext(Dispatchers.Main) {
                         val lottieAnimationView = LottieAnimationView(context)
