@@ -260,7 +260,7 @@ class Command {
                 val fileList = Shell.cmd("ls ${inPath}/apk.*").exec().out
                 for (i in fileList) {
                     var cmd = ""
-                    when (getCompressionTypeByName(i)) {
+                    when (getCompressionTypeByName(i.split("/").last())) {
                         "tar" -> {
                             cmd = "pv -f -t -r -b \"${i}\" | tar -xmpf - -C \"${tmpDir}\""
                         }
@@ -280,10 +280,19 @@ class Command {
                         Shell.cmd(cmd).to(callbackList).exec()
                         val apkList = Shell.cmd("ls ${tmpDir}/*.apk").exec().out
                         if (apkList.size == 1) {
-                            // 暂时仅支持非Split Apk
+                            // 非Split Apk
                             for (j in apkList) {
                                 ShellUtils.fastCmd("pm install -i com.android.vending --user 0 -r ${tmpDir}/*.apk")
                             }
+                        } else {
+                            // Split Apk
+                            val session =
+                                ShellUtils.fastCmd("pm install-create -i com.android.vending --user 0 | egrep -o '[0-9]+'")
+                            for (j in apkList) {
+                                val apkName = j.split("/").last()
+                                ShellUtils.fastCmd("pm install-write $session \"${apkName}\" \"${j}\"")
+                            }
+                            ShellUtils.fastCmd("pm install-commit $session")
                         }
                     }
                 }
