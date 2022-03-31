@@ -56,7 +56,7 @@ class Command {
                     val packageName = i.packageName
                     var appEntity = room.findByPackage(packageName)
                     if (appEntity == null) {
-                        appEntity = AppEntity(0, appName, packageName)
+                        appEntity = AppEntity(0, appName, packageName, getAppVersion(packageName))
                     } else {
                         appEntity.appName = appName
                     }

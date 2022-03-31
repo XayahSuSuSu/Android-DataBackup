@@ -11,6 +11,7 @@ data class AppEntity(
     @PrimaryKey(autoGenerate = true) var uid: Int = 0,
     @ColumnInfo(name = "appName") var appName: String,
     @ColumnInfo(name = "packageName") val packageName: String,
+    @ColumnInfo(name = "appVersion") val appVersion: String = "",
     @ColumnInfo(name = "backupApp") var backupApp: Boolean = true,
     @ColumnInfo(name = "backupData") var backupData: Boolean = true,
 ) {
@@ -18,10 +19,10 @@ data class AppEntity(
     var icon: Drawable? = null
 
     @Ignore
-    var onBackupApp: Boolean = false
+    var onProcessingApp: Boolean = false
 
     @Ignore
-    var onBackupData: Boolean = false
+    var onProcessingData: Boolean = false
 
     @Ignore
     var isProcessing: Boolean = false

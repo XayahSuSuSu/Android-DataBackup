@@ -187,21 +187,21 @@ class BackupFragment : Fragment() {
 
                         if (appList[0].backupApp) {
                             withContext(Dispatchers.Main) {
-                                appList[0].onBackupApp = true
+                                appList[0].onProcessingApp = true
                                 mAdapter.notifyItemChanged(0)
                                 appList[0].progress = getString(R.string.backup_apk_processing)
                                 mAdapter.notifyItemChanged(0)
                             }
                             Command.compressAPK(compressionType, packageName, outPut)
                             withContext(Dispatchers.Main) {
-                                appList[0].onBackupApp = false
+                                appList[0].onProcessingApp = false
                                 appList[0].backupApp = false
                                 mAdapter.notifyItemChanged(0)
                             }
                         }
                         if (appList[0].backupData) {
                             withContext(Dispatchers.Main) {
-                                appList[0].onBackupData = true
+                                appList[0].onProcessingData = true
                                 mAdapter.notifyItemChanged(0)
                             }
                             Command.compress(compressionType, "user", packageName, outPut) {

@@ -102,7 +102,7 @@ class AppListAdapter(private val room: Room?) :
             binding.chipApplication.isClickable = false
             binding.chipData.isClickable = false
         }
-        if (item.onBackupApp) {
+        if (item.onProcessingApp) {
             binding.chipApplication.apply {
                 checkedIcon = null
                 chipIcon = CircularProgressDrawable(context).apply {
@@ -118,7 +118,7 @@ class AppListAdapter(private val room: Room?) :
                 chipIcon = null
             }
         }
-        if (item.onBackupData) {
+        if (item.onProcessingData) {
             binding.chipData.apply {
                 checkedIcon = null
                 chipIcon = CircularProgressDrawable(context).apply {
