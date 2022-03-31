@@ -12,7 +12,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.design.R
-import com.xayah.design.databinding.DialogTextFieldBinding
+import com.xayah.design.databinding.DesignDialogTextFieldBinding
 import com.xayah.design.databinding.PreferenceClickableBinding
 
 class EditableText @JvmOverloads constructor(
@@ -57,8 +57,11 @@ class EditableText @JvmOverloads constructor(
 
     init {
         binding.root.setOnClickListener {
-            val bindingDialogTextField = DialogTextFieldBinding
-                .inflate((context as Activity).layoutInflater, binding.root as ViewGroup, false)
+            val bindingDialogTextField = DesignDialogTextFieldBinding.inflate(
+                    (context as Activity).layoutInflater,
+                    binding.root as ViewGroup,
+                    false
+                )
             bindingDialogTextField.textLayout.hint = title
             bindingDialogTextField.textField.setText(summary)
             MaterialAlertDialogBuilder(context)
