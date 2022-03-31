@@ -2,10 +2,8 @@ package com.xayah.databackup.util
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
-import androidx.appcompat.content.res.AppCompatResources
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
@@ -50,6 +48,8 @@ class Command {
             val packageManager = context.packageManager
             val packages = packageManager.getInstalledPackages(0)
             for (i in packages) {
+                if (i.packageName == "com.xayah.databackup")
+                    continue
                 if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
                     val appIcon = i.applicationInfo.loadIcon(packageManager)
                     val appName = i.applicationInfo.loadLabel(packageManager).toString()
