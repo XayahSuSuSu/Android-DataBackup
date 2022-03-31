@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xayah.crash">
+
+    <application>
+        <activity
+            android:name=".CrashActivity"
+            android:exported="false"
+            android:label="@string/title_activity_crash"
+            android:theme="@style/Theme.DataBackup" />
+    </application>
 
 </manifest>

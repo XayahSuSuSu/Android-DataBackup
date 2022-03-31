@@ -3,6 +3,7 @@ package com.xayah.databackup
 import android.app.Application
 import android.content.Context
 import com.topjohnwu.superuser.Shell
+import com.xayah.crash.CrashHandler
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Path
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +34,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        CrashHandler(this).initialize()
+
         val that = this
         CoroutineScope(Dispatchers.IO).launch {
             if (!Command.ls("${Path.getExternalFilesDir(that)}/bin")) {
