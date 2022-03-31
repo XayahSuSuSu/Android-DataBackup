@@ -3,7 +3,6 @@
     <string name="backup">备份</string>
     <string name="restore">恢复</string>
     <string name="home">主页</string>
-    <string name="script">脚本</string>
     <string name="storage_space">存储空间</string>
     <string name="granted">已授权</string>
     <string name="not_granted">未授权</string>
@@ -29,4 +28,5 @@
     <string name="settings">设置</string>
     <string name="backup_dir">备份目录</string>
     <string name="compression_type">压缩方式</string>
+    <string name="architecture">架构</string>
 </resources>

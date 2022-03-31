@@ -41,8 +41,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="5dp"
                     app:icon="@drawable/ic_round_code"
-                    app:subtext="@{viewModel.scriptVersion}"
-                    app:text="@string/script" />
+                    app:subtext="@{viewModel.abi}"
+                    app:text="@string/architecture" />
 
                 <com.xayah.design.LargeActionCard
                     style="?attr/materialCardViewFilledStyle"
