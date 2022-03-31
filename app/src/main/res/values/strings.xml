@@ -20,10 +20,13 @@
     <string name="backup_apk_processing">Backup apk…</string>
     <string name="backup_success">Successfully!</string>
     <string name="choose_backup">Choose backup</string>
+    <string name="restore_success" >Successfully!</string>
+    <string name="install_apk_processing">Install apk…</string>
     <string-array name="reverse_array">
         <item>All: Application</item>
         <item>All: Data</item>
         <item>Reverse: Application</item>
         <item>Reverse: Data</item>
     </string-array>
+    <string name="choose_right_backup">Please choose the right backup folder!</string>
 </resources>

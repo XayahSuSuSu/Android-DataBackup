@@ -24,14 +24,11 @@ data class AppEntity(
     var onBackupData: Boolean = false
 
     @Ignore
-    var onBackupAppFinished: Boolean = false
-
-    @Ignore
-    var onBackupDataFinished: Boolean = false
-
-    @Ignore
     var isProcessing: Boolean = false
 
     @Ignore
     var progress: String = ""
+
+    @Ignore
+    var backupPath: String = ""
 }

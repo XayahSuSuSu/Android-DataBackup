@@ -2,8 +2,10 @@ package com.xayah.databackup.util
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import androidx.appcompat.content.res.AppCompatResources
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
@@ -61,6 +63,27 @@ class Command {
                     room.insertOrUpdate(appEntity)
                     appEntity.icon = appIcon
                     appList.add(appEntity)
+                }
+            }
+            return appList
+        }
+
+        fun getAppList(context: Context,appName: String, packages: MutableList<String>): MutableList<AppEntity> {
+            val appList: MutableList<AppEntity> = mutableListOf()
+            for (packageName in packages) {
+                try {
+                    var appIcon =
+                        AppCompatResources.getDrawable(context, R.drawable.ic_round_android)
+                    val packageManager: PackageManager = context.packageManager
+                    val appInfo =
+                        packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+                    val appName = packageManager.getApplicationLabel(appInfo).toString()
+                    appIcon = packageManager.getApplicationIcon(appInfo)
+                    val appEntity = AppEntity(0, appName, packageName)
+                    appEntity.icon = appIcon
+
+                } catch (e: PackageManager.NameNotFoundException) {
+                    e.printStackTrace()
                 }
             }
             return appList
@@ -239,7 +262,7 @@ class Command {
             return ""
         }
 
-        private fun installAPK(
+        fun installAPK(
             inPath: String,
             packageName: String,
             onCallback: (line: String) -> Unit = {}
@@ -323,6 +346,29 @@ class Command {
 
         fun restore(packageName: String, inPath: String, onCallback: (line: String) -> Unit = {}) {
             installAPK(inPath, packageName)
+            val fileList = Shell.cmd("ls $inPath | grep -v apk.* | grep .tar").exec().out
+            for (i in fileList) {
+                val item = i.split(".")
+                val dataType = item[0]
+                var path = ""
+                val compressionType = getCompressionTypeByName(i)
+                if (compressionType.isNotEmpty()) {
+                    decompress(compressionType, dataType, "${inPath}/${i}", onCallback)
+                    when (dataType) {
+                        "user" -> {
+                            path = "/data/data"
+                        }
+                        "data", "obb" -> {
+                            path = "/data/media/0/Android/${dataType}"
+                        }
+                    }
+                    if (path.isNotEmpty())
+                        setOwnerAndSELinux(packageName, "${path}/${packageName}")
+                }
+            }
+        }
+
+        fun restoreData(packageName: String, inPath: String, onCallback: (line: String) -> Unit = {}) {
             val fileList = Shell.cmd("ls $inPath | grep -v apk.* | grep .tar").exec().out
             for (i in fileList) {
                 val item = i.split(".")

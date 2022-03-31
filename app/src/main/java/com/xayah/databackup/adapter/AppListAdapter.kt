@@ -18,7 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AppListAdapter(private val room: Room) :
+class AppListAdapter(private val room: Room?) :
     ItemViewDelegate<AppEntity, AppListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
@@ -40,10 +40,12 @@ class AppListAdapter(private val room: Room) :
             setOnCheckedChangeListener { _, checked ->
                 if (!item.isProcessing) {
                     (adapterItems[holder.bindingAdapterPosition] as AppEntity).backupApp = checked
-                    CoroutineScope(Dispatchers.IO).launch {
-                        room.findByPackage(item.packageName) {
-                            it.backupApp = checked
-                            room.update(it)
+                    if (room != null) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            room.findByPackage(item.packageName) {
+                                it.backupApp = checked
+                                room.update(it)
+                            }
                         }
                     }
                 }
@@ -54,10 +56,12 @@ class AppListAdapter(private val room: Room) :
             setOnCheckedChangeListener { _, checked ->
                 if (!item.isProcessing) {
                     (adapterItems[holder.bindingAdapterPosition] as AppEntity).backupData = checked
-                    CoroutineScope(Dispatchers.IO).launch {
-                        room.findByPackage(item.packageName) {
-                            it.backupData = checked
-                            room.update(it)
+                    if (room != null) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            room.findByPackage(item.packageName) {
+                                it.backupData = checked
+                                room.update(it)
+                            }
                         }
                     }
                 }

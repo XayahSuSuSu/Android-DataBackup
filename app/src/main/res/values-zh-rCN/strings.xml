@@ -24,4 +24,7 @@
     <string name="backup_apk_processing">备份APK中…</string>
     <string name="backup_success">备份完成！</string>
     <string name="choose_backup">选择备份</string>
+    <string name="restore_success">恢复完成！</string>
+    <string name="install_apk_processing">安装APK中…</string>
+    <string name="choose_right_backup">请选择正确的备份文件夹！</string>
 </resources>
