@@ -146,34 +146,31 @@ class Command {
         ) {
             mkdir(outPut)
             ShellUtils.fastCmd("apk_path=\"\$(pm path \"${packageName}\" | cut -f2 -d ':')\"")
-            val apkPath = ShellUtils.fastCmd("echo \${apk_path%/*}")
+            ShellUtils.fastCmd("apk_path=\"\$(echo \"\$apk_path\" | head -1)\"")
+            val apkPath = ShellUtils.fastCmd("echo \"\${apk_path%/*}\"")
             ShellUtils.fastCmd("cd $apkPath")
-            val apks = Shell.cmd("ls *.apk").exec().out
-            if (apks.size == 1) {
-                // 暂时仅支持非Split Apk
-                var cmd = ""
-                when (compressionType) {
-                    "tar" -> {
-                        cmd = "tar -cf \"${outPut}/apk.tar\" *.apk"
-                    }
-                    "zstd" -> {
-                        cmd =
-                            "tar -cf - *apk | zstd -r -T0 --ultra -6 -q --priority=rt >\"${outPut}/apk.tar.zst\""
-                    }
-                    "lz4" -> {
-                        cmd =
-                            "tar -cf - *.apk | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >\"${outPut}/apk.tar.lz4\""
-                    }
+            var cmd = ""
+            when (compressionType) {
+                "tar" -> {
+                    cmd = "tar -cf \"${outPut}/apk.tar\" *.apk"
                 }
-                val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
-                    override fun onAddElement(line: String?) {
-                        if (line != null) {
-                            onCallback(line)
+                "zstd" -> {
+                    cmd =
+                        "tar -cf - *apk | zstd -r -T0 --ultra -6 -q --priority=rt >\"${outPut}/apk.tar.zst\""
+                }
+                "lz4" -> {
+                    cmd =
+                        "tar -cf - *.apk | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >\"${outPut}/apk.tar.lz4\""
+                }
+            }
+            val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
+                override fun onAddElement(line: String?) {
+                    if (line != null) {
+                        onCallback(line)
                         }
                     }
                 }
                 Shell.cmd(cmd).to(callbackList).exec()
-            }
             ShellUtils.fastCmd("cd ~")
         }
 
