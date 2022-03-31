@@ -56,6 +56,9 @@ dependencies {
     // Design
     implementation project(":design")
 
+    // Crash
+    implementation project(":crash")
+
     // LibSU
     def libsuVersion = '4.0.3'
     // The core module is used by all other components
