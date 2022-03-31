@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">數據備份</string>
     <string name="backup">備份</string>
-    <string name="more">更多</string>
     <string name="restore">恢復</string>
     <string name="home">主頁</string>
     <string name="script">脚本</string>
@@ -27,4 +26,5 @@
     <string name="restore_success">恢復完成！</string>
     <string name="install_apk_processing">安裝APK中…</string>
     <string name="choose_right_backup">請選擇正確的備份文件夾！</string>
+    <string name="settings">設置</string>
 </resources>

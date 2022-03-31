@@ -13,9 +13,9 @@
         android:name="com.xayah.databackup.fragment.backup.BackupFragment"
         android:label="@string/backup" />
     <fragment
-        android:id="@+id/moreFragment"
-        android:name="com.xayah.databackup.fragment.more.MoreFragment"
-        android:label="@string/more" />
+        android:id="@+id/settingsFragment"
+        android:name="com.xayah.databackup.fragment.settings.SettingsFragment"
+        android:label="@string/settings" />
     <fragment
         android:id="@+id/restoreFragment"
         android:name="com.xayah.databackup.fragment.restore.RestoreFragment"

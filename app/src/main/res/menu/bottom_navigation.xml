@@ -16,8 +16,8 @@
         android:icon="@drawable/ic_outline_restore"
         android:title="@string/restore" />
     <item
-        android:id="@+id/moreFragment"
+        android:id="@+id/settingsFragment"
         android:enabled="true"
-        android:icon="@drawable/ic_outline_apps"
-        android:title="@string/more" />
+        android:icon="@drawable/ic_outline_settings"
+        android:title="@string/settings" />
 </menu>
