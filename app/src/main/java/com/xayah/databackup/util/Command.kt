@@ -68,27 +68,6 @@ class Command {
             return appList
         }
 
-        fun getAppList(context: Context,appName: String, packages: MutableList<String>): MutableList<AppEntity> {
-            val appList: MutableList<AppEntity> = mutableListOf()
-            for (packageName in packages) {
-                try {
-                    var appIcon =
-                        AppCompatResources.getDrawable(context, R.drawable.ic_round_android)
-                    val packageManager: PackageManager = context.packageManager
-                    val appInfo =
-                        packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-                    val appName = packageManager.getApplicationLabel(appInfo).toString()
-                    appIcon = packageManager.getApplicationIcon(appInfo)
-                    val appEntity = AppEntity(0, appName, packageName)
-                    appEntity.icon = appIcon
-
-                } catch (e: PackageManager.NameNotFoundException) {
-                    e.printStackTrace()
-                }
-            }
-            return appList
-        }
-
         fun extractAssets(mContext: Context, assetsPath: String, outName: String) {
             try {
                 val assets = File(Path.getExternalFilesDir(mContext), outName)
