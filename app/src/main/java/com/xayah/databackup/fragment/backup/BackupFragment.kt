@@ -30,34 +30,28 @@ import kotlinx.coroutines.withContext
 
 
 class BackupFragment : Fragment() {
-    private var _binding: FragmentBackupBinding? = null
+    lateinit var viewModel: BackupViewModel
 
-    private val binding get() = _binding!!
-
-    lateinit var room: Room
-
-    lateinit var mAdapter: MultiTypeAdapter
-
-    lateinit var appList: MutableList<AppEntity>
+    private var room: Room? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentBackupBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        viewModel = ViewModelProvider(requireActivity())[BackupViewModel::class.java]
+        viewModel.binding?.viewModel = viewModel
+        viewModel.binding = FragmentBackupBinding.inflate(inflater, container, false)
+        return viewModel.binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.viewModel = ViewModelProvider(this)[BackupViewModel::class.java]
 
         initialize()
     }
 
     private fun initialize() {
-        val mContext = requireContext()
+        val mContext = requireActivity()
         room = Room(mContext)
-        setHasOptionsMenu(true)
 
         val linearProgressIndicator = LinearProgressIndicator(mContext).apply {
             layoutParams =
@@ -70,25 +64,29 @@ class BackupFragment : Fragment() {
             trackCornerRadius = 3.dp
             isIndeterminate = true
         }
-        binding.relativeLayout.addView(linearProgressIndicator)
-        mAdapter = MultiTypeAdapter().apply {
-            register(AppListAdapter(room))
-            CoroutineScope(Dispatchers.IO).launch {
-                appList = Command.getAppList(mContext, room)
-                items = appList
-                withContext(Dispatchers.Main) {
-                    notifyDataSetChanged()
-                    linearProgressIndicator.visibility = View.GONE
-                    if (_binding != null)
-                        binding.recyclerView.visibility = View.VISIBLE
+        viewModel.binding?.relativeLayout?.addView(linearProgressIndicator)
+        if (!viewModel.isProcessing) {
+            setHasOptionsMenu(true)
+            viewModel.mAdapter = MultiTypeAdapter().apply {
+                register(AppListAdapter(room))
+                CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.appList = Command.getAppList(mContext, room)
+                    items = viewModel.appList
+                    withContext(Dispatchers.Main) {
+                        notifyDataSetChanged()
+                        linearProgressIndicator.visibility = View.GONE
+                        viewModel.binding?.recyclerView?.visibility = View.VISIBLE
+                    }
                 }
             }
+        } else {
+            linearProgressIndicator.visibility = View.GONE
+            viewModel.binding?.recyclerView?.visibility = View.VISIBLE
         }
-        binding.recyclerView.apply {
-            adapter = mAdapter
+        viewModel.binding?.recyclerView?.apply {
+            adapter = viewModel.mAdapter
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             layoutManager = GridLayoutManager(mContext, 1)
-            visibility = View.INVISIBLE
             layoutAnimation = LayoutAnimationController(
                 loadAnimation(
                     context,
@@ -111,10 +109,10 @@ class BackupFragment : Fragment() {
         val mContext = requireContext()
         when (item.itemId) {
             R.id.backup_reverse -> {
-                val items: Array<String> = resources.getStringArray(R.array.reverse_array)
+                val items: Array<String> = mContext.resources.getStringArray(R.array.reverse_array)
                 var choice = 0
                 MaterialAlertDialogBuilder(mContext)
-                    .setTitle(getString(R.string.choose))
+                    .setTitle(mContext.getString(R.string.choose))
                     .setCancelable(true)
                     .setSingleChoiceItems(
                         items,
@@ -122,62 +120,67 @@ class BackupFragment : Fragment() {
                     ) { _, which ->
                         choice = which
                     }
-                    .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                    .setPositiveButton(mContext.getString(R.string.confirm)) { _, _ ->
                         when (choice) {
                             0 -> {
-                                for ((index, _) in appList.withIndex()) {
-                                    appList[index].backupApp = true
+                                for ((index, _) in viewModel.appList.withIndex()) {
+                                    viewModel.appList[index].backupApp = true
                                 }
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    room.selectAllApp()
+                                    room?.selectAllApp()
                                 }
-                                mAdapter.notifyDataSetChanged()
+                                viewModel.mAdapter.notifyDataSetChanged()
                             }
                             1 -> {
-                                for ((index, _) in appList.withIndex()) {
-                                    appList[index].backupData = true
+                                for ((index, _) in viewModel.appList.withIndex()) {
+                                    viewModel.appList[index].backupData = true
                                 }
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    room.selectAllData()
+                                    room?.selectAllData()
                                 }
-                                mAdapter.notifyDataSetChanged()
+                                viewModel.mAdapter.notifyDataSetChanged()
                             }
                             2 -> {
-                                for ((index, _) in appList.withIndex()) {
-                                    appList[index].backupApp = !appList[index].backupApp
+                                for ((index, _) in viewModel.appList.withIndex()) {
+                                    viewModel.appList[index].backupApp =
+                                        !viewModel.appList[index].backupApp
                                 }
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    room.reverseAllApp()
+                                    room?.reverseAllApp()
                                 }
-                                mAdapter.notifyDataSetChanged()
+                                viewModel.mAdapter.notifyDataSetChanged()
                             }
                             3 -> {
-                                for ((index, _) in appList.withIndex()) {
-                                    appList[index].backupData = !appList[index].backupData
+                                for ((index, _) in viewModel.appList.withIndex()) {
+                                    viewModel.appList[index].backupData =
+                                        !viewModel.appList[index].backupData
                                 }
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    room.reverseAllData()
+                                    room?.reverseAllData()
                                 }
-                                mAdapter.notifyDataSetChanged()
+                                viewModel.mAdapter.notifyDataSetChanged()
                             }
                         }
                     }
                     .show()
             }
             R.id.backup_confirm -> {
-                binding.recyclerView.scrollToPosition(0)
+                viewModel.isProcessing = true
+                viewModel.binding?.recyclerView?.scrollToPosition(0)
+                setHasOptionsMenu(false)
+
                 val mAppList = mutableListOf<AppEntity>()
-                mAppList.addAll(appList)
+                mAppList.addAll(viewModel.appList)
                 for (i in mAppList) {
                     if (!i.backupApp && !i.backupData) {
-                        appList.remove(i)
+                        viewModel.appList.remove(i)
                     } else {
-                        appList[appList.indexOf(i)].isProcessing = true
+                        viewModel.appList[viewModel.appList.indexOf(i)].isProcessing = true
                     }
                 }
-                mAdapter.notifyDataSetChanged()
+                viewModel.mAdapter.notifyDataSetChanged()
                 mAppList.clear()
-                mAppList.addAll(appList)
+                mAppList.addAll(viewModel.appList)
                 CoroutineScope(Dispatchers.IO).launch {
                     for (i in mAppList) {
                         val compressionType = mContext.readPreferences("compression_type") ?: "lz4"
@@ -185,58 +188,59 @@ class BackupFragment : Fragment() {
                         val outPut =
                             "${mContext.readPreferences("backup_save_path") ?: mContext.getString(R.string.default_backup_save_path)}/${packageName}"
 
-                        if (appList[0].backupApp) {
+                        if (viewModel.appList[0].backupApp) {
                             withContext(Dispatchers.Main) {
-                                appList[0].onProcessingApp = true
-                                mAdapter.notifyItemChanged(0)
-                                appList[0].progress = getString(R.string.backup_apk_processing)
-                                mAdapter.notifyItemChanged(0)
+                                viewModel.appList[0].onProcessingApp = true
+                                viewModel.mAdapter.notifyItemChanged(0)
+                                viewModel.appList[0].progress =
+                                    mContext.getString(R.string.backup_apk_processing)
+                                viewModel.mAdapter.notifyItemChanged(0)
                             }
                             Command.compressAPK(compressionType, packageName, outPut)
                             withContext(Dispatchers.Main) {
-                                appList[0].onProcessingApp = false
-                                appList[0].backupApp = false
-                                mAdapter.notifyItemChanged(0)
+                                viewModel.appList[0].onProcessingApp = false
+                                viewModel.appList[0].backupApp = false
+                                viewModel.mAdapter.notifyItemChanged(0)
                             }
                         }
-                        if (appList[0].backupData) {
+                        if (viewModel.appList[0].backupData) {
                             withContext(Dispatchers.Main) {
-                                appList[0].onProcessingData = true
-                                mAdapter.notifyItemChanged(0)
+                                viewModel.appList[0].onProcessingData = true
+                                viewModel.mAdapter.notifyItemChanged(0)
                             }
                             Command.compress(compressionType, "user", packageName, outPut) {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    if (appList.isNotEmpty()) {
-                                        appList[0].progress = it
-                                        mAdapter.notifyItemChanged(0)
+                                    if (viewModel.appList.isNotEmpty()) {
+                                        viewModel.appList[0].progress = it
+                                        viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                 }
                             }
                             Command.compress(compressionType, "data", packageName, outPut) {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    if (appList.isNotEmpty()) {
-                                        appList[0].progress = it
-                                        mAdapter.notifyItemChanged(0)
+                                    if (viewModel.appList.isNotEmpty()) {
+                                        viewModel.appList[0].progress = it
+                                        viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                 }
                             }
                             Command.compress(compressionType, "obb", packageName, outPut) {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    if (appList.isNotEmpty()) {
-                                        appList[0].progress = it
-                                        mAdapter.notifyItemChanged(0)
+                                    if (viewModel.appList.isNotEmpty()) {
+                                        viewModel.appList[0].progress = it
+                                        viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                 }
                             }
                         }
                         withContext(Dispatchers.Main) {
-                            appList.removeAt(0)
-                            mAdapter.notifyItemRemoved(0)
+                            viewModel.appList.removeAt(0)
+                            viewModel.mAdapter.notifyItemRemoved(0)
                         }
                         Command.generateAppInfo(i.appName, i.packageName, outPut)
                     }
                     withContext(Dispatchers.Main) {
-                        val lottieAnimationView = LottieAnimationView(context)
+                        val lottieAnimationView = LottieAnimationView(mContext)
                         lottieAnimationView.apply {
                             layoutParams =
                                 RelativeLayout.LayoutParams(
@@ -248,16 +252,18 @@ class BackupFragment : Fragment() {
                             setAnimation(R.raw.success)
                             playAnimation()
                             addAnimatorUpdateListener { animation ->
-                                if (animation.animatedFraction == 1.0F) {
+                                if (animation.animatedFraction == 1.0F || viewModel.binding == null) {
                                     Toast.makeText(
                                         mContext,
-                                        context.getString(R.string.backup_success),
+                                        mContext.getString(R.string.backup_success),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             }
                         }
-                        binding.relativeLayout.addView(lottieAnimationView)
+                        viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
+                        viewModel.isProcessing = false
+                        setHasOptionsMenu(false)
                     }
                 }
             }
@@ -267,7 +273,8 @@ class BackupFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
-        room.close()
+        viewModel.binding = null
+        room?.close()
+        room = null
     }
 }
