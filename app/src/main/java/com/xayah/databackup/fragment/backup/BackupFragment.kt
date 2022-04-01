@@ -188,6 +188,8 @@ class BackupFragment : Fragment() {
                                     withContext(Dispatchers.Main) {
                                         viewModel.appList[0].onProcessingApp = false
                                         viewModel.appList[0].backupApp = false
+                                        viewModel.appList[0].progress =
+                                            mContext.getString(R.string.success)
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                 }
@@ -196,29 +198,29 @@ class BackupFragment : Fragment() {
                                         viewModel.appList[0].onProcessingData = true
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
-                                    Command.compress(compressionType, "user", packageName, outPut) {
-                                        CoroutineScope(Dispatchers.Main).launch {
-                                            if (viewModel.appList.isNotEmpty()) {
-                                                viewModel.appList[0].progress = it
-                                                viewModel.mAdapter.notifyItemChanged(0)
+                                    val onCallback: (line: String, type: String) -> Unit =
+                                        { line, type ->
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                val lineList =
+                                                    line.split(" ").toMutableList().apply {
+                                                        removeIf { line == "" }
+                                                        add(0, "${type}:")
+                                                    }
+                                                if (viewModel.appList.isNotEmpty()) {
+                                                    viewModel.appList[0].progress =
+                                                        lineList.joinToString(separator = " ")
+                                                    viewModel.mAdapter.notifyItemChanged(0)
+                                                }
                                             }
                                         }
+                                    Command.compress(compressionType, "user", packageName, outPut) {
+                                        onCallback(it, "user")
                                     }
                                     Command.compress(compressionType, "data", packageName, outPut) {
-                                        CoroutineScope(Dispatchers.Main).launch {
-                                            if (viewModel.appList.isNotEmpty()) {
-                                                viewModel.appList[0].progress = it
-                                                viewModel.mAdapter.notifyItemChanged(0)
-                                            }
-                                        }
+                                        onCallback(it, "data")
                                     }
                                     Command.compress(compressionType, "obb", packageName, outPut) {
-                                        CoroutineScope(Dispatchers.Main).launch {
-                                            if (viewModel.appList.isNotEmpty()) {
-                                                viewModel.appList[0].progress = it
-                                                viewModel.mAdapter.notifyItemChanged(0)
-                                            }
-                                        }
+                                        onCallback(it, "obb")
                                     }
                                 }
                                 withContext(Dispatchers.Main) {
