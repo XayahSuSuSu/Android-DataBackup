@@ -1,5 +1,6 @@
 package com.xayah.databackup.fragment.restore
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.view.animation.AnimationUtils
@@ -32,26 +33,22 @@ import kotlinx.coroutines.withContext
 
 
 class RestoreFragment : Fragment() {
-    private var _binding: FragmentRestoreBinding? = null
-
-    private val binding get() = _binding!!
+    lateinit var viewModel: RestoreViewModel
 
     private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
 
-    lateinit var mAdapter: MultiTypeAdapter
-
-    val appList: MutableList<AppEntity> = mutableListOf()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentRestoreBinding.inflate(inflater, container, false)
-        return binding.root
+    ): View? {
+        viewModel = ViewModelProvider(requireActivity())[RestoreViewModel::class.java]
+        viewModel.binding?.viewModel = viewModel
+
+        viewModel.binding = FragmentRestoreBinding.inflate(inflater, container, false)
+        return viewModel.binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.viewModel = ViewModelProvider(this)[RestoreViewModel::class.java]
 
         initialize()
     }
@@ -65,116 +62,124 @@ class RestoreFragment : Fragment() {
     }
 
     private fun initialize() {
-        val mContext = requireContext()
+        val mContext = requireActivity()
 
-        val lottieAnimationView = LottieAnimationView(context)
-        lottieAnimationView.apply {
-            id = LottieAnimationView.generateViewId()
-            layoutParams =
-                RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    200.dp
-                ).apply {
-                    addRule(RelativeLayout.CENTER_IN_PARENT)
-                }
-            setAnimation(R.raw.file)
-            playAnimation()
-            repeatCount = LottieDrawable.INFINITE
-        }
-        binding.relativeLayout.addView(lottieAnimationView)
-        val materialButton = MaterialButton(mContext).apply {
-            layoutParams =
-                RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    addRule(RelativeLayout.CENTER_HORIZONTAL)
-                    addRule(RelativeLayout.BELOW, lottieAnimationView.id)
-                }
-            text = mContext.getString(R.string.choose_backup)
-            setOnClickListener {
-                materialYouFileExplorer.toExplorer(
-                    mContext,
-                    false,
-                    "default",
-                    arrayListOf(),
-                    true
-                ) { path, _ ->
-                    val packages = Shell.cmd("ls $path").exec().out
-                    for (i in packages) {
-                        val info = Shell.cmd("cat ${path}/${i}/info").exec().out
-                        try {
-                            val appName = info[0].split("=")
-                            val packageName = info[1].split("=")
-                            val appEntity = AppEntity(0, appName[1], packageName[1]).apply {
-                                icon = AppCompatResources.getDrawable(
-                                    mContext,
-                                    R.drawable.ic_round_android
-                                )
-                                backupPath = "${path}/${i}"
-                            }
-                            appList.add(appEntity)
-                        } catch (e: IndexOutOfBoundsException) {
-                            e.printStackTrace()
-                        }
+        if (!viewModel.isProcessing) {
+            val lottieAnimationView = LottieAnimationView(context)
+            lottieAnimationView.apply {
+                id = LottieAnimationView.generateViewId()
+                layoutParams =
+                    RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        200.dp
+                    ).apply {
+                        addRule(RelativeLayout.CENTER_IN_PARENT)
                     }
-                    if (appList.isEmpty()) {
-                        Toast.makeText(
-                            mContext,
-                            mContext.getString(R.string.choose_right_backup),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        setHasOptionsMenu(true)
-                        binding.relativeLayout.removeView(this)
-                        binding.relativeLayout.removeView(lottieAnimationView)
-                        val linearProgressIndicator = LinearProgressIndicator(mContext).apply {
-                            layoutParams =
-                                RelativeLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT
-                                )
-                                    .apply {
-                                        addRule(RelativeLayout.CENTER_IN_PARENT)
-                                        marginStart = 100.dp
-                                        marginEnd = 100.dp
-                                    }
-                            trackCornerRadius = 3.dp
-                            isIndeterminate = true
-                        }
-                        binding.relativeLayout.addView(linearProgressIndicator)
-                        mAdapter = MultiTypeAdapter().apply {
-                            register(AppListAdapter(null))
-                            CoroutineScope(Dispatchers.IO).launch {
-                                items = appList
-                                withContext(Dispatchers.Main) {
-                                    notifyDataSetChanged()
-                                    linearProgressIndicator.visibility = View.GONE
-                                    if (_binding != null)
-                                        binding.recyclerView.visibility = View.VISIBLE
+                setAnimation(R.raw.file)
+                playAnimation()
+                repeatCount = LottieDrawable.INFINITE
+            }
+            viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
+            val materialButton = MaterialButton(mContext).apply {
+                layoutParams =
+                    RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        addRule(RelativeLayout.CENTER_HORIZONTAL)
+                        addRule(RelativeLayout.BELOW, lottieAnimationView.id)
+                    }
+                text = mContext.getString(R.string.choose_backup)
+                setOnClickListener {
+                    materialYouFileExplorer.toExplorer(
+                        mContext,
+                        false,
+                        "default",
+                        arrayListOf(),
+                        true
+                    ) { path, _ ->
+                        viewModel.appList = mutableListOf()
+                        val packages = Shell.cmd("ls $path").exec().out
+                        for (i in packages) {
+                            val info = Shell.cmd("cat ${path}/${i}/info").exec().out
+                            try {
+                                val appName = info[0].split("=")
+                                val packageName = info[1].split("=")
+                                val appEntity = AppEntity(0, appName[1], packageName[1]).apply {
+                                    icon = AppCompatResources.getDrawable(
+                                        mContext,
+                                        R.drawable.ic_round_android
+                                    )
+                                    backupPath = "${path}/${i}"
                                 }
+                                viewModel.appList.add(appEntity)
+                            } catch (e: IndexOutOfBoundsException) {
+                                e.printStackTrace()
                             }
                         }
-                        binding.recyclerView.apply {
-                            adapter = mAdapter
-                            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-                            layoutManager = GridLayoutManager(mContext, 1)
-                            visibility = View.INVISIBLE
-                            layoutAnimation = LayoutAnimationController(
-                                AnimationUtils.loadAnimation(
-                                    context,
-                                    androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom
-                                )
-                            ).apply {
-                                order = LayoutAnimationController.ORDER_NORMAL
-                                delay = 0.3F
-                            }
+                        if (viewModel.appList.isEmpty()) {
+                            Toast.makeText(
+                                mContext,
+                                mContext.getString(R.string.choose_right_backup),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            setHasOptionsMenu(true)
+                            viewModel.binding?.relativeLayout?.removeView(this)
+                            viewModel.binding?.relativeLayout?.removeView(lottieAnimationView)
+                            showAppList(mContext)
                         }
                     }
                 }
             }
+            viewModel.binding?.relativeLayout?.addView(materialButton)
+        } else {
+            showAppList(mContext)
         }
-        binding.relativeLayout.addView(materialButton)
+    }
+
+    private fun showAppList(mContext: Context) {
+        val linearProgressIndicator = LinearProgressIndicator(mContext).apply {
+            layoutParams =
+                RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                    .apply {
+                        addRule(RelativeLayout.CENTER_IN_PARENT)
+                        marginStart = 100.dp
+                        marginEnd = 100.dp
+                    }
+            trackCornerRadius = 3.dp
+            isIndeterminate = true
+        }
+        viewModel.binding?.relativeLayout?.addView(linearProgressIndicator)
+        viewModel.mAdapter = MultiTypeAdapter().apply {
+            register(AppListAdapter(null))
+            CoroutineScope(Dispatchers.IO).launch {
+                items = viewModel.appList
+                withContext(Dispatchers.Main) {
+                    notifyDataSetChanged()
+                    linearProgressIndicator.visibility = View.GONE
+                    viewModel.binding?.recyclerView?.visibility = View.VISIBLE
+                }
+            }
+        }
+        viewModel.binding?.recyclerView?.apply {
+            adapter = viewModel.mAdapter
+            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+            layoutManager = GridLayoutManager(mContext, 1)
+            visibility = View.INVISIBLE
+            layoutAnimation = LayoutAnimationController(
+                AnimationUtils.loadAnimation(
+                    context,
+                    androidx.appcompat.R.anim.abc_grow_fade_in_from_bottom
+                )
+            ).apply {
+                order = LayoutAnimationController.ORDER_NORMAL
+                delay = 0.3F
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -183,13 +188,13 @@ class RestoreFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val mContext = requireContext()
+        val mContext = requireActivity()
         when (item.itemId) {
             R.id.backup_reverse -> {
-                val items: Array<String> = resources.getStringArray(R.array.reverse_array)
+                val items: Array<String> = mContext.resources.getStringArray(R.array.reverse_array)
                 var choice = 0
                 MaterialAlertDialogBuilder(mContext)
-                    .setTitle(getString(R.string.choose))
+                    .setTitle(mContext.getString(R.string.choose))
                     .setCancelable(true)
                     .setSingleChoiceItems(
                         items,
@@ -197,90 +202,95 @@ class RestoreFragment : Fragment() {
                     ) { _, which ->
                         choice = which
                     }
-                    .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                    .setPositiveButton(mContext.getString(R.string.confirm)) { _, _ ->
                         when (choice) {
                             0 -> {
-                                for ((index, _) in appList.withIndex()) {
-                                    appList[index].backupApp = true
+                                for ((index, _) in viewModel.appList.withIndex()) {
+                                    viewModel.appList[index].backupApp = true
                                 }
-                                mAdapter.notifyDataSetChanged()
+                                viewModel.mAdapter.notifyDataSetChanged()
                             }
                             1 -> {
-                                for ((index, _) in appList.withIndex()) {
-                                    appList[index].backupData = true
+                                for ((index, _) in viewModel.appList.withIndex()) {
+                                    viewModel.appList[index].backupData = true
                                 }
-                                mAdapter.notifyDataSetChanged()
+                                viewModel.mAdapter.notifyDataSetChanged()
                             }
                             2 -> {
-                                for ((index, _) in appList.withIndex()) {
-                                    appList[index].backupApp = !appList[index].backupApp
+                                for ((index, _) in viewModel.appList.withIndex()) {
+                                    viewModel.appList[index].backupApp =
+                                        !viewModel.appList[index].backupApp
                                 }
-                                mAdapter.notifyDataSetChanged()
+                                viewModel.mAdapter.notifyDataSetChanged()
                             }
                             3 -> {
-                                for ((index, _) in appList.withIndex()) {
-                                    appList[index].backupData = !appList[index].backupData
+                                for ((index, _) in viewModel.appList.withIndex()) {
+                                    viewModel.appList[index].backupData =
+                                        !viewModel.appList[index].backupData
                                 }
-                                mAdapter.notifyDataSetChanged()
+                                viewModel.mAdapter.notifyDataSetChanged()
                             }
                         }
                     }
                     .show()
             }
             R.id.backup_confirm -> {
-                binding.recyclerView.scrollToPosition(0)
+                setHasOptionsMenu(false)
+                viewModel.isProcessing = true
+                viewModel.binding?.recyclerView?.scrollToPosition(0)
                 val mAppList = mutableListOf<AppEntity>()
-                mAppList.addAll(appList)
+                mAppList.addAll(viewModel.appList)
                 for (i in mAppList) {
                     if (!i.backupApp && !i.backupData) {
-                        appList.remove(i)
+                        viewModel.appList.remove(i)
                     } else {
-                        appList[appList.indexOf(i)].isProcessing = true
+                        viewModel.appList[viewModel.appList.indexOf(i)].isProcessing = true
                     }
                 }
-                mAdapter.notifyDataSetChanged()
+                viewModel.mAdapter.notifyDataSetChanged()
                 mAppList.clear()
-                mAppList.addAll(appList)
+                mAppList.addAll(viewModel.appList)
                 CoroutineScope(Dispatchers.IO).launch {
                     for (i in mAppList) {
                         val inPath = i.backupPath
                         val packageName = i.packageName
 
-                        if (appList[0].backupApp) {
+                        if (viewModel.appList[0].backupApp) {
                             withContext(Dispatchers.Main) {
-                                appList[0].onProcessingApp = true
-                                mAdapter.notifyItemChanged(0)
-                                appList[0].progress = getString(R.string.install_apk_processing)
-                                mAdapter.notifyItemChanged(0)
+                                viewModel.appList[0].onProcessingApp = true
+                                viewModel.mAdapter.notifyItemChanged(0)
+                                viewModel.appList[0].progress =
+                                    mContext.getString(R.string.install_apk_processing)
+                                viewModel.mAdapter.notifyItemChanged(0)
                             }
                             Command.installAPK(inPath, packageName)
                             withContext(Dispatchers.Main) {
-                                appList[0].onProcessingApp = false
-                                appList[0].backupApp = false
-                                mAdapter.notifyItemChanged(0)
+                                viewModel.appList[0].onProcessingApp = false
+                                viewModel.appList[0].backupApp = false
+                                viewModel.mAdapter.notifyItemChanged(0)
                             }
                         }
-                        if (appList[0].backupData) {
+                        if (viewModel.appList[0].backupData) {
                             withContext(Dispatchers.Main) {
-                                appList[0].onProcessingData = true
-                                mAdapter.notifyItemChanged(0)
+                                viewModel.appList[0].onProcessingData = true
+                                viewModel.mAdapter.notifyItemChanged(0)
                             }
                             Command.restoreData(packageName, inPath) {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    if (appList.isNotEmpty()) {
-                                        appList[0].progress = it
-                                        mAdapter.notifyItemChanged(0)
+                                    if (viewModel.appList.isNotEmpty()) {
+                                        viewModel.appList[0].progress = it
+                                        viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                 }
                             }
                         }
                         withContext(Dispatchers.Main) {
-                            appList.removeAt(0)
-                            mAdapter.notifyItemRemoved(0)
+                            viewModel.appList.removeAt(0)
+                            viewModel.mAdapter.notifyItemRemoved(0)
                         }
                     }
                     withContext(Dispatchers.Main) {
-                        val lottieAnimationView = LottieAnimationView(context)
+                        val lottieAnimationView = LottieAnimationView(mContext)
                         lottieAnimationView.apply {
                             layoutParams =
                                 RelativeLayout.LayoutParams(
@@ -292,16 +302,17 @@ class RestoreFragment : Fragment() {
                             setAnimation(R.raw.success)
                             playAnimation()
                             addAnimatorUpdateListener { animation ->
-                                if (animation.animatedFraction == 1.0F) {
+                                if (animation.animatedFraction == 1.0F || viewModel.binding == null) {
                                     Toast.makeText(
                                         mContext,
-                                        context.getString(R.string.restore_success),
+                                        mContext.getString(R.string.restore_success),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             }
                         }
-                        binding.relativeLayout.addView(lottieAnimationView)
+                        viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
+                        viewModel.isProcessing = false
                     }
                 }
             }
@@ -311,6 +322,6 @@ class RestoreFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        viewModel.binding = null
     }
 }

@@ -263,7 +263,6 @@ class BackupFragment : Fragment() {
                         }
                         viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
                         viewModel.isProcessing = false
-                        setHasOptionsMenu(false)
                     }
                 }
             }
