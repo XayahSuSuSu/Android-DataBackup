@@ -31,4 +31,7 @@
     <string name="backup_dir">Backup directory</string>
     <string name="compression_type">Compression type</string>
     <string name="architecture">Architecture</string>
+    <string name="cancel">Cancel</string>
+    <string name="onConfirm">Sure?</string>
+    <string name="tips">Tips</string>
 </resources>

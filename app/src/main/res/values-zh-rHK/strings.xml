@@ -29,4 +29,7 @@
     <string name="backup_dir">備份目錄</string>
     <string name="compression_type">壓縮方式</string>
     <string name="architecture">架構</string>
+    <string name="cancel">取消</string>
+    <string name="onConfirm">確定進行此操作嗎？</string>
+    <string name="tips">提示</string>
 </resources>
