@@ -3,6 +3,7 @@ package com.xayah.databackup
 import android.app.Application
 import android.content.Context
 import com.topjohnwu.superuser.Shell
+import com.topjohnwu.superuser.ShellUtils
 import com.xayah.crash.CrashHandler
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Path
@@ -38,12 +39,22 @@ class App : Application() {
 
         val that = this
         CoroutineScope(Dispatchers.IO).launch {
+            val versionName =
+                that.packageManager.getPackageInfo(that.packageName, 0).versionName
+            val oldVersionName =
+                ShellUtils.fastCmd("cat ${Path.getExternalFilesDir(that)}/version")
+            if (versionName > oldVersionName){
+                ShellUtils.fastCmd("rm -rf ${Path.getExternalFilesDir(that)}/bin")
+                ShellUtils.fastCmd("rm -rf ${Path.getExternalFilesDir(that)}/bin.zip")
+            }
+
             if (!Command.ls("${Path.getExternalFilesDir(that)}/bin")) {
                 Command.extractAssets(that, "${Command.getABI()}/bin.zip", "bin.zip")
                 Command.unzip(
                     "${Path.getExternalFilesDir(that)}/bin.zip",
                     "${Path.getExternalFilesDir(that)}/bin"
                 )
+                ShellUtils.fastCmd("echo \"${versionName}\" > ${Path.getExternalFilesDir(that)}/version")
             }
         }
     }
