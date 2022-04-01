@@ -1,5 +1,6 @@
 package com.xayah.databackup.fragment.backup
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.view.ViewGroup.LayoutParams
@@ -24,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
+@SuppressLint("NotifyDataSetChanged")
 class BackupFragment : Fragment() {
     lateinit var viewModel: BackupViewModel
 

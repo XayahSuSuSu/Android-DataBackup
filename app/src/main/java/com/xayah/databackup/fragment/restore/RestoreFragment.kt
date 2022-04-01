@@ -1,5 +1,6 @@
 package com.xayah.databackup.fragment.restore
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.*
@@ -28,7 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
+@SuppressLint("NotifyDataSetChanged")
 class RestoreFragment : Fragment() {
     lateinit var viewModel: RestoreViewModel
 
