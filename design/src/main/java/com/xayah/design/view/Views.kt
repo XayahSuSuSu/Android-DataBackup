@@ -1,6 +1,6 @@
 package com.xayah.design.view
 
-import android.view.View
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
@@ -9,7 +9,6 @@ import androidx.appcompat.R
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.xayah.design.util.dp
 
@@ -43,6 +42,19 @@ fun RecyclerView.fastInitialize() {
             order = LayoutAnimationController.ORDER_NORMAL
             delay = 0.3F
         }
+    }
+}
+
+@SuppressLint("NotifyDataSetChanged")
+fun RecyclerView.notifyDataSetChanged() {
+    this.apply {
+        adapter?.notifyDataSetChanged()
+        startAnimation(
+            AnimationUtils.loadAnimation(
+                context,
+                R.anim.abc_grow_fade_in_from_bottom
+            )
+        )
     }
 }
 

@@ -1,6 +1,5 @@
 package com.xayah.databackup.fragment.backup
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.view.ViewGroup.LayoutParams
@@ -20,12 +19,12 @@ import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Room
 import com.xayah.databackup.util.readPreferences
 import com.xayah.design.view.fastInitialize
+import com.xayah.design.view.notifyDataSetChanged
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@SuppressLint("NotifyDataSetChanged")
 class BackupFragment : Fragment() {
     lateinit var viewModel: BackupViewModel
 
@@ -60,7 +59,7 @@ class BackupFragment : Fragment() {
                     viewModel.appList = Command.getAppList(mContext, room)
                     items = viewModel.appList
                     withContext(Dispatchers.Main) {
-                        notifyDataSetChanged()
+                        viewModel.binding?.recyclerView?.notifyDataSetChanged()
                         linearProgressIndicator.visibility = View.GONE
                         viewModel.binding?.recyclerView?.visibility = View.VISIBLE
                     }
@@ -105,7 +104,7 @@ class BackupFragment : Fragment() {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     room?.selectAllApp()
                                 }
-                                viewModel.mAdapter.notifyDataSetChanged()
+                                viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                             1 -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
@@ -114,7 +113,7 @@ class BackupFragment : Fragment() {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     room?.selectAllData()
                                 }
-                                viewModel.mAdapter.notifyDataSetChanged()
+                                viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                             2 -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
@@ -124,7 +123,7 @@ class BackupFragment : Fragment() {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     room?.reverseAllApp()
                                 }
-                                viewModel.mAdapter.notifyDataSetChanged()
+                                viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                             3 -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
@@ -134,7 +133,7 @@ class BackupFragment : Fragment() {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     room?.reverseAllData()
                                 }
-                                viewModel.mAdapter.notifyDataSetChanged()
+                                viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                         }
                     }
@@ -161,7 +160,7 @@ class BackupFragment : Fragment() {
                                 viewModel.appList[viewModel.appList.indexOf(i)].isProcessing = true
                             }
                         }
-                        viewModel.mAdapter.notifyDataSetChanged()
+                        viewModel.binding?.recyclerView?.notifyDataSetChanged()
                         mAppList.clear()
                         mAppList.addAll(viewModel.appList)
                         CoroutineScope(Dispatchers.IO).launch {

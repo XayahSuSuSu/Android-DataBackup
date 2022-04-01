@@ -1,6 +1,5 @@
 package com.xayah.databackup.fragment.restore
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.*
@@ -23,13 +22,13 @@ import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.util.Command
 import com.xayah.design.util.dp
 import com.xayah.design.view.fastInitialize
+import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@SuppressLint("NotifyDataSetChanged")
 class RestoreFragment : Fragment() {
     lateinit var viewModel: RestoreViewModel
 
@@ -144,7 +143,7 @@ class RestoreFragment : Fragment() {
             CoroutineScope(Dispatchers.IO).launch {
                 items = viewModel.appList
                 withContext(Dispatchers.Main) {
-                    notifyDataSetChanged()
+                    viewModel.binding?.recyclerView?.notifyDataSetChanged()
                     linearProgressIndicator.visibility = View.GONE
                     viewModel.binding?.recyclerView?.visibility = View.VISIBLE
                 }
@@ -182,27 +181,27 @@ class RestoreFragment : Fragment() {
                                 for ((index, _) in viewModel.appList.withIndex()) {
                                     viewModel.appList[index].backupApp = true
                                 }
-                                viewModel.mAdapter.notifyDataSetChanged()
+                                viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                             1 -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
                                     viewModel.appList[index].backupData = true
                                 }
-                                viewModel.mAdapter.notifyDataSetChanged()
+                                viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                             2 -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
                                     viewModel.appList[index].backupApp =
                                         !viewModel.appList[index].backupApp
                                 }
-                                viewModel.mAdapter.notifyDataSetChanged()
+                                viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                             3 -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
                                     viewModel.appList[index].backupData =
                                         !viewModel.appList[index].backupData
                                 }
-                                viewModel.mAdapter.notifyDataSetChanged()
+                                viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                         }
                     }
@@ -228,7 +227,7 @@ class RestoreFragment : Fragment() {
                                 viewModel.appList[viewModel.appList.indexOf(i)].isProcessing = true
                             }
                         }
-                        viewModel.mAdapter.notifyDataSetChanged()
+                        viewModel.binding?.recyclerView?.notifyDataSetChanged()
                         mAppList.clear()
                         mAppList.addAll(viewModel.appList)
                         CoroutineScope(Dispatchers.IO).launch {
