@@ -24,11 +24,10 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        val viewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
         binding.viewModel = viewModel
 
-        viewModel.abi = Command.getABI()
-        viewModel.storageSpace = Command.getStorageSpace(requireContext())
+        viewModel.initialize(requireActivity())
     }
 
     override fun onDestroyView() {
