@@ -11,6 +11,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
@@ -20,10 +21,7 @@ import com.xayah.databackup.util.Room
 import com.xayah.databackup.util.readPreferences
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class BackupFragment : Fragment() {
     lateinit var viewModel: BackupViewModel
@@ -147,7 +145,28 @@ class BackupFragment : Fragment() {
                     setMessage(mContext.getString(R.string.onConfirm))
                     setNegativeButton(mContext.getString(R.string.cancel)) { _, _ -> }
                     setPositiveButton(mContext.getString(R.string.confirm)) { _, _ ->
+                        viewModel.time = 0
                         viewModel.isProcessing = true
+                        CoroutineScope(Dispatchers.IO).launch {
+                            while (viewModel.isProcessing) {
+                                delay(1000)
+                                viewModel.time += 1
+                                val s = String.format("%02d", viewModel.time % 60)
+                                val m = String.format("%02d", viewModel.time / 60 % 60)
+                                val h = String.format("%02d", viewModel.time / 3600 % 24)
+                                withContext(Dispatchers.Main) {
+                                    (mContext as MainActivity).binding.toolbar.subtitle = "$h:$m:$s"
+                                    mContext.binding.toolbar.title =
+                                        "${mContext.getString(R.string.backup_processing)}: ${viewModel.index}/${viewModel.total}"
+                                }
+                            }
+                            withContext(Dispatchers.Main) {
+                                (mContext as MainActivity).binding.toolbar.subtitle =
+                                    mContext.viewModel.versionName
+                                mContext.binding.toolbar.title =
+                                    mContext.getString(R.string.backup_success)
+                            }
+                        }
                         viewModel.binding?.recyclerView?.scrollToPosition(0)
                         setHasOptionsMenu(false)
 
@@ -163,8 +182,10 @@ class BackupFragment : Fragment() {
                         viewModel.binding?.recyclerView?.notifyDataSetChanged()
                         mAppList.clear()
                         mAppList.addAll(viewModel.appList)
+                        viewModel.total = mAppList.size
                         CoroutineScope(Dispatchers.IO).launch {
-                            for (i in mAppList) {
+                            for ((index, i) in mAppList.withIndex()) {
+                                viewModel.index = index
                                 val compressionType =
                                     mContext.readPreferences("compression_type") ?: "lz4"
                                 val packageName = i.packageName

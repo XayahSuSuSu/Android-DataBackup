@@ -35,4 +35,5 @@
     <string name="onConfirm">Sure?</string>
     <string name="tips">Tips</string>
     <string name="success">Success</string>
+    <string name="backup_processing">Backup processing</string>
 </resources>
