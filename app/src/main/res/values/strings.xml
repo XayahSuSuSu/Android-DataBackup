@@ -36,4 +36,5 @@
     <string name="tips">Tips</string>
     <string name="success">Success</string>
     <string name="backup_processing">Backup processing</string>
+    <string name="restore_processing">Restore processing</string>
 </resources>

@@ -15,6 +15,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
@@ -24,10 +25,7 @@ import com.xayah.design.util.dp
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class RestoreFragment : Fragment() {
     lateinit var viewModel: RestoreViewModel
@@ -216,7 +214,28 @@ class RestoreFragment : Fragment() {
                     setNegativeButton(mContext.getString(R.string.cancel)) { _, _ -> }
                     setPositiveButton(mContext.getString(R.string.confirm)) { _, _ ->
                         setHasOptionsMenu(false)
+                        viewModel.time = 0
                         viewModel.isProcessing = true
+                        CoroutineScope(Dispatchers.IO).launch {
+                            while (viewModel.isProcessing) {
+                                delay(1000)
+                                viewModel.time += 1
+                                val s = String.format("%02d", viewModel.time % 60)
+                                val m = String.format("%02d", viewModel.time / 60 % 60)
+                                val h = String.format("%02d", viewModel.time / 3600 % 24)
+                                withContext(Dispatchers.Main) {
+                                    (mContext as MainActivity).binding.toolbar.subtitle = "$h:$m:$s"
+                                    mContext.binding.toolbar.title =
+                                        "${mContext.getString(R.string.restore_processing)}: ${viewModel.index}/${viewModel.total}"
+                                }
+                            }
+                            withContext(Dispatchers.Main) {
+                                (mContext as MainActivity).binding.toolbar.subtitle =
+                                    mContext.viewModel.versionName
+                                mContext.binding.toolbar.title =
+                                    mContext.getString(R.string.restore_success)
+                            }
+                        }
                         viewModel.binding?.recyclerView?.scrollToPosition(0)
                         val mAppList = mutableListOf<AppEntity>()
                         mAppList.addAll(viewModel.appList)
@@ -230,8 +249,10 @@ class RestoreFragment : Fragment() {
                         viewModel.binding?.recyclerView?.notifyDataSetChanged()
                         mAppList.clear()
                         mAppList.addAll(viewModel.appList)
+                        viewModel.total = mAppList.size
                         CoroutineScope(Dispatchers.IO).launch {
-                            for (i in mAppList) {
+                            for ((index, i) in mAppList.withIndex()) {
+                                viewModel.index = index
                                 val inPath = i.backupPath
                                 val packageName = i.packageName
 

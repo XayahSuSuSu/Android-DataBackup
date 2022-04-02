@@ -13,4 +13,7 @@ class RestoreViewModel : ViewModel() {
     var appList: MutableList<AppEntity> = mutableListOf()
     lateinit var mAdapter: MultiTypeAdapter
 
+    var time: Long = 0
+    var index = 0
+    var total = 0
 }

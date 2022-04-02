@@ -34,4 +34,5 @@
     <string name="tips">提示</string>
     <string name="success">成功</string>
     <string name="backup_processing">正在备份</string>
+    <string name="restore_processing">正在恢复</string>
 </resources>
