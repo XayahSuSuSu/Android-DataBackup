@@ -50,7 +50,6 @@ class BackupFragment : Fragment() {
         val linearProgressIndicator = LinearProgressIndicator(mContext).apply { fastInitialize() }
         viewModel.binding?.relativeLayout?.addView(linearProgressIndicator)
         if (!viewModel.isProcessing) {
-            setHasOptionsMenu(true)
             viewModel.mAdapter = MultiTypeAdapter().apply {
                 register(AppListAdapter(room))
                 CoroutineScope(Dispatchers.IO).launch {
@@ -60,12 +59,14 @@ class BackupFragment : Fragment() {
                         viewModel.binding?.recyclerView?.notifyDataSetChanged()
                         linearProgressIndicator.visibility = View.GONE
                         viewModel.binding?.recyclerView?.visibility = View.VISIBLE
+                        setHasOptionsMenu(true)
                     }
                 }
             }
         } else {
             linearProgressIndicator.visibility = View.GONE
             viewModel.binding?.recyclerView?.visibility = View.VISIBLE
+            setHasOptionsMenu(true)
         }
         viewModel.binding?.recyclerView?.apply {
             adapter = viewModel.mAdapter
