@@ -1,11 +1,13 @@
 package com.xayah.design.view
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.TransitionDrawable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.annotation.RawRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -14,9 +16,15 @@ import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.xayah.design.R
+import com.xayah.design.databinding.BottomSheetDialogResultBinding
 import com.xayah.design.util.dp
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 fun BottomSheetDialog.setWithTopBar(): LinearLayout {
@@ -135,6 +143,67 @@ fun BottomSheetDialog.setWithTopBarAndTips(
             addView(lottieAnimationView)
             addView(tipsView)
             addView(materialButton)
+        }
+    }
+}
+
+
+@SuppressLint("SetTextI18n")
+fun BottomSheetDialog.setWithResult(logs: String, success: Int, failed: Int) {
+    this.apply {
+        val that = this
+        val binding = BottomSheetDialogResultBinding.inflate(this.layoutInflater).apply {
+            materialTextViewSuccess.text = "${that.context.getString(R.string.success)}: $success"
+            materialTextViewFailed.text = "${that.context.getString(R.string.failed)}: $failed"
+            filledButton.apply {
+                setOnClickListener {
+                    that.dismiss()
+                    MaterialAlertDialogBuilder(this.context)
+                        .setTitle(this.context.getString(R.string.logs))
+                        .setCancelable(true)
+                        .setMessage(logs)
+                        .setNeutralButton(this.context.getString(R.string.save_logs)) { _, _ ->
+                            this.context.getExternalFilesDir(null)?.path.apply {
+                                if (this != null) {
+                                    val simpleDateFormat =
+                                        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+                                    val date: String = simpleDateFormat.format(Date())
+                                    val fileName =
+                                        "Logs-${date.replace(" ", "-").replace(":", "-")}.txt"
+                                    val crashDir = File(this)
+                                    if (!crashDir.exists()) crashDir.mkdirs()
+                                    val fileOutputStream =
+                                        FileOutputStream("${this}/$fileName", true)
+                                    fileOutputStream.write(logs.toByteArray())
+                                    fileOutputStream.flush()
+                                    fileOutputStream.close()
+                                    val path = this
+                                    MaterialAlertDialogBuilder(that.context).apply {
+                                        setWithNormalMessage(
+                                            that.context.getString(R.string.tips),
+                                            "${that.context.getString(R.string.success)}\n${
+                                                that.context.getString(
+                                                    R.string.path
+                                                )
+                                            }: $path"
+                                        )
+                                    }
+                                } else {
+                                    Toast.makeText(
+                                        that.context,
+                                        that.context.getString(R.string.failed),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                        .setPositiveButton(this.context.getString(R.string.dialog_positive)) { _, _ -> }
+                        .show()
+                }
+            }
+        }
+        setWithTopBar().apply {
+            addView(binding.root)
         }
     }
 }

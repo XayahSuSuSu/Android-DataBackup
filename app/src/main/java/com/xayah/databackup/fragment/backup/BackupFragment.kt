@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.airbnb.lottie.LottieAnimationView
 import com.drakeet.multitype.MultiTypeAdapter
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
@@ -21,6 +23,7 @@ import com.xayah.databackup.util.Room
 import com.xayah.databackup.util.readPreferences
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
+import com.xayah.design.view.setWithResult
 import kotlinx.coroutines.*
 
 class BackupFragment : Fragment() {
@@ -80,7 +83,7 @@ class BackupFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val mContext = requireContext()
+        val mContext = requireActivity()
         when (item.itemId) {
             R.id.backup_reverse -> {
                 val items: Array<String> = mContext.resources.getStringArray(R.array.reverse_array)
@@ -146,7 +149,10 @@ class BackupFragment : Fragment() {
                     setMessage(mContext.getString(R.string.onConfirm))
                     setNegativeButton(mContext.getString(R.string.cancel)) { _, _ -> }
                     setPositiveButton(mContext.getString(R.string.confirm)) { _, _ ->
+                        App.log.clear()
                         viewModel.time = 0
+                        viewModel.success = 0
+                        viewModel.failed = 0
                         viewModel.isProcessing = true
                         CoroutineScope(Dispatchers.IO).launch {
                             while (viewModel.isProcessing) {
@@ -186,6 +192,9 @@ class BackupFragment : Fragment() {
                         viewModel.total = mAppList.size
                         CoroutineScope(Dispatchers.IO).launch {
                             for ((index, i) in mAppList.withIndex()) {
+                                App.log.add("----------------------------")
+                                App.log.add("${mContext.getString(R.string.backup_processing)}: ${i.packageName}")
+                                var state = true
                                 viewModel.index = index
                                 val compressionType =
                                     mContext.readPreferences("compression_type") ?: "lz4"
@@ -206,6 +215,10 @@ class BackupFragment : Fragment() {
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                     Command.compressAPK(compressionType, packageName, outPut)
+                                        .apply {
+                                            if (!this)
+                                                state = false
+                                        }
                                     withContext(Dispatchers.Main) {
                                         viewModel.appList[0].onProcessingApp = false
                                         viewModel.appList[0].backupApp = false
@@ -217,56 +230,86 @@ class BackupFragment : Fragment() {
                                 if (viewModel.appList[0].backupData) {
                                     withContext(Dispatchers.Main) {
                                         viewModel.appList[0].onProcessingData = true
-                                        viewModel.mAdapter.notifyItemChanged(0)
-                                    }
-                                    withContext(Dispatchers.Main) {
                                         viewModel.appList[0].progress =
                                             "${mContext.getString(R.string.backup_processing)}user"
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                     Command.compress(compressionType, "user", packageName, outPut)
+                                        .apply {
+                                            if (!this)
+                                                state = false
+                                        }
                                     withContext(Dispatchers.Main) {
                                         viewModel.appList[0].progress =
                                             "${mContext.getString(R.string.backup_processing)}data"
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                     Command.compress(compressionType, "data", packageName, outPut)
+                                        .apply {
+                                            if (!this)
+                                                state = false
+                                        }
                                     withContext(Dispatchers.Main) {
                                         viewModel.appList[0].progress =
                                             "${mContext.getString(R.string.backup_processing)}obb"
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
                                     Command.compress(compressionType, "obb", packageName, outPut)
+                                        .apply {
+                                            if (!this)
+                                                state = false
+                                        }
                                 }
                                 withContext(Dispatchers.Main) {
                                     viewModel.appList.removeAt(0)
                                     viewModel.mAdapter.notifyItemRemoved(0)
                                 }
-                                Command.generateAppInfo(i.appName, i.packageName, outPut)
+                                Command.generateAppInfo(i.appName, i.packageName, outPut).apply {
+                                    if (!this)
+                                        state = false
+                                }
+                                if (state)
+                                    viewModel.success += 1
+                                else
+                                    viewModel.failed += 1
                             }
                             withContext(Dispatchers.Main) {
-                                val lottieAnimationView = LottieAnimationView(mContext)
-                                lottieAnimationView.apply {
-                                    layoutParams =
-                                        RelativeLayout.LayoutParams(
-                                            LayoutParams.MATCH_PARENT,
-                                            LayoutParams.MATCH_PARENT
-                                        ).apply {
-                                            addRule(RelativeLayout.CENTER_IN_PARENT)
-                                        }
-                                    setAnimation(R.raw.success)
-                                    playAnimation()
-                                    addAnimatorUpdateListener { animation ->
-                                        if (animation.animatedFraction == 1.0F || viewModel.binding == null) {
-                                            Toast.makeText(
-                                                mContext,
-                                                mContext.getString(R.string.backup_success),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
+                                val showResult = {
+                                    Toast.makeText(
+                                        mContext,
+                                        mContext.getString(R.string.backup_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    BottomSheetDialog(mContext).apply {
+                                        setWithResult(
+                                            App.log.toString(),
+                                            viewModel.success,
+                                            viewModel.failed
+                                        )
                                     }
                                 }
-                                viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
+                                if (viewModel.binding == null) {
+                                    showResult()
+                                } else {
+                                    val lottieAnimationView = LottieAnimationView(mContext)
+                                    lottieAnimationView.apply {
+                                        layoutParams =
+                                            RelativeLayout.LayoutParams(
+                                                LayoutParams.MATCH_PARENT,
+                                                LayoutParams.MATCH_PARENT
+                                            ).apply {
+                                                addRule(RelativeLayout.CENTER_IN_PARENT)
+                                            }
+                                        setAnimation(R.raw.success)
+                                        playAnimation()
+                                        addAnimatorUpdateListener { animation ->
+                                            if (animation.animatedFraction == 1.0F) {
+                                                showResult()
+                                            }
+                                        }
+                                    }
+                                    viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
+                                }
                                 viewModel.isProcessing = false
                             }
                         }

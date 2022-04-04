@@ -11,10 +11,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.drakeet.multitype.MultiTypeAdapter
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
@@ -24,6 +26,7 @@ import com.xayah.databackup.util.Command
 import com.xayah.design.util.dp
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
+import com.xayah.design.view.setWithResult
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.*
 
@@ -214,7 +217,10 @@ class RestoreFragment : Fragment() {
                     setNegativeButton(mContext.getString(R.string.cancel)) { _, _ -> }
                     setPositiveButton(mContext.getString(R.string.confirm)) { _, _ ->
                         setHasOptionsMenu(false)
+                        App.log.clear()
                         viewModel.time = 0
+                        viewModel.success = 0
+                        viewModel.failed = 0
                         viewModel.isProcessing = true
                         CoroutineScope(Dispatchers.IO).launch {
                             while (viewModel.isProcessing) {
@@ -252,6 +258,9 @@ class RestoreFragment : Fragment() {
                         viewModel.total = mAppList.size
                         CoroutineScope(Dispatchers.IO).launch {
                             for ((index, i) in mAppList.withIndex()) {
+                                App.log.add("----------------------------")
+                                App.log.add("${mContext.getString(R.string.restore_processing)}: ${i.packageName}")
+                                var state = true
                                 viewModel.index = index
                                 val inPath = i.backupPath
                                 val packageName = i.packageName
@@ -278,36 +287,57 @@ class RestoreFragment : Fragment() {
                                             mContext.getString(R.string.restore_processing)
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
-                                    Command.restoreData(packageName, inPath)
+                                    Command.restoreData(packageName, inPath).apply {
+                                        if (!this)
+                                            state = false
+                                    }
                                 }
                                 withContext(Dispatchers.Main) {
                                     viewModel.appList.removeAt(0)
                                     viewModel.mAdapter.notifyItemRemoved(0)
                                 }
+                                if (state)
+                                    viewModel.success += 1
+                                else
+                                    viewModel.failed += 1
                             }
                             withContext(Dispatchers.Main) {
-                                val lottieAnimationView = LottieAnimationView(mContext)
-                                lottieAnimationView.apply {
-                                    layoutParams =
-                                        RelativeLayout.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            ViewGroup.LayoutParams.MATCH_PARENT
-                                        ).apply {
-                                            addRule(RelativeLayout.CENTER_IN_PARENT)
-                                        }
-                                    setAnimation(R.raw.success)
-                                    playAnimation()
-                                    addAnimatorUpdateListener { animation ->
-                                        if (animation.animatedFraction == 1.0F || viewModel.binding == null) {
-                                            Toast.makeText(
-                                                mContext,
-                                                mContext.getString(R.string.restore_success),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
+                                val showResult = {
+                                    Toast.makeText(
+                                        mContext,
+                                        mContext.getString(R.string.restore_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    BottomSheetDialog(mContext).apply {
+                                        setWithResult(
+                                            App.log.toString(),
+                                            viewModel.success,
+                                            viewModel.failed
+                                        )
                                     }
                                 }
-                                viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
+                                if (viewModel.binding == null) {
+                                    showResult()
+                                } else {
+                                    val lottieAnimationView = LottieAnimationView(mContext)
+                                    lottieAnimationView.apply {
+                                        layoutParams =
+                                            RelativeLayout.LayoutParams(
+                                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                                ViewGroup.LayoutParams.MATCH_PARENT
+                                            ).apply {
+                                                addRule(RelativeLayout.CENTER_IN_PARENT)
+                                            }
+                                        setAnimation(R.raw.success)
+                                        playAnimation()
+                                        addAnimatorUpdateListener { animation ->
+                                            if (animation.animatedFraction == 1.0F) {
+                                                showResult()
+                                            }
+                                        }
+                                    }
+                                    viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
+                                }
                                 viewModel.isProcessing = false
                             }
                         }

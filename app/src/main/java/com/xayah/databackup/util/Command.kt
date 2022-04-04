@@ -60,7 +60,7 @@ class Command {
 
         fun extractAssets(mContext: Context, assetsPath: String, outName: String) {
             try {
-                val assets = File(Path.getExternalFilesDir(mContext), outName)
+                val assets = File(Path.getFilesDir(mContext), outName)
                 if (!assets.exists()) {
                     val outStream = FileOutputStream(assets)
                     val inputStream = mContext.resources.assets.open(assetsPath)
@@ -90,20 +90,21 @@ class Command {
             dataType: String,
             packageName: String,
             outPut: String
-        ) {
+        ): Boolean {
             Bashrc.compress(compressionType, dataType, packageName, outPut).apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.compress_failed))
-                    return
+                    return false
                 }
             }
+            return true
         }
 
         fun compressAPK(
             compressionType: String,
             packageName: String,
             outPut: String
-        ) {
+        ): Boolean {
             val apkPathPair = Bashrc.getAPKPath(packageName).apply {
                 if (!this.first) {
                     App.log.add(
@@ -111,7 +112,7 @@ class Command {
                             App.globalContext.getString(R.string.compress_apk_failed)
                         }"
                     )
-                    return
+                    return false
                 }
             }
             Bashrc.cd(apkPathPair.second).apply {
@@ -121,21 +122,22 @@ class Command {
                             App.globalContext.getString(R.string.path_not_exist)
                         }"
                     )
-                    return
+                    return false
                 }
             }
             Bashrc.compressAPK(compressionType, outPut).apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.compress_apk_failed))
-                    return
+                    return false
                 }
             }
             Bashrc.cd("~").apply {
                 if (!this.first) {
                     App.log.add("~: ${App.globalContext.getString(R.string.path_not_exist)}")
-                    return
+                    return false
                 }
             }
+            return true
         }
 
         private fun decompress(
@@ -143,13 +145,14 @@ class Command {
             dataType: String,
             inputPath: String,
             packageName: String
-        ) {
+        ): Boolean {
             Bashrc.decompress(compressionType, dataType, inputPath, packageName).apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.decompress_failed))
-                    return
+                    return false
                 }
             }
+            return true
         }
 
         private fun getCompressionTypeByName(name: String): String {
@@ -179,7 +182,7 @@ class Command {
         fun installAPK(
             inPath: String,
             packageName: String
-        ) {
+        ): Boolean {
             // 禁止APK验证
             Bashrc.setInstallEnv()
 
@@ -188,9 +191,10 @@ class Command {
                     App.log.add(
                         App.globalContext.getString(R.string.install_apk_failed_or_skip)
                     )
-                    return
+                    return false
                 }
             }
+            return true
         }
 
         private fun setOwnerAndSELinux(dataType: String, packageName: String, path: String) {
@@ -205,7 +209,8 @@ class Command {
         fun restoreData(
             packageName: String,
             inPath: String
-        ) {
+        ): Boolean {
+            var result = true
             val fileList = Shell.cmd("ls $inPath | grep -v apk.* | grep .tar").exec().out
             for (i in fileList) {
                 val item = i.split(".")
@@ -213,7 +218,10 @@ class Command {
                 var path = ""
                 val compressionType = getCompressionTypeByName(i)
                 if (compressionType.isNotEmpty()) {
-                    decompress(compressionType, dataType, "${inPath}/${i}", packageName)
+                    decompress(compressionType, dataType, "${inPath}/${i}", packageName).apply {
+                        if (!this)
+                            result = false
+                    }
                     when (dataType) {
                         "user" -> {
                             path = "/data/data"
@@ -226,6 +234,7 @@ class Command {
                         setOwnerAndSELinux(dataType, packageName, "${path}/${packageName}")
                 }
             }
+            return result
         }
 
         private fun getAppVersion(packageName: String): String {
@@ -238,7 +247,7 @@ class Command {
             }
         }
 
-        fun generateAppInfo(appName: String, packageName: String, outPut: String) {
+        fun generateAppInfo(appName: String, packageName: String, outPut: String): Boolean {
             var content = "\""
             content += "appName=${appName}" + "\\n"
             content += "packageName=${packageName}" + "\\n"
@@ -247,8 +256,10 @@ class Command {
             Bashrc.writeToFile(content, "${outPut}/info").apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.generate_app_info_failed))
+                    return false
                 }
             }
+            return true
         }
     }
 }

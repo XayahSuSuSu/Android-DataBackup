@@ -3,4 +3,11 @@
     <string name="dialog_positive">确认</string>
     <string name="dialog_negative">取消</string>
     <string name="dialog_neutral">重置</string>
+    <string name="save_logs">保存日志</string>
+    <string name="logs">日志</string>
+    <string name="success">成功</string>
+    <string name="failed">失败</string>
+    <string name="check_logs">查看日志</string>
+    <string name="tips">提示</string>
+    <string name="path">路径</string>
 </resources>

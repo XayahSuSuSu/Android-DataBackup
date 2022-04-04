@@ -16,4 +16,7 @@ class RestoreViewModel : ViewModel() {
     var time: Long = 0
     var index = 0
     var total = 0
+
+    var success = 0
+    var failed = 0
 }

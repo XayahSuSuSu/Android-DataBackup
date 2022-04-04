@@ -2,4 +2,11 @@
     <string name="dialog_positive">Confirm</string>
     <string name="dialog_negative">Cancel</string>
     <string name="dialog_neutral">Reset</string>
+    <string name="save_logs">Save logs</string>
+    <string name="logs">Logs</string>
+    <string name="success">Success</string>
+    <string name="failed">Failed</string>
+    <string name="check_logs">Check logs</string>
+    <string name="tips">Tips</string>
+    <string name="path">Path</string>
 </resources>

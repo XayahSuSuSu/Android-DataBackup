@@ -37,7 +37,7 @@ class App : Application() {
             val bashrc: InputStream = context.resources.openRawResource(R.raw.bashrc)
             shell.newJob()
                 .add(bashrc)
-                .add("export PATH=${Path.getExternalFilesDir(context)}/bin:\$PATH")
+                .add("export PATH=${Path.getFilesDir(context)}/bin:\$PATH")
                 .exec()
             return true
         }
@@ -53,19 +53,19 @@ class App : Application() {
             val versionName =
                 that.packageManager.getPackageInfo(that.packageName, 0).versionName
             val oldVersionName =
-                ShellUtils.fastCmd("cat ${Path.getExternalFilesDir(that)}/version")
+                ShellUtils.fastCmd("cat ${Path.getFilesDir(that)}/version")
             if (versionName > oldVersionName){
-                ShellUtils.fastCmd("rm -rf ${Path.getExternalFilesDir(that)}/bin")
-                ShellUtils.fastCmd("rm -rf ${Path.getExternalFilesDir(that)}/bin.zip")
+                ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(that)}/bin")
+                ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(that)}/bin.zip")
             }
 
-            if (!Command.ls("${Path.getExternalFilesDir(that)}/bin")) {
+            if (!Command.ls("${Path.getFilesDir(that)}/bin")) {
                 Command.extractAssets(that, "${Command.getABI()}/bin.zip", "bin.zip")
                 Command.unzip(
-                    "${Path.getExternalFilesDir(that)}/bin.zip",
-                    "${Path.getExternalFilesDir(that)}/bin"
+                    "${Path.getFilesDir(that)}/bin.zip",
+                    "${Path.getFilesDir(that)}/bin"
                 )
-                ShellUtils.fastCmd("echo \"${versionName}\" > ${Path.getExternalFilesDir(that)}/version")
+                ShellUtils.fastCmd("echo \"${versionName}\" > ${Path.getFilesDir(that)}/version")
             }
         }
     }
