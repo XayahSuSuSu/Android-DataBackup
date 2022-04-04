@@ -219,30 +219,24 @@ class BackupFragment : Fragment() {
                                         viewModel.appList[0].onProcessingData = true
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
-                                    val onCallback: (line: String, type: String) -> Unit =
-                                        { line, type ->
-                                            CoroutineScope(Dispatchers.Main).launch {
-                                                val lineList =
-                                                    line.split(" ").toMutableList().apply {
-                                                        removeIf { line == "" }
-                                                        add(0, "${type}:")
-                                                    }
-                                                if (viewModel.appList.isNotEmpty()) {
-                                                    viewModel.appList[0].progress =
-                                                        lineList.joinToString(separator = " ")
-                                                    viewModel.mAdapter.notifyItemChanged(0)
-                                                }
-                                            }
-                                        }
-                                    Command.compress(compressionType, "user", packageName, outPut) {
-                                        onCallback(it, "user")
+                                    withContext(Dispatchers.Main) {
+                                        viewModel.appList[0].progress =
+                                            "${mContext.getString(R.string.backup_processing)}user"
+                                        viewModel.mAdapter.notifyItemChanged(0)
                                     }
-                                    Command.compress(compressionType, "data", packageName, outPut) {
-                                        onCallback(it, "data")
+                                    Command.compress(compressionType, "user", packageName, outPut)
+                                    withContext(Dispatchers.Main) {
+                                        viewModel.appList[0].progress =
+                                            "${mContext.getString(R.string.backup_processing)}data"
+                                        viewModel.mAdapter.notifyItemChanged(0)
                                     }
-                                    Command.compress(compressionType, "obb", packageName, outPut) {
-                                        onCallback(it, "obb")
+                                    Command.compress(compressionType, "data", packageName, outPut)
+                                    withContext(Dispatchers.Main) {
+                                        viewModel.appList[0].progress =
+                                            "${mContext.getString(R.string.backup_processing)}obb"
+                                        viewModel.mAdapter.notifyItemChanged(0)
                                     }
+                                    Command.compress(compressionType, "obb", packageName, outPut)
                                 }
                                 withContext(Dispatchers.Main) {
                                     viewModel.appList.removeAt(0)

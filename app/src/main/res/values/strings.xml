@@ -37,4 +37,19 @@
     <string name="success">Success</string>
     <string name="backup_processing">Backup processing</string>
     <string name="restore_processing">Restore processing</string>
+    <string name="get_apk_path">Get apk path</string>
+    <string name="compress_apk">Compress apk</string>
+    <string name="compress">Compress</string>
+    <string name="install">Install</string>
+    <string name="set_SELinux">Set SELinux</string>
+    <string name="decompress">Decompress</string>
+    <string name="compress_failed">Compress failed</string>
+    <string name="get_apk_path_failed">Get apk path failed</string>
+    <string name="path_not_exist">Path not exist</string>
+    <string name="compress_apk_failed">Compress apk failed</string>
+    <string name="decompress_failed">Decompress failed</string>
+    <string name="install_apk_failed_or_skip">Install apk failed or skip</string>
+    <string name="set_SELinux_failed">Set SELinux failed</string>
+    <string name="get_app_version_failed">Get app version failed</string>
+    <string name="generate_app_info_failed">Generate app info failed</string>
 </resources>

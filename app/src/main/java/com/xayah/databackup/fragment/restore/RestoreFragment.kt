@@ -274,16 +274,11 @@ class RestoreFragment : Fragment() {
                                 if (viewModel.appList[0].backupData) {
                                     withContext(Dispatchers.Main) {
                                         viewModel.appList[0].onProcessingData = true
+                                        viewModel.appList[0].progress =
+                                            mContext.getString(R.string.restore_processing)
                                         viewModel.mAdapter.notifyItemChanged(0)
                                     }
-                                    Command.restoreData(packageName, inPath) {
-                                        CoroutineScope(Dispatchers.Main).launch {
-                                            if (viewModel.appList.isNotEmpty()) {
-                                                viewModel.appList[0].progress = it
-                                                viewModel.mAdapter.notifyItemChanged(0)
-                                            }
-                                        }
-                                    }
+                                    Command.restoreData(packageName, inPath)
                                 }
                                 withContext(Dispatchers.Main) {
                                     viewModel.appList.removeAt(0)

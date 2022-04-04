@@ -35,4 +35,19 @@
     <string name="success">成功</string>
     <string name="backup_processing">正在備份</string>
     <string name="restore_processing">正在恢復</string>
+    <string name="get_apk_path">獲取APK路徑</string>
+    <string name="compress_apk">壓縮APK</string>
+    <string name="compress">壓縮</string>
+    <string name="install">安裝</string>
+    <string name="set_SELinux">設置SELinux</string>
+    <string name="decompress">解壓</string>
+    <string name="compress_failed">解壓失敗</string>
+    <string name="get_apk_path_failed">獲取APK路徑失敗</string>
+    <string name="path_not_exist">路徑不存在</string>
+    <string name="compress_apk_failed">壓縮APK失敗</string>
+    <string name="decompress_failed">解壓失敗</string>
+    <string name="install_apk_failed_or_skip">安裝APK失敗或跳過安裝</string>
+    <string name="set_SELinux_failed">設置SELinux失敗</string>
+    <string name="get_app_version_failed">APP版本獲取失敗</string>
+    <string name="generate_app_info_failed">生成應用信息失敗</string>
 </resources>

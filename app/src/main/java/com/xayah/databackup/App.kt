@@ -1,15 +1,18 @@
 package com.xayah.databackup
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.crash.CrashHandler
+import com.xayah.databackup.data.Log
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.InputStream
 
 class App : Application() {
     companion object {
@@ -22,11 +25,18 @@ class App : Application() {
                     .setInitializers(EnvInitializer::class.java)
             )
         }
+
+        val log = Log()
+
+        @SuppressLint("StaticFieldLeak")
+        lateinit var globalContext: Context
     }
 
     class EnvInitializer : Shell.Initializer() {
         override fun onInit(context: Context, shell: Shell): Boolean {
+            val bashrc: InputStream = context.resources.openRawResource(R.raw.bashrc)
             shell.newJob()
+                .add(bashrc)
                 .add("export PATH=${Path.getExternalFilesDir(context)}/bin:\$PATH")
                 .exec()
             return true
@@ -36,6 +46,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         CrashHandler(this).initialize()
+        globalContext = this
 
         val that = this
         CoroutineScope(Dispatchers.IO).launch {
