@@ -23,6 +23,7 @@ import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.readPreferences
 import com.xayah.design.util.dp
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
@@ -79,22 +80,17 @@ class RestoreFragment : Fragment() {
             }
             viewModel.binding?.relativeLayout?.addView(lottieAnimationView)
             val materialButton = MaterialButton(mContext).apply {
-                layoutParams =
-                    RelativeLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        addRule(RelativeLayout.CENTER_HORIZONTAL)
-                        addRule(RelativeLayout.BELOW, lottieAnimationView.id)
-                    }
+                id = MaterialButton.generateViewId()
+                layoutParams = RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    addRule(RelativeLayout.CENTER_HORIZONTAL)
+                    addRule(RelativeLayout.BELOW, lottieAnimationView.id)
+                }
                 text = mContext.getString(R.string.choose_backup)
                 setOnClickListener {
                     materialYouFileExplorer.toExplorer(
-                        mContext,
-                        false,
-                        "default",
-                        arrayListOf(),
-                        true
+                        mContext, false, "default", arrayListOf(), true
                     ) { path, _ ->
                         viewModel.appList = mutableListOf()
                         val packages = Shell.cmd("ls $path").exec().out
@@ -105,8 +101,7 @@ class RestoreFragment : Fragment() {
                                 val packageName = info[1].split("=")
                                 val appEntity = AppEntity(0, appName[1], packageName[1]).apply {
                                     icon = AppCompatResources.getDrawable(
-                                        mContext,
-                                        R.drawable.ic_round_android
+                                        mContext, R.drawable.ic_round_android
                                     )
                                     backupPath = "${path}/${i}"
                                 }
@@ -130,7 +125,54 @@ class RestoreFragment : Fragment() {
                     }
                 }
             }
+            val materialButton_def = MaterialButton(mContext).apply {
+                layoutParams = RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = 16.dp
+                    addRule(RelativeLayout.CENTER_HORIZONTAL)
+                    addRule(RelativeLayout.BELOW, materialButton.id)
+                }
+                text = mContext.getString(R.string.choose_backup_def)
+                setOnClickListener {
+                    viewModel.appList = mutableListOf()
+                    val path = mContext.readPreferences("backup_save_path")
+                        ?: mContext.getString(R.string.default_backup_save_path)
+                    val packages = Shell.cmd("ls $path").exec().out
+                    for (i in packages) {
+                        val info = Shell.cmd("cat ${path}/${i}/info").exec().out
+                        try {
+                            val appName = info[0].split("=")
+                            val packageName = info[1].split("=")
+                            val appEntity = AppEntity(0, appName[1], packageName[1]).apply {
+                                icon = AppCompatResources.getDrawable(
+                                    mContext, R.drawable.ic_round_android
+                                )
+                                backupPath = "${path}/${i}"
+                            }
+                            viewModel.appList.add(appEntity)
+                        } catch (e: IndexOutOfBoundsException) {
+                            e.printStackTrace()
+                        }
+                    }
+                    if (viewModel.appList.isEmpty()) {
+                        Toast.makeText(
+                            mContext,
+                            mContext.getString(R.string.choose_right_backup),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        setHasOptionsMenu(true)
+                        viewModel.binding?.relativeLayout?.removeView(this)
+                        viewModel.binding?.relativeLayout?.removeView(materialButton)
+                        viewModel.binding?.relativeLayout?.removeView(lottieAnimationView)
+                        showAppList(mContext)
+                    }
+                }
+            }
+
             viewModel.binding?.relativeLayout?.addView(materialButton)
+            viewModel.binding?.relativeLayout?.addView(materialButton_def)
         } else {
             showAppList(mContext)
         }

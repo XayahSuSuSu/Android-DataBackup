@@ -52,4 +52,5 @@
     <string name="set_SELinux_failed">Set SELinux failed</string>
     <string name="get_app_version_failed">Get app version failed</string>
     <string name="generate_app_info_failed">Generate app info failed</string>
+    <string name="choose_backup_def">Default path</string>
 </resources>

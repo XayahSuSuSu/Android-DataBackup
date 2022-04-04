@@ -50,4 +50,5 @@
     <string name="set_SELinux_failed">设置SELinux失败</string>
     <string name="get_app_version_failed">APP版本获取失败</string>
     <string name="generate_app_info_failed">生成应用信息失败</string>
+    <string name="choose_backup_def">默认路径</string>
 </resources>
