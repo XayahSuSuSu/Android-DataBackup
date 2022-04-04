@@ -62,9 +62,9 @@ class App : Application() {
             if (!Command.ls("${Path.getFilesDir(that)}/bin")) {
                 Command.extractAssets(that, "${Command.getABI()}/bin.zip", "bin.zip")
                 Command.unzip(
-                    "${Path.getFilesDir(that)}/bin.zip",
-                    "${Path.getFilesDir(that)}/bin"
+                    "${Path.getFilesDir(that)}/bin.zip", "${Path.getFilesDir(that)}/bin"
                 )
+                ShellUtils.fastCmd("chmod 777 -R ${Path.getFilesDir(that)}")
                 ShellUtils.fastCmd("echo \"${versionName}\" > ${Path.getFilesDir(that)}/version")
             }
         }
