@@ -197,7 +197,7 @@ class BackupFragment : Fragment() {
                                 var state = true
                                 viewModel.index = index
                                 val compressionType =
-                                    mContext.readPreferences("compression_type") ?: "lz4"
+                                    mContext.readPreferences("compression_type") ?: "zstd"
                                 val packageName = i.packageName
                                 val outPut =
                                     "${

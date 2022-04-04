@@ -10,7 +10,7 @@ import com.xayah.design.preference.SelectableList
 
 class SettingsViewModel : ViewModel() {
     val compressionTypeItems: Array<String> = arrayOf("tar", "zstd", "lz4")
-    var compressionTypeIndex = 2
+    var compressionTypeIndex = 1
 
     var backupSavePath = ""
 
@@ -20,7 +20,7 @@ class SettingsViewModel : ViewModel() {
                 ?: context.getString(R.string.default_backup_save_path)
 
         compressionTypeIndex =
-            compressionTypeItems.indexOf(context.readPreferences("compression_type") ?: "lz4")
+            compressionTypeItems.indexOf(context.readPreferences("compression_type") ?: "zstd")
     }
 
     val changeBackupSavePath: (v: EditableText, content: CharSequence?) -> Unit = { v, content ->
