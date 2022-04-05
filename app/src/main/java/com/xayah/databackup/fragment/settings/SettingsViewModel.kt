@@ -1,7 +1,9 @@
 package com.xayah.databackup.fragment.settings
 
 import android.content.Context
+import android.view.View
 import androidx.lifecycle.ViewModel
+import androidx.navigation.Navigation
 import com.xayah.databackup.R
 import com.xayah.databackup.util.readPreferences
 import com.xayah.databackup.util.savePreferences
@@ -29,5 +31,9 @@ class SettingsViewModel : ViewModel() {
 
     val changeCompressionType: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
         v.context.savePreferences("compression_type", compressionTypeItems[choice])
+    }
+
+    fun toAboutFragment(v: View) {
+        Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_aboutFragment)
     }
 }

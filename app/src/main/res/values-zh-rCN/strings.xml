@@ -51,4 +51,9 @@
     <string name="get_app_version_failed">APP版本获取失败</string>
     <string name="generate_app_info_failed">生成应用信息失败</string>
     <string name="choose_backup_def">默认路径</string>
+    <string name="others">其它</string>
+    <string name="about">关于</string>
+    <string name="author">作者</string>
+    <string name="credits">感谢</string>
+    <string name="backup_script">备份脚本</string>
 </resources>

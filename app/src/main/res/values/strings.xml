@@ -53,4 +53,9 @@
     <string name="get_app_version_failed">Get app version failed</string>
     <string name="generate_app_info_failed">Generate app info failed</string>
     <string name="choose_backup_def">Default path</string>
+    <string name="others">Others</string>
+    <string name="about">About</string>
+    <string name="author">Author</string>
+    <string name="credits">Credits</string>
+    <string name="backup_script">Backup script</string>
 </resources>
