@@ -56,4 +56,6 @@
     <string name="author">作者</string>
     <string name="credits">感谢</string>
     <string name="backup_script">备份脚本</string>
+    <string name="please_exit_search_mode">请退出搜索模式</string>
+    <string name="please_type_key_word">请输入关键字</string>
 </resources>

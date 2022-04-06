@@ -11,6 +11,11 @@ class BackupViewModel : ViewModel() {
     var isProcessing: Boolean = false
 
     var appList: MutableList<AppEntity> = mutableListOf()
+
+    var appListAll: MutableList<AppEntity> = mutableListOf()
+
+    var isFiltering = false
+
     lateinit var mAdapter: MultiTypeAdapter
 
     var time: Long = 0

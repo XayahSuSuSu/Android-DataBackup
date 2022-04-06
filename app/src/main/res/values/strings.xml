@@ -58,4 +58,6 @@
     <string name="author">Author</string>
     <string name="credits">Credits</string>
     <string name="backup_script">Backup script</string>
+    <string name="please_type_key_word">Please type key word</string>
+    <string name="please_exit_search_mode">Please exit search mode</string>
 </resources>

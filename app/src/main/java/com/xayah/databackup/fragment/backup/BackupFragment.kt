@@ -2,9 +2,11 @@ package com.xayah.databackup.fragment.backup
 
 import android.os.Bundle
 import android.view.*
+import android.view.MenuItem.OnActionExpandListener
 import android.view.ViewGroup.LayoutParams
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.airbnb.lottie.LottieAnimationView
@@ -56,7 +58,9 @@ class BackupFragment : Fragment() {
             viewModel.mAdapter = MultiTypeAdapter().apply {
                 register(AppListAdapter(room))
                 CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.appList = Command.getAppList(mContext, room)
+                    val appList = Command.getAppList(mContext, room)
+                    viewModel.appList = appList
+                    viewModel.appListAll = appList
                     items = viewModel.appList
                     withContext(Dispatchers.Main) {
                         viewModel.binding?.recyclerView?.notifyDataSetChanged()
@@ -79,6 +83,43 @@ class BackupFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.backup, menu)
+
+        val searchView = SearchView(requireContext()).apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    newText?.let {
+                        viewModel.appList =
+                            viewModel.appListAll.filter { it.appName.contains(newText) }
+                                .toMutableList()
+                        viewModel.mAdapter.items = viewModel.appList
+                        viewModel.binding?.recyclerView?.notifyDataSetChanged()
+                    }
+                    return false
+                }
+            })
+            queryHint = this.context.getString(R.string.please_type_key_word)
+            isQueryRefinementEnabled = true
+        }
+
+        menu.findItem(R.id.backup_search).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            actionView = searchView
+            setOnActionExpandListener(object : OnActionExpandListener {
+                override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                    viewModel.isFiltering = true
+                    return true
+                }
+
+                override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                    viewModel.isFiltering = false
+                    return true
+                }
+            })
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -143,6 +184,14 @@ class BackupFragment : Fragment() {
                 }
             }
             R.id.backup_confirm -> {
+                if (viewModel.isFiltering) {
+                    Toast.makeText(
+                        mContext,
+                        mContext.getString(R.string.please_exit_search_mode),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return super.onOptionsItemSelected(item)
+                }
                 MaterialAlertDialogBuilder(mContext).apply {
                     setTitle(mContext.getString(R.string.tips))
                     setCancelable(true)
@@ -176,6 +225,10 @@ class BackupFragment : Fragment() {
                         }
                         viewModel.binding?.recyclerView?.scrollToPosition(0)
                         setHasOptionsMenu(false)
+
+                        viewModel.appList.clear()
+                        viewModel.appList.addAll(viewModel.appListAll)
+                        viewModel.mAdapter.items = viewModel.appList
 
                         val mAppList = mutableListOf<AppEntity>()
                         mAppList.addAll(viewModel.appList)
