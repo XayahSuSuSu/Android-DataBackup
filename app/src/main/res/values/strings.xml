@@ -19,12 +19,10 @@
     <string name="choose_backup">Choose backup</string>
     <string name="restore_success" >Successfully!</string>
     <string name="install_apk_processing">Install apk…</string>
-    <string-array name="reverse_array">
-        <item>All: Application</item>
-        <item>All: Data</item>
-        <item>Reverse: Application</item>
-        <item>Reverse: Data</item>
-    </string-array>
+    <string name="select_all_app">All: Application</string>
+    <string name="select_all_data">All: Data</string>
+    <string name="reverse_all_app">Reverse: Application</string>
+    <string name="reverse_all_data">Reverse: Data</string>
     <string name="choose_right_backup">Please choose the right backup folder!</string>
     <string name="settings">Settings</string>
     <string name="default_backup_save_path" translatable="false">/storage/emulated/0/DataBackup</string>

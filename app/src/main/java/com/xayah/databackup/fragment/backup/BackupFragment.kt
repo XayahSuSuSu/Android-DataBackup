@@ -6,6 +6,7 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.ViewGroup.LayoutParams
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -127,20 +128,11 @@ class BackupFragment : Fragment() {
         val mContext = requireActivity()
         when (item.itemId) {
             R.id.backup_reverse -> {
-                val items: Array<String> = mContext.resources.getStringArray(R.array.reverse_array)
-                var choice = 0
-                MaterialAlertDialogBuilder(mContext).apply {
-                    setTitle(mContext.getString(R.string.choose))
-                    setCancelable(true)
-                    setSingleChoiceItems(
-                        items,
-                        choice
-                    ) { _, which ->
-                        choice = which
-                    }
-                    setPositiveButton(mContext.getString(R.string.confirm)) { _, _ ->
-                        when (choice) {
-                            0 -> {
+                PopupMenu(mContext, mContext.findViewById(R.id.backup_reverse)).apply {
+                    menuInflater.inflate(R.menu.select, menu)
+                    setOnMenuItemClickListener {
+                        when (it.itemId) {
+                            R.id.select_all_app -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
                                     viewModel.appList[index].backupApp = true
                                 }
@@ -149,7 +141,7 @@ class BackupFragment : Fragment() {
                                 }
                                 viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
-                            1 -> {
+                            R.id.select_all_data -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
                                     viewModel.appList[index].backupData = true
                                 }
@@ -158,7 +150,7 @@ class BackupFragment : Fragment() {
                                 }
                                 viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
-                            2 -> {
+                            R.id.reverse_all_app -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
                                     viewModel.appList[index].backupApp =
                                         !viewModel.appList[index].backupApp
@@ -168,7 +160,7 @@ class BackupFragment : Fragment() {
                                 }
                                 viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
-                            3 -> {
+                            R.id.reverse_all_data -> {
                                 for ((index, _) in viewModel.appList.withIndex()) {
                                     viewModel.appList[index].backupData =
                                         !viewModel.appList[index].backupData
@@ -179,6 +171,7 @@ class BackupFragment : Fragment() {
                                 viewModel.binding?.recyclerView?.notifyDataSetChanged()
                             }
                         }
+                        true
                     }
                     show()
                 }

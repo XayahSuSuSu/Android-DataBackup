@@ -13,12 +13,10 @@
     <string name="reverse">反选</string>
     <string name="search">搜索</string>
     <string name="choose">选择</string>
-    <string-array name="reverse_array">
-        <item>全选：应用</item>
-        <item>全选：数据</item>
-        <item>反选：应用</item>
-        <item>反选：数据</item>
-    </string-array>
+    <string name="select_all_app">全选：应用</string>
+    <string name="select_all_data">全选：数据</string>
+    <string name="reverse_all_app">反选：应用</string>
+    <string name="reverse_all_data">反选：数据</string>
     <string name="backup_apk_processing">备份APK中…</string>
     <string name="backup_success">备份完成！</string>
     <string name="choose_backup">选择备份</string>
