@@ -219,7 +219,7 @@ class BackupFragment : Fragment() {
                         viewModel.binding?.recyclerView?.scrollToPosition(0)
                         setHasOptionsMenu(false)
 
-                        viewModel.appList.clear()
+                        viewModel.appList = mutableListOf()
                         viewModel.appList.addAll(viewModel.appListAll)
                         viewModel.mAdapter.items = viewModel.appList
 
