@@ -26,7 +26,7 @@ class SettingsViewModel : ViewModel() {
     }
 
     val changeBackupSavePath: (v: EditableText, content: CharSequence?) -> Unit = { v, content ->
-        v.context.savePreferences("backup_save_path", content.toString())
+        v.context.savePreferences("backup_save_path", content.toString().trim())
     }
 
     val changeCompressionType: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
