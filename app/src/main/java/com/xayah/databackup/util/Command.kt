@@ -261,5 +261,19 @@ class Command {
             }
             return true
         }
+
+        fun compressMedia(
+            compressionType: String,
+            inputPath: String,
+            outPut: String
+        ): Boolean {
+            Bashrc.compressMedia(compressionType, inputPath, outPut).apply {
+                if (!this.first) {
+                    App.log.add(App.globalContext.getString(R.string.compress_failed))
+                    return false
+                }
+            }
+            return true
+        }
     }
 }

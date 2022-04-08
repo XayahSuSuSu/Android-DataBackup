@@ -173,3 +173,19 @@ write_to_file() {
   # $2: path
   echo "$1" >"$2"
 }
+
+compress_media() {
+  # $1: compression_type
+  # $2: input_path
+  # $3: out_put
+  mkdir -p "$3"
+  if [ -d "$2" ]; then
+    case "$1" in
+    tar) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force >"$3/${2##*/}.tar" ;;
+    zstd) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force | zstd -r -T0 --ultra -6 -q --priority=rt >"$3/${2##*/}.tar.zst" ;;
+    lz4) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$3/${2##*/}.tar.lz4" ;;
+    esac
+  else
+    echo "No such path: $2"
+  fi
+}

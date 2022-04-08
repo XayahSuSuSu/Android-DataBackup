@@ -1,6 +1,5 @@
 package com.xayah.databackup.util
 
-import android.content.res.Resources
 import android.os.Environment
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
@@ -110,6 +109,24 @@ class Bashrc {
 
         fun writeToFile(content: String, path: String): Pair<Boolean, String> {
             val exec = Shell.cmd("write_to_file $content $path").exec()
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
+
+        fun compressMedia(
+            compressionType: String,
+            inputPath: String,
+            outPut: String
+        ): Pair<Boolean, String> {
+            App.log.add("${App.globalContext.getString(R.string.compress)}${inputPath}")
+            val cmd = "compress_media $compressionType $inputPath $outPut"
+            val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
+                override fun onAddElement(line: String?) {
+                    if (line != null) {
+                        App.log.add(line)
+                    }
+                }
+            }
+            val exec = Shell.cmd(cmd).to(callbackList).exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
     }
