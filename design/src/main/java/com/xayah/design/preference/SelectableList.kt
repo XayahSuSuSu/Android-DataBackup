@@ -8,9 +8,12 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.appcompat.widget.ListPopupWindow
 import com.xayah.design.R
+import com.xayah.design.adapter.PopupListAdapter
 import com.xayah.design.databinding.PreferenceClickableBinding
+import com.xayah.design.util.getPixels
+import com.xayah.design.util.measureWidth
 
 class SelectableList @JvmOverloads constructor(
     context: Context,
@@ -69,22 +72,30 @@ class SelectableList @JvmOverloads constructor(
         }
 
     init {
+        val that = this
         binding.root.setOnClickListener {
-            MaterialAlertDialogBuilder(context)
-                .setTitle(title)
-                .setCancelable(true)
-                .setSingleChoiceItems(
-                    items,
-                    choice
-                ) { _, which ->
-                    choice = which
-                }
-                .setPositiveButton(context.getString(R.string.dialog_positive)) { _, _ ->
+            ListPopupWindow(context).apply {
+                val adapter = PopupListAdapter(
+                    context,
+                    items.toList(),
+                    choice,
+                )
+                setAdapter(adapter)
+                anchorView = binding.root
+                width = adapter.measureWidth(context)
+                    .coerceAtLeast(context.getPixels(R.dimen.dialog_menu_min_width))
+                isModal = true
+                horizontalOffset = context.getPixels(R.dimen.item_header_component_size) +
+                        context.getPixels(R.dimen.item_header_margin) * 2
+                setOnItemClickListener { _, _, position, _ ->
+                    dismiss()
+                    choice = position
                     refreshSummary()
                     if (::onConfirmListener.isInitialized)
-                        onConfirmListener.invoke(this, choice)
+                        onConfirmListener.invoke(that, choice)
                 }
-                .show()
+                show()
+            }
         }
         context.theme.obtainStyledAttributes(
             attributeSet,
