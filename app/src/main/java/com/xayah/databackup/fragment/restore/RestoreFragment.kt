@@ -25,7 +25,7 @@ import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.readPreferences
+import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.design.util.dp
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
@@ -141,8 +141,7 @@ class RestoreFragment : Fragment() {
                 setOnClickListener {
                     viewModel.appList = mutableListOf()
                     viewModel.appListAll = mutableListOf()
-                    val path = mContext.readPreferences("backup_save_path")
-                        ?: mContext.getString(R.string.default_backup_save_path)
+                    val path = mContext.readBackupSavePath()
                     val packages = Shell.cmd("ls $path").exec().out
                     for (i in packages) {
                         val info = Shell.cmd("cat ${path}/${i}/info").exec().out

@@ -5,8 +5,10 @@ import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.navigation.Navigation
 import com.xayah.databackup.R
-import com.xayah.databackup.util.readPreferences
-import com.xayah.databackup.util.savePreferences
+import com.xayah.databackup.util.readBackupSavePath
+import com.xayah.databackup.util.readCompressionType
+import com.xayah.databackup.util.saveBackupSavePath
+import com.xayah.databackup.util.saveCompressionType
 import com.xayah.design.preference.EditableText
 import com.xayah.design.preference.SelectableList
 
@@ -17,20 +19,17 @@ class SettingsViewModel : ViewModel() {
     var backupSavePath = ""
 
     fun initialize(context: Context) {
-        backupSavePath =
-            context.readPreferences("backup_save_path")
-                ?: context.getString(R.string.default_backup_save_path)
+        backupSavePath = context.readBackupSavePath()
 
-        compressionTypeIndex =
-            compressionTypeItems.indexOf(context.readPreferences("compression_type") ?: "zstd")
+        compressionTypeIndex = compressionTypeItems.indexOf(context.readCompressionType())
     }
 
     val changeBackupSavePath: (v: EditableText, content: CharSequence?) -> Unit = { v, content ->
-        v.context.savePreferences("backup_save_path", content.toString().trim())
+        v.context.saveBackupSavePath(content.toString().trim())
     }
 
     val changeCompressionType: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
-        v.context.savePreferences("compression_type", compressionTypeItems[choice])
+        v.context.saveCompressionType(compressionTypeItems[choice])
     }
 
     fun toAboutFragment(v: View) {

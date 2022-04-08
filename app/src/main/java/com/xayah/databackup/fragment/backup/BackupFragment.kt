@@ -23,7 +23,8 @@ import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Room
-import com.xayah.databackup.util.readPreferences
+import com.xayah.databackup.util.readBackupSavePath
+import com.xayah.databackup.util.readCompressionType
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.design.view.setWithResult
@@ -242,15 +243,9 @@ class BackupFragment : Fragment() {
                                 App.log.add("${mContext.getString(R.string.backup_processing)}: ${i.packageName}")
                                 var state = true
                                 viewModel.index = index
-                                val compressionType =
-                                    mContext.readPreferences("compression_type") ?: "zstd"
+                                val compressionType = mContext.readCompressionType()
                                 val packageName = i.packageName
-                                val outPut =
-                                    "${
-                                        mContext.readPreferences("backup_save_path") ?: mContext.getString(
-                                            R.string.default_backup_save_path
-                                        )
-                                    }/${packageName}"
+                                val outPut = "${mContext.readBackupSavePath()}/${packageName}"
 
                                 if (viewModel.appList[0].backupApp) {
                                     withContext(Dispatchers.Main) {
