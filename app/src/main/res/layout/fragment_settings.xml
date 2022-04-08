@@ -6,6 +6,8 @@
         <variable
             name="viewModel"
             type="com.xayah.databackup.fragment.settings.SettingsViewModel" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -42,6 +44,22 @@
                     app:defaultValue="@string/default_backup_save_path"
                     app:summary="@{viewModel.backupSavePath}"
                     app:title="@string/backup_dir" />
+
+                <com.xayah.design.preference.Switch
+                    onCheckedChange="@{viewModel.onCustomDirectoryPath}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:checked="@{viewModel.isCustomDirectoryPath}"
+                    app:title="@string/backup_custom_dir" />
+
+                <com.xayah.design.preference.EditableText
+                    onConfirm="@{viewModel.changeCustomDirectoryPath}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{viewModel.isCustomDirectoryPath ? View.VISIBLE : View.GONE}"
+                    app:defaultValue="@string/default_custom_directory_path"
+                    app:summary="@{viewModel.customDirectoryPath}"
+                    app:title="@string/custom_dir" />
 
                 <com.xayah.design.preference.Category
                     android:layout_width="match_parent"

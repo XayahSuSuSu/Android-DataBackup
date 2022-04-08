@@ -23,9 +23,7 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = ViewModelProvider(this)[SettingsViewModel::class.java].apply {
-            initialize(requireContext())
-        }
+        val viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
         binding.viewModel = viewModel
 
     }

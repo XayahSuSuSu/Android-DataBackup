@@ -56,4 +56,6 @@
     <string name="backup_script">備份腳本</string>
     <string name="please_exit_search_mode">請退出搜索模式</string>
     <string name="please_type_key_word">請輸入關鍵字</string>
+    <string name="custom_dir">自定義目錄</string>
+    <string name="backup_custom_dir">備份自定義目錄</string>
 </resources>
