@@ -128,18 +128,20 @@ class BackupViewModel : ViewModel() {
                         for ((index, _) in appList.withIndex()) {
                             appList[index].backupApp = true
                         }
-                        CoroutineScope(Dispatchers.IO).launch {
-                            room?.selectAllApp()
-                        }
+                        if (!isFiltering)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                room?.selectAllApp()
+                            }
                         binding?.recyclerView?.notifyDataSetChanged()
                     }
                     R.id.select_all_data -> {
                         for ((index, _) in appList.withIndex()) {
                             appList[index].backupData = true
                         }
-                        CoroutineScope(Dispatchers.IO).launch {
-                            room?.selectAllData()
-                        }
+                        if (!isFiltering)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                room?.selectAllData()
+                            }
                         binding?.recyclerView?.notifyDataSetChanged()
                     }
                     R.id.reverse_all_app -> {
@@ -147,9 +149,10 @@ class BackupViewModel : ViewModel() {
                             appList[index].backupApp =
                                 !appList[index].backupApp
                         }
-                        CoroutineScope(Dispatchers.IO).launch {
-                            room?.reverseAllApp()
-                        }
+                        if (!isFiltering)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                room?.reverseAllApp()
+                            }
                         binding?.recyclerView?.notifyDataSetChanged()
                     }
                     R.id.reverse_all_data -> {
@@ -157,9 +160,10 @@ class BackupViewModel : ViewModel() {
                             appList[index].backupData =
                                 !appList[index].backupData
                         }
-                        CoroutineScope(Dispatchers.IO).launch {
-                            room?.reverseAllData()
-                        }
+                        if (!isFiltering)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                room?.reverseAllData()
+                            }
                         binding?.recyclerView?.notifyDataSetChanged()
                     }
                 }
