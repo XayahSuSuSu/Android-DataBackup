@@ -34,6 +34,8 @@ import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.design.view.setWithResult
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.*
+import java.text.Collator
+import java.util.*
 
 class RestoreViewModel : ViewModel() {
     var binding: FragmentRestoreBinding? = null
@@ -91,6 +93,7 @@ class RestoreViewModel : ViewModel() {
                     ) { path, _ ->
                         appList = mutableListOf()
                         appListAll = mutableListOf()
+                        val tmpAppList = mutableListOf<AppEntity>()
                         val packages = Shell.cmd("ls $path").exec().out
                         for (i in packages) {
                             val info = Shell.cmd("cat ${path}/${i}/info").exec().out
@@ -103,12 +106,20 @@ class RestoreViewModel : ViewModel() {
                                     )
                                     backupPath = "${path}/${i}"
                                 }
-                                appList.add(appEntity)
-                                appListAll.add(appEntity)
+                                tmpAppList.add(appEntity)
                             } catch (e: IndexOutOfBoundsException) {
                                 e.printStackTrace()
                             }
                         }
+                        tmpAppList.apply {
+                            sortWith { appEntity1, appEntity2 ->
+                                val collator = Collator.getInstance(Locale.CHINA)
+                                collator.getCollationKey((appEntity1 as AppEntity).appName)
+                                    .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
+                            }
+                        }
+                        appList = tmpAppList
+                        appListAll = tmpAppList
                         if (appList.isEmpty()) {
                             Toast.makeText(
                                 context,
@@ -136,6 +147,7 @@ class RestoreViewModel : ViewModel() {
                 setOnClickListener {
                     appList = mutableListOf()
                     appListAll = mutableListOf()
+                    val tmpAppList = mutableListOf<AppEntity>()
                     val path = context.readBackupSavePath()
                     val packages = Shell.cmd("ls $path").exec().out
                     for (i in packages) {
@@ -149,12 +161,20 @@ class RestoreViewModel : ViewModel() {
                                 )
                                 backupPath = "${path}/${i}"
                             }
-                            appList.add(appEntity)
-                            appListAll.add(appEntity)
+                            tmpAppList.add(appEntity)
                         } catch (e: IndexOutOfBoundsException) {
                             e.printStackTrace()
                         }
                     }
+                    tmpAppList.apply {
+                        sortWith { appEntity1, appEntity2 ->
+                            val collator = Collator.getInstance(Locale.CHINA)
+                            collator.getCollationKey((appEntity1 as AppEntity).appName)
+                                .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
+                        }
+                    }
+                    appList = tmpAppList
+                    appListAll = tmpAppList
                     if (appList.isEmpty()) {
                         Toast.makeText(
                             context,

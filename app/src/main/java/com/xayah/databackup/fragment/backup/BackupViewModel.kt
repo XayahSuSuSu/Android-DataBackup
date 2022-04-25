@@ -30,6 +30,8 @@ import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.design.view.setWithResult
 import kotlinx.coroutines.*
+import java.text.Collator
+import java.util.*
 
 class BackupViewModel : ViewModel() {
     var binding: FragmentBackupBinding? = null
@@ -58,7 +60,13 @@ class BackupViewModel : ViewModel() {
             mAdapter = MultiTypeAdapter().apply {
                 register(AppListAdapter(room))
                 CoroutineScope(Dispatchers.IO).launch {
-                    val mAppList = Command.getAppList(context, room)
+                    val mAppList = Command.getAppList(context, room).apply {
+                        sortWith { appEntity1, appEntity2 ->
+                            val collator = Collator.getInstance(Locale.CHINA)
+                            collator.getCollationKey((appEntity1 as AppEntity).appName)
+                                .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
+                        }
+                    }
                     appList = mAppList
                     appListAll = mAppList
                     items = appList
