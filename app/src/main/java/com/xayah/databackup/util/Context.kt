@@ -54,6 +54,14 @@ fun Context.readIsCustomDirectoryPath(): Boolean {
     return readPreferencesBoolean("is_custom_directory_path")
 }
 
+fun Context.saveIsDynamicColors(value: Boolean) {
+    savePreferences("is_dynamic_colors", value)
+}
+
+fun Context.readIsDynamicColors(): Boolean {
+    return readPreferencesBoolean("is_dynamic_colors")
+}
+
 fun Context.saveCustomDirectoryPath(path: CharSequence?) {
     savePreferences("custom_directory_path", path.toString().trim())
 }

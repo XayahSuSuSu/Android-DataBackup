@@ -36,6 +36,13 @@ class SettingsViewModel() : ViewModel() {
             v.context.saveCustomDirectoryPath(content.toString().trim())
         }
 
+    var isDynamicColors: ObservableField<Boolean> =
+        ObservableField(App.globalContext.readIsDynamicColors())
+    val onDynamicColors: (buttonView: CompoundButton, isChecked: Boolean) -> Unit =
+        { v, isChecked ->
+            v.context.saveIsDynamicColors(isChecked)
+        }
+
     fun toAboutFragment(v: View) {
         Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_aboutFragment)
     }

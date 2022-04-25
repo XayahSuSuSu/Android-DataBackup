@@ -61,4 +61,6 @@
     <string name="default_custom_directory_path" translatable="false">/storage/emulated/0/Pictures\n/storage/emulated/0/Download\n/storage/emulated/0/Music\n/storage/emulated/0/DCIM</string>
     <string name="custom_dir">Custom directory</string>
     <string name="backup_custom_dir">Backup custom directory</string>
+    <string name="dynamic_colors">Dynamic colors</string>
+    <string name="summary_dynamic_colors">Restart the app to apply, only for Android S+</string>
 </resources>

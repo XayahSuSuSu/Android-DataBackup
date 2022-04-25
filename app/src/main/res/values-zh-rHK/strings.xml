@@ -58,4 +58,6 @@
     <string name="please_type_key_word">請輸入關鍵字</string>
     <string name="custom_dir">自定義目錄</string>
     <string name="backup_custom_dir">備份自定義目錄</string>
+    <string name="dynamic_colors">動態取色</string>
+    <string name="summary_dynamic_colors">重啟應用生效，僅支持Android S+</string>
 </resources>

@@ -3,12 +3,14 @@ package com.xayah.databackup
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.crash.CrashHandler
 import com.xayah.databackup.data.Log
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.readIsDynamicColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,6 +49,8 @@ class App : Application() {
         super.onCreate()
         CrashHandler(this).initialize()
         globalContext = this
+        if (globalContext.readIsDynamicColors())
+            DynamicColors.applyToActivitiesIfAvailable(this)
 
         val that = this
         CoroutineScope(Dispatchers.IO).launch {
@@ -54,7 +58,7 @@ class App : Application() {
                 that.packageManager.getPackageInfo(that.packageName, 0).versionName
             val oldVersionName =
                 ShellUtils.fastCmd("cat ${Path.getFilesDir(that)}/version")
-            if (versionName > oldVersionName){
+            if (versionName > oldVersionName) {
                 ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(that)}/bin")
                 ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(that)}/bin.zip")
             }

@@ -58,4 +58,6 @@
     <string name="please_type_key_word">请输入关键字</string>
     <string name="custom_dir">自定义目录</string>
     <string name="backup_custom_dir">备份自定义目录</string>
+    <string name="dynamic_colors">动态取色</string>
+    <string name="summary_dynamic_colors">重启应用生效，仅支持Android S+</string>
 </resources>

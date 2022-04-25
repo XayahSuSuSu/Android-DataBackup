@@ -66,6 +66,14 @@
                     android:layout_height="wrap_content"
                     app:text="@string/others" />
 
+                <com.xayah.design.preference.Switch
+                    onCheckedChange="@{viewModel.onDynamicColors}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:checked="@{viewModel.isDynamicColors}"
+                    app:summary="@string/summary_dynamic_colors"
+                    app:title="@string/dynamic_colors" />
+
                 <com.xayah.design.ActionLabel
                     android:onClick="@{(v)->viewModel.toAboutFragment(v)}"
                     android:layout_width="match_parent"
