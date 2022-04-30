@@ -123,8 +123,8 @@ class RestoreViewModel : ViewModel() {
                                     .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
                             }
                         }
-                        appList = tmpAppList
-                        appListAll = tmpAppList
+                        appList.addAll(tmpAppList)
+                        appListAll.addAll(tmpAppList)
                         if (appList.isEmpty()) {
                             Toast.makeText(
                                 context,
@@ -179,8 +179,8 @@ class RestoreViewModel : ViewModel() {
                                 .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
                         }
                     }
-                    appList = tmpAppList
-                    appListAll = tmpAppList
+                    appList.addAll(tmpAppList)
+                    appListAll.addAll(tmpAppList)
                     if (appList.isEmpty()) {
                         Toast.makeText(
                             context,
