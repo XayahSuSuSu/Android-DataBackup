@@ -66,5 +66,5 @@
     <string name="correct">Correct</string>
     <string name="environment">Environment</string>
     <string name="environment_detection">Environment detection</string>
-    <string name="environment_detection_tip">To run correctly, all of the following detections need to pass:</string>
+    <string name="environment_detection_tip">To run correctly, the following detections need to pass at least the last two:</string>
 </resources>

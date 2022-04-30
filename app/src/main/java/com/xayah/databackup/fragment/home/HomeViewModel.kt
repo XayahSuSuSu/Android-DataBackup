@@ -64,7 +64,6 @@ class HomeViewModel : ViewModel() {
                         envList.add("which: √")
                     else {
                         envList.add("which: ×")
-                        isEnvCorrect = false
                     }
                 }
                 Shell.cmd("which unzip").exec().isSuccess.apply {
@@ -72,7 +71,6 @@ class HomeViewModel : ViewModel() {
                         envList.add("unzip: √")
                     else {
                         envList.add("unzip: ×")
-                        isEnvCorrect = false
                     }
                 }
                 Shell.cmd("ls ${Path.getFilesDir(context)}/bin").exec().out.apply {
