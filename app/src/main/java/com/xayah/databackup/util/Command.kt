@@ -275,5 +275,16 @@ class Command {
             }
             return true
         }
+
+        fun decompressMedia(inputPath: String, name: String): Boolean {
+            Bashrc.decompress(getCompressionTypeByName(name), "media", "${inputPath}/$name", "")
+                .apply {
+                    if (!this.first) {
+                        App.log.add(App.globalContext.getString(R.string.decompress_failed))
+                        return false
+                    }
+                }
+            return true
+        }
     }
 }

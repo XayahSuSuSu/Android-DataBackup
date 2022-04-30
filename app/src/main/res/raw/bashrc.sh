@@ -154,7 +154,7 @@ decompress() {
     lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xmpf - -C "$data_path" ;;
     esac
     ;;
-  data | obb)
+  data | obb | media)
     case "$1" in
     tar) pv_force "$3" | tar --recursive-unlink -xmPpf - ;;
     lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xmPpf - ;;

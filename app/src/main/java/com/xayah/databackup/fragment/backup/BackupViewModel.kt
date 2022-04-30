@@ -12,20 +12,20 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieDrawable
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.textview.MaterialTextView
 import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.FragmentBackupBinding
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.Room
-import com.xayah.databackup.util.readBackupSavePath
-import com.xayah.databackup.util.readCompressionType
+import com.xayah.databackup.util.*
+import com.xayah.design.util.dp
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.design.view.setWithResult
@@ -317,7 +317,85 @@ class BackupViewModel : ViewModel() {
                             else
                                 failed += 1
                         }
+                        var lottieAnimationView: LottieAnimationView? = null
+                        var titleView: MaterialTextView? = null
+                        var logView: MaterialTextView? = null
+                        if (App.globalContext.readIsCustomDirectoryPath()) {
+                            withContext(Dispatchers.Main) {
+                                lottieAnimationView = LottieAnimationView(context)
+                                lottieAnimationView?.apply {
+                                    id = LottieAnimationView.generateViewId()
+                                    layoutParams =
+                                        RelativeLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            200.dp
+                                        ).apply {
+                                            addRule(RelativeLayout.CENTER_IN_PARENT)
+                                        }
+                                    setAnimation(R.raw.loading)
+                                    repeatCount = LottieDrawable.INFINITE
+                                    playAnimation()
+                                }
+                                titleView = MaterialTextView(context)
+                                titleView?.apply {
+                                    id = MaterialTextView.generateViewId()
+                                    layoutParams =
+                                        RelativeLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT
+                                        ).apply {
+                                            addRule(RelativeLayout.CENTER_IN_PARENT)
+                                            addRule(
+                                                RelativeLayout.BELOW,
+                                                lottieAnimationView?.id ?: 0
+                                            )
+                                        }
+                                    textAlignment = MaterialTextView.TEXT_ALIGNMENT_CENTER
+                                    setTextAppearance(com.google.android.material.R.style.TextAppearance_MaterialComponents_Subtitle2)
+                                }
+                                logView = MaterialTextView(context)
+                                logView?.apply {
+                                    layoutParams =
+                                        RelativeLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT
+                                        ).apply {
+                                            addRule(RelativeLayout.CENTER_IN_PARENT)
+                                            addRule(RelativeLayout.BELOW, titleView?.id ?: 0)
+                                            topMargin = 20.dp
+                                        }
+                                    textAlignment = MaterialTextView.TEXT_ALIGNMENT_CENTER
+                                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
+                                }
+                                binding?.relativeLayout?.addView(lottieAnimationView)
+                                binding?.relativeLayout?.addView(titleView)
+                                binding?.relativeLayout?.addView(logView)
+                                App.log.onObserveLast(context) {
+                                    logView?.text = it
+                                }
+                            }
+                            val outPut = "${context.readBackupSavePath()}/media"
+                            for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
+                                withContext(Dispatchers.Main) {
+                                    titleView?.text = i
+                                }
+                                Command.compressMedia(
+                                    App.globalContext.readCompressionType(),
+                                    i,
+                                    outPut
+                                )
+                            }
+                        }
                         withContext(Dispatchers.Main) {
+                            lottieAnimationView?.apply {
+                                binding?.relativeLayout?.removeView(this)
+                            }
+                            titleView?.apply {
+                                binding?.relativeLayout?.removeView(this)
+                            }
+                            logView?.apply {
+                                binding?.relativeLayout?.removeView(this)
+                            }
                             val showResult = {
                                 Toast.makeText(
                                     context,
@@ -335,8 +413,8 @@ class BackupViewModel : ViewModel() {
                             if (binding == null) {
                                 showResult()
                             } else {
-                                val lottieAnimationView = LottieAnimationView(context)
-                                lottieAnimationView.apply {
+                                lottieAnimationView = LottieAnimationView(context)
+                                lottieAnimationView?.apply {
                                     layoutParams =
                                         RelativeLayout.LayoutParams(
                                             ViewGroup.LayoutParams.MATCH_PARENT,
