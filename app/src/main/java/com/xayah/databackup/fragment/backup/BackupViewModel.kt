@@ -58,7 +58,7 @@ class BackupViewModel : ViewModel() {
         binding?.relativeLayout?.addView(linearProgressIndicator)
         if (!isProcessing) {
             mAdapter = MultiTypeAdapter().apply {
-                register(AppListAdapter(room))
+                register(AppListAdapter(room, context))
                 CoroutineScope(Dispatchers.IO).launch {
                     val mAppList = Command.getAppList(context, room).apply {
                         sortWith { appEntity1, appEntity2 ->

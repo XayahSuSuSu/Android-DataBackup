@@ -202,7 +202,7 @@ class RestoreViewModel : ViewModel() {
         val linearProgressIndicator = LinearProgressIndicator(context).apply { fastInitialize() }
         binding?.relativeLayout?.addView(linearProgressIndicator)
         mAdapter = MultiTypeAdapter().apply {
-            register(AppListAdapter(null))
+            register(AppListAdapter(null, context))
             CoroutineScope(Dispatchers.IO).launch {
                 items = appList
                 withContext(Dispatchers.Main) {

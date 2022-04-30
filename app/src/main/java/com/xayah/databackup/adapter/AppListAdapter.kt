@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.drakeet.multitype.ItemViewDelegate
+import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.AdapterAppListBinding
@@ -18,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AppListAdapter(private val room: Room?) :
+class AppListAdapter(private val room: Room?, val context: Context) :
     ItemViewDelegate<AppEntity, AppListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
@@ -36,6 +38,15 @@ class AppListAdapter(private val room: Room?) :
         binding.appIcon.setImageDrawable(item.icon)
         binding.appName.text = item.appName
         binding.appPackage.text = item.packageName
+
+        val isFirst = (adapterItems as MutableList<*>).indexOf(item) == 0
+        App.log.onObserveLast(context as FragmentActivity) {
+            if (isFirst && item.isProcessing)
+                binding.appPackage.text = it
+            else
+                binding.appPackage.text = item.packageName
+        }
+
         binding.chipApplication.apply {
             setOnCheckedChangeListener { _, checked ->
                 if (!item.isProcessing) {
