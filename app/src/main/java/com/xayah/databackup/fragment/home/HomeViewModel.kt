@@ -3,6 +3,7 @@ package com.xayah.databackup.fragment.home
 import android.content.Context
 import android.view.View
 import androidx.core.view.size
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.ViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.topjohnwu.superuser.Shell
@@ -27,7 +28,7 @@ class HomeViewModel : ViewModel() {
     lateinit var storageSpace: String
     var initialized = false
 
-    var isEnvCorrect = true
+    var isEnvCorrect = ObservableBoolean(true)
     var envList = mutableListOf<String>()
 
     fun initialize(context: Context) {
@@ -77,14 +78,14 @@ class HomeViewModel : ViewModel() {
                     envList.add("root: √")
                 else {
                     envList.add("root: ×")
-                    isEnvCorrect = false
+                    isEnvCorrect.set(false)
                 }
                 Shell.cmd("ls ${Path.getFilesDir(context)}/bin").exec().out.apply {
                     if (this.size == 3)
                         envList.add("bin: √")
                     else {
                         envList.add("bin: ×")
-                        isEnvCorrect = false
+                        isEnvCorrect.set(false)
                     }
                 }
                 Shell.cmd("check_bashrc").exec().isSuccess.apply {
@@ -92,10 +93,10 @@ class HomeViewModel : ViewModel() {
                         envList.add("bashrc: √")
                     else {
                         envList.add("bashrc: ×")
-                        isEnvCorrect = false
+                        isEnvCorrect.set(false)
                     }
                 }
-                if (!isEnvCorrect) {
+                if (!isEnvCorrect.get()) {
                     withContext(Dispatchers.Main) {
                         for (i in 0 until (context as MainActivity).binding.bottomNavigation.menu.size) {
                             context.binding.bottomNavigation.menu.getItem(i).isEnabled = false
