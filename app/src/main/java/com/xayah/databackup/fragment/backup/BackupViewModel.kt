@@ -99,7 +99,11 @@ class BackupViewModel : ViewModel() {
                 override fun onQueryTextChange(newText: String?): Boolean {
                     newText?.let {
                         appList =
-                            appListAll.filter { it.appName.contains(newText) }
+                            appListAll.filter {
+                                it.appName.contains(newText.lowercase()) or it.appName.contains(
+                                    newText.uppercase()
+                                )
+                            }
                                 .toMutableList()
                         mAdapter.items = appList
                         binding?.recyclerView?.notifyDataSetChanged()
