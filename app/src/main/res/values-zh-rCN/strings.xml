@@ -63,5 +63,5 @@
     <string name="correct">正确</string>
     <string name="environment">环境</string>
     <string name="environment_detection">环境检测</string>
-    <string name="environment_detection_tip">以下检测项至少需要通过最后两项才能正确使用本应用：</string>
+    <string name="environment_detection_tip">以下检测项至少需要通过最后三项才能正确使用本应用：</string>
 </resources>

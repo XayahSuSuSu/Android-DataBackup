@@ -73,6 +73,12 @@ class HomeViewModel : ViewModel() {
                         envList.add("unzip: ×")
                     }
                 }
+                if (isRoot)
+                    envList.add("root: √")
+                else {
+                    envList.add("root: ×")
+                    isEnvCorrect = false
+                }
                 Shell.cmd("ls ${Path.getFilesDir(context)}/bin").exec().out.apply {
                     if (this.size == 3)
                         envList.add("bin: √")
