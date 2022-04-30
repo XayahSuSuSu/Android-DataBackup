@@ -63,4 +63,8 @@
     <string name="backup_custom_dir">Backup custom directory</string>
     <string name="dynamic_colors">Dynamic colors</string>
     <string name="summary_dynamic_colors">Restart the app to apply, only for Android S+</string>
+    <string name="correct">Correct</string>
+    <string name="environment">Environment</string>
+    <string name="environment_detection">Environment detection</string>
+    <string name="environment_detection_tip">To run correctly, all of the following detections need to pass:</string>
 </resources>

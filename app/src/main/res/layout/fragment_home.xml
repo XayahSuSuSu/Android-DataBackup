@@ -34,6 +34,15 @@
                     app:subtext="@{viewModel.isRoot ? @string/granted : @string/not_granted}"
                     app:text="@string/root" />
 
+                <com.xayah.design.LargeActionCard
+                    style="?attr/materialCardViewFilledStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="5dp"
+                    android:onClick="@{(v)->viewModel.showEnv(v)}"
+                    app:icon="@drawable/ic_round_build"
+                    app:subtext="@{viewModel.isEnvCorrect ? @string/correct : @string/error}"
+                    app:text="@string/environment" />
 
                 <com.xayah.design.LargeActionCard
                     style="?attr/materialCardViewFilledStyle"

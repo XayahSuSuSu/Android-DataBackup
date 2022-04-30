@@ -189,3 +189,7 @@ compress_media() {
     echo "No such path: $2"
   fi
 }
+
+check_bashrc() {
+  echo "OK"
+}

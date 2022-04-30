@@ -60,4 +60,8 @@
     <string name="backup_custom_dir">备份自定义目录</string>
     <string name="dynamic_colors">动态取色</string>
     <string name="summary_dynamic_colors">重启应用生效，仅支持Android S+</string>
+    <string name="correct">正确</string>
+    <string name="environment">环境</string>
+    <string name="environment_detection">环境检测</string>
+    <string name="environment_detection_tip">以下检测项需要全部通过才能正确使用本应用：</string>
 </resources>
