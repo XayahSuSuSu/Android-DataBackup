@@ -20,8 +20,10 @@ class Log {
 
     fun onObserveLast(owner: LifecycleOwner, callback: (String) -> Unit) {
         logs.observe(owner) {
-            if (it.isNotEmpty())
-                callback(it.last())
+            it?.apply {
+                if (this.isNotEmpty())
+                    callback(it.last())
+            }
         }
     }
 
