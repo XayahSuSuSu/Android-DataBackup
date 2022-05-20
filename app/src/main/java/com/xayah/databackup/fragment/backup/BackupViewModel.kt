@@ -1,31 +1,28 @@
 package com.xayah.databackup.fragment.backup
 
 import android.content.Context
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.graphics.drawable.Drawable
+import android.view.*
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.airbnb.lottie.LottieAnimationView
-import com.airbnb.lottie.LottieDrawable
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.google.android.material.textview.MaterialTextView
 import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.FragmentBackupBinding
+import com.xayah.databackup.databinding.LayoutProcessingBinding
 import com.xayah.databackup.util.*
-import com.xayah.design.util.dp
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.design.view.setWithResult
@@ -53,14 +50,41 @@ class BackupViewModel : ViewModel() {
     var success = 0
     var failed = 0
 
+    var currentAppName = MutableLiveData<String?>()
+    var currentAppIcon = MutableLiveData<Drawable?>()
+
     fun initialize(context: Context, room: Room?, onInitialized: () -> Unit) {
-        val linearProgressIndicator = LinearProgressIndicator(context).apply { fastInitialize() }
+        val mContext = context as FragmentActivity
+
+        // 设置底部栏菜单按钮
+        binding?.bottomAppBar?.menu?.let { setSearchView(mContext, it) }
+        binding?.bottomAppBar?.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.backup_reverse -> {
+                    setReverse(mContext, room)
+                }
+            }
+            true
+        }
+
+        // 确定事件
+        binding?.floatingActionButton?.setOnClickListener {
+            setConfirm(mContext) {
+                binding?.coordinatorLayout?.removeView(binding?.bottomAppBar)
+                binding?.coordinatorLayout?.removeView(binding?.floatingActionButton)
+            }
+        }
+
+        // 加载进度
+        val linearProgressIndicator = LinearProgressIndicator(mContext).apply { fastInitialize() }
         binding?.relativeLayout?.addView(linearProgressIndicator)
         if (!isProcessing) {
+            // 没有Processing
             mAdapter = MultiTypeAdapter().apply {
-                register(AppListAdapter(room, context))
+                register(AppListAdapter(room, mContext))
                 CoroutineScope(Dispatchers.IO).launch {
-                    val mAppList = Command.getAppList(context, room).apply {
+                    // 按照字母表排序
+                    val mAppList = Command.getAppList(mContext, room).apply {
                         sortWith { appEntity1, appEntity2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
                             collator.getCollationKey((appEntity1 as AppEntity).appName)
@@ -79,17 +103,19 @@ class BackupViewModel : ViewModel() {
                 }
             }
         } else {
-            linearProgressIndicator.visibility = View.GONE
-            binding?.recyclerView?.visibility = View.VISIBLE
+            // 恢复状态
+            // 设置Processing布局
+            onProcessing(mContext)
             onInitialized()
         }
+
         binding?.recyclerView?.apply {
             adapter = mAdapter
             fastInitialize()
         }
     }
 
-    fun setSearchView(context: Context, menu: Menu) {
+    private fun setSearchView(context: Context, menu: Menu) {
         val searchView = SearchView(context).apply {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -131,8 +157,8 @@ class BackupViewModel : ViewModel() {
         }
     }
 
-    fun setReverse(context: FragmentActivity, room: Room?) {
-        PopupMenu(context, context.findViewById(R.id.backup_reverse)).apply {
+    private fun setReverse(context: FragmentActivity, room: Room?) {
+        PopupMenu(context, context.findViewById(R.id.bottomAppBar)).apply {
             menuInflater.inflate(R.menu.select, menu)
             setOnMenuItemClickListener {
                 when (it.itemId) {
@@ -185,8 +211,9 @@ class BackupViewModel : ViewModel() {
         }
     }
 
-    fun setConfirm(context: FragmentActivity, onCallback: () -> Unit) {
+    private fun setConfirm(context: FragmentActivity, onCallback: () -> Unit) {
         if (isFiltering) {
+            // 检查是否处于搜索模式
             Toast.makeText(
                 context,
                 context.getString(R.string.please_exit_search_mode),
@@ -199,11 +226,16 @@ class BackupViewModel : ViewModel() {
                 setMessage(context.getString(R.string.onConfirm))
                 setNegativeButton(context.getString(R.string.cancel)) { _, _ -> }
                 setPositiveButton(context.getString(R.string.confirm)) { _, _ ->
+                    // 设置Processing布局
+                    val layoutProcessingBinding = onProcessing(context)
+                    // 清空日志
                     App.log.clear()
+                    // 初始化数据
                     time = 0
                     success = 0
                     failed = 0
                     isProcessing = true
+                    // 标题栏计数
                     CoroutineScope(Dispatchers.IO).launch {
                         while (isProcessing) {
                             delay(1000)
@@ -224,94 +256,73 @@ class BackupViewModel : ViewModel() {
                                 context.getString(R.string.backup_success)
                         }
                     }
-                    binding?.recyclerView?.scrollToPosition(0)
                     onCallback()
 
+                    // 重建appList
                     appList = mutableListOf()
                     appList.addAll(appListAll)
                     mAdapter.items = appList
-
-                    val mAppList = mutableListOf<AppEntity>()
-                    mAppList.addAll(appList)
-                    for (i in mAppList) {
+                    for (i in appListAll) {
                         if (!i.backupApp && !i.backupData) {
                             appList.remove(i)
                         } else {
                             appList[appList.indexOf(i)].isProcessing = true
                         }
                     }
-                    binding?.recyclerView?.notifyDataSetChanged()
-                    mAppList.clear()
-                    mAppList.addAll(appList)
-                    total = mAppList.size
+
+                    // 获取任务总个数
+                    total = appList.size
+
                     CoroutineScope(Dispatchers.IO).launch {
-                        for ((mIndex, i) in mAppList.withIndex()) {
+                        for ((mIndex, i) in appList.withIndex()) {
+                            // 推送数据
+                            currentAppName.postValue(i.appName)
+                            currentAppIcon.postValue(i.icon)
                             App.log.add("----------------------------")
                             App.log.add("${context.getString(R.string.backup_processing)}: ${i.packageName}")
-                            var state = true
+                            var state = true // 该任务是否成功完成
                             index = mIndex
+
+                            // 设置任务参数
                             val compressionType = context.readCompressionType()
                             val packageName = i.packageName
                             val outPut = "${context.readBackupSavePath()}/${packageName}"
 
-                            if (appList[0].backupApp) {
-                                withContext(Dispatchers.Main) {
-                                    appList[0].onProcessingApp = true
-                                    mAdapter.notifyItemChanged(0)
-                                    appList[0].progress =
-                                        context.getString(R.string.backup_apk_processing)
-                                    mAdapter.notifyItemChanged(0)
-                                }
+                            if (i.backupApp) {
+                                // 选中备份应用
+                                App.log.add(context.getString(R.string.backup_apk_processing))
                                 Command.compressAPK(compressionType, packageName, outPut)
                                     .apply {
                                         if (!this)
                                             state = false
                                     }
-                                withContext(Dispatchers.Main) {
-                                    appList[0].onProcessingApp = false
-                                    appList[0].backupApp = false
-                                    appList[0].progress =
-                                        context.getString(R.string.success)
-                                    mAdapter.notifyItemChanged(0)
-                                }
+                                App.log.add(context.getString(R.string.success))
                             }
-                            if (appList[0].backupData) {
-                                withContext(Dispatchers.Main) {
-                                    appList[0].onProcessingData = true
-                                    appList[0].progress =
-                                        "${context.getString(R.string.backup_processing)}user"
-                                    mAdapter.notifyItemChanged(0)
-                                }
+                            if (i.backupData) {
+                                // 选中备份数据
+                                App.log.add("${context.getString(R.string.backup_processing)}user")
+                                // 备份user数据
                                 Command.compress(compressionType, "user", packageName, outPut)
                                     .apply {
                                         if (!this)
                                             state = false
                                     }
-                                withContext(Dispatchers.Main) {
-                                    appList[0].progress =
-                                        "${context.getString(R.string.backup_processing)}data"
-                                    mAdapter.notifyItemChanged(0)
-                                }
+                                App.log.add("${context.getString(R.string.backup_processing)}data")
+                                // 备份data数据
                                 Command.compress(compressionType, "data", packageName, outPut)
                                     .apply {
                                         if (!this)
                                             state = false
                                     }
-                                withContext(Dispatchers.Main) {
-                                    appList[0].progress =
-                                        "${context.getString(R.string.backup_processing)}obb"
-                                    mAdapter.notifyItemChanged(0)
-                                }
+                                App.log.add("${context.getString(R.string.backup_processing)}obb")
+                                // 备份obb数据
                                 Command.compress(compressionType, "obb", packageName, outPut)
                                     .apply {
                                         if (!this)
                                             state = false
                                     }
                             }
-                            withContext(Dispatchers.Main) {
-                                appList.removeAt(0)
-                                mAdapter.notifyItemRemoved(0)
-                            }
+                            // 生成应用信息
                             Command.generateAppInfo(i.appName, i.packageName, outPut).apply {
                                 if (!this)
                                     state = false
@@ -321,68 +332,21 @@ class BackupViewModel : ViewModel() {
                             else
                                 failed += 1
                         }
-                        var lottieAnimationView: LottieAnimationView? = null
-                        var titleView: MaterialTextView? = null
-                        var logView: MaterialTextView? = null
                         if (App.globalContext.readIsCustomDirectoryPath()) {
+                            // 移除图标
                             withContext(Dispatchers.Main) {
-                                lottieAnimationView = LottieAnimationView(context)
-                                lottieAnimationView?.apply {
-                                    id = LottieAnimationView.generateViewId()
-                                    layoutParams =
-                                        RelativeLayout.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            200.dp
-                                        ).apply {
-                                            addRule(RelativeLayout.CENTER_IN_PARENT)
-                                        }
-                                    setAnimation(R.raw.loading)
-                                    repeatCount = LottieDrawable.INFINITE
-                                    playAnimation()
-                                }
-                                titleView = MaterialTextView(context)
-                                titleView?.apply {
-                                    id = MaterialTextView.generateViewId()
-                                    layoutParams =
-                                        RelativeLayout.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            ViewGroup.LayoutParams.WRAP_CONTENT
-                                        ).apply {
-                                            addRule(RelativeLayout.CENTER_IN_PARENT)
-                                            addRule(
-                                                RelativeLayout.BELOW,
-                                                lottieAnimationView?.id ?: 0
-                                            )
-                                        }
-                                    textAlignment = MaterialTextView.TEXT_ALIGNMENT_CENTER
-                                    setTextAppearance(com.google.android.material.R.style.TextAppearance_MaterialComponents_Subtitle2)
-                                }
-                                logView = MaterialTextView(context)
-                                logView?.apply {
-                                    layoutParams =
-                                        RelativeLayout.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            ViewGroup.LayoutParams.WRAP_CONTENT
-                                        ).apply {
-                                            addRule(RelativeLayout.CENTER_IN_PARENT)
-                                            addRule(RelativeLayout.BELOW, titleView?.id ?: 0)
-                                            topMargin = 20.dp
-                                        }
-                                    textAlignment = MaterialTextView.TEXT_ALIGNMENT_CENTER
-                                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
-                                }
-                                binding?.relativeLayout?.addView(lottieAnimationView)
-                                binding?.relativeLayout?.addView(titleView)
-                                binding?.relativeLayout?.addView(logView)
-                                App.log.onObserveLast(context) {
-                                    logView?.text = it
-                                }
+                                layoutProcessingBinding.linearLayout.removeView(
+                                    layoutProcessingBinding.shapeableImageViewAppIcon
+                                )
                             }
+
+                            // 备份自定义目录
                             val outPut = "${context.readBackupSavePath()}/media"
                             for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
-                                withContext(Dispatchers.Main) {
-                                    titleView?.text = i
-                                }
+                                // 推送数据
+                                currentAppName.postValue(i)
+
+                                // 备份目录
                                 Command.compressMedia(
                                     App.globalContext.readCompressionType(),
                                     i,
@@ -391,15 +355,8 @@ class BackupViewModel : ViewModel() {
                             }
                         }
                         withContext(Dispatchers.Main) {
-                            lottieAnimationView?.apply {
-                                binding?.relativeLayout?.removeView(this)
-                            }
-                            titleView?.apply {
-                                binding?.relativeLayout?.removeView(this)
-                            }
-                            logView?.apply {
-                                binding?.relativeLayout?.removeView(this)
-                            }
+                            // 展示完成页面
+                            binding?.relativeLayout?.removeAllViews()
                             val showResult = {
                                 Toast.makeText(
                                     context,
@@ -417,8 +374,8 @@ class BackupViewModel : ViewModel() {
                             if (binding == null) {
                                 showResult()
                             } else {
-                                lottieAnimationView = LottieAnimationView(context)
-                                lottieAnimationView?.apply {
+                                val lottieAnimationView = LottieAnimationView(context)
+                                lottieAnimationView.apply {
                                     layoutParams =
                                         RelativeLayout.LayoutParams(
                                             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -443,5 +400,42 @@ class BackupViewModel : ViewModel() {
                 show()
             }
         }
+    }
+
+    private fun onProcessing(context: FragmentActivity): LayoutProcessingBinding {
+        // 移除底部栏和悬浮按钮
+        binding?.coordinatorLayout?.removeView(binding?.bottomAppBar)
+        binding?.coordinatorLayout?.removeView(binding?.floatingActionButton)
+        // 载入Processing布局
+        val layoutProcessingBinding =
+            LayoutProcessingBinding.inflate(LayoutInflater.from(context)).apply {
+                root.apply {
+                    layoutParams =
+                        RelativeLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        )
+                            .apply {
+                                addRule(RelativeLayout.CENTER_IN_PARENT)
+                            }
+                }
+            }
+        binding?.relativeLayout?.removeAllViews()
+        binding?.relativeLayout?.addView(layoutProcessingBinding.root)
+        // 绑定可变数据
+        currentAppName.observe(context) {
+            it?.apply {
+                layoutProcessingBinding.materialTextViewAppName.text = this
+            }
+        }
+        currentAppIcon.observe(context) {
+            it?.apply {
+                layoutProcessingBinding.shapeableImageViewAppIcon.setImageDrawable(this)
+            }
+        }
+        App.log.onObserveLast(context) {
+            layoutProcessingBinding.materialTextViewLog.text = it
+        }
+        return layoutProcessingBinding
     }
 }

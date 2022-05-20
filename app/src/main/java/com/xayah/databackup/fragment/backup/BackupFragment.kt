@@ -1,10 +1,11 @@
 package com.xayah.databackup.fragment.backup
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.xayah.databackup.R
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.util.Room
 
@@ -31,26 +32,7 @@ class BackupFragment : Fragment() {
     private fun initialize() {
         val mContext = requireActivity()
         room = Room(mContext)
-        viewModel.initialize(mContext, room) { setHasOptionsMenu(true) }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.backup, menu)
-        viewModel.setSearchView(requireActivity(), menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val mContext = requireActivity()
-        when (item.itemId) {
-            R.id.backup_reverse -> {
-                viewModel.setReverse(mContext, room)
-            }
-            R.id.backup_confirm -> {
-                viewModel.setConfirm(mContext) { setHasOptionsMenu(false) }
-            }
-        }
-        return super.onOptionsItemSelected(item)
+        viewModel.initialize(mContext, room) { }
     }
 
     override fun onDestroyView() {

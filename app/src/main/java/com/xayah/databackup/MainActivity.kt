@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration.Builder(
             R.id.homeFragment,
-            R.id.backupFragment,
             R.id.restoreFragment,
             R.id.settingsFragment,
         ).build()
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemReselectedListener { }
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.homeFragment, R.id.backupFragment, R.id.restoreFragment, R.id.settingsFragment -> {
+                R.id.homeFragment, R.id.restoreFragment, R.id.settingsFragment -> {
                     binding.bottomNavigation.visibility = View.VISIBLE
                 }
                 else -> {

@@ -16,5 +16,6 @@
         android:id="@+id/backup_confirm"
         android:icon="@drawable/ic_round_check"
         android:title="@string/confirm"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 </menu>
