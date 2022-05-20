@@ -78,6 +78,7 @@ class RestoreViewModel : ViewModel() {
                     setReverse(mContext)
                 }
                 R.id.restore_add -> {
+                    binding?.linearLayout?.visibility = View.GONE
                     materialYouFileExplorer.toExplorer(
                         context, false, "default", arrayListOf(), true
                     ) { path, _ ->
@@ -120,6 +121,11 @@ class RestoreViewModel : ViewModel() {
                         items = appList
                         withContext(Dispatchers.Main) {
                             binding?.recyclerView?.notifyDataSetChanged()
+                            if (appList.isEmpty()) {
+                                binding?.linearLayout?.visibility = View.VISIBLE
+                            } else {
+                                binding?.linearLayout?.visibility = View.GONE
+                            }
                             linearProgressIndicator.visibility = View.GONE
                             binding?.recyclerView?.visibility = View.VISIBLE
                             onInitialized()

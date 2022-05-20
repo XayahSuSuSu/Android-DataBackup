@@ -66,4 +66,5 @@
     <string name="environment_detection">環境檢測</string>
     <string name="environment_detection_tip">以下檢測項至少需要通過最後三項才能正確使用本應用：</string>
     <string name="select">選擇</string>
+    <string name="empty">空空如也~</string>
 </resources>

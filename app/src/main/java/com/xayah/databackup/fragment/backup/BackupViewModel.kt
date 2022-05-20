@@ -100,6 +100,11 @@ class BackupViewModel : ViewModel() {
                     items = appList
                     withContext(Dispatchers.Main) {
                         binding?.recyclerView?.notifyDataSetChanged()
+                        if (appList.isEmpty()) {
+                            binding?.linearLayout?.visibility = View.VISIBLE
+                        } else {
+                            binding?.linearLayout?.visibility = View.GONE
+                        }
                         linearProgressIndicator.visibility = View.GONE
                         binding?.recyclerView?.visibility = View.VISIBLE
                         onInitialized()

@@ -66,4 +66,5 @@
     <string name="environment_detection">环境检测</string>
     <string name="environment_detection_tip">以下检测项至少需要通过最后三项才能正确使用本应用：</string>
     <string name="select">选择</string>
+    <string name="empty">空空如也~</string>
 </resources>
