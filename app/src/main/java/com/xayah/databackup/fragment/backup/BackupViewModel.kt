@@ -53,6 +53,10 @@ class BackupViewModel : ViewModel() {
     var currentAppName = MutableLiveData<String?>()
     var currentAppIcon = MutableLiveData<Drawable?>()
 
+    var selectAllApp = false
+    var selectAllData = false
+    var selectAll = false
+
     fun initialize(context: Context, room: Room?, onInitialized: () -> Unit) {
         val mContext = context as FragmentActivity
 
@@ -162,47 +166,40 @@ class BackupViewModel : ViewModel() {
             menuInflater.inflate(R.menu.select, menu)
             setOnMenuItemClickListener {
                 when (it.itemId) {
-                    R.id.select_all_app -> {
+                    R.id.select_all -> {
                         for ((index, _) in appList.withIndex()) {
-                            appList[index].backupApp = true
+                            appList[index].backupApp = selectAll
+                            appList[index].backupData = selectAll
                         }
                         if (!isFiltering)
                             CoroutineScope(Dispatchers.IO).launch {
-                                room?.selectAllApp()
+                                room?.selectAllApp(selectAll)
+                                room?.selectAllData(selectAll)
                             }
                         binding?.recyclerView?.notifyDataSetChanged()
+                        selectAll = !selectAll
+                    }
+                    R.id.select_all_app -> {
+                        for ((index, _) in appList.withIndex()) {
+                            appList[index].backupApp = selectAllApp
+                        }
+                        if (!isFiltering)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                room?.selectAllApp(selectAllApp)
+                            }
+                        binding?.recyclerView?.notifyDataSetChanged()
+                        selectAllApp = !selectAllApp
                     }
                     R.id.select_all_data -> {
                         for ((index, _) in appList.withIndex()) {
-                            appList[index].backupData = true
+                            appList[index].backupData = selectAllData
                         }
                         if (!isFiltering)
                             CoroutineScope(Dispatchers.IO).launch {
-                                room?.selectAllData()
+                                room?.selectAllData(selectAllData)
                             }
                         binding?.recyclerView?.notifyDataSetChanged()
-                    }
-                    R.id.reverse_all_app -> {
-                        for ((index, _) in appList.withIndex()) {
-                            appList[index].backupApp =
-                                !appList[index].backupApp
-                        }
-                        if (!isFiltering)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                room?.reverseAllApp()
-                            }
-                        binding?.recyclerView?.notifyDataSetChanged()
-                    }
-                    R.id.reverse_all_data -> {
-                        for ((index, _) in appList.withIndex()) {
-                            appList[index].backupData =
-                                !appList[index].backupData
-                        }
-                        if (!isFiltering)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                room?.reverseAllData()
-                            }
-                        binding?.recyclerView?.notifyDataSetChanged()
+                        selectAllData = !selectAllData
                     }
                 }
                 true

@@ -13,6 +13,7 @@
     <string name="reverse">反選</string>
     <string name="search">搜索</string>
     <string name="choose">選擇</string>
+    <string name="select_all">全選</string>
     <string name="select_all_app">全選：應用</string>
     <string name="select_all_data">全選：數據</string>
     <string name="reverse_all_app">反選：應用</string>

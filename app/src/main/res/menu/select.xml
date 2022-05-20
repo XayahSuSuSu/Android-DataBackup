@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/select_all"
+        android:title="@string/select_all"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/select_all_app"
         android:title="@string/select_all_app"
         app:showAsAction="ifRoom" />
@@ -9,12 +13,12 @@
         android:id="@+id/select_all_data"
         android:title="@string/select_all_data"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/reverse_all_app"
-        android:title="@string/reverse_all_app"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/reverse_all_data"
-        android:title="@string/reverse_all_data"
-        app:showAsAction="ifRoom" />
+<!--    <item-->
+<!--        android:id="@+id/reverse_all_app"-->
+<!--        android:title="@string/reverse_all_app"-->
+<!--        app:showAsAction="ifRoom" />-->
+<!--    <item-->
+<!--        android:id="@+id/reverse_all_data"-->
+<!--        android:title="@string/reverse_all_data"-->
+<!--        app:showAsAction="ifRoom" />-->
 </menu>

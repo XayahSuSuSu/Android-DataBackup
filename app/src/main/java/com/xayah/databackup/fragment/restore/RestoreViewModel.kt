@@ -59,6 +59,10 @@ class RestoreViewModel : ViewModel() {
     var currentAppName = MutableLiveData<String?>()
     var currentAppIcon = MutableLiveData<Drawable?>()
 
+    var selectAllApp = false
+    var selectAllData = false
+    var selectAll = false
+
     fun initialize(
         context: Context,
         materialYouFileExplorer: MaterialYouFileExplorer,
@@ -221,31 +225,27 @@ class RestoreViewModel : ViewModel() {
             menuInflater.inflate(R.menu.select, menu)
             setOnMenuItemClickListener {
                 when (it.itemId) {
-                    R.id.select_all_app -> {
+                    R.id.select_all -> {
                         for ((index, _) in appList.withIndex()) {
-                            appList[index].backupApp = true
+                            appList[index].backupApp = selectAll
+                            appList[index].backupData = selectAll
                         }
                         binding?.recyclerView?.notifyDataSetChanged()
+                        selectAll = !selectAll
+                    }
+                    R.id.select_all_app -> {
+                        for ((index, _) in appList.withIndex()) {
+                            appList[index].backupApp = selectAllApp
+                        }
+                        binding?.recyclerView?.notifyDataSetChanged()
+                        selectAllApp = !selectAllApp
                     }
                     R.id.select_all_data -> {
                         for ((index, _) in appList.withIndex()) {
-                            appList[index].backupData = true
+                            appList[index].backupData = selectAllData
                         }
                         binding?.recyclerView?.notifyDataSetChanged()
-                    }
-                    R.id.reverse_all_app -> {
-                        for ((index, _) in appList.withIndex()) {
-                            appList[index].backupApp =
-                                !appList[index].backupApp
-                        }
-                        binding?.recyclerView?.notifyDataSetChanged()
-                    }
-                    R.id.reverse_all_data -> {
-                        for ((index, _) in appList.withIndex()) {
-                            appList[index].backupData =
-                                !appList[index].backupData
-                        }
-                        binding?.recyclerView?.notifyDataSetChanged()
+                        selectAllData = !selectAllData
                     }
                 }
                 true

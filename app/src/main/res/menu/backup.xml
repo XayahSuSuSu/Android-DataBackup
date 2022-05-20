@@ -9,7 +9,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/backup_reverse"
-        android:icon="@drawable/ic_round_sync"
+        android:icon="@drawable/ic_round_checklist"
         android:title="@string/reverse"
         app:showAsAction="ifRoom" />
     <item

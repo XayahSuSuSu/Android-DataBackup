@@ -55,12 +55,12 @@ class Room(context: Context) {
         }
     }
 
-    fun selectAllApp() {
-        db.appDao().selectAllApp(true)
+    fun selectAllApp(boolean: Boolean) {
+        db.appDao().selectAllApp(boolean)
     }
 
-    fun selectAllData() {
-        db.appDao().selectAllData(true)
+    fun selectAllData(boolean: Boolean) {
+        db.appDao().selectAllData(boolean)
     }
 
     fun reverseAllApp() {
