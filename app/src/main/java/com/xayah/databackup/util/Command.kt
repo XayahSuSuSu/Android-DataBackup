@@ -3,6 +3,7 @@ package com.xayah.databackup.util
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
+import androidx.appcompat.content.res.AppCompatResources
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
@@ -53,6 +54,28 @@ class Command {
                         e.printStackTrace()
                         break
                     }
+                }
+            }
+            return appList
+        }
+
+        fun getAppList(context: Context, path: String): MutableList<AppEntity> {
+            val appList: MutableList<AppEntity> = mutableListOf()
+            val packages = Shell.cmd("ls $path").exec().out
+            for (i in packages) {
+                val info = Shell.cmd("cat ${path}/${i}/info").exec().out
+                try {
+                    val appName = info[0].split("=")
+                    val packageName = info[1].split("=")
+                    val appEntity = AppEntity(0, appName[1], packageName[1]).apply {
+                        icon = AppCompatResources.getDrawable(
+                            context, R.drawable.ic_round_android
+                        )
+                        backupPath = "${path}/${i}"
+                    }
+                    appList.add(appEntity)
+                } catch (e: IndexOutOfBoundsException) {
+                    e.printStackTrace()
                 }
             }
             return appList
