@@ -68,4 +68,5 @@
     <string name="environment">Environment</string>
     <string name="environment_detection">Environment detection</string>
     <string name="environment_detection_tip">To run correctly, the following detections need to pass at least the last three:</string>
+    <string name="select">Select</string>
 </resources>

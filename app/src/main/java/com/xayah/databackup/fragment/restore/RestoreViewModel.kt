@@ -47,7 +47,7 @@ class RestoreViewModel : ViewModel() {
 
     lateinit var mAdapter: MultiTypeAdapter
 
-    var backupPath = ""
+    var backupPath: String? = null
 
     var time: Long = 0
     var index = 0
@@ -74,8 +74,16 @@ class RestoreViewModel : ViewModel() {
         binding?.bottomAppBar?.menu?.let { setSearchView(mContext, it) }
         binding?.bottomAppBar?.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.backup_reverse -> {
+                R.id.restore_reverse -> {
                     setReverse(mContext)
+                }
+                R.id.restore_add -> {
+                    materialYouFileExplorer.toExplorer(
+                        context, false, "default", arrayListOf(), true
+                    ) { path, _ ->
+                        backupPath = path
+                        initialize(context, materialYouFileExplorer) {}
+                    }
                 }
             }
             true
@@ -89,54 +97,6 @@ class RestoreViewModel : ViewModel() {
             }
         }
 
-        // 没有Processing
-//            materialYouFileExplorer.toExplorer(
-//                context, false, "default", arrayListOf(), true
-//            ) { path, _ ->
-//                backupPath = path
-//                appList = mutableListOf()
-//                appListAll = mutableListOf()
-//                val tmpAppList = mutableListOf<AppEntity>()
-//                val packages = Shell.cmd("ls $path").exec().out
-//                for (i in packages) {
-//                    val info = Shell.cmd("cat ${path}/${i}/info").exec().out
-//                    try {
-//                        val appName = info[0].split("=")
-//                        val packageName = info[1].split("=")
-//                        val appEntity = AppEntity(0, appName[1], packageName[1]).apply {
-//                            icon = AppCompatResources.getDrawable(
-//                                context, R.drawable.ic_round_android
-//                            )
-//                            backupPath = "${path}/${i}"
-//                        }
-//                        tmpAppList.add(appEntity)
-//                    } catch (e: IndexOutOfBoundsException) {
-//                        e.printStackTrace()
-//                    }
-//                }
-//                tmpAppList.apply {
-//                    sortWith { appEntity1, appEntity2 ->
-//                        val collator = Collator.getInstance(Locale.CHINA)
-//                        collator.getCollationKey((appEntity1 as AppEntity).appName)
-//                            .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
-//                    }
-//                }
-//                appList.addAll(tmpAppList)
-//                appListAll.addAll(tmpAppList)
-//                if (appList.isEmpty()) {
-//                    Toast.makeText(
-//                        context,
-//                        context.getString(R.string.choose_right_backup),
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                } else {
-//                    binding?.relativeLayout?.removeView(this)
-//                    binding?.relativeLayout?.removeView(lottieAnimationView)
-//                    showAppList(context)
-//                    onInitialized()
-//                }
-//            }
-
         // 加载进度
         val linearProgressIndicator = LinearProgressIndicator(mContext).apply { fastInitialize() }
         binding?.relativeLayout?.addView(linearProgressIndicator)
@@ -146,22 +106,24 @@ class RestoreViewModel : ViewModel() {
                 register(AppListAdapter(null, context))
                 CoroutineScope(Dispatchers.IO).launch {
                     // 按照字母表排序
-                    backupPath = context.readBackupSavePath()
-                    val mAppList = Command.getAppList(context, backupPath).apply {
-                        sortWith { appEntity1, appEntity2 ->
-                            val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appEntity1 as AppEntity).appName)
-                                .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
+                    if (backupPath == null) backupPath = context.readBackupSavePath()
+                    backupPath?.let {
+                        val mAppList = Command.getAppList(context, it).apply {
+                            sortWith { appEntity1, appEntity2 ->
+                                val collator = Collator.getInstance(Locale.CHINA)
+                                collator.getCollationKey((appEntity1 as AppEntity).appName)
+                                    .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
+                            }
                         }
-                    }
-                    appList = mAppList
-                    appListAll = mAppList
-                    items = appList
-                    withContext(Dispatchers.Main) {
-                        binding?.recyclerView?.notifyDataSetChanged()
-                        linearProgressIndicator.visibility = View.GONE
-                        binding?.recyclerView?.visibility = View.VISIBLE
-                        onInitialized()
+                        appList = mAppList
+                        appListAll = mAppList
+                        items = appList
+                        withContext(Dispatchers.Main) {
+                            binding?.recyclerView?.notifyDataSetChanged()
+                            linearProgressIndicator.visibility = View.GONE
+                            binding?.recyclerView?.visibility = View.VISIBLE
+                            onInitialized()
+                        }
                     }
                 }
             }
@@ -203,7 +165,7 @@ class RestoreViewModel : ViewModel() {
             queryHint = this.context.getString(R.string.please_type_key_word)
             isQueryRefinementEnabled = true
         }
-        menu.findItem(R.id.backup_search).apply {
+        menu.findItem(R.id.restore_search).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
             actionView = searchView
             setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
@@ -221,7 +183,7 @@ class RestoreViewModel : ViewModel() {
     }
 
     private fun setReverse(context: FragmentActivity) {
-        PopupMenu(context, context.findViewById(R.id.backup_reverse)).apply {
+        PopupMenu(context, context.findViewById(R.id.restore_reverse)).apply {
             menuInflater.inflate(R.menu.select, menu)
             setOnMenuItemClickListener {
                 when (it.itemId) {

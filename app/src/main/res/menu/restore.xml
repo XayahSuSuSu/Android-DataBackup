@@ -2,14 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/backup_search"
+        android:id="@+id/restore_search"
         android:icon="@drawable/ic_round_search"
         android:title="@string/search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
     <item
-        android:id="@+id/backup_reverse"
+        android:id="@+id/restore_reverse"
         android:icon="@drawable/ic_round_checklist"
         android:title="@string/reverse"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/restore_add"
+        android:icon="@drawable/ic_round_folder_open"
+        android:title="@string/select"
         app:showAsAction="ifRoom" />
 </menu>

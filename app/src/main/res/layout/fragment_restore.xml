@@ -37,7 +37,7 @@
             android:fitsSystemWindows="true"
             app:fabAlignmentMode="end"
             app:hideOnScroll="true"
-            app:menu="@menu/backup" />
+            app:menu="@menu/restore" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"
