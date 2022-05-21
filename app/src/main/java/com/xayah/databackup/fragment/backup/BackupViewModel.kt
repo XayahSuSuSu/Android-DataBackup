@@ -358,6 +358,7 @@ class BackupViewModel : ViewModel() {
                                 // 推送数据
                                 currentAppName.postValue(i)
                                 App.log.add("----------------------------")
+                                var state = true // 该任务是否成功完成
 
                                 // 备份目录
                                 Command.compressMedia(
@@ -365,11 +366,18 @@ class BackupViewModel : ViewModel() {
                                     i,
                                     outPut
                                 ).apply {
-                                    if (this)
-                                        success += 1
-                                    else
-                                        failed += 1
+                                    if (!this)
+                                        state = false
                                 }
+                                // 检验
+                                Command.testArchiveForEach(outPut).apply {
+                                    if (!this)
+                                        state = false
+                                }
+                                if (state)
+                                    success += 1
+                                else
+                                    failed += 1
                                 index++
                             }
                         }
