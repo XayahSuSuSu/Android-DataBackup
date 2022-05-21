@@ -243,6 +243,7 @@ class RestoreViewModel : ViewModel() {
                     App.log.clear()
                     // 初始化数据
                     time = 0
+                    index = 0
                     success = 0
                     failed = 0
                     isProcessing = true
@@ -284,16 +285,18 @@ class RestoreViewModel : ViewModel() {
 
                     // 获取任务总个数
                     total = appList.size
+                    if (App.globalContext.readIsCustomDirectoryPath()) {
+                        total += Shell.cmd("ls ${backupPath}/media").exec().out.size
+                    }
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        for ((mIndex, i) in appList.withIndex()) {
+                        for (i in appList) {
                             // 推送数据
                             currentAppName.postValue(i.appName)
                             currentAppIcon.postValue(i.icon)
                             App.log.add("----------------------------")
                             App.log.add("${context.getString(R.string.restore_processing)}: ${i.packageName}")
                             var state = true // 该任务是否成功完成
-                            index = mIndex
 
                             // 设置任务参数
                             val inPath = i.backupPath
@@ -316,6 +319,8 @@ class RestoreViewModel : ViewModel() {
                                 success += 1
                             else
                                 failed += 1
+
+                            index++
                         }
                         if (Command.ls("${backupPath}/media")) {
                             // 移除图标
@@ -331,9 +336,15 @@ class RestoreViewModel : ViewModel() {
                                 for (i in mediaList) {
                                     // 推送数据
                                     currentAppName.postValue(i)
+                                    App.log.add("----------------------------")
 
                                     // 恢复目录
-                                    Command.decompressMedia("${backupPath}/media", i)
+                                    Command.decompressMedia("${backupPath}/media", i).apply {
+                                        if (this)
+                                            success += 1
+                                        else
+                                            failed += 1
+                                    }
                                 }
                             }
                         }

@@ -234,6 +234,7 @@ class BackupViewModel : ViewModel() {
                     App.log.clear()
                     // 初始化数据
                     time = 0
+                    index = 0
                     success = 0
                     failed = 0
                     isProcessing = true
@@ -274,16 +275,18 @@ class BackupViewModel : ViewModel() {
 
                     // 获取任务总个数
                     total = appList.size
+                    if (App.globalContext.readIsCustomDirectoryPath()) {
+                        total += App.globalContext.readCustomDirectoryPath().split("\n").size
+                    }
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        for ((mIndex, i) in appList.withIndex()) {
+                        for (i in appList) {
                             // 推送数据
                             currentAppName.postValue(i.appName)
                             currentAppIcon.postValue(i.icon)
                             App.log.add("----------------------------")
                             App.log.add("${context.getString(R.string.backup_processing)}: ${i.packageName}")
                             var state = true // 该任务是否成功完成
-                            index = mIndex
 
                             // 设置任务参数
                             val compressionType = context.readCompressionType()
@@ -338,6 +341,8 @@ class BackupViewModel : ViewModel() {
                                 success += 1
                             else
                                 failed += 1
+
+                            index++
                         }
                         if (App.globalContext.readIsCustomDirectoryPath()) {
                             // 移除图标
@@ -352,13 +357,20 @@ class BackupViewModel : ViewModel() {
                             for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
                                 // 推送数据
                                 currentAppName.postValue(i)
+                                App.log.add("----------------------------")
 
                                 // 备份目录
                                 Command.compressMedia(
                                     App.globalContext.readCompressionType(),
                                     i,
                                     outPut
-                                )
+                                ).apply {
+                                    if (this)
+                                        success += 1
+                                    else
+                                        failed += 1
+                                }
+                                index++
                             }
                         }
                         withContext(Dispatchers.Main) {
