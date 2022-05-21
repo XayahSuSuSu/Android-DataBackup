@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.view.*
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
@@ -114,6 +115,17 @@ class RestoreViewModel : ViewModel() {
                                 val collator = Collator.getInstance(Locale.CHINA)
                                 collator.getCollationKey((appEntity1 as AppEntity).appName)
                                     .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
+                            }
+                        }
+                        if (App.globalContext.readIsCustomDirectoryPath()) {
+                            for (i in Shell.cmd("ls ${backupPath}/media").exec().out) {
+                                val packageName = context.getString(R.string.custom_dir)
+                                val appEntity = AppEntity(0, i, packageName).apply {
+                                    icon = AppCompatResources.getDrawable(
+                                        context, R.drawable.ic_round_android
+                                    )
+                                }
+                                mAppList.add(appEntity)
                             }
                         }
                         appList = mAppList
@@ -285,12 +297,12 @@ class RestoreViewModel : ViewModel() {
 
                     // 获取任务总个数
                     total = appList.size
-                    if (App.globalContext.readIsCustomDirectoryPath()) {
-                        total += Shell.cmd("ls ${backupPath}/media").exec().out.size
-                    }
 
                     CoroutineScope(Dispatchers.IO).launch {
                         for (i in appList) {
+                            if (i.packageName == context.getString(R.string.custom_dir))
+                                continue
+
                             // 推送数据
                             currentAppName.postValue(i.appName)
                             currentAppIcon.postValue(i.icon)
