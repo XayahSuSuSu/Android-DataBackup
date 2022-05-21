@@ -129,5 +129,22 @@ class Bashrc {
             val exec = Shell.cmd(cmd).to(callbackList).exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
+
+        fun testArchive(
+            compressionType: String,
+            inputPath: String,
+        ): Pair<Boolean, String> {
+            App.log.add("${App.globalContext.getString(R.string.test)} ${inputPath}")
+            val cmd = "test_archive $compressionType $inputPath"
+            val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
+                override fun onAddElement(line: String?) {
+                    if (line != null) {
+                        App.log.add(line)
+                    }
+                }
+            }
+            val exec = Shell.cmd(cmd).to(callbackList).exec()
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
     }
 }

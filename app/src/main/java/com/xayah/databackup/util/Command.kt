@@ -309,5 +309,33 @@ class Command {
                 }
             return true
         }
+
+        fun testArchive(
+            compressionType: String,
+            inputPath: String,
+        ): Boolean {
+            Bashrc.testArchive(compressionType, inputPath).apply {
+                if (!this.first) {
+                    App.log.add(App.globalContext.getString(R.string.broken))
+                    return false
+                }
+            }
+            return true
+        }
+
+        fun testArchiveForEach(inPath: String): Boolean {
+            var result = true
+            val fileList = Shell.cmd("ls $inPath | grep .tar").exec().out
+            for (i in fileList) {
+                val compressionType = getCompressionTypeByName(i)
+                if (compressionType.isNotEmpty()) {
+                    testArchive(compressionType, "${inPath}/${i}").apply {
+                        if (!this)
+                            result = false
+                    }
+                }
+            }
+            return result
+        }
     }
 }

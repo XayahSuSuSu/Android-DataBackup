@@ -329,6 +329,11 @@ class BackupViewModel : ViewModel() {
                                 if (!this)
                                     state = false
                             }
+                            // 检验
+                            Command.testArchiveForEach(outPut).apply {
+                                if (!this)
+                                    state = false
+                            }
                             if (state)
                                 success += 1
                             else

@@ -193,3 +193,16 @@ compress_media() {
 check_bashrc() {
   echo "OK"
 }
+
+test_archive() {
+  # $1: compression_type
+  # $2: input_path
+  if [ -e "$2" ]; then
+    case "$1" in
+    tar) tar -t -f "$2" ;;
+    zstd | lz4) zstd -t "$2" ;;
+    esac
+  else
+    echo "No such path: $2"
+  fi
+}
