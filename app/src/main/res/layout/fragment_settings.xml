@@ -50,7 +50,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:checked="@{viewModel.isCustomDirectoryPath}"
-                    app:title="@string/backup_custom_dir" />
+                    app:summary="@string/summary_backup_or_restore_custom_dir"
+                    app:title="@string/backup_or_restore_custom_dir" />
 
                 <com.xayah.design.preference.EditableText
                     onConfirm="@{viewModel.changeCustomDirectoryPath}"
@@ -75,9 +76,9 @@
                     app:title="@string/dynamic_colors" />
 
                 <com.xayah.design.ActionLabel
-                    android:onClick="@{(v)->viewModel.toAboutFragment(v)}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="@{(v)->viewModel.toAboutFragment(v)}"
                     app:text="@string/about" />
 
             </LinearLayout>

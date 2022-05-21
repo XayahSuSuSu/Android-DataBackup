@@ -61,7 +61,7 @@
     <string name="please_exit_search_mode">Please exit search mode</string>
     <string name="default_custom_directory_path" translatable="false">/storage/emulated/0/Pictures\n/storage/emulated/0/Download\n/storage/emulated/0/Music\n/storage/emulated/0/DCIM</string>
     <string name="custom_dir">Custom directory</string>
-    <string name="backup_custom_dir">Backup custom directory</string>
+    <string name="backup_or_restore_custom_dir">Backup or restore custom directory</string>
     <string name="dynamic_colors">Dynamic colors</string>
     <string name="summary_dynamic_colors">Restart the app to apply, only for Android S+</string>
     <string name="correct">Correct</string>
@@ -72,4 +72,5 @@
     <string name="empty">It\'s empty</string>
     <string name="test">Test</string>
     <string name="broken">Broken</string>
+    <string name="summary_backup_or_restore_custom_dir">Enable to back up all the following custom directories, or restore all custom directories in the backup folder</string>
 </resources>

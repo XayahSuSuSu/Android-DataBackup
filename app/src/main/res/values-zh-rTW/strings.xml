@@ -58,7 +58,7 @@
     <string name="please_exit_search_mode">請退出搜索模式</string>
     <string name="please_type_key_word">請輸入關鍵字</string>
     <string name="custom_dir">自定義目錄</string>
-    <string name="backup_custom_dir">備份自定義目錄</string>
+    <string name="backup_or_restore_custom_dir">備份或恢復自定義目錄</string>
     <string name="dynamic_colors">動態取色</string>
     <string name="summary_dynamic_colors">重啟應用生效，僅支持Android S+</string>
     <string name="correct">正確</string>
@@ -69,4 +69,5 @@
     <string name="empty">空空如也~</string>
     <string name="test">檢驗</string>
     <string name="broken">損壞</string>
+    <string name="summary_backup_or_restore_custom_dir">啟用則備份下列所有自定義目錄，或恢復備份文件夾內所有自定義目錄</string>
 </resources>
