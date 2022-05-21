@@ -46,7 +46,7 @@ class Bashrc {
             packageName: String,
             outPut: String,
         ): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.compress)}$dataType")
+            App.log.add("${App.globalContext.getString(R.string.compress)} $dataType")
             val cmd = "compress $compressionType $dataType $packageName $outPut"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
@@ -65,7 +65,7 @@ class Bashrc {
         }
 
         fun installAPK(inPath: String, packageName: String): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.install)}${packageName}")
+            App.log.add("${App.globalContext.getString(R.string.install)} $packageName")
             val cmd = "install_apk $inPath $packageName"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
@@ -89,7 +89,7 @@ class Bashrc {
         fun decompress(
             compressionType: String, dataType: String, inputPath: String, packageName: String
         ): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.decompress)}$dataType")
+            App.log.add("${App.globalContext.getString(R.string.decompress)} $dataType")
             val cmd = "decompress $compressionType $dataType $inputPath $packageName"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
@@ -117,7 +117,7 @@ class Bashrc {
             inputPath: String,
             outPut: String
         ): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.compress)}${inputPath}")
+            App.log.add("${App.globalContext.getString(R.string.compress)} $inputPath")
             val cmd = "compress_media $compressionType $inputPath $outPut"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
@@ -134,7 +134,7 @@ class Bashrc {
             compressionType: String,
             inputPath: String,
         ): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.test)} ${inputPath}")
+            App.log.add("${App.globalContext.getString(R.string.test)} $inputPath")
             val cmd = "test_archive $compressionType $inputPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
