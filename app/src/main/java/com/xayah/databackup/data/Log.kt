@@ -18,11 +18,11 @@ class Log {
         })
     }
 
-    fun onObserveLast(owner: LifecycleOwner, callback: (String) -> Unit) {
+    fun onObserveLast(owner: LifecycleOwner, callback: (String?) -> Unit) {
         logs.observe(owner) {
             it?.apply {
                 if (this.isNotEmpty())
-                    callback(it.last())
+                    callback(this.lastOrNull())
             }
         }
     }

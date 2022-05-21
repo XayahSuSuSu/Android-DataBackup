@@ -41,10 +41,12 @@ class AppListAdapter(private val room: Room?, val context: Context) :
 
         val isFirst = (adapterItems as MutableList<*>).indexOf(item) == 0
         App.log.onObserveLast(context as FragmentActivity) {
-            if (isFirst && item.isProcessing)
-                binding.appPackage.text = it
-            else
-                binding.appPackage.text = item.packageName
+            it?.apply {
+                if (isFirst && item.isProcessing)
+                    binding.appPackage.text = this
+                else
+                    binding.appPackage.text = item.packageName
+            }
         }
 
         binding.chipApplication.apply {

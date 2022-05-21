@@ -440,7 +440,9 @@ class RestoreViewModel : ViewModel() {
             }
         }
         App.log.onObserveLast(context) {
-            layoutProcessingBinding.materialTextViewLog.text = it
+            it?.apply {
+                layoutProcessingBinding.materialTextViewLog.text = this
+            }
         }
         return layoutProcessingBinding
     }
