@@ -8,6 +8,7 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppEntity
+import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -24,6 +25,10 @@ class Command {
 
         fun unzip(filePath: String, outPath: String) {
             if (mkdir(outPath)) Shell.cmd("unzip $filePath -d $outPath").exec()
+        }
+
+        fun unzipByZip4j(filePath: String, outPath: String) {
+            ZipFile(filePath).extractAll(outPath)
         }
 
         fun getAppList(context: Context, room: Room?): MutableList<AppEntity> {

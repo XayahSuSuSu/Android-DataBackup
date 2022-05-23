@@ -51,7 +51,7 @@ class HomeViewModel : ViewModel() {
 
                 if (!Command.ls("${Path.getFilesDir(context)}/bin")) {
                     Command.extractAssets(context, "${Command.getABI()}/bin.zip", "bin.zip")
-                    Command.unzip(
+                    Command.unzipByZip4j(
                         "${Path.getFilesDir(context)}/bin.zip", "${Path.getFilesDir(context)}/bin"
                     )
                     ShellUtils.fastCmd("chmod 777 -R ${Path.getFilesDir(context)}")
@@ -60,20 +60,6 @@ class HomeViewModel : ViewModel() {
 
                 envList.clear()
                 envList.add(context.getString(R.string.environment_detection_tip))
-                Shell.cmd("which --help").exec().isSuccess.apply {
-                    if (this)
-                        envList.add("which: √")
-                    else {
-                        envList.add("which: ×")
-                    }
-                }
-                Shell.cmd("which unzip").exec().isSuccess.apply {
-                    if (this)
-                        envList.add("unzip: √")
-                    else {
-                        envList.add("unzip: ×")
-                    }
-                }
                 if (isRoot)
                     envList.add("root: √")
                 else {
