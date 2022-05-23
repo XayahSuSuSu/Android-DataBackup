@@ -118,14 +118,17 @@ class RestoreViewModel : ViewModel() {
                             }
                         }
                         if (App.globalContext.readIsCustomDirectoryPath()) {
-                            for (i in Shell.cmd("ls ${backupPath}/media").exec().out) {
-                                val packageName = context.getString(R.string.custom_dir)
-                                val appEntity = AppEntity(0, i, packageName).apply {
-                                    icon = AppCompatResources.getDrawable(
-                                        context, R.drawable.ic_round_android
-                                    )
+                            val ls = Shell.cmd("ls ${backupPath}/media").exec()
+                            if (ls.isSuccess) {
+                                for (i in ls.out) {
+                                    val packageName = context.getString(R.string.custom_dir)
+                                    val appEntity = AppEntity(0, i, packageName).apply {
+                                        icon = AppCompatResources.getDrawable(
+                                            context, R.drawable.ic_round_android
+                                        )
+                                    }
+                                    mAppList.add(appEntity)
                                 }
-                                mAppList.add(appEntity)
                             }
                         }
                         appList = mAppList
