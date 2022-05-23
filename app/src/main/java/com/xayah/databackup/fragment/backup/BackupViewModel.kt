@@ -135,9 +135,7 @@ class BackupViewModel : ViewModel() {
                     newText?.let {
                         appList =
                             appListAll.filter {
-                                it.appName.contains(newText.lowercase()) or it.appName.contains(
-                                    newText.uppercase()
-                                )
+                                it.appName.lowercase().contains(newText.lowercase())
                             }
                                 .toMutableList()
                         mAdapter.items = appList
