@@ -150,7 +150,7 @@ class BackupViewModel : ViewModel() {
             queryHint = this.context.getString(R.string.please_type_key_word)
             isQueryRefinementEnabled = true
         }
-        menu.findItem(R.id.backup_search).apply {
+        val item = menu.findItem(R.id.backup_search).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
             actionView = searchView
             setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
@@ -164,6 +164,12 @@ class BackupViewModel : ViewModel() {
                     return true
                 }
             })
+        }
+        searchView.setOnQueryTextFocusChangeListener { _, queryTextFocused ->
+            if (!queryTextFocused) {
+                item.collapseActionView()
+                searchView.setQuery("", false)
+            }
         }
     }
 
