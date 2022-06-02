@@ -82,7 +82,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:5.0.3'
 
     // MaterialYouFileExplorer
-    implementation 'io.github.xayahsususu:materialyoufileexplorer:1.1.1'
+    implementation 'com.github.XayahSuSuSu:Android-MaterialYouFileExplorer:1.2.0'
 
     // zip4j
     implementation 'net.lingala.zip4j:zip4j:2.10.0'
