@@ -63,12 +63,8 @@ dependencies {
     def libsuVersion = '4.0.3'
     // The core module is used by all other components
     implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
-    // Optional: APIs for creating root services
-    implementation "com.github.topjohnwu.libsu:service:${libsuVersion}"
     // Optional: For com.topjohnwu.superuser.io classes
     implementation "com.github.topjohnwu.libsu:io:${libsuVersion}"
-    // Optional: Bundle prebuilt BusyBox binaries
-    implementation "com.github.topjohnwu.libsu:busybox:${libsuVersion}"
 
     // MultiType
     implementation 'com.drakeet.multitype:multitype:4.3.0'
