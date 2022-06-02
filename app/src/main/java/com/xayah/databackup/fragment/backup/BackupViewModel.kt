@@ -223,10 +223,27 @@ class BackupViewModel : ViewModel() {
                 Toast.LENGTH_SHORT
             ).show()
         } else {
+            // 确认清单
+            var contents = "${context.getString(R.string.selected)}\n"
+            if (App.globalContext.readIsBackupItself()) {
+                // 备份自身
+                contents += context.getString(R.string.app_name) + "\n"
+            }
+            for (i in appListAll) {
+                if (i.backupApp || i.backupData) {
+                    contents += i.appName + "\n"
+                }
+            }
+            if (App.globalContext.readIsCustomDirectoryPath()) {
+                // 自定义备份目录
+                contents += App.globalContext.readCustomDirectoryPath().split("\n")
+                    .joinToString(separator = "\n")
+            }
+
             MaterialAlertDialogBuilder(context).apply {
                 setTitle(context.getString(R.string.tips))
                 setCancelable(true)
-                setMessage(context.getString(R.string.onConfirm))
+                setMessage(contents)
                 setNegativeButton(context.getString(R.string.cancel)) { _, _ -> }
                 setPositiveButton(context.getString(R.string.confirm)) { _, _ ->
                     // 设置Processing布局

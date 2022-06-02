@@ -24,9 +24,7 @@ import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.readBackupSavePath
-import com.xayah.databackup.util.readIsCustomDirectoryPath
+import com.xayah.databackup.util.*
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.design.view.setWithResult
@@ -246,10 +244,18 @@ class RestoreViewModel : ViewModel() {
                 Toast.LENGTH_SHORT
             ).show()
         } else {
+            // 确认清单
+            var contents = "${context.getString(R.string.selected)}\n"
+            for (i in appListAll) {
+                if (i.backupApp || i.backupData) {
+                    contents += i.appName + "\n"
+                }
+            }
+
             MaterialAlertDialogBuilder(context).apply {
                 setTitle(context.getString(R.string.tips))
                 setCancelable(true)
-                setMessage(context.getString(R.string.onConfirm))
+                setMessage(contents)
                 setNegativeButton(context.getString(R.string.cancel)) { _, _ -> }
                 setPositiveButton(context.getString(R.string.confirm)) { _, _ ->
                     // 设置Processing布局

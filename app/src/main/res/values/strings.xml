@@ -75,4 +75,5 @@
     <string name="summary_backup_or_restore_custom_dir">Enable to back up all the following custom directories, or restore all custom directories in the backup folder</string>
     <string name="backup_itself">Backup itself</string>
     <string name="summary_backup_itself">Automatically extract the application installation package to the root directory of the backup folder after backup</string>
+    <string name="selected">"Selected: "</string>
 </resources>
