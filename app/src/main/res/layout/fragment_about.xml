@@ -28,7 +28,7 @@
                     app:text="@string/about" />
 
                 <com.xayah.design.preference.Clickable
-                    isRound="@{true}"
+                    isRound="@{false}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:onClick="@{(v)->viewModel.toAppGitHub(v)}"
