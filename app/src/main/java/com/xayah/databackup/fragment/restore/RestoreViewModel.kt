@@ -69,6 +69,8 @@ class RestoreViewModel : ViewModel() {
         materialYouFileExplorer: MaterialYouFileExplorer,
         onInitialized: () -> Unit
     ) {
+        isFiltering = false
+
         val mContext = context as FragmentActivity
 
         // 设置底部栏菜单按钮
