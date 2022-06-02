@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.view.*
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
@@ -274,7 +275,34 @@ class BackupViewModel : ViewModel() {
                     // 获取任务总个数
                     total = appList.size
                     if (App.globalContext.readIsCustomDirectoryPath()) {
+                        // 自定义备份目录
                         total += App.globalContext.readCustomDirectoryPath().split("\n").size
+                    }
+                    if (App.globalContext.readIsBackupItself()) {
+                        // 备份自身
+                        total += 1
+                        val appName = context.getString(R.string.app_name)
+                        val icon = AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)
+                        val packageName = "com.xayah.databackup"
+                        val outPut = context.readBackupSavePath()
+
+                        currentAppName.postValue(appName)
+                        currentAppIcon.postValue(icon)
+                        App.log.add("----------------------------")
+                        App.log.add("${context.getString(R.string.backup_processing)}: ${packageName}")
+                        var state = true // 该任务是否成功完成
+                        App.log.add(context.getString(R.string.backup_apk_processing))
+                        Command.backupItself(packageName, outPut)
+                            .apply {
+                                if (!this)
+                                    state = false
+                            }
+                        App.log.add(context.getString(R.string.success))
+                        if (state)
+                            success += 1
+                        else
+                            failed += 1
+                        index++
                     }
 
                     CoroutineScope(Dispatchers.IO).launch {

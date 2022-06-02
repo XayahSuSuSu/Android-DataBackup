@@ -43,6 +43,13 @@ class SettingsViewModel() : ViewModel() {
             v.context.saveIsDynamicColors(isChecked)
         }
 
+    var isBackupItself: ObservableField<Boolean> =
+        ObservableField(App.globalContext.readIsBackupItself())
+    val onIsBackupItself: (buttonView: CompoundButton, isChecked: Boolean) -> Unit =
+        { v, isChecked ->
+            v.context.saveIsBackupItself(isChecked)
+        }
+
     fun toAboutFragment(v: View) {
         Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_aboutFragment)
     }

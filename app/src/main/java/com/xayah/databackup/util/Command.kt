@@ -27,6 +27,10 @@ class Command {
             if (mkdir(outPath)) Shell.cmd("unzip $filePath -d $outPath").exec()
         }
 
+        private fun cp(src: String, dst: String): Boolean {
+            return Shell.cmd("cp $src $dst").exec().isSuccess
+        }
+
         fun unzipByZip4j(filePath: String, outPath: String) {
             ZipFile(filePath).extractAll(outPath)
         }
@@ -137,7 +141,7 @@ class Command {
                 if (!this.first) {
                     App.log.add(
                         "${packageName}: ${
-                            App.globalContext.getString(R.string.compress_apk_failed)
+                            App.globalContext.getString(R.string.path_not_exist)
                         }"
                     )
                     return false
@@ -341,6 +345,34 @@ class Command {
                 }
             }
             return result
+        }
+
+        fun backupItself(
+            packageName: String,
+            outPut: String
+        ): Boolean {
+            mkdir(outPut)
+            val apkPathPair = Bashrc.getAPKPath(packageName).apply {
+                if (!this.first) {
+                    App.log.add(
+                        "${packageName}: ${
+                            App.globalContext.getString(R.string.path_not_exist)
+                        }"
+                    )
+                    return false
+                }
+            }
+            cp("${apkPathPair.second}/base.apk", "${outPut}/DataBackup.apk").apply {
+                if (!this) {
+                    App.log.add(
+                        "${packageName}: ${
+                            App.globalContext.getString(R.string.path_not_exist)
+                        }"
+                    )
+                    return false
+                }
+            }
+            return true
         }
     }
 }

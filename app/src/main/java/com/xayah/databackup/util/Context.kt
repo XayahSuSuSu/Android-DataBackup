@@ -24,9 +24,9 @@ fun Context.readPreferencesString(key: String): String? {
     }
 }
 
-fun Context.readPreferencesBoolean(key: String): Boolean {
+fun Context.readPreferencesBoolean(key: String, defValue: Boolean = false): Boolean {
     getSharedPreferences("settings", MODE_PRIVATE).apply {
-        return getBoolean(key, false)
+        return getBoolean(key, defValue)
     }
 }
 
@@ -69,4 +69,12 @@ fun Context.saveCustomDirectoryPath(path: CharSequence?) {
 fun Context.readCustomDirectoryPath(): String {
     return readPreferencesString("custom_directory_path")
         ?: getString(R.string.default_custom_directory_path)
+}
+
+fun Context.saveIsBackupItself(value: Boolean) {
+    savePreferences("is_backup_itself", value)
+}
+
+fun Context.readIsBackupItself(): Boolean {
+    return readPreferencesBoolean("is_backup_itself", true)
 }

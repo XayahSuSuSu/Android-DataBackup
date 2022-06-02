@@ -70,4 +70,6 @@
     <string name="test">检验</string>
     <string name="broken">损坏</string>
     <string name="summary_backup_or_restore_custom_dir">启用则备份下列所有自定义目录，或恢复备份文件夹内所有自定义目录</string>
+    <string name="backup_itself">备份自身安装包</string>
+    <string name="summary_backup_itself">备份时自动提取本应用安装包到备份文件夹根目录</string>
 </resources>

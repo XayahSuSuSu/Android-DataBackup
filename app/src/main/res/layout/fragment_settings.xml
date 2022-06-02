@@ -46,6 +46,14 @@
                     app:title="@string/backup_dir" />
 
                 <com.xayah.design.preference.Switch
+                    onCheckedChange="@{viewModel.onIsBackupItself}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:checked="@{viewModel.isBackupItself}"
+                    app:summary="@string/summary_backup_itself"
+                    app:title="@string/backup_itself" />
+
+                <com.xayah.design.preference.Switch
                     onCheckedChange="@{viewModel.onCustomDirectoryPath}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
