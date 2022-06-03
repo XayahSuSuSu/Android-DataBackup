@@ -16,11 +16,13 @@ class SettingsViewModel() : ViewModel() {
     var compressionTypeIndex = compressionTypeItems.indexOf(App.globalContext.readCompressionType())
     val changeCompressionType: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
         v.context.saveCompressionType(compressionTypeItems[choice])
+        compressionTypeIndex = choice
     }
 
     var backupSavePath = App.globalContext.readBackupSavePath()
     val changeBackupSavePath: (v: EditableText, content: CharSequence?) -> Unit = { v, content ->
         v.context.saveBackupSavePath(content.toString().trim())
+        backupSavePath = content.toString().trim()
     }
 
     var isCustomDirectoryPath: ObservableField<Boolean> =
@@ -34,6 +36,7 @@ class SettingsViewModel() : ViewModel() {
     val changeCustomDirectoryPath: (v: EditableText, content: CharSequence?) -> Unit =
         { v, content ->
             v.context.saveCustomDirectoryPath(content.toString().trim())
+            customDirectoryPath = content.toString().trim()
         }
 
     var isDynamicColors: ObservableField<Boolean> =
@@ -41,6 +44,7 @@ class SettingsViewModel() : ViewModel() {
     val onDynamicColors: (buttonView: CompoundButton, isChecked: Boolean) -> Unit =
         { v, isChecked ->
             v.context.saveIsDynamicColors(isChecked)
+            isDynamicColors.set(isChecked)
         }
 
     var isBackupItself: ObservableField<Boolean> =
@@ -48,6 +52,7 @@ class SettingsViewModel() : ViewModel() {
     val onIsBackupItself: (buttonView: CompoundButton, isChecked: Boolean) -> Unit =
         { v, isChecked ->
             v.context.saveIsBackupItself(isChecked)
+            isBackupItself.set(isChecked)
         }
 
     val userItems: Array<String> =
@@ -55,6 +60,7 @@ class SettingsViewModel() : ViewModel() {
     var userIndex = userItems.indexOf(App.globalContext.readUser())
     val changeUser: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
         v.context.saveUser(userItems[choice])
+        userIndex = choice
     }
 
     fun toAboutFragment(v: View) {
