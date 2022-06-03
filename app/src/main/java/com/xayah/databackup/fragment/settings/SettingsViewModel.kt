@@ -50,6 +50,13 @@ class SettingsViewModel() : ViewModel() {
             v.context.saveIsBackupItself(isChecked)
         }
 
+    val userItems: Array<String> =
+        if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf("0")
+    var userIndex = userItems.indexOf(App.globalContext.readUser())
+    val changeUser: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
+        v.context.saveUser(userItems[choice])
+    }
+
     fun toAboutFragment(v: View) {
         Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_aboutFragment)
     }

@@ -78,3 +78,12 @@ fun Context.saveIsBackupItself(value: Boolean) {
 fun Context.readIsBackupItself(): Boolean {
     return readPreferencesBoolean("is_backup_itself", true)
 }
+
+fun Context.saveUser(type: CharSequence?) {
+    savePreferences("user", type.toString().trim())
+}
+
+fun Context.readUser(): String {
+    return readPreferencesString("user")
+        ?: if (Bashrc.listUsers().first && Bashrc.listUsers().second.isNotEmpty()) Bashrc.listUsers().second[0] else "0"
+}

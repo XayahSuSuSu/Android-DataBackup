@@ -76,4 +76,5 @@
     <string name="backup_itself">Backup itself</string>
     <string name="summary_backup_itself">Automatically extract the application installation package to the root directory of the backup folder after backup</string>
     <string name="selected">"Selected: "</string>
+    <string name="user">User</string>
 </resources>

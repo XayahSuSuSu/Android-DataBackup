@@ -73,4 +73,5 @@
     <string name="backup_itself">备份自身安装包</string>
     <string name="summary_backup_itself">备份时自动提取本应用安装包到备份文件夹根目录</string>
     <string name="selected">已选择：</string>
+    <string name="user">用户</string>
 </resources>

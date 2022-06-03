@@ -206,3 +206,10 @@ test_archive() {
     echo "No such path: $2"
   fi
 }
+
+list_users() {
+  list=$(pm list users | grep "{" | grep "}" | cut -d '{' -f2 | cut -d '}' -f1)
+  for line in $list; do
+    echo "${line%%:*}"
+  done
+}

@@ -146,5 +146,10 @@ class Bashrc {
             val exec = Shell.cmd(cmd).to(callbackList).exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
+
+        fun listUsers(): Pair<Boolean, MutableList<String>> {
+            val exec = Shell.cmd("list_users").exec()
+            return Pair(exec.isSuccess, exec.out)
+        }
     }
 }
