@@ -45,9 +45,10 @@ class Bashrc {
             dataType: String,
             packageName: String,
             outPut: String,
+            userId: String
         ): Pair<Boolean, String> {
             App.log.add("${App.globalContext.getString(R.string.compress)} $dataType")
-            val cmd = "compress $compressionType $dataType $packageName $outPut"
+            val cmd = "compress $compressionType $dataType $packageName $outPut $userId"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
                     if (line != null) {
@@ -64,9 +65,9 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun installAPK(inPath: String, packageName: String): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.install)} $packageName")
-            val cmd = "install_apk $inPath $packageName"
+        fun installAPK(inPath: String, packageName: String, userId: String): Pair<Boolean, String> {
+            App.log.add("${App.globalContext.getString(R.string.install)} $packageName $userId")
+            val cmd = "install_apk $inPath $packageName $userId"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
                     if (line != null) {
@@ -79,18 +80,23 @@ class Bashrc {
         }
 
         fun setOwnerAndSELinux(
-            dataType: String, packageName: String, path: String
+            dataType: String, packageName: String, path: String, userId: String
         ): Pair<Boolean, String> {
             App.log.add(App.globalContext.getString(R.string.set_SELinux))
-            val exec = Shell.cmd("set_owner_and_SELinux $dataType $packageName $path").exec()
+            val exec =
+                Shell.cmd("set_owner_and_SELinux $dataType $packageName $path $userId").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
         fun decompress(
-            compressionType: String, dataType: String, inputPath: String, packageName: String
+            compressionType: String,
+            dataType: String,
+            inputPath: String,
+            packageName: String,
+            userId: String
         ): Pair<Boolean, String> {
             App.log.add("${App.globalContext.getString(R.string.decompress)} $dataType")
-            val cmd = "decompress $compressionType $dataType $inputPath $packageName"
+            val cmd = "decompress $compressionType $dataType $inputPath $packageName $userId"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
                     if (line != null) {
@@ -149,6 +155,11 @@ class Bashrc {
 
         fun listUsers(): Pair<Boolean, MutableList<String>> {
             val exec = Shell.cmd("list_users").exec()
+            return Pair(exec.isSuccess, exec.out)
+        }
+
+        fun listPackages(userId: String): Pair<Boolean, MutableList<String>> {
+            val exec = Shell.cmd("list_packages $userId").exec()
             return Pair(exec.isSuccess, exec.out)
         }
     }

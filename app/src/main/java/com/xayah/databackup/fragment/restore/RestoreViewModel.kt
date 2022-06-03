@@ -110,7 +110,8 @@ class RestoreViewModel : ViewModel() {
                     // 按照字母表排序
                     if (backupPath == null) backupPath = context.readBackupSavePath()
                     backupPath?.let {
-                        val mAppList = Command.getAppList(context, it).apply {
+                        val userId = context.readUser()
+                        val mAppList = Command.getAppList(context, "$it/$userId").apply {
                             sortWith { appEntity1, appEntity2 ->
                                 val collator = Collator.getInstance(Locale.CHINA)
                                 collator.getCollationKey((appEntity1 as AppEntity).appName)
@@ -313,6 +314,9 @@ class RestoreViewModel : ViewModel() {
                     // 获取任务总个数
                     total = appList.size
 
+                    // 设置用户
+                    val userId = context.readUser()
+
                     CoroutineScope(Dispatchers.IO).launch {
                         for (i in appList) {
                             if (i.packageName == context.getString(R.string.custom_dir))
@@ -332,12 +336,12 @@ class RestoreViewModel : ViewModel() {
                             if (i.backupApp) {
                                 // 选中恢复应用
                                 App.log.add(context.getString(R.string.install_apk_processing))
-                                Command.installAPK(inPath, packageName)
+                                Command.installAPK(inPath, packageName, userId)
                             }
                             if (i.backupData) {
                                 // 选中恢复数据
                                 App.log.add(context.getString(R.string.restore_processing))
-                                Command.restoreData(packageName, inPath).apply {
+                                Command.restoreData(packageName, inPath, userId).apply {
                                     if (!this)
                                         state = false
                                 }

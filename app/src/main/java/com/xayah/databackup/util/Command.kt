@@ -39,9 +39,13 @@ class Command {
             val appList: MutableList<AppEntity> = mutableListOf()
             room?.let {
                 val packageManager = context.packageManager
-                val packages = packageManager.getInstalledPackages(0)
-                for (i in packages) {
+                val userId = context.readUser()
+                val listPackages = Bashrc.listPackages(userId)
+                val packages =
+                    if (listPackages.first) listPackages.second else mutableListOf()
+                for (index in packages) {
                     try {
+                        val i = packageManager.getPackageInfo(index.replace("package:", ""), 0)
                         if (i.packageName == "com.xayah.databackup")
                             continue
                         if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
@@ -121,9 +125,10 @@ class Command {
             compressionType: String,
             dataType: String,
             packageName: String,
-            outPut: String
+            outPut: String,
+            userId: String
         ): Boolean {
-            Bashrc.compress(compressionType, dataType, packageName, outPut).apply {
+            Bashrc.compress(compressionType, dataType, packageName, outPut, userId).apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.compress_failed))
                     return false
@@ -176,9 +181,10 @@ class Command {
             compressionType: String,
             dataType: String,
             inputPath: String,
-            packageName: String
+            packageName: String,
+            userId: String
         ): Boolean {
-            Bashrc.decompress(compressionType, dataType, inputPath, packageName).apply {
+            Bashrc.decompress(compressionType, dataType, inputPath, packageName, userId).apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.decompress_failed))
                     return false
@@ -213,12 +219,13 @@ class Command {
 
         fun installAPK(
             inPath: String,
-            packageName: String
+            packageName: String,
+            userId: String
         ): Boolean {
             // 禁止APK验证
             Bashrc.setInstallEnv()
 
-            Bashrc.installAPK(inPath, packageName).apply {
+            Bashrc.installAPK(inPath, packageName, userId).apply {
                 if (!this.first) {
                     App.log.add(
                         App.globalContext.getString(R.string.install_apk_failed_or_skip)
@@ -229,8 +236,13 @@ class Command {
             return true
         }
 
-        private fun setOwnerAndSELinux(dataType: String, packageName: String, path: String) {
-            Bashrc.setOwnerAndSELinux(dataType, packageName, path).apply {
+        private fun setOwnerAndSELinux(
+            dataType: String,
+            packageName: String,
+            path: String,
+            userId: String
+        ) {
+            Bashrc.setOwnerAndSELinux(dataType, packageName, path, userId).apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.set_SELinux_failed))
                     return
@@ -240,7 +252,8 @@ class Command {
 
         fun restoreData(
             packageName: String,
-            inPath: String
+            inPath: String,
+            userId: String
         ): Boolean {
             var result = true
             val fileList = Shell.cmd("ls $inPath | grep -v apk.* | grep .tar").exec().out
@@ -250,20 +263,26 @@ class Command {
                 var path = ""
                 val compressionType = getCompressionTypeByName(i)
                 if (compressionType.isNotEmpty()) {
-                    decompress(compressionType, dataType, "${inPath}/${i}", packageName).apply {
+                    decompress(
+                        compressionType,
+                        dataType,
+                        "${inPath}/${i}",
+                        packageName,
+                        userId
+                    ).apply {
                         if (!this)
                             result = false
                     }
                     when (dataType) {
                         "user" -> {
-                            path = "/data/data"
+                            path = "/data/user/$userId"
                         }
                         "data", "obb" -> {
-                            path = "/data/media/0/Android/${dataType}"
+                            path = "/data/media/$userId/Android/${dataType}"
                         }
                     }
                     if (path.isNotEmpty())
-                        setOwnerAndSELinux(dataType, packageName, "${path}/${packageName}")
+                        setOwnerAndSELinux(dataType, packageName, "${path}/${packageName}", userId)
                 }
             }
             return result
@@ -309,7 +328,7 @@ class Command {
         }
 
         fun decompressMedia(inputPath: String, name: String): Boolean {
-            Bashrc.decompress(getCompressionTypeByName(name), "media", "${inputPath}/$name", "")
+            Bashrc.decompress(getCompressionTypeByName(name), "media", "${inputPath}/$name", "", "")
                 .apply {
                     if (!this.first) {
                         App.log.add(App.globalContext.getString(R.string.decompress_failed))

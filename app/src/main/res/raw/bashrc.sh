@@ -48,11 +48,12 @@ compress() {
   # $2: data_type
   # $3: package_name
   # $4: out_put
+  # $5: user_id
   mkdir -p "$4"
   am force-stop "$3"
   case "$2" in
   user)
-    data_path="/data/data"
+    data_path="/data/user/$5"
     if [ -d "$data_path/$3" ]; then
       case "$1" in
       tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" -cpf - -C "${data_path}" "$3" | pv_force >"$4/$2.tar" ;;
@@ -64,7 +65,7 @@ compress() {
     fi
     ;;
   data | obb)
-    data_path="/data/media/0/Android/$2"
+    data_path="/data/media/$5/Android/$2"
     if [ -d "$data_path/$3" ]; then
       case "$1" in
       tar) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force >"$4/$2.tar" ;;
@@ -90,21 +91,23 @@ set_install_env() {
 install_apk() {
   # $1: in_path
   # $2: package_name
+  # $3: user_id
   tmp_dir="/data/local/tmp/data_backup"
   rm -rf "$tmp_dir"
   mkdir -p "$tmp_dir"
-  if [ -z "$(pm path "$2")" ]; then
+  if [ -z "$(list_packages "$3" | grep "$2")" ]; then
     find "$1" -maxdepth 1 -name "apk.*" -type f | while read -r i; do
       case "${i##*.}" in
       tar) pv_force "$i" | tar -xmpf - -C "$tmp_dir" ;;
       zst | lz4) pv_force "$i" | tar -I zstd -xmpf - -C "$tmp_dir" ;;
       esac
     done
+    ls "$tmp_dir"
     apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
     case "$apk_num" in
-    1) pm install -i com.android.vending --user 0 -r ${tmp_dir}/*.apk ;;
+    1) pm install -i com.android.vending --user "$3" -r ${tmp_dir}/*.apk ;;
     *)
-      session=$(pm install-create -i com.android.vending --user 0 | grep -E -o '[0-9]+')
+      session=$(pm install-create -i com.android.vending --user "$3" | grep -E -o '[0-9]+')
       find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | while read -r i; do
         pm install-write "$session" "${i##*/}" "$i"
       done
@@ -121,6 +124,7 @@ set_owner_and_SELinux() {
   # $1: data_type
   # $2: package_name
   # $3: path
+  # $4: user_id
   case $1 in
   user)
     if [ -f /config/sdcardfs/$2/appid ]; then
@@ -130,8 +134,8 @@ set_owner_and_SELinux() {
     fi
     owner="$(echo "$owner" | grep -E -o '[0-9]+')"
     if [ "$owner" != "" ]; then
-      chown -hR "$owner:$owner" "$3/"
-      restorecon -RF "$3/"
+      chown -hR "$4$owner:$4$owner" "$3/"
+      restorecon -RFD "$3/"
     fi
     ;;
   data | obb) chmod -R 0777 "$3" ;;
@@ -143,10 +147,11 @@ decompress() {
   # $2: data_type
   # $3: input_path
   # $4: package_name
+  # $5: user_id
   am force-stop "$4"
   case "$2" in
   user)
-    data_path="/data/data"
+    data_path="/data/user/$5"
     case "$1" in
     tar)
       pv_force "$3" | tar --recursive-unlink -xmpf - -C "$data_path"
@@ -212,4 +217,9 @@ list_users() {
   for line in $list; do
     echo "${line%%:*}"
   done
+}
+
+list_packages() {
+  # $1: user_id
+  pm list packages --user "$1"
 }

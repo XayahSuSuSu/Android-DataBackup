@@ -314,7 +314,7 @@ class BackupViewModel : ViewModel() {
                         currentAppName.postValue(appName)
                         currentAppIcon.postValue(icon)
                         App.log.add("----------------------------")
-                        App.log.add("${context.getString(R.string.backup_processing)}: ${packageName}")
+                        App.log.add("${context.getString(R.string.backup_processing)}: $packageName")
                         var state = true // 该任务是否成功完成
                         App.log.add(context.getString(R.string.backup_apk_processing))
                         Command.backupItself(packageName, outPut)
@@ -330,6 +330,9 @@ class BackupViewModel : ViewModel() {
                         index++
                     }
 
+                    // 设置用户
+                    val userId = context.readUser()
+
                     CoroutineScope(Dispatchers.IO).launch {
                         for (i in appList) {
                             // 推送数据
@@ -342,7 +345,7 @@ class BackupViewModel : ViewModel() {
                             // 设置任务参数
                             val compressionType = context.readCompressionType()
                             val packageName = i.packageName
-                            val outPut = "${context.readBackupSavePath()}/${packageName}"
+                            val outPut = "${context.readBackupSavePath()}/$userId/${packageName}"
 
                             if (i.backupApp) {
                                 // 选中备份应用
@@ -358,21 +361,39 @@ class BackupViewModel : ViewModel() {
                                 // 选中备份数据
                                 App.log.add("${context.getString(R.string.backup_processing)}user")
                                 // 备份user数据
-                                Command.compress(compressionType, "user", packageName, outPut)
+                                Command.compress(
+                                    compressionType,
+                                    "user",
+                                    packageName,
+                                    outPut,
+                                    userId
+                                )
                                     .apply {
                                         if (!this)
                                             state = false
                                     }
                                 App.log.add("${context.getString(R.string.backup_processing)}data")
                                 // 备份data数据
-                                Command.compress(compressionType, "data", packageName, outPut)
+                                Command.compress(
+                                    compressionType,
+                                    "data",
+                                    packageName,
+                                    outPut,
+                                    userId
+                                )
                                     .apply {
                                         if (!this)
                                             state = false
                                     }
                                 App.log.add("${context.getString(R.string.backup_processing)}obb")
                                 // 备份obb数据
-                                Command.compress(compressionType, "obb", packageName, outPut)
+                                Command.compress(
+                                    compressionType,
+                                    "obb",
+                                    packageName,
+                                    outPut,
+                                    userId
+                                )
                                     .apply {
                                         if (!this)
                                             state = false
