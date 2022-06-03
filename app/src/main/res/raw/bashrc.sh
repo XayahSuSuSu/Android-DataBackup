@@ -37,7 +37,7 @@ compress_apk() {
   mkdir -p "$2"
   case "$1" in
   tar) tar -cf "${2}/apk.tar" ./*.apk | pv_force ;;
-  zstd) tar -cf - ./*apk | zstd -r -T0 --ultra -6 -q --priority=rt | pv_force >"${2}/apk.tar.zst" ;;
+  zstd) tar -cf - ./*apk | zstd -r -T0 --ultra -1 -q --priority=rt | pv_force >"${2}/apk.tar.zst" ;;
   lz4) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 | pv_force >"${2}/apk.tar.lz4" ;;
   *) return 1 ;;
   esac
@@ -56,7 +56,7 @@ compress() {
     if [ -d "$data_path/$3" ]; then
       case "$1" in
       tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" -cpf - -C "${data_path}" "$3" | pv_force >"$4/$2.tar" ;;
-      zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -6 -q --priority=rt >"$4/$2.tar.zst" ;;
+      zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
       lz4) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
       esac
     else
@@ -68,7 +68,7 @@ compress() {
     if [ -d "$data_path/$3" ]; then
       case "$1" in
       tar) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force >"$4/$2.tar" ;;
-      zstd) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force | zstd -r -T0 --ultra -6 -q --priority=rt >"$4/$2.tar.zst" ;;
+      zstd) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
       lz4) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
       esac
     else
@@ -182,7 +182,7 @@ compress_media() {
   if [ -d "$2" ]; then
     case "$1" in
     tar) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force >"$3/${2##*/}.tar" ;;
-    zstd) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force | zstd -r -T0 --ultra -6 -q --priority=rt >"$3/${2##*/}.tar.zst" ;;
+    zstd) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$3/${2##*/}.tar.zst" ;;
     lz4) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$3/${2##*/}.tar.lz4" ;;
     esac
   else
