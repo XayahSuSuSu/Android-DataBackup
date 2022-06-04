@@ -82,4 +82,10 @@ dependencies {
 
     // zip4j
     implementation 'net.lingala.zip4j:zip4j:2.10.0'
+
+    // okhttp3
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+
+    // gson
+    implementation 'com.google.code.gson:gson:2.9.0'
 }
