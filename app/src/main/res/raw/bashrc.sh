@@ -53,34 +53,43 @@ compress() {
   # $2: data_type
   # $3: package_name
   # $4: out_put
-  # $5: user_id
+  # $5: data_path
   mkdir -p "$4"
   am force-stop "$3"
   case "$2" in
   user)
-    data_path="/data/user/$5"
-    if [ -d "$data_path/$3" ]; then
+    if [ -d "$5/$3" ]; then
       case "$1" in
-      tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "${data_path}" "$3" | pv_redirect "$4/$2.tar" ;;
-      zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
-      lz4) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
+      tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;
+      zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
+      lz4) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
       esac
     else
-      echo "No such path: $data_path"
+      echo "No such path: $5"
     fi
     ;;
   data | obb)
-    data_path="/data/media/$5/Android/$2"
-    if [ -d "$data_path/$3" ]; then
+    if [ -d "$5/$3" ]; then
       case "$1" in
-      tar) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_redirect "$4/$2.tar" ;;
-      zstd) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
-      lz4) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
+      tar) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;
+      zstd) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
+      lz4) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
       esac
     else
-      echo "No such path: $data_path/$3"
+      echo "No such path: $5/$3"
     fi
     ;;
+  media)
+      if [ -d "$5" ]; then
+        case "$1" in
+        tar) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_redirect "$4/${5##*/}.tar" ;;
+        zstd) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/${5##*/}.tar.zst" ;;
+        lz4) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/${5##*/}.tar.lz4" ;;
+        esac
+      else
+        echo "No such path: $5"
+      fi
+      ;;
   esac
 }
 
@@ -100,7 +109,7 @@ install_apk() {
   tmp_dir="/data/local/tmp/data_backup"
   rm -rf "$tmp_dir"
   mkdir -p "$tmp_dir"
-  if [ -z "$(list_packages "$3" | grep "$2")" ]; then
+  if [ -z "$(find_package "$3" "$2")" ]; then
     find "$1" -maxdepth 1 -name "apk.*" -type f | while read -r i; do
       case "${i##*.}" in
       tar) pv_force "$i" | tar -xmpf - -C "$tmp_dir" ;;
@@ -134,7 +143,7 @@ set_owner_and_SELinux() {
     if [ -f /config/sdcardfs/$2/appid ]; then
       owner="$(cat "/config/sdcardfs/$2/appid")"
     else
-      owner="$(dumpsys package "$2" | awk '/userId=/{print $1}' | cut -f2 -d '=' | head -1)"
+      owner="$(dumpsys package "$2" | grep -w 'userId' | head -1)"
     fi
     owner="$(echo "$owner" | grep -E -o '[0-9]+')"
     if [ "$owner" != "" ]; then
@@ -151,22 +160,19 @@ decompress() {
   # $2: data_type
   # $3: input_path
   # $4: package_name
-  # $5: user_id
+  # $5: data_path
   am force-stop "$4"
   case "$2" in
-  user)
-    data_path="/data/user/$5"
+  media)
     case "$1" in
-    tar)
-      pv_force "$3" | tar --recursive-unlink -xmpf - -C "$data_path"
-      ;;
-    lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xmpf - -C "$data_path" ;;
+    tar) pv_force "$3" | tar --recursive-unlink -xpf - -C "$5" ;;
+    lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xpf - -C "$5" ;;
     esac
     ;;
-  data | obb | media)
+  *)
     case "$1" in
-    tar) pv_force "$3" | tar --recursive-unlink -xmPpf - ;;
-    lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xmPpf - ;;
+    tar) pv_force "$3" | tar --recursive-unlink -xmpf - -C "$5" ;;
+    lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xmpf - -C "$5" ;;
     esac
     ;;
   esac
@@ -181,22 +187,6 @@ write_to_file() {
   # $1: content
   # $2: path
   echo "$1" >"$2"
-}
-
-compress_media() {
-  # $1: compression_type
-  # $2: input_path
-  # $3: out_put
-  mkdir -p "$3"
-  if [ -d "$2" ]; then
-    case "$1" in
-    tar) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force >"$3/${2##*/}.tar" ;;
-    zstd) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$3/${2##*/}.tar.zst" ;;
-    lz4) tar --exclude="Backup_"* --exclude="${2##*/}/cache" -cPpf - "$2" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$3/${2##*/}.tar.lz4" ;;
-    esac
-  else
-    echo "No such path: $2"
-  fi
 }
 
 check_bashrc() {
@@ -217,13 +207,16 @@ test_archive() {
 }
 
 list_users() {
-  list=$(pm list users | grep "{" | grep "}" | cut -d '{' -f2 | cut -d '}' -f1)
-  for line in $list; do
-    echo "${line%%:*}"
-  done
+  ls -1 "/data/user"
 }
 
 list_packages() {
   # $1: user_id
   pm list packages --user "$1"
+}
+
+find_package() {
+  # $1: user_id
+  # $2: package_name
+  pm path --user "$1" "$2"
 }
