@@ -50,6 +50,17 @@ class Clickable @JvmOverloads constructor(
         binding.root.setOnClickListener(l)
     }
 
+    fun setIconButtonVisibility(isVisible: Boolean) {
+        if (isVisible)
+            binding.iconButton.visibility = View.VISIBLE
+        else
+            binding.iconButton.visibility = View.GONE
+    }
+
+    fun setOnIconButtonClickListener(listener: ((buttonView: View) -> Unit)) {
+        binding.iconButton.setOnClickListener(listener)
+    }
+
     init {
         context.theme.obtainStyledAttributes(
             attributeSet,

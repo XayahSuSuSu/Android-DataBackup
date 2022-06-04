@@ -53,6 +53,17 @@ class SelectableList @JvmOverloads constructor(
         onConfirmListener = listener
     }
 
+    fun setIconButtonVisibility(isVisible: Boolean) {
+        if (isVisible)
+            binding.iconButton.visibility = View.VISIBLE
+        else
+            binding.iconButton.visibility = View.GONE
+    }
+
+    fun setOnIconButtonClickListener(listener: ((buttonView: View) -> Unit)) {
+        binding.iconButton.setOnClickListener(listener)
+    }
+
     private var items: Array<String> = arrayOf()
 
     fun setItems(items: Array<String>) {

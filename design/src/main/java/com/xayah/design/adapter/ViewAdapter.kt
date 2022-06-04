@@ -1,5 +1,6 @@
 package com.xayah.design.adapter
 
+import android.view.View
 import android.widget.CompoundButton
 import androidx.databinding.BindingAdapter
 import com.xayah.design.preference.Clickable
@@ -48,6 +49,36 @@ class ViewAdapter {
         @JvmStatic
         fun setRound(view: Clickable, isRound: Boolean) {
             view.setRound(isRound)
+        }
+
+        @BindingAdapter("isIconButtonVisible")
+        @JvmStatic
+        fun setIconButtonVisibility(view: Clickable, isVisible: Boolean) {
+            view.setIconButtonVisibility(isVisible)
+        }
+
+        @BindingAdapter("onIconButtonClick")
+        @JvmStatic
+        fun setOnIconButtonClickListener(
+            v: Clickable,
+            listener: ((buttonView: View) -> Unit)
+        ) {
+            v.setOnIconButtonClickListener(listener)
+        }
+
+        @BindingAdapter("isIconButtonVisible")
+        @JvmStatic
+        fun setIconButtonVisibility(view: SelectableList, isVisible: Boolean) {
+            view.setIconButtonVisibility(isVisible)
+        }
+
+        @BindingAdapter("onIconButtonClick")
+        @JvmStatic
+        fun setOnIconButtonClickListener(
+            v: SelectableList,
+            listener: ((buttonView: View) -> Unit)
+        ) {
+            v.setOnIconButtonClickListener(listener)
         }
     }
 }
