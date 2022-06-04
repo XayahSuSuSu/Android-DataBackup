@@ -74,4 +74,6 @@
     <string name="summary_backup_itself">备份时自动提取本应用安装包到备份文件夹根目录</string>
     <string name="selected">已选择：</string>
     <string name="user">用户</string>
+    <string name="history_version">历史版本</string>
+    <string name="feature_foresight">版本前瞻</string>
 </resources>

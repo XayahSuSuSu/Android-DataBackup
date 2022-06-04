@@ -74,4 +74,6 @@
     <string name="summary_backup_itself">備份時自動提取本應用安裝包到備份文件夾根目錄</string>
     <string name="selected">已選擇：</string>
     <string name="user">用戶</string>
+    <string name="history_version">歷史版本</string>
+    <string name="feature_foresight">版本前瞻</string>
 </resources>

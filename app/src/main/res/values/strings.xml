@@ -77,4 +77,7 @@
     <string name="summary_backup_itself">Automatically extract the application installation package to the root directory of the backup folder after backup</string>
     <string name="selected">"Selected: "</string>
     <string name="user">User</string>
+    <string name="history_version">History version</string>
+    <string name="feature_foresight">Feature foresight</string>
+    <string name="github" translatable="false">GitHub</string>
 </resources>

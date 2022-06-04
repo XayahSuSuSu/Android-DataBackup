@@ -94,6 +94,20 @@
                 <com.xayah.design.ActionLabel
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="@{(v)->viewModel.toHistoryDialog(v)}"
+                    app:icon="@drawable/ic_round_releases"
+                    app:text="@string/history_version" />
+
+                <com.xayah.design.ActionLabel
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{(v)->viewModel.toFeatureDialog(v)}"
+                    app:icon="@drawable/ic_round_magic"
+                    app:text="@string/feature_foresight" />
+
+                <com.xayah.design.ActionLabel
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:onClick="@{(v)->viewModel.toAboutFragment(v)}"
                     app:text="@string/about" />
 
