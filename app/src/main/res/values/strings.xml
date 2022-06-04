@@ -80,4 +80,7 @@
     <string name="history_version">History version</string>
     <string name="feature_foresight">Feature foresight</string>
     <string name="github" translatable="false">GitHub</string>
+    <string name="compression_type_help">tar: Pack only\n\nzstd: Pack and compress, slower than lz4, higher compression than lz4\n\nlz4: Pack and compress, faster than zstd, lower compression than zstd</string>
+    <string name="user_help">Set the backup/restore user for dual/multi-user backup and restoration. \n\nAt present, only the MIUI dual-opening is tested and passed. After the restoration is completed, the dual-opening application may not be opened correctly, and it needs to be restarted to use it normally.</string>
+    <string name="beta_risk">[Beta &amp;&amp; Risk]</string>
 </resources>

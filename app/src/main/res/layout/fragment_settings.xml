@@ -30,6 +30,8 @@
                     app:text="@string/backup" />
 
                 <com.xayah.design.preference.SelectableList
+                    isIconButtonVisible="@{true}"
+                    onIconButtonClick="@{viewModel.userHelp}"
                     items="@{viewModel.userItems}"
                     onConfirm="@{viewModel.changeUser}"
                     android:layout_width="match_parent"
@@ -38,6 +40,8 @@
                     app:title="@string/user" />
 
                 <com.xayah.design.preference.SelectableList
+                    isIconButtonVisible="@{true}"
+                    onIconButtonClick="@{viewModel.compressionTypeHelp}"
                     items="@{viewModel.CompressionTypeItems}"
                     onConfirm="@{viewModel.changeCompressionType}"
                     android:layout_width="match_parent"

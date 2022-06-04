@@ -32,6 +32,14 @@ class SettingsViewModel() : ViewModel() {
         v.context.saveCompressionType(compressionTypeItems[choice])
         compressionTypeIndex = choice
     }
+    val compressionTypeHelp: ((v: View) -> Unit) = { v ->
+        MaterialAlertDialogBuilder(v.context)
+            .setTitle(v.context.getString(R.string.compression_type))
+            .setMessage(v.context.getString(R.string.compression_type_help))
+            .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
+            .setCancelable(true)
+            .show()
+    }
 
     var backupSavePath = App.globalContext.readBackupSavePath()
     val changeBackupSavePath: (v: EditableText, content: CharSequence?) -> Unit = { v, content ->
@@ -75,6 +83,14 @@ class SettingsViewModel() : ViewModel() {
     val changeUser: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
         v.context.saveUser(userItems[choice])
         userIndex = choice
+    }
+    val userHelp: ((v: View) -> Unit) = { v ->
+        MaterialAlertDialogBuilder(v.context)
+            .setTitle(v.context.getString(R.string.user) + " " + v.context.getString(R.string.beta_risk))
+            .setMessage(v.context.getString(R.string.user_help))
+            .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
+            .setCancelable(true)
+            .show()
     }
 
     fun toAboutFragment(v: View) {
