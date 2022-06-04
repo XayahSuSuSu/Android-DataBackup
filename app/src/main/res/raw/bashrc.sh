@@ -31,13 +31,18 @@ pv_force() {
   fi
 }
 
+pv_redirect() {
+  # $1: path
+  pv -f -t -r -b > "$1"
+}
+
 compress_apk() {
   # $1: compression_type
   # $2: out_put
   mkdir -p "$2"
   case "$1" in
-  tar) tar -cf "${2}/apk.tar" ./*.apk | pv_force ;;
-  zstd) tar -cf - ./*apk | zstd -r -T0 --ultra -1 -q --priority=rt | pv_force >"${2}/apk.tar.zst" ;;
+  tar) tar -cf - ./*.apk | pv_redirect "${2}/apk.tar" ;;
+  zstd) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt | pv_force >"${2}/apk.tar.zst" ;;
   lz4) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 | pv_force >"${2}/apk.tar.lz4" ;;
   *) return 1 ;;
   esac
@@ -56,9 +61,9 @@ compress() {
     data_path="/data/user/$5"
     if [ -d "$data_path/$3" ]; then
       case "$1" in
-      tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" -cpf - -C "${data_path}" "$3" | pv_force >"$4/$2.tar" ;;
-      zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
-      lz4) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
+      tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "${data_path}" "$3" | pv_redirect "$4/$2.tar" ;;
+      zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
+      lz4) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "${data_path}" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
       esac
     else
       echo "No such path: $data_path"
@@ -68,7 +73,7 @@ compress() {
     data_path="/data/media/$5/Android/$2"
     if [ -d "$data_path/$3" ]; then
       case "$1" in
-      tar) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force >"$4/$2.tar" ;;
+      tar) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_redirect "$4/$2.tar" ;;
       zstd) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
       lz4) tar --exclude="Backup_"* --exclude="$3/cache" -cPpf - "$data_path/$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
       esac
@@ -102,10 +107,9 @@ install_apk() {
       zst | lz4) pv_force "$i" | tar -I zstd -xmpf - -C "$tmp_dir" ;;
       esac
     done
-    ls "$tmp_dir"
     apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
     case "$apk_num" in
-    1) pm install -i com.android.vending --user "$3" -r ${tmp_dir}/*.apk ;;
+    1) pm install -i com.android.vending --user "$3" -r -t ${tmp_dir}/*.apk ;;
     *)
       session=$(pm install-create -i com.android.vending --user "$3" | grep -E -o '[0-9]+')
       find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | while read -r i; do
