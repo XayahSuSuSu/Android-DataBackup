@@ -16,3 +16,9 @@ data class Issue(
     val title: String,
     val body: String
 )
+
+data class Info(
+    val appName: String,
+    val packageName: String,
+    val version: String
+)

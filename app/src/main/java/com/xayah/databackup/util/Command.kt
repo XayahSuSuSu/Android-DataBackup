@@ -4,14 +4,17 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import androidx.appcompat.content.res.AppCompatResources
+import com.google.gson.Gson
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppEntity
+import com.xayah.databackup.data.Info
 import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+
 
 class Command {
     companion object {
@@ -76,18 +79,19 @@ class Command {
             val appList: MutableList<AppEntity> = mutableListOf()
             val packages = Shell.cmd("ls $path").exec().out
             for (i in packages) {
-                val info = Shell.cmd("cat ${path}/${i}/info").exec().out
+                val exec = Shell.cmd("cat ${path}/${i}/info").exec()
+                if (!exec.isSuccess)
+                    continue
                 try {
-                    val appName = info[0].split("=")
-                    val packageName = info[1].split("=")
-                    val appEntity = AppEntity(0, appName[1], packageName[1]).apply {
+                    val info = Gson().fromJson(exec.out.joinToString(), Info::class.java)
+                    val appEntity = AppEntity(0, info.appName, info.packageName).apply {
                         icon = AppCompatResources.getDrawable(
                             context, R.drawable.ic_round_android
                         )
                         backupPath = "${path}/${i}"
                     }
                     appList.add(appEntity)
-                } catch (e: IndexOutOfBoundsException) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
@@ -304,16 +308,18 @@ class Command {
         }
 
         fun generateAppInfo(appName: String, packageName: String, outPut: String): Boolean {
-            var content = "\""
-            content += "appName=${appName}" + "\\n"
-            content += "packageName=${packageName}" + "\\n"
-            content += "version=${getAppVersion(packageName)}" + "\\n"
-            content += "\""
-            Bashrc.writeToFile(content, "${outPut}/info").apply {
-                if (!this.first) {
-                    App.log.add(App.globalContext.getString(R.string.generate_app_info_failed))
-                    return false
+            try {
+                val info = Info(appName, packageName, getAppVersion(packageName))
+                val json = Gson().toJson(info)
+                Bashrc.writeToFile(json, "${outPut}/info").apply {
+                    if (!this.first) {
+                        App.log.add(App.globalContext.getString(R.string.generate_app_info_failed))
+                        return false
+                    }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return false
             }
             return true
         }

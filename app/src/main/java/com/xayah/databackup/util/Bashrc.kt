@@ -114,7 +114,7 @@ class Bashrc {
         }
 
         fun writeToFile(content: String, path: String): Pair<Boolean, String> {
-            val exec = Shell.cmd("write_to_file $content $path").exec()
+            val exec = Shell.cmd("write_to_file \'$content\' $path").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 

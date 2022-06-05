@@ -111,9 +111,13 @@ class SettingsViewModel() : ViewModel() {
                         val nameList = mutableListOf<String>()
                         val mBodyList = mutableListOf<Release>()
                         for (i in jsonArray) {
-                            val item = Gson().fromJson(i, Release::class.java)
-                            mBodyList.add(item)
-                            nameList.add(item.name)
+                            try {
+                                val item = Gson().fromJson(i, Release::class.java)
+                                mBodyList.add(item)
+                                nameList.add(item.name)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
                         withContext(Dispatchers.Main) {
                             MaterialAlertDialogBuilder(v.context)
@@ -154,9 +158,13 @@ class SettingsViewModel() : ViewModel() {
                         val titleList = mutableListOf<String>()
                         val mBodyList = mutableListOf<Issue>()
                         for (i in jsonArray) {
-                            val item = Gson().fromJson(i, Issue::class.java)
-                            mBodyList.add(item)
-                            titleList.add(item.title)
+                            try {
+                                val item = Gson().fromJson(i, Issue::class.java)
+                                mBodyList.add(item)
+                                titleList.add(item.title)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
                         withContext(Dispatchers.Main) {
                             MaterialAlertDialogBuilder(v.context)
