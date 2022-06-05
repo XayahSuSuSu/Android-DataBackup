@@ -17,8 +17,12 @@ data class Issue(
     val body: String
 )
 
-data class Info(
+data class AppInfo(
     val appName: String,
     val packageName: String,
+    val version: String
+)
+
+data class BackupInfo(
     val version: String
 )

@@ -21,6 +21,7 @@ import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
+import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
 import com.xayah.databackup.util.*
@@ -332,6 +333,19 @@ class BackupViewModel : ViewModel() {
 
                     // 设置用户
                     val userId = context.readUser()
+
+                    // 生成备份信息
+                    val backupInfo = BackupInfo(context.getString(R.string.backup_version))
+                    Command.object2JSONFile(
+                        backupInfo,
+                        "${context.readBackupSavePath()}/$userId/info"
+                    ).apply {
+                        if (!this) {
+                            App.log.add(context.getString(R.string.generate_backup_info_failed))
+                            isProcessing = false
+                            return@setPositiveButton
+                        }
+                    }
 
                     CoroutineScope(Dispatchers.IO).launch {
                         for (i in appList) {

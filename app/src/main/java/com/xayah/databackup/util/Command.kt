@@ -9,7 +9,7 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppEntity
-import com.xayah.databackup.data.Info
+import com.xayah.databackup.data.AppInfo
 import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.FileOutputStream
@@ -83,8 +83,8 @@ class Command {
                 if (!exec.isSuccess)
                     continue
                 try {
-                    val info = Gson().fromJson(exec.out.joinToString(), Info::class.java)
-                    val appEntity = AppEntity(0, info.appName, info.packageName).apply {
+                    val appInfo = Gson().fromJson(exec.out.joinToString(), AppInfo::class.java)
+                    val appEntity = AppEntity(0, appInfo.appName, appInfo.packageName).apply {
                         icon = AppCompatResources.getDrawable(
                             context, R.drawable.ic_round_android
                         )
@@ -308,20 +308,8 @@ class Command {
         }
 
         fun generateAppInfo(appName: String, packageName: String, outPut: String): Boolean {
-            try {
-                val info = Info(appName, packageName, getAppVersion(packageName))
-                val json = Gson().toJson(info)
-                Bashrc.writeToFile(json, "${outPut}/info").apply {
-                    if (!this.first) {
-                        App.log.add(App.globalContext.getString(R.string.generate_app_info_failed))
-                        return false
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return false
-            }
-            return true
+            val appInfo = AppInfo(appName, packageName, getAppVersion(packageName))
+            return object2JSONFile(appInfo, "${outPut}/info")
         }
 
         fun decompressMedia(inputPath: String, name: String, dataPath: String): Boolean {
@@ -393,6 +381,21 @@ class Command {
                     )
                     return false
                 }
+            }
+            return true
+        }
+
+        fun object2JSONFile(src: Any, outPut: String): Boolean {
+            try {
+                val json = Gson().toJson(src)
+                Bashrc.writeToFile(json, outPut).apply {
+                    if (!this.first) {
+                        return false
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return false
             }
             return true
         }
