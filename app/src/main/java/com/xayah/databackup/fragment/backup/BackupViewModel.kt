@@ -334,11 +334,15 @@ class BackupViewModel : ViewModel() {
                         index++
                     }
 
+                    // 建立备份目录
+                    val outPut = "${context.readBackupSavePath()}/$userId"
+                    Command.mkdir(outPut)
+
                     // 生成备份信息
                     val backupInfo = BackupInfo(context.getString(R.string.backup_version))
                     Command.object2JSONFile(
                         backupInfo,
-                        "${context.readBackupSavePath()}/$userId/info"
+                        "${outPut}/info"
                     ).apply {
                         if (!this) {
                             App.log.add(context.getString(R.string.generate_backup_info_failed))
@@ -359,12 +363,17 @@ class BackupViewModel : ViewModel() {
                             // 设置任务参数
                             val compressionType = context.readCompressionType()
                             val packageName = i.packageName
-                            val outPut = "${context.readBackupSavePath()}/$userId/${packageName}"
+                            val outPutData = "${outPut}/${packageName}"
 
                             if (i.backupApp) {
                                 // 选中备份应用
                                 App.log.add(context.getString(R.string.backup_apk_processing))
-                                Command.compressAPK(compressionType, packageName, outPut, userId)
+                                Command.compressAPK(
+                                    compressionType,
+                                    packageName,
+                                    outPutData,
+                                    userId
+                                )
                                     .apply {
                                         if (!this)
                                             state = false
@@ -379,7 +388,7 @@ class BackupViewModel : ViewModel() {
                                     compressionType,
                                     "user",
                                     packageName,
-                                    outPut,
+                                    outPutData,
                                     "/data/user/$userId"
                                 )
                                     .apply {
@@ -392,7 +401,7 @@ class BackupViewModel : ViewModel() {
                                     compressionType,
                                     "data",
                                     packageName,
-                                    outPut,
+                                    outPutData,
                                     "/data/media/$userId/Android/data"
                                 )
                                     .apply {
@@ -405,7 +414,7 @@ class BackupViewModel : ViewModel() {
                                     compressionType,
                                     "obb",
                                     packageName,
-                                    outPut,
+                                    outPutData,
                                     "/data/media/$userId/Android/obb"
                                 )
                                     .apply {
@@ -414,12 +423,12 @@ class BackupViewModel : ViewModel() {
                                     }
                             }
                             // 生成应用信息
-                            Command.generateAppInfo(i.appName, i.packageName, outPut).apply {
+                            Command.generateAppInfo(i.appName, i.packageName, outPutData).apply {
                                 if (!this)
                                     state = false
                             }
                             // 检验
-                            Command.testArchiveForEach(outPut).apply {
+                            Command.testArchiveForEach(outPutData).apply {
                                 if (!this)
                                     state = false
                             }
@@ -439,7 +448,7 @@ class BackupViewModel : ViewModel() {
                             }
 
                             // 备份自定义目录
-                            val outPut = "${context.readBackupSavePath()}/$userId/media"
+                            val outPutMedia = "${outPut}/media"
                             for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
                                 // 推送数据
                                 currentAppName.postValue(i)
@@ -451,14 +460,14 @@ class BackupViewModel : ViewModel() {
                                     App.globalContext.readCompressionType(),
                                     "media",
                                     "media",
-                                    outPut,
+                                    outPutMedia,
                                     i
                                 ).apply {
                                     if (!this)
                                         state = false
                                 }
                                 // 检验
-                                Command.testArchiveForEach(outPut).apply {
+                                Command.testArchiveForEach(outPutMedia).apply {
                                     if (!this)
                                         state = false
                                 }

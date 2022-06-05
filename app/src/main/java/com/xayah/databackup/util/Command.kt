@@ -22,7 +22,7 @@ class Command {
             return Shell.cmd("ls -i $path").exec().isSuccess
         }
 
-        private fun mkdir(path: String): Boolean {
+        fun mkdir(path: String): Boolean {
             return Shell.cmd("mkdir -p $path").exec().isSuccess
         }
 
