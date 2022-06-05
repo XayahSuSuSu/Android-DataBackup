@@ -85,6 +85,6 @@
     <string name="beta_risk">[Beta &amp;&amp; Risk]</string>
     <string name="backup_version" translatable="false">1</string>
     <string name="generate_backup_info_failed">Generate backup info failed!</string>
-    <string name="backup_not_support">The current version is not compatible with the selected backup, please use the historical version to restore!</string>
+    <string name="backup_not_support">No backup detected or the current version is not compatible with the selected backup! If the backup already exists, please use the historical version to restore.</string>
     <string name="generate_media_info_failed">Generate media info failed!</string>
 </resources>

@@ -80,6 +80,6 @@
     <string name="user_help">設置備份/恢復用戶，用於雙開/多用戶備份恢復。\n\n目前僅測試MIUI雙開並成功，恢復完成後可能無法打開雙開應用，需要重啟才能正常使用。</string>
     <string name="beta_risk">[Beta &amp;&amp; 高風險]</string>
     <string name="generate_backup_info_failed">生成備份信息失敗！</string>
-    <string name="backup_not_support">當前版本不兼容所選備份，請使用歷史版本恢復！</string>
+    <string name="backup_not_support">未檢測到備份或當前版本不兼容所選備份！若備份已存在，請使用歷史版本恢復。</string>
     <string name="generate_media_info_failed">生成自定義目錄信息失敗！</string>
 </resources>
