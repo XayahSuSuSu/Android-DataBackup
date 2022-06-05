@@ -219,5 +219,9 @@ list_packages() {
 find_package() {
   # $1: user_id
   # $2: package_name
-  pm path --user "$1" "$2"
+	if [ -z "$1" ]; then
+		pm path "$2"
+	else
+		pm path --user "$1" "$2"
+	fi
 }

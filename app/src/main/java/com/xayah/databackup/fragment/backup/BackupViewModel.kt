@@ -325,7 +325,7 @@ class BackupViewModel : ViewModel() {
                         App.log.add("${context.getString(R.string.backup_processing)}: $packageName")
                         var state = true // 该任务是否成功完成
                         App.log.add(context.getString(R.string.backup_apk_processing))
-                        Command.backupItself(packageName, outPut, userId)
+                        Command.backupItself(packageName, outPut, "")
                             .apply {
                                 if (!this)
                                     state = false
