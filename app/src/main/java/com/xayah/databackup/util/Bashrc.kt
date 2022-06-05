@@ -15,9 +15,9 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun getAPKPath(packageName: String): Pair<Boolean, String> {
+        fun getAPKPath(packageName: String, userId: String): Pair<Boolean, String> {
             App.log.add(App.globalContext.getString(R.string.get_apk_path))
-            val exec = Shell.cmd("get_apk_path $packageName").exec()
+            val exec = Shell.cmd("get_apk_path $packageName $userId").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 

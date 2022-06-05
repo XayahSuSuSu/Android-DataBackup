@@ -144,9 +144,10 @@ class Command {
         fun compressAPK(
             compressionType: String,
             packageName: String,
-            outPut: String
+            outPut: String,
+            userId: String
         ): Boolean {
-            val apkPathPair = Bashrc.getAPKPath(packageName).apply {
+            val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
                     App.log.add(
                         "${packageName}: ${
@@ -359,10 +360,11 @@ class Command {
 
         fun backupItself(
             packageName: String,
-            outPut: String
+            outPut: String,
+            userId: String
         ): Boolean {
             mkdir(outPut)
-            val apkPathPair = Bashrc.getAPKPath(packageName).apply {
+            val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
                     App.log.add(
                         "${packageName}: ${

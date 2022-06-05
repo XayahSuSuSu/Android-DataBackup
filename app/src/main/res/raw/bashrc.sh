@@ -7,7 +7,8 @@ get_storage_space() {
 
 get_apk_path() {
   # $1: packageName
-  apk_path="$(pm path "$1" | cut -f2 -d ':')"
+  # $2: user_id
+  apk_path="$(find_package "$2" "$1" | cut -f2 -d ':')"
   apk_path="$(echo "$apk_path" | head -1)"
   apk_path="${apk_path%/*}"
   if [ -z "$apk_path" ]; then

@@ -298,6 +298,9 @@ class BackupViewModel : ViewModel() {
                         }
                     }
 
+                    // 设置用户
+                    val userId = context.readUser()
+
                     // 获取任务总个数
                     total = appList.size
                     if (App.globalContext.readIsCustomDirectoryPath()) {
@@ -318,7 +321,7 @@ class BackupViewModel : ViewModel() {
                         App.log.add("${context.getString(R.string.backup_processing)}: $packageName")
                         var state = true // 该任务是否成功完成
                         App.log.add(context.getString(R.string.backup_apk_processing))
-                        Command.backupItself(packageName, outPut)
+                        Command.backupItself(packageName, outPut, userId)
                             .apply {
                                 if (!this)
                                     state = false
@@ -330,9 +333,6 @@ class BackupViewModel : ViewModel() {
                             failed += 1
                         index++
                     }
-
-                    // 设置用户
-                    val userId = context.readUser()
 
                     // 生成备份信息
                     val backupInfo = BackupInfo(context.getString(R.string.backup_version))
@@ -364,7 +364,7 @@ class BackupViewModel : ViewModel() {
                             if (i.backupApp) {
                                 // 选中备份应用
                                 App.log.add(context.getString(R.string.backup_apk_processing))
-                                Command.compressAPK(compressionType, packageName, outPut)
+                                Command.compressAPK(compressionType, packageName, outPut, userId)
                                     .apply {
                                         if (!this)
                                             state = false
