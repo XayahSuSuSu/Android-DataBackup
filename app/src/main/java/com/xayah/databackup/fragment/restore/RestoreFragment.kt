@@ -45,6 +45,7 @@ class RestoreFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.backupPath = null
         viewModel.binding = null
     }
 }
