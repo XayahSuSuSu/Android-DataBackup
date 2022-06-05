@@ -28,10 +28,7 @@ import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.readBackupSavePath
-import com.xayah.databackup.util.readIsCustomDirectoryPath
-import com.xayah.databackup.util.readUser
+import com.xayah.databackup.util.*
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.design.view.setWithNormalMessage
@@ -115,7 +112,7 @@ class RestoreViewModel : ViewModel() {
             mAdapter = MultiTypeAdapter().apply {
                 register(AppListAdapter(null, context))
                 CoroutineScope(Dispatchers.IO).launch {
-                    val userId = context.readUser()
+                    val userId = context.readBackupUser()
                     // 按照字母表排序
                     if (backupPath == null) backupPath = context.readBackupSavePath() + "/$userId"
                     backupPath?.let {
@@ -344,7 +341,7 @@ class RestoreViewModel : ViewModel() {
                     total = appList.size
 
                     // 设置用户
-                    val userId = context.readUser()
+                    val userId = context.readRestoreUser()
 
                     CoroutineScope(Dispatchers.IO).launch {
                         for (i in appList) {

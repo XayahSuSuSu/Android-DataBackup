@@ -42,7 +42,7 @@ class Command {
             val appList: MutableList<AppEntity> = mutableListOf()
             room?.let {
                 val packageManager = context.packageManager
-                val userId = context.readUser()
+                val userId = context.readBackupUser()
                 val listPackages = Bashrc.listPackages(userId)
                 val packages =
                     if (listPackages.first) listPackages.second else mutableListOf()

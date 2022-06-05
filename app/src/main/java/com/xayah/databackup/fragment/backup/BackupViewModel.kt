@@ -303,7 +303,7 @@ class BackupViewModel : ViewModel() {
                     }
 
                     // 设置用户
-                    val userId = context.readUser()
+                    val userId = context.readBackupUser()
 
                     // 获取任务总个数
                     total = appList.size

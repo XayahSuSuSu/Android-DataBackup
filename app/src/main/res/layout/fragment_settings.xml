@@ -31,13 +31,23 @@
 
                 <com.xayah.design.preference.SelectableList
                     isIconButtonVisible="@{true}"
-                    onIconButtonClick="@{viewModel.userHelp}"
-                    items="@{viewModel.userItems}"
-                    onConfirm="@{viewModel.changeUser}"
+                    onIconButtonClick="@{viewModel.backupUserHelp}"
+                    items="@{viewModel.backupUserItems}"
+                    onConfirm="@{viewModel.changeBackupUser}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:choice="@{viewModel.userIndex}"
-                    app:title="@string/user" />
+                    app:choice="@{viewModel.backupUserIndex}"
+                    app:title="@string/backup_user" />
+
+                <com.xayah.design.preference.SelectableList
+                    isIconButtonVisible="@{true}"
+                    onIconButtonClick="@{viewModel.restoreUserHelp}"
+                    items="@{viewModel.restoreUserItems}"
+                    onConfirm="@{viewModel.changeRestoreUser}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:choice="@{viewModel.restoreUserIndex}"
+                    app:title="@string/restore_user" />
 
                 <com.xayah.design.preference.SelectableList
                     isIconButtonVisible="@{true}"

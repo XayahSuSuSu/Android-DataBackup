@@ -76,15 +76,17 @@
     <string name="backup_itself">Backup itself</string>
     <string name="summary_backup_itself">Automatically extract the application installation package to the root directory of the backup folder after backup</string>
     <string name="selected">"Selected: "</string>
-    <string name="user">User</string>
+    <string name="backup_user">Backup user</string>
     <string name="history_version">History version</string>
     <string name="feature_foresight">Feature foresight</string>
     <string name="github" translatable="false">GitHub</string>
     <string name="compression_type_help">tar: Pack only\n\nzstd: Pack and compress, slower than lz4, higher compression than lz4\n\nlz4: Pack and compress, faster than zstd, lower compression than zstd</string>
-    <string name="user_help">Set the backup/restore user for dual/multi-user backup and restoration. \n\nAt present, only the MIUI dual-opening is tested and passed. After the restoration is completed, the dual-opening application may not be opened correctly, and it needs to be restarted to use it normally.</string>
-    <string name="beta_risk">[Beta &amp;&amp; Risk]</string>
+    <string name="backup_user_help">Set backup user for dual/multi-user backup, the backup user folder automatically selected by the backup/restore page. \n\nCurrently passed the test:\nMIUI dual-apps, UserManager, Island.</string>
+    <string name="restore_user_help">Set the recovery user for dual/multi-user recovery, the target user for data recovery. \n\nDual-apps may break after the restoration, and a restart is required to make them work.</string>
+    <string name="cautious_action">[Be cautious]</string>
     <string name="backup_version" translatable="false">1</string>
     <string name="generate_backup_info_failed">Generate backup info failed!</string>
     <string name="backup_not_support">No backup detected or the current version is not compatible with the selected backup! If the backup already exists, please use the historical version to restore.</string>
     <string name="generate_media_info_failed">Generate media info failed!</string>
+    <string name="restore_user">Restore user</string>
 </resources>

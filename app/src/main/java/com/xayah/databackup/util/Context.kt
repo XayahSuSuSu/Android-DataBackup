@@ -79,11 +79,20 @@ fun Context.readIsBackupItself(): Boolean {
     return readPreferencesBoolean("is_backup_itself", true)
 }
 
-fun Context.saveUser(type: CharSequence?) {
-    savePreferences("user", type.toString().trim())
+fun Context.saveBackupUser(type: CharSequence?) {
+    savePreferences("backup_user", type.toString().trim())
 }
 
-fun Context.readUser(): String {
-    return readPreferencesString("user")
+fun Context.readBackupUser(): String {
+    return readPreferencesString("backup_user")
+        ?: if (Bashrc.listUsers().first && Bashrc.listUsers().second.isNotEmpty()) Bashrc.listUsers().second[0] else "0"
+}
+
+fun Context.saveRestoreUser(type: CharSequence?) {
+    savePreferences("restore_user", type.toString().trim())
+}
+
+fun Context.readRestoreUser(): String {
+    return readPreferencesString("restore_user")
         ?: if (Bashrc.listUsers().first && Bashrc.listUsers().second.isNotEmpty()) Bashrc.listUsers().second[0] else "0"
 }

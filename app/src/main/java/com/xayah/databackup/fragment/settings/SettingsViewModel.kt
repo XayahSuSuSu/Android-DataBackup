@@ -77,17 +77,33 @@ class SettingsViewModel() : ViewModel() {
             isBackupItself.set(isChecked)
         }
 
-    val userItems: Array<String> =
+    val backupUserItems: Array<String> =
         if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf("0")
-    var userIndex = userItems.indexOf(App.globalContext.readUser())
-    val changeUser: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
-        v.context.saveUser(userItems[choice])
-        userIndex = choice
+    var backupUserIndex = backupUserItems.indexOf(App.globalContext.readBackupUser())
+    val changeBackupUser: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
+        v.context.saveBackupUser(backupUserItems[choice])
+        backupUserIndex = choice
     }
-    val userHelp: ((v: View) -> Unit) = { v ->
+    val backupUserHelp: ((v: View) -> Unit) = { v ->
         MaterialAlertDialogBuilder(v.context)
-            .setTitle(v.context.getString(R.string.user) + " " + v.context.getString(R.string.beta_risk))
-            .setMessage(v.context.getString(R.string.user_help))
+            .setTitle(v.context.getString(R.string.backup_user) + " " + v.context.getString(R.string.cautious_action))
+            .setMessage(v.context.getString(R.string.backup_user_help))
+            .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
+            .setCancelable(true)
+            .show()
+    }
+
+    val restoreUserItems: Array<String> =
+        if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf("0")
+    var restoreUserIndex = restoreUserItems.indexOf(App.globalContext.readRestoreUser())
+    val changeRestoreUser: ((v: SelectableList, choice: Int) -> Unit) = { v, choice ->
+        v.context.saveRestoreUser(restoreUserItems[choice])
+        restoreUserIndex = choice
+    }
+    val restoreUserHelp: ((v: View) -> Unit) = { v ->
+        MaterialAlertDialogBuilder(v.context)
+            .setTitle(v.context.getString(R.string.restore_user) + " " + v.context.getString(R.string.cautious_action))
+            .setMessage(v.context.getString(R.string.restore_user_help))
             .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
             .setCancelable(true)
             .show()
