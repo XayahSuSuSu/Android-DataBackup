@@ -16,12 +16,16 @@ import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonParser
 import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.data.BackupInfo
+import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
 import com.xayah.databackup.util.*
@@ -449,11 +453,20 @@ class BackupViewModel : ViewModel() {
 
                             // 备份自定义目录
                             val outPutMedia = "${outPut}/media"
+
+                            // 目录数组
+                            val jsonArray = JsonArray()
+
                             for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
                                 // 推送数据
                                 currentAppName.postValue(i)
                                 App.log.add("----------------------------")
                                 var state = true // 该任务是否成功完成
+
+                                // 目录信息
+                                val name = i.split("/").last()
+                                val mediaInfo = MediaInfo(name, i.replace("/${name}", ""))
+                                jsonArray.add(JsonParser.parseString(Gson().toJson(mediaInfo)))
 
                                 // 备份目录
                                 Command.compress(
@@ -476,6 +489,18 @@ class BackupViewModel : ViewModel() {
                                 else
                                     failed += 1
                                 index++
+                            }
+
+                            // 生成目录信息
+                            Command.object2JSONFile(
+                                jsonArray,
+                                "${outPutMedia}/info"
+                            ).apply {
+                                if (!this) {
+                                    App.log.add(context.getString(R.string.generate_media_info_failed))
+                                    isProcessing = false
+                                    return@launch
+                                }
                             }
                         }
                         withContext(Dispatchers.Main) {

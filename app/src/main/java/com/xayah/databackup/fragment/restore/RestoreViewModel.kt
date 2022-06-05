@@ -17,6 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
@@ -24,6 +25,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.data.BackupInfo
+import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
 import com.xayah.databackup.util.Command
@@ -118,8 +120,13 @@ class RestoreViewModel : ViewModel() {
                     if (backupPath == null) backupPath = context.readBackupSavePath() + "/$userId"
                     backupPath?.let {
                         val exec = Shell.cmd("cat ${backupPath}/info").exec()
-                        val backupInfo =
-                            Gson().fromJson(exec.out.joinToString(), BackupInfo::class.java)
+                        var backupInfo = BackupInfo("")
+                        try {
+                            backupInfo =
+                                Gson().fromJson(exec.out.joinToString(), BackupInfo::class.java)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                         if ((backupInfo.version != context.getString(R.string.backup_version)) || (!exec.isSuccess)) {
                             withContext(Dispatchers.Main) {
                                 MaterialAlertDialogBuilder(context).apply {
@@ -142,6 +149,8 @@ class RestoreViewModel : ViewModel() {
                             val ls = Shell.cmd("ls ${backupPath}/media").exec()
                             if (ls.isSuccess) {
                                 for (i in ls.out) {
+                                    if (i == "info")
+                                        continue
                                     val packageName = context.getString(R.string.custom_dir)
                                     val appEntity = AppEntity(0, i, packageName).apply {
                                         icon = AppCompatResources.getDrawable(
@@ -384,21 +393,38 @@ class RestoreViewModel : ViewModel() {
                             // 恢复自定义目录
                             if (App.globalContext.readIsCustomDirectoryPath()) {
                                 val mediaList = Shell.cmd("ls ${backupPath}/media").exec().out
+                                val info = Shell.cmd("cat ${backupPath}/media/info")
+                                    .exec().out.joinToString()
+                                val jsonArray = JsonParser.parseString(info).asJsonArray
                                 for (i in mediaList) {
+                                    if (i == "info")
+                                        continue
                                     // 推送数据
                                     currentAppName.postValue(i)
                                     App.log.add("----------------------------")
 
+                                    // 获取恢复路径
+                                    var path = ""
+                                    for (j in jsonArray) {
+                                        val item = Gson().fromJson(j, MediaInfo::class.java)
+                                        if (item.name == i.split(".").first())
+                                            path = item.path
+                                    }
+
                                     // 恢复目录
-                                    Command.decompressMedia(
-                                        "${backupPath}/media",
-                                        i,
-                                        "/storage/emulated/0"
-                                    ).apply {
-                                        if (this)
-                                            success += 1
-                                        else
-                                            failed += 1
+                                    if (path != "") {
+                                        Command.decompressMedia(
+                                            "${backupPath}/media",
+                                            i,
+                                            path
+                                        ).apply {
+                                            if (this)
+                                                success += 1
+                                            else
+                                                failed += 1
+                                        }
+                                    } else {
+                                        failed += 1
                                     }
                                 }
                             }

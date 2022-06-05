@@ -81,4 +81,5 @@
     <string name="beta_risk">[Beta &amp;&amp; 高風險]</string>
     <string name="generate_backup_info_failed">生成備份信息失敗！</string>
     <string name="backup_not_support">當前版本不兼容所選備份，請使用歷史版本恢復！</string>
+    <string name="generate_media_info_failed">生成自定義目錄信息失敗！</string>
 </resources>

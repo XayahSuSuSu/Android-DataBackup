@@ -26,3 +26,8 @@ data class AppInfo(
 data class BackupInfo(
     val version: String
 )
+
+data class MediaInfo(
+    val name: String,
+    val path: String
+)
