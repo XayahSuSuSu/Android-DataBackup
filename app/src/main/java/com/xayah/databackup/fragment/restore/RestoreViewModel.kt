@@ -16,12 +16,14 @@ import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.gson.Gson
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
+import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
 import com.xayah.databackup.util.Command
@@ -30,6 +32,7 @@ import com.xayah.databackup.util.readIsCustomDirectoryPath
 import com.xayah.databackup.util.readUser
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
+import com.xayah.design.view.setWithNormalMessage
 import com.xayah.design.view.setWithResult
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.*
@@ -114,6 +117,20 @@ class RestoreViewModel : ViewModel() {
                     // 按照字母表排序
                     if (backupPath == null) backupPath = context.readBackupSavePath() + "/$userId"
                     backupPath?.let {
+                        val exec = Shell.cmd("cat ${backupPath}/info").exec()
+                        val backupInfo =
+                            Gson().fromJson(exec.out.joinToString(), BackupInfo::class.java)
+                        if ((backupInfo.version != context.getString(R.string.backup_version)) || (!exec.isSuccess)) {
+                            withContext(Dispatchers.Main) {
+                                MaterialAlertDialogBuilder(context).apply {
+                                    setWithNormalMessage(
+                                        context.getString(R.string.tips),
+                                        context.getString(R.string.backup_not_support),
+                                        false
+                                    )
+                                }
+                            }
+                        }
                         val mAppList = Command.getAppList(context, it).apply {
                             sortWith { appEntity1, appEntity2 ->
                                 val collator = Collator.getInstance(Locale.CHINA)
