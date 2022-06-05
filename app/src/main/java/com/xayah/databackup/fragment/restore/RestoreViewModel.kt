@@ -24,7 +24,10 @@ import com.xayah.databackup.adapter.AppListAdapter
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.readBackupSavePath
+import com.xayah.databackup.util.readIsCustomDirectoryPath
+import com.xayah.databackup.util.readUser
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 import com.xayah.design.view.setWithResult
@@ -107,11 +110,11 @@ class RestoreViewModel : ViewModel() {
             mAdapter = MultiTypeAdapter().apply {
                 register(AppListAdapter(null, context))
                 CoroutineScope(Dispatchers.IO).launch {
+                    val userId = context.readUser()
                     // 按照字母表排序
-                    if (backupPath == null) backupPath = context.readBackupSavePath()
+                    if (backupPath == null) backupPath = context.readBackupSavePath() + "/$userId"
                     backupPath?.let {
-                        val userId = context.readUser()
-                        val mAppList = Command.getAppList(context, "$it/$userId").apply {
+                        val mAppList = Command.getAppList(context, it).apply {
                             sortWith { appEntity1, appEntity2 ->
                                 val collator = Collator.getInstance(Locale.CHINA)
                                 collator.getCollationKey((appEntity1 as AppEntity).appName)
@@ -370,7 +373,11 @@ class RestoreViewModel : ViewModel() {
                                     App.log.add("----------------------------")
 
                                     // 恢复目录
-                                    Command.decompressMedia("${backupPath}/media", i).apply {
+                                    Command.decompressMedia(
+                                        "${backupPath}/media",
+                                        i,
+                                        "/storage/emulated/0"
+                                    ).apply {
                                         if (this)
                                             success += 1
                                         else

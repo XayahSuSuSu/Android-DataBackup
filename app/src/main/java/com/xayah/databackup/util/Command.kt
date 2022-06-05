@@ -63,7 +63,7 @@ class Command {
                             appEntity.icon = appIcon
                             appList.add(appEntity)
                         }
-                    } catch (e: IllegalStateException) {
+                    } catch (e: Exception) {
                         e.printStackTrace()
                         break
                     }
@@ -126,9 +126,9 @@ class Command {
             dataType: String,
             packageName: String,
             outPut: String,
-            userId: String
+            dataPath: String
         ): Boolean {
-            Bashrc.compress(compressionType, dataType, packageName, outPut, userId).apply {
+            Bashrc.compress(compressionType, dataType, packageName, outPut, dataPath).apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.compress_failed))
                     return false
@@ -182,9 +182,9 @@ class Command {
             dataType: String,
             inputPath: String,
             packageName: String,
-            userId: String
+            dataPath: String
         ): Boolean {
-            Bashrc.decompress(compressionType, dataType, inputPath, packageName, userId).apply {
+            Bashrc.decompress(compressionType, dataType, inputPath, packageName, dataPath).apply {
                 if (!this.first) {
                     App.log.add(App.globalContext.getString(R.string.decompress_failed))
                     return false
@@ -260,29 +260,34 @@ class Command {
             for (i in fileList) {
                 val item = i.split(".")
                 val dataType = item[0]
-                var path = ""
+                var dataPath = ""
                 val compressionType = getCompressionTypeByName(i)
                 if (compressionType.isNotEmpty()) {
+                    when (dataType) {
+                        "user" -> {
+                            dataPath = "/data/user/$userId"
+                        }
+                        "data", "obb" -> {
+                            dataPath = "/data/media/$userId/Android/${dataType}"
+                        }
+                    }
                     decompress(
                         compressionType,
                         dataType,
                         "${inPath}/${i}",
                         packageName,
-                        userId
+                        dataPath
                     ).apply {
                         if (!this)
                             result = false
                     }
-                    when (dataType) {
-                        "user" -> {
-                            path = "/data/user/$userId"
-                        }
-                        "data", "obb" -> {
-                            path = "/data/media/$userId/Android/${dataType}"
-                        }
-                    }
-                    if (path.isNotEmpty())
-                        setOwnerAndSELinux(dataType, packageName, "${path}/${packageName}", userId)
+                    if (dataPath.isNotEmpty())
+                        setOwnerAndSELinux(
+                            dataType,
+                            packageName,
+                            "${dataPath}/${packageName}",
+                            userId
+                        )
                 }
             }
             return result
@@ -313,22 +318,14 @@ class Command {
             return true
         }
 
-        fun compressMedia(
-            compressionType: String,
-            inputPath: String,
-            outPut: String
-        ): Boolean {
-            Bashrc.compressMedia(compressionType, inputPath, outPut).apply {
-                if (!this.first) {
-                    App.log.add(App.globalContext.getString(R.string.compress_failed))
-                    return false
-                }
-            }
-            return true
-        }
-
-        fun decompressMedia(inputPath: String, name: String): Boolean {
-            Bashrc.decompress(getCompressionTypeByName(name), "media", "${inputPath}/$name", "", "")
+        fun decompressMedia(inputPath: String, name: String, dataPath: String): Boolean {
+            Bashrc.decompress(
+                getCompressionTypeByName(name),
+                "media",
+                "${inputPath}/$name",
+                "media",
+                dataPath
+            )
                 .apply {
                     if (!this.first) {
                         App.log.add(App.globalContext.getString(R.string.decompress_failed))

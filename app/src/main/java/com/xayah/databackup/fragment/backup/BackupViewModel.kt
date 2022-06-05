@@ -366,7 +366,7 @@ class BackupViewModel : ViewModel() {
                                     "user",
                                     packageName,
                                     outPut,
-                                    userId
+                                    "/data/user/$userId"
                                 )
                                     .apply {
                                         if (!this)
@@ -379,7 +379,7 @@ class BackupViewModel : ViewModel() {
                                     "data",
                                     packageName,
                                     outPut,
-                                    userId
+                                    "/data/media/$userId/Android/data"
                                 )
                                     .apply {
                                         if (!this)
@@ -392,7 +392,7 @@ class BackupViewModel : ViewModel() {
                                     "obb",
                                     packageName,
                                     outPut,
-                                    userId
+                                    "/data/media/$userId/Android/obb"
                                 )
                                     .apply {
                                         if (!this)
@@ -425,7 +425,7 @@ class BackupViewModel : ViewModel() {
                             }
 
                             // 备份自定义目录
-                            val outPut = "${context.readBackupSavePath()}/media"
+                            val outPut = "${context.readBackupSavePath()}/$userId/media"
                             for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
                                 // 推送数据
                                 currentAppName.postValue(i)
@@ -433,10 +433,12 @@ class BackupViewModel : ViewModel() {
                                 var state = true // 该任务是否成功完成
 
                                 // 备份目录
-                                Command.compressMedia(
+                                Command.compress(
                                     App.globalContext.readCompressionType(),
-                                    i,
-                                    outPut
+                                    "media",
+                                    "media",
+                                    outPut,
+                                    i
                                 ).apply {
                                     if (!this)
                                         state = false

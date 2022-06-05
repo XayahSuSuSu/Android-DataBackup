@@ -45,10 +45,10 @@ class Bashrc {
             dataType: String,
             packageName: String,
             outPut: String,
-            userId: String
+            dataPath: String
         ): Pair<Boolean, String> {
             App.log.add("${App.globalContext.getString(R.string.compress)} $dataType")
-            val cmd = "compress $compressionType $dataType $packageName $outPut $userId"
+            val cmd = "compress $compressionType $dataType $packageName $outPut $dataPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
                     if (line != null) {
@@ -93,10 +93,10 @@ class Bashrc {
             dataType: String,
             inputPath: String,
             packageName: String,
-            userId: String
+            dataPath: String
         ): Pair<Boolean, String> {
             App.log.add("${App.globalContext.getString(R.string.decompress)} $dataType")
-            val cmd = "decompress $compressionType $dataType $inputPath $packageName $userId"
+            val cmd = "decompress $compressionType $dataType $inputPath $packageName $dataPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
                     if (line != null) {
@@ -115,24 +115,6 @@ class Bashrc {
 
         fun writeToFile(content: String, path: String): Pair<Boolean, String> {
             val exec = Shell.cmd("write_to_file $content $path").exec()
-            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
-        }
-
-        fun compressMedia(
-            compressionType: String,
-            inputPath: String,
-            outPut: String
-        ): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.compress)} $inputPath")
-            val cmd = "compress_media $compressionType $inputPath $outPut"
-            val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
-                override fun onAddElement(line: String?) {
-                    if (line != null) {
-                        App.log.add(line)
-                    }
-                }
-            }
-            val exec = Shell.cmd(cmd).to(callbackList).exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
