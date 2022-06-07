@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 
 class HomeViewModel : ViewModel() {
     val isRoot by lazy {
-        SuFile.open("/dev/console").canRead()
+        SuFile.open("/dev/console").canRead() || Shell.cmd("ls /").exec().isSuccess
     }
     lateinit var abi: String
     lateinit var storageSpace: String
