@@ -43,13 +43,13 @@ class Command {
             room?.let {
                 val packageManager = context.packageManager
                 val userId = context.readBackupUser()
-                val listPackages = Bashrc.listPackages(userId)
-                val packages =
-                    if (listPackages.first) listPackages.second else mutableListOf()
-                for (index in packages) {
+                val packages = packageManager.getInstalledPackages(0)
+                val listPackages = Bashrc.listPackages(userId).second
+                for ((index, j) in listPackages.withIndex())
+                    listPackages[index] = j.replace("package:", "")
+                for (i in packages) {
                     try {
-                        val i = packageManager.getPackageInfo(index.replace("package:", ""), 0)
-                        if (i.packageName == "com.xayah.databackup")
+                        if (i.packageName == "com.xayah.databackup" || listPackages.indexOf(i.packageName) == -1)
                             continue
                         if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
                             val appIcon = i.applicationInfo.loadIcon(packageManager)
