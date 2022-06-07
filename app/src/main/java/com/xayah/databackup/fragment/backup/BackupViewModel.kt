@@ -351,6 +351,7 @@ class BackupViewModel : ViewModel() {
                         if (!this) {
                             App.log.add(context.getString(R.string.generate_backup_info_failed))
                             isProcessing = false
+                            showFinish(context)
                             return@setPositiveButton
                         }
                     }
@@ -499,50 +500,13 @@ class BackupViewModel : ViewModel() {
                                 if (!this) {
                                     App.log.add(context.getString(R.string.generate_media_info_failed))
                                     isProcessing = false
+                                    showFinish(context)
                                     return@launch
                                 }
                             }
                         }
                         withContext(Dispatchers.Main) {
-                            // 展示完成页面
-                            binding?.relativeLayout?.removeAllViews()
-                            val showResult = {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.backup_success),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                BottomSheetDialog(context).apply {
-                                    setWithResult(
-                                        App.log.toString(),
-                                        success,
-                                        failed
-                                    )
-                                }
-                            }
-                            if (binding == null) {
-                                showResult()
-                            } else {
-                                val lottieAnimationView = LottieAnimationView(context)
-                                lottieAnimationView.apply {
-                                    layoutParams =
-                                        RelativeLayout.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            ViewGroup.LayoutParams.MATCH_PARENT
-                                        ).apply {
-                                            addRule(RelativeLayout.CENTER_IN_PARENT)
-                                        }
-                                    setAnimation(R.raw.success)
-                                    playAnimation()
-                                    addAnimatorUpdateListener { animation ->
-                                        if (animation.animatedFraction == 1.0F) {
-                                            showResult()
-                                        }
-                                    }
-                                }
-                                binding?.relativeLayout?.addView(lottieAnimationView)
-                            }
-                            isProcessing = false
+                            showFinish(context)
                         }
                     }
                 }
@@ -588,5 +552,47 @@ class BackupViewModel : ViewModel() {
             }
         }
         return layoutProcessingBinding
+    }
+
+    private fun showFinish(context: Context) {
+        // 展示完成页面
+        binding?.relativeLayout?.removeAllViews()
+        val showResult = {
+            Toast.makeText(
+                context,
+                context.getString(R.string.backup_success),
+                Toast.LENGTH_SHORT
+            ).show()
+            BottomSheetDialog(context).apply {
+                setWithResult(
+                    App.log.toString(),
+                    success,
+                    failed
+                )
+            }
+        }
+        if (binding == null) {
+            showResult()
+        } else {
+            val lottieAnimationView = LottieAnimationView(context)
+            lottieAnimationView.apply {
+                layoutParams =
+                    RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    ).apply {
+                        addRule(RelativeLayout.CENTER_IN_PARENT)
+                    }
+                setAnimation(R.raw.success)
+                playAnimation()
+                addAnimatorUpdateListener { animation ->
+                    if (animation.animatedFraction == 1.0F) {
+                        showResult()
+                    }
+                }
+            }
+            binding?.relativeLayout?.addView(lottieAnimationView)
+        }
+        isProcessing = false
     }
 }
