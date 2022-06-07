@@ -19,11 +19,19 @@ import java.io.IOException
 class Command {
     companion object {
         fun ls(path: String): Boolean {
-            return Shell.cmd("ls -i $path").exec().isSuccess
+            Shell.cmd("ls -i $path").exec().apply {
+                if (!this.isSuccess)
+                    App.log.add(this.out.joinToString(separator = "\n"))
+                return this.isSuccess
+            }
         }
 
         fun mkdir(path: String): Boolean {
-            return Shell.cmd("mkdir -p $path").exec().isSuccess
+            Shell.cmd("mkdir -p $path").exec().apply {
+                if (!this.isSuccess)
+                    App.log.add(this.out.joinToString(separator = "\n"))
+                return this.isSuccess
+            }
         }
 
         fun unzip(filePath: String, outPath: String) {
@@ -134,6 +142,7 @@ class Command {
         ): Boolean {
             Bashrc.compress(compressionType, dataType, packageName, outPut, dataPath).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(App.globalContext.getString(R.string.compress_failed))
                     return false
                 }
@@ -149,6 +158,7 @@ class Command {
         ): Boolean {
             val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(
                         "${packageName}: ${
                             App.globalContext.getString(R.string.path_not_exist)
@@ -159,6 +169,7 @@ class Command {
             }
             Bashrc.cd(apkPathPair.second).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(
                         "${apkPathPair.second}: ${
                             App.globalContext.getString(R.string.path_not_exist)
@@ -169,12 +180,14 @@ class Command {
             }
             Bashrc.compressAPK(compressionType, outPut).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(App.globalContext.getString(R.string.compress_apk_failed))
                     return false
                 }
             }
             Bashrc.cd("~").apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add("~: ${App.globalContext.getString(R.string.path_not_exist)}")
                     return false
                 }
@@ -191,6 +204,7 @@ class Command {
         ): Boolean {
             Bashrc.decompress(compressionType, dataType, inputPath, packageName, dataPath).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(App.globalContext.getString(R.string.decompress_failed))
                     return false
                 }
@@ -232,6 +246,7 @@ class Command {
 
             Bashrc.installAPK(inPath, packageName, userId).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(
                         App.globalContext.getString(R.string.install_apk_failed_or_skip)
                     )
@@ -249,6 +264,7 @@ class Command {
         ) {
             Bashrc.setOwnerAndSELinux(dataType, packageName, path, userId).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(App.globalContext.getString(R.string.set_SELinux_failed))
                     return
                 }
@@ -301,6 +317,7 @@ class Command {
         private fun getAppVersion(packageName: String): String {
             Bashrc.getAppVersion(packageName).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(App.globalContext.getString(R.string.get_app_version_failed))
                     return ""
                 }
@@ -323,6 +340,7 @@ class Command {
             )
                 .apply {
                     if (!this.first) {
+                        App.log.add(this.second)
                         App.log.add(App.globalContext.getString(R.string.decompress_failed))
                         return false
                     }
@@ -336,6 +354,7 @@ class Command {
         ): Boolean {
             Bashrc.testArchive(compressionType, inputPath).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(App.globalContext.getString(R.string.broken))
                     return false
                 }
@@ -366,6 +385,7 @@ class Command {
             mkdir(outPut)
             val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
+                    App.log.add(this.second)
                     App.log.add(
                         "${packageName}: ${
                             App.globalContext.getString(R.string.path_not_exist)
@@ -392,6 +412,7 @@ class Command {
                 val json = Gson().toJson(src)
                 Bashrc.writeToFile(json, outPut).apply {
                     if (!this.first) {
+                        App.log.add(this.second)
                         return false
                     }
                 }
