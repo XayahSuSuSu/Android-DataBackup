@@ -67,6 +67,7 @@ compress() {
       esac
     else
       echo "No such path: $5"
+      return 1
     fi
     ;;
   data | obb)
