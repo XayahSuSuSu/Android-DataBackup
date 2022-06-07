@@ -10,4 +10,6 @@
     <string name="check_logs">查看日志</string>
     <string name="tips">提示</string>
     <string name="path">路径</string>
+    <string name="time">时间</string>
+    <string name="count">计数</string>
 </resources>

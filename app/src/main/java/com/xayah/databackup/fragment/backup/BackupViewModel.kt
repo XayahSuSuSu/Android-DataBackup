@@ -564,10 +564,15 @@ class BackupViewModel : ViewModel() {
                 Toast.LENGTH_SHORT
             ).show()
             BottomSheetDialog(context).apply {
+                val s = String.format("%02d", time % 60)
+                val m = String.format("%02d", time / 60 % 60)
+                val h = String.format("%02d", time / 3600 % 24)
                 setWithResult(
                     App.log.toString(),
                     success,
-                    failed
+                    failed,
+                    "$h:$m:$s",
+                    Command.countSize(context.readBackupSavePath())
                 )
             }
         }

@@ -149,12 +149,20 @@ fun BottomSheetDialog.setWithTopBarAndTips(
 
 
 @SuppressLint("SetTextI18n")
-fun BottomSheetDialog.setWithResult(logs: String, success: Int, failed: Int) {
+fun BottomSheetDialog.setWithResult(
+    logs: String,
+    success: Int,
+    failed: Int,
+    time: String,
+    count: String
+) {
     this.apply {
         val that = this
         val binding = BottomSheetDialogResultBinding.inflate(this.layoutInflater).apply {
             materialTextViewSuccess.text = "${that.context.getString(R.string.success)}: $success"
             materialTextViewFailed.text = "${that.context.getString(R.string.failed)}: $failed"
+            materialTextViewTime.text = "${that.context.getString(R.string.time)}: $time"
+            materialTextViewCount.text = "${that.context.getString(R.string.count)}: $count"
             filledButton.apply {
                 setOnClickListener {
                     that.dismiss()

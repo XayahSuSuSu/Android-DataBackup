@@ -422,5 +422,15 @@ class Command {
             }
             return true
         }
+
+        fun countSize(path: String): String {
+            Bashrc.countSize(path).apply {
+                if (!this.first) {
+                    App.log.add(this.second)
+                    return ""
+                }
+                return this.second
+            }
+        }
     }
 }

@@ -226,3 +226,8 @@ find_package() {
 		pm path --user "$1" "$2"
 	fi
 }
+
+count_size() {
+  # $1: path
+  du -ksh "$1" | awk '{print $1}'
+}

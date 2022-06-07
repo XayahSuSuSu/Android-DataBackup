@@ -144,5 +144,10 @@ class Bashrc {
             val exec = Shell.cmd("list_packages $userId").exec()
             return Pair(exec.isSuccess, exec.out)
         }
+
+        fun countSize(path: String): Pair<Boolean, String> {
+            val exec = Shell.cmd("count_size $path").exec()
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
     }
 }

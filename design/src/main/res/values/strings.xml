@@ -9,4 +9,6 @@
     <string name="check_logs">Check logs</string>
     <string name="tips">Tips</string>
     <string name="path">Path</string>
+    <string name="time">Time</string>
+    <string name="count">Count</string>
 </resources>
