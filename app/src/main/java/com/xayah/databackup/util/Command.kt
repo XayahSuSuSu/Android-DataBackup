@@ -67,21 +67,23 @@ class Command {
                     try {
                         if (i.packageName == "com.xayah.databackup" || listPackages.indexOf(i.packageName) == -1)
                             continue
-                        if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
-                            val appIcon = i.applicationInfo.loadIcon(packageManager)
-                            val appName = i.applicationInfo.loadLabel(packageManager).toString()
-                            val packageName = i.packageName
-                            var appEntity = room.findByPackage(packageName)
-                            if (appEntity == null) {
-                                appEntity =
-                                    AppEntity(0, appName, packageName, getAppVersion(packageName))
-                            } else {
-                                appEntity.appName = appName
-                            }
-                            room.insertOrUpdate(appEntity)
-                            appEntity.icon = appIcon
-                            appList.add(appEntity)
+                        if (!context.readIsSupportSystemApp())
+                            if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0)
+                                continue
+                        val appIcon = i.applicationInfo.loadIcon(packageManager)
+                        val appName = i.applicationInfo.loadLabel(packageManager).toString()
+                        val packageName = i.packageName
+                        var appEntity = room.findByPackage(packageName)
+                        if (appEntity == null) {
+                            appEntity =
+                                AppEntity(0, appName, packageName, getAppVersion(packageName))
+                        } else {
+                            appEntity.appName = appName
                         }
+                        room.insertOrUpdate(appEntity)
+                        appEntity.icon = appIcon
+                        appList.add(appEntity)
+
                     } catch (e: Exception) {
                         e.printStackTrace()
                         break

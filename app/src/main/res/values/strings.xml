@@ -90,4 +90,6 @@
     <string name="generate_media_info_failed">Generate media info failed!</string>
     <string name="restore_user">Restore user</string>
     <string name="delete_confirm">Delete?</string>
+    <string name="support_system_app">Support system apps</string>
+    <string name="summary_support_system_app">Whether to support system apps (risk operation)</string>
 </resources>

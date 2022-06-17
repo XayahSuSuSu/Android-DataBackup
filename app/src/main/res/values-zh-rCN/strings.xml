@@ -85,4 +85,6 @@
     <string name="generate_media_info_failed">生成自定义目录信息失败！</string>
     <string name="restore_user">恢复用户</string>
     <string name="delete_confirm">确定要删除吗?</string>
+    <string name="support_system_app">支持系统应用</string>
+    <string name="summary_support_system_app">是否支持系统应用(风险操作)</string>
 </resources>

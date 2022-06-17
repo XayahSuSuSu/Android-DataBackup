@@ -68,6 +68,14 @@
                     app:title="@string/backup_dir" />
 
                 <com.xayah.design.preference.Switch
+                    onCheckedChange="@{viewModel.onIsSupportSystemApp}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:checked="@{viewModel.isSupportSystemApp}"
+                    app:summary="@string/summary_support_system_app"
+                    app:title="@string/support_system_app" />
+
+                <com.xayah.design.preference.Switch
                     onCheckedChange="@{viewModel.onIsBackupItself}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

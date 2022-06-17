@@ -85,4 +85,6 @@
     <string name="generate_media_info_failed">生成自定義目錄信息失敗！</string>
     <string name="restore_user">恢復用戶</string>
     <string name="delete_confirm">確定要刪除嗎?</string>
+    <string name="support_system_app">支持系統應用</string>
+    <string name="summary_support_system_app">是否支持系統應用(風險操作)</string>
 </resources>

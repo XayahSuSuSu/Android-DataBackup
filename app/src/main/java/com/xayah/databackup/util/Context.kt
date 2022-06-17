@@ -96,3 +96,11 @@ fun Context.readRestoreUser(): String {
     return readPreferencesString("restore_user")
         ?: if (Bashrc.listUsers().first && Bashrc.listUsers().second.isNotEmpty()) Bashrc.listUsers().second[0] else "0"
 }
+
+fun Context.saveIsSupportSystemApp(value: Boolean) {
+    savePreferences("support_system_app", value)
+}
+
+fun Context.readIsSupportSystemApp(): Boolean {
+    return readPreferencesBoolean("support_system_app", false)
+}

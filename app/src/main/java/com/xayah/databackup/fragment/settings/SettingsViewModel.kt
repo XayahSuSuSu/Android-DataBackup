@@ -109,6 +109,14 @@ class SettingsViewModel() : ViewModel() {
             .show()
     }
 
+    var isSupportSystemApp: ObservableField<Boolean> =
+        ObservableField(App.globalContext.readIsSupportSystemApp())
+    val onIsSupportSystemApp: (buttonView: CompoundButton, isChecked: Boolean) -> Unit =
+        { v, isChecked ->
+            v.context.saveIsSupportSystemApp(isChecked)
+            isSupportSystemApp.set(isChecked)
+        }
+
     fun toAboutFragment(v: View) {
         Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_aboutFragment)
     }
