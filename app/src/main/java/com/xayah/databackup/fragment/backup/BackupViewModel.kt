@@ -63,6 +63,8 @@ class BackupViewModel : ViewModel() {
     var selectAllData = false
     var selectAll = false
 
+    var notification = Notification("backup", "Backup")
+
     fun initialize(context: Context, room: Room?, onInitialized: () -> Unit) {
         isFiltering = false
 
@@ -257,6 +259,8 @@ class BackupViewModel : ViewModel() {
                 setMessage(contents)
                 setNegativeButton(context.getString(R.string.cancel)) { _, _ -> }
                 setPositiveButton(context.getString(R.string.confirm)) { _, _ ->
+                    // 初始化通知类
+                    notification.initialize(context)
                     // 设置Processing布局
                     val layoutProcessingBinding = onProcessing(context)
                     // 清空日志
@@ -279,6 +283,11 @@ class BackupViewModel : ViewModel() {
                                 (context as MainActivity).binding.toolbar.subtitle = "$h:$m:$s"
                                 context.binding.toolbar.title =
                                     "${context.getString(R.string.backup_processing)}: ${index}/${total}"
+                                // 更新通知
+                                notification.update(index == total) {
+                                    it?.setProgress(total, index, false)
+                                    it?.setContentText("${index}/${total}")
+                                }
                             }
                         }
                         withContext(Dispatchers.Main) {
@@ -319,6 +328,11 @@ class BackupViewModel : ViewModel() {
                         val packageName = "com.xayah.databackup"
                         val outPut = context.readBackupSavePath()
 
+                        // 更新通知
+                        notification.update(false) {
+                            it?.setContentTitle(appName)
+                        }
+                        // 推送数据
                         currentAppName.postValue(appName)
                         currentAppIcon.postValue(icon)
                         App.log.add("----------------------------")
@@ -358,6 +372,10 @@ class BackupViewModel : ViewModel() {
 
                     CoroutineScope(Dispatchers.IO).launch {
                         for (i in appList) {
+                            // 更新通知
+                            notification.update(false) {
+                                it?.setContentTitle(i.appName)
+                            }
                             // 推送数据
                             currentAppName.postValue(i.appName)
                             currentAppIcon.postValue(i.icon)
@@ -459,6 +477,10 @@ class BackupViewModel : ViewModel() {
                             val jsonArray = JsonArray()
 
                             for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
+                                // 更新通知
+                                notification.update(false) {
+                                    it?.setContentTitle(i)
+                                }
                                 // 推送数据
                                 currentAppName.postValue(i)
                                 App.log.add("----------------------------")
@@ -555,6 +577,10 @@ class BackupViewModel : ViewModel() {
     }
 
     private fun showFinish(context: Context) {
+        // 完成通知
+        notification.update(true) {
+            it?.setContentTitle(context.getString(R.string.backup_success))
+        }
         // 展示完成页面
         binding?.relativeLayout?.removeAllViews()
         val showResult = {

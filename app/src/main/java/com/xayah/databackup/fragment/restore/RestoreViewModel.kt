@@ -67,6 +67,8 @@ class RestoreViewModel : ViewModel() {
     var selectAllData = false
     var selectAll = false
 
+    var notification = Notification("restore", "Restore")
+
     fun initialize(
         context: Context,
         materialYouFileExplorer: MaterialYouFileExplorer,
@@ -291,6 +293,8 @@ class RestoreViewModel : ViewModel() {
                 setMessage(contents)
                 setNegativeButton(context.getString(R.string.cancel)) { _, _ -> }
                 setPositiveButton(context.getString(R.string.confirm)) { _, _ ->
+                    // 初始化通知类
+                    notification.initialize(context)
                     // 设置Processing布局
                     val layoutProcessingBinding = onProcessing(context)
                     // 清空日志
@@ -313,6 +317,11 @@ class RestoreViewModel : ViewModel() {
                                 (context as MainActivity).binding.toolbar.subtitle = "$h:$m:$s"
                                 context.binding.toolbar.title =
                                     "${context.getString(R.string.restore_processing)}: ${index}/${total}"
+                                // 更新通知
+                                notification.update(index == total) {
+                                    it?.setProgress(total, index, false)
+                                    it?.setContentText("${index}/${total}")
+                                }
                             }
                         }
                         withContext(Dispatchers.Main) {
@@ -347,7 +356,10 @@ class RestoreViewModel : ViewModel() {
                         for (i in appList) {
                             if (i.packageName == context.getString(R.string.custom_dir))
                                 continue
-
+                            // 更新通知
+                            notification.update(false) {
+                                it?.setContentTitle(i.appName)
+                            }
                             // 推送数据
                             currentAppName.postValue(i.appName)
                             currentAppIcon.postValue(i.icon)
@@ -396,6 +408,10 @@ class RestoreViewModel : ViewModel() {
                                 for (i in mediaList) {
                                     if (i == "info")
                                         continue
+                                    // 更新通知
+                                    notification.update(false) {
+                                        it?.setContentTitle(i)
+                                    }
                                     // 推送数据
                                     currentAppName.postValue(i)
                                     App.log.add("----------------------------")
@@ -427,50 +443,7 @@ class RestoreViewModel : ViewModel() {
                             }
                         }
                         withContext(Dispatchers.Main) {
-                            // 展示完成页面
-                            binding?.relativeLayout?.removeAllViews()
-                            val showResult = {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.restore_success),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                BottomSheetDialog(context).apply {
-                                    val s = String.format("%02d", time % 60)
-                                    val m = String.format("%02d", time / 60 % 60)
-                                    val h = String.format("%02d", time / 3600 % 24)
-                                    setWithResult(
-                                        App.log.toString(),
-                                        success,
-                                        failed,
-                                        "$h:$m:$s",
-                                        Command.countSize(context.readBackupSavePath())
-                                    )
-                                }
-                            }
-                            if (binding == null) {
-                                showResult()
-                            } else {
-                                val lottieAnimationView = LottieAnimationView(context)
-                                lottieAnimationView.apply {
-                                    layoutParams =
-                                        RelativeLayout.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            ViewGroup.LayoutParams.MATCH_PARENT
-                                        ).apply {
-                                            addRule(RelativeLayout.CENTER_IN_PARENT)
-                                        }
-                                    setAnimation(R.raw.success)
-                                    playAnimation()
-                                    addAnimatorUpdateListener { animation ->
-                                        if (animation.animatedFraction == 1.0F) {
-                                            showResult()
-                                        }
-                                    }
-                                }
-                                binding?.relativeLayout?.addView(lottieAnimationView)
-                            }
-                            isProcessing = false
+                            showFinish(context)
                         }
                     }
                 }
@@ -516,6 +489,57 @@ class RestoreViewModel : ViewModel() {
             }
         }
         return layoutProcessingBinding
+    }
+
+    fun showFinish(context: Context) {
+        // 完成通知
+        notification.update(true) {
+            it?.setContentTitle(context.getString(R.string.restore_success))
+        }
+        // 展示完成页面
+        binding?.relativeLayout?.removeAllViews()
+        val showResult = {
+            Toast.makeText(
+                context,
+                context.getString(R.string.restore_success),
+                Toast.LENGTH_SHORT
+            ).show()
+            BottomSheetDialog(context).apply {
+                val s = String.format("%02d", time % 60)
+                val m = String.format("%02d", time / 60 % 60)
+                val h = String.format("%02d", time / 3600 % 24)
+                setWithResult(
+                    App.log.toString(),
+                    success,
+                    failed,
+                    "$h:$m:$s",
+                    Command.countSize(context.readBackupSavePath())
+                )
+            }
+        }
+        if (binding == null) {
+            showResult()
+        } else {
+            val lottieAnimationView = LottieAnimationView(context)
+            lottieAnimationView.apply {
+                layoutParams =
+                    RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    ).apply {
+                        addRule(RelativeLayout.CENTER_IN_PARENT)
+                    }
+                setAnimation(R.raw.success)
+                playAnimation()
+                addAnimatorUpdateListener { animation ->
+                    if (animation.animatedFraction == 1.0F) {
+                        showResult()
+                    }
+                }
+            }
+            binding?.relativeLayout?.addView(lottieAnimationView)
+        }
+        isProcessing = false
     }
 
 }
