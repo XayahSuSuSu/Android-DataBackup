@@ -70,6 +70,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp">
 
+                <Button
+                    android:id="@+id/icon_button"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_round_delete"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_application"
                     style="@style/Widget.Material3.Chip.Filter"

@@ -22,7 +22,7 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
-import com.xayah.databackup.adapter.AppListAdapterBase
+import com.xayah.databackup.adapter.AppListAdapterRestore
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.MediaInfo
@@ -132,7 +132,13 @@ class RestoreViewModel : ViewModel() {
         if (!isProcessing) {
             // 没有Processing
             mAdapter = MultiTypeAdapter().apply {
-                register(AppListAdapterBase(context))
+                register(
+                    AppListAdapterRestore(
+                        appListAll,
+                        { initialize(context, materialYouFileExplorer) {} },
+                        context
+                    )
+                )
                 CoroutineScope(Dispatchers.IO).launch {
                     val userId = context.readBackupUser()
                     // 按照字母表排序
