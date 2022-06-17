@@ -22,7 +22,7 @@ import com.google.gson.JsonParser
 import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
-import com.xayah.databackup.adapter.AppListAdapter
+import com.xayah.databackup.adapter.AppListAdapterBackup
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.MediaInfo
@@ -96,7 +96,7 @@ class BackupViewModel : ViewModel() {
         if (!isProcessing) {
             // 没有Processing
             mAdapter = MultiTypeAdapter().apply {
-                register(AppListAdapter(room, mContext))
+                register(AppListAdapterBackup(room, mContext))
                 CoroutineScope(Dispatchers.IO).launch {
                     // 按照字母表排序
                     val mAppList = Command.getAppList(mContext, room).apply {

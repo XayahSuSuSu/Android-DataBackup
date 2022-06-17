@@ -14,14 +14,10 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.AdapterAppListBinding
-import com.xayah.databackup.util.Room
 import com.xayah.design.util.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class AppListAdapter(private val room: Room?, val context: Context) :
-    ItemViewDelegate<AppEntity, AppListAdapter.ViewHolder>() {
+open class AppListAdapterBase(open val context: Context) :
+    ItemViewDelegate<AppEntity, AppListAdapterBase.ViewHolder>() {
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
         return ViewHolder(
@@ -49,38 +45,6 @@ class AppListAdapter(private val room: Room?, val context: Context) :
             }
         }
 
-        binding.chipApplication.apply {
-            setOnCheckedChangeListener { _, checked ->
-                if (!item.isProcessing) {
-                    (adapterItems[holder.bindingAdapterPosition] as AppEntity).backupApp = checked
-                    if (room != null) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            room.findByPackage(item.packageName) {
-                                it.backupApp = checked
-                                room.update(it)
-                            }
-                        }
-                    }
-                }
-            }
-            isChecked = item.backupApp
-        }
-        binding.chipData.apply {
-            setOnCheckedChangeListener { _, checked ->
-                if (!item.isProcessing) {
-                    (adapterItems[holder.bindingAdapterPosition] as AppEntity).backupData = checked
-                    if (room != null) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            room.findByPackage(item.packageName) {
-                                it.backupData = checked
-                                room.update(it)
-                            }
-                        }
-                    }
-                }
-            }
-            isChecked = item.backupData
-        }
         if (holder.bindingAdapterPosition == adapterItems.size - 1) {
             binding.materialCardView.apply {
                 layoutParams =
@@ -110,6 +74,7 @@ class AppListAdapter(private val room: Room?, val context: Context) :
             }
         }
 
+        // -------------Deprecated-------------
         if (item.isProcessing) {
             binding.appPackage.text = item.progress
             binding.chipApplication.isClickable = false
@@ -158,6 +123,7 @@ class AppListAdapter(private val room: Room?, val context: Context) :
         } else {
             binding.chipData.visibility = View.VISIBLE
         }
+        // -------------Deprecated-------------
     }
 
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
