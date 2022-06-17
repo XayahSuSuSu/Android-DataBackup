@@ -17,3 +17,17 @@ fun MaterialAlertDialogBuilder.setWithNormalMessage(
         show()
     }
 }
+
+fun MaterialAlertDialogBuilder.setWithConfirm(
+    message: String,
+    callback: () -> Unit
+) {
+    this.apply {
+        setTitle(context.getString(R.string.tips))
+        setCancelable(true)
+        setMessage(message)
+        setNegativeButton(context.getString(R.string.dialog_negative)) { _, _ -> }
+        setPositiveButton(context.getString(R.string.dialog_positive)) { _, _ -> callback() }
+        show()
+    }
+}

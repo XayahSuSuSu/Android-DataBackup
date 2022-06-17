@@ -29,10 +29,7 @@ import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
 import com.xayah.databackup.util.*
-import com.xayah.design.view.fastInitialize
-import com.xayah.design.view.notifyDataSetChanged
-import com.xayah.design.view.setWithNormalMessage
-import com.xayah.design.view.setWithResult
+import com.xayah.design.view.*
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.*
 import java.text.Collator
@@ -288,11 +285,7 @@ class RestoreViewModel : ViewModel() {
             }
 
             MaterialAlertDialogBuilder(context).apply {
-                setTitle(context.getString(R.string.tips))
-                setCancelable(true)
-                setMessage(contents)
-                setNegativeButton(context.getString(R.string.cancel)) { _, _ -> }
-                setPositiveButton(context.getString(R.string.confirm)) { _, _ ->
+                setWithConfirm(contents) {
                     // 初始化通知类
                     notification.initialize(context)
                     // 设置Processing布局
@@ -447,7 +440,6 @@ class RestoreViewModel : ViewModel() {
                         }
                     }
                 }
-                show()
             }
         }
     }

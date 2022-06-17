@@ -31,6 +31,7 @@ import com.xayah.databackup.databinding.LayoutProcessingBinding
 import com.xayah.databackup.util.*
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
+import com.xayah.design.view.setWithConfirm
 import com.xayah.design.view.setWithResult
 import kotlinx.coroutines.*
 import java.text.Collator
@@ -254,11 +255,7 @@ class BackupViewModel : ViewModel() {
             }
 
             MaterialAlertDialogBuilder(context).apply {
-                setTitle(context.getString(R.string.tips))
-                setCancelable(true)
-                setMessage(contents)
-                setNegativeButton(context.getString(R.string.cancel)) { _, _ -> }
-                setPositiveButton(context.getString(R.string.confirm)) { _, _ ->
+                setWithConfirm(contents) {
                     // 初始化通知类
                     notification.initialize(context)
                     // 设置Processing布局
@@ -366,7 +363,7 @@ class BackupViewModel : ViewModel() {
                             App.log.add(context.getString(R.string.generate_backup_info_failed))
                             isProcessing = false
                             showFinish(context)
-                            return@setPositiveButton
+                            return@setWithConfirm
                         }
                     }
 
@@ -532,7 +529,6 @@ class BackupViewModel : ViewModel() {
                         }
                     }
                 }
-                show()
             }
         }
     }
