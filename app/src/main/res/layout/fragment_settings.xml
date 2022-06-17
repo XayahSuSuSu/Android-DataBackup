@@ -130,6 +130,13 @@
                 <com.xayah.design.ActionLabel
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="@{(v)->viewModel.toCheckGitHub(v)}"
+                    app:icon="@drawable/ic_round_checklist"
+                    app:text="@string/backup_check" />
+
+                <com.xayah.design.ActionLabel
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:onClick="@{(v)->viewModel.toAboutFragment(v)}"
                     app:text="@string/about" />
 

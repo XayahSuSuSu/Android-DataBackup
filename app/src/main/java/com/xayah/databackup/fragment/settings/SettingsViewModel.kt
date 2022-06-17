@@ -220,4 +220,38 @@ class SettingsViewModel() : ViewModel() {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         v.context.startActivity(intent)
     }
+
+    fun toCheckGitHub(v: View) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = OkHttpClient()
+                val request: Request = Request.Builder()
+                    .url("https://api.github.com/repos/XayahSuSuSu/Android-DataBackup/releases")
+                    .build()
+                client.newCall(request).execute().use { response ->
+                    response.body?.apply {
+                        // 解析response.body
+                        val jsonArray = JsonParser.parseString(this.string()).asJsonArray
+                        val nameList = mutableListOf<String>()
+                        val mBodyList = mutableListOf<Release>()
+                        for (i in jsonArray) {
+                            try {
+                                val item = Gson().fromJson(i, Release::class.java)
+                                if (item.name.contains("Check")) {
+                                    mBodyList.add(item)
+                                    nameList.add(item.name)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                        if (mBodyList.isNotEmpty())
+                            toWebView(v, mBodyList[0].html_url)
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
 }

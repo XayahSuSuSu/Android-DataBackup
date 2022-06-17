@@ -87,4 +87,5 @@
     <string name="delete_confirm">確定要刪除嗎?</string>
     <string name="support_system_app">支持系統應用</string>
     <string name="summary_support_system_app">是否支持系統應用(風險操作)</string>
+    <string name="backup_check">備份校驗</string>
 </resources>

@@ -92,4 +92,5 @@
     <string name="delete_confirm">Delete?</string>
     <string name="support_system_app">Support system apps</string>
     <string name="summary_support_system_app">Whether to support system apps (risk operation)</string>
+    <string name="backup_check">Backup check</string>
 </resources>
