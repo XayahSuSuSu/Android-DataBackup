@@ -7,13 +7,14 @@ import com.xayah.design.R
 fun MaterialAlertDialogBuilder.setWithNormalMessage(
     title: String,
     message: String,
-    cancelable: Boolean = true
+    cancelable: Boolean = true,
+    callback: () -> Unit = {}
 ) {
     this.apply {
         setTitle(title)
         setCancelable(cancelable)
         setMessage(message)
-        setPositiveButton(this.context.getString(R.string.dialog_positive)) { _, _ -> }
+        setPositiveButton(this.context.getString(R.string.dialog_positive)) { _, _ -> callback() }
         show()
     }
 }

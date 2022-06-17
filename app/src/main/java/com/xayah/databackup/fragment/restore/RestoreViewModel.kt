@@ -103,6 +103,29 @@ class RestoreViewModel : ViewModel() {
             }
         }
 
+        // 长按事件
+        binding?.floatingActionButton?.setOnLongClickListener {
+            MaterialAlertDialogBuilder(context).apply {
+                setWithConfirm(context.getString(R.string.delete_confirm)) {
+                    backupPath?.apply {
+                        val ret = Command.rm(this)
+                        MaterialAlertDialogBuilder(context).apply {
+                            setWithNormalMessage(
+                                context.getString(R.string.tips),
+                                if (ret) context.getString(R.string.success) else context.getString(
+                                    com.xayah.design.R.string.failed
+                                ),
+                                false
+                            ) {
+                                initialize(context, materialYouFileExplorer) {}
+                            }
+                        }
+                    }
+                }
+            }
+            false
+        }
+
         // 加载进度
         val linearProgressIndicator = LinearProgressIndicator(mContext).apply { fastInitialize() }
         binding?.relativeLayout?.addView(linearProgressIndicator)

@@ -84,4 +84,5 @@
     <string name="backup_not_support">未检测到备份或当前版本不兼容所选备份！若备份已存在，请使用历史版本恢复。</string>
     <string name="generate_media_info_failed">生成自定义目录信息失败！</string>
     <string name="restore_user">恢复用户</string>
+    <string name="delete_confirm">确定要删除吗?</string>
 </resources>

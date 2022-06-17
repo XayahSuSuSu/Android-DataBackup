@@ -26,6 +26,14 @@ class Command {
             }
         }
 
+        fun rm(path: String): Boolean {
+            Shell.cmd("rm -rf $path").exec().apply {
+                if (!this.isSuccess)
+                    App.log.add(this.out.joinToString(separator = "\n"))
+                return this.isSuccess
+            }
+        }
+
         fun mkdir(path: String): Boolean {
             Shell.cmd("mkdir -p $path").exec().apply {
                 if (!this.isSuccess)
