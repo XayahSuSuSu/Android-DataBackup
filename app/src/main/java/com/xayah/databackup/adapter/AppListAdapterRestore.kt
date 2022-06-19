@@ -20,6 +20,23 @@ class AppListAdapterRestore(
         super.onBindViewHolder(holder, item)
         val binding = holder.binding
 
+        binding.chipApplication.apply {
+            setOnCheckedChangeListener { _, checked ->
+                if (!item.isProcessing) {
+                    (adapterItems[holder.bindingAdapterPosition] as AppEntity).backupApp = checked
+                }
+            }
+            isChecked = item.backupApp
+        }
+        binding.chipData.apply {
+            setOnCheckedChangeListener { _, checked ->
+                if (!item.isProcessing) {
+                    (adapterItems[holder.bindingAdapterPosition] as AppEntity).backupData = checked
+                }
+            }
+            isChecked = item.backupData
+        }
+
         binding.iconButton.visibility = View.VISIBLE
         binding.iconButton.setOnClickListener {
             MaterialAlertDialogBuilder(context).apply {
