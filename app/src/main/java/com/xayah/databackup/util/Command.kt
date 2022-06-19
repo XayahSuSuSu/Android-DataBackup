@@ -51,7 +51,11 @@ class Command {
         }
 
         fun unzipByZip4j(filePath: String, outPath: String) {
-            ZipFile(filePath).extractAll(outPath)
+            try {
+                ZipFile(filePath).extractAll(outPath)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         fun getAppList(context: Context, room: Room?): MutableList<AppEntity> {
