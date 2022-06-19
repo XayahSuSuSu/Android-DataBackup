@@ -130,7 +130,7 @@ install_apk() {
       ;;
     esac
   else
-    return 1
+    return 222
   fi
   rm -rf "$tmp_dir"
 }

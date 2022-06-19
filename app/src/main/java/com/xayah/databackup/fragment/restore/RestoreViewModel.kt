@@ -396,7 +396,12 @@ class RestoreViewModel : ViewModel() {
                             if (i.backupApp) {
                                 // 选中恢复应用
                                 App.log.add(context.getString(R.string.install_apk_processing))
-                                Command.installAPK(inPath, packageName, userId)
+                                val ret = Command.installAPK(inPath, packageName, userId)
+                                if (!ret) {
+                                    failed += 1
+                                    index++
+                                    continue
+                                }
                             }
                             if (i.backupData) {
                                 // 选中恢复数据

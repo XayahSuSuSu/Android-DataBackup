@@ -47,7 +47,7 @@
     <string name="path_not_exist">Path not exist</string>
     <string name="compress_apk_failed">Compress apk failed</string>
     <string name="decompress_failed">Decompress failed</string>
-    <string name="install_apk_failed_or_skip">Install apk failed or skip</string>
+    <string name="install_apk_failed">Install apk failed!</string>
     <string name="set_SELinux_failed">Set SELinux failed</string>
     <string name="get_app_version_failed">Get app version failed</string>
     <string name="generate_app_info_failed">Generate app info failed</string>
@@ -93,4 +93,5 @@
     <string name="support_system_app">Support system apps</string>
     <string name="summary_support_system_app">Whether to support system apps (risk operation)</string>
     <string name="backup_check">Backup check</string>
+    <string name="install_apk_installed">Apk installed</string>
 </resources>

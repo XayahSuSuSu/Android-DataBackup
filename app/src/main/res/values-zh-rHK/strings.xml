@@ -45,7 +45,7 @@
     <string name="path_not_exist">路徑不存在</string>
     <string name="compress_apk_failed">壓縮APK失敗</string>
     <string name="decompress_failed">解壓失敗</string>
-    <string name="install_apk_failed_or_skip">安裝APK失敗或跳過安裝</string>
+    <string name="install_apk_failed">安裝APK失敗！</string>
     <string name="set_SELinux_failed">設置SELinux失敗</string>
     <string name="get_app_version_failed">APP版本獲取失敗</string>
     <string name="generate_app_info_failed">生成應用信息失敗</string>
@@ -88,4 +88,5 @@
     <string name="support_system_app">支持系統應用</string>
     <string name="summary_support_system_app">是否支持系統應用(風險操作)</string>
     <string name="backup_check">備份校驗</string>
+    <string name="install_apk_installed">APK已安裝！</string>
 </resources>

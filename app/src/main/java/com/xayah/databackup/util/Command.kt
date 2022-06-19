@@ -255,15 +255,23 @@ class Command {
             Bashrc.setInstallEnv()
 
             Bashrc.installAPK(inPath, packageName, userId).apply {
-                if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(
-                        App.globalContext.getString(R.string.install_apk_failed_or_skip)
-                    )
-                    return false
+                when (this.first) {
+                    0 -> return true
+                    222 -> {
+                        App.log.add(
+                            App.globalContext.getString(R.string.install_apk_installed)
+                        )
+                        return true
+                    }
+                    else -> {
+                        App.log.add(this.second)
+                        App.log.add(
+                            App.globalContext.getString(R.string.install_apk_failed)
+                        )
+                        return false
+                    }
                 }
             }
-            return true
         }
 
         private fun setOwnerAndSELinux(

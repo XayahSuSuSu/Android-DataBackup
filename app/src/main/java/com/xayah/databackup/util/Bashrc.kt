@@ -65,7 +65,7 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun installAPK(inPath: String, packageName: String, userId: String): Pair<Boolean, String> {
+        fun installAPK(inPath: String, packageName: String, userId: String): Pair<Int, String> {
             App.log.add("${App.globalContext.getString(R.string.install)} $packageName $userId")
             val cmd = "install_apk $inPath $packageName $userId"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
@@ -76,7 +76,7 @@ class Bashrc {
                 }
             }
             val exec = Shell.cmd(cmd).to(callbackList).exec()
-            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+            return Pair(exec.code, exec.out.joinToString(separator = "\n"))
         }
 
         fun setOwnerAndSELinux(
