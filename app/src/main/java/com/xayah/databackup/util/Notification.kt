@@ -9,7 +9,7 @@ import com.xayah.databackup.R
 
 class Notification(val id: String, val name: String) {
     private val notificationChannel =
-        NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH)
+        NotificationChannel(id, name, NotificationManager.IMPORTANCE_LOW)
     private var notificationBuilder: NotificationCompat.Builder? = null
     private var notificationManager: NotificationManager? = null
     fun initialize(context: Context) {
