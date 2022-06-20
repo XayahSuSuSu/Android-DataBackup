@@ -121,7 +121,7 @@ install_apk() {
     apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
     case "$apk_num" in
     0) exit 1 ;;
-    1) pm_install "$3" "${tmp_dir}/*.apk" ;;
+    1) pm_install "$3" ${tmp_dir}/*.apk ;;
     *)
       session=$(pm_install_create "$3" | grep -E -o '[0-9]+')
       find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | while read -r i; do
@@ -140,9 +140,9 @@ pm_install() {
   # $1: user_id
   # $2: apk_path
   if [ "$(getprop ro.build.version.sdk)" -lt 30 ]; then
-    pm install --user "$1" -rt "$2"
+    pm install --user "$1" -r -t "$2"
   else
-    pm install -i com.android.vending --user "$1" -rt "$2"
+    pm install -i com.android.vending --user "$1" -r -t "$2"
   fi
 }
 
