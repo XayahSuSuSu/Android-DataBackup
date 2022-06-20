@@ -26,4 +26,7 @@ data class AppEntity(
 
     @Ignore
     var appInfo: AppInfo? = null
+
+    @Ignore
+    var mediaInfo: MediaInfo? = null
 }

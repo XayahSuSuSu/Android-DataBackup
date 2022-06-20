@@ -34,5 +34,6 @@ data class BackupInfo(
 
 data class MediaInfo(
     val name: String,
-    val path: String
+    val path: String,
+    val size: String
 )

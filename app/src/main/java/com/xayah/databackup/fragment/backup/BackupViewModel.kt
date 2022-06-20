@@ -510,7 +510,12 @@ class BackupViewModel : ViewModel() {
 
                                 // 目录信息
                                 val name = i.split("/").last()
-                                val mediaInfo = MediaInfo(name, i.replace("/${name}", ""))
+                                val size = Command.countSize(i, 1)
+                                val mediaInfo = MediaInfo(
+                                    name,
+                                    i.replace("/${name}", ""),
+                                    size
+                                )
                                 jsonArray.add(JsonParser.parseString(Gson().toJson(mediaInfo)))
 
                                 // 备份目录
@@ -519,7 +524,8 @@ class BackupViewModel : ViewModel() {
                                     "media",
                                     "media",
                                     outPutMedia,
-                                    i
+                                    i,
+                                    size
                                 ).apply {
                                     if (!this)
                                         state = false

@@ -170,13 +170,22 @@ class Command {
             dataPath: String,
             dataSize: String? = null
         ): Boolean {
-            countSize(
-                "${dataPath}/${packageName}",
-                1
-            ).apply {
-                if (this == dataSize) {
-                    App.log.add(GlobalString.noUpdateAndSkip)
-                    return true
+            if (dataType == "media") {
+                countSize(dataPath, 1).apply {
+                    if (this == dataSize) {
+                        App.log.add(GlobalString.noUpdateAndSkip)
+                        return true
+                    }
+                }
+            } else {
+                countSize(
+                    "${dataPath}/${packageName}",
+                    1
+                ).apply {
+                    if (this == dataSize) {
+                        App.log.add(GlobalString.noUpdateAndSkip)
+                        return true
+                    }
                 }
             }
             Bashrc.compress(compressionType, dataType, packageName, outPut, dataPath).apply {
