@@ -73,57 +73,6 @@ open class AppListAdapterBase(open val context: Context) :
                         }
             }
         }
-
-        // -------------Deprecated-------------
-        if (item.isProcessing) {
-            binding.appPackage.text = item.progress
-            binding.chipApplication.isClickable = false
-            binding.chipData.isClickable = false
-        }
-        if (item.onProcessingApp) {
-            binding.chipApplication.apply {
-                checkedIcon = null
-                chipIcon = CircularProgressDrawable(context).apply {
-                    setStyle(CircularProgressDrawable.DEFAULT)
-                    centerRadius = 5.dp.toFloat()
-                    strokeWidth = 2.dp.toFloat()
-                    start()
-                }
-            }
-        } else {
-            binding.chipApplication.apply {
-                checkedIcon = AppCompatResources.getDrawable(context, R.drawable.ic_round_check)
-                chipIcon = null
-            }
-        }
-        if (item.onProcessingData) {
-            binding.chipData.apply {
-                checkedIcon = null
-                chipIcon = CircularProgressDrawable(context).apply {
-                    setStyle(CircularProgressDrawable.DEFAULT)
-                    centerRadius = 5.dp.toFloat()
-                    strokeWidth = 2.dp.toFloat()
-                    start()
-                }
-            }
-        } else {
-            binding.chipData.apply {
-                checkedIcon = AppCompatResources.getDrawable(context, R.drawable.ic_round_check)
-                chipIcon = null
-            }
-        }
-
-        if (item.isProcessing && !item.backupApp) {
-            binding.chipApplication.visibility = View.GONE
-        } else {
-            binding.chipApplication.visibility = View.VISIBLE
-        }
-        if (item.isProcessing && !item.backupData) {
-            binding.chipData.visibility = View.GONE
-        } else {
-            binding.chipData.visibility = View.VISIBLE
-        }
-        // -------------Deprecated-------------
     }
 
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
