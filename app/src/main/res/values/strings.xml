@@ -95,4 +95,5 @@
     <string name="backup_check">Backup check</string>
     <string name="install_apk_installed">Apk installed</string>
     <string name="get_app_version_code_failed">Get app version code failed</string>
+    <string name="no_update_and_skip">No update, skip</string>
 </resources>

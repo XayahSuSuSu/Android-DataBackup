@@ -392,7 +392,8 @@ class BackupViewModel : ViewModel() {
                                     compressionType,
                                     packageName,
                                     outPutData,
-                                    userId
+                                    userId,
+                                    i.appInfo?.apkSize
                                 )
                                     .apply {
                                         if (!this)
@@ -409,7 +410,8 @@ class BackupViewModel : ViewModel() {
                                     "user",
                                     packageName,
                                     outPutData,
-                                    Path.getUserPath(userId)
+                                    Path.getUserPath(userId),
+                                    i.appInfo?.userSize
                                 )
                                     .apply {
                                         if (!this)
@@ -422,7 +424,8 @@ class BackupViewModel : ViewModel() {
                                     "data",
                                     packageName,
                                     outPutData,
-                                    Path.getDataPath(userId)
+                                    Path.getDataPath(userId),
+                                    i.appInfo?.dataSize
                                 )
                                     .apply {
                                         if (!this)
@@ -435,7 +438,8 @@ class BackupViewModel : ViewModel() {
                                     "obb",
                                     packageName,
                                     outPutData,
-                                    Path.getObbPath(userId)
+                                    Path.getObbPath(userId),
+                                    i.appInfo?.obbSize
                                 )
                                     .apply {
                                         if (!this)

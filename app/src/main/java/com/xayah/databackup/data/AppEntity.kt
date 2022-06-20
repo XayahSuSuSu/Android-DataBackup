@@ -23,4 +23,7 @@ data class AppEntity(
 
     @Ignore
     var backupPath: String = ""
+
+    @Ignore
+    var appInfo: AppInfo? = null
 }

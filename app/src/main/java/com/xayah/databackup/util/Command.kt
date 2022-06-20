@@ -86,6 +86,21 @@ class Command {
                         }
                         room.insertOrUpdate(appEntity)
                         appEntity.icon = appIcon
+                        try {
+                            val backupPath = context.readBackupSavePath() + "/$userId"
+                            Shell.cmd("cat ${backupPath}/${packageName}/info").exec().apply {
+                                if (this.isSuccess) {
+                                    val appInfo =
+                                        Gson().fromJson(
+                                            this.out.joinToString(),
+                                            AppInfo::class.java
+                                        )
+                                    appEntity.appInfo = appInfo
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                         appList.add(appEntity)
 
                     } catch (e: Exception) {
@@ -152,8 +167,18 @@ class Command {
             dataType: String,
             packageName: String,
             outPut: String,
-            dataPath: String
+            dataPath: String,
+            dataSize: String? = null
         ): Boolean {
+            countSize(
+                "${dataPath}/${packageName}",
+                1
+            ).apply {
+                if (this == dataSize) {
+                    App.log.add(App.globalContext.getString(R.string.no_update_and_skip))
+                    return true
+                }
+            }
             Bashrc.compress(compressionType, dataType, packageName, outPut, dataPath).apply {
                 if (!this.first) {
                     App.log.add(this.second)
@@ -168,7 +193,8 @@ class Command {
             compressionType: String,
             packageName: String,
             outPut: String,
-            userId: String
+            userId: String,
+            apkSize: String? = null
         ): Boolean {
             val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
@@ -179,6 +205,15 @@ class Command {
                         }"
                     )
                     return false
+                }
+            }
+            countSize(
+                apkPathPair.second,
+                1
+            ).apply {
+                if (this == apkSize) {
+                    App.log.add(App.globalContext.getString(R.string.no_update_and_skip))
+                    return true
                 }
             }
             Bashrc.cd(apkPathPair.second).apply {

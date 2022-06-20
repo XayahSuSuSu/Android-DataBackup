@@ -90,4 +90,5 @@
     <string name="backup_check">備份校驗</string>
     <string name="install_apk_installed">APK已安裝！</string>
     <string name="get_app_version_code_failed">APP版本代碼獲取失敗</string>
+    <string name="no_update_and_skip">無更新，跳過備份</string>
 </resources>
