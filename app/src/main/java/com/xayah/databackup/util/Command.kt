@@ -308,10 +308,13 @@ class Command {
                 if (compressionType.isNotEmpty()) {
                     when (dataType) {
                         "user" -> {
-                            dataPath = "/data/user/$userId"
+                            dataPath = Path.getUserPath(userId)
                         }
-                        "data", "obb" -> {
-                            dataPath = "/data/media/$userId/Android/${dataType}"
+                        "data" -> {
+                            dataPath = Path.getDataPath(userId)
+                        }
+                        "obb" -> {
+                            dataPath = Path.getObbPath(userId)
                         }
                     }
                     decompress(
@@ -347,8 +350,34 @@ class Command {
             }
         }
 
-        fun generateAppInfo(appName: String, packageName: String, outPut: String): Boolean {
-            val appInfo = AppInfo(appName, packageName, getAppVersion(packageName))
+        private fun getAppVersionCode(userId: String, packageName: String): String {
+            Bashrc.getAppVersionCode(userId, packageName).apply {
+                if (!this.first) {
+                    App.log.add(this.second)
+                    App.log.add(App.globalContext.getString(R.string.get_app_version_code_failed))
+                    return ""
+                }
+                return this.second
+            }
+        }
+
+        fun generateAppInfo(
+            appName: String,
+            userId: String,
+            packageName: String,
+            userSize: String,
+            dataSize: String,
+            obbSize: String,
+            outPut: String
+        ): Boolean {
+            val appInfo = AppInfo(
+                appName, packageName,
+                getAppVersion(packageName),
+                getAppVersionCode(userId, packageName),
+                userSize,
+                dataSize,
+                obbSize
+            )
             return object2JSONFile(appInfo, "${outPut}/info")
         }
 
@@ -445,8 +474,8 @@ class Command {
             return true
         }
 
-        fun countSize(path: String): String {
-            Bashrc.countSize(path).apply {
+        fun countSize(path: String, type: Int = 0): String {
+            Bashrc.countSize(path, type).apply {
                 if (!this.first) {
                     App.log.add(this.second)
                     return ""

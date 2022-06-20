@@ -409,7 +409,7 @@ class BackupViewModel : ViewModel() {
                                     "user",
                                     packageName,
                                     outPutData,
-                                    "/data/user/$userId"
+                                    Path.getUserPath(userId)
                                 )
                                     .apply {
                                         if (!this)
@@ -422,7 +422,7 @@ class BackupViewModel : ViewModel() {
                                     "data",
                                     packageName,
                                     outPutData,
-                                    "/data/media/$userId/Android/data"
+                                    Path.getDataPath(userId)
                                 )
                                     .apply {
                                         if (!this)
@@ -435,7 +435,7 @@ class BackupViewModel : ViewModel() {
                                     "obb",
                                     packageName,
                                     outPutData,
-                                    "/data/media/$userId/Android/obb"
+                                    Path.getObbPath(userId)
                                 )
                                     .apply {
                                         if (!this)
@@ -443,10 +443,28 @@ class BackupViewModel : ViewModel() {
                                     }
                             }
                             // 生成应用信息
-                            Command.generateAppInfo(i.appName, i.packageName, outPutData).apply {
-                                if (!this)
-                                    state = false
-                            }
+                            Command.generateAppInfo(
+                                i.appName,
+                                userId,
+                                i.packageName,
+                                Command.countSize(
+                                    "${Path.getUserPath(userId)}/${i.packageName}",
+                                    1
+                                ),
+                                Command.countSize(
+                                    "${Path.getDataPath(userId)}/${i.packageName}",
+                                    1
+                                ),
+                                Command.countSize(
+                                    "${Path.getObbPath(userId)}/${i.packageName}",
+                                    1
+                                ),
+                                outPutData,
+                            )
+                                .apply {
+                                    if (!this)
+                                        state = false
+                                }
                             // 检验
                             Command.testArchiveForEach(outPutData).apply {
                                 if (!this)

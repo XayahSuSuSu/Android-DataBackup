@@ -20,7 +20,11 @@ data class Issue(
 data class AppInfo(
     val appName: String,
     val packageName: String,
-    val version: String
+    val version: String,
+    val versionCode: String,
+    val userSize: String,
+    val dataSize: String,
+    val obbSize: String
 )
 
 data class BackupInfo(

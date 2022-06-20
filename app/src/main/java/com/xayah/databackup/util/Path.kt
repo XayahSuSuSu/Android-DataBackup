@@ -11,5 +11,17 @@ class Path {
         fun getExternalFilesDir(context: Context): String? {
             return context.getExternalFilesDir(null)?.path
         }
+
+        fun getUserPath(userId: String): String {
+            return "/data/user/$userId"
+        }
+
+        fun getDataPath(userId: String): String {
+            return "/data/media/$userId/Android/data"
+        }
+
+        fun getObbPath(userId: String): String {
+            return "/data/media/$userId/Android/obb"
+        }
     }
 }

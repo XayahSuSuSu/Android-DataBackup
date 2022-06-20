@@ -204,6 +204,12 @@ get_app_version() {
   dumpsys package "$1" | awk '/versionName=/{print $1}' | cut -f2 -d '=' | head -1
 }
 
+get_app_version_code() {
+  # $1: user_id
+  # $2: package_name
+  pm list packages --show-versioncode --user "$1" "$2" | cut -f3 -d ':' | head -n 1
+}
+
 write_to_file() {
   # $1: content
   # $2: path
@@ -248,5 +254,11 @@ find_package() {
 
 count_size() {
   # $1: path
-  du -ksh "$1" | awk '{print $1}'
+  # $2: type
+  if [ -d "$1" ]; then
+    case "$2" in
+    0) du -ksh "$1" | awk '{print $1}' ;;
+    *) du -ks "$1" | awk '{print $1}' ;;
+    esac
+  fi
 }

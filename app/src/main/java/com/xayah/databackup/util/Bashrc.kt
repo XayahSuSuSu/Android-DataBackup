@@ -113,6 +113,11 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        fun getAppVersionCode(userId: String, packageName: String): Pair<Boolean, String> {
+            val exec = Shell.cmd("get_app_version_code $userId $packageName").exec()
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
+
         fun writeToFile(content: String, path: String): Pair<Boolean, String> {
             val exec = Shell.cmd("write_to_file \'$content\' $path").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
@@ -145,8 +150,8 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out)
         }
 
-        fun countSize(path: String): Pair<Boolean, String> {
-            val exec = Shell.cmd("count_size $path").exec()
+        fun countSize(path: String, type: Int): Pair<Boolean, String> {
+            val exec = Shell.cmd("count_size $path $type").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
     }
