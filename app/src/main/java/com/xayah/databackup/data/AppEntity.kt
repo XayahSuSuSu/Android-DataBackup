@@ -19,16 +19,7 @@ data class AppEntity(
     var icon: Drawable? = null
 
     @Ignore
-    var onProcessingApp: Boolean = false
-
-    @Ignore
-    var onProcessingData: Boolean = false
-
-    @Ignore
     var isProcessing: Boolean = false
-
-    @Ignore
-    var progress: String = ""
 
     @Ignore
     var backupPath: String = ""
