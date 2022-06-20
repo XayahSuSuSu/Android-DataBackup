@@ -19,6 +19,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
+import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
@@ -498,6 +499,11 @@ class BackupViewModel : ViewModel() {
                             // 目录数组
                             val jsonArray = JsonArray()
 
+                            // 已存在的数据
+                            val info = Shell.cmd("cat ${outPut}/media/info")
+                                .exec().out.joinToString()
+                            val jsonArrayInfo = JsonParser.parseString(info).asJsonArray
+
                             for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
                                 // 更新通知
                                 notification.update(false) {
@@ -510,13 +516,22 @@ class BackupViewModel : ViewModel() {
 
                                 // 目录信息
                                 val name = i.split("/").last()
-                                val size = Command.countSize(i, 1)
+
                                 val mediaInfo = MediaInfo(
                                     name,
                                     i.replace("/${name}", ""),
-                                    size
+                                    Command.countSize(i, 1)
                                 )
+
                                 jsonArray.add(JsonParser.parseString(Gson().toJson(mediaInfo)))
+
+                                var size: String? = null
+
+                                for (j in jsonArrayInfo) {
+                                    val item = Gson().fromJson(j, MediaInfo::class.java)
+                                    if (item.name == name.split(".").first())
+                                        size = item.size
+                                }
 
                                 // 备份目录
                                 Command.compress(
