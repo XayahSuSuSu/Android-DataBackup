@@ -466,6 +466,13 @@ class Command {
                     return false
                 }
             }
+            val apkSize = countSize(Bashrc.getAPKPath(packageName, userId).second, 1)
+            countSize(apkPathPair.second, 1).apply {
+                if (this == apkSize) {
+                    App.log.add(GlobalString.noUpdateAndSkip)
+                    return true
+                }
+            }
             cp("${apkPathPair.second}/base.apk", "${outPut}/DataBackup.apk").apply {
                 if (!this) {
                     App.log.add("${packageName}: ${GlobalString.pathNotExist}")
