@@ -120,9 +120,9 @@ install_apk() {
     done
     apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
     case "$apk_num" in
-    1) pm install -i com.android.vending --user "$3" -r -t ${tmp_dir}/*.apk ;;
+    1) pm_install "$3" "${tmp_dir}/*.apk" ;;
     *)
-      session=$(pm install-create -i com.android.vending --user "$3" | grep -E -o '[0-9]+')
+      session=$(pm_install_create "$3" | grep -E -o '[0-9]+')
       find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | while read -r i; do
         pm install-write "$session" "${i##*/}" "$i"
       done
@@ -133,6 +133,25 @@ install_apk() {
     return 222
   fi
   rm -rf "$tmp_dir"
+}
+
+pm_install() {
+  # $1: user_id
+  # $2: apk_path
+  if [ "$(getprop ro.build.version.sdk)" -lt 30 ]; then
+    pm install --user "$1" -rt "$2"
+  else
+    pm install -i com.android.vending --user "$1" -rt "$2"
+  fi
+}
+
+pm_install_create() {
+  # $1: user_id
+  if [ "$(getprop ro.build.version.sdk)" -lt 30 ]; then
+    pm install-create --user "$1" -t
+  else
+    pm install-create -i com.android.vending --user "$1" -t
+  fi
 }
 
 set_owner_and_SELinux() {
