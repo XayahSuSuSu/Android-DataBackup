@@ -2,7 +2,6 @@ package com.xayah.databackup.util
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import com.xayah.databackup.R
 
 fun Context.savePreferences(key: String, value: String) {
     getSharedPreferences("settings", MODE_PRIVATE).edit().apply {
@@ -35,7 +34,7 @@ fun Context.saveBackupSavePath(path: CharSequence?) {
 }
 
 fun Context.readBackupSavePath(): String {
-    return readPreferencesString("backup_save_path") ?: getString(R.string.default_backup_save_path)
+    return readPreferencesString("backup_save_path") ?: GlobalString.defaultBackupSavePath
 }
 
 fun Context.saveCompressionType(type: CharSequence?) {
@@ -68,7 +67,7 @@ fun Context.saveCustomDirectoryPath(path: CharSequence?) {
 
 fun Context.readCustomDirectoryPath(): String {
     return readPreferencesString("custom_directory_path")
-        ?: getString(R.string.default_custom_directory_path)
+        ?: GlobalString.defaultCustomDirectoryPath
 }
 
 fun Context.saveIsBackupItself(value: Boolean) {

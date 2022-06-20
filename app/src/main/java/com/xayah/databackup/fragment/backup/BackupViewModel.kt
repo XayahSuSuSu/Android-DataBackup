@@ -155,7 +155,7 @@ class BackupViewModel : ViewModel() {
                     return false
                 }
             })
-            queryHint = this.context.getString(R.string.please_type_key_word)
+            queryHint = GlobalString.pleaseTypeKeyWord
             isQueryRefinementEnabled = true
         }
         val item = menu.findItem(R.id.backup_search).apply {
@@ -233,15 +233,15 @@ class BackupViewModel : ViewModel() {
             // 检查是否处于搜索模式
             Toast.makeText(
                 context,
-                context.getString(R.string.please_exit_search_mode),
+                GlobalString.pleaseExitSearchMode,
                 Toast.LENGTH_SHORT
             ).show()
         } else {
             // 确认清单
-            var contents = "${context.getString(R.string.selected)}\n"
+            var contents = "${GlobalString.selected}\n"
             if (App.globalContext.readIsBackupItself()) {
                 // 备份自身
-                contents += context.getString(R.string.app_name) + "\n"
+                contents += "${GlobalString.appName}\n"
             }
             for (i in appListAll) {
                 if (i.backupApp || i.backupData) {
@@ -279,7 +279,7 @@ class BackupViewModel : ViewModel() {
                             withContext(Dispatchers.Main) {
                                 (context as MainActivity).binding.toolbar.subtitle = "$h:$m:$s"
                                 context.binding.toolbar.title =
-                                    "${context.getString(R.string.backup_processing)}: ${index}/${total}"
+                                    "${GlobalString.backupProcessing}: ${index}/${total}"
                                 // 更新通知
                                 notification.update(index == total) {
                                     it?.setProgress(total, index, false)
@@ -290,8 +290,7 @@ class BackupViewModel : ViewModel() {
                         withContext(Dispatchers.Main) {
                             (context as MainActivity).binding.toolbar.subtitle =
                                 context.viewModel.versionName
-                            context.binding.toolbar.title =
-                                context.getString(R.string.backup_success)
+                            context.binding.toolbar.title = GlobalString.backupSuccess
                         }
                     }
                     onCallback()
@@ -320,7 +319,7 @@ class BackupViewModel : ViewModel() {
                     if (App.globalContext.readIsBackupItself()) {
                         // 备份自身
                         total += 1
-                        val appName = context.getString(R.string.app_name)
+                        val appName = GlobalString.appName
                         val icon = AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)
                         val packageName = "com.xayah.databackup"
                         val outPut = context.readBackupSavePath()
@@ -333,15 +332,15 @@ class BackupViewModel : ViewModel() {
                         currentAppName.postValue(appName)
                         currentAppIcon.postValue(icon)
                         App.log.add("----------------------------")
-                        App.log.add("${context.getString(R.string.backup_processing)}: $packageName")
+                        App.log.add("${GlobalString.backupProcessing}: $packageName")
                         var state = true // 该任务是否成功完成
-                        App.log.add(context.getString(R.string.backup_apk_processing))
+                        App.log.add(GlobalString.backupApkProcessing)
                         Command.backupItself(packageName, outPut, "")
                             .apply {
                                 if (!this)
                                     state = false
                             }
-                        App.log.add(context.getString(R.string.success))
+                        App.log.add(GlobalString.success)
                         if (state)
                             success += 1
                         else
@@ -354,13 +353,13 @@ class BackupViewModel : ViewModel() {
                     Command.mkdir(outPut)
 
                     // 生成备份信息
-                    val backupInfo = BackupInfo(context.getString(R.string.backup_version))
+                    val backupInfo = BackupInfo(GlobalString.backupVersion)
                     Command.object2JSONFile(
                         backupInfo,
                         "${outPut}/info"
                     ).apply {
                         if (!this) {
-                            App.log.add(context.getString(R.string.generate_backup_info_failed))
+                            App.log.add(GlobalString.generateBackupInfoFailed)
                             isProcessing = false
                             showFinish(context)
                             return@setWithConfirm
@@ -377,7 +376,7 @@ class BackupViewModel : ViewModel() {
                             currentAppName.postValue(i.appName)
                             currentAppIcon.postValue(i.icon)
                             App.log.add("----------------------------")
-                            App.log.add("${context.getString(R.string.backup_processing)}: ${i.packageName}")
+                            App.log.add("${GlobalString.backupProcessing}: ${i.packageName}")
                             var state = true // 该任务是否成功完成
 
                             // 设置任务参数
@@ -387,7 +386,7 @@ class BackupViewModel : ViewModel() {
 
                             if (i.backupApp) {
                                 // 选中备份应用
-                                App.log.add(context.getString(R.string.backup_apk_processing))
+                                App.log.add(GlobalString.backupApkProcessing)
                                 Command.compressAPK(
                                     compressionType,
                                     packageName,
@@ -399,11 +398,11 @@ class BackupViewModel : ViewModel() {
                                         if (!this)
                                             state = false
                                     }
-                                App.log.add(context.getString(R.string.success))
+                                App.log.add(GlobalString.success)
                             }
                             if (i.backupData) {
                                 // 选中备份数据
-                                App.log.add("${context.getString(R.string.backup_processing)}user")
+                                App.log.add("${GlobalString.backupProcessing}user")
                                 // 备份user数据
                                 Command.compress(
                                     compressionType,
@@ -417,7 +416,7 @@ class BackupViewModel : ViewModel() {
                                         if (!this)
                                             state = false
                                     }
-                                App.log.add("${context.getString(R.string.backup_processing)}data")
+                                App.log.add("${GlobalString.backupProcessing}data")
                                 // 备份data数据
                                 Command.compress(
                                     compressionType,
@@ -431,7 +430,7 @@ class BackupViewModel : ViewModel() {
                                         if (!this)
                                             state = false
                                     }
-                                App.log.add("${context.getString(R.string.backup_processing)}obb")
+                                App.log.add("${GlobalString.backupProcessing}obb")
                                 // 备份obb数据
                                 Command.compress(
                                     compressionType,
@@ -543,7 +542,7 @@ class BackupViewModel : ViewModel() {
                                 "${outPutMedia}/info"
                             ).apply {
                                 if (!this) {
-                                    App.log.add(context.getString(R.string.generate_media_info_failed))
+                                    App.log.add(GlobalString.generateMediaInfoFailed)
                                     isProcessing = false
                                     showFinish(context)
                                     return@launch
@@ -601,14 +600,14 @@ class BackupViewModel : ViewModel() {
     private fun showFinish(context: Context) {
         // 完成通知
         notification.update(true) {
-            it?.setContentTitle(context.getString(R.string.backup_success))
+            it?.setContentTitle(GlobalString.backupSuccess)
         }
         // 展示完成页面
         binding?.relativeLayout?.removeAllViews()
         val showResult = {
             Toast.makeText(
                 context,
-                context.getString(R.string.backup_success),
+                GlobalString.backupSuccess,
                 Toast.LENGTH_SHORT
             ).show()
             BottomSheetDialog(context).apply {

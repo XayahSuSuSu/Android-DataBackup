@@ -106,15 +106,13 @@ class RestoreViewModel : ViewModel() {
         // 长按事件
         binding?.floatingActionButton?.setOnLongClickListener {
             MaterialAlertDialogBuilder(context).apply {
-                setWithConfirm(context.getString(R.string.delete_confirm)) {
+                setWithConfirm(GlobalString.deleteConfirm) {
                     backupPath?.apply {
                         val ret = Command.rm(this)
                         MaterialAlertDialogBuilder(context).apply {
                             setWithNormalMessage(
-                                context.getString(R.string.tips),
-                                if (ret) context.getString(R.string.success) else context.getString(
-                                    com.xayah.design.R.string.failed
-                                ),
+                                GlobalString.tips,
+                                if (ret) GlobalString.success else GlobalString.failed,
                                 false
                             ) {
                                 initialize(context, materialYouFileExplorer) {}
@@ -152,12 +150,12 @@ class RestoreViewModel : ViewModel() {
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
-                        if ((backupInfo.version != context.getString(R.string.backup_version)) || (!exec.isSuccess)) {
+                        if ((backupInfo.version != GlobalString.backupVersion) || (!exec.isSuccess)) {
                             withContext(Dispatchers.Main) {
                                 MaterialAlertDialogBuilder(context).apply {
                                     setWithNormalMessage(
-                                        context.getString(R.string.tips),
-                                        context.getString(R.string.backup_not_support),
+                                        GlobalString.tips,
+                                        GlobalString.backupNotSupport,
                                         false
                                     )
                                 }
@@ -176,7 +174,7 @@ class RestoreViewModel : ViewModel() {
                                 for (i in ls.out) {
                                     if (i == "info")
                                         continue
-                                    val packageName = context.getString(R.string.custom_dir)
+                                    val packageName = GlobalString.customDir
                                     val appEntity = AppEntity(0, i, packageName).apply {
                                         icon = AppCompatResources.getDrawable(
                                             context, R.drawable.ic_round_android
@@ -236,7 +234,7 @@ class RestoreViewModel : ViewModel() {
                     return false
                 }
             })
-            queryHint = this.context.getString(R.string.please_type_key_word)
+            queryHint = GlobalString.pleaseTypeKeyWord
             isQueryRefinementEnabled = true
         }
         val item = menu.findItem(R.id.restore_search).apply {
@@ -301,12 +299,12 @@ class RestoreViewModel : ViewModel() {
             // 检查是否处于搜索模式
             Toast.makeText(
                 context,
-                context.getString(R.string.please_exit_search_mode),
+                GlobalString.pleaseExitSearchMode,
                 Toast.LENGTH_SHORT
             ).show()
         } else {
             // 确认清单
-            var contents = "${context.getString(R.string.selected)}\n"
+            var contents = "${GlobalString.selected}\n"
             for (i in appListAll) {
                 if (i.backupApp || i.backupData) {
                     contents += i.appName + "\n"
@@ -338,7 +336,7 @@ class RestoreViewModel : ViewModel() {
                             withContext(Dispatchers.Main) {
                                 (context as MainActivity).binding.toolbar.subtitle = "$h:$m:$s"
                                 context.binding.toolbar.title =
-                                    "${context.getString(R.string.restore_processing)}: ${index}/${total}"
+                                    "${GlobalString.restoreProcessing}: ${index}/${total}"
                                 // 更新通知
                                 notification.update(index == total) {
                                     it?.setProgress(total, index, false)
@@ -349,8 +347,7 @@ class RestoreViewModel : ViewModel() {
                         withContext(Dispatchers.Main) {
                             (context as MainActivity).binding.toolbar.subtitle =
                                 context.viewModel.versionName
-                            context.binding.toolbar.title =
-                                context.getString(R.string.restore_success)
+                            context.binding.toolbar.title = GlobalString.restoreSuccess
                         }
                     }
                     onCallback()
@@ -376,7 +373,7 @@ class RestoreViewModel : ViewModel() {
 
                     CoroutineScope(Dispatchers.IO).launch {
                         for (i in appList) {
-                            if (i.packageName == context.getString(R.string.custom_dir))
+                            if (i.packageName == GlobalString.customDir)
                                 continue
                             // 更新通知
                             notification.update(false) {
@@ -386,7 +383,7 @@ class RestoreViewModel : ViewModel() {
                             currentAppName.postValue(i.appName)
                             currentAppIcon.postValue(i.icon)
                             App.log.add("----------------------------")
-                            App.log.add("${context.getString(R.string.restore_processing)}: ${i.packageName}")
+                            App.log.add("${GlobalString.restoreProcessing}: ${i.packageName}")
                             var state = true // 该任务是否成功完成
 
                             // 设置任务参数
@@ -395,7 +392,7 @@ class RestoreViewModel : ViewModel() {
 
                             if (i.backupApp) {
                                 // 选中恢复应用
-                                App.log.add(context.getString(R.string.install_apk_processing))
+                                App.log.add(GlobalString.installApkProcessing)
                                 val ret = Command.installAPK(inPath, packageName, userId)
                                 if (!ret) {
                                     failed += 1
@@ -405,7 +402,7 @@ class RestoreViewModel : ViewModel() {
                             }
                             if (i.backupData) {
                                 // 选中恢复数据
-                                App.log.add(context.getString(R.string.restore_processing))
+                                App.log.add(GlobalString.restoreProcessing)
                                 Command.restoreData(packageName, inPath, userId).apply {
                                     if (!this)
                                         state = false
@@ -520,14 +517,14 @@ class RestoreViewModel : ViewModel() {
     fun showFinish(context: Context) {
         // 完成通知
         notification.update(true) {
-            it?.setContentTitle(context.getString(R.string.restore_success))
+            it?.setContentTitle(GlobalString.restoreSuccess)
         }
         // 展示完成页面
         binding?.relativeLayout?.removeAllViews()
         val showResult = {
             Toast.makeText(
                 context,
-                context.getString(R.string.restore_success),
+                GlobalString.restoreSuccess,
                 Toast.LENGTH_SHORT
             ).show()
             BottomSheetDialog(context).apply {

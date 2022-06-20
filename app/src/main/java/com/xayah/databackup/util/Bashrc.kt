@@ -4,7 +4,6 @@ import android.os.Environment
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
-import com.xayah.databackup.R
 
 class Bashrc {
     companion object {
@@ -16,7 +15,7 @@ class Bashrc {
         }
 
         fun getAPKPath(packageName: String, userId: String): Pair<Boolean, String> {
-            App.log.add(App.globalContext.getString(R.string.get_apk_path))
+            App.log.add(GlobalString.getApkPath)
             val exec = Shell.cmd("get_apk_path $packageName $userId").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
@@ -27,7 +26,7 @@ class Bashrc {
         }
 
         fun compressAPK(compressionType: String, outPut: String): Pair<Boolean, String> {
-            App.log.add(App.globalContext.getString(R.string.compress_apk))
+            App.log.add(GlobalString.compressApk)
             val cmd = "compress_apk $compressionType $outPut"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
@@ -47,7 +46,7 @@ class Bashrc {
             outPut: String,
             dataPath: String
         ): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.compress)} $dataType")
+            App.log.add("${GlobalString.compress} $dataType")
             val cmd = "compress $compressionType $dataType $packageName $outPut $dataPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
@@ -66,7 +65,7 @@ class Bashrc {
         }
 
         fun installAPK(inPath: String, packageName: String, userId: String): Pair<Int, String> {
-            App.log.add("${App.globalContext.getString(R.string.install)} $packageName $userId")
+            App.log.add("${GlobalString.install} $packageName $userId")
             val cmd = "install_apk $inPath $packageName $userId"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
@@ -82,7 +81,7 @@ class Bashrc {
         fun setOwnerAndSELinux(
             dataType: String, packageName: String, path: String, userId: String
         ): Pair<Boolean, String> {
-            App.log.add(App.globalContext.getString(R.string.set_SELinux))
+            App.log.add(GlobalString.setSELinux)
             val exec =
                 Shell.cmd("set_owner_and_SELinux $dataType $packageName $path $userId").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
@@ -95,7 +94,7 @@ class Bashrc {
             packageName: String,
             dataPath: String
         ): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.decompress)} $dataType")
+            App.log.add("${GlobalString.decompress} $dataType")
             val cmd = "decompress $compressionType $dataType $inputPath $packageName $dataPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
@@ -127,7 +126,7 @@ class Bashrc {
             compressionType: String,
             inputPath: String,
         ): Pair<Boolean, String> {
-            App.log.add("${App.globalContext.getString(R.string.test)} $inputPath")
+            App.log.add("${GlobalString.test} $inputPath")
             val cmd = "test_archive $compressionType $inputPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {

@@ -34,9 +34,9 @@ class SettingsViewModel() : ViewModel() {
     }
     val compressionTypeHelp: ((v: View) -> Unit) = { v ->
         MaterialAlertDialogBuilder(v.context)
-            .setTitle(v.context.getString(R.string.compression_type))
-            .setMessage(v.context.getString(R.string.compression_type_help))
-            .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
+            .setTitle(GlobalString.compressionType)
+            .setMessage(GlobalString.compressionTypeHelp)
+            .setPositiveButton(GlobalString.confirm) { _, _ -> }
             .setCancelable(true)
             .show()
     }
@@ -86,9 +86,9 @@ class SettingsViewModel() : ViewModel() {
     }
     val backupUserHelp: ((v: View) -> Unit) = { v ->
         MaterialAlertDialogBuilder(v.context)
-            .setTitle(v.context.getString(R.string.backup_user) + " " + v.context.getString(R.string.cautious_action))
-            .setMessage(v.context.getString(R.string.backup_user_help))
-            .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
+            .setTitle("${GlobalString.backupUser} ${GlobalString.cautiousAction}")
+            .setMessage(GlobalString.backupUserHelp)
+            .setPositiveButton(GlobalString.confirm) { _, _ -> }
             .setCancelable(true)
             .show()
     }
@@ -102,9 +102,9 @@ class SettingsViewModel() : ViewModel() {
     }
     val restoreUserHelp: ((v: View) -> Unit) = { v ->
         MaterialAlertDialogBuilder(v.context)
-            .setTitle(v.context.getString(R.string.restore_user) + " " + v.context.getString(R.string.cautious_action))
-            .setMessage(v.context.getString(R.string.restore_user_help))
-            .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
+            .setTitle("${GlobalString.restoreUser} ${GlobalString.cautiousAction}")
+            .setMessage(GlobalString.restoreUserHelp)
+            .setPositiveButton(GlobalString.confirm) { _, _ -> }
             .setCancelable(true)
             .show()
     }
@@ -145,18 +145,18 @@ class SettingsViewModel() : ViewModel() {
                         }
                         withContext(Dispatchers.Main) {
                             MaterialAlertDialogBuilder(v.context)
-                                .setTitle(v.context.getString(R.string.history_version))
+                                .setTitle(GlobalString.historyVersion)
                                 .setItems(nameList.toTypedArray()) { _, index ->
                                     MaterialAlertDialogBuilder(v.context)
                                         .setTitle(nameList[index])
                                         .setMessage(mBodyList[index].body)
-                                        .setPositiveButton(v.context.getString(R.string.github)) { _, _ ->
+                                        .setPositiveButton(GlobalString.github) { _, _ ->
                                             toWebView(v, mBodyList[index].html_url)
                                         }
                                         .setCancelable(true)
                                         .show()
                                 }
-                                .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
+                                .setPositiveButton(GlobalString.confirm) { _, _ -> }
                                 .setCancelable(true)
                                 .show()
                         }
@@ -192,18 +192,18 @@ class SettingsViewModel() : ViewModel() {
                         }
                         withContext(Dispatchers.Main) {
                             MaterialAlertDialogBuilder(v.context)
-                                .setTitle(v.context.getString(R.string.feature_foresight))
+                                .setTitle(GlobalString.featureForesight)
                                 .setItems(titleList.toTypedArray()) { _, index ->
                                     MaterialAlertDialogBuilder(v.context)
                                         .setTitle(titleList[index])
                                         .setMessage(mBodyList[index].body)
-                                        .setPositiveButton(v.context.getString(R.string.github)) { _, _ ->
+                                        .setPositiveButton(GlobalString.github) { _, _ ->
                                             toWebView(v, mBodyList[index].html_url)
                                         }
                                         .setCancelable(true)
                                         .show()
                                 }
-                                .setPositiveButton(v.context.getString(R.string.confirm)) { _, _ -> }
+                                .setPositiveButton(GlobalString.confirm) { _, _ -> }
                                 .setCancelable(true)
                                 .show()
                         }

@@ -13,6 +13,7 @@ import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.util.Bashrc
 import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Path
 import com.xayah.design.view.setWithTopBarAndTips
 import kotlinx.coroutines.CoroutineScope
@@ -35,9 +36,7 @@ class HomeViewModel : ViewModel() {
         if (!initialized) {
             abi = Command.getABI()
             storageSpace =
-                if (Bashrc.getStorageSpace().first) Bashrc.getStorageSpace().second else context.getString(
-                    R.string.error
-                )
+                if (Bashrc.getStorageSpace().first) Bashrc.getStorageSpace().second else GlobalString.error
 
             CoroutineScope(Dispatchers.IO).launch {
                 val versionName =
@@ -59,7 +58,7 @@ class HomeViewModel : ViewModel() {
                 }
 
                 envList.clear()
-                envList.add(context.getString(R.string.environment_detection_tip))
+                envList.add(GlobalString.environmentDetectionTip)
                 if (isRoot)
                     envList.add("root: √")
                 else {
@@ -102,7 +101,7 @@ class HomeViewModel : ViewModel() {
     private fun showBottomSheetDialog(context: Context) {
         BottomSheetDialog(context).apply {
             setWithTopBarAndTips(
-                context.getString(R.string.environment_detection),
+                GlobalString.environmentDetection,
                 envList.joinToString(separator = "\n"),
                 R.raw.crown
             ) {}

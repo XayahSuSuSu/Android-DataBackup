@@ -4,9 +4,9 @@ import android.content.Context
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.xayah.databackup.R
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalString
 import com.xayah.design.view.setWithConfirm
 
 class AppListAdapterRestore(
@@ -40,7 +40,7 @@ class AppListAdapterRestore(
         binding.iconButton.visibility = View.VISIBLE
         binding.iconButton.setOnClickListener {
             MaterialAlertDialogBuilder(context).apply {
-                setWithConfirm(context.getString(R.string.delete_confirm)) {
+                setWithConfirm(GlobalString.deleteConfirm) {
                     if (item.backupPath.isNotEmpty()) {
                         val ret = Command.rm(item.backupPath)
                         if (ret) {
@@ -53,7 +53,7 @@ class AppListAdapterRestore(
                         } else {
                             Toast.makeText(
                                 context,
-                                context.getString(com.xayah.design.R.string.failed),
+                                GlobalString.failed,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

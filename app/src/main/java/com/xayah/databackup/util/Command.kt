@@ -175,14 +175,14 @@ class Command {
                 1
             ).apply {
                 if (this == dataSize) {
-                    App.log.add(App.globalContext.getString(R.string.no_update_and_skip))
+                    App.log.add(GlobalString.noUpdateAndSkip)
                     return true
                 }
             }
             Bashrc.compress(compressionType, dataType, packageName, outPut, dataPath).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(App.globalContext.getString(R.string.compress_failed))
+                    App.log.add(GlobalString.compressFailed)
                     return false
                 }
             }
@@ -199,11 +199,7 @@ class Command {
             val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(
-                        "${packageName}: ${
-                            App.globalContext.getString(R.string.path_not_exist)
-                        }"
-                    )
+                    App.log.add("${packageName}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
@@ -212,32 +208,28 @@ class Command {
                 1
             ).apply {
                 if (this == apkSize) {
-                    App.log.add(App.globalContext.getString(R.string.no_update_and_skip))
+                    App.log.add(GlobalString.noUpdateAndSkip)
                     return true
                 }
             }
             Bashrc.cd(apkPathPair.second).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(
-                        "${apkPathPair.second}: ${
-                            App.globalContext.getString(R.string.path_not_exist)
-                        }"
-                    )
+                    App.log.add("${apkPathPair.second}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
             Bashrc.compressAPK(compressionType, outPut).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(App.globalContext.getString(R.string.compress_apk_failed))
+                    App.log.add(GlobalString.compressApkFailed)
                     return false
                 }
             }
             Bashrc.cd("~").apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add("~: ${App.globalContext.getString(R.string.path_not_exist)}")
+                    App.log.add("~: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
@@ -254,7 +246,7 @@ class Command {
             Bashrc.decompress(compressionType, dataType, inputPath, packageName, dataPath).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(App.globalContext.getString(R.string.decompress_failed))
+                    App.log.add(GlobalString.decompressFailed)
                     return false
                 }
             }
@@ -297,16 +289,12 @@ class Command {
                 when (this.first) {
                     0 -> return true
                     222 -> {
-                        App.log.add(
-                            App.globalContext.getString(R.string.install_apk_installed)
-                        )
+                        App.log.add(GlobalString.installApkInstalled)
                         return true
                     }
                     else -> {
                         App.log.add(this.second)
-                        App.log.add(
-                            App.globalContext.getString(R.string.install_apk_failed)
-                        )
+                        App.log.add(GlobalString.installApkFailed)
                         return false
                     }
                 }
@@ -322,7 +310,7 @@ class Command {
             Bashrc.setOwnerAndSELinux(dataType, packageName, path, userId).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(App.globalContext.getString(R.string.set_SELinux_failed))
+                    App.log.add(GlobalString.setSELinuxFailed)
                     return
                 }
             }
@@ -378,7 +366,7 @@ class Command {
             Bashrc.getAppVersion(packageName).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(App.globalContext.getString(R.string.get_app_version_failed))
+                    App.log.add(GlobalString.getAppVersionFailed)
                     return ""
                 }
                 return this.second
@@ -389,7 +377,7 @@ class Command {
             Bashrc.getAppVersionCode(userId, packageName).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(App.globalContext.getString(R.string.get_app_version_code_failed))
+                    App.log.add(GlobalString.getAppVersionCodeFailed)
                     return ""
                 }
                 return this.second
@@ -429,7 +417,7 @@ class Command {
                 .apply {
                     if (!this.first) {
                         App.log.add(this.second)
-                        App.log.add(App.globalContext.getString(R.string.decompress_failed))
+                        App.log.add(GlobalString.decompressFailed)
                         return false
                     }
                 }
@@ -443,7 +431,7 @@ class Command {
             Bashrc.testArchive(compressionType, inputPath).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(App.globalContext.getString(R.string.broken))
+                    App.log.add(GlobalString.broken)
                     return false
                 }
             }
@@ -474,21 +462,13 @@ class Command {
             val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
                     App.log.add(this.second)
-                    App.log.add(
-                        "${packageName}: ${
-                            App.globalContext.getString(R.string.path_not_exist)
-                        }"
-                    )
+                    App.log.add("${packageName}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
             cp("${apkPathPair.second}/base.apk", "${outPut}/DataBackup.apk").apply {
                 if (!this) {
-                    App.log.add(
-                        "${packageName}: ${
-                            App.globalContext.getString(R.string.path_not_exist)
-                        }"
-                    )
+                    App.log.add("${packageName}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
