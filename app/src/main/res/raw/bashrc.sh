@@ -120,6 +120,7 @@ install_apk() {
     done
     apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
     case "$apk_num" in
+    0) exit 1 ;;
     1) pm_install "$3" "${tmp_dir}/*.apk" ;;
     *)
       session=$(pm_install_create "$3" | grep -E -o '[0-9]+')
