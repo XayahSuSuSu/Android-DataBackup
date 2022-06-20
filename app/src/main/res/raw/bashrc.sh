@@ -111,28 +111,24 @@ install_apk() {
   tmp_dir="/data/local/tmp/data_backup"
   rm -rf "$tmp_dir"
   mkdir -p "$tmp_dir"
-  if [ -z "$(find_package "$3" "$2")" ]; then
-    find "$1" -maxdepth 1 -name "apk.*" -type f | while read -r i; do
-      case "${i##*.}" in
-      tar) pv_force "$i" | tar -xmpf - -C "$tmp_dir" ;;
-      zst | lz4) pv_force "$i" | tar -I zstd -xmpf - -C "$tmp_dir" ;;
-      esac
-    done
-    apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
-    case "$apk_num" in
-    0) exit 1 ;;
-    1) pm_install "$3" ${tmp_dir}/*.apk ;;
-    *)
-      session=$(pm_install_create "$3" | grep -E -o '[0-9]+')
-      find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | while read -r i; do
-        pm install-write "$session" "${i##*/}" "$i"
-      done
-      pm install-commit "$session"
-      ;;
+  find "$1" -maxdepth 1 -name "apk.*" -type f | while read -r i; do
+    case "${i##*.}" in
+    tar) pv_force "$i" | tar -xmpf - -C "$tmp_dir" ;;
+    zst | lz4) pv_force "$i" | tar -I zstd -xmpf - -C "$tmp_dir" ;;
     esac
-  else
-    return 222
-  fi
+  done
+  apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
+  case "$apk_num" in
+  0) exit 1 ;;
+  1) pm_install "$3" ${tmp_dir}/*.apk ;;
+  *)
+    session=$(pm_install_create "$3" | grep -E -o '[0-9]+')
+    find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | while read -r i; do
+      pm install-write "$session" "${i##*/}" "$i"
+    done
+    pm install-commit "$session"
+    ;;
+  esac
   rm -rf "$tmp_dir"
 }
 

@@ -120,13 +120,15 @@ class Command {
                 if (!exec.isSuccess)
                     continue
                 try {
-                    val appInfo = Gson().fromJson(exec.out.joinToString(), AppInfo::class.java)
-                    val appEntity = AppEntity(0, appInfo.appName, appInfo.packageName).apply {
-                        icon = AppCompatResources.getDrawable(
-                            context, R.drawable.ic_round_android
-                        )
-                        backupPath = "${path}/${i}"
-                    }
+                    val appInfoLocal = Gson().fromJson(exec.out.joinToString(), AppInfo::class.java)
+                    val appEntity =
+                        AppEntity(0, appInfoLocal.appName, appInfoLocal.packageName).apply {
+                            icon = AppCompatResources.getDrawable(
+                                context, R.drawable.ic_round_android
+                            )
+                            backupPath = "${path}/${i}"
+                            appInfo = appInfoLocal
+                        }
                     appList.add(appEntity)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -289,18 +291,20 @@ class Command {
         fun installAPK(
             inPath: String,
             packageName: String,
-            userId: String
+            userId: String,
+            versionCode: String
         ): Boolean {
+            if (versionCode <= getAppVersionCode(userId, packageName)) {
+                App.log.add(GlobalString.noUpdateAndSkip)
+                return true
+            }
+
             // 禁止APK验证
             Bashrc.setInstallEnv()
 
             Bashrc.installAPK(inPath, packageName, userId).apply {
                 when (this.first) {
                     0 -> return true
-                    222 -> {
-                        App.log.add(GlobalString.installApkInstalled)
-                        return true
-                    }
                     else -> {
                         App.log.add(this.second)
                         App.log.add(GlobalString.installApkFailed)

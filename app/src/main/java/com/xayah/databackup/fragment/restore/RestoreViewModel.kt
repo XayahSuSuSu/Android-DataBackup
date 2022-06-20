@@ -439,11 +439,13 @@ class RestoreViewModel : ViewModel() {
                             // 设置任务参数
                             val inPath = i.backupPath
                             val packageName = i.packageName
+                            val versionCode = i.appInfo?.versionCode ?: ""
 
                             if (i.backupApp) {
                                 // 选中恢复应用
                                 App.log.add(GlobalString.installApkProcessing)
-                                val ret = Command.installAPK(inPath, packageName, userId)
+                                val ret =
+                                    Command.installAPK(inPath, packageName, userId, versionCode)
                                 if (!ret) {
                                     failed += 1
                                     index++
