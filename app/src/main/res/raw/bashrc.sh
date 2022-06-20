@@ -256,7 +256,7 @@ find_package() {
 count_size() {
   # $1: path
   # $2: type
-  if [ -d "$1" ]; then
+  if [ -e "$1" ]; then
     case "$2" in
     0) du -ksh "$1" | awk '{print $1}' ;;
     *) du -ks "$1" | awk '{print $1}' ;;
