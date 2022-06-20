@@ -34,7 +34,7 @@ pv_force() {
 
 pv_redirect() {
   # $1: path
-  pv -f -t -r -b > "$1"
+  pv -f -t -r -b >"$1"
 }
 
 compress_apk() {
@@ -82,16 +82,16 @@ compress() {
     fi
     ;;
   media)
-      if [ -d "$5" ]; then
-        case "$1" in
-        tar) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_redirect "$4/${5##*/}.tar" ;;
-        zstd) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/${5##*/}.tar.zst" ;;
-        lz4) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/${5##*/}.tar.lz4" ;;
-        esac
-      else
-        echo "No such path: $5"
-      fi
-      ;;
+    if [ -d "$5" ]; then
+      case "$1" in
+      tar) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_redirect "$4/${5##*/}.tar" ;;
+      zstd) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/${5##*/}.tar.zst" ;;
+      lz4) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/${5##*/}.tar.lz4" ;;
+      esac
+    else
+      echo "No such path: $5"
+    fi
+    ;;
   esac
 }
 
@@ -239,11 +239,11 @@ list_packages() {
 find_package() {
   # $1: user_id
   # $2: package_name
-	if [ -z "$1" ]; then
-		pm path "$2"
-	else
-		pm path --user "$1" "$2"
-	fi
+  if [ -z "$1" ]; then
+    pm path "$2"
+  else
+    pm path --user "$1" "$2"
+  fi
 }
 
 count_size() {
