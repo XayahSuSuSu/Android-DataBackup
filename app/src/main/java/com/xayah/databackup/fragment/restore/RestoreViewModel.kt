@@ -169,6 +169,11 @@ class RestoreViewModel : ViewModel() {
                             }
                         }
                         if (App.globalContext.readIsCustomDirectoryPath()) {
+                            // 已存在数据
+                            val info = Shell.cmd("cat ${backupPath}/media/info")
+                                .exec().out.joinToString()
+                            val jsonArray = JsonParser.parseString(info).asJsonArray
+
                             val ls = Shell.cmd("ls ${backupPath}/media").exec()
                             if (ls.isSuccess) {
                                 for (i in ls.out) {
@@ -179,6 +184,11 @@ class RestoreViewModel : ViewModel() {
                                         icon = AppCompatResources.getDrawable(
                                             context, R.drawable.ic_round_android
                                         )
+                                        for (j in jsonArray) {
+                                            val item = Gson().fromJson(j, MediaInfo::class.java)
+                                            if (item.name == i.split(".").first())
+                                                mediaInfo = item
+                                        }
                                     }
                                     mAppList.add(appEntity)
                                 }
@@ -373,8 +383,48 @@ class RestoreViewModel : ViewModel() {
 
                     CoroutineScope(Dispatchers.IO).launch {
                         for (i in appList) {
-                            if (i.packageName == GlobalString.customDir)
+                            if (i.packageName == GlobalString.customDir) {
+                                if (Command.ls("${backupPath}/media")) {
+                                    // 移除图标
+                                    withContext(Dispatchers.Main) {
+                                        layoutProcessingBinding.linearLayout.removeView(
+                                            layoutProcessingBinding.shapeableImageViewAppIcon
+                                        )
+                                    }
+
+                                    // 恢复自定义目录
+                                    if (App.globalContext.readIsCustomDirectoryPath()) {
+                                        // 更新通知
+                                        notification.update(false) {
+                                            it?.setContentTitle(i.appName)
+                                        }
+                                        // 推送数据
+                                        currentAppName.postValue(i.appName)
+                                        App.log.add("----------------------------")
+
+                                        // 恢复目录
+                                        i.mediaInfo?.apply {
+                                            if (this.path != "") {
+                                                Command.decompressMedia(
+                                                    "${backupPath}/media",
+                                                    i.appName,
+                                                    this.path
+                                                ).apply {
+                                                    if (this)
+                                                        success += 1
+                                                    else
+                                                        failed += 1
+                                                }
+                                            } else {
+                                                failed += 1
+                                            }
+                                        }
+                                    }
+                                }
+                                index++
                                 continue
+                            }
+
                             // 更新通知
                             notification.update(false) {
                                 it?.setContentTitle(i.appName)
@@ -414,57 +464,6 @@ class RestoreViewModel : ViewModel() {
                                 failed += 1
 
                             index++
-                        }
-                        if (Command.ls("${backupPath}/media")) {
-                            // 移除图标
-                            withContext(Dispatchers.Main) {
-                                layoutProcessingBinding.linearLayout.removeView(
-                                    layoutProcessingBinding.shapeableImageViewAppIcon
-                                )
-                            }
-
-                            // 恢复自定义目录
-                            if (App.globalContext.readIsCustomDirectoryPath()) {
-                                val mediaList = Shell.cmd("ls ${backupPath}/media").exec().out
-                                val info = Shell.cmd("cat ${backupPath}/media/info")
-                                    .exec().out.joinToString()
-                                val jsonArray = JsonParser.parseString(info).asJsonArray
-                                for (i in mediaList) {
-                                    if (i == "info")
-                                        continue
-                                    // 更新通知
-                                    notification.update(false) {
-                                        it?.setContentTitle(i)
-                                    }
-                                    // 推送数据
-                                    currentAppName.postValue(i)
-                                    App.log.add("----------------------------")
-
-                                    // 获取恢复路径
-                                    var path = ""
-                                    for (j in jsonArray) {
-                                        val item = Gson().fromJson(j, MediaInfo::class.java)
-                                        if (item.name == i.split(".").first())
-                                            path = item.path
-                                    }
-
-                                    // 恢复目录
-                                    if (path != "") {
-                                        Command.decompressMedia(
-                                            "${backupPath}/media",
-                                            i,
-                                            path
-                                        ).apply {
-                                            if (this)
-                                                success += 1
-                                            else
-                                                failed += 1
-                                        }
-                                    } else {
-                                        failed += 1
-                                    }
-                                }
-                            }
                         }
                         withContext(Dispatchers.Main) {
                             showFinish(context)
