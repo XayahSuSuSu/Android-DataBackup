@@ -365,6 +365,7 @@ class Command {
             appName: String,
             userId: String,
             packageName: String,
+            apkSize: String,
             userSize: String,
             dataSize: String,
             obbSize: String,
@@ -374,6 +375,7 @@ class Command {
                 appName, packageName,
                 getAppVersion(packageName),
                 getAppVersionCode(userId, packageName),
+                apkSize,
                 userSize,
                 dataSize,
                 obbSize

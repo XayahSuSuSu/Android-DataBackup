@@ -448,6 +448,10 @@ class BackupViewModel : ViewModel() {
                                 userId,
                                 i.packageName,
                                 Command.countSize(
+                                    Bashrc.getAPKPath(i.packageName, userId).second,
+                                    1
+                                ),
+                                Command.countSize(
                                     "${Path.getUserPath(userId)}/${i.packageName}",
                                     1
                                 ),

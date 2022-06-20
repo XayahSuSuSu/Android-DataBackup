@@ -22,6 +22,7 @@ data class AppInfo(
     val packageName: String,
     val version: String,
     val versionCode: String,
+    val apkSize: String,
     val userSize: String,
     val dataSize: String,
     val obbSize: String
