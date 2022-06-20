@@ -8,7 +8,8 @@ class Log {
 
     fun add(line: String) {
         logs.postValue(logs.value?.apply {
-            add(line)
+            if (line.isNotEmpty())
+                add(line)
         })
     }
 
