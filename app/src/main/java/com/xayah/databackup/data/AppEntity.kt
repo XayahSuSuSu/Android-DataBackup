@@ -29,4 +29,10 @@ data class AppEntity(
 
     @Ignore
     var mediaInfo: MediaInfo? = null
+
+    @Ignore
+    var appEnabled: Boolean = false
+
+    @Ignore
+    var dataEnabled: Boolean = false
 }

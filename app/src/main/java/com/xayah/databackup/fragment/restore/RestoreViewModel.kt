@@ -61,9 +61,9 @@ class RestoreViewModel : ViewModel() {
     var currentAppName = MutableLiveData<String?>()
     var currentAppIcon = MutableLiveData<Drawable?>()
 
-    var selectAllApp = false
-    var selectAllData = false
-    var selectAll = false
+    var selectAllApp = true
+    var selectAllData = true
+    var selectAll = true
 
     var notification = Notification("restore", "Restore")
 
@@ -180,16 +180,26 @@ class RestoreViewModel : ViewModel() {
                                 e.printStackTrace()
                             }
 
-                            val ls = Shell.cmd("ls ${backupPath}/media").exec()
+                            val thatBackupPath = "${backupPath}/media"
+                            val ls = Shell.cmd("ls $thatBackupPath").exec()
                             if (ls.isSuccess) {
                                 for (i in ls.out) {
                                     if (i == "info")
                                         continue
                                     val packageName = GlobalString.customDir
-                                    val appEntity = AppEntity(0, i, packageName).apply {
+                                    val appEntity = AppEntity(
+                                        0,
+                                        i,
+                                        packageName,
+                                        backupApp = false,
+                                        backupData = false
+                                    ).apply {
                                         icon = AppCompatResources.getDrawable(
                                             context, R.drawable.ic_round_android
                                         )
+                                        backupPath = thatBackupPath
+                                        appEnabled = false
+                                        dataEnabled = Command.ls("${thatBackupPath}/${i}")
                                         for (j in jsonArray) {
                                             try {
                                                 val item = Gson().fromJson(j, MediaInfo::class.java)
@@ -287,22 +297,26 @@ class RestoreViewModel : ViewModel() {
                 when (it.itemId) {
                     R.id.select_all -> {
                         for ((index, _) in appList.withIndex()) {
-                            appList[index].backupApp = selectAll
-                            appList[index].backupData = selectAll
+                            if (appList[index].appEnabled)
+                                appList[index].backupApp = selectAll
+                            if (appList[index].dataEnabled)
+                                appList[index].backupData = selectAll
                         }
                         binding?.recyclerView?.notifyDataSetChanged()
                         selectAll = !selectAll
                     }
                     R.id.select_all_app -> {
                         for ((index, _) in appList.withIndex()) {
-                            appList[index].backupApp = selectAllApp
+                            if (appList[index].appEnabled)
+                                appList[index].backupApp = selectAllApp
                         }
                         binding?.recyclerView?.notifyDataSetChanged()
                         selectAllApp = !selectAllApp
                     }
                     R.id.select_all_data -> {
                         for ((index, _) in appList.withIndex()) {
-                            appList[index].backupData = selectAllData
+                            if (appList[index].dataEnabled)
+                                appList[index].backupData = selectAllData
                         }
                         binding?.recyclerView?.notifyDataSetChanged()
                         selectAllData = !selectAllData

@@ -126,11 +126,21 @@ class Command {
                 try {
                     val appInfoLocal = Gson().fromJson(exec.out.joinToString(), AppInfo::class.java)
                     val appEntity =
-                        AppEntity(0, appInfoLocal.appName, appInfoLocal.packageName).apply {
+                        AppEntity(
+                            0,
+                            appInfoLocal.appName,
+                            appInfoLocal.packageName,
+                            backupApp = false,
+                            backupData = false
+                        ).apply {
                             icon = AppCompatResources.getDrawable(
                                 context, R.drawable.ic_round_android
                             )
                             backupPath = "${path}/${i}"
+                            appEnabled = ls("${path}/${i}/apk.tar*")
+                            dataEnabled = ls("${path}/${i}/user.tar*") ||
+                                    ls("${path}/${i}/data.tar*") ||
+                                    ls("${path}/${i}/obb.tar*")
                             appInfo = appInfoLocal
                         }
                     appList.add(appEntity)
