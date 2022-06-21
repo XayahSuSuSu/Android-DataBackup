@@ -47,5 +47,7 @@ class RestoreFragment : Fragment() {
         super.onDestroyView()
         viewModel.backupPath = null
         viewModel.binding = null
+        if (!viewModel.isProcessing)
+            viewModel.clear()
     }
 }

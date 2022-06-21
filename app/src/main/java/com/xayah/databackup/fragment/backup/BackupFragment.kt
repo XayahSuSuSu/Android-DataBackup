@@ -40,5 +40,7 @@ class BackupFragment : Fragment() {
         viewModel.binding = null
         room?.close()
         room = null
+        if (!viewModel.isProcessing)
+            viewModel.clear()
     }
 }

@@ -687,4 +687,34 @@ class BackupViewModel : ViewModel() {
         }
         isProcessing = false
     }
+
+    fun clear() {
+        binding = null
+
+        isProcessing = false
+
+        appList = mutableListOf()
+
+        appListAll = mutableListOf()
+
+        isFiltering = false
+
+        mAdapter = MultiTypeAdapter()
+
+        time = 0
+        index = 0
+        total = 0
+
+        success = 0
+        failed = 0
+
+        currentAppName = MutableLiveData<String?>()
+        currentAppIcon = MutableLiveData<Drawable?>()
+
+        selectAllApp = false
+        selectAllData = false
+        selectAll = false
+
+        notification = Notification("backup", "Backup")
+    }
 }

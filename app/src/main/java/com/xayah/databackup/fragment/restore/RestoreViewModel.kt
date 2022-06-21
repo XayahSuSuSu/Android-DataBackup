@@ -594,4 +594,35 @@ class RestoreViewModel : ViewModel() {
         isProcessing = false
     }
 
+    fun clear() {
+        binding = null
+
+        isProcessing = false
+
+        appList = mutableListOf()
+
+        appListAll = mutableListOf()
+
+        isFiltering = false
+
+        mAdapter = MultiTypeAdapter()
+
+        backupPath = null
+
+        time = 0
+        index = 0
+        total = 0
+
+        success = 0
+        failed = 0
+
+        currentAppName = MutableLiveData<String?>()
+        currentAppIcon = MutableLiveData<Drawable?>()
+
+        selectAllApp = true
+        selectAllData = true
+        selectAll = true
+
+        notification = Notification("restore", "Restore")
+    }
 }
