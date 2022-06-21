@@ -472,14 +472,15 @@ class Command {
             userId: String
         ): Boolean {
             mkdir(outPut)
-            val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
+            val apkPath = Bashrc.getAPKPath(packageName, userId)
+            val apkPathPair = apkPath.apply {
                 if (!this.first) {
                     App.log.add(this.second)
                     App.log.add("${packageName}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
-            val apkSize = countSize(Bashrc.getAPKPath(packageName, userId).second, 1)
+            val apkSize = countSize(apkPath.second, 1)
             countSize(apkPathPair.second, 1).apply {
                 if (this == apkSize) {
                     App.log.add(GlobalString.noUpdateAndSkip)
