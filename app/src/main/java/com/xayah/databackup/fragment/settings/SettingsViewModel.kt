@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.Navigation
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.xayah.databackup.App
 import com.xayah.databackup.R
@@ -131,7 +132,12 @@ class SettingsViewModel() : ViewModel() {
                 client.newCall(request).execute().use { response ->
                     response.body?.apply {
                         // 解析response.body
-                        val jsonArray = JsonParser.parseString(this.string()).asJsonArray
+                        var jsonArray = JsonArray()
+                        try {
+                            jsonArray = JsonParser.parseString(this.string()).asJsonArray
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                         val nameList = mutableListOf<String>()
                         val mBodyList = mutableListOf<Release>()
                         for (i in jsonArray) {
@@ -178,7 +184,12 @@ class SettingsViewModel() : ViewModel() {
                 client.newCall(request).execute().use { response ->
                     response.body?.apply {
                         // 解析response.body
-                        val jsonArray = JsonParser.parseString(this.string()).asJsonArray
+                        var jsonArray = JsonArray()
+                        try {
+                            jsonArray = JsonParser.parseString(this.string()).asJsonArray
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                         val titleList = mutableListOf<String>()
                         val mBodyList = mutableListOf<Issue>()
                         for (i in jsonArray) {

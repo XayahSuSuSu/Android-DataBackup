@@ -90,12 +90,16 @@ class Command {
                             val backupPath = context.readBackupSavePath() + "/$userId"
                             Shell.cmd("cat ${backupPath}/${packageName}/info").exec().apply {
                                 if (this.isSuccess) {
-                                    val appInfo =
-                                        Gson().fromJson(
-                                            this.out.joinToString(),
-                                            AppInfo::class.java
-                                        )
-                                    appEntity.appInfo = appInfo
+                                    try {
+                                        val appInfo =
+                                            Gson().fromJson(
+                                                this.out.joinToString(),
+                                                AppInfo::class.java
+                                            )
+                                        appEntity.appInfo = appInfo
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
                                 }
                             }
                         } catch (e: Exception) {

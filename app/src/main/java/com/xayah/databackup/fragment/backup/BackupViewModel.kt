@@ -506,7 +506,13 @@ class BackupViewModel : ViewModel() {
                             // 已存在的数据
                             val info = Shell.cmd("cat ${outPut}/media/info")
                                 .exec().out.joinToString()
-                            val jsonArrayInfo = JsonParser.parseString(info).asJsonArray
+                            val jsonArrayInfo = JsonArray()
+
+                            try {
+                                JsonParser.parseString(info).asJsonArray
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
 
                             for (i in App.globalContext.readCustomDirectoryPath().split("\n")) {
                                 // 更新通知
@@ -527,14 +533,23 @@ class BackupViewModel : ViewModel() {
                                     Command.countSize(i, 1)
                                 )
 
-                                jsonArray.add(JsonParser.parseString(Gson().toJson(mediaInfo)))
+                                try {
+                                    jsonArray.add(JsonParser.parseString(Gson().toJson(mediaInfo)))
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
 
                                 var size: String? = null
 
                                 for (j in jsonArrayInfo) {
-                                    val item = Gson().fromJson(j, MediaInfo::class.java)
-                                    if (item.name == name.split(".").first())
-                                        size = item.size
+                                    try {
+                                        val item = Gson().fromJson(j, MediaInfo::class.java)
+                                        if (item.name == name.split(".").first())
+                                            size = item.size
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+
                                 }
 
                                 // 备份目录

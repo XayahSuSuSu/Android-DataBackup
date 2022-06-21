@@ -17,6 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
@@ -172,7 +173,12 @@ class RestoreViewModel : ViewModel() {
                             // 已存在数据
                             val info = Shell.cmd("cat ${backupPath}/media/info")
                                 .exec().out.joinToString()
-                            val jsonArray = JsonParser.parseString(info).asJsonArray
+                            var jsonArray = JsonArray()
+                            try {
+                                jsonArray = JsonParser.parseString(info).asJsonArray
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
 
                             val ls = Shell.cmd("ls ${backupPath}/media").exec()
                             if (ls.isSuccess) {
@@ -185,9 +191,13 @@ class RestoreViewModel : ViewModel() {
                                             context, R.drawable.ic_round_android
                                         )
                                         for (j in jsonArray) {
-                                            val item = Gson().fromJson(j, MediaInfo::class.java)
-                                            if (item.name == i.split(".").first())
-                                                mediaInfo = item
+                                            try {
+                                                val item = Gson().fromJson(j, MediaInfo::class.java)
+                                                if (item.name == i.split(".").first())
+                                                    mediaInfo = item
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                            }
                                         }
                                     }
                                     mAppList.add(appEntity)
