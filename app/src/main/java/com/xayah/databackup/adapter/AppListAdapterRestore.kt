@@ -20,6 +20,23 @@ class AppListAdapterRestore(
         super.onBindViewHolder(holder, item)
         val binding = holder.binding
 
+        // 检测是否存在安装包
+        if (!Command.ls("${item.backupPath}/apk.tar*")) {
+            binding.chipApplication.isChecked = false
+            item.backupApp = false
+            binding.chipApplication.isEnabled = false
+        }
+
+        // 检测是否存在数据
+        if (!Command.ls("${item.backupPath}/user.tar*") &&
+            !Command.ls("${item.backupPath}/data.tar*") &&
+            !Command.ls("${item.backupPath}/obb.tar*")
+        ) {
+            binding.chipData.isChecked = false
+            item.backupData = false
+            binding.chipData.isEnabled = false
+        }
+
         binding.chipApplication.apply {
             setOnCheckedChangeListener { _, checked ->
                 if (!item.isProcessing) {
