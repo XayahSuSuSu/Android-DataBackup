@@ -317,7 +317,11 @@ class RestoreViewModel : ViewModel() {
             var contents = "${GlobalString.selected}\n"
             for (i in appListAll) {
                 if (i.backupApp || i.backupData) {
-                    contents += i.appName + "\n"
+                    if (i.backupApp)
+                        contents += "[${GlobalString.application}]"
+                    if (i.backupData)
+                        contents += "[${GlobalString.data}]"
+                    contents += " ${i.appName}\n"
                 }
             }
 

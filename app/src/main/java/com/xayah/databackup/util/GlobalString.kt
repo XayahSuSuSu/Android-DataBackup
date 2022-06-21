@@ -63,5 +63,7 @@ class GlobalString {
         val broken = App.globalContext.getString(R.string.broken)
         val failed = App.globalContext.getString(R.string.failed)
         val error = App.globalContext.getString(R.string.error)
+        val application = App.globalContext.getString(R.string.application)
+        val data = App.globalContext.getString(R.string.data)
     }
 }
