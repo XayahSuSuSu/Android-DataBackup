@@ -66,7 +66,7 @@ class HomeViewModel : ViewModel() {
                     isEnvCorrect.set(false)
                 }
                 Shell.cmd("ls ${Path.getFilesDir(context)}/bin").exec().out.apply {
-                    if (this.size == 3)
+                    if (this.size == 4)
                         envList.add("bin: √")
                     else {
                         envList.add("bin: ×")
