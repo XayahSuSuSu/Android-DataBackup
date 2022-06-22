@@ -494,7 +494,7 @@ class Command {
                     return false
                 }
             }
-            val apkSize = countSize(apkPath.second, 1)
+            val apkSize = countSize("${outPut}/DataBackup.apk", 1)
             countSize(apkPathPair.second, 1).apply {
                 if (this == apkSize) {
                     App.log.add(GlobalString.noUpdateAndSkip)
