@@ -92,4 +92,6 @@
     <string name="get_app_version_code_failed">APP版本代码获取失败</string>
     <string name="no_update_and_skip">无更新，跳过备份</string>
     <string name="failed">失败</string>
+    <string name="otg_change_dir">检测到OTG，是否将备份目录修改为OTG目录？</string>
+    <string name="otg_not_support">当前的OTG格式不支持大于4G的文件传输\n请格式化为以下某种格式:\nFuseblk、ExFAT(推荐)、NTFS、ext4、f2fs</string>
 </resources>

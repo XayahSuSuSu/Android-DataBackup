@@ -153,5 +153,10 @@ class Bashrc {
             val exec = Shell.cmd("count_size $path $type").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
+
+        fun checkOTG(): Pair<Int, String> {
+            val exec = Shell.cmd("check_otg").exec()
+            return Pair(exec.code, exec.out.joinToString(separator = "\n"))
+        }
     }
 }

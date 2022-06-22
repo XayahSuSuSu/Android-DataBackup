@@ -65,5 +65,7 @@ class GlobalString {
         val error = App.globalContext.getString(R.string.error)
         val application = App.globalContext.getString(R.string.application)
         val data = App.globalContext.getString(R.string.data)
+        val otgChangeDir = App.globalContext.getString(R.string.otg_change_dir)
+        val otgNotSupport = App.globalContext.getString(R.string.otg_not_support)
     }
 }

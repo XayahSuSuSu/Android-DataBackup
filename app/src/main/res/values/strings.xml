@@ -97,4 +97,6 @@
     <string name="get_app_version_code_failed">Get app version code failed</string>
     <string name="no_update_and_skip">No update, skip</string>
     <string name="failed">Failed</string>
+    <string name="otg_change_dir">OTG detected. Do you want to change the backup directory to OTG directory?</string>
+    <string name="otg_not_support">The current OTG format does not support file transfers larger than 4G\nPlease format it into one of the following formats:\nFuseblk, ExFAT (recommended), NTFS, ext4, f2fs</string>
 </resources>

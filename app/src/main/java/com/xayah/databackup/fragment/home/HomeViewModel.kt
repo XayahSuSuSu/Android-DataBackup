@@ -11,10 +11,7 @@ import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.MainActivity
 import com.xayah.databackup.R
-import com.xayah.databackup.util.Bashrc
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 import com.xayah.design.view.setWithTopBarAndTips
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,6 +84,32 @@ class HomeViewModel : ViewModel() {
                             context.binding.bottomNavigation.menu.getItem(i).isEnabled = false
                         }
                         showBottomSheetDialog(context)
+                    }
+                }
+                Bashrc.checkOTG().apply {
+                    val that = this
+                    if (that.first == 0) {
+                        withContext(Dispatchers.Main) {
+                            BottomSheetDialog(context).apply {
+                                setWithTopBarAndTips(
+                                    GlobalString.tips,
+                                    GlobalString.otgChangeDir,
+                                    R.raw.usb
+                                ) {
+                                    context.saveBackupSavePath("${that.second}/DataBackup")
+                                }
+                            }
+                        }
+                    } else if (that.first == 1) {
+                        withContext(Dispatchers.Main) {
+                            BottomSheetDialog(context).apply {
+                                setWithTopBarAndTips(
+                                    GlobalString.tips,
+                                    GlobalString.otgNotSupport,
+                                    R.raw.usb
+                                ) {}
+                            }
+                        }
                     }
                 }
                 initialized = true
