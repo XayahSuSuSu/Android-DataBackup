@@ -103,3 +103,11 @@ fun Context.saveIsSupportSystemApp(value: Boolean) {
 fun Context.readIsSupportSystemApp(): Boolean {
     return readPreferencesBoolean("support_system_app", false)
 }
+
+fun Context.saveFileExplorerPath(path: CharSequence?) {
+    savePreferences("file_explorer_path", path.toString().trim())
+}
+
+fun Context.readFileExplorerPath(): String {
+    return readPreferencesString("file_explorer_path") ?: GlobalString.defaultBackupSavePath
+}

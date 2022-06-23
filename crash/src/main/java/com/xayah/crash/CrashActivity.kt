@@ -26,24 +26,30 @@ class CrashActivity : AppCompatActivity() {
         val materialYouFileExplorer = MaterialYouFileExplorer().apply { initialize(that) }
         binding.logs = logs
         binding.filledButton.setOnClickListener {
-            materialYouFileExplorer.toExplorer(
-                that, false, "default", arrayListOf(), true
-            ) { path, _ ->
-                try {
-                    val date = logs.split("\n")[0]
-                    val fileName = "Crash-${date.replace(" ", "-").replace(":", "-")}.txt"
-                    val crashDir = File(path)
-                    if (!crashDir.exists()) crashDir.mkdirs()
-                    val fileOutputStream = FileOutputStream("${path}/$fileName", true)
-                    fileOutputStream.write(logs.toByteArray())
-                    fileOutputStream.flush()
-                    fileOutputStream.close()
-                    Toast.makeText(that, getString(R.string.save_successful), Toast.LENGTH_SHORT)
-                        .show()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(that, getString(R.string.save_failed), Toast.LENGTH_SHORT)
-                        .show()
+            materialYouFileExplorer.apply {
+                isFile = false
+
+                toExplorer(that) { path, _ ->
+                    try {
+                        val date = logs.split("\n")[0]
+                        val fileName = "Crash-${date.replace(" ", "-").replace(":", "-")}.txt"
+                        val crashDir = File(path)
+                        if (!crashDir.exists()) crashDir.mkdirs()
+                        val fileOutputStream = FileOutputStream("${path}/$fileName", true)
+                        fileOutputStream.write(logs.toByteArray())
+                        fileOutputStream.flush()
+                        fileOutputStream.close()
+                        Toast.makeText(
+                            that,
+                            getString(R.string.save_successful),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(that, getString(R.string.save_failed), Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
         }

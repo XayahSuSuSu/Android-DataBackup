@@ -85,11 +85,15 @@ class RestoreViewModel : ViewModel() {
                 }
                 R.id.restore_add -> {
                     binding?.linearLayout?.visibility = View.GONE
-                    materialYouFileExplorer.toExplorer(
-                        context, false, "default", arrayListOf(), true
-                    ) { path, _ ->
-                        backupPath = path
-                        initialize(context, materialYouFileExplorer) {}
+                    materialYouFileExplorer.apply {
+                        isFile = false
+                        defPath = App.globalContext.readFileExplorerPath()
+
+                        toExplorer(context) { path, _ ->
+                            backupPath = path
+                            App.globalContext.saveFileExplorerPath(path)
+                            initialize(context, materialYouFileExplorer) {}
+                        }
                     }
                 }
             }

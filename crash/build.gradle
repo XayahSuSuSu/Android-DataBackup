@@ -50,5 +50,5 @@ dependencies {
     implementation 'com.airbnb.android:lottie:5.0.3'
 
     // MaterialYouFileExplorer
-    implementation 'com.github.XayahSuSuSu:Android-MaterialYouFileExplorer:1.2.0'
+    implementation 'com.github.XayahSuSuSu:Android-MaterialYouFileExplorer:1.2.2'
 }
