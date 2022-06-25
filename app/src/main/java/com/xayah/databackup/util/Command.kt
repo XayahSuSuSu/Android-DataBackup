@@ -308,7 +308,7 @@ class Command {
             userId: String,
             versionCode: String
         ): Boolean {
-            if (versionCode <= getAppVersionCode(userId, packageName)) {
+            if (versionCode.isNotEmpty() && versionCode <= getAppVersionCode(userId, packageName)) {
                 App.log.add(GlobalString.noUpdateAndSkip)
                 return true
             }
