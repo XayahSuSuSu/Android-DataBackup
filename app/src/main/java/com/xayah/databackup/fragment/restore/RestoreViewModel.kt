@@ -145,7 +145,8 @@ class RestoreViewModel : ViewModel() {
                 CoroutineScope(Dispatchers.IO).launch {
                     val userId = context.readBackupUser()
                     // 按照字母表排序
-                    if (backupPath == null) backupPath = context.readBackupSavePath() + "/$userId"
+                    if (backupPath == null) backupPath =
+                        context.readBackupSavePath() + "/$userId" else backupPath += "/$userId"
                     backupPath?.let {
                         val exec = Shell.cmd("cat ${backupPath}/info").exec()
                         var backupInfo = BackupInfo("")
