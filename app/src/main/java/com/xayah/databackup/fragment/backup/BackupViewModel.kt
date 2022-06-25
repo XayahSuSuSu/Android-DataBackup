@@ -196,9 +196,11 @@ class BackupViewModel : ViewModel() {
                             CoroutineScope(Dispatchers.IO).launch {
                                 room?.selectAllApp(selectAll)
                                 room?.selectAllData(selectAll)
+                                withContext(Dispatchers.Main) {
+                                    binding?.recyclerView?.notifyDataSetChanged()
+                                    selectAll = !selectAll
+                                }
                             }
-                        binding?.recyclerView?.notifyDataSetChanged()
-                        selectAll = !selectAll
                     }
                     R.id.select_all_app -> {
                         for ((index, _) in appList.withIndex()) {
@@ -207,9 +209,11 @@ class BackupViewModel : ViewModel() {
                         if (!isFiltering)
                             CoroutineScope(Dispatchers.IO).launch {
                                 room?.selectAllApp(selectAllApp)
+                                withContext(Dispatchers.Main) {
+                                    binding?.recyclerView?.notifyDataSetChanged()
+                                    selectAllApp = !selectAllApp
+                                }
                             }
-                        binding?.recyclerView?.notifyDataSetChanged()
-                        selectAllApp = !selectAllApp
                     }
                     R.id.select_all_data -> {
                         for ((index, _) in appList.withIndex()) {
@@ -218,9 +222,11 @@ class BackupViewModel : ViewModel() {
                         if (!isFiltering)
                             CoroutineScope(Dispatchers.IO).launch {
                                 room?.selectAllData(selectAllData)
+                                withContext(Dispatchers.Main) {
+                                    binding?.recyclerView?.notifyDataSetChanged()
+                                    selectAllData = !selectAllData
+                                }
                             }
-                        binding?.recyclerView?.notifyDataSetChanged()
-                        selectAllData = !selectAllData
                     }
                 }
                 true
