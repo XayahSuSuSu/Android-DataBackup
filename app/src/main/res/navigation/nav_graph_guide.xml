@@ -7,10 +7,14 @@
     <fragment
         android:id="@+id/guideOneFragment"
         android:name="com.xayah.databackup.fragment.guide.GuideOneFragment"
-        android:label="GuideOneFragment" >
+        android:label="GuideOneFragment">
         <action
             android:id="@+id/action_guideOneFragment_to_guideTwoFragment"
-            app:destination="@id/guideTwoFragment" />
+            app:destination="@id/guideTwoFragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/guideTwoFragment"
