@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_guide"
+    app:startDestination="@id/guideOneFragment">
+
+    <fragment
+        android:id="@+id/guideOneFragment"
+        android:name="com.xayah.databackup.fragment.guide.GuideOneFragment"
+        android:label="GuideOneFragment" >
+        <action
+            android:id="@+id/action_guideOneFragment_to_guideTwoFragment"
+            app:destination="@id/guideTwoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/guideTwoFragment"
+        android:name="com.xayah.databackup.fragment.guide.GuideTwoFragment"
+        android:label="GuideTwoFragment" />
+</navigation>

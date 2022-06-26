@@ -27,6 +27,7 @@ class App : Application() {
 
         @SuppressLint("StaticFieldLeak")
         lateinit var globalContext: Context
+        lateinit var versionName: String
     }
 
     class EnvInitializer : Shell.Initializer() {
@@ -44,6 +45,7 @@ class App : Application() {
         super.onCreate()
         CrashHandler(this).initialize()
         globalContext = this
+        versionName = packageManager.getPackageInfo(packageName, 0).versionName
         if (globalContext.readIsDynamicColors())
             DynamicColors.applyToActivitiesIfAvailable(this)
     }

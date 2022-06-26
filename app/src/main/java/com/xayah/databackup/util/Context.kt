@@ -111,3 +111,11 @@ fun Context.saveFileExplorerPath(path: CharSequence?) {
 fun Context.readFileExplorerPath(): String {
     return readPreferencesString("file_explorer_path") ?: GlobalString.defaultBackupSavePath
 }
+
+fun Context.saveInitializedVersionName(value: CharSequence?) {
+    savePreferences("initialized_version_name", value.toString().trim())
+}
+
+fun Context.readInitializedVersionName(): String {
+    return readPreferencesString("initialized_version_name") ?: ""
+}

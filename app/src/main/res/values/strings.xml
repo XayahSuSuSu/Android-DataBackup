@@ -17,7 +17,7 @@
     <string name="backup_apk_processing">Backup apk…</string>
     <string name="backup_success">Successfully!</string>
     <string name="choose_backup">Choose backup</string>
-    <string name="restore_success" >Successfully!</string>
+    <string name="restore_success">Successfully!</string>
     <string name="install_apk_processing">Install apk…</string>
     <string name="select_all">Select all</string>
     <string name="select_all_app">All: Application</string>
@@ -99,4 +99,16 @@
     <string name="failed">Failed</string>
     <string name="otg_change_dir">OTG detected. Do you want to change the backup directory to OTG directory?</string>
     <string name="otg_not_support">The current OTG format does not support file transfers larger than 4G\nPlease format it into one of the following formats:\nFuseblk, ExFAT (recommended), NTFS, ext4, f2fs</string>
+    <string name="symbol_tick" translatable="false">✔</string>
+    <string name="symbol_cross" translatable="false">✖</string>
+    <string name="grant_root_access">Grant root access</string>
+    <string name="release_prebuilt_binaries">Release prebuilt binaries</string>
+    <string name="activate_bashrc">Activate bashrc</string>
+    <string name="finish">Finish</string>
+    <string name="welcome_to_use">Welcome to use</string>
+    <string name="guide_one_subtitle">Before using this app, you need to read the following carefully</string>
+    <string name="guide_one_content">● Thank you for your continued support and understanding :)\n● Data is priceless, please use this app with caution\n● Try to use the same backup version to backup/restore data\n● This app is still in beta, and there may be discrepancies Stability\n● If there is a problem, please give feedback in time</string>
+    <string name="guide_two_subtitle">To use this app correctly, you need to pass the following tests</string>
+    <string name="symbol_dot" translatable="false">●</string>
+    <string name="next_step">Next step</string>
 </resources>

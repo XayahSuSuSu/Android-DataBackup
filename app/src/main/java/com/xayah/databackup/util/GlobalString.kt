@@ -67,5 +67,13 @@ class GlobalString {
         val data = App.globalContext.getString(R.string.data)
         val otgChangeDir = App.globalContext.getString(R.string.otg_change_dir)
         val otgNotSupport = App.globalContext.getString(R.string.otg_not_support)
+        val symbolTick = App.globalContext.getString(R.string.symbol_tick)
+        val symbolCross = App.globalContext.getString(R.string.symbol_cross)
+        val symbolDot = App.globalContext.getString(R.string.symbol_dot)
+        val grantRootAccess = App.globalContext.getString(R.string.grant_root_access)
+        val releasePrebuiltBinaries = App.globalContext.getString(R.string.release_prebuilt_binaries)
+        val activateBashrc = App.globalContext.getString(R.string.activate_bashrc)
+        val finish = App.globalContext.getString(R.string.finish)
+        val nextStep = App.globalContext.getString(R.string.next_step)
     }
 }
