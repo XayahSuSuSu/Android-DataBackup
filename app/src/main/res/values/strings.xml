@@ -121,4 +121,5 @@
     <string name="not_plugged_in">Not plugged in</string>
     <string name="latest">Latest</string>
     <string name="unsupported_format">Unsupported format</string>
+    <string name="fetching">Fetching</string>
 </resources>

@@ -81,5 +81,6 @@ class GlobalString {
         val notPluggedIn = App.globalContext.getString(R.string.not_plugged_in)
         val latest = App.globalContext.getString(R.string.latest)
         val unsupportedFormat = App.globalContext.getString(R.string.unsupported_format)
+        val fetching = App.globalContext.getString(R.string.fetching)
     }
 }

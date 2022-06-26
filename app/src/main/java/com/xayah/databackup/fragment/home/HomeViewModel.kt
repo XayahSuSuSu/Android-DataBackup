@@ -64,6 +64,10 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun setOTG() {
+        // 默认值
+        otgString.set(GlobalString.notPluggedIn)
+        otgValue.set(0)
+        // 检查OTG连接情况
         Bashrc.checkOTG().apply {
             val that = this
             if (that.first == 0) {
@@ -71,16 +75,14 @@ class HomeViewModel : ViewModel() {
                 val string = if (space.first) space.second else GlobalString.error
                 otgString.set(string)
                 if (space.first) {
-                    otgValue.set(string.split(" ").last().replace("%", "").toInt())
-                } else {
-                    otgValue.set(0)
+                    try {
+                        otgValue.set(string.split(" ").last().replace("%", "").toInt())
+                    } catch (e: NumberFormatException) {
+                        e.printStackTrace()
+                    }
                 }
             } else if (that.first == 1) {
                 otgString.set(GlobalString.unsupportedFormat)
-                otgValue.set(0)
-            } else {
-                otgString.set(GlobalString.notPluggedIn)
-                otgValue.set(0)
             }
         }
     }
@@ -90,6 +92,9 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun setUpdate() {
+        // 设置默认值
+        versionLatest.set(GlobalString.fetching)
+        downloadBtnVisible.set(false)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val client = OkHttpClient()
@@ -118,21 +123,17 @@ class HomeViewModel : ViewModel() {
                         }
                         if (mBodyList.isEmpty()) {
                             versionLatest.set(GlobalString.fetchFailed)
-                            downloadBtnVisible.set(false)
                         } else {
                             versionLatest.set("${GlobalString.latest}: ${mBodyList[0].name}")
-                            if (versionLatest.get()!!.contains(versionCurrent.get()!!)) {
-                                downloadBtnVisible.set(false)
-                            } else {
+                            if (!versionLatest.get()!!.contains(versionCurrent.get()!!)) {
                                 downloadBtnVisible.set(true)
                             }
                         }
                     }
                 }
             } catch (e: IOException) {
-                versionLatest.set(GlobalString.fetchFailed)
-                downloadBtnVisible.set(false)
                 e.printStackTrace()
+                versionLatest.set(GlobalString.fetchFailed)
             }
         }
     }

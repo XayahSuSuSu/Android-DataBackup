@@ -112,4 +112,5 @@
     <string name="not_plugged_in">未接入</string>
     <string name="latest">最新</string>
     <string name="unsupported_format">不支持的格式</string>
+    <string name="fetching">获取中</string>
 </resources>
