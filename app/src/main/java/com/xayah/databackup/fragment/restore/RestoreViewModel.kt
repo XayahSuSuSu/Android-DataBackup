@@ -388,9 +388,8 @@ class RestoreViewModel : ViewModel() {
                             }
                         }
                         withContext(Dispatchers.Main) {
-                            (context as MainActivity).binding.toolbar.subtitle =
-                                context.viewModel.versionName
-                            context.binding.toolbar.title = GlobalString.restoreSuccess
+                            (context as MainActivity).binding.toolbar.title =
+                                GlobalString.restoreSuccess
                         }
                     }
                     onCallback()

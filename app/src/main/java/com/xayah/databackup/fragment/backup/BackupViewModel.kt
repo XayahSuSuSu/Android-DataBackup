@@ -299,9 +299,8 @@ class BackupViewModel : ViewModel() {
                             }
                         }
                         withContext(Dispatchers.Main) {
-                            (context as MainActivity).binding.toolbar.subtitle =
-                                context.viewModel.versionName
-                            context.binding.toolbar.title = GlobalString.backupSuccess
+                            (context as MainActivity).binding.toolbar.title =
+                                GlobalString.backupSuccess
                         }
                     }
                     onCallback()
