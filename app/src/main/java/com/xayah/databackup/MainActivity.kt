@@ -52,8 +52,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         binding.bottomNavigation.setupWithNavController(navController)
-        viewModel.versionName =
-            this.packageManager.getPackageInfo(this.packageName, 0).versionName
     }
 
     override fun onSupportNavigateUp(): Boolean {

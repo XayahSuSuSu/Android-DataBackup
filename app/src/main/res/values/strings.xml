@@ -111,4 +111,14 @@
     <string name="guide_two_subtitle">To use this app correctly, you need to pass the following tests</string>
     <string name="symbol_dot" translatable="false">●</string>
     <string name="next_step">Next step</string>
+    <string name="refresh">Refresh</string>
+    <string name="internal_storage">Internal storage</string>
+    <string name="otg" translatable="false">OTG</string>
+    <string name="check_update">Check update</string>
+    <string name="download">Download</string>
+    <string name="support">Support</string>
+    <string name="fetch_failed">Fetch failed</string>
+    <string name="not_plugged_in">Not plugged in</string>
+    <string name="latest">Latest</string>
+    <string name="unsupported_format">Unsupported format</string>
 </resources>

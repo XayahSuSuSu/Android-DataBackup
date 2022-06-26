@@ -103,4 +103,13 @@
     <string name="guide_one_content">● 感谢你一直以来的支持与理解:)\n● 数据无价, 请谨慎使用本应用\n● 尽量使用备份时版本恢复数据\n● 本应用尚处于测试阶段(Beta), 可能会存在不稳定性\n● 出现问题请及时反馈</string>
     <string name="guide_two_subtitle">要正确使用本应用, 需要通过如下检测</string>
     <string name="next_step">下一步</string>
+    <string name="refresh">刷新</string>
+    <string name="internal_storage">内部存储</string>
+    <string name="check_update">检查更新</string>
+    <string name="download">下载</string>
+    <string name="support">支持</string>
+    <string name="fetch_failed">获取失败</string>
+    <string name="not_plugged_in">未接入</string>
+    <string name="latest">最新</string>
+    <string name="unsupported_format">不支持的格式</string>
 </resources>

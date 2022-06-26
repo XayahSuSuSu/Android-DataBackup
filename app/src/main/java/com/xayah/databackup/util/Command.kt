@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.appcompat.content.res.AppCompatResources
 import com.google.gson.Gson
 import com.topjohnwu.superuser.Shell
+import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppEntity
@@ -534,6 +535,39 @@ class Command {
                 }
                 return this.second
             }
+        }
+
+        fun checkRoot(): Boolean {
+            return Shell.cmd("ls /").exec().isSuccess
+        }
+
+        fun checkBin(context: Context): Boolean {
+            val versionName = App.versionName
+            val oldVersionName =
+                ShellUtils.fastCmd("cat ${Path.getFilesDir(context)}/version")
+            if (versionName > oldVersionName) {
+                ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(context)}/bin")
+                ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(context)}/bin.zip")
+            }
+
+            if (!ls("${Path.getFilesDir(context)}/bin")) {
+                extractAssets(
+                    context,
+                    "${Command.getABI()}/bin.zip",
+                    "bin.zip"
+                )
+                unzipByZip4j(
+                    "${Path.getFilesDir(context)}/bin.zip",
+                    "${Path.getFilesDir(context)}/bin"
+                )
+                ShellUtils.fastCmd("chmod 777 -R ${Path.getFilesDir(context)}")
+                Bashrc.writeToFile(versionName, "${Path.getFilesDir(context)}/version")
+            }
+            return Shell.cmd("ls ${Path.getFilesDir(context)}/bin").exec().out.size == 4
+        }
+
+        fun checkBashrc(): Boolean {
+            return Shell.cmd("check_bashrc").exec().isSuccess
         }
     }
 }

@@ -1,16 +1,13 @@
 package com.xayah.databackup.util
 
-import android.os.Environment
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 
 class Bashrc {
     companion object {
-        fun getStorageSpace(): Pair<Boolean, String> {
-            val exec =
-                Shell.cmd("get_storage_space ${Environment.getExternalStorageDirectory().path}")
-                    .exec()
+        fun getStorageSpace(path: String): Pair<Boolean, String> {
+            val exec = Shell.cmd("get_storage_space $path").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 

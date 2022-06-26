@@ -1,133 +1,148 @@
 package com.xayah.databackup.fragment.home
 
-import android.content.Context
+import android.os.Environment
 import android.view.View
-import androidx.core.view.size
 import androidx.databinding.ObservableBoolean
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.topjohnwu.superuser.Shell
-import com.topjohnwu.superuser.ShellUtils
-import com.topjohnwu.superuser.io.SuFile
-import com.xayah.databackup.MainActivity
-import com.xayah.databackup.R
-import com.xayah.databackup.util.*
-import com.xayah.design.view.setWithTopBarAndTips
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonParser
+import com.xayah.databackup.App
+import com.xayah.databackup.data.Release
+import com.xayah.databackup.util.Bashrc
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.IOException
 
 class HomeViewModel : ViewModel() {
-    val isRoot by lazy {
-        SuFile.open("/dev/console").canRead() || Shell.cmd("ls /").exec().isSuccess
+    val root = "${GlobalString.symbolDot} Root"
+    val bin = "${GlobalString.symbolDot} Bin"
+    val bashrc = "${GlobalString.symbolDot} Bashrc"
+    var rootCheck = ObservableField(checkRoot())
+    var binCheck = ObservableField(checkBin())
+    var bashrcCheck = ObservableField(checkBashrc())
+    var internalStorageString = ObservableField("")
+    var internalStorageMaxValue = 100
+    var internalStorageValue = ObservableInt(0)
+    var otgString = ObservableField(GlobalString.notPluggedIn)
+    var otgMaxValue = 100
+    var otgValue = ObservableInt(0)
+    var architectureCurrent = ObservableField("")
+    var architectureSupport = ObservableField("${GlobalString.support}: arm64-v8a, x86_64")
+    var versionCurrent = ObservableField(App.versionName)
+    var versionLatest = ObservableField("")
+    var downloadBtnVisible = ObservableBoolean(false)
+
+    private fun checkRoot(): String {
+        return if (Command.checkRoot()) GlobalString.symbolTick else GlobalString.symbolCross
     }
-    lateinit var abi: String
-    lateinit var storageSpace: String
-    var initialized = false
 
-    var isEnvCorrect = ObservableBoolean(true)
-    var envList = mutableListOf<String>()
+    private fun checkBin(): String {
+        return if (Command.checkBin(App.globalContext)) GlobalString.symbolTick else GlobalString.symbolCross
+    }
 
-    fun initialize(context: Context) {
-        if (!initialized) {
-            abi = Command.getABI()
-            storageSpace =
-                if (Bashrc.getStorageSpace().first) Bashrc.getStorageSpace().second else GlobalString.error
+    private fun checkBashrc(): String {
+        return if (Command.checkBashrc()) GlobalString.symbolTick else GlobalString.symbolCross
+    }
 
-            CoroutineScope(Dispatchers.IO).launch {
-                val versionName =
-                    context.packageManager.getPackageInfo(context.packageName, 0).versionName
-                val oldVersionName =
-                    ShellUtils.fastCmd("cat ${Path.getFilesDir(context)}/version")
-                if (versionName > oldVersionName) {
-                    ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(context)}/bin")
-                    ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(context)}/bin.zip")
-                }
+    private fun setInternalStorage() {
+        val space = Bashrc.getStorageSpace(Environment.getExternalStorageDirectory().path)
+        val string = if (space.first) space.second else GlobalString.error
+        internalStorageString.set(string)
+        if (space.first) {
+            internalStorageValue.set(string.split(" ").last().replace("%", "").toInt())
+        } else {
+            internalStorageValue.set(0)
+        }
+    }
 
-                if (!Command.ls("${Path.getFilesDir(context)}/bin")) {
-                    Command.extractAssets(context, "${Command.getABI()}/bin.zip", "bin.zip")
-                    Command.unzipByZip4j(
-                        "${Path.getFilesDir(context)}/bin.zip", "${Path.getFilesDir(context)}/bin"
-                    )
-                    ShellUtils.fastCmd("chmod 777 -R ${Path.getFilesDir(context)}")
-                    ShellUtils.fastCmd("echo \"${versionName}\" > ${Path.getFilesDir(context)}/version")
+    private fun setOTG() {
+        Bashrc.checkOTG().apply {
+            val that = this
+            if (that.first == 0) {
+                val space = Bashrc.getStorageSpace(that.second)
+                val string = if (space.first) space.second else GlobalString.error
+                otgString.set(string)
+                if (space.first) {
+                    otgValue.set(string.split(" ").last().replace("%", "").toInt())
+                } else {
+                    otgValue.set(0)
                 }
-
-                envList.clear()
-                envList.add(GlobalString.environmentDetectionTip)
-                if (isRoot)
-                    envList.add("root: √")
-                else {
-                    envList.add("root: ×")
-                    isEnvCorrect.set(false)
-                }
-                Shell.cmd("ls ${Path.getFilesDir(context)}/bin").exec().out.apply {
-                    if (this.size == 4)
-                        envList.add("bin: √")
-                    else {
-                        envList.add("bin: ×")
-                        isEnvCorrect.set(false)
-                    }
-                }
-                Shell.cmd("check_bashrc").exec().isSuccess.apply {
-                    if (this)
-                        envList.add("bashrc: √")
-                    else {
-                        envList.add("bashrc: ×")
-                        isEnvCorrect.set(false)
-                    }
-                }
-                if (!isEnvCorrect.get()) {
-                    withContext(Dispatchers.Main) {
-                        for (i in 0 until (context as MainActivity).binding.bottomNavigation.menu.size) {
-                            context.binding.bottomNavigation.menu.getItem(i).isEnabled = false
-                        }
-                        showBottomSheetDialog(context)
-                    }
-                }
-                Bashrc.checkOTG().apply {
-                    val that = this
-                    if (that.first == 0) {
-                        withContext(Dispatchers.Main) {
-                            BottomSheetDialog(context).apply {
-                                setWithTopBarAndTips(
-                                    GlobalString.tips,
-                                    GlobalString.otgChangeDir,
-                                    R.raw.usb
-                                ) {
-                                    context.saveBackupSavePath("${that.second}/DataBackup")
-                                }
-                            }
-                        }
-                    } else if (that.first == 1) {
-                        withContext(Dispatchers.Main) {
-                            BottomSheetDialog(context).apply {
-                                setWithTopBarAndTips(
-                                    GlobalString.tips,
-                                    GlobalString.otgNotSupport,
-                                    R.raw.usb
-                                ) {}
-                            }
-                        }
-                    }
-                }
-                initialized = true
+            } else if (that.first == 1) {
+                otgString.set(GlobalString.unsupportedFormat)
+                otgValue.set(0)
+            } else {
+                otgString.set(GlobalString.notPluggedIn)
+                otgValue.set(0)
             }
         }
     }
 
-    fun showEnv(v: View) {
-        showBottomSheetDialog(v.context)
+    private fun setArchitecture() {
+        architectureCurrent.set(Command.getABI())
     }
 
-    private fun showBottomSheetDialog(context: Context) {
-        BottomSheetDialog(context).apply {
-            setWithTopBarAndTips(
-                GlobalString.environmentDetection,
-                envList.joinToString(separator = "\n"),
-                R.raw.crown
-            ) {}
+    private fun setUpdate() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = OkHttpClient()
+                val request: Request = Request.Builder()
+                    .url("https://api.github.com/repos/XayahSuSuSu/Android-DataBackup/releases")
+                    .build()
+                client.newCall(request).execute().use { response ->
+                    response.body?.apply {
+                        // 解析response.body
+                        var jsonArray = JsonArray()
+                        try {
+                            jsonArray = JsonParser.parseString(this.string()).asJsonArray
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                        val mBodyList = mutableListOf<Release>()
+                        for (i in jsonArray) {
+                            try {
+                                val item = Gson().fromJson(i, Release::class.java)
+                                if (item.name.contains("Check"))
+                                    continue
+                                mBodyList.add(item)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                        versionLatest.set("${GlobalString.latest}: ${mBodyList[0].name}")
+                        if (versionLatest.get()!!.contains(versionCurrent.get()!!)) {
+                            downloadBtnVisible.set(false)
+                        } else {
+                            downloadBtnVisible.set(true)
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                versionLatest.set(GlobalString.fetchFailed)
+                downloadBtnVisible.set(false)
+                e.printStackTrace()
+            }
         }
+    }
+
+    fun refresh(v: View? = null) {
+        rootCheck.set(checkRoot())
+        binCheck.set(checkBin())
+        bashrcCheck.set(checkBashrc())
+        setInternalStorage()
+        setOTG()
+        setArchitecture()
+        setUpdate()
+    }
+
+    fun initialize() {
+        refresh()
     }
 }

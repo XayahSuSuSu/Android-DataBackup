@@ -75,5 +75,11 @@ class GlobalString {
         val activateBashrc = App.globalContext.getString(R.string.activate_bashrc)
         val finish = App.globalContext.getString(R.string.finish)
         val nextStep = App.globalContext.getString(R.string.next_step)
+        val root = App.globalContext.getString(R.string.root)
+        val support = App.globalContext.getString(R.string.support)
+        val fetchFailed = App.globalContext.getString(R.string.fetch_failed)
+        val notPluggedIn = App.globalContext.getString(R.string.not_plugged_in)
+        val latest = App.globalContext.getString(R.string.latest)
+        val unsupportedFormat = App.globalContext.getString(R.string.unsupported_format)
     }
 }
