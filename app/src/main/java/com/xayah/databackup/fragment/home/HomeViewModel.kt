@@ -116,11 +116,16 @@ class HomeViewModel : ViewModel() {
                                 e.printStackTrace()
                             }
                         }
-                        versionLatest.set("${GlobalString.latest}: ${mBodyList[0].name}")
-                        if (versionLatest.get()!!.contains(versionCurrent.get()!!)) {
+                        if (mBodyList.isEmpty()) {
+                            versionLatest.set(GlobalString.fetchFailed)
                             downloadBtnVisible.set(false)
                         } else {
-                            downloadBtnVisible.set(true)
+                            versionLatest.set("${GlobalString.latest}: ${mBodyList[0].name}")
+                            if (versionLatest.get()!!.contains(versionCurrent.get()!!)) {
+                                downloadBtnVisible.set(false)
+                            } else {
+                                downloadBtnVisible.set(true)
+                            }
                         }
                     }
                 }
