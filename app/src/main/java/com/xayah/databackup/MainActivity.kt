@@ -39,13 +39,12 @@ class MainActivity : AppCompatActivity() {
             R.id.homeFragment,
             R.id.backupFragment,
             R.id.restoreFragment,
-            R.id.settingsFragment,
         ).build()
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.bottomNavigation.setOnItemReselectedListener { }
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.homeFragment, R.id.backupFragment, R.id.restoreFragment, R.id.settingsFragment -> {
+                R.id.homeFragment, R.id.backupFragment, R.id.restoreFragment -> {
                     binding.bottomNavigation.visibility = View.VISIBLE
                 }
                 else -> {

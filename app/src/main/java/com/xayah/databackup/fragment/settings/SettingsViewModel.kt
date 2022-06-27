@@ -6,13 +6,11 @@ import android.view.View
 import android.widget.CompoundButton
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
-import androidx.navigation.Navigation
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.xayah.databackup.App
-import com.xayah.databackup.R
 import com.xayah.databackup.data.Issue
 import com.xayah.databackup.data.Release
 import com.xayah.databackup.util.*
@@ -118,9 +116,9 @@ class SettingsViewModel() : ViewModel() {
             isSupportSystemApp.set(isChecked)
         }
 
-    fun toAboutFragment(v: View) {
-        Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_aboutFragment)
-    }
+//    fun toAboutFragment(v: View) {
+//        Navigation.findNavController(v).navigate(R.id.action_settingsFragment_to_aboutFragment)
+//    }
 
     fun toHistoryDialog(v: View) {
         CoroutineScope(Dispatchers.IO).launch {

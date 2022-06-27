@@ -13,23 +13,7 @@
         android:name="com.xayah.databackup.fragment.backup.BackupFragment"
         android:label="@string/backup" />
     <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.xayah.databackup.fragment.settings.SettingsFragment"
-        android:label="@string/settings">
-        <action
-            android:id="@+id/action_settingsFragment_to_aboutFragment"
-            app:destination="@id/aboutFragment"
-            app:enterAnim="@animator/nav_default_enter_anim"
-            app:exitAnim="@animator/nav_default_exit_anim"
-            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
-            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
-    </fragment>
-    <fragment
         android:id="@+id/restoreFragment"
         android:name="com.xayah.databackup.fragment.restore.RestoreFragment"
         android:label="@string/restore" />
-    <fragment
-        android:id="@+id/aboutFragment"
-        android:name="com.xayah.databackup.fragment.about.AboutFragment"
-        android:label="@string/about" />
 </navigation>
