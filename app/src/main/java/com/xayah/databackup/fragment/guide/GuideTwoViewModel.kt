@@ -4,7 +4,7 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.util.GlobalString
 
-class GuideTwoViewModel() : ViewModel() {
+class GuideTwoViewModel : ViewModel() {
     val grantRootAccess = "${GlobalString.symbolDot} ${GlobalString.grantRootAccess}"
     val releasePrebuiltBinaries =
         "${GlobalString.symbolDot} ${GlobalString.releasePrebuiltBinaries}"

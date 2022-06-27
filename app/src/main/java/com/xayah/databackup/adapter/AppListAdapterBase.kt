@@ -2,16 +2,12 @@ package com.xayah.databackup.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.drakeet.multitype.ItemViewDelegate
 import com.xayah.databackup.App
-import com.xayah.databackup.R
 import com.xayah.databackup.data.AppEntity
 import com.xayah.databackup.databinding.AdapterAppListBinding
 import com.xayah.design.util.dp
