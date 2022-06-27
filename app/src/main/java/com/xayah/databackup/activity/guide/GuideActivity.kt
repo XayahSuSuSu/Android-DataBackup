@@ -8,7 +8,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.xayah.databackup.MainActivity
+import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.databinding.ActivityGuideBinding
 

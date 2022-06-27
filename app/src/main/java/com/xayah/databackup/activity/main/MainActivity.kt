@@ -1,4 +1,4 @@
-package com.xayah.databackup
+package com.xayah.databackup.activity.main
 
 import android.os.Bundle
 import android.view.View
@@ -11,6 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.xayah.databackup.R
 import com.xayah.databackup.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

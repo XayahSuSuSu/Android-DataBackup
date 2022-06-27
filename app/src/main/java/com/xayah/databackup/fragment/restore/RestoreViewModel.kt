@@ -21,7 +21,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
-import com.xayah.databackup.MainActivity
+import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.R
 import com.xayah.databackup.adapter.AppListAdapterRestore
 import com.xayah.databackup.data.AppEntity

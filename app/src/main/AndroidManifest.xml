@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.main.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.DataBackup" />
     </application>
