@@ -122,4 +122,12 @@
     <string name="latest">Latest</string>
     <string name="unsupported_format">Unsupported format</string>
     <string name="fetching">Fetching</string>
+    <string name="set_path">Set path</string>
+    <string name="user">User</string>
+    <string name="backup_app_title">Back up apps and data, here we go</string>
+    <string name="select_app">Select app</string>
+    <string name="start_backup">Start backup</string>
+    <string name="media">Media</string>
+    <string name="backup_media_title">Backup your media, or custom directory</string>
+    <string name="edit">Edit</string>
 </resources>

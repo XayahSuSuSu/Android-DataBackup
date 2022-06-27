@@ -113,4 +113,12 @@
     <string name="latest">最新</string>
     <string name="unsupported_format">不支持的格式</string>
     <string name="fetching">获取中</string>
+    <string name="set_path">设置路径</string>
+    <string name="user">用户</string>
+    <string name="backup_app_title">备份应用和数据，从这里开始</string>
+    <string name="select_app">选择应用</string>
+    <string name="start_backup">开始备份</string>
+    <string name="media">媒体</string>
+    <string name="backup_media_title">备份你的媒体资料，或者自定义目录</string>
+    <string name="edit">编辑</string>
 </resources>

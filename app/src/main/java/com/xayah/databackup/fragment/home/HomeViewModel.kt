@@ -53,13 +53,22 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun setInternalStorage() {
+        // 默认值
+        internalStorageString.set(GlobalString.fetching)
+        internalStorageValue.set(0)
+
         val space = Bashrc.getStorageSpace(Environment.getExternalStorageDirectory().path)
         val string = if (space.first) space.second else GlobalString.error
         internalStorageString.set(string)
         if (space.first) {
-            internalStorageValue.set(string.split(" ").last().replace("%", "").toInt())
+            try {
+                internalStorageValue.set(string.split(" ").last().replace("%", "").toInt())
+            } catch (e: NumberFormatException) {
+                e.printStackTrace()
+                internalStorageString.set(GlobalString.fetchFailed)
+            }
         } else {
-            internalStorageValue.set(0)
+            internalStorageString.set(GlobalString.fetchFailed)
         }
     }
 
