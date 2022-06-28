@@ -20,6 +20,9 @@
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
         <activity
+            android:name=".activity.backup.list.BackupAppListActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.guide.GuideActivity"
             android:exported="true">
             <intent-filter>

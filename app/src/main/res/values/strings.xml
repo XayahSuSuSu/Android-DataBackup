@@ -130,4 +130,5 @@
     <string name="media">Media</string>
     <string name="backup_media_title">Backup your media, or custom directory</string>
     <string name="edit">Edit</string>
+    <string name="system_app">System app</string>
 </resources>

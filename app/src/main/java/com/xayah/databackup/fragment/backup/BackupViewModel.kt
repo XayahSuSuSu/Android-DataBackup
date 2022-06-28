@@ -1,5 +1,6 @@
 package com.xayah.databackup.fragment.backup
 
+import android.content.Intent
 import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableBoolean
@@ -8,6 +9,7 @@ import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.activity.backup.list.BackupAppListActivity
 import com.xayah.databackup.util.*
 import com.xayah.design.adapter.PopupListAdapter
 import com.xayah.design.util.getPixels
@@ -97,8 +99,9 @@ class BackupViewModel : ViewModel() {
                 .coerceAtLeast(context.getPixels(com.xayah.design.R.dimen.dialog_menu_min_width))
             isModal = true
             horizontalOffset =
-                context.getPixels(com.xayah.design.R.dimen.item_header_component_size) +
-                        context.getPixels(com.xayah.design.R.dimen.item_header_margin) * 2
+                context.getPixels(com.xayah.design.R.dimen.item_header_component_size) + context.getPixels(
+                    com.xayah.design.R.dimen.item_header_margin
+                ) * 2
             setOnItemClickListener { _, _, position, _ ->
                 when (v.id) {
                     R.id.materialButton_change_backup_user -> {
@@ -137,9 +140,22 @@ class BackupViewModel : ViewModel() {
         }
     }
 
+    fun onSelectAppBtnClick(v: View) {
+        v.context.startActivity(Intent(v.context, BackupAppListActivity::class.java))
+    }
+
+    fun setNum() {
+        val that = this
+        Command.getCachedAppInfoBaseListNum().apply {
+            that.appNum.set(this.appNum.toString())
+            that.dataNum.set(this.dataNum.toString())
+        }
+    }
+
     private fun refresh() {
         setInternalStorage()
         setOTG()
+        setNum()
     }
 
     fun initialize() {

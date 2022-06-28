@@ -4,10 +4,9 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"
-        style="?attr/materialCardViewFilledStyle"
+        style="@style/Widget.Material3.CardView.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
         android:layout_marginTop="16dp"
         android:focusable="false">
 
@@ -36,8 +35,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
                     android:layout_marginEnd="16dp"
+                    android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/appIcon"
@@ -47,8 +46,8 @@
                         android:id="@+id/appName"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:ellipsize="end"
                         android:layout_weight="1"
+                        android:ellipsize="end"
                         android:maxLines="1"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textStyle="bold" />
@@ -88,10 +87,9 @@
                     android:layout_marginHorizontal="16dp"
                     android:checked="true"
                     android:text="@string/application"
-                    app:chipStrokeWidth="0dp"
-                    app:chipIconEnabled="true"
                     app:layout_constraintEnd_toStartOf="@id/chip_data"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_data"
@@ -101,10 +99,9 @@
                     android:layout_marginHorizontal="16dp"
                     android:checked="true"
                     android:text="@string/data"
-                    app:chipStrokeWidth="0dp"
-                    app:chipIconEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 

@@ -25,7 +25,7 @@ data class AppEntity(
     var backupPath: String = ""
 
     @Ignore
-    var appInfo: AppInfo? = null
+    var appInfo2: AppInfo2? = null
 
     @Ignore
     var mediaInfo: MediaInfo? = null

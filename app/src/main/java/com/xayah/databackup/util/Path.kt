@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.content.Context
+import com.xayah.databackup.App
 
 class Path {
     companion object {
@@ -22,6 +23,10 @@ class Path {
 
         fun getObbPath(userId: String): String {
             return "/data/media/$userId/Android/obb"
+        }
+
+        fun getBackupAppListPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/config/backup/appList"
         }
     }
 }

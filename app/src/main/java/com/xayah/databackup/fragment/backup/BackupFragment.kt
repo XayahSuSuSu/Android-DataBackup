@@ -12,6 +12,8 @@ import com.xayah.databackup.databinding.FragmentBackupBinding
 class BackupFragment : Fragment() {
     private var _binding: FragmentBackupBinding? = null
     private val binding get() = _binding!!
+    private lateinit var viewModel: BackupViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -22,9 +24,12 @@ class BackupFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = ViewModelProvider(requireActivity())[BackupViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[BackupViewModel::class.java]
         binding.viewModel = viewModel
+    }
 
+    override fun onResume() {
+        super.onResume()
         viewModel.initialize()
     }
 

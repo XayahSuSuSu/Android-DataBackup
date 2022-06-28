@@ -1,10 +1,9 @@
 package com.xayah.databackup.data
 
+import android.graphics.drawable.Drawable
+
 data class Release(
-    val html_url: String,
-    val name: String,
-    val assets: List<Asset>,
-    val body: String
+    val html_url: String, val name: String, val assets: List<Asset>, val body: String
 )
 
 data class Asset(
@@ -12,12 +11,10 @@ data class Asset(
 )
 
 data class Issue(
-    val html_url: String,
-    val title: String,
-    val body: String
+    val html_url: String, val title: String, val body: String
 )
 
-data class AppInfo(
+data class AppInfo2(
     val appName: String,
     val packageName: String,
     val version: String,
@@ -28,12 +25,18 @@ data class AppInfo(
     val obbSize: String
 )
 
-data class BackupInfo(
-    val version: String
+data class AppInfoBase(
+    var appName: String, var packageName: String, var app: Boolean, var data: Boolean
+)
+
+data class AppInfoBaseNum(
+    var appNum: Int, var dataNum: Int
+)
+
+data class AppInfo(
+    val appIcon: Drawable, val infoBase: AppInfoBase
 )
 
 data class MediaInfo(
-    val name: String,
-    val path: String,
-    val size: String
+    val name: String, val path: String, val size: String
 )

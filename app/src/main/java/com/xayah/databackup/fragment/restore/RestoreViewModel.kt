@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.view.*
 import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
@@ -16,25 +15,16 @@ import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonParser
-import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
-import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.R
-import com.xayah.databackup.adapter.AppListAdapterRestore
+import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.data.AppEntity
-import com.xayah.databackup.data.BackupInfo
-import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.databinding.LayoutProcessingBinding
 import com.xayah.databackup.util.*
 import com.xayah.design.view.*
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.*
-import java.text.Collator
-import java.util.*
 
 class RestoreViewModel : ViewModel() {
     var binding: FragmentRestoreBinding? = null
@@ -135,105 +125,105 @@ class RestoreViewModel : ViewModel() {
         if (!isProcessing) {
             // 没有Processing
             mAdapter = MultiTypeAdapter().apply {
-                register(
-                    AppListAdapterRestore(
-                        appListAll,
-                        { initialize(context, materialYouFileExplorer) {} },
-                        context
-                    )
-                )
+//                register(
+//                    AppListAdapterRestore(
+//                        appListAll,
+//                        { initialize(context, materialYouFileExplorer) {} },
+//                        context
+//                    )
+//                )
                 CoroutineScope(Dispatchers.IO).launch {
                     val userId = context.readBackupUser()
                     // 按照字母表排序
                     if (backupPath == null) backupPath =
                         context.readBackupSavePath() + "/$userId" else backupPath += "/$userId"
-                    backupPath?.let {
-                        val exec = Shell.cmd("cat ${backupPath}/info").exec()
-                        var backupInfo = BackupInfo("")
-                        try {
-                            backupInfo =
-                                Gson().fromJson(exec.out.joinToString(), BackupInfo::class.java)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                        if ((backupInfo.version != GlobalString.backupVersion) || (!exec.isSuccess)) {
-                            withContext(Dispatchers.Main) {
-                                MaterialAlertDialogBuilder(context).apply {
-                                    setWithNormalMessage(
-                                        GlobalString.tips,
-                                        GlobalString.backupNotSupport,
-                                        false
-                                    )
-                                }
-                            }
-                        }
-                        val mAppList = Command.getAppList(context, it).apply {
-                            sortWith { appEntity1, appEntity2 ->
-                                val collator = Collator.getInstance(Locale.CHINA)
-                                collator.getCollationKey((appEntity1 as AppEntity).appName)
-                                    .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
-                            }
-                        }
-                        if (App.globalContext.readIsCustomDirectoryPath()) {
-                            // 已存在数据
-                            val info = Shell.cmd("cat ${backupPath}/media/info")
-                                .exec().out.joinToString()
-                            var jsonArray = JsonArray()
-                            try {
-                                jsonArray = JsonParser.parseString(info).asJsonArray
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-
-                            val thatBackupPath = "${backupPath}/media"
-                            val ls = Shell.cmd("ls $thatBackupPath").exec()
-                            if (ls.isSuccess) {
-                                for (i in ls.out) {
-                                    if (i == "info")
-                                        continue
-                                    val packageName = GlobalString.customDir
-                                    val appEntity = AppEntity(
-                                        0,
-                                        i,
-                                        packageName,
-                                        backupApp = false,
-                                        backupData = false
-                                    ).apply {
-                                        icon = AppCompatResources.getDrawable(
-                                            context, R.drawable.ic_round_android
-                                        )
-                                        backupPath = thatBackupPath
-                                        appEnabled = false
-                                        dataEnabled = Command.ls("${thatBackupPath}/${i}")
-                                        for (j in jsonArray) {
-                                            try {
-                                                val item = Gson().fromJson(j, MediaInfo::class.java)
-                                                if (item.name == i.split(".").first())
-                                                    mediaInfo = item
-                                            } catch (e: Exception) {
-                                                e.printStackTrace()
-                                            }
-                                        }
-                                    }
-                                    mAppList.add(appEntity)
-                                }
-                            }
-                        }
-                        appList = mAppList
-                        appListAll = mAppList
-                        items = appList
-                        withContext(Dispatchers.Main) {
-                            binding?.recyclerView?.notifyDataSetChanged()
-                            if (appList.isEmpty()) {
-                                binding?.linearLayout?.visibility = View.VISIBLE
-                            } else {
-                                binding?.linearLayout?.visibility = View.GONE
-                            }
-                            linearProgressIndicator.visibility = View.GONE
-                            binding?.recyclerView?.visibility = View.VISIBLE
-                            onInitialized()
-                        }
-                    }
+//                    backupPath?.let {
+//                        val exec = Shell.cmd("cat ${backupPath}/info").exec()
+//                        var backupInfo = BackupInfo("")
+//                        try {
+//                            backupInfo =
+//                                Gson().fromJson(exec.out.joinToString(), BackupInfo::class.java)
+//                        } catch (e: Exception) {
+//                            e.printStackTrace()
+//                        }
+//                        if ((backupInfo.version != GlobalString.backupVersion) || (!exec.isSuccess)) {
+//                            withContext(Dispatchers.Main) {
+//                                MaterialAlertDialogBuilder(context).apply {
+//                                    setWithNormalMessage(
+//                                        GlobalString.tips,
+//                                        GlobalString.backupNotSupport,
+//                                        false
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        val mAppList = Command.getAppList(context, it).apply {
+//                            sortWith { appEntity1, appEntity2 ->
+//                                val collator = Collator.getInstance(Locale.CHINA)
+//                                collator.getCollationKey((appEntity1 as AppEntity).appName)
+//                                    .compareTo(collator.getCollationKey((appEntity2 as AppEntity).appName))
+//                            }
+//                        }
+//                        if (App.globalContext.readIsCustomDirectoryPath()) {
+//                            // 已存在数据
+//                            val info = Shell.cmd("cat ${backupPath}/media/info")
+//                                .exec().out.joinToString()
+//                            var jsonArray = JsonArray()
+//                            try {
+//                                jsonArray = JsonParser.parseString(info).asJsonArray
+//                            } catch (e: Exception) {
+//                                e.printStackTrace()
+//                            }
+//
+//                            val thatBackupPath = "${backupPath}/media"
+//                            val ls = Shell.cmd("ls $thatBackupPath").exec()
+//                            if (ls.isSuccess) {
+//                                for (i in ls.out) {
+//                                    if (i == "info")
+//                                        continue
+//                                    val packageName = GlobalString.customDir
+//                                    val appEntity = AppEntity(
+//                                        0,
+//                                        i,
+//                                        packageName,
+//                                        backupApp = false,
+//                                        backupData = false
+//                                    ).apply {
+//                                        icon = AppCompatResources.getDrawable(
+//                                            context, R.drawable.ic_round_android
+//                                        )
+//                                        backupPath = thatBackupPath
+//                                        appEnabled = false
+//                                        dataEnabled = Command.ls("${thatBackupPath}/${i}")
+//                                        for (j in jsonArray) {
+//                                            try {
+//                                                val item = Gson().fromJson(j, MediaInfo::class.java)
+//                                                if (item.name == i.split(".").first())
+//                                                    mediaInfo = item
+//                                            } catch (e: Exception) {
+//                                                e.printStackTrace()
+//                                            }
+//                                        }
+//                                    }
+//                                    mAppList.add(appEntity)
+//                                }
+//                            }
+//                        }
+//                        appList = mAppList
+//                        appListAll = mAppList
+//                        items = appList
+//                        withContext(Dispatchers.Main) {
+//                            binding?.recyclerView?.notifyDataSetChanged()
+//                            if (appList.isEmpty()) {
+//                                binding?.linearLayout?.visibility = View.VISIBLE
+//                            } else {
+//                                binding?.linearLayout?.visibility = View.GONE
+//                            }
+//                            linearProgressIndicator.visibility = View.GONE
+//                            binding?.recyclerView?.visibility = View.VISIBLE
+//                            onInitialized()
+//                        }
+//                    }
                 }
             }
         } else {
@@ -258,11 +248,9 @@ class RestoreViewModel : ViewModel() {
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     newText?.let {
-                        appList =
-                            appListAll.filter {
-                                it.appName.lowercase().contains(newText.lowercase())
-                            }
-                                .toMutableList()
+                        appList = appListAll.filter {
+                            it.appName.lowercase().contains(newText.lowercase())
+                        }.toMutableList()
                         mAdapter.items = appList
                         binding?.recyclerView?.notifyDataSetChanged()
                     }
@@ -302,26 +290,23 @@ class RestoreViewModel : ViewModel() {
                 when (it.itemId) {
                     R.id.select_all -> {
                         for ((index, _) in appList.withIndex()) {
-                            if (appList[index].appEnabled)
-                                appList[index].backupApp = selectAll
-                            if (appList[index].dataEnabled)
-                                appList[index].backupData = selectAll
+                            if (appList[index].appEnabled) appList[index].backupApp = selectAll
+                            if (appList[index].dataEnabled) appList[index].backupData = selectAll
                         }
                         binding?.recyclerView?.notifyDataSetChanged()
                         selectAll = !selectAll
                     }
                     R.id.select_all_app -> {
                         for ((index, _) in appList.withIndex()) {
-                            if (appList[index].appEnabled)
-                                appList[index].backupApp = selectAllApp
+                            if (appList[index].appEnabled) appList[index].backupApp = selectAllApp
                         }
                         binding?.recyclerView?.notifyDataSetChanged()
                         selectAllApp = !selectAllApp
                     }
                     R.id.select_all_data -> {
                         for ((index, _) in appList.withIndex()) {
-                            if (appList[index].dataEnabled)
-                                appList[index].backupData = selectAllData
+                            if (appList[index].dataEnabled) appList[index].backupData =
+                                selectAllData
                         }
                         binding?.recyclerView?.notifyDataSetChanged()
                         selectAllData = !selectAllData
@@ -337,19 +322,15 @@ class RestoreViewModel : ViewModel() {
         if (isFiltering) {
             // 检查是否处于搜索模式
             Toast.makeText(
-                context,
-                GlobalString.pleaseExitSearchMode,
-                Toast.LENGTH_SHORT
+                context, GlobalString.pleaseExitSearchMode, Toast.LENGTH_SHORT
             ).show()
         } else {
             // 确认清单
             var contents = "${GlobalString.selected}\n"
             for (i in appListAll) {
                 if (i.backupApp || i.backupData) {
-                    if (i.backupApp)
-                        contents += "[${GlobalString.application}]"
-                    if (i.backupData)
-                        contents += "[${GlobalString.data}]"
+                    if (i.backupApp) contents += "[${GlobalString.application}]"
+                    if (i.backupData) contents += "[${GlobalString.data}]"
                     contents += " ${i.appName}\n"
                 }
             }
@@ -438,14 +419,10 @@ class RestoreViewModel : ViewModel() {
                                         i.mediaInfo?.apply {
                                             if (this.path != "") {
                                                 Command.decompressMedia(
-                                                    "${backupPath}/media",
-                                                    i.appName,
-                                                    this.path
+                                                    "${backupPath}/media", i.appName, this.path
                                                 ).apply {
-                                                    if (this)
-                                                        success += 1
-                                                    else
-                                                        failed += 1
+                                                    if (this) success += 1
+                                                    else failed += 1
                                                 }
                                             } else {
                                                 failed += 1
@@ -471,7 +448,7 @@ class RestoreViewModel : ViewModel() {
                             // 设置任务参数
                             val inPath = i.backupPath
                             val packageName = i.packageName
-                            val versionCode = i.appInfo?.versionCode ?: ""
+                            val versionCode = i.appInfo2?.versionCode ?: ""
 
                             if (i.backupApp) {
                                 // 选中恢复应用
@@ -488,14 +465,11 @@ class RestoreViewModel : ViewModel() {
                                 // 选中恢复数据
                                 App.log.add(GlobalString.restoreProcessing)
                                 Command.restoreData(packageName, inPath, userId).apply {
-                                    if (!this)
-                                        state = false
+                                    if (!this) state = false
                                 }
                             }
-                            if (state)
-                                success += 1
-                            else
-                                failed += 1
+                            if (state) success += 1
+                            else failed += 1
 
                             index++
                         }
@@ -516,14 +490,11 @@ class RestoreViewModel : ViewModel() {
         val layoutProcessingBinding =
             LayoutProcessingBinding.inflate(LayoutInflater.from(context)).apply {
                 root.apply {
-                    layoutParams =
-                        RelativeLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        )
-                            .apply {
-                                addRule(RelativeLayout.CENTER_IN_PARENT)
-                            }
+                    layoutParams = RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        addRule(RelativeLayout.CENTER_IN_PARENT)
+                    }
                 }
             }
         binding?.relativeLayout?.removeAllViews()
@@ -556,9 +527,7 @@ class RestoreViewModel : ViewModel() {
         binding?.relativeLayout?.removeAllViews()
         val showResult = {
             Toast.makeText(
-                context,
-                GlobalString.restoreSuccess,
-                Toast.LENGTH_SHORT
+                context, GlobalString.restoreSuccess, Toast.LENGTH_SHORT
             ).show()
             BottomSheetDialog(context).apply {
                 val s = String.format("%02d", time % 60)
@@ -578,13 +547,11 @@ class RestoreViewModel : ViewModel() {
         } else {
             val lottieAnimationView = LottieAnimationView(context)
             lottieAnimationView.apply {
-                layoutParams =
-                    RelativeLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    ).apply {
-                        addRule(RelativeLayout.CENTER_IN_PARENT)
-                    }
+                layoutParams = RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                ).apply {
+                    addRule(RelativeLayout.CENTER_IN_PARENT)
+                }
                 setAnimation(R.raw.success)
                 playAnimation()
                 addAnimatorUpdateListener { animation ->

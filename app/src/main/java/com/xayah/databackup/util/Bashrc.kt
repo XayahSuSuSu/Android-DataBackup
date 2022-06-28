@@ -115,6 +115,11 @@ class Bashrc {
         }
 
         fun writeToFile(content: String, path: String): Pair<Boolean, String> {
+            val prefix = path.split("/").toMutableList().apply {
+                removeLast()
+            }
+            val newPath = prefix.joinToString(separator = "/")
+            Command.mkdir(newPath)
             val exec = Shell.cmd("write_to_file \'$content\' $path").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
