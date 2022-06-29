@@ -19,7 +19,7 @@
     <string name="reverse_all_app">反选：应用</string>
     <string name="reverse_all_data">反选：数据</string>
     <string name="backup_apk_processing">备份APK中…</string>
-    <string name="backup_success">备份完成！</string>
+    <string name="backup_finished">备份完成</string>
     <string name="choose_backup">选择备份</string>
     <string name="restore_success">恢复完成！</string>
     <string name="install_apk_processing">安装APK中…</string>
@@ -72,7 +72,7 @@
     <string name="summary_backup_or_restore_custom_dir">启用则备份下列所有自定义目录，或恢复备份文件夹内所有自定义目录</string>
     <string name="backup_itself">备份自身安装包</string>
     <string name="summary_backup_itself">备份时自动提取本应用安装包到备份文件夹根目录</string>
-    <string name="selected">已选择：</string>
+    <string name="selected">已选择</string>
     <string name="backup_user">备份用户</string>
     <string name="history_version">历史版本</string>
     <string name="feature_foresight">版本前瞻</string>
@@ -122,4 +122,9 @@
     <string name="backup_media_title">备份你的媒体资料，或者自定义目录</string>
     <string name="edit">编辑</string>
     <string name="system_app">系统应用</string>
+    <string name="speed">速度</string>
+    <string name="size">大小</string>
+    <string name="progress">进度</string>
+    <string name="total">总计</string>
+    <string name="ready">准备就绪</string>
 </resources>

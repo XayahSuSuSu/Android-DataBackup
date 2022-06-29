@@ -15,7 +15,7 @@
     <string name="search">Search</string>
     <string name="choose">Choose</string>
     <string name="backup_apk_processing">Backup apk…</string>
-    <string name="backup_success">Successfully!</string>
+    <string name="backup_finished">Finished</string>
     <string name="choose_backup">Choose backup</string>
     <string name="restore_success">Successfully!</string>
     <string name="install_apk_processing">Install apk…</string>
@@ -75,7 +75,7 @@
     <string name="summary_backup_or_restore_custom_dir">Enable to back up all the following custom directories, or restore all custom directories in the backup folder</string>
     <string name="backup_itself">Backup itself</string>
     <string name="summary_backup_itself">Automatically extract the application installation package to the root directory of the backup folder after backup</string>
-    <string name="selected">"Selected: "</string>
+    <string name="selected">Selected</string>
     <string name="backup_user">Backup user</string>
     <string name="history_version">History version</string>
     <string name="feature_foresight">Feature foresight</string>
@@ -131,4 +131,14 @@
     <string name="backup_media_title">Backup your media, or custom directory</string>
     <string name="edit">Edit</string>
     <string name="system_app">System app</string>
+    <string name="symbol_triangle" translatable="false">▲</string>
+    <string name="speed">Speed</string>
+    <string name="size">Size</string>
+    <string name="letter_obb" translatable="false">OBB</string>
+    <string name="letter_data" translatable="false">DATA</string>
+    <string name="letter_user" translatable="false">USER</string>
+    <string name="letter_apk" translatable="false">APK</string>
+    <string name="progress">Progress</string>
+    <string name="total">Total</string>
+    <string name="ready">Ready</string>
 </resources>

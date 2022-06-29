@@ -6,7 +6,7 @@ import com.drakeet.multitype.MultiTypeAdapter
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.AppListAdapterBackup
 import com.xayah.databackup.adapter.AppListHeaderAdapterBase
-import com.xayah.databackup.data.AppInfo
+import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
 import com.xayah.databackup.util.Command
 import kotlinx.coroutines.CoroutineScope
@@ -17,7 +17,7 @@ import java.text.Collator
 import java.util.*
 
 class BackupAppListViewModel : ViewModel() {
-    var mAppInfoList: MutableList<AppInfo> = mutableListOf()
+    var mAppInfoBackupList: MutableList<AppInfoBackup> = mutableListOf()
     val mAdapter = MultiTypeAdapter()
     var appNumFull = true
     var dataNumFull = true
@@ -28,11 +28,11 @@ class BackupAppListViewModel : ViewModel() {
             mAdapter.apply {
                 val adapterList = mutableListOf<Any>()
                 // 按照字母表排序
-                mAppInfoList = Command.getAppList(App.globalContext).apply {
+                mAppInfoBackupList = Command.getAppInfoBackupList(App.globalContext).apply {
                     sortWith { appInfo1, appInfo2 ->
                         val collator = Collator.getInstance(Locale.CHINA)
-                        collator.getCollationKey((appInfo1 as AppInfo).infoBase.appName)
-                            .compareTo(collator.getCollationKey((appInfo2 as AppInfo).infoBase.appName))
+                        collator.getCollationKey((appInfo1 as AppInfoBackup).infoBase.appName)
+                            .compareTo(collator.getCollationKey((appInfo2 as AppInfoBackup).infoBase.appName))
                     }
                 }
                 register(
@@ -40,17 +40,17 @@ class BackupAppListViewModel : ViewModel() {
                         updateChip(it)
                     }, onChipAppClick = {
                         appNumFull = !appNumFull
-                        for (i in mAppInfoList) i.infoBase.app = appNumFull
+                        for (i in mAppInfoBackupList) i.infoBase.app = appNumFull
                         mAdapter.notifyDataSetChanged()
                     }, onChipDataClick = {
                         dataNumFull = !dataNumFull
-                        for (i in mAppInfoList) i.infoBase.data = dataNumFull
+                        for (i in mAppInfoBackupList) i.infoBase.data = dataNumFull
                         mAdapter.notifyDataSetChanged()
                     })
                 )
                 register(AppListAdapterBackup())
                 adapterList.add(0, "Header")
-                adapterList.addAll(mAppInfoList)
+                adapterList.addAll(mAppInfoBackupList)
                 items = adapterList
                 withContext(Dispatchers.Main) {
                     onInitialized()
@@ -62,8 +62,8 @@ class BackupAppListViewModel : ViewModel() {
     private fun updateChip(binding: AdapterAppListHeaderBinding) {
         var appNum = 0
         var dataNum = 0
-        val size = mAppInfoList.size
-        for (i in mAppInfoList) {
+        val size = mAppInfoBackupList.size
+        for (i in mAppInfoBackupList) {
             if (i.infoBase.app) appNum++
             if (i.infoBase.data) dataNum++
         }

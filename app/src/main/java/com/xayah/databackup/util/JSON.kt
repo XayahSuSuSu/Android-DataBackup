@@ -1,9 +1,10 @@
 package com.xayah.databackup.util
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+
 
 class JSON {
     companion object {
@@ -23,20 +24,24 @@ class JSON {
         fun jsonArrayToEntityArray(
             jsonArray: JsonArray, classEntity: Class<MutableList<*>>
         ): MutableList<Any> {
-            return Gson().fromJson(jsonArray, classEntity) as MutableList<Any>
+            return GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
+                .fromJson(jsonArray, classEntity) as MutableList<Any>
         }
 
         fun jsonElementToEntity(jsonElement: JsonElement, classEntity: Class<*>): Any {
-            return Gson().fromJson(jsonElement, classEntity)
+            return GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
+                .fromJson(jsonElement, classEntity)
         }
 
         fun entityToJsonElement(src: Any): JsonElement? {
-            return JsonParser.parseString(Gson().toJson(src))
+            return JsonParser.parseString(
+                GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(src)
+            )
         }
 
         fun writeJSONToFile(src: Any, outPut: String): Boolean {
             try {
-                val json = Gson().toJson(src)
+                val json = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(src)
                 Bashrc.writeToFile(json, outPut).apply {
                     if (!this.first) {
                         return false

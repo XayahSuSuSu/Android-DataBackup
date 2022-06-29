@@ -60,7 +60,7 @@ class Command {
             }
         }
 
-        fun getAppList(context: Context): MutableList<AppInfo> {
+        fun getAppInfoBackupList(context: Context): MutableList<AppInfoBackup> {
             val packageManager = context.packageManager
             val userId = context.readBackupUser()
             // 出于某些原因，只有getInstalledPackages()才能正确获取所有的应用信息
@@ -70,17 +70,17 @@ class Command {
             for ((index, j) in listPackages.withIndex()) listPackages[index] =
                 j.replace("package:", "")
             // 可变列表
-            val cachedAppList = mutableListOf<AppInfoBase>()
-            val appList = mutableListOf<AppInfo>()
+            val cachedAppInfoBackupList = mutableListOf<AppInfoBackup>()
+            val appInfoBackupList = mutableListOf<AppInfoBackup>()
             cat(Path.getBackupAppListPath()).apply {
                 if (this.first) {
                     try {
                         val jsonArray = JSON.stringToJsonArray(this.second)
                         for (i in jsonArray) {
-                            cachedAppList.add(
+                            cachedAppInfoBackupList.add(
                                 JSON.jsonElementToEntity(
-                                    i, AppInfoBase::class.java
-                                ) as AppInfoBase
+                                    i, AppInfoBackup::class.java
+                                ) as AppInfoBackup
                             )
                         }
                     } catch (e: Exception) {
@@ -95,27 +95,81 @@ class Command {
                         continue
                     if (!context.readIsSupportSystemApp()) if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0) continue
                     // 寻找缓存数据
-                    var appInfoBase = AppInfoBase("", "", app = true, data = true)
-                    for (j in cachedAppList) {
-                        if (i.packageName == j.packageName) {
-                            appInfoBase = j
+                    var appInfo = AppInfoBackup(
+                        null,
+                        AppInfoBase("", "", "", 0, app = true, data = true),
+                    )
+                    for (j in cachedAppInfoBackupList) {
+                        if (i.packageName == j.infoBase.packageName) {
+                            appInfo = j
                             break
                         }
                     }
                     val appIcon = i.applicationInfo.loadIcon(packageManager)
                     val appName = i.applicationInfo.loadLabel(packageManager).toString()
+                    val versionName = i.versionName
+                    val versionCode = i.longVersionCode
                     val packageName = i.packageName
-                    appInfoBase.appName = appName
-                    appInfoBase.packageName = packageName
-                    appList.add(AppInfo(appIcon, appInfoBase))
+                    appInfo.appIcon = appIcon
+                    appInfo.apply {
+                        infoBase.appName = appName
+                        infoBase.packageName = packageName
+                        infoBase.versionName = versionName
+                        infoBase.versionCode = versionCode
+                    }
+                    appInfoBackupList.add(appInfo)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
-            return appList
+            return appInfoBackupList
         }
 
-        fun getCachedAppInfoBaseListNum(): AppInfoBaseNum {
+        fun getCachedAppInfoBackupList(
+            context: Context,
+            isFiltered: Boolean = false // 是否过滤应用和数据均未勾选的item
+        ): MutableList<AppInfoBackup> {
+            val packageManager = context.packageManager
+            val userId = context.readBackupUser()
+            // 出于某些原因，只有getInstalledPackages()才能正确获取所有的应用信息
+            val packages = packageManager.getInstalledPackages(0)
+            // 获取指定用户的所有应用信息
+            val listPackages = Bashrc.listPackages(userId).second
+            for ((index, j) in listPackages.withIndex()) listPackages[index] =
+                j.replace("package:", "")
+            // 可变列表
+            val cachedAppInfoBackupList = mutableListOf<AppInfoBackup>()
+            val appInfoBackupList = mutableListOf<AppInfoBackup>()
+            cat(Path.getBackupAppListPath()).apply {
+                if (this.first) {
+                    try {
+                        val jsonArray = JSON.stringToJsonArray(this.second)
+                        for (i in jsonArray) {
+                            cachedAppInfoBackupList.add(
+                                JSON.jsonElementToEntity(
+                                    i, AppInfoBackup::class.java
+                                ) as AppInfoBackup
+                            )
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            for (i in cachedAppInfoBackupList) {
+                for (j in packages) {
+                    if (i.infoBase.packageName == j.packageName) {
+                        if (isFiltered)
+                            if (!i.infoBase.app && !i.infoBase.data) continue
+                        appInfoBackupList.add(i)
+                        break
+                    }
+                }
+            }
+            return appInfoBackupList
+        }
+
+        fun getCachedAppInfoBackupListNum(): AppInfoBaseNum {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             cat(Path.getBackupAppListPath()).apply {
                 if (this.first) {
@@ -123,10 +177,10 @@ class Command {
                         val jsonArray = JSON.stringToJsonArray(this.second)
                         for (i in jsonArray) {
                             (JSON.jsonElementToEntity(
-                                i, AppInfoBase::class.java
-                            ) as AppInfoBase).apply {
-                                if (this.app) appInfoBaseNum.appNum++
-                                if (this.data) appInfoBaseNum.dataNum++
+                                i, AppInfoBackup::class.java
+                            ) as AppInfoBackup).apply {
+                                if (this.infoBase.app) appInfoBaseNum.appNum++
+                                if (this.infoBase.data) appInfoBaseNum.dataNum++
                             }
                         }
                     } catch (e: Exception) {
@@ -137,7 +191,7 @@ class Command {
             return appInfoBaseNum
         }
 
-        fun getAppList(context: Context, path: String): MutableList<AppEntity> {
+        fun getAppInfoBackupList(context: Context, path: String): MutableList<AppEntity> {
             val appList: MutableList<AppEntity> = mutableListOf()
             val packages = Shell.cmd("ls $path").exec().out
             for (i in packages) {
@@ -203,7 +257,8 @@ class Command {
             packageName: String,
             outPut: String,
             dataPath: String,
-            dataSize: String? = null
+            dataSize: String? = null,
+            onAddLine: (line: String?) -> Unit = {}
         ): Boolean {
             if (dataType == "media") {
                 countSize(dataPath, 1).apply {
@@ -222,7 +277,13 @@ class Command {
                     }
                 }
             }
-            Bashrc.compress(compressionType, dataType, packageName, outPut, dataPath).apply {
+            Bashrc.compress(
+                compressionType,
+                dataType,
+                packageName,
+                outPut,
+                dataPath
+            ) { onAddLine(it) }.apply {
                 if (!this.first) {
                     App.log.add(this.second)
                     App.log.add(GlobalString.compressFailed)
@@ -237,7 +298,8 @@ class Command {
             packageName: String,
             outPut: String,
             userId: String,
-            apkSize: String? = null
+            apkSize: String? = null,
+            onAddLine: (line: String?) -> Unit = {}
         ): Boolean {
             val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
@@ -261,7 +323,9 @@ class Command {
                     return false
                 }
             }
-            Bashrc.compressAPK(compressionType, outPut).apply {
+            Bashrc.compressAPK(compressionType, outPut) {
+                onAddLine(it)
+            }.apply {
                 if (!this.first) {
                     App.log.add(this.second)
                     App.log.add(GlobalString.compressApkFailed)

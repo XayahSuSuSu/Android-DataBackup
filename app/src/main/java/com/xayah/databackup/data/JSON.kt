@@ -1,6 +1,7 @@
 package com.xayah.databackup.data
 
 import android.graphics.drawable.Drawable
+import com.google.gson.annotations.Expose
 
 data class Release(
     val html_url: String, val name: String, val assets: List<Asset>, val body: String
@@ -26,15 +27,34 @@ data class AppInfo2(
 )
 
 data class AppInfoBase(
-    var appName: String, var packageName: String, var app: Boolean, var data: Boolean
+    @Expose
+    var appName: String,
+    @Expose
+    var packageName: String,
+    @Expose
+    var versionName: String,
+    @Expose
+    var versionCode: Long,
+    @Expose
+    var app: Boolean,
+    @Expose
+    var data: Boolean
 )
 
 data class AppInfoBaseNum(
     var appNum: Int, var dataNum: Int
 )
 
-data class AppInfo(
-    val appIcon: Drawable, val infoBase: AppInfoBase
+data class AppInfoBackup(
+    var appIcon: Drawable? = null,
+    @Expose
+    val infoBase: AppInfoBase,
+)
+
+data class AppInfoRestore(
+    var appIcon: Drawable? = null,
+    @Expose
+    val infoBase: AppInfoBase,
 )
 
 data class MediaInfo(

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.backup.list.BackupAppListActivity
+import com.xayah.databackup.activity.backup.processing.BackupProcessingActivity
 import com.xayah.databackup.util.*
 import com.xayah.design.adapter.PopupListAdapter
 import com.xayah.design.util.getPixels
@@ -144,9 +145,13 @@ class BackupViewModel : ViewModel() {
         v.context.startActivity(Intent(v.context, BackupAppListActivity::class.java))
     }
 
-    fun setNum() {
+    fun onBackupAppBtnClick(v: View) {
+        v.context.startActivity(Intent(v.context, BackupProcessingActivity::class.java))
+    }
+
+    private fun setNum() {
         val that = this
-        Command.getCachedAppInfoBaseListNum().apply {
+        Command.getCachedAppInfoBackupListNum().apply {
             that.appNum.set(this.appNum.toString())
             that.dataNum.set(this.dataNum.toString())
         }

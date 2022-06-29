@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="red">#FFB1BD</color>
+    <color name="redContainer">#8F0032</color>
+
+    <color name="yellow">#FEB96B</color>
+    <color name="yellowContainer">#673E01</color>
+
+    <color name="green">#5DDDA2</color>
+    <color name="greenContainer">#015232</color>
+
+    <color name="blue">#B0C6FF</color>
+    <color name="blueContainer">#0140A1</color>
 </resources>

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.AppInfoBase
 import com.xayah.databackup.databinding.ActivityBackupAppListBinding
 import com.xayah.databackup.util.JSON
@@ -38,10 +39,10 @@ class BackupAppListActivity : AppCompatActivity() {
     }
 
     private fun saveAppList() {
-        val appInfoBaseList = mutableListOf<AppInfoBase>()
-        for (i in viewModel.mAppInfoList) appInfoBaseList.add(i.infoBase)
+        val appInfoBackupList = mutableListOf<AppInfoBackup>()
+        for (i in viewModel.mAppInfoBackupList) appInfoBackupList.add(i)
         JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(appInfoBaseList as MutableList<Any>),
+            JSON.entityArrayToJsonArray(appInfoBackupList as MutableList<Any>),
             Path.getBackupAppListPath()
         )
     }

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.xayah.databackup.activity.backup.processing.BackupProcessingViewModel" />
+
+        <import type="android.view.View" />
+    </data>
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:context=".activity.backup.list.BackupProcessingActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_round_arrow_back"
+                app:title="@string/backup"
+                app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical"
+                    android:paddingBottom="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/lottieAnimationView"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
+                        app:lottie_rawRes="@raw/loader" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Filled"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="30dp"
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="24dp"
+                        app:contentPadding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{viewModel.totalTip}"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{viewModel.totalProgress}"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/progress"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                android:visibility="@{viewModel.isProcessing() ? View.VISIBLE : View.GONE}" />
+
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:max="@{viewModel.progressMax}"
+                                android:progress="@{viewModel.progress}"
+                                android:visibility="@{viewModel.isProcessing() ? View.VISIBLE : View.GONE}"
+                                app:indicatorColor="@color/red"
+                                app:trackColor="?attr/colorOnError"
+                                app:trackCornerRadius="3dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:onClick="@{(v)->viewModel.onBackupClick(v)}"
+                                android:text="@{viewModel.backupBtnText}"
+                                android:visibility="@{viewModel.isProcessing() ? View.GONE : View.VISIBLE}" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="30dp"
+                        android:layout_marginTop="24dp"
+                        android:visibility="@{viewModel.isProcessing() ? View.VISIBLE : View.GONE}"
+                        app:cardCornerRadius="24dp"
+                        app:contentPadding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent">
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@{viewModel.appName}"
+                                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                                        tools:ignore="TooDeepLayout" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@{viewModel.packageName}"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@{viewModel.appVersion}"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+                                </LinearLayout>
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:src="@{viewModel.appIcon}"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="8dp"
+                                android:animateLayoutChanges="true"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:visibility="@{viewModel.isBackupApk() ? View.VISIBLE : View.GONE}">
+
+                                    <androidx.constraintlayout.utils.widget.ImageFilterView
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@color/redContainer"
+                                        android:padding="8dp"
+                                        android:tint="@color/red"
+                                        app:roundPercent="1"
+                                        app:srcCompat="@drawable/ic_round_android" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="@string/letter_apk"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/symbol_triangle"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                        android:visibility="@{viewModel.processingApk ? View.VISIBLE : View.INVISIBLE}" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:visibility="@{viewModel.isBackupUser() ? View.VISIBLE : View.GONE}">
+
+                                    <androidx.constraintlayout.utils.widget.ImageFilterView
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@color/yellowContainer"
+                                        android:padding="8dp"
+                                        android:tint="@color/yellow"
+                                        app:roundPercent="1"
+                                        app:srcCompat="@drawable/ic_round_person" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="@string/letter_user"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/symbol_triangle"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                        android:visibility="@{viewModel.processingUser ? View.VISIBLE : View.INVISIBLE}" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:visibility="@{viewModel.isBackupData() ? View.VISIBLE : View.GONE}">
+
+                                    <androidx.constraintlayout.utils.widget.ImageFilterView
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@color/greenContainer"
+                                        android:padding="8dp"
+                                        android:tint="@color/green"
+                                        app:roundPercent="1"
+                                        app:srcCompat="@drawable/ic_round_database" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="@string/letter_data"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/symbol_triangle"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                        android:visibility="@{viewModel.processingData ? View.VISIBLE : View.INVISIBLE}" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:visibility="@{viewModel.isBackupObb() ? View.VISIBLE : View.GONE}">
+
+                                    <androidx.constraintlayout.utils.widget.ImageFilterView
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@color/blueContainer"
+                                        android:padding="8dp"
+                                        android:tint="@color/blue"
+                                        app:roundPercent="1"
+                                        app:srcCompat="@drawable/ic_round_esports" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="@string/letter_obb"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/symbol_triangle"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                        android:visibility="@{viewModel.processingObb ? View.VISIBLE : View.INVISIBLE}" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/size"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.size}"
+                                    android:textAppearance="@style/TextAppearance.Material3.DisplayLarge" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.sizeUnit}"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+                            </LinearLayout>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/speed"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.speed}"
+                                    android:textAppearance="@style/TextAppearance.Material3.DisplayLarge" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.speedUnit}"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

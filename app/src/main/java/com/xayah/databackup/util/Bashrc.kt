@@ -22,12 +22,17 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun compressAPK(compressionType: String, outPut: String): Pair<Boolean, String> {
+        fun compressAPK(
+            compressionType: String,
+            outPut: String,
+            onAddLine: (line: String?) -> Unit
+        ): Pair<Boolean, String> {
             App.log.add(GlobalString.compressApk)
             val cmd = "compress_apk $compressionType $outPut"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
                     if (line != null) {
+                        onAddLine(line)
                         App.log.add(line)
                     }
                 }
@@ -41,12 +46,14 @@ class Bashrc {
             dataType: String,
             packageName: String,
             outPut: String,
-            dataPath: String
+            dataPath: String,
+            onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
             App.log.add("${GlobalString.compress} $dataType")
             val cmd = "compress $compressionType $dataType $packageName $outPut $dataPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
+                    onAddLine(line)
                     if (line != null) {
                         App.log.add(line)
                     }

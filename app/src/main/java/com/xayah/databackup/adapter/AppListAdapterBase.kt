@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
-import com.xayah.databackup.data.AppInfo
+import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.databinding.AdapterAppListBinding
 import com.xayah.design.util.dp
 
-open class AppListAdapterBase : ItemViewDelegate<AppInfo, AppListAdapterBase.ViewHolder>() {
+open class AppListAdapterBase : ItemViewDelegate<AppInfoBackup, AppListAdapterBase.ViewHolder>() {
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
         return ViewHolder(
@@ -20,7 +20,7 @@ open class AppListAdapterBase : ItemViewDelegate<AppInfo, AppListAdapterBase.Vie
         )
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, item: AppInfo) {
+    override fun onBindViewHolder(holder: ViewHolder, item: AppInfoBackup) {
         val binding = holder.binding
         binding.appIcon.setImageDrawable(item.appIcon)
         binding.appName.text = item.infoBase.appName

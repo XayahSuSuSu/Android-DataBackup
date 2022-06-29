@@ -1,19 +1,19 @@
 package com.xayah.databackup.adapter
 
-import com.xayah.databackup.data.AppInfo
+import com.xayah.databackup.data.AppInfoBackup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AppListAdapterBackup : AppListAdapterBase() {
 
-    override fun onBindViewHolder(holder: ViewHolder, item: AppInfo) {
+    override fun onBindViewHolder(holder: ViewHolder, item: AppInfoBackup) {
         super.onBindViewHolder(holder, item)
         val binding = holder.binding
 
         binding.chipApplication.apply {
             setOnCheckedChangeListener { _, checked ->
-                (adapterItems[holder.bindingAdapterPosition] as AppInfo).infoBase.app = checked
+                (adapterItems[holder.bindingAdapterPosition] as AppInfoBackup).infoBase.app = checked
                 CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
                 }
@@ -22,7 +22,7 @@ class AppListAdapterBackup : AppListAdapterBase() {
         }
         binding.chipData.apply {
             setOnCheckedChangeListener { _, checked ->
-                (adapterItems[holder.bindingAdapterPosition] as AppInfo).infoBase.data = checked
+                (adapterItems[holder.bindingAdapterPosition] as AppInfoBackup).infoBase.data = checked
                 CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
                 }

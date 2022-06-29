@@ -32,7 +32,7 @@ class GlobalString {
         val selected = App.globalContext.getString(R.string.selected)
         val appName = App.globalContext.getString(R.string.app_name)
         val backupProcessing = App.globalContext.getString(R.string.backup_processing)
-        val backupSuccess = App.globalContext.getString(R.string.backup_success)
+        val backupFinished = App.globalContext.getString(R.string.backup_finished)
         val backupApkProcessing = App.globalContext.getString(R.string.backup_apk_processing)
         val success = App.globalContext.getString(R.string.success)
         val backupVersion = App.globalContext.getString(R.string.backup_version)
@@ -83,5 +83,8 @@ class GlobalString {
         val latest = App.globalContext.getString(R.string.latest)
         val unsupportedFormat = App.globalContext.getString(R.string.unsupported_format)
         val fetching = App.globalContext.getString(R.string.fetching)
+        val total = App.globalContext.getString(R.string.total)
+        val backup = App.globalContext.getString(R.string.backup)
+        val ready = App.globalContext.getString(R.string.ready)
     }
 }
