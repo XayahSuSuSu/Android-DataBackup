@@ -9,8 +9,8 @@ import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.activity.backup.list.BackupAppListActivity
-import com.xayah.databackup.activity.backup.processing.BackupProcessingActivity
+import com.xayah.databackup.activity.backup.list.app.BackupAppListActivity
+import com.xayah.databackup.activity.backup.processing.app.BackupProcessingActivity
 import com.xayah.databackup.util.*
 import com.xayah.design.adapter.PopupListAdapter
 import com.xayah.design.util.getPixels

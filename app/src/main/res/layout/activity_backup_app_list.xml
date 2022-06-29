@@ -5,7 +5,7 @@
 
         <variable
             name="viewModel"
-            type="com.xayah.databackup.activity.backup.list.BackupAppListViewModel" />
+            type="com.xayah.databackup.activity.backup.list.app.BackupAppListViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".activity.backup.list.BackupAppListActivity">
+        tools:context=".activity.backup.list.app.BackupAppListActivity">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"

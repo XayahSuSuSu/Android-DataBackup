@@ -1,4 +1,4 @@
-package com.xayah.databackup.activity.backup.list
+package com.xayah.databackup.activity.backup.list.app
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.data.AppInfoBackup
-import com.xayah.databackup.data.AppInfoBase
 import com.xayah.databackup.databinding.ActivityBackupAppListBinding
 import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path

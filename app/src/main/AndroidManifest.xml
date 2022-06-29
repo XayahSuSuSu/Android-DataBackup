@@ -20,10 +20,10 @@
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
         <activity
-            android:name=".activity.backup.processing.BackupProcessingActivity"
+            android:name=".activity.backup.processing.app.BackupProcessingActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.backup.list.BackupAppListActivity"
+            android:name=".activity.backup.list.app.BackupAppListActivity"
             android:exported="false" />
         <activity
             android:name=".activity.guide.GuideActivity"
