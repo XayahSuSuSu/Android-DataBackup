@@ -169,6 +169,34 @@ class Command {
             return appInfoBackupList
         }
 
+        fun getCachedMediaInfoList(): MutableList<MediaInfo> {
+            // 可变列表
+            val cachedMediaInfoList = mutableListOf<MediaInfo>()
+            cat(Path.getBackupMediaListPath()).apply {
+                if (this.first) {
+                    try {
+                        val jsonArray = JSON.stringToJsonArray(this.second)
+                        for (i in jsonArray) {
+                            cachedMediaInfoList.add(
+                                JSON.jsonElementToEntity(
+                                    i, MediaInfo::class.java
+                                ) as MediaInfo
+                            )
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            if (cachedMediaInfoList.isEmpty()) {
+                cachedMediaInfoList.add(MediaInfo("Pictures", "/storage/emulated/0/Pictures", ""))
+                cachedMediaInfoList.add(MediaInfo("Download", "/storage/emulated/0/Download", ""))
+                cachedMediaInfoList.add(MediaInfo("Music", "/storage/emulated/0/Music", ""))
+                cachedMediaInfoList.add(MediaInfo("DCIM", "/storage/emulated/0/DCIM", ""))
+            }
+            return cachedMediaInfoList
+        }
+
         fun getCachedAppInfoBackupListNum(): AppInfoBaseNum {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             cat(Path.getBackupAppListPath()).apply {

@@ -58,5 +58,10 @@ data class AppInfoRestore(
 )
 
 data class MediaInfo(
-    val name: String, val path: String, val size: String
+    @Expose
+    var name: String,
+    @Expose
+    var path: String,
+    @Expose
+    val size: String
 )

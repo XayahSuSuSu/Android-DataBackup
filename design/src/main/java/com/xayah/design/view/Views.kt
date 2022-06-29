@@ -1,6 +1,7 @@
 package com.xayah.design.view
 
 import android.annotation.SuppressLint
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
@@ -9,6 +10,8 @@ import androidx.appcompat.R
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.xayah.design.util.dp
 
@@ -56,5 +59,9 @@ fun RecyclerView.notifyDataSetChanged() {
             )
         )
     }
+}
+
+fun InputChip(layoutInflater: LayoutInflater, chipGroup: ChipGroup): Chip {
+    return layoutInflater.inflate(com.xayah.design.R.layout.input_chip, chipGroup, false) as Chip
 }
 

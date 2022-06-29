@@ -141,4 +141,5 @@
     <string name="progress">Progress</string>
     <string name="total">Total</string>
     <string name="ready">Ready</string>
+    <string name="add">Add</string>
 </resources>

@@ -127,4 +127,5 @@
     <string name="progress">進度</string>
     <string name="total">總計</string>
     <string name="ready">準備就緒</string>
+    <string name="add">添加</string>
 </resources>

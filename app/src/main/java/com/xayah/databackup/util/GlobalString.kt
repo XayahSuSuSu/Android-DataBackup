@@ -86,5 +86,6 @@ class GlobalString {
         val total = App.globalContext.getString(R.string.total)
         val backup = App.globalContext.getString(R.string.backup)
         val ready = App.globalContext.getString(R.string.ready)
+        val edit = App.globalContext.getString(R.string.edit)
     }
 }

@@ -357,7 +357,7 @@
                     android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.Material3.CardView.Filled"
+                    style="@style/Widget.Material3.CardView.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -377,14 +377,20 @@
                             android:text="@string/backup_media_title"
                             android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="wrap_content"
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/default_custom_directory_path"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            android:scrollbars="none">
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/chipGroup"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:animateLayoutChanges="true"
+                                app:singleLine="true">
+
+                            </com.google.android.material.chip.ChipGroup>
+                        </HorizontalScrollView>
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -393,12 +399,13 @@
                             android:orientation="horizontal">
 
                             <com.google.android.material.button.MaterialButton
+                                android:id="@+id/materialButton_add_media"
                                 style="@style/Widget.Material3.Button.TextButton"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="8dp"
                                 android:layout_weight="1"
-                                android:text="@string/edit" />
+                                android:text="@string/add" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:layout_width="wrap_content"
