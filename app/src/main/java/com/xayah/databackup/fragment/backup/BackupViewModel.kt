@@ -146,7 +146,17 @@ class BackupViewModel : ViewModel() {
     }
 
     fun onBackupAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, BackupProcessingActivity::class.java))
+        v.context.startActivity(Intent(v.context, BackupProcessingActivity::class.java).apply {
+            putExtra("isMedia", false)
+        })
+    }
+
+    fun onBackupMediaBtnClick(v: View) {
+        v.context.startActivity(
+            Intent(v.context, BackupProcessingActivity::class.java).apply {
+                putExtra("isMedia", true)
+            }
+        )
     }
 
     private fun setNum() {

@@ -45,7 +45,7 @@ class BackupFragment : Fragment() {
             materialYouFileExplorer.apply {
                 isFile = false
                 toExplorer(requireContext()) { path, _ ->
-                    val mediaInfo = MediaInfo(path.split("/").last(), path, "")
+                    val mediaInfo = MediaInfo(path.split("/").last(), path, true, "")
                     mediaInfoList.add(mediaInfo)
                     addChip(mediaInfo, mediaInfoList)
                     saveMediaList(mediaInfoList)
@@ -57,7 +57,11 @@ class BackupFragment : Fragment() {
     private fun addChip(mediaInfo: MediaInfo, mediaInfoList: MutableList<MediaInfo>) {
         val chip = InputChip(layoutInflater, binding.chipGroup).apply {
             text = mediaInfo.name
-            isChecked = true
+            isChecked = mediaInfo.data
+            setOnCheckedChangeListener { _, isChecked ->
+                mediaInfo.data = isChecked
+                saveMediaList(mediaInfoList)
+            }
             setOnCloseIconClickListener {
                 mediaInfoList.remove(mediaInfo)
                 binding.chipGroup.removeView(this)

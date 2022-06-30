@@ -412,6 +412,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginHorizontal="8dp"
                                 android:layout_weight="1"
+                                android:onClick="@{(v)->viewModel.onBackupMediaBtnClick(v)}"
                                 android:text="@string/start_backup" />
 
                         </LinearLayout>

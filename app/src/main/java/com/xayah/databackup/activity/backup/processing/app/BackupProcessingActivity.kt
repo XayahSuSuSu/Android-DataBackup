@@ -20,6 +20,6 @@ class BackupProcessingActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
-        viewModel.initialize()
+        viewModel.initialize(intent.getBooleanExtra("isMedia", false))
     }
 }

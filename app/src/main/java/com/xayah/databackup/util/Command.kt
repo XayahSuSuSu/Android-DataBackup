@@ -126,8 +126,7 @@ class Command {
         }
 
         fun getCachedAppInfoBackupList(
-            context: Context,
-            isFiltered: Boolean = false // 是否过滤应用和数据均未勾选的item
+            context: Context, isFiltered: Boolean = false // 是否过滤应用和数据均未勾选的item
         ): MutableList<AppInfoBackup> {
             val packageManager = context.packageManager
             val userId = context.readBackupUser()
@@ -159,8 +158,7 @@ class Command {
             for (i in cachedAppInfoBackupList) {
                 for (j in packages) {
                     if (i.infoBase.packageName == j.packageName) {
-                        if (isFiltered)
-                            if (!i.infoBase.app && !i.infoBase.data) continue
+                        if (isFiltered) if (!i.infoBase.app && !i.infoBase.data) continue
                         appInfoBackupList.add(i)
                         break
                     }
@@ -169,7 +167,7 @@ class Command {
             return appInfoBackupList
         }
 
-        fun getCachedMediaInfoList(): MutableList<MediaInfo> {
+        fun getCachedMediaInfoList(isFiltered: Boolean = false): MutableList<MediaInfo> {
             // 可变列表
             val cachedMediaInfoList = mutableListOf<MediaInfo>()
             cat(Path.getBackupMediaListPath()).apply {
@@ -177,11 +175,10 @@ class Command {
                     try {
                         val jsonArray = JSON.stringToJsonArray(this.second)
                         for (i in jsonArray) {
-                            cachedMediaInfoList.add(
-                                JSON.jsonElementToEntity(
-                                    i, MediaInfo::class.java
-                                ) as MediaInfo
-                            )
+                            val item =
+                                JSON.jsonElementToEntity(i, MediaInfo::class.java) as MediaInfo
+                            if (isFiltered) if (!item.data) continue
+                            cachedMediaInfoList.add(item)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -189,10 +186,18 @@ class Command {
                 }
             }
             if (cachedMediaInfoList.isEmpty()) {
-                cachedMediaInfoList.add(MediaInfo("Pictures", "/storage/emulated/0/Pictures", ""))
-                cachedMediaInfoList.add(MediaInfo("Download", "/storage/emulated/0/Download", ""))
-                cachedMediaInfoList.add(MediaInfo("Music", "/storage/emulated/0/Music", ""))
-                cachedMediaInfoList.add(MediaInfo("DCIM", "/storage/emulated/0/DCIM", ""))
+                cachedMediaInfoList.add(
+                    MediaInfo(
+                        "Pictures", "/storage/emulated/0/Pictures", false, ""
+                    )
+                )
+                cachedMediaInfoList.add(
+                    MediaInfo(
+                        "Download", "/storage/emulated/0/Download", false, ""
+                    )
+                )
+                cachedMediaInfoList.add(MediaInfo("Music", "/storage/emulated/0/Music", false, ""))
+                cachedMediaInfoList.add(MediaInfo("DCIM", "/storage/emulated/0/DCIM", false, ""))
             }
             return cachedMediaInfoList
         }
@@ -306,11 +311,7 @@ class Command {
                 }
             }
             Bashrc.compress(
-                compressionType,
-                dataType,
-                packageName,
-                outPut,
-                dataPath
+                compressionType, dataType, packageName, outPut, dataPath
             ) { onAddLine(it) }.apply {
                 if (!this.first) {
                     App.log.add(this.second)

@@ -63,5 +63,7 @@ data class MediaInfo(
     @Expose
     var path: String,
     @Expose
-    val size: String
+    var data: Boolean,
+    @Expose
+    var size: String
 )
