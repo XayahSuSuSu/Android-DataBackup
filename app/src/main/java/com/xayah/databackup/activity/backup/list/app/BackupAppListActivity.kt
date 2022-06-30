@@ -42,7 +42,7 @@ class BackupAppListActivity : AppCompatActivity() {
         for (i in viewModel.mAppInfoBackupList) appInfoBackupList.add(i)
         JSON.writeJSONToFile(
             JSON.entityArrayToJsonArray(appInfoBackupList as MutableList<Any>),
-            Path.getBackupAppListPath()
+            Path.getAppInfoBackupListPath()
         )
     }
 

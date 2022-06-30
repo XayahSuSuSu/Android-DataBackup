@@ -48,6 +48,14 @@ data class AppInfoBaseNum(
 data class AppInfoBackup(
     var appIcon: Drawable? = null,
     @Expose
+    var appSize: String,
+    @Expose
+    var userSize: String,
+    @Expose
+    var dataSize: String,
+    @Expose
+    var obbSize: String,
+    @Expose
     val infoBase: AppInfoBase,
 )
 

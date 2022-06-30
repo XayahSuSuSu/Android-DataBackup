@@ -74,7 +74,7 @@ class BackupFragment : Fragment() {
     private fun saveMediaList(mediaInfoList: MutableList<MediaInfo>) {
         JSON.writeJSONToFile(
             JSON.entityArrayToJsonArray(mediaInfoList as MutableList<Any>),
-            Path.getBackupMediaListPath()
+            Path.getMediaInfoBackupListPath()
         )
     }
 

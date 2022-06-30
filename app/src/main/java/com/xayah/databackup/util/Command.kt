@@ -72,7 +72,7 @@ class Command {
             // 可变列表
             val cachedAppInfoBackupList = mutableListOf<AppInfoBackup>()
             val appInfoBackupList = mutableListOf<AppInfoBackup>()
-            cat(Path.getBackupAppListPath()).apply {
+            cat(Path.getAppInfoBackupListPath()).apply {
                 if (this.first) {
                     try {
                         val jsonArray = JSON.stringToJsonArray(this.second)
@@ -97,6 +97,10 @@ class Command {
                     // 寻找缓存数据
                     var appInfo = AppInfoBackup(
                         null,
+                        "",
+                        "",
+                        "",
+                        "",
                         AppInfoBase("", "", "", 0, app = true, data = true),
                     )
                     for (j in cachedAppInfoBackupList) {
@@ -139,7 +143,7 @@ class Command {
             // 可变列表
             val cachedAppInfoBackupList = mutableListOf<AppInfoBackup>()
             val appInfoBackupList = mutableListOf<AppInfoBackup>()
-            cat(Path.getBackupAppListPath()).apply {
+            cat(Path.getAppInfoBackupListPath()).apply {
                 if (this.first) {
                     try {
                         val jsonArray = JSON.stringToJsonArray(this.second)
@@ -167,10 +171,31 @@ class Command {
             return appInfoBackupList
         }
 
+        fun getCachedAppInfoRestoreList(isFiltered: Boolean = false): MutableList<AppInfoRestore> {
+            val cachedAppInfoRestoreList = mutableListOf<AppInfoRestore>()
+            cat(Path.getAppInfoRestoreListPath()).apply {
+                if (this.first) {
+                    try {
+                        val jsonArray = JSON.stringToJsonArray(this.second)
+                        for (i in jsonArray) {
+                            val item = JSON.jsonElementToEntity(
+                                i, AppInfoRestore::class.java
+                            ) as AppInfoRestore
+                            if (isFiltered) if (!item.infoBase.app && !item.infoBase.data) continue
+                            cachedAppInfoRestoreList.add(item)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            return cachedAppInfoRestoreList
+        }
+
         fun getCachedMediaInfoList(isFiltered: Boolean = false): MutableList<MediaInfo> {
             // 可变列表
             val cachedMediaInfoList = mutableListOf<MediaInfo>()
-            cat(Path.getBackupMediaListPath()).apply {
+            cat(Path.getMediaInfoBackupListPath()).apply {
                 if (this.first) {
                     try {
                         val jsonArray = JSON.stringToJsonArray(this.second)
@@ -204,7 +229,7 @@ class Command {
 
         fun getCachedAppInfoBackupListNum(): AppInfoBaseNum {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
-            cat(Path.getBackupAppListPath()).apply {
+            cat(Path.getAppInfoBackupListPath()).apply {
                 if (this.first) {
                     try {
                         val jsonArray = JSON.stringToJsonArray(this.second)
