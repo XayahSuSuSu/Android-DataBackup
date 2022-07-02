@@ -202,7 +202,6 @@ class Command {
                         for (i in jsonArray) {
                             val item =
                                 JSON.jsonElementToEntity(i, MediaInfo::class.java) as MediaInfo
-                            if (isFiltered) if (!item.data) continue
                             cachedMediaInfoList.add(item)
                         }
                     } catch (e: Exception) {
@@ -224,7 +223,7 @@ class Command {
                 cachedMediaInfoList.add(MediaInfo("Music", "/storage/emulated/0/Music", false, ""))
                 cachedMediaInfoList.add(MediaInfo("DCIM", "/storage/emulated/0/DCIM", false, ""))
             }
-            return cachedMediaInfoList
+            return if (!isFiltered) cachedMediaInfoList else cachedMediaInfoList.filter { it.data }.toMutableList()
         }
 
         fun getCachedAppInfoBackupListNum(): AppInfoBaseNum {
