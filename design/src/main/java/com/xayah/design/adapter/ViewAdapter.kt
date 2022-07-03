@@ -3,6 +3,7 @@ package com.xayah.design.adapter
 import android.view.View
 import android.widget.CompoundButton
 import androidx.databinding.BindingAdapter
+import com.xayah.design.card.StorageRadioCard
 import com.xayah.design.preference.Clickable
 import com.xayah.design.preference.EditableText
 import com.xayah.design.preference.SelectableList
@@ -79,6 +80,15 @@ class ViewAdapter {
             listener: ((buttonView: View) -> Unit)
         ) {
             v.setOnIconButtonClickListener(listener)
+        }
+
+        @BindingAdapter("app:onCheckedChangeListener")
+        @JvmStatic
+        fun setStorageRadioCardOnCheckedChangeListener(
+            v: StorageRadioCard,
+            listener: ((v: StorageRadioCard, choice: Int) -> Unit)
+        ) {
+            v.setOnCheckedChangeListener(listener)
         }
     }
 }

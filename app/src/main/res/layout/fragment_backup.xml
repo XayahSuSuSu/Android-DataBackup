@@ -34,6 +34,7 @@
                     app:internalStorageEnabled="true"
                     app:internalStoragePath="@{viewModel.internalStorageString}"
                     app:internalStorageProgress="@{viewModel.internalStorageValue}"
+                    app:onCheckedChangeListener="@{viewModel.onStorageRadioCardCheckedChangeListener}"
                     app:otgEnabled="@{viewModel.otgEnabled}"
                     app:otgPath="@{viewModel.otgString}"
                     app:otgProgress="@{viewModel.otgValue}"

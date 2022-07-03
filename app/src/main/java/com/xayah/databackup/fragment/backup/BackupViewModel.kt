@@ -1,6 +1,7 @@
 package com.xayah.databackup.fragment.backup
 
 import android.content.Intent
+import android.os.Environment
 import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableBoolean
@@ -13,6 +14,7 @@ import com.xayah.databackup.activity.backup.list.app.BackupAppListActivity
 import com.xayah.databackup.activity.backup.processing.app.BackupProcessingActivity
 import com.xayah.databackup.util.*
 import com.xayah.design.adapter.PopupListAdapter
+import com.xayah.design.card.StorageRadioCard
 import com.xayah.design.util.getPixels
 import com.xayah.design.util.measureWidth
 
@@ -104,7 +106,7 @@ class BackupViewModel : ViewModel() {
     }
 
     private fun setInternalStorage() {
-        val path = App.globalContext.readBackupSavePath()
+        val path = "${Environment.getExternalStorageDirectory().path}/DataBackup"
         // 默认值
         internalStorageString.set(GlobalString.fetching)
         internalStorageValue.set(0)
@@ -141,6 +143,12 @@ class BackupViewModel : ViewModel() {
             }
         )
     }
+
+    val onStorageRadioCardCheckedChangeListener: (v: StorageRadioCard, index: Int) -> Unit =
+        { _, index ->
+            radioGroupCheckedIndex.set(index)
+            App.globalContext.saveBackupSavePath(if (index == 0) internalStorageString.get() else otgString.get())
+        }
 
     private fun setNum() {
         val that = this

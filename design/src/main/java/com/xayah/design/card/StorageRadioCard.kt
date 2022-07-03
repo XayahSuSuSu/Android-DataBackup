@@ -78,6 +78,12 @@ class StorageRadioCard @JvmOverloads constructor(
             )[value]
         }
 
+    private var onConfirmListener: (v: StorageRadioCard, index: Int) -> Unit = { _, _ -> }
+
+    fun setOnCheckedChangeListener(listener: ((v: StorageRadioCard, index: Int) -> Unit)) {
+        onConfirmListener = listener
+    }
+
     init {
         context.theme.obtainStyledAttributes(
             attributeSet, R.styleable.StorageRadioCard, defStyleAttr, 0
@@ -104,11 +110,15 @@ class StorageRadioCard @JvmOverloads constructor(
 
         radioGroupCheckedIndex = 0
 
+        val that = this
+
         binding.materialRadioButtonInternalStorage.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) radioGroupCheckedIndex = 0
+            onConfirmListener.invoke(that, 0)
         }
         binding.materialRadioButtonOtg.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) radioGroupCheckedIndex = 1
+            onConfirmListener.invoke(that, 1)
         }
     }
 
