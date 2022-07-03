@@ -148,6 +148,7 @@ class BackupViewModel : ViewModel() {
         { _, index ->
             radioGroupCheckedIndex.set(index)
             App.globalContext.saveBackupSavePath(if (index == 0) internalStorageString.get() else otgString.get())
+            refresh()
         }
 
     private fun setNum() {
