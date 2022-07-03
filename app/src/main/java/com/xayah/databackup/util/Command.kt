@@ -192,7 +192,7 @@ class Command {
             return cachedAppInfoRestoreList
         }
 
-        fun getCachedMediaInfoList(isFiltered: Boolean = false): MutableList<MediaInfo> {
+        fun getCachedMediaInfoBackupList(isFiltered: Boolean = false): MutableList<MediaInfo> {
             // 可变列表
             val cachedMediaInfoList = mutableListOf<MediaInfo>()
             cat(Path.getMediaInfoBackupListPath()).apply {
@@ -223,7 +223,29 @@ class Command {
                 cachedMediaInfoList.add(MediaInfo("Music", "/storage/emulated/0/Music", false, ""))
                 cachedMediaInfoList.add(MediaInfo("DCIM", "/storage/emulated/0/DCIM", false, ""))
             }
-            return if (!isFiltered) cachedMediaInfoList else cachedMediaInfoList.filter { it.data }.toMutableList()
+            return if (!isFiltered) cachedMediaInfoList else cachedMediaInfoList.filter { it.data }
+                .toMutableList()
+        }
+
+        fun getCachedMediaInfoRestoreList(isFiltered: Boolean = false): MutableList<MediaInfo> {
+            val cachedMediaInfoRestoreList = mutableListOf<MediaInfo>()
+            cat(Path.getMediaInfoRestoreListPath()).apply {
+                if (this.first) {
+                    try {
+                        val jsonArray = JSON.stringToJsonArray(this.second)
+                        for (i in jsonArray) {
+                            val item = JSON.jsonElementToEntity(
+                                i, MediaInfo::class.java
+                            ) as MediaInfo
+                            if (isFiltered) if (!item.data) continue
+                            cachedMediaInfoRestoreList.add(item)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            return cachedMediaInfoRestoreList
         }
 
         fun getCachedAppInfoBackupListNum(): AppInfoBaseNum {

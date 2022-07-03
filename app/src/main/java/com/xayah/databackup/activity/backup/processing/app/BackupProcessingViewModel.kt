@@ -63,7 +63,8 @@ class BackupProcessingViewModel : ViewModel() {
     }
 
     private fun initializeMedia() {
-        mMediaInfoBackupList = Command.getCachedMediaInfoList(true)
+        mMediaInfoBackupList = Command.getCachedMediaInfoBackupList(true)
+        mMediaInfoRestoreList = Command.getCachedMediaInfoRestoreList()
         progressMax.set(mMediaInfoBackupList.size)
         totalTip.set(GlobalString.ready)
         totalProgress.set("${GlobalString.selected} ${mMediaInfoBackupList.size} ${GlobalString.data}")
@@ -196,7 +197,13 @@ class BackupProcessingViewModel : ViewModel() {
                 }
                 if (state) {
                     successNum += 1
-                    mAppInfoRestoreList.add(AppInfoRestore(null, i.infoBase))
+                    val tmp =
+                        mAppInfoRestoreList.find { it.infoBase.packageName == i.infoBase.packageName }
+                    val tmpIndex = mAppInfoRestoreList.indexOf(tmp)
+                    if (tmpIndex == -1)
+                        mAppInfoRestoreList.add(AppInfoRestore(null, i.infoBase))
+                    else
+                        mAppInfoRestoreList[tmpIndex] = AppInfoRestore(null, i.infoBase)
                 } else failedNum += 1
                 progress.set(index + 1)
             }
@@ -246,7 +253,12 @@ class BackupProcessingViewModel : ViewModel() {
                 }
                 if (state) {
                     successNum += 1
-                    mMediaInfoRestoreList.add(i)
+                    val tmp = mMediaInfoRestoreList.find { it.path == i.path }
+                    val tmpIndex = mMediaInfoRestoreList.indexOf(tmp)
+                    if (tmpIndex == -1)
+                        mMediaInfoRestoreList.add(i)
+                    else
+                        mMediaInfoRestoreList[tmpIndex] = i
                 } else failedNum += 1
                 progress.set(index + 1)
             }

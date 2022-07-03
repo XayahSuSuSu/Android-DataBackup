@@ -43,7 +43,7 @@ class BackupFragment : Fragment() {
         }
 
         binding.chipGroup.removeAllViews()
-        val mediaInfoList = Command.getCachedMediaInfoList()
+        val mediaInfoList = Command.getCachedMediaInfoBackupList()
         for (i in mediaInfoList) {
             addChip(i, mediaInfoList)
         }
