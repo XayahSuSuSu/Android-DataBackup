@@ -8,6 +8,18 @@
     <attr name="choice" format="integer" />
     <attr name="checked" format="boolean" />
 
+
+    <declare-styleable name="StorageRadioCard">
+        <attr name="title" />
+        <attr name="radioGroupCheckedIndex" format="integer" />
+        <attr name="internalStorageProgress" format="integer" />
+        <attr name="internalStorageEnabled" format="boolean" />
+        <attr name="internalStoragePath" format="string" />
+        <attr name="otgEnabled" format="boolean" />
+        <attr name="otgProgress" format="integer" />
+        <attr name="otgPath" format="string" />
+    </declare-styleable>
+
     <declare-styleable name="LargeActionCard">
         <attr name="text" />
         <attr name="subtext" />

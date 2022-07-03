@@ -12,4 +12,5 @@
     <string name="path">路径</string>
     <string name="time">时间</string>
     <string name="count">计数</string>
+    <string name="internal_storage">内部存储</string>
 </resources>

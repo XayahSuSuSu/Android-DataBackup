@@ -11,4 +11,6 @@
     <string name="path">Path</string>
     <string name="time">Time</string>
     <string name="count">Count</string>
+    <string name="otg" translatable="false">OTG</string>
+    <string name="internal_storage">Internal storage</string>
 </resources>

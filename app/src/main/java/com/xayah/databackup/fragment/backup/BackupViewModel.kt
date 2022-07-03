@@ -17,33 +17,16 @@ import com.xayah.design.util.getPixels
 import com.xayah.design.util.measureWidth
 
 class BackupViewModel : ViewModel() {
+    var radioGroupCheckedIndex = ObservableInt(0)
     var internalStorageString = ObservableField("")
-    var internalStorageMaxValue = 100
     var internalStorageValue = ObservableInt(0)
-    var internalStorageCheck = ObservableBoolean(true)
     var otgString = ObservableField(GlobalString.notPluggedIn)
-    var otgMaxValue = 100
     var otgValue = ObservableInt(0)
-    var otgCheck = ObservableBoolean(false)
     var otgEnabled = ObservableBoolean(false)
-    var radioGroupCheckedId = ObservableInt(R.id.materialRadioButton_internal_storage)
     var backupUser = ObservableField(App.globalContext.readBackupUser())
     var restoreUser = ObservableField(App.globalContext.readRestoreUser())
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
-
-    fun onRadioButtonCheckedChanged(v: View, isChecked: Boolean) {
-        setOTG()
-        if (isChecked) {
-            radioGroupCheckedId.set(v.id)
-        }
-        updateRadioButton()
-    }
-
-    private fun updateRadioButton() {
-        internalStorageCheck.set(radioGroupCheckedId.get() == R.id.materialRadioButton_internal_storage)
-        otgCheck.set(radioGroupCheckedId.get() == R.id.materialRadioButton_otg)
-    }
 
     private fun setOTG() {
         // 默认值
@@ -55,24 +38,24 @@ class BackupViewModel : ViewModel() {
             val that = this
             if (that.first == 0) {
                 val space = Bashrc.getStorageSpace(that.second)
-                val string = if (space.first) space.second else GlobalString.error
-                otgString.set(that.second + "/DataBackup")
                 if (space.first) {
                     try {
+                        val string = space.second
                         otgValue.set(string.split(" ").last().replace("%", "").toInt())
+                        otgString.set(that.second + "/DataBackup")
                         otgEnabled.set(true)
                     } catch (e: NumberFormatException) {
+                        otgString.set(GlobalString.fetchFailed)
                         e.printStackTrace()
                     }
                 }
             } else if (that.first == 1) {
-                radioGroupCheckedId.set(R.id.materialRadioButton_internal_storage)
+                radioGroupCheckedIndex.set(0)
                 otgString.set(GlobalString.unsupportedFormat)
             } else {
-                radioGroupCheckedId.set(R.id.materialRadioButton_internal_storage)
+                radioGroupCheckedIndex.set(0)
             }
         }
-        updateRadioButton()
     }
 
     fun onChangeUser(v: View) {
