@@ -6,17 +6,18 @@ import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.App
-import com.xayah.databackup.R
 import com.xayah.databackup.activity.backup.list.app.BackupAppListActivity
 import com.xayah.databackup.activity.backup.processing.app.BackupProcessingActivity
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.Bashrc
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.readBackupUser
+import com.xayah.databackup.util.saveBackupUser
 import com.xayah.design.adapter.PopupListAdapter
 import com.xayah.design.util.getPixels
 import com.xayah.design.util.measureWidth
 
 class BackupViewModel : ViewModel() {
     var backupUser = ObservableField(App.globalContext.readBackupUser())
-    var restoreUser = ObservableField(App.globalContext.readRestoreUser())
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
 
@@ -24,15 +25,8 @@ class BackupViewModel : ViewModel() {
         val context = v.context
         val items =
             if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf("0")
-        var choice = 0
-        when (v.id) {
-            R.id.materialButton_change_backup_user -> {
-                choice = items.indexOf(App.globalContext.readBackupUser())
-            }
-            R.id.materialButton_change_restore_user -> {
-                choice = items.indexOf(App.globalContext.readRestoreUser())
-            }
-        }
+        val choice = items.indexOf(App.globalContext.readBackupUser())
+
         ListPopupWindow(context).apply {
             val adapter = PopupListAdapter(
                 context,
@@ -49,16 +43,8 @@ class BackupViewModel : ViewModel() {
                     com.xayah.design.R.dimen.item_header_margin
                 ) * 2
             setOnItemClickListener { _, _, position, _ ->
-                when (v.id) {
-                    R.id.materialButton_change_backup_user -> {
-                        context.saveBackupUser(items[position])
-                        backupUser.set(items[position])
-                    }
-                    R.id.materialButton_change_restore_user -> {
-                        context.saveRestoreUser(items[position])
-                        restoreUser.set(items[position])
-                    }
-                }
+                context.saveBackupUser(items[position])
+                backupUser.set(items[position])
                 dismiss()
             }
             show()
