@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.content.Context
+import android.os.Environment
 import com.xayah.databackup.App
 
 class Path {
@@ -11,6 +12,10 @@ class Path {
 
         fun getExternalFilesDir(context: Context): String? {
             return context.getExternalFilesDir(null)?.path
+        }
+
+        fun getExternalStorageDirectory(): String {
+            return Environment.getExternalStorageDirectory().path
         }
 
         fun getUserPath(userId: String): String {

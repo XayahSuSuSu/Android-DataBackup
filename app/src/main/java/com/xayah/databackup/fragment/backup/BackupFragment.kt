@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.saveBackupSavePath
 import com.xayah.design.view.InputChip
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 
@@ -32,11 +34,15 @@ class BackupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[BackupViewModel::class.java]
         binding.viewModel = viewModel
-
-        initialize()
     }
 
     private fun initialize() {
+        App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
+        binding.storageRadioCard.setOnCheckedChangeListener { _, path ->
+            initialize()
+        }
+
+        binding.chipGroup.removeAllViews()
         val mediaInfoList = Command.getCachedMediaInfoList()
         for (i in mediaInfoList) {
             addChip(i, mediaInfoList)
@@ -52,6 +58,8 @@ class BackupFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.initialize()
     }
 
     private fun addChip(mediaInfo: MediaInfo, mediaInfoList: MutableList<MediaInfo>) {
@@ -88,7 +96,7 @@ class BackupFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.initialize()
+        initialize()
     }
 
     override fun onDestroyView() {
