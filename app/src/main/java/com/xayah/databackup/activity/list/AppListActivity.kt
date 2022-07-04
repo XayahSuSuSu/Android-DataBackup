@@ -1,4 +1,4 @@
-package com.xayah.databackup.activity.backup.list.app
+package com.xayah.databackup.activity.list
 
 import android.os.Bundle
 import android.view.View
@@ -11,16 +11,16 @@ import com.xayah.databackup.util.Path
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 
-class BackupAppListActivity : AppCompatActivity() {
+class AppListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBackupAppListBinding
-    private lateinit var viewModel: BackupAppListViewModel
+    private lateinit var viewModel: AppListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
         binding = ActivityBackupAppListBinding.inflate(layoutInflater)
-        viewModel = ViewModelProvider(this)[BackupAppListViewModel::class.java]
+        viewModel = ViewModelProvider(this)[AppListViewModel::class.java]
         binding.viewModel = viewModel
         setContentView(binding.root)
 

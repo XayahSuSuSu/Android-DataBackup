@@ -6,8 +6,8 @@ import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.App
-import com.xayah.databackup.activity.backup.list.app.BackupAppListActivity
-import com.xayah.databackup.activity.backup.processing.app.BackupProcessingActivity
+import com.xayah.databackup.activity.list.AppListActivity
+import com.xayah.databackup.activity.processing.ProcessingActivity
 import com.xayah.databackup.util.Bashrc
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.readBackupUser
@@ -52,18 +52,18 @@ class BackupViewModel : ViewModel() {
     }
 
     fun onSelectAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, BackupAppListActivity::class.java))
+        v.context.startActivity(Intent(v.context, AppListActivity::class.java))
     }
 
     fun onBackupAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, BackupProcessingActivity::class.java).apply {
+        v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
             putExtra("isMedia", false)
         })
     }
 
     fun onBackupMediaBtnClick(v: View) {
         v.context.startActivity(
-            Intent(v.context, BackupProcessingActivity::class.java).apply {
+            Intent(v.context, ProcessingActivity::class.java).apply {
                 putExtra("isMedia", true)
             }
         )

@@ -1,4 +1,4 @@
-package com.xayah.databackup.activity.backup.processing.app
+package com.xayah.databackup.activity.processing
 
 import android.graphics.drawable.Drawable
 import android.view.View
@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class BackupProcessingViewModel : ViewModel() {
+class ProcessingViewModel : ViewModel() {
     var mAppInfoBackupList: MutableList<AppInfoBackup> = mutableListOf()
     var mAppInfoRestoreList: MutableList<AppInfoRestore> = mutableListOf()
     var mMediaInfoBackupList: MutableList<MediaInfo> = mutableListOf()

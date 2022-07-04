@@ -1,4 +1,4 @@
-package com.xayah.databackup.activity.backup.list.app
+package com.xayah.databackup.activity.list
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import java.text.Collator
 import java.util.*
 
-class BackupAppListViewModel : ViewModel() {
+class AppListViewModel : ViewModel() {
     var mAppInfoBackupList: MutableList<AppInfoBackup> = mutableListOf()
     val mAdapter = MultiTypeAdapter()
     var appNumFull = true
