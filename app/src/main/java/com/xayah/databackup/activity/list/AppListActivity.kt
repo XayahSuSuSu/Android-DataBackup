@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.databinding.ActivityAppListBinding
-import com.xayah.databackup.util.JSON
-import com.xayah.databackup.util.Path
 import com.xayah.design.view.fastInitialize
 import com.xayah.design.view.notifyDataSetChanged
 
@@ -36,15 +34,8 @@ class AppListActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveAppList() {
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(viewModel.mAppInfoBackupList as MutableList<Any>),
-            Path.getAppInfoBackupListPath()
-        )
-    }
-
     override fun onPause() {
         super.onPause()
-        saveAppList()
+        viewModel.saveAppList()
     }
 }
