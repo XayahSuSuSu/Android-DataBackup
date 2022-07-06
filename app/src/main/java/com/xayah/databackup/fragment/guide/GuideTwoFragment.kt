@@ -13,6 +13,9 @@ import com.xayah.databackup.App
 import com.xayah.databackup.activity.guide.GuideActivity
 import com.xayah.databackup.databinding.FragmentGuideTwoBinding
 import com.xayah.databackup.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class GuideTwoFragment : Fragment() {
@@ -37,19 +40,23 @@ class GuideTwoFragment : Fragment() {
 
         hostActivity = requireActivity() as GuideActivity
         hostActivity.setBtnOnClickListener {
-            when (step) {
-                0 -> {
-                    rootAccess()
+            CoroutineScope(Dispatchers.IO).launch {
+                hostActivity.setBtnEnabled(false)
+                when (step) {
+                    0 -> {
+                        rootAccess()
+                    }
+                    1 -> {
+                        binRelease()
+                    }
+                    2 -> {
+                        checkBashrc()
+                    }
+                    3 -> {
+                        finish()
+                    }
                 }
-                1 -> {
-                    binRelease()
-                }
-                2 -> {
-                    checkBashrc()
-                }
-                3 -> {
-                    finish()
-                }
+                hostActivity.setBtnEnabled(true)
             }
         }
     }
@@ -69,9 +76,7 @@ class GuideTwoFragment : Fragment() {
                     step++
                 } else {
                     Toast.makeText(
-                        requireContext(),
-                        GlobalString.backupDirCreateFailed,
-                        Toast.LENGTH_SHORT
+                        requireContext(), GlobalString.backupDirCreateFailed, Toast.LENGTH_SHORT
                     ).show()
                     viewModel.grantRootAccessCheck.set(GlobalString.symbolCross)
                 }
@@ -83,8 +88,7 @@ class GuideTwoFragment : Fragment() {
 
     private fun binRelease() {
         versionName = App.versionName
-        val oldVersionName =
-            ShellUtils.fastCmd("cat ${Path.getFilesDir(hostActivity)}/version")
+        val oldVersionName = ShellUtils.fastCmd("cat ${Path.getFilesDir(hostActivity)}/version")
         if (versionName > oldVersionName) {
             ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(hostActivity)}/bin")
             ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(hostActivity)}/bin.zip")
@@ -92,13 +96,10 @@ class GuideTwoFragment : Fragment() {
 
         if (!Command.ls("${Path.getFilesDir(hostActivity)}/bin")) {
             Command.extractAssets(
-                hostActivity,
-                "${Command.getABI()}/bin.zip",
-                "bin.zip"
+                hostActivity, "${Command.getABI()}/bin.zip", "bin.zip"
             )
             Command.unzipByZip4j(
-                "${Path.getFilesDir(hostActivity)}/bin.zip",
-                "${Path.getFilesDir(hostActivity)}/bin"
+                "${Path.getFilesDir(hostActivity)}/bin.zip", "${Path.getFilesDir(hostActivity)}/bin"
             )
             ShellUtils.fastCmd("chmod 777 -R ${Path.getFilesDir(hostActivity)}")
             Bashrc.writeToFile(versionName, "${Path.getFilesDir(hostActivity)}/version")
