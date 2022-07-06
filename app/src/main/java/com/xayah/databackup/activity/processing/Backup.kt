@@ -172,13 +172,12 @@ class Backup {
                 }
                 if (state) {
                     successNum += 1
-                    val tmp =
-                        mAppInfoRestoreList.find { it.infoBase.packageName == i.infoBase.packageName }
-                    val tmpIndex = mAppInfoRestoreList.indexOf(tmp)
-                    if (tmpIndex == -1)
-                        mAppInfoRestoreList.add(AppInfoRestore(null, i.infoBase))
-                    else
-                        mAppInfoRestoreList[tmpIndex] = AppInfoRestore(null, i.infoBase)
+                    addOrUpdate(
+                        AppInfoRestore(null, i.infoBase),
+                        mAppInfoRestoreList as MutableList<Any>
+                    ) {
+                        (it as AppInfoRestore).infoBase.packageName == i.infoBase.packageName
+                    }
                 } else failedNum += 1
                 dataBinding.progress.set(index + 1)
             }
@@ -228,12 +227,9 @@ class Backup {
                 }
                 if (state) {
                     successNum += 1
-                    val tmp = mMediaInfoRestoreList.find { it.path == i.path }
-                    val tmpIndex = mMediaInfoRestoreList.indexOf(tmp)
-                    if (tmpIndex == -1)
-                        mMediaInfoRestoreList.add(i)
-                    else
-                        mMediaInfoRestoreList[tmpIndex] = i
+                    addOrUpdate(i, mMediaInfoRestoreList as MutableList<Any>) {
+                        (it as MediaInfo).path == i.path
+                    }
                 } else failedNum += 1
                 dataBinding.progress.set(index + 1)
             }
@@ -247,8 +243,14 @@ class Backup {
     }
 
     private fun saveAppInfoBackupList() {
+        val appInfoBackupList = Command.getCachedAppInfoBackupList(App.globalContext, false)
+        for (i in mAppInfoBackupList) {
+            addOrUpdate(i, appInfoBackupList as MutableList<Any>) {
+                (it as AppInfoBackup).infoBase.packageName == i.infoBase.packageName
+            }
+        }
         JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mAppInfoBackupList as MutableList<Any>),
+            JSON.entityArrayToJsonArray(appInfoBackupList as MutableList<Any>),
             Path.getAppInfoBackupListPath()
         )
     }
@@ -261,8 +263,14 @@ class Backup {
     }
 
     private fun saveMediaInfoBackupList() {
+        val mediaInfoBackupList = Command.getCachedMediaInfoBackupList(false)
+        for (i in mMediaInfoBackupList) {
+            addOrUpdate(i, mediaInfoBackupList as MutableList<Any>) {
+                (it as MediaInfo).path == i.path
+            }
+        }
         JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mMediaInfoBackupList as MutableList<Any>),
+            JSON.entityArrayToJsonArray(mediaInfoBackupList as MutableList<Any>),
             Path.getMediaInfoBackupListPath()
         )
     }
@@ -272,5 +280,14 @@ class Backup {
             JSON.entityArrayToJsonArray(mMediaInfoRestoreList as MutableList<Any>),
             Path.getMediaInfoRestoreListPath()
         )
+    }
+
+    private fun addOrUpdate(item: Any, dst: MutableList<Any>, callback: (item: Any) -> Boolean) {
+        val tmp = dst.find { callback(it) }
+        val tmpIndex = dst.indexOf(tmp)
+        if (tmpIndex == -1)
+            dst.add(item)
+        else
+            dst[tmpIndex] = item
     }
 }
