@@ -506,13 +506,13 @@ class Command {
                 if (compressionType.isNotEmpty()) {
                     when (dataType) {
                         "user" -> {
-                            dataPath = Path.getUserPath(userId)
+                            dataPath = Path.getUserPath()
                         }
                         "data" -> {
-                            dataPath = Path.getDataPath(userId)
+                            dataPath = Path.getDataPath()
                         }
                         "obb" -> {
-                            dataPath = Path.getObbPath(userId)
+                            dataPath = Path.getObbPath()
                         }
                     }
                     decompress(

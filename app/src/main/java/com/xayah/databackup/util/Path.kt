@@ -22,40 +22,40 @@ class Path {
             return "${getExternalStorageDirectory()}/DataBackup"
         }
 
-        fun getUserPath(userId: String): String {
-            return "/data/user/$userId"
+        fun getUserPath(): String {
+            return "/data/user/${App.globalContext.readBackupUser()}"
         }
 
-        fun getDataPath(userId: String): String {
-            return "/data/media/$userId/Android/data"
+        fun getDataPath(): String {
+            return "/data/media/${App.globalContext.readBackupUser()}/Android/data"
         }
 
-        fun getObbPath(userId: String): String {
-            return "/data/media/$userId/Android/obb"
+        fun getObbPath(): String {
+            return "/data/media/${App.globalContext.readBackupUser()}/Android/obb"
         }
 
         fun getAppInfoBackupListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/backup/appList"
+            return "${App.globalContext.readBackupSavePath()}/config/${App.globalContext.readBackupUser()}/backup/appList"
         }
 
         fun getAppInfoRestoreListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/restore/appList"
+            return "${App.globalContext.readBackupSavePath()}/config/${App.globalContext.readBackupUser()}/restore/appList"
         }
 
         fun getMediaInfoBackupListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/backup/mediaList"
+            return "${App.globalContext.readBackupSavePath()}/config/${App.globalContext.readBackupUser()}/backup/mediaList"
         }
 
         fun getMediaInfoRestoreListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/restore/mediaList"
+            return "${App.globalContext.readBackupSavePath()}/config/${App.globalContext.readBackupUser()}/restore/mediaList"
         }
 
         fun getBackupDataSavePath(): String {
-            return "${App.globalContext.readBackupSavePath()}/backup/data"
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/data"
         }
 
         fun getBackupMediaSavePath(): String {
-            return "${App.globalContext.readBackupSavePath()}/backup/media"
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/media"
         }
     }
 }

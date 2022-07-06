@@ -90,9 +90,9 @@ class Backup {
                 val userId = App.globalContext.readBackupUser()
                 val compressionType = App.globalContext.readCompressionType()
                 val outPutPath = "${Path.getBackupDataSavePath()}/${packageName}"
-                val userPath = "${Path.getUserPath(userId)}/${packageName}"
-                val dataPath = "${Path.getDataPath(userId)}/${packageName}"
-                val obbPath = "${Path.getObbPath(userId)}/${packageName}"
+                val userPath = "${Path.getUserPath()}/${packageName}"
+                val dataPath = "${Path.getDataPath()}/${packageName}"
+                val obbPath = "${Path.getObbPath()}/${packageName}"
                 if (i.infoBase.data) {
                     Command.ls(userPath).apply { dataBinding.isBackupUser.set(this) }
                     Command.ls(dataPath).apply { dataBinding.isBackupData.set(this) }
@@ -124,7 +124,7 @@ class Backup {
                         "user",
                         packageName,
                         outPutPath,
-                        Path.getUserPath(userId),
+                        Path.getUserPath(),
                         i.userSize
                     ) { setSizeAndSpeed(it) }.apply {
                         if (!this) state = false
@@ -142,7 +142,7 @@ class Backup {
                         "data",
                         packageName,
                         outPutPath,
-                        Path.getDataPath(userId),
+                        Path.getDataPath(),
                         i.dataSize
                     ) { setSizeAndSpeed(it) }.apply {
                         if (!this) state = false
@@ -160,7 +160,7 @@ class Backup {
                         "obb",
                         packageName,
                         outPutPath,
-                        Path.getObbPath(userId),
+                        Path.getObbPath(),
                         i.obbSize
                     ) { setSizeAndSpeed(it) }.apply {
                         if (!this) state = false
