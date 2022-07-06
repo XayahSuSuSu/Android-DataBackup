@@ -87,5 +87,6 @@ class GlobalString {
         val backup = App.globalContext.getString(R.string.backup)
         val ready = App.globalContext.getString(R.string.ready)
         val edit = App.globalContext.getString(R.string.edit)
+        val backupDirCreateFailed = App.globalContext.getString(R.string.backup_dir_create_failed)
     }
 }

@@ -18,6 +18,10 @@ class Path {
             return Environment.getExternalStorageDirectory().path
         }
 
+        fun getExternalStorageDataBackupDirectory(): String {
+            return "${getExternalStorageDirectory()}/DataBackup"
+        }
+
         fun getUserPath(userId: String): String {
             return "/data/user/$userId"
         }

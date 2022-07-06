@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.topjohnwu.superuser.Shell
@@ -61,9 +62,20 @@ class GuideTwoFragment : Fragment() {
     private fun rootAccess() {
         val isRoot = Shell.cmd("ls /").exec().isSuccess
         if (isRoot) {
-            viewModel.grantRootAccessCheck.set(GlobalString.symbolTick)
-            hostActivity.setBtnText(GlobalString.releasePrebuiltBinaries)
-            step++
+            Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
+                if (this) {
+                    viewModel.grantRootAccessCheck.set(GlobalString.symbolTick)
+                    hostActivity.setBtnText(GlobalString.releasePrebuiltBinaries)
+                    step++
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        GlobalString.backupDirCreateFailed,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    viewModel.grantRootAccessCheck.set(GlobalString.symbolCross)
+                }
+            }
         } else {
             viewModel.grantRootAccessCheck.set(GlobalString.symbolCross)
         }

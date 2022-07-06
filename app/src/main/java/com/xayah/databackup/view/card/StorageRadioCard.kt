@@ -125,7 +125,7 @@ class StorageRadioCard @JvmOverloads constructor(
     }
 
     private fun setInternalStorage() {
-        val path = "${Path.getExternalStorageDirectory()}/DataBackup"
+        val path = Path.getExternalStorageDataBackupDirectory()
         // 默认值
         internalStoragePath = GlobalString.fetching
         internalStorageProgress = 0
