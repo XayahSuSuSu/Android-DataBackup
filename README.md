@@ -1,5 +1,5 @@
 <div align="center">
-	<span style="font-weight: bold"> 中文 </span>
+	<span style="font-weight: bold"> 中文 | <a href=README_EN.md> English </a> </span>
 </div>
 
 # 数据备份
@@ -18,25 +18,5 @@
 
 * **易操作**：仅需简单几步即可备份App完整数据！
 
-## 备份方法
-1. 授予**Root**权限。
-
-2. 进入**备份页面**，选择**欲备份应用**。
-
-4. 点击**确定按钮**。
-
-6. **备份完成**后，**默认设置下**备份**数据**位于`SD卡根目录/DataBackup`。
-
-7. 将备份产物`SD卡根目录/DataBackup`复制到U盘或者PC。
-
-## 恢复方法
-1. 将备份产物移动回`SD卡根目录/DataBackup`。
-
-1. 进入**恢复页面**，选择**欲恢复应用**。
-
-2. 点击**确定按钮**。
-
-3. **恢复**完成。
-
-## 许可证
-本项目遵循 [GNU General Public License v3.0](./LICENSE) 协议。
+## 开源证书
+[GNU General Public License v3.0](./LICENSE)
