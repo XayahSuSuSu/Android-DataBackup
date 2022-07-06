@@ -1,4 +1,4 @@
-package com.xayah.design.adapter
+package com.xayah.databackup.view.adapter
 
 import android.content.Context
 import android.graphics.Color
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import com.xayah.design.util.resolveThemedColor
+import com.xayah.databackup.view.util.resolveThemedColor
 
 class PopupListAdapter(
     private val context: Context,

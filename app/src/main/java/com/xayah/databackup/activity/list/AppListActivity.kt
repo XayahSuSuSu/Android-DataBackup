@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.databinding.ActivityAppListBinding
-import com.xayah.design.view.fastInitialize
-import com.xayah.design.view.notifyDataSetChanged
+import com.xayah.databackup.view.fastInitialize
+import com.xayah.databackup.view.notifyDataSetChanged
 
 class AppListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAppListBinding

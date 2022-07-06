@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
 import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.databinding.AdapterAppListBinding
-import com.xayah.design.util.dp
+import com.xayah.databackup.view.util.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -13,7 +13,7 @@ import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.saveBackupSavePath
-import com.xayah.design.view.InputChip
+import com.xayah.databackup.view.InputChip
 
 class RestoreFragment : Fragment() {
     private var _binding: FragmentRestoreBinding? = null

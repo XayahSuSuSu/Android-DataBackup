@@ -12,9 +12,7 @@ import com.xayah.databackup.util.Bashrc
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.readBackupUser
 import com.xayah.databackup.util.saveBackupUser
-import com.xayah.design.adapter.PopupListAdapter
-import com.xayah.design.util.getPixels
-import com.xayah.design.util.measureWidth
+import com.xayah.databackup.view.fastInitialize
 
 class BackupViewModel : ViewModel() {
     var backupUser = ObservableField(App.globalContext.readBackupUser())
@@ -28,20 +26,7 @@ class BackupViewModel : ViewModel() {
         val choice = items.indexOf(App.globalContext.readBackupUser())
 
         ListPopupWindow(context).apply {
-            val adapter = PopupListAdapter(
-                context,
-                items.toList(),
-                choice,
-            )
-            setAdapter(adapter)
-            anchorView = v
-            width = adapter.measureWidth(context)
-                .coerceAtLeast(context.getPixels(com.xayah.design.R.dimen.dialog_menu_min_width))
-            isModal = true
-            horizontalOffset =
-                context.getPixels(com.xayah.design.R.dimen.item_header_component_size) + context.getPixels(
-                    com.xayah.design.R.dimen.item_header_margin
-                ) * 2
+            fastInitialize(v, items, choice)
             setOnItemClickListener { _, _, position, _ ->
                 context.saveBackupUser(items[position])
                 backupUser.set(items[position])
