@@ -3,12 +3,9 @@ package com.xayah.databackup.util
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
-import androidx.appcompat.content.res.AppCompatResources
-import com.google.gson.Gson
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.App
-import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import net.lingala.zip4j.ZipFile
 import java.io.File
@@ -292,39 +289,6 @@ class Command {
             return appInfoBaseNum
         }
 
-        fun getAppInfoBackupList(context: Context, path: String): MutableList<AppEntity> {
-            val appList: MutableList<AppEntity> = mutableListOf()
-            val packages = Shell.cmd("ls $path").exec().out
-            for (i in packages) {
-                val exec = Shell.cmd("cat ${path}/${i}/info").exec()
-                if (!exec.isSuccess) continue
-                try {
-                    val appInfo2Local =
-                        Gson().fromJson(exec.out.joinToString(), AppInfo2::class.java)
-                    val appEntity = AppEntity(
-                        0,
-                        appInfo2Local.appName,
-                        appInfo2Local.packageName,
-                        backupApp = false,
-                        backupData = false
-                    ).apply {
-                        icon = AppCompatResources.getDrawable(
-                            context, R.drawable.ic_round_android
-                        )
-                        backupPath = "${path}/${i}"
-                        appEnabled = ls("${path}/${i}/apk.tar*")
-                        dataEnabled =
-                            ls("${path}/${i}/user.tar*") || ls("${path}/${i}/data.tar*") || ls("${path}/${i}/obb.tar*")
-                        appInfo2 = appInfo2Local
-                    }
-                    appList.add(appEntity)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-            return appList
-        }
-
         fun extractAssets(mContext: Context, assetsPath: String, outName: String) {
             try {
                 val assets = File(Path.getFilesDir(mContext), outName)
@@ -459,30 +423,6 @@ class Command {
             return true
         }
 
-        private fun getCompressionTypeByName(name: String): String {
-            val item = name.split(".")
-            when (item.size) {
-                2 -> {
-                    when (item[1]) {
-                        "tar" -> {
-                            return "tar"
-                        }
-                    }
-                }
-                3 -> {
-                    when ("${item[1]}.${item[2]}") {
-                        "tar.zst" -> {
-                            return "zstd"
-                        }
-                        "tar.lz4" -> {
-                            return "lz4"
-                        }
-                    }
-                }
-            }
-            return ""
-        }
-
         fun installAPK(
             inPath: String,
             packageName: String,
@@ -525,17 +465,6 @@ class Command {
             }
         }
 
-        private fun getAppVersion(packageName: String): String {
-            Bashrc.getAppVersion(packageName).apply {
-                if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(GlobalString.getAppVersionFailed)
-                    return ""
-                }
-                return this.second
-            }
-        }
-
         private fun getAppVersionCode(userId: String, packageName: String): String {
             Bashrc.getAppVersionCode(userId, packageName).apply {
                 if (!this.first) {
@@ -547,30 +476,7 @@ class Command {
             }
         }
 
-        fun generateAppInfo(
-            appName: String,
-            userId: String,
-            packageName: String,
-            apkSize: String,
-            userSize: String,
-            dataSize: String,
-            obbSize: String,
-            outPut: String
-        ): Boolean {
-            val appInfo2 = AppInfo2(
-                appName,
-                packageName,
-                getAppVersion(packageName),
-                getAppVersionCode(userId, packageName),
-                apkSize,
-                userSize,
-                dataSize,
-                obbSize
-            )
-            return object2JSONFile(appInfo2, "${outPut}/info")
-        }
-
-        fun testArchive(
+        private fun testArchive(
             compressionType: String,
             inputPath: String,
         ): Boolean {
@@ -582,20 +488,6 @@ class Command {
                 }
             }
             return true
-        }
-
-        fun testArchiveForEach(inPath: String): Boolean {
-            var result = true
-            val fileList = Shell.cmd("ls $inPath | grep .tar").exec().out
-            for (i in fileList) {
-                val compressionType = getCompressionTypeByName(i)
-                if (compressionType.isNotEmpty()) {
-                    testArchive(compressionType, "${inPath}/${i}").apply {
-                        if (!this) result = false
-                    }
-                }
-            }
-            return result
         }
 
         fun backupItself(
@@ -626,22 +518,6 @@ class Command {
             return true
         }
 
-        fun object2JSONFile(src: Any, outPut: String): Boolean {
-            try {
-                val json = Gson().toJson(src)
-                Bashrc.writeToFile(json, outPut).apply {
-                    if (!this.first) {
-                        App.log.add(this.second)
-                        return false
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return false
-            }
-            return true
-        }
-
         fun countSize(path: String, type: Int = 0): String {
             Bashrc.countSize(path, type).apply {
                 if (!this.first) {
@@ -666,7 +542,7 @@ class Command {
 
             if (!ls("${Path.getFilesDir(context)}/bin")) {
                 extractAssets(
-                    context, "${Command.getABI()}/bin.zip", "bin.zip"
+                    context, "${getABI()}/bin.zip", "bin.zip"
                 )
                 unzipByZip4j(
                     "${Path.getFilesDir(context)}/bin.zip", "${Path.getFilesDir(context)}/bin"
