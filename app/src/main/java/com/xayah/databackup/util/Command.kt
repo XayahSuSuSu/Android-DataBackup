@@ -270,6 +270,28 @@ class Command {
             return appInfoBaseNum
         }
 
+        fun getCachedAppInfoRestoreListNum(): AppInfoBaseNum {
+            val appInfoBaseNum = AppInfoBaseNum(0, 0)
+            cat(Path.getAppInfoRestoreListPath()).apply {
+                if (this.first) {
+                    try {
+                        val jsonArray = JSON.stringToJsonArray(this.second)
+                        for (i in jsonArray) {
+                            (JSON.jsonElementToEntity(
+                                i, AppInfoRestore::class.java
+                            ) as AppInfoRestore).apply {
+                                if (this.infoBase.app) appInfoBaseNum.appNum++
+                                if (this.infoBase.data) appInfoBaseNum.dataNum++
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            return appInfoBaseNum
+        }
+
         fun getAppInfoBackupList(context: Context, path: String): MutableList<AppEntity> {
             val appList: MutableList<AppEntity> = mutableListOf()
             val packages = Shell.cmd("ls $path").exec().out
@@ -417,14 +439,17 @@ class Command {
             return true
         }
 
-        private fun decompress(
+        fun decompress(
             compressionType: String,
             dataType: String,
             inputPath: String,
             packageName: String,
-            dataPath: String
+            dataPath: String,
+            onAddLine: (line: String?) -> Unit = {}
         ): Boolean {
-            Bashrc.decompress(compressionType, dataType, inputPath, packageName, dataPath).apply {
+            Bashrc.decompress(compressionType, dataType, inputPath, packageName, dataPath) {
+                onAddLine(it)
+            }.apply {
                 if (!this.first) {
                     App.log.add(this.second)
                     App.log.add(GlobalString.decompressFailed)
@@ -459,9 +484,14 @@ class Command {
         }
 
         fun installAPK(
-            inPath: String, packageName: String, userId: String, versionCode: String
+            inPath: String,
+            packageName: String,
+            userId: String,
+            versionCode: String,
+            onAddLine: (line: String?) -> Unit = {}
         ): Boolean {
-            if (versionCode.isNotEmpty() && versionCode <= getAppVersionCode(userId, packageName)) {
+            val appVersionCode = getAppVersionCode(userId, packageName)
+            if (versionCode < appVersionCode) {
                 App.log.add(GlobalString.noUpdateAndSkip)
                 return true
             }
@@ -469,19 +499,21 @@ class Command {
             // 禁止APK验证
             Bashrc.setInstallEnv()
 
-            Bashrc.installAPK(inPath, packageName, userId).apply {
-                when (this.first) {
-                    0 -> return true
+            Bashrc.installAPK(inPath, packageName, userId) {
+                onAddLine(it)
+            }.apply {
+                return when (this.first) {
+                    0 -> true
                     else -> {
                         App.log.add(this.second)
                         App.log.add(GlobalString.installApkFailed)
-                        return false
+                        false
                     }
                 }
             }
         }
 
-        private fun setOwnerAndSELinux(
+        fun setOwnerAndSELinux(
             dataType: String, packageName: String, path: String, userId: String
         ) {
             Bashrc.setOwnerAndSELinux(dataType, packageName, path, userId).apply {
@@ -491,41 +523,6 @@ class Command {
                     return
                 }
             }
-        }
-
-        fun restoreData(
-            packageName: String, inPath: String, userId: String
-        ): Boolean {
-            var result = true
-            val fileList = Shell.cmd("ls $inPath | grep -v apk.* | grep .tar").exec().out
-            for (i in fileList) {
-                val item = i.split(".")
-                val dataType = item[0]
-                var dataPath = ""
-                val compressionType = getCompressionTypeByName(i)
-                if (compressionType.isNotEmpty()) {
-                    when (dataType) {
-                        "user" -> {
-                            dataPath = Path.getUserPath()
-                        }
-                        "data" -> {
-                            dataPath = Path.getDataPath()
-                        }
-                        "obb" -> {
-                            dataPath = Path.getObbPath()
-                        }
-                    }
-                    decompress(
-                        compressionType, dataType, "${inPath}/${i}", packageName, dataPath
-                    ).apply {
-                        if (!this) result = false
-                    }
-                    if (dataPath.isNotEmpty()) setOwnerAndSELinux(
-                        dataType, packageName, "${dataPath}/${packageName}", userId
-                    )
-                }
-            }
-            return result
         }
 
         private fun getAppVersion(packageName: String): String {
@@ -571,19 +568,6 @@ class Command {
                 obbSize
             )
             return object2JSONFile(appInfo2, "${outPut}/info")
-        }
-
-        fun decompressMedia(inputPath: String, name: String, dataPath: String): Boolean {
-            Bashrc.decompress(
-                getCompressionTypeByName(name), "media", "${inputPath}/$name", "media", dataPath
-            ).apply {
-                if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(GlobalString.decompressFailed)
-                    return false
-                }
-            }
-            return true
         }
 
         fun testArchive(

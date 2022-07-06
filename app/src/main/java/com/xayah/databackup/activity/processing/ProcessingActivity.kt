@@ -20,6 +20,9 @@ class ProcessingActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
-        viewModel.initialize(intent.getBooleanExtra("isMedia", false))
+        viewModel.initialize(
+            intent.getBooleanExtra("isRestore", false),
+            intent.getBooleanExtra("isMedia", false)
+        )
     }
 }

@@ -1,10 +1,83 @@
 package com.xayah.databackup.adapter
 
-import com.xayah.databackup.data.AppInfoBackup
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.recyclerview.widget.RecyclerView
+import com.drakeet.multitype.ItemViewDelegate
+import com.xayah.databackup.R
+import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.databinding.AdapterAppListBinding
+import com.xayah.design.util.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class AppListAdapterRestore : AppListAdapterBase() {
+class AppListAdapterRestore : ItemViewDelegate<AppInfoRestore, AppListAdapterRestore.ViewHolder>() {
+    class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
 
-    override fun onBindViewHolder(holder: ViewHolder, item: AppInfoBackup) {
-        super.onBindViewHolder(holder, item)
+    override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
+        return ViewHolder(
+            AdapterAppListBinding.inflate(
+                LayoutInflater.from(context), parent, false
+            )
+        )
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, item: AppInfoRestore) {
+        val binding = holder.binding
+        binding.appIcon.setImageDrawable(
+            if (item.appIcon == null) AppCompatResources.getDrawable(
+                binding.root.context, R.drawable.ic_round_android
+            ) else item.appIcon
+        )
+        binding.appName.text = item.infoBase.appName
+        binding.appPackage.text = item.infoBase.packageName
+
+        if (holder.bindingAdapterPosition == adapterItems.size - 1) {
+            binding.materialCardView.apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = 16.dp
+                    bottomMargin = 16.dp
+                    marginStart = 20.dp
+                    marginEnd = 20.dp
+                }
+            }
+        } else {
+            binding.materialCardView.apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = 16.dp
+                    marginStart = 20.dp
+                    marginEnd = 20.dp
+                }
+            }
+        }
+        // ----------------------------------------------------------------------------------------
+        binding.chipApplication.apply {
+            setOnCheckedChangeListener { _, checked ->
+                (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.app =
+                    checked
+                CoroutineScope(Dispatchers.Main).launch {
+                    adapter.notifyItemChanged(0)
+                }
+            }
+            isChecked = item.infoBase.app
+        }
+        binding.chipData.apply {
+            setOnCheckedChangeListener { _, checked ->
+                (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.data =
+                    checked
+                CoroutineScope(Dispatchers.Main).launch {
+                    adapter.notifyItemChanged(0)
+                }
+            }
+            isChecked = item.infoBase.data
+        }
     }
 }

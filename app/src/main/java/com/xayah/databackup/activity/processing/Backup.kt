@@ -26,6 +26,7 @@ class Backup {
                 if (isMedia) onBackupMediaClick(v)
                 else onBackupAppClick(v)
             }
+            btnText.set(GlobalString.backup)
         }
         isMedia = mIsMedia
 
@@ -186,7 +187,7 @@ class Backup {
             dataBinding.totalTip.set(GlobalString.backupFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mAppInfoBackupList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
-            dataBinding.backupBtnText.set(GlobalString.finish)
+            dataBinding.btnText.set(GlobalString.finish)
         }
     }
 
@@ -238,7 +239,7 @@ class Backup {
             dataBinding.totalTip.set(GlobalString.backupFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mMediaInfoBackupList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
-            dataBinding.backupBtnText.set(GlobalString.finish)
+            dataBinding.btnText.set(GlobalString.finish)
         }
     }
 

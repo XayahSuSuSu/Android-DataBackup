@@ -143,4 +143,8 @@
     <string name="ready">Ready</string>
     <string name="add">Add</string>
     <string name="backup_dir_create_failed">Backup dir create failed!</string>
+    <string name="restore_dir">Restore directory</string>
+    <string name="restore_app_title">Restore your apps and data here</string>
+    <string name="start_restore">Start restore</string>
+    <string name="restore_media_title">Restore your media, or custom directory</string>
 </resources>

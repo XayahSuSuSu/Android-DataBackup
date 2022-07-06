@@ -68,11 +68,17 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun installAPK(inPath: String, packageName: String, userId: String): Pair<Int, String> {
+        fun installAPK(
+            inPath: String,
+            packageName: String,
+            userId: String,
+            onAddLine: (line: String?) -> Unit
+        ): Pair<Int, String> {
             App.log.add("${GlobalString.install} $packageName $userId")
             val cmd = "install_apk $inPath $packageName $userId"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
+                    onAddLine(line)
                     if (line != null) {
                         App.log.add(line)
                     }
@@ -96,12 +102,14 @@ class Bashrc {
             dataType: String,
             inputPath: String,
             packageName: String,
-            dataPath: String
+            dataPath: String,
+            onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
             App.log.add("${GlobalString.decompress} $dataType")
             val cmd = "decompress $compressionType $dataType $inputPath $packageName $dataPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
+                    onAddLine(line)
                     if (line != null) {
                         App.log.add(line)
                     }

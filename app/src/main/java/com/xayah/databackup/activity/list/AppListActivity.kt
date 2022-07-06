@@ -27,7 +27,7 @@ class AppListActivity : AppCompatActivity() {
             adapter = viewModel.mAdapter
             fastInitialize()
         }
-        viewModel.initialize {
+        viewModel.initialize(intent.getBooleanExtra("isRestore", false)) {
             binding.recyclerView.notifyDataSetChanged()
             binding.recyclerView.visibility = View.VISIBLE
             binding.lottieAnimationView.visibility = View.GONE

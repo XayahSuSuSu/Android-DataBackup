@@ -52,11 +52,14 @@ class BackupViewModel : ViewModel() {
     }
 
     fun onSelectAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, AppListActivity::class.java))
+        v.context.startActivity(Intent(v.context, AppListActivity::class.java).apply {
+            putExtra("isRestore", false)
+        })
     }
 
     fun onBackupAppBtnClick(v: View) {
         v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
+            putExtra("isRestore", false)
             putExtra("isMedia", false)
         })
     }
@@ -64,6 +67,7 @@ class BackupViewModel : ViewModel() {
     fun onBackupMediaBtnClick(v: View) {
         v.context.startActivity(
             Intent(v.context, ProcessingActivity::class.java).apply {
+                putExtra("isRestore", false)
                 putExtra("isMedia", true)
             }
         )

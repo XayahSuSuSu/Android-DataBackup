@@ -6,7 +6,6 @@ import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
-import com.xayah.databackup.util.GlobalString
 
 data class DataBinding(
     var appName: ObservableField<String>,
@@ -18,7 +17,7 @@ data class DataBinding(
     var speed: ObservableField<String>,
     var speedUnit: ObservableField<String>,
     var isProcessing: ObservableBoolean,
-    var backupBtnText: ObservableField<String>,
+    var btnText: ObservableField<String>,
     var totalTip: ObservableField<String>,
     var totalProgress: ObservableField<String>,
     var progressMax: ObservableInt,
@@ -32,7 +31,8 @@ data class DataBinding(
     var processingData: ObservableBoolean,
     var processingObb: ObservableBoolean,
 
-    var onBackupClick: (v: View) -> Unit
+    var onBackupClick: (v: View) -> Unit,
+    var onRestoreClick: (v: View) -> Unit
 )
 
 class ProcessingViewModel : ViewModel() {
@@ -46,7 +46,7 @@ class ProcessingViewModel : ViewModel() {
         ObservableField("0"),
         ObservableField("Mib/s"),
         ObservableBoolean(false),
-        ObservableField(GlobalString.backup),
+        ObservableField(""),
         ObservableField(""),
         ObservableField(""),
         ObservableInt(0),
@@ -58,18 +58,29 @@ class ProcessingViewModel : ViewModel() {
         ObservableBoolean(false),
         ObservableBoolean(false),
         ObservableBoolean(false),
-        ObservableBoolean(false)
-    ) {}
+        ObservableBoolean(false),
+        {}, {})
+    var isRestore = false
     lateinit var backup: Backup
+    lateinit var restore: Restore
 
-    fun initialize(mIsMedia: Boolean) {
+    fun initialize(mIsRestore: Boolean, mIsMedia: Boolean) {
+        isRestore = mIsRestore
         val that = this
-        backup = Backup().apply {
-            initialize(that.dataBinding, mIsMedia)
-        }
+        if (isRestore)
+            restore = Restore().apply {
+                initialize(that.dataBinding, mIsMedia)
+            }
+        else
+            backup = Backup().apply {
+                initialize(that.dataBinding, mIsMedia)
+            }
     }
 
     fun onBtnClick(v: View) {
-        dataBinding.onBackupClick(v)
+        if (isRestore)
+            dataBinding.onRestoreClick(v)
+        else
+            dataBinding.onBackupClick(v)
     }
 }

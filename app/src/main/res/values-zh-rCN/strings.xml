@@ -129,4 +129,8 @@
     <string name="ready">准备就绪</string>
     <string name="add">添加</string>
     <string name="backup_dir_create_failed">备份目录创建失败！</string>
+    <string name="restore_dir">恢复目录</string>
+    <string name="restore_app_title">在这里恢复你的应用和数据</string>
+    <string name="start_restore">开始恢复</string>
+    <string name="restore_media_title">恢复你的媒体资料，或者自定义目录</string>
 </resources>

@@ -26,12 +26,24 @@ class Path {
             return "/data/user/${App.globalContext.readBackupUser()}"
         }
 
+        fun getUserPath(userId: String): String {
+            return "/data/user/${userId}"
+        }
+
         fun getDataPath(): String {
             return "/data/media/${App.globalContext.readBackupUser()}/Android/data"
         }
 
+        fun getDataPath(userId: String): String {
+            return "/data/media/${userId}/Android/data"
+        }
+
         fun getObbPath(): String {
             return "/data/media/${App.globalContext.readBackupUser()}/Android/obb"
+        }
+
+        fun getObbPath(userId: String): String {
+            return "/data/media/${userId}/Android/obb"
         }
 
         fun getAppInfoBackupListPath(): String {

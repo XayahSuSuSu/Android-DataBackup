@@ -5,13 +5,26 @@ import com.drakeet.multitype.MultiTypeAdapter
 
 class AppListViewModel : ViewModel() {
     val mAdapter = MultiTypeAdapter()
-    val backup = Backup(mAdapter)
+    lateinit var backup: Backup
+    lateinit var restore: Restore
+    var isRestore = false
 
-    fun initialize(onInitialized: () -> Unit) {
-        backup.initialize(onInitialized)
+    fun initialize(mIsRestore: Boolean, onInitialized: () -> Unit) {
+        isRestore = mIsRestore
+        if (isRestore)
+            restore = Restore(mAdapter).apply {
+                initialize(onInitialized)
+            }
+        else
+            backup = Backup(mAdapter).apply {
+                initialize(onInitialized)
+            }
     }
 
     fun saveAppList() {
-        backup.saveAppList()
+        if (isRestore)
+            restore.saveAppList()
+        else
+            backup.saveAppList()
     }
 }

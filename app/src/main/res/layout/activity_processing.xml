@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:navigationIcon="@drawable/ic_round_arrow_back"
-                app:title="@string/backup"
+                app:title="@{viewModel.dataBinding.btnText}"
                 app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
 
@@ -112,7 +112,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="end"
                                 android:onClick="@{(v)->viewModel.onBtnClick(v)}"
-                                android:text="@{viewModel.dataBinding.backupBtnText}"
+                                android:text="@{viewModel.dataBinding.btnText}"
                                 android:visibility="@{viewModel.dataBinding.isProcessing() ? View.GONE : View.VISIBLE}" />
 
                         </LinearLayout>
