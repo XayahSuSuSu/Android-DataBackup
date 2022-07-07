@@ -15,17 +15,6 @@ data class Issue(
     val html_url: String, val title: String, val body: String
 )
 
-data class AppInfo2(
-    val appName: String,
-    val packageName: String,
-    val version: String,
-    val versionCode: String,
-    val apkSize: String,
-    val userSize: String,
-    val dataSize: String,
-    val obbSize: String
-)
-
 data class AppInfoBase(
     @Expose
     var appName: String,
