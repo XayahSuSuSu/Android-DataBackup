@@ -28,6 +28,7 @@ class RestoreViewModel : ViewModel() {
             setOnItemClickListener { _, _, position, _ ->
                 context.saveRestoreUser(items[position])
                 restoreUser.set("${GlobalString.user}${items[position]}")
+                refresh()
                 dismiss()
             }
             show()

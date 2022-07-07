@@ -28,6 +28,7 @@ class BackupViewModel : ViewModel() {
             setOnItemClickListener { _, _, position, _ ->
                 context.saveBackupUser(items[position])
                 backupUser.set("${GlobalString.user}${items[position]}")
+                refresh()
                 dismiss()
             }
             show()
