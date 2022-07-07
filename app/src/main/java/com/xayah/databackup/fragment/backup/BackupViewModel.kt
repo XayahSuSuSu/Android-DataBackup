@@ -8,14 +8,12 @@ import androidx.lifecycle.ViewModel
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
-import com.xayah.databackup.util.Bashrc
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.readBackupUser
-import com.xayah.databackup.util.saveBackupUser
+import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 
 class BackupViewModel : ViewModel() {
-    var backupUser = ObservableField(App.globalContext.readBackupUser())
+    var backupUser = ObservableField("${GlobalString.user}${App.globalContext.readBackupUser()}")
+    var restoreUser = ObservableField("${GlobalString.user}${App.globalContext.readRestoreUser()}")
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
 
@@ -29,7 +27,7 @@ class BackupViewModel : ViewModel() {
             fastInitialize(v, items, choice)
             setOnItemClickListener { _, _, position, _ ->
                 context.saveBackupUser(items[position])
-                backupUser.set(items[position])
+                backupUser.set("${GlobalString.user}${items[position]}")
                 dismiss()
             }
             show()
@@ -68,6 +66,12 @@ class BackupViewModel : ViewModel() {
 
     private fun refresh() {
         setNum()
+        setUser()
+    }
+
+    private fun setUser() {
+        backupUser.set("${GlobalString.user}${App.globalContext.readBackupUser()}")
+        restoreUser.set("${GlobalString.user}${App.globalContext.readRestoreUser()}")
     }
 
     fun initialize() {

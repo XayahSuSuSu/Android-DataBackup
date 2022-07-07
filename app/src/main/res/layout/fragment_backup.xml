@@ -68,14 +68,44 @@
                             android:text="@string/backup_user_help"
                             android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/materialButton_change_backup_user"
-                            style="@style/Widget.Material3.Button.TextButton"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:onClick="@{(v)->viewModel.onChangeUser(v)}"
-                            android:text="@{viewModel.backupUser}" />
+                            android:layout_marginTop="16dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/materialButton_change_backup_user"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:onClick="@{(v)->viewModel.onChangeUser(v)}"
+                                android:text="@{viewModel.backupUser}"
+                                android:textColor="@color/red"
+                                app:icon="@drawable/ic_round_person"
+                                app:iconTint="@color/red" />
+
+                            <androidx.constraintlayout.utils.widget.ImageFilterView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                app:srcCompat="@drawable/ic_round_arrow_right_alt"
+                                app:tint="@color/blue" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/materialButton_change_restore_user"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:enabled="false"
+                                android:text="@{viewModel.restoreUser}"
+                                app:icon="@drawable/ic_round_iphone" />
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
