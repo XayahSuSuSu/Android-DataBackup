@@ -19,6 +19,7 @@ class RestoreFragment : Fragment() {
     private var _binding: FragmentRestoreBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: RestoreViewModel
+    private var mediaInfoList: MutableList<MediaInfo> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -35,17 +36,19 @@ class RestoreFragment : Fragment() {
 
     private fun initialize() {
         App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
-        binding.storageRadioCard.setOnCheckedChangeListener { _, path ->
+        binding.storageRadioCard.setOnCheckedChangeListener { _, _ ->
             initialize()
         }
 
+        viewModel.initialize { setChipGroup() }
+    }
+
+    private fun setChipGroup() {
         binding.chipGroup.removeAllViews()
-        val mediaInfoList = Command.getCachedMediaInfoRestoreList()
+        mediaInfoList = Command.getCachedMediaInfoRestoreList()
         for (i in mediaInfoList) {
             addChip(i, mediaInfoList)
         }
-
-        viewModel.initialize()
     }
 
     private fun addChip(mediaInfo: MediaInfo, mediaInfoList: MutableList<MediaInfo>) {

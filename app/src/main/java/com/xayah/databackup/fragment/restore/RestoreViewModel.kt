@@ -16,6 +16,7 @@ class RestoreViewModel : ViewModel() {
     var restoreUser = ObservableField("${GlobalString.user}${App.globalContext.readRestoreUser()}")
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
+    var callback: () -> Unit = {}
 
     fun onChangeUser(v: View) {
         val context = v.context
@@ -68,7 +69,7 @@ class RestoreViewModel : ViewModel() {
     private fun refresh() {
         setNum()
         setUser()
-
+        callback()
     }
 
     private fun setUser() {
@@ -76,7 +77,8 @@ class RestoreViewModel : ViewModel() {
         restoreUser.set("${GlobalString.user}${App.globalContext.readRestoreUser()}")
     }
 
-    fun initialize() {
+    fun initialize(mCallback: () -> Unit) {
+        callback = mCallback
         refresh()
     }
 }

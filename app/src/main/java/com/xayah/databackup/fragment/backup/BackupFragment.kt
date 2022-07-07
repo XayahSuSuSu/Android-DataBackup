@@ -21,6 +21,7 @@ class BackupFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: BackupViewModel
     private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
+    private var mediaInfoList: MutableList<MediaInfo> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -37,15 +38,10 @@ class BackupFragment : Fragment() {
 
     private fun initialize() {
         App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
-        binding.storageRadioCard.setOnCheckedChangeListener { _, path ->
+        binding.storageRadioCard.setOnCheckedChangeListener { _, _ ->
             initialize()
         }
 
-        binding.chipGroup.removeAllViews()
-        val mediaInfoList = Command.getCachedMediaInfoBackupList()
-        for (i in mediaInfoList) {
-            addChip(i, mediaInfoList)
-        }
         binding.materialButtonAddMedia.setOnClickListener {
             materialYouFileExplorer.apply {
                 isFile = false
@@ -58,7 +54,15 @@ class BackupFragment : Fragment() {
             }
         }
 
-        viewModel.initialize()
+        viewModel.initialize { setChipGroup() }
+    }
+
+    private fun setChipGroup() {
+        binding.chipGroup.removeAllViews()
+        mediaInfoList = Command.getCachedMediaInfoBackupList()
+        for (i in mediaInfoList) {
+            addChip(i, mediaInfoList)
+        }
     }
 
     private fun addChip(mediaInfo: MediaInfo, mediaInfoList: MutableList<MediaInfo>) {
