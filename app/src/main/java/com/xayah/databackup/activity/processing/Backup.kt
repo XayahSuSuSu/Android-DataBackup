@@ -4,6 +4,7 @@ import android.view.View
 import com.xayah.databackup.App
 import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +17,7 @@ class Backup {
     var mAppInfoRestoreList: MutableList<AppInfoRestore> = mutableListOf()
     var mMediaInfoBackupList: MutableList<MediaInfo> = mutableListOf()
     var mMediaInfoRestoreList: MutableList<MediaInfo> = mutableListOf()
+    var mBackupInfoList: MutableList<BackupInfo> = mutableListOf()
     var isMedia = false
     var successNum = 0
     var failedNum = 0
@@ -30,6 +32,7 @@ class Backup {
         }
         isMedia = mIsMedia
 
+        mBackupInfoList = Command.getCachedBackupInfoList()
         if (isMedia) initializeMedia()
         else initializeApp()
     }
@@ -76,6 +79,8 @@ class Backup {
     }
 
     private fun onBackupAppClick(v: View) {
+        val startTime = Command.getDate()
+        val startSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
         if (successNum + failedNum != mAppInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.backupProcessing)
@@ -182,8 +187,22 @@ class Backup {
                 } else failedNum += 1
                 dataBinding.progress.set(index + 1)
             }
+            val endTime = Command.getDate()
+            val endSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
+            mBackupInfoList.add(
+                BackupInfo(
+                    Command.getVersion(),
+                    startTime,
+                    endTime,
+                    startSize,
+                    endSize,
+                    "app",
+                    App.globalContext.readBackupUser()
+                )
+            )
+            saveBackupInfoList() // 更新备份信息
             saveAppInfoBackupList() // 更新备份大小
-            saveAppInfoRestoreList() //保存备份信息
+            saveAppInfoRestoreList() //保存恢复信息
             dataBinding.totalTip.set(GlobalString.backupFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mAppInfoBackupList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
@@ -192,6 +211,8 @@ class Backup {
     }
 
     private fun onBackupMediaClick(v: View) {
+        val startTime = Command.getDate()
+        val startSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
         if (successNum + failedNum != mMediaInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.backupProcessing)
@@ -234,6 +255,20 @@ class Backup {
                 } else failedNum += 1
                 dataBinding.progress.set(index + 1)
             }
+            val endTime = Command.getDate()
+            val endSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
+            mBackupInfoList.add(
+                BackupInfo(
+                    Command.getVersion(),
+                    startTime,
+                    endTime,
+                    startSize,
+                    endSize,
+                    "media",
+                    App.globalContext.readBackupUser()
+                )
+            )
+            saveBackupInfoList() // 更新备份信息
             saveMediaInfoBackupList() // 更新备份大小
             saveMediaInfoRestoreList() // 保存备份信息
             dataBinding.totalTip.set(GlobalString.backupFinished)
@@ -290,5 +325,12 @@ class Backup {
             dst.add(item)
         else
             dst[tmpIndex] = item
+    }
+
+    private fun saveBackupInfoList() {
+        JSON.writeJSONToFile(
+            JSON.entityArrayToJsonArray(mBackupInfoList as MutableList<Any>),
+            Path.getBackInfoListPath()
+        )
     }
 }

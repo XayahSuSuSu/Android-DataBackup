@@ -11,6 +11,8 @@ import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class Command {
@@ -289,6 +291,26 @@ class Command {
             return appInfoBaseNum
         }
 
+        fun getCachedBackupInfoList(): MutableList<BackupInfo> {
+            val cachedBackupInfoList = mutableListOf<BackupInfo>()
+            cat(Path.getBackInfoListPath()).apply {
+                if (this.first) {
+                    try {
+                        val jsonArray = JSON.stringToJsonArray(this.second)
+                        for (i in jsonArray) {
+                            val item = JSON.jsonElementToEntity(
+                                i, BackupInfo::class.java
+                            ) as BackupInfo
+                            cachedBackupInfoList.add(item)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            return cachedBackupInfoList
+        }
+
         fun extractAssets(mContext: Context, assetsPath: String, outName: String) {
             try {
                 val assets = File(Path.getFilesDir(mContext), outName)
@@ -555,6 +577,27 @@ class Command {
 
         fun checkBashrc(): Boolean {
             return Shell.cmd("check_bashrc").exec().isSuccess
+        }
+
+        fun getVersion(): String {
+            var version = ""
+            version = App.globalContext.packageManager.getPackageInfo(
+                App.globalContext.packageName,
+                0
+            ).versionName
+            return version
+        }
+
+        fun getDate(): String {
+            var date = ""
+            try {
+                SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).apply {
+                    date = format(Date())
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return date
         }
     }
 }

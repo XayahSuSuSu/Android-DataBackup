@@ -16,18 +16,12 @@ data class Issue(
 )
 
 data class AppInfoBase(
-    @Expose
-    var appName: String,
-    @Expose
-    var packageName: String,
-    @Expose
-    var versionName: String,
-    @Expose
-    var versionCode: Long,
-    @Expose
-    var app: Boolean,
-    @Expose
-    var data: Boolean
+    @Expose var appName: String,
+    @Expose var packageName: String,
+    @Expose var versionName: String,
+    @Expose var versionCode: Long,
+    @Expose var app: Boolean,
+    @Expose var data: Boolean
 )
 
 data class AppInfoBaseNum(
@@ -36,31 +30,31 @@ data class AppInfoBaseNum(
 
 data class AppInfoBackup(
     var appIcon: Drawable? = null,
-    @Expose
-    var appSize: String,
-    @Expose
-    var userSize: String,
-    @Expose
-    var dataSize: String,
-    @Expose
-    var obbSize: String,
-    @Expose
-    val infoBase: AppInfoBase,
+    @Expose var appSize: String,
+    @Expose var userSize: String,
+    @Expose var dataSize: String,
+    @Expose var obbSize: String,
+    @Expose val infoBase: AppInfoBase,
 )
 
 data class AppInfoRestore(
     var appIcon: Drawable? = null,
-    @Expose
-    val infoBase: AppInfoBase,
+    @Expose val infoBase: AppInfoBase,
 )
 
 data class MediaInfo(
-    @Expose
-    var name: String,
-    @Expose
-    var path: String,
-    @Expose
-    var data: Boolean,
-    @Expose
-    var size: String
+    @Expose var name: String,
+    @Expose var path: String,
+    @Expose var data: Boolean,
+    @Expose var size: String
+)
+
+data class BackupInfo(
+    @Expose var version: String,
+    @Expose var startTime: String,
+    @Expose var endTime: String,
+    @Expose var startSize: String,
+    @Expose var endSize: String,
+    @Expose var type: String,
+    @Expose var backupUser: String
 )
