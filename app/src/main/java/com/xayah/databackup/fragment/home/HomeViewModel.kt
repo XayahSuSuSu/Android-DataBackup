@@ -2,6 +2,7 @@ package com.xayah.databackup.fragment.home
 
 import android.os.Environment
 import android.view.View
+import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
@@ -14,6 +15,7 @@ import com.xayah.databackup.data.Release
 import com.xayah.databackup.util.Bashrc
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,6 +43,13 @@ class HomeViewModel : ViewModel() {
     var downloadBtnVisible = ObservableBoolean(false)
 
     private fun checkRoot(): String {
+        Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
+            if (!this) {
+                Toast.makeText(
+                    App.globalContext, GlobalString.backupDirCreateFailed, Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
         return if (Command.checkRoot()) GlobalString.symbolTick else GlobalString.symbolCross
     }
 
@@ -123,8 +132,7 @@ class HomeViewModel : ViewModel() {
                         for (i in jsonArray) {
                             try {
                                 val item = Gson().fromJson(i, Release::class.java)
-                                if (item.name.contains("Check"))
-                                    continue
+                                if (item.name.contains("Check")) continue
                                 mBodyList.add(item)
                             } catch (e: Exception) {
                                 e.printStackTrace()
