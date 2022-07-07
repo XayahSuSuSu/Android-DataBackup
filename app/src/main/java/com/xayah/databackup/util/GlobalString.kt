@@ -70,6 +70,8 @@ class GlobalString {
         val symbolTick = App.globalContext.getString(R.string.symbol_tick)
         val symbolCross = App.globalContext.getString(R.string.symbol_cross)
         val symbolDot = App.globalContext.getString(R.string.symbol_dot)
+        val symbolQuestion = App.globalContext.getString(R.string.symbol_question)
+        val symbolExclamation = App.globalContext.getString(R.string.symbol_exclamation)
         val grantRootAccess = App.globalContext.getString(R.string.grant_root_access)
         val releasePrebuiltBinaries =
             App.globalContext.getString(R.string.release_prebuilt_binaries)
@@ -89,5 +91,8 @@ class GlobalString {
         val edit = App.globalContext.getString(R.string.edit)
         val backupDirCreateFailed = App.globalContext.getString(R.string.backup_dir_create_failed)
         val restore = App.globalContext.getString(R.string.restore)
+        val confirmRemove = App.globalContext.getString(R.string.confirm_remove)
+        val removeFilesToo = App.globalContext.getString(R.string.remove_files_too)
+        val removeFailed = App.globalContext.getString(R.string.remove_failed)
     }
 }

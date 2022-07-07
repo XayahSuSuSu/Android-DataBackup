@@ -6,14 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentBackupBinding
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.JSON
-import com.xayah.databackup.util.Path
-import com.xayah.databackup.util.saveBackupSavePath
+import com.xayah.databackup.util.*
 import com.xayah.databackup.view.InputChip
+import com.xayah.databackup.view.util.setWithConfirm
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 
 
@@ -71,9 +70,13 @@ class BackupFragment : Fragment() {
                 saveMediaList(mediaInfoList)
             }
             setOnCloseIconClickListener {
-                mediaInfoList.remove(mediaInfo)
-                binding.chipGroup.removeView(this)
-                saveMediaList(mediaInfoList)
+                MaterialAlertDialogBuilder(requireContext()).apply {
+                    setWithConfirm("${GlobalString.confirmRemove}${GlobalString.symbolQuestion}") {
+                        mediaInfoList.remove(mediaInfo)
+                        binding.chipGroup.removeView(it)
+                        saveMediaList(mediaInfoList)
+                    }
+                }
             }
         }
         binding.chipGroup.addView(chip)

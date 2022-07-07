@@ -111,4 +111,9 @@
     <string name="restore_app_title">Restore your apps and data here</string>
     <string name="start_restore">Start restore</string>
     <string name="restore_media_title">Restore your media, or custom directory</string>
+    <string name="confirm_remove">Sure to remove it</string>
+    <string name="symbol_question">\?</string>
+    <string name="remove_files_too">This will remove related files, too</string>
+    <string name="symbol_exclamation">!</string>
+    <string name="remove_failed">Remove failed</string>
 </resources>

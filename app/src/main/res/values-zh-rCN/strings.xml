@@ -97,4 +97,9 @@
     <string name="restore_app_title">在这里恢复你的应用和数据</string>
     <string name="start_restore">开始恢复</string>
     <string name="restore_media_title">恢复你的媒体资料，或者自定义目录</string>
+    <string name="confirm_remove">确定要移除吗</string>
+    <string name="symbol_question">？</string>
+    <string name="remove_files_too">这同时也会移除相关文件</string>
+    <string name="symbol_exclamation">！</string>
+    <string name="remove_failed">移除失败</string>
 </resources>

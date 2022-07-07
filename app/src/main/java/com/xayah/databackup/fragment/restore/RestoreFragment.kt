@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.JSON
-import com.xayah.databackup.util.Path
-import com.xayah.databackup.util.saveBackupSavePath
+import com.xayah.databackup.util.*
 import com.xayah.databackup.view.InputChip
+import com.xayah.databackup.view.util.setWithConfirm
 
 class RestoreFragment : Fragment() {
     private var _binding: FragmentRestoreBinding? = null
@@ -57,9 +57,28 @@ class RestoreFragment : Fragment() {
                 saveMediaList(mediaInfoList)
             }
             setOnCloseIconClickListener {
-                mediaInfoList.remove(mediaInfo)
-                binding.chipGroup.removeView(this)
-                saveMediaList(mediaInfoList)
+                MaterialAlertDialogBuilder(requireContext()).apply {
+                    setWithConfirm(
+                        "${GlobalString.confirmRemove}${GlobalString.symbolQuestion}\n" +
+                                "${GlobalString.removeFilesToo}${GlobalString.symbolExclamation}"
+                    ) {
+                        Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}.tar.*")
+                            .apply {
+                                if (this) {
+                                    mediaInfoList.remove(mediaInfo)
+                                    binding.chipGroup.removeView(it)
+                                    saveMediaList(mediaInfoList)
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "${GlobalString.removeFailed}${GlobalString.symbolExclamation}",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            }
+                    }
+                }
             }
         }
         binding.chipGroup.addView(chip)
