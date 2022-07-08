@@ -24,21 +24,18 @@ class Command {
 
         fun ls(path: String): Boolean {
             Shell.cmd("ls -i $path").exec().apply {
-                if (!this.isSuccess) App.log.add(this.out.joinToString(separator = "\n"))
                 return this.isSuccess
             }
         }
 
         fun rm(path: String): Boolean {
             Shell.cmd("rm -rf $path").exec().apply {
-                if (!this.isSuccess) App.log.add(this.out.joinToString(separator = "\n"))
                 return this.isSuccess
             }
         }
 
         fun mkdir(path: String): Boolean {
             Shell.cmd("mkdir -p $path").exec().apply {
-                if (!this.isSuccess) App.log.add(this.out.joinToString(separator = "\n"))
                 return this.isSuccess
             }
         }
@@ -350,7 +347,6 @@ class Command {
             if (dataType == "media") {
                 countSize(dataPath, 1).apply {
                     if (this == dataSize) {
-                        App.log.add(GlobalString.noUpdateAndSkip)
                         return true
                     }
                 }
@@ -359,7 +355,6 @@ class Command {
                     "${dataPath}/${packageName}", 1
                 ).apply {
                     if (this == dataSize) {
-                        App.log.add(GlobalString.noUpdateAndSkip)
                         return true
                     }
                 }
@@ -368,8 +363,6 @@ class Command {
                 compressionType, dataType, packageName, outPut, dataPath
             ) { onAddLine(it) }.apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(GlobalString.compressFailed)
                     return false
                 }
             }
@@ -386,8 +379,6 @@ class Command {
         ): Boolean {
             val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add("${packageName}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
@@ -395,14 +386,11 @@ class Command {
                 apkPathPair.second, 1
             ).apply {
                 if (this == apkSize) {
-                    App.log.add(GlobalString.noUpdateAndSkip)
                     return true
                 }
             }
             Bashrc.cd(apkPathPair.second).apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add("${apkPathPair.second}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
@@ -410,15 +398,11 @@ class Command {
                 onAddLine(it)
             }.apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(GlobalString.compressApkFailed)
                     return false
                 }
             }
             Bashrc.cd("~").apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add("~: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
@@ -437,8 +421,6 @@ class Command {
                 onAddLine(it)
             }.apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(GlobalString.decompressFailed)
                     return false
                 }
             }
@@ -454,7 +436,6 @@ class Command {
         ): Boolean {
             val appVersionCode = getAppVersionCode(userId, packageName)
             if (versionCode < appVersionCode) {
-                App.log.add(GlobalString.noUpdateAndSkip)
                 return true
             }
 
@@ -467,8 +448,6 @@ class Command {
                 return when (this.first) {
                     0 -> true
                     else -> {
-                        App.log.add(this.second)
-                        App.log.add(GlobalString.installApkFailed)
                         false
                     }
                 }
@@ -480,8 +459,6 @@ class Command {
         ) {
             Bashrc.setOwnerAndSELinux(dataType, packageName, path, userId).apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(GlobalString.setSELinuxFailed)
                     return
                 }
             }
@@ -490,8 +467,6 @@ class Command {
         private fun getAppVersionCode(userId: String, packageName: String): String {
             Bashrc.getAppVersionCode(userId, packageName).apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(GlobalString.getAppVersionCodeFailed)
                     return ""
                 }
                 return this.second
@@ -504,8 +479,6 @@ class Command {
         ): Boolean {
             Bashrc.testArchive(compressionType, inputPath).apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add(GlobalString.broken)
                     return false
                 }
             }
@@ -519,21 +492,17 @@ class Command {
             val apkPath = Bashrc.getAPKPath(packageName, userId)
             val apkPathPair = apkPath.apply {
                 if (!this.first) {
-                    App.log.add(this.second)
-                    App.log.add("${packageName}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
             val apkSize = countSize("${outPut}/DataBackup.apk", 1)
             countSize(apkPathPair.second, 1).apply {
                 if (this == apkSize) {
-                    App.log.add(GlobalString.noUpdateAndSkip)
                     return true
                 }
             }
             cp("${apkPathPair.second}/base.apk", "${outPut}/DataBackup.apk").apply {
                 if (!this) {
-                    App.log.add("${packageName}: ${GlobalString.pathNotExist}")
                     return false
                 }
             }
@@ -543,7 +512,6 @@ class Command {
         fun countSize(path: String, type: Int = 0): String {
             Bashrc.countSize(path, type).apply {
                 if (!this.first) {
-                    App.log.add(this.second)
                     return ""
                 }
                 return this.second

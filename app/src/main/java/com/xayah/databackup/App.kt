@@ -6,7 +6,6 @@ import android.content.Context
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.xayah.crash.CrashHandler
-import com.xayah.databackup.data.Log
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.readIsDynamicColors
@@ -26,8 +25,6 @@ class App : Application() {
                     .setInitializers(EnvInitializer::class.java)
             )
         }
-
-        val log = Log()
 
         @SuppressLint("StaticFieldLeak")
         lateinit var globalContext: Context

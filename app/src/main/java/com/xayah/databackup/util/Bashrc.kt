@@ -2,7 +2,6 @@ package com.xayah.databackup.util
 
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
-import com.xayah.databackup.App
 
 class Bashrc {
     companion object {
@@ -12,7 +11,6 @@ class Bashrc {
         }
 
         fun getAPKPath(packageName: String, userId: String): Pair<Boolean, String> {
-            App.log.add(GlobalString.getApkPath)
             val exec = Shell.cmd("get_apk_path $packageName $userId").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
@@ -27,13 +25,11 @@ class Bashrc {
             outPut: String,
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
-            App.log.add(GlobalString.compressApk)
             val cmd = "compress_apk $compressionType $outPut"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
                     if (line != null) {
                         onAddLine(line)
-                        App.log.add(line)
                     }
                 }
             }
@@ -49,13 +45,11 @@ class Bashrc {
             dataPath: String,
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
-            App.log.add("${GlobalString.compress} $dataType")
             val cmd = "compress $compressionType $dataType $packageName $outPut $dataPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
-                    onAddLine(line)
                     if (line != null) {
-                        App.log.add(line)
+                        onAddLine(line)
                     }
                 }
             }
@@ -74,13 +68,11 @@ class Bashrc {
             userId: String,
             onAddLine: (line: String?) -> Unit
         ): Pair<Int, String> {
-            App.log.add("${GlobalString.install} $packageName $userId")
             val cmd = "install_apk $inPath $packageName $userId"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
-                    onAddLine(line)
                     if (line != null) {
-                        App.log.add(line)
+                        onAddLine(line)
                     }
                 }
             }
@@ -91,7 +83,6 @@ class Bashrc {
         fun setOwnerAndSELinux(
             dataType: String, packageName: String, path: String, userId: String
         ): Pair<Boolean, String> {
-            App.log.add(GlobalString.setSELinux)
             val exec =
                 Shell.cmd("set_owner_and_SELinux $dataType $packageName $path $userId").exec()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
@@ -105,13 +96,11 @@ class Bashrc {
             dataPath: String,
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
-            App.log.add("${GlobalString.decompress} $dataType")
             val cmd = "decompress $compressionType $dataType $inputPath $packageName $dataPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
-                    onAddLine(line)
                     if (line != null) {
-                        App.log.add(line)
+                        onAddLine(line)
                     }
                 }
             }
@@ -143,13 +132,10 @@ class Bashrc {
             compressionType: String,
             inputPath: String,
         ): Pair<Boolean, String> {
-            App.log.add("${GlobalString.test} $inputPath")
             val cmd = "test_archive $compressionType $inputPath"
             val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                 override fun onAddElement(line: String?) {
-                    if (line != null) {
-                        App.log.add(line)
-                    }
+                    if (line != null) { }
                 }
             }
             val exec = Shell.cmd(cmd).to(callbackList).exec()
