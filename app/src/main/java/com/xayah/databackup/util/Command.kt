@@ -599,5 +599,9 @@ class Command {
             }
             return date
         }
+
+        fun saveShellLog(outPut: String) {
+            Shell.cmd("logcat | grep -E 'SHELL_IN|SHELLOUT' >> $outPut &").exec()
+        }
     }
 }

@@ -73,5 +73,9 @@ class Path {
         fun getBackInfoListPath(): String {
             return "${App.globalContext.readBackupSavePath()}/config/backupList"
         }
+
+        fun getShellLogPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/log"
+        }
     }
 }
