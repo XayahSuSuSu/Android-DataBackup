@@ -14,6 +14,9 @@ import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.util.setWithConfirm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class RestoreFragment : Fragment() {
     private var _binding: FragmentRestoreBinding? = null
@@ -35,19 +38,23 @@ class RestoreFragment : Fragment() {
     }
 
     private fun initialize() {
-        App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
-        binding.storageRadioCard.setOnCheckedChangeListener { _, _ ->
-            initialize()
-        }
+        CoroutineScope(Dispatchers.IO).launch {
+            App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
+            binding.storageRadioCard.setOnCheckedChangeListener { _, _ ->
+                initialize()
+            }
 
-        viewModel.initialize { setChipGroup() }
+            viewModel.initialize { setChipGroup() }
+        }
     }
 
     private fun setChipGroup() {
-        binding.chipGroup.removeAllViews()
-        mediaInfoList = Command.getCachedMediaInfoRestoreList()
-        for (i in mediaInfoList) {
-            addChip(i, mediaInfoList)
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.chipGroup.removeAllViews()
+            mediaInfoList = Command.getCachedMediaInfoRestoreList()
+            for (i in mediaInfoList) {
+                addChip(i, mediaInfoList)
+            }
         }
     }
 

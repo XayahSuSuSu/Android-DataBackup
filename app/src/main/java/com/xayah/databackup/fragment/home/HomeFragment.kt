@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.databinding.FragmentHomeBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class HomeFragment : Fragment() {
@@ -26,7 +29,9 @@ class HomeFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
         binding.viewModel = viewModel
 
-        viewModel.initialize()
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.initialize()
+        }
     }
 
     override fun onDestroyView() {

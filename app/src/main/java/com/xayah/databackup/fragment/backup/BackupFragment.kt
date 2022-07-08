@@ -14,6 +14,9 @@ import com.xayah.databackup.util.*
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.util.setWithConfirm
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class BackupFragment : Fragment() {
@@ -37,31 +40,35 @@ class BackupFragment : Fragment() {
     }
 
     private fun initialize() {
-        App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
-        binding.storageRadioCard.setOnCheckedChangeListener { _, _ ->
-            initialize()
-        }
+        CoroutineScope(Dispatchers.IO).launch {
+            App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
+            binding.storageRadioCard.setOnCheckedChangeListener { _, _ ->
+                initialize()
+            }
 
-        binding.materialButtonAddMedia.setOnClickListener {
-            materialYouFileExplorer.apply {
-                isFile = false
-                toExplorer(requireContext()) { path, _ ->
-                    val mediaInfo = MediaInfo(path.split("/").last(), path, true, "")
-                    mediaInfoList.add(mediaInfo)
-                    addChip(mediaInfo, mediaInfoList)
-                    saveMediaList(mediaInfoList)
+            binding.materialButtonAddMedia.setOnClickListener {
+                materialYouFileExplorer.apply {
+                    isFile = false
+                    toExplorer(requireContext()) { path, _ ->
+                        val mediaInfo = MediaInfo(path.split("/").last(), path, true, "")
+                        mediaInfoList.add(mediaInfo)
+                        addChip(mediaInfo, mediaInfoList)
+                        saveMediaList(mediaInfoList)
+                    }
                 }
             }
-        }
 
-        viewModel.initialize { setChipGroup() }
+            viewModel.initialize { setChipGroup() }
+        }
     }
 
     private fun setChipGroup() {
-        binding.chipGroup.removeAllViews()
-        mediaInfoList = Command.getCachedMediaInfoBackupList()
-        for (i in mediaInfoList) {
-            addChip(i, mediaInfoList)
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.chipGroup.removeAllViews()
+            mediaInfoList = Command.getCachedMediaInfoBackupList()
+            for (i in mediaInfoList) {
+                addChip(i, mediaInfoList)
+            }
         }
     }
 
