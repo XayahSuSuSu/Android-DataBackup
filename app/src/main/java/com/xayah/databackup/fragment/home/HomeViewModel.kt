@@ -156,13 +156,15 @@ class HomeViewModel : ViewModel() {
     }
 
     fun refresh(v: View? = null) {
-        rootCheck.set(checkRoot())
-        binCheck.set(checkBin())
-        bashrcCheck.set(checkBashrc())
-        setInternalStorage()
-        setOTG()
-        setArchitecture()
-        setUpdate()
+        CoroutineScope(Dispatchers.IO).launch {
+            rootCheck.set(checkRoot())
+            binCheck.set(checkBin())
+            bashrcCheck.set(checkBashrc())
+            setInternalStorage()
+            setOTG()
+            setArchitecture()
+            setUpdate()
+        }
     }
 
     fun initialize() {
