@@ -103,6 +103,10 @@ class Backup {
                     Command.ls(userPath).apply { dataBinding.isBackupUser.set(this) }
                     Command.ls(dataPath).apply { dataBinding.isBackupData.set(this) }
                     Command.ls(obbPath).apply { dataBinding.isBackupObb.set(this) }
+                } else {
+                    dataBinding.isBackupUser.set(false)
+                    dataBinding.isBackupData.set(false)
+                    dataBinding.isBackupObb.set(false)
                 }
 
                 // 开始备份
