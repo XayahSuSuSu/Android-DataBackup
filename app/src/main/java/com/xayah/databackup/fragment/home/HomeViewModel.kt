@@ -169,5 +169,14 @@ class HomeViewModel : ViewModel() {
 
     fun initialize() {
         refresh()
+//        saveLog()
+    }
+
+    private fun saveLog() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val date = Command.getDate().replace(" ", "_")
+            Command.mkdir(Path.getShellLogPath())
+            Command.saveShellLog("${Path.getShellLogPath()}/${date}")
+        }
     }
 }
