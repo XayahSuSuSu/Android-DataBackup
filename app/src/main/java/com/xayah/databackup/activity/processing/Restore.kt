@@ -73,7 +73,7 @@ class Restore {
     private fun onRestoreAppClick(v: View) {
         if (successNum + failedNum != mAppInfoRestoreList.size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
-            dataBinding.totalTip.set(GlobalString.backupProcessing)
+            dataBinding.totalTip.set(GlobalString.restoreProcessing)
             for ((index, i) in mAppInfoRestoreList.withIndex()) {
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.infoBase.appName)
@@ -189,7 +189,7 @@ class Restore {
                     failedNum += 1
                 dataBinding.progress.set(index + 1)
             }
-            dataBinding.totalTip.set(GlobalString.backupFinished)
+            dataBinding.totalTip.set(GlobalString.restoreFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mAppInfoRestoreList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
@@ -202,7 +202,7 @@ class Restore {
     private fun onRestoreMediaClick(v: View) {
         if (successNum + failedNum != mMediaInfoRestoreList.size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
-            dataBinding.totalTip.set(GlobalString.backupProcessing)
+            dataBinding.totalTip.set(GlobalString.restoreProcessing)
             for ((index, i) in mMediaInfoRestoreList.withIndex()) {
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.name)
@@ -236,7 +236,7 @@ class Restore {
                     failedNum += 1
                 dataBinding.progress.set(index + 1)
             }
-            dataBinding.totalTip.set(GlobalString.backupFinished)
+            dataBinding.totalTip.set(GlobalString.restoreFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mMediaInfoRestoreList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)

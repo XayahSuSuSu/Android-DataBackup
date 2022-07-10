@@ -10,7 +10,7 @@
     <string name="confirm">確定</string>
     <string name="backup_apk_processing">備份APK中…</string>
     <string name="backup_finished">備份完成</string>
-    <string name="restore_success">恢復完成！</string>
+    <string name="restore_finished">恢復完成</string>
     <string name="install_apk_processing">安裝APK中…</string>
     <string name="backup_dir">備份目錄</string>
     <string name="compression_type">壓縮方式</string>

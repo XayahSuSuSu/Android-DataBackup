@@ -47,7 +47,7 @@ class GlobalString {
         val backupNotSupport = App.globalContext.getString(R.string.backup_not_support)
         val customDir = App.globalContext.getString(R.string.custom_dir)
         val restoreProcessing = App.globalContext.getString(R.string.restore_processing)
-        val restoreSuccess = App.globalContext.getString(R.string.restore_success)
+        val restoreFinished = App.globalContext.getString(R.string.restore_finished)
         val installApkProcessing = App.globalContext.getString(R.string.install_apk_processing)
         val noUpdateAndSkip = App.globalContext.getString(R.string.no_update_and_skip)
         val compressFailed = App.globalContext.getString(R.string.compress_failed)
