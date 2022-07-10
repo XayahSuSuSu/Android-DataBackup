@@ -26,6 +26,12 @@ class StorageRadioCard @JvmOverloads constructor(
             binding.materialTextViewTitle.text = value
         }
 
+    var text: CharSequence?
+        get() = binding.materialTextViewText.text
+        set(value) {
+            binding.materialTextViewText.text = value
+        }
+
     private var internalStorageEnabled: Boolean
         get() = binding.materialRadioButtonInternalStorage.isEnabled
         set(value) {
@@ -84,6 +90,7 @@ class StorageRadioCard @JvmOverloads constructor(
         ).apply {
             try {
                 title = getString(R.styleable.StorageRadioCard_title)
+                text = getString(R.styleable.StorageRadioCard_text)
             } finally {
                 recycle()
             }

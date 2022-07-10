@@ -107,4 +107,5 @@
     <string name="start">开始</string>
     <string name="retrieve_finish">寻回完成</string>
     <string name="app_retrieved">被寻回的应用</string>
+    <string name="backup_whole_dir_for_safe">存档请选择整个DataBackup目录，以防丢失配置信息</string>
 </resources>

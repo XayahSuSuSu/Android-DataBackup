@@ -31,6 +31,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    app:text="@string/backup_whole_dir_for_safe"
                     app:title="@string/restore_dir" />
 
                 <com.google.android.material.textview.MaterialTextView
