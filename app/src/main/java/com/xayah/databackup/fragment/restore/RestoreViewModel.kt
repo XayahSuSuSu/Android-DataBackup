@@ -2,6 +2,7 @@ package com.xayah.databackup.fragment.restore
 
 import android.content.Intent
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
@@ -56,6 +57,14 @@ class RestoreViewModel : ViewModel() {
                 putExtra("isMedia", true)
             }
         )
+    }
+
+    fun onFixBtnClick(v: View) {
+        JSON.writeJSONToFile(
+            JSON.entityArrayToJsonArray(Command.getCachedAppInfoRestoreActualList() as MutableList<Any>),
+            Path.getAppInfoRestoreListPath()
+        )
+        Toast.makeText(v.context, GlobalString.retrieveFinish, Toast.LENGTH_SHORT).show()
     }
 
     private fun setNum() {

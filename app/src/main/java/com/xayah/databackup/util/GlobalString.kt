@@ -95,5 +95,7 @@ class GlobalString {
         val removeFilesToo = App.globalContext.getString(R.string.remove_files_too)
         val removeFailed = App.globalContext.getString(R.string.remove_failed)
         val user = App.globalContext.getString(R.string.user)
+        val retrieveFinish = App.globalContext.getString(R.string.retrieve_finish)
+        val appRetrieved = App.globalContext.getString(R.string.app_retrieved)
     }
 }

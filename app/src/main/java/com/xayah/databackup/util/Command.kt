@@ -188,6 +188,51 @@ class Command {
             return cachedAppInfoRestoreList
         }
 
+        fun getCachedAppInfoRestoreActualList(): MutableList<AppInfoRestore> {
+            val cachedAppInfoRestoreActualList = mutableListOf<AppInfoRestore>()
+            val cachedAppInfoRestoreList = mutableListOf<AppInfoRestore>()
+            cat(Path.getAppInfoRestoreListPath()).apply {
+                if (this.first) {
+                    try {
+                        val jsonArray = JSON.stringToJsonArray(this.second)
+                        for (i in jsonArray) {
+                            val item = JSON.jsonElementToEntity(
+                                i, AppInfoRestore::class.java
+                            ) as AppInfoRestore
+                            cachedAppInfoRestoreList.add(item)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            Shell.cmd("ls ${Path.getBackupDataSavePath()}").exec().apply {
+                if (isSuccess) {
+                    for (i in out) {
+                        val tmp = cachedAppInfoRestoreList.find { it.infoBase.packageName == i }
+                        val tmpIndex = cachedAppInfoRestoreList.indexOf(tmp)
+                        if (tmpIndex == -1)
+                            cachedAppInfoRestoreActualList.add(
+                                AppInfoRestore(
+                                    null,
+                                    AppInfoBase(
+                                        GlobalString.appRetrieved,
+                                        i,
+                                        "",
+                                        0,
+                                        app = false,
+                                        data = false
+                                    )
+                                )
+                            )
+                        else
+                            cachedAppInfoRestoreActualList.add(cachedAppInfoRestoreList[tmpIndex])
+                    }
+                }
+            }
+            return cachedAppInfoRestoreActualList
+        }
+
         fun addOrUpdateList(item: Any, dst: MutableList<Any>, callback: (item: Any) -> Boolean) {
             val tmp = dst.find { callback(it) }
             val tmpIndex = dst.indexOf(tmp)

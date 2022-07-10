@@ -116,4 +116,9 @@
     <string name="remove_files_too">This will remove related files, too</string>
     <string name="symbol_exclamation">!</string>
     <string name="remove_failed">Remove failed</string>
+    <string name="retrieve">Retrieve</string>
+    <string name="retrieve_title">Repair or clear invalid application configuration</string>
+    <string name="start">Start</string>
+    <string name="retrieve_finish">Retrieved</string>
+    <string name="app_retrieved">The retrieved app</string>
 </resources>

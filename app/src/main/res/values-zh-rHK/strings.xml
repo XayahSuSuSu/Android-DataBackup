@@ -102,4 +102,9 @@
     <string name="remove_files_too">這同時也會移除相關文件</string>
     <string name="symbol_exclamation">！</string>
     <string name="remove_failed">移除失敗</string>
+    <string name="retrieve">尋回</string>
+    <string name="retrieve_title">修復或清除無效應用配置信息</string>
+    <string name="start">開始</string>
+    <string name="retrieve_finish">寻回完成</string>
+    <string name="app_retrieved">被尋回的應用</string>
 </resources>
