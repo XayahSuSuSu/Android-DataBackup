@@ -182,7 +182,7 @@ class Backup {
                 }
                 if (state) {
                     successNum += 1
-                    addOrUpdate(
+                    Command.addOrUpdateList(
                         AppInfoRestore(null, i.infoBase),
                         mAppInfoRestoreList as MutableList<Any>
                     ) {
@@ -253,7 +253,7 @@ class Backup {
                 }
                 if (state) {
                     successNum += 1
-                    addOrUpdate(i, mMediaInfoRestoreList as MutableList<Any>) {
+                    Command.addOrUpdateList(i, mMediaInfoRestoreList as MutableList<Any>) {
                         (it as MediaInfo).path == i.path
                     }
                 } else failedNum += 1
@@ -285,7 +285,7 @@ class Backup {
     private fun saveAppInfoBackupList() {
         val appInfoBackupList = Command.getCachedAppInfoBackupList(App.globalContext, false)
         for (i in mAppInfoBackupList) {
-            addOrUpdate(i, appInfoBackupList as MutableList<Any>) {
+            Command.addOrUpdateList(i, appInfoBackupList as MutableList<Any>) {
                 (it as AppInfoBackup).infoBase.packageName == i.infoBase.packageName
             }
         }
@@ -305,7 +305,7 @@ class Backup {
     private fun saveMediaInfoBackupList() {
         val mediaInfoBackupList = Command.getCachedMediaInfoBackupList(false)
         for (i in mMediaInfoBackupList) {
-            addOrUpdate(i, mediaInfoBackupList as MutableList<Any>) {
+            Command.addOrUpdateList(i, mediaInfoBackupList as MutableList<Any>) {
                 (it as MediaInfo).path == i.path
             }
         }
@@ -320,15 +320,6 @@ class Backup {
             JSON.entityArrayToJsonArray(mMediaInfoRestoreList as MutableList<Any>),
             Path.getMediaInfoRestoreListPath()
         )
-    }
-
-    private fun addOrUpdate(item: Any, dst: MutableList<Any>, callback: (item: Any) -> Boolean) {
-        val tmp = dst.find { callback(it) }
-        val tmpIndex = dst.indexOf(tmp)
-        if (tmpIndex == -1)
-            dst.add(item)
-        else
-            dst[tmpIndex] = item
     }
 
     private fun saveBackupInfoList() {

@@ -188,6 +188,15 @@ class Command {
             return cachedAppInfoRestoreList
         }
 
+        fun addOrUpdateList(item: Any, dst: MutableList<Any>, callback: (item: Any) -> Boolean) {
+            val tmp = dst.find { callback(it) }
+            val tmpIndex = dst.indexOf(tmp)
+            if (tmpIndex == -1)
+                dst.add(item)
+            else
+                dst[tmpIndex] = item
+        }
+
         fun getCachedMediaInfoBackupList(isFiltered: Boolean = false): MutableList<MediaInfo> {
             // 可变列表
             val cachedMediaInfoList = mutableListOf<MediaInfo>()
