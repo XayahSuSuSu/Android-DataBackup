@@ -270,31 +270,13 @@
                             </com.google.android.material.chip.ChipGroup>
                         </HorizontalScrollView>
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <com.google.android.material.button.MaterialButton
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:orientation="horizontal">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/materialButton_add_media"
-                                style="@style/Widget.Material3.Button.TextButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="8dp"
-                                android:layout_weight="1"
-                                android:text="@string/add"
-                                android:visibility="invisible" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="8dp"
-                                android:layout_weight="1"
-                                android:onClick="@{(v)->viewModel.onRestoreMediaBtnClick(v)}"
-                                android:text="@string/start_restore" />
-
-                        </LinearLayout>
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginHorizontal="8dp"
+                            android:onClick="@{(v)->viewModel.onRestoreMediaBtnClick(v)}"
+                            android:text="@string/start_restore" />
 
                     </LinearLayout>
 
