@@ -8,6 +8,8 @@
 The script has been **widely acclaimed** since the author made it. This app was made **with the consent of the author**.
 
 ## Advantage
+* **Support multi-user/dual backup**: Even backup/restore across partitions!
+
 * **100% Data Integrity**: All the data will be retained, and there is no need to log in again or download additional packages.
 
 * **Fast**: Support: tar lz4 **zstd(default)**.
