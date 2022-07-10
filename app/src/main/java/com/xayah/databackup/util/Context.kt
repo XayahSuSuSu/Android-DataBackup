@@ -1,7 +1,9 @@
 package com.xayah.databackup.util
 
+import android.app.Activity
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.ContextWrapper
 
 fun Context.savePreferences(key: String, value: String) {
     getSharedPreferences("settings", MODE_PRIVATE).edit().apply {
@@ -118,4 +120,15 @@ fun Context.saveInitializedVersionName(value: CharSequence?) {
 
 fun Context.readInitializedVersionName(): String {
     return readPreferencesString("initialized_version_name") ?: ""
+}
+
+fun Context.getActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    return null
 }

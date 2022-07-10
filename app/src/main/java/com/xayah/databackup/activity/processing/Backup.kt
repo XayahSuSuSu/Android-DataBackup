@@ -212,6 +212,9 @@ class Backup {
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
         }
+        else {
+            v.context.getActivity()?.finish()
+        }
     }
 
     private fun onBackupMediaClick(v: View) {
@@ -279,6 +282,9 @@ class Backup {
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mMediaInfoBackupList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
+        }
+        else {
+            v.context.getActivity()?.finish()
         }
     }
 

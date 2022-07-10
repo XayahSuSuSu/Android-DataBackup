@@ -194,6 +194,9 @@ class Restore {
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
         }
+        else {
+            v.context.getActivity()?.finish()
+        }
     }
 
     private fun onRestoreMediaClick(v: View) {
@@ -237,6 +240,9 @@ class Restore {
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mMediaInfoRestoreList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
+        }
+        else {
+            v.context.getActivity()?.finish()
         }
     }
 }
