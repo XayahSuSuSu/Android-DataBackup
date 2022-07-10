@@ -2,15 +2,22 @@ package com.xayah.databackup.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.databinding.AdapterAppListBinding
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.Path
 import com.xayah.databackup.view.util.dp
+import com.xayah.databackup.view.util.setWithConfirm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,6 +66,31 @@ class AppListAdapterRestore : ItemViewDelegate<AppInfoRestore, AppListAdapterRes
             }
         }
         // ----------------------------------------------------------------------------------------
+        binding.iconButton.apply {
+            visibility = View.VISIBLE
+            setOnClickListener {
+                MaterialAlertDialogBuilder(context).apply {
+                    setWithConfirm("${GlobalString.confirmRemove}${GlobalString.symbolQuestion}") {
+                        Command.rm("${Path.getBackupDataSavePath()}/${item.infoBase.packageName}")
+                            .apply {
+                                if (this) {
+                                    val items = adapterItems.toMutableList()
+                                    items.remove(item)
+                                    adapterItems = items.toList()
+                                    adapter.notifyItemRemoved(holder.bindingAdapterPosition)
+                                    Toast.makeText(
+                                        context,
+                                        GlobalString.success,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else
+                                    Toast.makeText(context, GlobalString.failed, Toast.LENGTH_SHORT)
+                                        .show()
+                            }
+                    }
+                }
+            }
+        }
         binding.chipApplication.apply {
             setOnCheckedChangeListener { _, checked ->
                 (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.app =

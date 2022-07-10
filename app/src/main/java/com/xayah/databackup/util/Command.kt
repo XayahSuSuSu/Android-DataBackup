@@ -233,6 +233,31 @@ class Command {
             return cachedAppInfoRestoreActualList
         }
 
+        fun retrieve(){
+            val mAppInfoRestoreActualList = getCachedAppInfoRestoreActualList()
+            val mAppInfoBackupList = getCachedAppInfoBackupList(App.globalContext, false)
+            for (i in mAppInfoBackupList) {
+                val tmp = mAppInfoRestoreActualList.find { it.infoBase.packageName == i.infoBase.packageName }
+                val tmpIndex = mAppInfoRestoreActualList.indexOf(tmp)
+                if (tmpIndex == -1) {
+                    i.apply {
+                        appSize = ""
+                        userSize = ""
+                        dataSize = ""
+                        obbSize = ""
+                    }
+                }
+            }
+            JSON.writeJSONToFile(
+                JSON.entityArrayToJsonArray(mAppInfoBackupList as MutableList<Any>),
+                Path.getAppInfoBackupListPath()
+            )
+            JSON.writeJSONToFile(
+                JSON.entityArrayToJsonArray(mAppInfoRestoreActualList as MutableList<Any>),
+                Path.getAppInfoRestoreListPath()
+            )
+        }
+
         fun addOrUpdateList(item: Any, dst: MutableList<Any>, callback: (item: Any) -> Boolean) {
             val tmp = dst.find { callback(it) }
             val tmpIndex = dst.indexOf(tmp)

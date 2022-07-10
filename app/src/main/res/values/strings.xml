@@ -122,4 +122,5 @@
     <string name="retrieve_finish">Retrieved</string>
     <string name="app_retrieved">The retrieved app</string>
     <string name="backup_whole_dir_for_safe">For archiving, please select the entire DataBackup directory to prevent loss of configuration</string>
+    <string name="confirm_remove_all_app_and_data_that_backed_up">Sure to remove all apps and data that backed up</string>
 </resources>
