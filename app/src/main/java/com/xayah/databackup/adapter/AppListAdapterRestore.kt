@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
@@ -16,13 +17,16 @@ import com.xayah.databackup.databinding.AdapterAppListBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Path
+import com.xayah.databackup.view.setLoading
 import com.xayah.databackup.view.util.dp
 import com.xayah.databackup.view.util.setWithConfirm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class AppListAdapterRestore : ItemViewDelegate<AppInfoRestore, AppListAdapterRestore.ViewHolder>() {
+class AppListAdapterRestore(val mAppInfoRestoreList: MutableList<AppInfoRestore>) :
+    ItemViewDelegate<AppInfoRestore, AppListAdapterRestore.ViewHolder>() {
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
@@ -76,13 +80,24 @@ class AppListAdapterRestore : ItemViewDelegate<AppInfoRestore, AppListAdapterRes
                                 if (this) {
                                     val items = adapterItems.toMutableList()
                                     items.remove(item)
+                                    mAppInfoRestoreList.remove(item)
                                     adapterItems = items.toList()
-                                    adapter.notifyItemRemoved(holder.bindingAdapterPosition)
-                                    Toast.makeText(
-                                        context,
-                                        GlobalString.success,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    BottomSheetDialog(context).apply {
+                                        setLoading()
+                                        val that = this
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            Command.retrieve(mAppInfoRestoreList)
+                                            withContext(Dispatchers.Main) {
+                                                that.dismiss()
+                                                adapter.notifyItemRemoved(holder.bindingAdapterPosition)
+                                                Toast.makeText(
+                                                    context,
+                                                    GlobalString.success,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                    }
                                 } else
                                     Toast.makeText(context, GlobalString.failed, Toast.LENGTH_SHORT)
                                         .show()

@@ -233,11 +233,11 @@ class Command {
             return cachedAppInfoRestoreActualList
         }
 
-        fun retrieve(){
-            val mAppInfoRestoreActualList = getCachedAppInfoRestoreActualList()
+        fun retrieve(mAppInfoRestoreActualList: MutableList<AppInfoRestore>) {
             val mAppInfoBackupList = getCachedAppInfoBackupList(App.globalContext, false)
             for (i in mAppInfoBackupList) {
-                val tmp = mAppInfoRestoreActualList.find { it.infoBase.packageName == i.infoBase.packageName }
+                val tmp =
+                    mAppInfoRestoreActualList.find { it.infoBase.packageName == i.infoBase.packageName }
                 val tmpIndex = mAppInfoRestoreActualList.indexOf(tmp)
                 if (tmpIndex == -1) {
                     i.apply {

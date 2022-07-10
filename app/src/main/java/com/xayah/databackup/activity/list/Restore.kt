@@ -7,6 +7,8 @@ import com.xayah.databackup.adapter.AppListHeaderAdapterBase
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
 import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.JSON
+import com.xayah.databackup.util.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,7 +47,7 @@ class Restore(private val mAdapter: MultiTypeAdapter) {
                         mAdapter.notifyDataSetChanged()
                     })
                 )
-                register(AppListAdapterRestore())
+                register(AppListAdapterRestore(mAppInfoRestoreList))
                 adapterList.add(0, "Header")
                 adapterList.addAll(mAppInfoRestoreList)
                 items = adapterList
@@ -71,8 +73,9 @@ class Restore(private val mAdapter: MultiTypeAdapter) {
     }
 
     fun saveAppList() {
-        CoroutineScope(Dispatchers.IO).launch {
-            Command.retrieve()
-        }
+        JSON.writeJSONToFile(
+            JSON.entityArrayToJsonArray(mAppInfoRestoreList as MutableList<Any>),
+            Path.getAppInfoRestoreListPath()
+        )
     }
 }

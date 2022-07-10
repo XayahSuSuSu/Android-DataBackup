@@ -109,4 +109,5 @@
     <string name="app_retrieved">被尋回的應用</string>
     <string name="backup_whole_dir_for_safe">存檔請選擇整個DataBackup目錄，以防丟失配置信息</string>
     <string name="confirm_remove_all_app_and_data_that_backed_up">確定要移除所有已備份的應用和數據嗎</string>
+    <string name="please_wait">請稍等</string>
 </resources>
