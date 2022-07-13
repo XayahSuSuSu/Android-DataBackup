@@ -12,13 +12,11 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.xayah.databackup.App
 import com.xayah.databackup.data.Release
-import com.xayah.databackup.util.Bashrc
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
@@ -41,6 +39,8 @@ class HomeViewModel : ViewModel() {
     var versionCurrent = ObservableField(App.versionName)
     var versionLatest = ObservableField("")
     var downloadBtnVisible = ObservableBoolean(false)
+    var logEnable = ObservableBoolean(false)
+    var logText = ObservableField("")
 
     private fun checkRoot(): String {
         Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
@@ -164,12 +164,45 @@ class HomeViewModel : ViewModel() {
             setOTG()
             setArchitecture()
             setUpdate()
+            updateLogCard()
         }
     }
 
     fun initialize() {
         refresh()
-//        saveLog()
+        setLogCard()
+    }
+
+    private fun setLogCard() {
+        logEnable.set(App.globalContext.readLogEnable())
+        updateLogCard()
+        if (logEnable.get())
+            saveLog()
+    }
+
+    private fun updateLogCard() {
+        val logPath = Path.getShellLogPath()
+        logText.set("${Command.countFile(logPath)} ${GlobalString.log}, ${Command.countSize(logPath)} ${GlobalString.size}\n${GlobalString.storedIn} ${logPath}")
+    }
+
+    fun onLogEnableCheckedChanged(v: View, checked: Boolean) {
+        logEnable.set(checked)
+        App.globalContext.saveLogEnable(logEnable.get())
+    }
+
+    fun onLogClearClick(v: View) {
+        val context = v.context
+        CoroutineScope(Dispatchers.IO).launch {
+            Command.rm(Path.getShellLogPath())
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    GlobalString.success,
+                    Toast.LENGTH_SHORT
+                ).show()
+                refresh()
+            }
+        }
     }
 
     private fun saveLog() {

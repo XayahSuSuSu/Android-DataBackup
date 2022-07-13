@@ -28,6 +28,12 @@ class Command {
             }
         }
 
+        fun countFile(path: String): Int {
+            Shell.cmd("ls -i $path").exec().apply {
+                return this.out.size
+            }
+        }
+
         fun rm(path: String): Boolean {
             Shell.cmd("rm -rf $path").exec().apply {
                 return this.isSuccess

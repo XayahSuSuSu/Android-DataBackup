@@ -122,6 +122,14 @@ fun Context.readInitializedVersionName(): String {
     return readPreferencesString("initialized_version_name") ?: ""
 }
 
+fun Context.saveLogEnable(value: Boolean) {
+    savePreferences("log_enable", value)
+}
+
+fun Context.readLogEnable(): Boolean {
+    return readPreferencesBoolean("log_enable", false)
+}
+
 fun Context.getActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {

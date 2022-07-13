@@ -99,5 +99,8 @@ class GlobalString {
         val appRetrieved = App.globalContext.getString(R.string.app_retrieved)
         val confirmRemoveAllAppAndDataThatBackedUp = App.globalContext.getString(R.string.confirm_remove_all_app_and_data_that_backed_up)
         val pleaseWait = App.globalContext.getString(R.string.please_wait)
+        val log = App.globalContext.getString(R.string.log)
+        val size = App.globalContext.getString(R.string.size)
+        val storedIn = App.globalContext.getString(R.string.stored_in)
     }
 }

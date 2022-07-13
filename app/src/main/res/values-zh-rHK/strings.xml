@@ -110,4 +110,9 @@
     <string name="backup_whole_dir_for_safe">存檔請選擇整個DataBackup目錄，以防丟失配置信息</string>
     <string name="confirm_remove_all_app_and_data_that_backed_up">確定要移除所有已備份的應用和數據嗎</string>
     <string name="please_wait">請稍等</string>
+    <string name="log">日誌</string>
+    <string name="settings">配置</string>
+    <string name="log_title">幫助開發者定位問題，重啟應用生效</string>
+    <string name="clear">清除</string>
+    <string name="stored_in">存放於</string>
 </resources>
