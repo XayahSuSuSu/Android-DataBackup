@@ -236,7 +236,7 @@ class Backup {
                     dataBinding.processingData.set(true)
                     // 备份目录
                     Command.compress(
-                        App.globalContext.readCompressionType(),
+                        "tar",
                         "media",
                         "media",
                         Path.getBackupMediaSavePath(),
