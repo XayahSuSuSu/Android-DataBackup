@@ -117,4 +117,5 @@
     <string name="stored_in">存放於</string>
     <string name="dynamic_colors">動態取色</string>
     <string name="dynamic_colors_title">更加 Material You, 重啟應用生效</string>
+    <string name="tmp">臨時</string>
 </resources>

@@ -42,8 +42,11 @@ class BackupFragment : Fragment() {
     private fun initialize() {
         CoroutineScope(Dispatchers.IO).launch {
             App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
-            binding.storageRadioCard.setOnCheckedChangeListener { _, _ ->
-                initialize()
+            binding.storageRadioCard.apply {
+                setOnCheckedChangeListener { _, _ ->
+                    initialize()
+                }
+                setMaterialYouFileExplorer(materialYouFileExplorer)
             }
 
             binding.materialButtonAddMedia.setOnClickListener {

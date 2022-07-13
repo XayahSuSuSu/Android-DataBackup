@@ -41,6 +41,7 @@ class HomeViewModel : ViewModel() {
     var downloadBtnVisible = ObservableBoolean(false)
     var logEnable = ObservableBoolean(false)
     var logText = ObservableField("")
+    var isLogging = false
     var dynamicColorsEnable = ObservableBoolean(false)
 
     private fun checkRoot(): String {
@@ -171,6 +172,7 @@ class HomeViewModel : ViewModel() {
 
     fun initialize() {
         refresh()
+        App.globalContext.saveBackupSavePath(Path.getExternalStorageDataBackupDirectory()) // 恢复默认目录
         setLogCard()
         setDynamicColorsCard()
     }
@@ -178,8 +180,10 @@ class HomeViewModel : ViewModel() {
     private fun setLogCard() {
         logEnable.set(App.globalContext.readLogEnable())
         updateLogCard()
-        if (logEnable.get())
+        if (logEnable.get() && !isLogging) {
             saveLog()
+            isLogging = true
+        }
     }
 
     private fun updateLogCard() {

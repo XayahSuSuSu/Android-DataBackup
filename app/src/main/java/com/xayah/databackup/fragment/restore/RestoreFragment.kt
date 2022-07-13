@@ -14,6 +14,7 @@ import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.util.setWithConfirm
+import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ class RestoreFragment : Fragment() {
     private var _binding: FragmentRestoreBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: RestoreViewModel
+    private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
     private var mediaInfoList: MutableList<MediaInfo> = mutableListOf()
 
     override fun onCreateView(
@@ -40,9 +42,13 @@ class RestoreFragment : Fragment() {
     private fun initialize() {
         CoroutineScope(Dispatchers.IO).launch {
             App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
-            binding.storageRadioCard.setOnCheckedChangeListener { _, _ ->
-                initialize()
+            binding.storageRadioCard.apply {
+                setOnCheckedChangeListener { _, _ ->
+                    initialize()
+                }
+                setMaterialYouFileExplorer(materialYouFileExplorer)
             }
+
 
             viewModel.initialize { setChipGroup() }
         }
@@ -99,6 +105,14 @@ class RestoreFragment : Fragment() {
             JSON.entityArrayToJsonArray(mediaInfoList as MutableList<Any>),
             Path.getMediaInfoRestoreListPath()
         )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val that = this
+        materialYouFileExplorer = MaterialYouFileExplorer().apply {
+            initialize(that)
+        }
     }
 
     override fun onResume() {

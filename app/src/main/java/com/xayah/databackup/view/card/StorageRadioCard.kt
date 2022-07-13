@@ -11,6 +11,7 @@ import com.xayah.databackup.util.Bashrc
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.view.util.dp
+import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 
 class StorageRadioCard @JvmOverloads constructor(
     context: Context,
@@ -78,10 +79,16 @@ class StorageRadioCard @JvmOverloads constructor(
             binding.materialRadioButtonOtg.isChecked = (index == 1)
         }
 
+    private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
+
     private var onCheckedChangeListener: (v: StorageRadioCard, path: String) -> Unit = { _, _ -> }
 
     fun setOnCheckedChangeListener(listener: ((v: StorageRadioCard, path: String) -> Unit)) {
         onCheckedChangeListener = listener
+    }
+
+    fun setMaterialYouFileExplorer(mMaterialYouFileExplorer: MaterialYouFileExplorer) {
+        materialYouFileExplorer = mMaterialYouFileExplorer
     }
 
     init {
@@ -97,7 +104,7 @@ class StorageRadioCard @JvmOverloads constructor(
         }
 
         radius = 24.dp.toFloat()
-        setContentPadding(16.dp, 16.dp, 16.dp, 16.dp)
+        setContentPadding(16.dp, 8.dp, 16.dp, 16.dp)
 
         binding.materialRadioButtonInternalStorage.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -111,6 +118,21 @@ class StorageRadioCard @JvmOverloads constructor(
                 radioGroupCheckedIndex = 1
                 update()
                 onCheckedChangeListener.invoke(this, otgPath.toString())
+            }
+        }
+        binding.materialButtonEdit.setOnClickListener {
+            val that = this
+            materialYouFileExplorer.apply {
+                defPath = getPathByIndex(radioGroupCheckedIndex)
+                isFile = false
+                toExplorer(context) { path, _ ->
+                    when (radioGroupCheckedIndex) {
+                        0 -> setInternalStorage(path)
+
+                        1 -> setOTG(path)
+                    }
+                    onCheckedChangeListener.invoke(that, path)
+                }
             }
         }
 
@@ -131,8 +153,8 @@ class StorageRadioCard @JvmOverloads constructor(
         }
     }
 
-    private fun setInternalStorage() {
-        val path = Path.getExternalStorageDataBackupDirectory()
+    private fun setInternalStorage(mPath: String? = null) {
+        val path = mPath ?: Path.getExternalStorageDataBackupDirectory()
         // 默认值
         internalStoragePath = GlobalString.fetching
         internalStorageProgress = 0
@@ -152,7 +174,7 @@ class StorageRadioCard @JvmOverloads constructor(
         }
     }
 
-    private fun setOTG() {
+    private fun setOTG(mPath: String? = null) {
         // 默认值
         otgPath = GlobalString.fetching
         otgProgress = 0
@@ -161,12 +183,13 @@ class StorageRadioCard @JvmOverloads constructor(
         Bashrc.checkOTG().apply {
             val that = this
             if (that.first == 0) {
-                val space = Bashrc.getStorageSpace(that.second)
+                val path = mPath ?: ("${that.second}/DataBackup")
+                val space = Bashrc.getStorageSpace(path)
                 if (space.first) {
                     try {
                         val string = space.second
                         otgProgress = string.split(" ").last().replace("%", "").toInt()
-                        otgPath = that.second + "/DataBackup"
+                        otgPath = mPath
                         otgEnabled = true
                     } catch (e: NumberFormatException) {
                         otgPath = GlobalString.fetchFailed
