@@ -70,7 +70,7 @@ class RestoreFragment : Fragment() {
             isChecked = mediaInfo.data
             setOnCheckedChangeListener { _, isChecked ->
                 mediaInfo.data = isChecked
-                saveMediaList(mediaInfoList)
+                saveMediaList(mediaInfoList, Path.getMediaInfoRestoreListPath())
             }
             setOnCloseIconClickListener {
                 MaterialAlertDialogBuilder(requireContext()).apply {
@@ -83,7 +83,19 @@ class RestoreFragment : Fragment() {
                                 if (this) {
                                     mediaInfoList.remove(mediaInfo)
                                     binding.chipGroup.removeView(it)
-                                    saveMediaList(mediaInfoList)
+                                    saveMediaList(mediaInfoList, Path.getMediaInfoRestoreListPath())
+                                    val mediaInfoBackupList = Command.getCachedMediaInfoBackupList()
+                                    for (i in mediaInfoBackupList) {
+                                        if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
+                                            // 清除媒体备份大小信息
+                                            i.size = ""
+                                            break
+                                        }
+                                    }
+                                    saveMediaList(
+                                        mediaInfoBackupList,
+                                        Path.getMediaInfoBackupListPath()
+                                    )
                                 } else {
                                     Toast.makeText(
                                         requireContext(),
@@ -100,10 +112,10 @@ class RestoreFragment : Fragment() {
         binding.chipGroup.addView(chip)
     }
 
-    private fun saveMediaList(mediaInfoList: MutableList<MediaInfo>) {
+    private fun saveMediaList(mediaInfoList: MutableList<MediaInfo>, savePath: String) {
         JSON.writeJSONToFile(
             JSON.entityArrayToJsonArray(mediaInfoList as MutableList<Any>),
-            Path.getMediaInfoRestoreListPath()
+            savePath
         )
     }
 
