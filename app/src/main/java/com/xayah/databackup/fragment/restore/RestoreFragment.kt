@@ -78,7 +78,7 @@ class RestoreFragment : Fragment() {
                         "${GlobalString.confirmRemove}${GlobalString.symbolQuestion}\n" +
                                 "${GlobalString.removeFilesToo}${GlobalString.symbolExclamation}"
                     ) {
-                        Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}.tar.*")
+                        Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}.tar*")
                             .apply {
                                 if (this) {
                                     mediaInfoList.remove(mediaInfo)

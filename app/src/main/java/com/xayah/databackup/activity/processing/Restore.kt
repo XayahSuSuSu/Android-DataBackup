@@ -85,9 +85,9 @@ class Restore {
                 val packageName = dataBinding.packageName.get()!!
                 val userId = App.globalContext.readRestoreUser()
                 val inPath = "${Path.getBackupDataSavePath()}/${packageName}"
-                val userPath = "${Path.getBackupDataSavePath()}/${packageName}/user.tar.*"
-                val dataPath = "${Path.getBackupDataSavePath()}/${packageName}/data.tar.*"
-                val obbPath = "${Path.getBackupDataSavePath()}/${packageName}/obb.tar.*"
+                val userPath = "${Path.getBackupDataSavePath()}/${packageName}/user.tar*"
+                val dataPath = "${Path.getBackupDataSavePath()}/${packageName}/data.tar*"
+                val obbPath = "${Path.getBackupDataSavePath()}/${packageName}/obb.tar*"
                 if (i.infoBase.data) {
                     Command.ls(userPath).apply { dataBinding.isBackupUser.set(this) }
                     Command.ls(dataPath).apply { dataBinding.isBackupData.set(this) }
@@ -119,7 +119,7 @@ class Restore {
                 if (dataBinding.isBackupUser.get()) {
                     // 恢复User
                     dataBinding.processingUser.set(true)
-                    val inputPath = "${inPath}/user.tar.*"
+                    val inputPath = "${inPath}/user.tar*"
                     Command.decompress(
                         Command.getCompressionTypeByPath(inputPath),
                         "user",
@@ -138,7 +138,7 @@ class Restore {
                 if (dataBinding.isBackupData.get()) {
                     // 恢复Data
                     dataBinding.processingData.set(true)
-                    val inputPath = "${inPath}/data.tar.*"
+                    val inputPath = "${inPath}/data.tar*"
                     Command.decompress(
                         Command.getCompressionTypeByPath(inputPath),
                         "data",
@@ -157,7 +157,7 @@ class Restore {
                 if (dataBinding.isBackupObb.get()) {
                     // 恢复Obb
                     dataBinding.processingObb.set(true)
-                    val inputPath = "${inPath}/obb.tar.*"
+                    val inputPath = "${inPath}/obb.tar*"
                     Command.decompress(
                         Command.getCompressionTypeByPath(inputPath),
                         "obb",
@@ -205,7 +205,7 @@ class Restore {
                     // 恢复Data
                     dataBinding.processingData.set(true)
                     // 恢复目录
-                    val inputPath = "${inPath}/${i.name}.tar.*"
+                    val inputPath = "${inPath}/${i.name}.tar*"
                     Command.decompress(
                         Command.getCompressionTypeByPath(inputPath),
                         "media",
