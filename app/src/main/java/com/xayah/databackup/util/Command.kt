@@ -656,5 +656,21 @@ class Command {
         fun saveShellLog(outPut: String) {
             Shell.cmd("logcat | grep -E 'SHELL_IN|SHELLOUT' >> $outPut &").exec()
         }
+
+        fun getCompressionTypeByPath(path: String): String {
+            ShellUtils.fastCmd("ls $path").apply {
+                return try {
+                    when (this.split("/").last().split(".").last()) {
+                        "tar" -> "tar"
+                        "lz4" -> "lz4"
+                        "zst" -> "zstd"
+                        else -> ""
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    ""
+                }
+            }
+        }
     }
 }

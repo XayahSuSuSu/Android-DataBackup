@@ -84,7 +84,6 @@ class Restore {
 
                 val packageName = dataBinding.packageName.get()!!
                 val userId = App.globalContext.readRestoreUser()
-                val compressionType = App.globalContext.readCompressionType()
                 val inPath = "${Path.getBackupDataSavePath()}/${packageName}"
                 val userPath = "${Path.getBackupDataSavePath()}/${packageName}/user.tar.*"
                 val dataPath = "${Path.getBackupDataSavePath()}/${packageName}/data.tar.*"
@@ -105,10 +104,7 @@ class Restore {
                     // 恢复应用
                     dataBinding.processingApk.set(true)
                     Command.installAPK(
-                        inPath,
-                        packageName,
-                        userId,
-                        i.infoBase.versionCode.toString()
+                        inPath, packageName, userId, i.infoBase.versionCode.toString()
                     ) { setSizeAndSpeed(it) }.apply {
                         state = this
                     }
@@ -123,20 +119,18 @@ class Restore {
                 if (dataBinding.isBackupUser.get()) {
                     // 恢复User
                     dataBinding.processingUser.set(true)
+                    val inputPath = "${inPath}/user.tar.*"
                     Command.decompress(
-                        compressionType,
+                        Command.getCompressionTypeByPath(inputPath),
                         "user",
-                        "${inPath}/user.tar.*",
+                        inputPath,
                         packageName,
                         Path.getUserPath(userId)
                     ) { setSizeAndSpeed(it) }.apply {
                         if (!this) state = false
                     }
                     Command.setOwnerAndSELinux(
-                        "user",
-                        packageName,
-                        "${Path.getUserPath(userId)}/${packageName}",
-                        userId
+                        "user", packageName, "${Path.getUserPath(userId)}/${packageName}", userId
                     )
                     dataBinding.processingUser.set(false)
                     initializeSizeAndSpeed()
@@ -144,20 +138,18 @@ class Restore {
                 if (dataBinding.isBackupData.get()) {
                     // 恢复Data
                     dataBinding.processingData.set(true)
+                    val inputPath = "${inPath}/data.tar.*"
                     Command.decompress(
-                        compressionType,
+                        Command.getCompressionTypeByPath(inputPath),
                         "data",
-                        "${inPath}/data.tar.*",
+                        inputPath,
                         packageName,
                         Path.getDataPath(userId)
                     ) { setSizeAndSpeed(it) }.apply {
                         if (!this) state = false
                     }
                     Command.setOwnerAndSELinux(
-                        "data",
-                        packageName,
-                        "${Path.getDataPath(userId)}/${packageName}",
-                        userId
+                        "data", packageName, "${Path.getDataPath(userId)}/${packageName}", userId
                     )
                     dataBinding.processingData.set(false)
                     initializeSizeAndSpeed()
@@ -165,28 +157,24 @@ class Restore {
                 if (dataBinding.isBackupObb.get()) {
                     // 恢复Obb
                     dataBinding.processingObb.set(true)
+                    val inputPath = "${inPath}/obb.tar.*"
                     Command.decompress(
-                        compressionType,
+                        Command.getCompressionTypeByPath(inputPath),
                         "obb",
-                        "${inPath}/obb.tar.*",
+                        inputPath,
                         packageName,
                         Path.getObbPath(userId)
                     ) { setSizeAndSpeed(it) }.apply {
                         if (!this) state = false
                     }
                     Command.setOwnerAndSELinux(
-                        "obb",
-                        packageName,
-                        "${Path.getObbPath(userId)}/${packageName}",
-                        userId
+                        "obb", packageName, "${Path.getObbPath(userId)}/${packageName}", userId
                     )
                     dataBinding.processingObb.set(false)
                     initializeSizeAndSpeed()
                 }
-                if (state)
-                    successNum += 1
-                else
-                    failedNum += 1
+                if (state) successNum += 1
+                else failedNum += 1
                 dataBinding.progress.set(index + 1)
             }
             dataBinding.totalTip.set(GlobalString.restoreFinished)
@@ -209,7 +197,6 @@ class Restore {
                 dataBinding.packageName.set(i.path)
                 dataBinding.isBackupData.set(i.data)
 
-                val compressionType = App.globalContext.readCompressionType()
                 val inPath = Path.getBackupMediaSavePath()
 
                 // 开始恢复
@@ -218,10 +205,11 @@ class Restore {
                     // 恢复Data
                     dataBinding.processingData.set(true)
                     // 恢复目录
+                    val inputPath = "${inPath}/${i.name}.tar.*"
                     Command.decompress(
-                        compressionType,
+                        Command.getCompressionTypeByPath(inputPath),
                         "media",
-                        "${inPath}/${i.name}.tar.*",
+                        inputPath,
                         "media",
                         i.path.replace("/${i.name}", "")
                     ) { setSizeAndSpeed(it) }.apply {
@@ -230,10 +218,8 @@ class Restore {
                     dataBinding.processingData.set(false)
                     initializeSizeAndSpeed()
                 }
-                if (state)
-                    successNum += 1
-                else
-                    failedNum += 1
+                if (state) successNum += 1
+                else failedNum += 1
                 dataBinding.progress.set(index + 1)
             }
             dataBinding.totalTip.set(GlobalString.restoreFinished)
