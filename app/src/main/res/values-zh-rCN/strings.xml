@@ -115,4 +115,6 @@
     <string name="log_title">帮助开发者定位问题，重启应用生效</string>
     <string name="clear">清除</string>
     <string name="stored_in">存放于</string>
+    <string name="dynamic_colors">动态取色</string>
+    <string name="dynamic_colors_title">更加 Material You, 重启应用生效</string>
 </resources>

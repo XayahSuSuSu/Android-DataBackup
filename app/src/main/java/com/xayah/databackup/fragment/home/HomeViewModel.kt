@@ -41,6 +41,7 @@ class HomeViewModel : ViewModel() {
     var downloadBtnVisible = ObservableBoolean(false)
     var logEnable = ObservableBoolean(false)
     var logText = ObservableField("")
+    var dynamicColorsEnable = ObservableBoolean(false)
 
     private fun checkRoot(): String {
         Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
@@ -171,6 +172,7 @@ class HomeViewModel : ViewModel() {
     fun initialize() {
         refresh()
         setLogCard()
+        setDynamicColorsCard()
     }
 
     private fun setLogCard() {
@@ -211,5 +213,14 @@ class HomeViewModel : ViewModel() {
             Command.mkdir(Path.getShellLogPath())
             Command.saveShellLog("${Path.getShellLogPath()}/${date}")
         }
+    }
+
+    private fun setDynamicColorsCard() {
+        dynamicColorsEnable.set(App.globalContext.readIsDynamicColors())
+    }
+
+    fun onDynamicColorsEnableCheckedChanged(v: View, checked: Boolean) {
+        dynamicColorsEnable.set(checked)
+        App.globalContext.saveIsDynamicColors(dynamicColorsEnable.get())
     }
 }

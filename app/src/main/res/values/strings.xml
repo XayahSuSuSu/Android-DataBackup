@@ -129,4 +129,6 @@
     <string name="log_title">Help the developer locate the problem. Restart to take effect</string>
     <string name="clear">Clear</string>
     <string name="stored_in">Stored in</string>
+    <string name="dynamic_colors">Dynamic colors</string>
+    <string name="dynamic_colors_title">Better Material You. Restart to take effect</string>
 </resources>

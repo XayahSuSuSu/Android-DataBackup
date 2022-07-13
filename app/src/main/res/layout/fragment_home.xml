@@ -348,7 +348,6 @@
                             android:orientation="horizontal">
 
                             <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:id="@+id/switch_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:checked="@{viewModel.logEnable}"
@@ -386,6 +385,52 @@
                             android:onClick="@{(v)->viewModel.onLogClearClick(v)}"
                             android:text="@string/clear"
                             android:visibility="@{viewModel.logEnable ? View.VISIBLE : View.GONE}" />
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Material3.CardView.Filled"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    app:cardCornerRadius="24dp"
+                    app:contentPadding="16dp"
+                    app:contentPaddingTop="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="@{viewModel.dynamicColorsEnable}"
+                                android:onCheckedChanged="@{(v, checked)->viewModel.onDynamicColorsEnableCheckedChanged(v, checked)}" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="@string/dynamic_colors"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+                        </LinearLayout>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dynamic_colors_title"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
