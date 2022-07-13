@@ -45,6 +45,14 @@ class Restore(private val mAdapter: MultiTypeAdapter) {
                         dataNumFull = !dataNumFull
                         for (i in mAppInfoRestoreList) i.infoBase.data = dataNumFull
                         mAdapter.notifyDataSetChanged()
+                    }, onSearchViewQueryTextChange = { newText ->
+                        adapterList.clear()
+                        adapterList.add(0, "Header")
+                        adapterList.addAll(mAppInfoRestoreList.filter {
+                            it.infoBase.appName.lowercase().contains(newText.toString().lowercase())
+                        })
+                        items = adapterList
+                        mAdapter.notifyDataSetChanged()
                     })
                 )
                 register(AppListAdapterRestore(mAppInfoRestoreList))

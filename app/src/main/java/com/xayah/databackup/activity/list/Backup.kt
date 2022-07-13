@@ -46,6 +46,14 @@ class Backup(private val mAdapter: MultiTypeAdapter) {
                         dataNumFull = !dataNumFull
                         for (i in mAppInfoBackupList) i.infoBase.data = dataNumFull
                         mAdapter.notifyDataSetChanged()
+                    }, onSearchViewQueryTextChange = { newText ->
+                        adapterList.clear()
+                        adapterList.add(0, "Header")
+                        adapterList.addAll(mAppInfoBackupList.filter {
+                            it.infoBase.appName.lowercase().contains(newText.toString().lowercase())
+                        })
+                        items = adapterList
+                        mAdapter.notifyDataSetChanged()
                     })
                 )
                 register(AppListAdapterBackup())
