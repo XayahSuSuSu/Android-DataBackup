@@ -26,22 +26,6 @@
                 android:paddingHorizontal="30dp"
                 android:paddingBottom="30dp">
 
-                <com.xayah.databackup.view.card.StorageRadioCard
-                    android:id="@+id/storageRadioCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:text="@string/backup_whole_dir_for_safe"
-                    app:title="@string/backup_dir" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/user"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
-
                 <com.google.android.material.card.MaterialCardView
                     style="@style/Widget.Material3.CardView.Filled"
                     android:layout_width="match_parent"

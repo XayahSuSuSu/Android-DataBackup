@@ -10,7 +10,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentBackupBinding
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.util.setWithConfirm
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
@@ -41,14 +41,6 @@ class BackupFragment : Fragment() {
 
     private fun initialize() {
         CoroutineScope(Dispatchers.IO).launch {
-            App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
-            binding.storageRadioCard.apply {
-                setOnCheckedChangeListener { _, _ ->
-                    initialize()
-                }
-                setMaterialYouFileExplorer(materialYouFileExplorer)
-            }
-
             binding.materialButtonAddMedia.setOnClickListener {
                 materialYouFileExplorer.apply {
                     isFile = false

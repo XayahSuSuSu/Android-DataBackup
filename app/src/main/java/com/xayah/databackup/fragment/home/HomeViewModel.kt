@@ -1,11 +1,9 @@
 package com.xayah.databackup.fragment.home
 
-import android.os.Environment
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -28,12 +26,6 @@ class HomeViewModel : ViewModel() {
     var rootCheck = ObservableField(checkRoot())
     var binCheck = ObservableField(checkBin())
     var bashrcCheck = ObservableField(checkBashrc())
-    var internalStorageString = ObservableField("")
-    var internalStorageMaxValue = 100
-    var internalStorageValue = ObservableInt(0)
-    var otgString = ObservableField(GlobalString.notPluggedIn)
-    var otgMaxValue = 100
-    var otgValue = ObservableInt(0)
     var architectureCurrent = ObservableField("")
     var architectureSupport = ObservableField("${GlobalString.support}: arm64-v8a, x86_64")
     var versionCurrent = ObservableField(App.versionName)
@@ -61,50 +53,6 @@ class HomeViewModel : ViewModel() {
 
     private fun checkBashrc(): String {
         return if (Command.checkBashrc()) GlobalString.symbolTick else GlobalString.symbolCross
-    }
-
-    private fun setInternalStorage() {
-        // 默认值
-        internalStorageString.set(GlobalString.fetching)
-        internalStorageValue.set(0)
-
-        val space = Bashrc.getStorageSpace(Environment.getExternalStorageDirectory().path)
-        val string = if (space.first) space.second else GlobalString.error
-        internalStorageString.set(string)
-        if (space.first) {
-            try {
-                internalStorageValue.set(string.split(" ").last().replace("%", "").toInt())
-            } catch (e: NumberFormatException) {
-                e.printStackTrace()
-                internalStorageString.set(GlobalString.fetchFailed)
-            }
-        } else {
-            internalStorageString.set(GlobalString.fetchFailed)
-        }
-    }
-
-    private fun setOTG() {
-        // 默认值
-        otgString.set(GlobalString.notPluggedIn)
-        otgValue.set(0)
-        // 检查OTG连接情况
-        Bashrc.checkOTG().apply {
-            val that = this
-            if (that.first == 0) {
-                val space = Bashrc.getStorageSpace(that.second)
-                val string = if (space.first) space.second else GlobalString.error
-                otgString.set(string)
-                if (space.first) {
-                    try {
-                        otgValue.set(string.split(" ").last().replace("%", "").toInt())
-                    } catch (e: NumberFormatException) {
-                        e.printStackTrace()
-                    }
-                }
-            } else if (that.first == 1) {
-                otgString.set(GlobalString.unsupportedFormat)
-            }
-        }
     }
 
     private fun setArchitecture() {
@@ -162,8 +110,6 @@ class HomeViewModel : ViewModel() {
             rootCheck.set(checkRoot())
             binCheck.set(checkBin())
             bashrcCheck.set(checkBashrc())
-            setInternalStorage()
-            setOTG()
             setArchitecture()
             setUpdate()
             updateLogCard()
@@ -172,7 +118,6 @@ class HomeViewModel : ViewModel() {
 
     fun initialize() {
         refresh()
-        App.globalContext.saveBackupSavePath(Path.getExternalStorageDataBackupDirectory()) // 恢复默认目录
         setLogCard()
         setDynamicColorsCard()
     }

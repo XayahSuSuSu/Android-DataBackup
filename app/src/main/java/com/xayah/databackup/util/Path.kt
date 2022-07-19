@@ -22,6 +22,10 @@ class Path {
             return "${getExternalStorageDirectory()}/DataBackup"
         }
 
+        fun getCustomDataBackupDirectory(): String {
+            return App.globalContext.readCustomBackupSavePath()
+        }
+
         fun getUserPath(): String {
             return "/data/user/${App.globalContext.readBackupUser()}"
         }

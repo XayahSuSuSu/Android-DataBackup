@@ -122,91 +122,13 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/storage_space"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
-
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.Material3.CardView.Outlined"
+                <com.xayah.databackup.view.card.StorageRadioCard
+                    android:id="@+id/storageRadioCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:cardCornerRadius="24dp"
-                    app:contentPadding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:baselineAligned="false"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:paddingHorizontal="8dp">
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/internal_storage"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                            <com.google.android.material.progressindicator.LinearProgressIndicator
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:max="@{viewModel.internalStorageMaxValue}"
-                                android:progress="@{viewModel.internalStorageValue}"
-                                app:trackCornerRadius="3dp" />
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="@{viewModel.internalStorageString}"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:paddingHorizontal="8dp">
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/otg"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                            <com.google.android.material.progressindicator.LinearProgressIndicator
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:max="@{viewModel.otgMaxValue}"
-                                android:progress="@{viewModel.otgValue}"
-                                app:trackCornerRadius="3dp" />
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="@{viewModel.otgString}"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
+                    android:layout_marginTop="16dp"
+                    app:text="@string/backup_whole_dir_for_safe"
+                    app:title="@string/backup_dir" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"

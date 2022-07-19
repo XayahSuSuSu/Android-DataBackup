@@ -19,6 +19,13 @@ fun Context.savePreferences(key: String, value: Boolean) {
     }
 }
 
+fun Context.savePreferences(key: String, value: Int) {
+    getSharedPreferences("settings", MODE_PRIVATE).edit().apply {
+        putInt(key, value)
+        apply()
+    }
+}
+
 fun Context.readPreferencesString(key: String): String? {
     getSharedPreferences("settings", MODE_PRIVATE).apply {
         return getString(key, null)
@@ -28,6 +35,12 @@ fun Context.readPreferencesString(key: String): String? {
 fun Context.readPreferencesBoolean(key: String, defValue: Boolean = false): Boolean {
     getSharedPreferences("settings", MODE_PRIVATE).apply {
         return getBoolean(key, defValue)
+    }
+}
+
+fun Context.readPreferencesInt(key: String, defValue: Int = 0): Int {
+    getSharedPreferences("settings", MODE_PRIVATE).apply {
+        return getInt(key, defValue)
     }
 }
 
@@ -128,6 +141,22 @@ fun Context.saveLogEnable(value: Boolean) {
 
 fun Context.readLogEnable(): Boolean {
     return readPreferencesBoolean("log_enable", false)
+}
+
+fun Context.saveCustomBackupSavePath(path: CharSequence?) {
+    savePreferences("custom_backup_save_path", path.toString().trim())
+}
+
+fun Context.readCustomBackupSavePath(): String {
+    return readPreferencesString("custom_backup_save_path") ?: GlobalString.defaultBackupSavePath
+}
+
+fun Context.saveBackupSaveIndex(value: Int) {
+    savePreferences("backup_save_index", value)
+}
+
+fun Context.readBackupSaveIndex(): Int {
+    return readPreferencesInt("backup_save_index", 0)
 }
 
 fun Context.getActivity(): Activity? {

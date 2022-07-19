@@ -11,10 +11,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.Path
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.util.setWithConfirm
-import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +24,6 @@ class RestoreFragment : Fragment() {
     private var _binding: FragmentRestoreBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: RestoreViewModel
-    private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
     private val mediaInfoList = App.globalMediaInfoRestoreList
 
     override fun onCreateView(
@@ -41,15 +41,6 @@ class RestoreFragment : Fragment() {
 
     private fun initialize() {
         CoroutineScope(Dispatchers.IO).launch {
-            App.globalContext.saveBackupSavePath(binding.storageRadioCard.getPathByIndex(binding.storageRadioCard.radioGroupCheckedIndex))
-            binding.storageRadioCard.apply {
-                setOnCheckedChangeListener { _, _ ->
-                    initialize()
-                }
-                setMaterialYouFileExplorer(materialYouFileExplorer)
-            }
-
-
             viewModel.initialize { setChipGroup() }
         }
     }
@@ -103,14 +94,6 @@ class RestoreFragment : Fragment() {
             }
         }
         binding.chipGroup.addView(chip)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val that = this
-        materialYouFileExplorer = MaterialYouFileExplorer().apply {
-            initialize(that)
-        }
     }
 
     override fun onResume() {
