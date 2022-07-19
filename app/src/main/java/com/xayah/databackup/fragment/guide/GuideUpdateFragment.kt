@@ -9,41 +9,35 @@ import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.guide.GuideActivity
-import com.xayah.databackup.databinding.FragmentGuideOneBinding
+import com.xayah.databackup.databinding.FragmentGuideUpdateBinding
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.readInitializedVersionName
+import com.xayah.databackup.util.saveInitializedVersionName
 
 
-class GuideOneFragment : Fragment() {
-    private var _binding: FragmentGuideOneBinding? = null
+class GuideUpdateFragment : Fragment() {
+    private var _binding: FragmentGuideUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var hostActivity: GuideActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentGuideOneBinding.inflate(inflater, container, false)
+        _binding = FragmentGuideUpdateBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = ViewModelProvider(this)[GuideOneViewModel::class.java]
+        val viewModel = ViewModelProvider(this)[GuideUpdateViewModel::class.java]
         binding.viewModel = viewModel
 
         hostActivity = requireActivity() as GuideActivity
-        if (hostActivity.readInitializedVersionName().isNotEmpty()) {
-            if (hostActivity.readInitializedVersionName() == App.versionName) {
-                App.initializeGlobalList()
-                hostActivity.toMainActivity()
-            } else {
-                hostActivity.navigate(R.id.action_guideOneFragment_to_guideUpdateFragment)
-                hostActivity.setBtnText(GlobalString.finish)
-            }
-        }
         hostActivity.setBtnOnClickListener {
             nextStep()
         }
+
+        viewModel.initialize()
     }
 
     override fun onDestroyView() {
@@ -52,6 +46,13 @@ class GuideOneFragment : Fragment() {
     }
 
     private fun nextStep() {
-        hostActivity.navigate(R.id.action_guideOneFragment_to_guideUpdateFragment)
+        if (hostActivity.readInitializedVersionName().isNotEmpty()) {
+            hostActivity.saveInitializedVersionName(App.versionName)
+            App.initializeGlobalList()
+            hostActivity.toMainActivity()
+        } else {
+            hostActivity.navigate(R.id.action_guideUpdateFragment_to_guideTwoFragment)
+            hostActivity.setBtnText(GlobalString.grantRootAccess)
+        }
     }
 }

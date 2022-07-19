@@ -118,4 +118,5 @@
     <string name="dynamic_colors">動態取色</string>
     <string name="dynamic_colors_title">更加 Material You, 重啟應用生效</string>
     <string name="tmp">臨時</string>
+    <string name="current_update">當前更新</string>
 </resources>

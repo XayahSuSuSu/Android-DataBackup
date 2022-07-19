@@ -132,4 +132,5 @@
     <string name="dynamic_colors">Dynamic colors</string>
     <string name="dynamic_colors_title">Better Material You. Restart to take effect</string>
     <string name="tmp">Tmp</string>
+    <string name="current_update">Current update</string>
 </resources>

@@ -5,19 +5,12 @@ import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonParser
 import com.xayah.databackup.App
-import com.xayah.databackup.data.Release
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.io.IOException
 
 class HomeViewModel : ViewModel() {
     val root = "${GlobalString.symbolDot} Root"
@@ -64,44 +57,17 @@ class HomeViewModel : ViewModel() {
         versionLatest.set(GlobalString.fetching)
         downloadBtnVisible.set(false)
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val client = OkHttpClient()
-                val request: Request = Request.Builder()
-                    .url("https://api.github.com/repos/XayahSuSuSu/Android-DataBackup/releases")
-                    .build()
-                client.newCall(request).execute().use { response ->
-                    response.body?.apply {
-                        // 解析response.body
-                        var jsonArray = JsonArray()
-                        try {
-                            jsonArray = JsonParser.parseString(this.string()).asJsonArray
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                        val mBodyList = mutableListOf<Release>()
-                        for (i in jsonArray) {
-                            try {
-                                val item = Gson().fromJson(i, Release::class.java)
-                                if (item.name.contains("Check")) continue
-                                mBodyList.add(item)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }
-                        if (mBodyList.isEmpty()) {
-                            versionLatest.set(GlobalString.fetchFailed)
-                        } else {
-                            versionLatest.set("${GlobalString.latest}: ${mBodyList[0].name}")
-                            if (!versionLatest.get()!!.contains(versionCurrent.get()!!)) {
-                                downloadBtnVisible.set(true)
-                            }
-                        }
+            Server.releases({ releaseList ->
+                val mReleaseList = releaseList.filter { !it.name.contains("Check") }
+                if (mReleaseList.isEmpty()) {
+                    versionLatest.set(GlobalString.fetchFailed)
+                } else {
+                    versionLatest.set("${GlobalString.latest}: ${mReleaseList[0].name}")
+                    if (!versionLatest.get()!!.contains(versionCurrent.get()!!)) {
+                        downloadBtnVisible.set(true)
                     }
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                versionLatest.set(GlobalString.fetchFailed)
-            }
+            }, { versionLatest.set(GlobalString.fetchFailed) })
         }
     }
 
@@ -147,9 +113,7 @@ class HomeViewModel : ViewModel() {
             Command.rm(Path.getShellLogPath())
             withContext(Dispatchers.Main) {
                 Toast.makeText(
-                    context,
-                    GlobalString.success,
-                    Toast.LENGTH_SHORT
+                    context, GlobalString.success, Toast.LENGTH_SHORT
                 ).show()
                 refresh()
             }

@@ -8,8 +8,8 @@
         android:name="com.xayah.databackup.fragment.guide.GuideOneFragment"
         android:label="GuideOneFragment">
         <action
-            android:id="@+id/action_guideOneFragment_to_guideTwoFragment"
-            app:destination="@id/guideTwoFragment"
+            android:id="@+id/action_guideOneFragment_to_guideUpdateFragment"
+            app:destination="@id/guideUpdateFragment"
             app:enterAnim="@animator/nav_default_enter_anim"
             app:exitAnim="@animator/nav_default_exit_anim"
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
@@ -19,4 +19,16 @@
         android:id="@+id/guideTwoFragment"
         android:name="com.xayah.databackup.fragment.guide.GuideTwoFragment"
         android:label="GuideTwoFragment" />
+    <fragment
+        android:id="@+id/guideUpdateFragment"
+        android:name="com.xayah.databackup.fragment.guide.GuideUpdateFragment"
+        android:label="GuideUpdateFragment">
+        <action
+            android:id="@+id/action_guideUpdateFragment_to_guideTwoFragment"
+            app:destination="@id/guideTwoFragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+    </fragment>
 </navigation>
