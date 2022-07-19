@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DataBackup.SplashScreen"
+        android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
         <activity
             android:name=".activity.processing.ProcessingActivity"
@@ -27,7 +27,8 @@
             android:exported="false" />
         <activity
             android:name=".activity.guide.GuideActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.DataBackup.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,8 +37,7 @@
         </activity>
         <activity
             android:name=".activity.main.MainActivity"
-            android:exported="false"
-            android:theme="@style/Theme.DataBackup" />
+            android:exported="false" />
     </application>
 
 </manifest>
