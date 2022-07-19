@@ -81,4 +81,7 @@ dependencies {
 
     // gson
     implementation 'com.google.code.gson:gson:2.9.0'
+
+    // splashscreen
+    implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
 }
