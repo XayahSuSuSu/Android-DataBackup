@@ -16,4 +16,9 @@
         <item name="track">@drawable/switch_track</item>
         <item name="trackTint">@color/switch_track_color</item>
     </style>
+
+    <style name="Theme.DataBackup.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.DataBackup</item>
+    </style>
 </resources>

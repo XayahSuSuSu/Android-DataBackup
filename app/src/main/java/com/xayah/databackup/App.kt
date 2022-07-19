@@ -14,9 +14,6 @@ import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.readIsDynamicColors
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.text.Collator
 import java.util.*
