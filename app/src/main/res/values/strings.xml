@@ -72,7 +72,7 @@
     <string name="finish">Finish</string>
     <string name="welcome_to_use">Welcome to use</string>
     <string name="guide_one_subtitle">Before using this app, you need to read the following carefully</string>
-    <string name="guide_one_content">● This update reconstructs the backup directory structure, which is not compatible with the backup data of the old version. Please clear the application data or uninstall and install it again before using it.\n● Thank you for your continued support and understanding :)\n● Data is priceless, please use this app with caution\n● Try to use the same backup version to backup/restore data\n● This app is still in beta, and there may be discrepancies Stability\n● If there is a problem, please give feedback in time</string>
+    <string name="guide_one_content">● Thank you for your continued support and understanding :)\n● Data is priceless, please use this app with caution\n● Try to use the same backup version to backup/restore data\n● This app is still in beta, and there may be discrepancies Stability\n● If there is a problem, please give feedback in time</string>
     <string name="guide_two_subtitle">To use this app correctly, you need to pass the following tests</string>
     <string name="symbol_dot" translatable="false">●</string>
     <string name="next_step">Next step</string>

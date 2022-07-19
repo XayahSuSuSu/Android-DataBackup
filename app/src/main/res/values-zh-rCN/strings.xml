@@ -65,7 +65,7 @@
     <string name="finish">完成</string>
     <string name="welcome_to_use">欢迎使用</string>
     <string name="guide_one_subtitle">在使用本应用之前, 你需要仔细阅读以下内容</string>
-    <string name="guide_one_content">● 本次更新重构了备份目录结构, 不兼容旧版本的备份数据, 请清除本应用数据或重新卸载安装后再使用\n● 感谢你一直以来的支持与理解:)\n● 数据无价, 请谨慎使用本应用\n● 尽量使用备份时版本恢复数据\n● 本应用尚处于测试阶段(Beta), 可能会存在不稳定性\n● 出现问题请及时反馈</string>
+    <string name="guide_one_content">● 感谢一直以来的支持与理解:)\n● 数据无价, 请谨慎使用本应用\n● 尽量使用备份时版本恢复数据\n● 本应用尚处于测试阶段(Beta), 可能会存在不稳定性\n● 出现问题请及时反馈</string>
     <string name="guide_two_subtitle">要正确使用本应用, 需要通过如下检测</string>
     <string name="next_step">下一步</string>
     <string name="refresh">刷新</string>
