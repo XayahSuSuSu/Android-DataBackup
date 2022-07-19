@@ -6,9 +6,20 @@ import android.content.Context
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.xayah.crash.CrashHandler
+import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.data.BackupInfo
+import com.xayah.databackup.data.MediaInfo
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.readIsDynamicColors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.InputStream
+import java.text.Collator
+import java.util.*
 
 class App : Application() {
     companion object {
@@ -25,6 +36,63 @@ class App : Application() {
         @SuppressLint("StaticFieldLeak")
         lateinit var globalContext: Context
         lateinit var versionName: String
+        lateinit var globalAppInfoBackupList: MutableList<AppInfoBackup>
+        lateinit var globalAppInfoRestoreList: MutableList<AppInfoRestore>
+        lateinit var globalMediaInfoBackupList: MutableList<MediaInfo>
+        lateinit var globalMediaInfoRestoreList: MutableList<MediaInfo>
+        lateinit var globalBackupInfoList: MutableList<BackupInfo>
+
+        fun saveGlobalList() {
+            // 保存AppInfoBackupList
+            JSON.writeJSONToFile(
+                JSON.entityArrayToJsonArray(globalAppInfoBackupList as MutableList<Any>),
+                Path.getAppInfoBackupListPath()
+            )
+            // 保存AppInfoRestoreList
+            JSON.writeJSONToFile(
+                JSON.entityArrayToJsonArray(globalAppInfoRestoreList as MutableList<Any>),
+                Path.getAppInfoRestoreListPath()
+            )
+            // 保存MediaInfoBackupList
+            JSON.writeJSONToFile(
+                JSON.entityArrayToJsonArray(globalMediaInfoBackupList as MutableList<Any>),
+                Path.getMediaInfoBackupListPath()
+            )
+            // 保存MediaInfoRestoreList
+            JSON.writeJSONToFile(
+                JSON.entityArrayToJsonArray(globalMediaInfoRestoreList as MutableList<Any>),
+                Path.getMediaInfoRestoreListPath()
+            )
+        }
+
+        fun initializeGlobalList() {
+            // 读取AppInfoBackupList (按照字母表排序)
+            globalAppInfoBackupList = Command.getAppInfoBackupList(globalContext).apply {
+                sortWith { appInfo1, appInfo2 ->
+                    val collator = Collator.getInstance(Locale.CHINA)
+                    collator.getCollationKey((appInfo1 as AppInfoBackup).infoBase.appName)
+                        .compareTo(collator.getCollationKey((appInfo2 as AppInfoBackup).infoBase.appName))
+                }
+            }
+
+            // 读取AppInfoRestoreList (按照字母表排序)
+            globalAppInfoRestoreList = Command.getCachedAppInfoRestoreList().apply {
+                sortWith { appInfo1, appInfo2 ->
+                    val collator = Collator.getInstance(Locale.CHINA)
+                    collator.getCollationKey((appInfo1 as AppInfoRestore).infoBase.appName)
+                        .compareTo(collator.getCollationKey((appInfo2 as AppInfoRestore).infoBase.appName))
+                }
+            }
+
+            // 读取MediaInfoBackupList
+            globalMediaInfoBackupList = Command.getCachedMediaInfoBackupList()
+
+            // 读取MediaInfoRestoreList
+            globalMediaInfoRestoreList = Command.getCachedMediaInfoRestoreList()
+
+            // 读取BackupInfoList
+            globalBackupInfoList = Command.getCachedBackupInfoList()
+        }
     }
 
     class EnvInitializer : Shell.Initializer() {

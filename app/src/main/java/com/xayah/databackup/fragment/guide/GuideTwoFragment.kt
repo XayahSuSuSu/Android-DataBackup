@@ -129,6 +129,7 @@ class GuideTwoFragment : Fragment() {
 
     private fun finish() {
         hostActivity.saveInitializedVersionName(versionName)
+        App.initializeGlobalList()
         hostActivity.toMainActivity()
     }
 }

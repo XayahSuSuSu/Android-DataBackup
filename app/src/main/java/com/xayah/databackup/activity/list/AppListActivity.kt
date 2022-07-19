@@ -5,9 +5,13 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import com.xayah.databackup.App
 import com.xayah.databackup.databinding.ActivityAppListBinding
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.notifyDataSetChanged
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AppListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAppListBinding
@@ -36,6 +40,8 @@ class AppListActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.saveAppList()
+        CoroutineScope(Dispatchers.IO).launch {
+            App.saveGlobalList()
+        }
     }
 }

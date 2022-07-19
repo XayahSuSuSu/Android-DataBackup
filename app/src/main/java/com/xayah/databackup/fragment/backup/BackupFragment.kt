@@ -24,7 +24,7 @@ class BackupFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: BackupViewModel
     private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
-    private var mediaInfoList: MutableList<MediaInfo> = mutableListOf()
+    private val mediaInfoList = App.globalMediaInfoBackupList
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -56,7 +56,6 @@ class BackupFragment : Fragment() {
                         val mediaInfo = MediaInfo(path.split("/").last(), path, true, "")
                         mediaInfoList.add(mediaInfo)
                         addChip(mediaInfo, mediaInfoList)
-                        saveMediaList(mediaInfoList)
                     }
                 }
             }
@@ -68,7 +67,6 @@ class BackupFragment : Fragment() {
     private fun setChipGroup() {
         CoroutineScope(Dispatchers.Main).launch {
             binding.chipGroup.removeAllViews()
-            mediaInfoList = Command.getCachedMediaInfoBackupList()
             for (i in mediaInfoList) {
                 addChip(i, mediaInfoList)
             }
@@ -81,26 +79,17 @@ class BackupFragment : Fragment() {
             isChecked = mediaInfo.data
             setOnCheckedChangeListener { _, isChecked ->
                 mediaInfo.data = isChecked
-                saveMediaList(mediaInfoList)
             }
             setOnCloseIconClickListener {
                 MaterialAlertDialogBuilder(requireContext()).apply {
                     setWithConfirm("${GlobalString.confirmRemove}${GlobalString.symbolQuestion}") {
                         mediaInfoList.remove(mediaInfo)
                         binding.chipGroup.removeView(it)
-                        saveMediaList(mediaInfoList)
                     }
                 }
             }
         }
         binding.chipGroup.addView(chip)
-    }
-
-    private fun saveMediaList(mediaInfoList: MutableList<MediaInfo>) {
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mediaInfoList as MutableList<Any>),
-            Path.getMediaInfoBackupListPath()
-        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

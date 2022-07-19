@@ -20,11 +20,4 @@ class AppListViewModel : ViewModel() {
                 initialize(onInitialized)
             }
     }
-
-    fun saveAppList() {
-        if (isRestore)
-            restore.saveAppList()
-        else
-            backup.saveAppList()
-    }
 }

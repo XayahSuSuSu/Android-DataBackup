@@ -2,8 +2,6 @@ package com.xayah.databackup.activity.processing
 
 import android.view.View
 import com.xayah.databackup.App
-import com.xayah.databackup.data.AppInfoRestore
-import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,8 +9,9 @@ import kotlinx.coroutines.launch
 
 class Restore {
     lateinit var dataBinding: DataBinding
-    var mAppInfoRestoreList: MutableList<AppInfoRestore> = mutableListOf()
-    var mMediaInfoRestoreList: MutableList<MediaInfo> = mutableListOf()
+    private val mAppInfoRestoreList =
+        App.globalAppInfoRestoreList.filter { it.infoBase.app || it.infoBase.data }
+    private val mMediaInfoRestoreList = App.globalMediaInfoRestoreList.filter { it.data }
     var isMedia = false
     var successNum = 0
     var failedNum = 0
@@ -32,7 +31,6 @@ class Restore {
     }
 
     private fun initializeApp() {
-        mAppInfoRestoreList = Command.getCachedAppInfoRestoreList(true)
         dataBinding.progressMax.set(mAppInfoRestoreList.size)
         dataBinding.totalTip.set(GlobalString.ready)
         Command.getCachedAppInfoRestoreListNum().apply {
@@ -41,7 +39,6 @@ class Restore {
     }
 
     private fun initializeMedia() {
-        mMediaInfoRestoreList = Command.getCachedMediaInfoRestoreList(true)
         dataBinding.progressMax.set(mMediaInfoRestoreList.size)
         dataBinding.totalTip.set(GlobalString.ready)
         dataBinding.totalProgress.set("${GlobalString.selected} ${mMediaInfoRestoreList.size} ${GlobalString.data}")

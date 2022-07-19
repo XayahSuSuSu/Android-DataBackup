@@ -5,20 +5,16 @@ import com.drakeet.multitype.MultiTypeAdapter
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.AppListAdapterBackup
 import com.xayah.databackup.adapter.AppListHeaderAdapterBase
-import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
-import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.Collator
-import java.util.*
 
 class Backup(private val mAdapter: MultiTypeAdapter) {
-    var mAppInfoBackupList: MutableList<AppInfoBackup> = mutableListOf()
+    private val mAppInfoBackupList = App.globalAppInfoBackupList
     var appNumFull = true
     var dataNumFull = true
 
@@ -27,14 +23,6 @@ class Backup(private val mAdapter: MultiTypeAdapter) {
         CoroutineScope(Dispatchers.IO).launch {
             mAdapter.apply {
                 val adapterList = mutableListOf<Any>()
-                // 按照字母表排序
-                mAppInfoBackupList = Command.getAppInfoBackupList(App.globalContext).apply {
-                    sortWith { appInfo1, appInfo2 ->
-                        val collator = Collator.getInstance(Locale.CHINA)
-                        collator.getCollationKey((appInfo1 as AppInfoBackup).infoBase.appName)
-                            .compareTo(collator.getCollationKey((appInfo2 as AppInfoBackup).infoBase.appName))
-                    }
-                }
                 register(
                     AppListHeaderAdapterBase(onInitialize = {
                         updateChip(it)
@@ -79,12 +67,5 @@ class Backup(private val mAdapter: MultiTypeAdapter) {
         dataNumFull = dataNum == size
         binding.chipApp.isChecked = appNumFull
         binding.chipData.isChecked = dataNumFull
-    }
-
-    fun saveAppList() {
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mAppInfoBackupList as MutableList<Any>),
-            Path.getAppInfoBackupListPath()
-        )
     }
 }

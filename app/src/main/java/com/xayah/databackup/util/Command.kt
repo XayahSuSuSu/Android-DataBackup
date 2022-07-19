@@ -331,44 +331,18 @@ class Command {
 
         fun getCachedAppInfoBackupListNum(): AppInfoBaseNum {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
-            cat(Path.getAppInfoBackupListPath()).apply {
-                if (this.first) {
-                    try {
-                        val jsonArray = JSON.stringToJsonArray(this.second)
-                        for (i in jsonArray) {
-                            (JSON.jsonElementToEntity(
-                                i, AppInfoBackup::class.java
-                            ) as AppInfoBackup).apply {
-                                if (this.infoBase.app) appInfoBaseNum.appNum++
-                                if (this.infoBase.data) appInfoBaseNum.dataNum++
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
+            for (i in App.globalAppInfoBackupList) {
+                if (i.infoBase.app) appInfoBaseNum.appNum++
+                if (i.infoBase.data) appInfoBaseNum.dataNum++
             }
             return appInfoBaseNum
         }
 
         fun getCachedAppInfoRestoreListNum(): AppInfoBaseNum {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
-            cat(Path.getAppInfoRestoreListPath()).apply {
-                if (this.first) {
-                    try {
-                        val jsonArray = JSON.stringToJsonArray(this.second)
-                        for (i in jsonArray) {
-                            (JSON.jsonElementToEntity(
-                                i, AppInfoRestore::class.java
-                            ) as AppInfoRestore).apply {
-                                if (this.infoBase.app) appInfoBaseNum.appNum++
-                                if (this.infoBase.data) appInfoBaseNum.dataNum++
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
+            for (i in App.globalAppInfoRestoreList) {
+                if (i.infoBase.app) appInfoBaseNum.appNum++
+                if (i.infoBase.data) appInfoBaseNum.dataNum++
             }
             return appInfoBaseNum
         }

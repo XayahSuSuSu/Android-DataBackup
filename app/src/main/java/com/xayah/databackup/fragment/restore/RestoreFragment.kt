@@ -24,7 +24,7 @@ class RestoreFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: RestoreViewModel
     private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
-    private var mediaInfoList: MutableList<MediaInfo> = mutableListOf()
+    private val mediaInfoList = App.globalMediaInfoRestoreList
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -57,7 +57,6 @@ class RestoreFragment : Fragment() {
     private fun setChipGroup() {
         CoroutineScope(Dispatchers.Main).launch {
             binding.chipGroup.removeAllViews()
-            mediaInfoList = Command.getCachedMediaInfoRestoreList()
             for (i in mediaInfoList) {
                 addChip(i, mediaInfoList)
             }
@@ -70,7 +69,6 @@ class RestoreFragment : Fragment() {
             isChecked = mediaInfo.data
             setOnCheckedChangeListener { _, isChecked ->
                 mediaInfo.data = isChecked
-                saveMediaList(mediaInfoList, Path.getMediaInfoRestoreListPath())
             }
             setOnCloseIconClickListener {
                 MaterialAlertDialogBuilder(requireContext()).apply {
@@ -83,8 +81,7 @@ class RestoreFragment : Fragment() {
                                 if (this) {
                                     mediaInfoList.remove(mediaInfo)
                                     binding.chipGroup.removeView(it)
-                                    saveMediaList(mediaInfoList, Path.getMediaInfoRestoreListPath())
-                                    val mediaInfoBackupList = Command.getCachedMediaInfoBackupList()
+                                    val mediaInfoBackupList = App.globalMediaInfoBackupList
                                     for (i in mediaInfoBackupList) {
                                         if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
                                             // 清除媒体备份大小信息
@@ -92,10 +89,6 @@ class RestoreFragment : Fragment() {
                                             break
                                         }
                                     }
-                                    saveMediaList(
-                                        mediaInfoBackupList,
-                                        Path.getMediaInfoBackupListPath()
-                                    )
                                 } else {
                                     Toast.makeText(
                                         requireContext(),
@@ -110,13 +103,6 @@ class RestoreFragment : Fragment() {
             }
         }
         binding.chipGroup.addView(chip)
-    }
-
-    private fun saveMediaList(mediaInfoList: MutableList<MediaInfo>, savePath: String) {
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mediaInfoList as MutableList<Any>),
-            savePath
-        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -13,11 +13,12 @@ import kotlinx.coroutines.launch
 
 class Backup {
     lateinit var dataBinding: DataBinding
-    var mAppInfoBackupList: MutableList<AppInfoBackup> = mutableListOf()
-    var mAppInfoRestoreList: MutableList<AppInfoRestore> = mutableListOf()
-    var mMediaInfoBackupList: MutableList<MediaInfo> = mutableListOf()
-    var mMediaInfoRestoreList: MutableList<MediaInfo> = mutableListOf()
-    var mBackupInfoList: MutableList<BackupInfo> = mutableListOf()
+    private val mAppInfoBackupList =
+        App.globalAppInfoBackupList.filter { it.infoBase.app || it.infoBase.data }
+    private val mAppInfoRestoreList = App.globalAppInfoRestoreList
+    private val mMediaInfoBackupList = App.globalMediaInfoBackupList.filter { it.data }
+    private val mMediaInfoRestoreList = App.globalMediaInfoRestoreList
+    private val mBackupInfoList = App.globalBackupInfoList
     var isMedia = false
     var successNum = 0
     var failedNum = 0
@@ -32,14 +33,11 @@ class Backup {
         }
         isMedia = mIsMedia
 
-        mBackupInfoList = Command.getCachedBackupInfoList()
         if (isMedia) initializeMedia()
         else initializeApp()
     }
 
     private fun initializeApp() {
-        mAppInfoBackupList = Command.getCachedAppInfoBackupList(App.globalContext, true)
-        mAppInfoRestoreList = Command.getCachedAppInfoRestoreList()
         dataBinding.progressMax.set(mAppInfoBackupList.size)
         dataBinding.totalTip.set(GlobalString.ready)
         Command.getCachedAppInfoBackupListNum().apply {
@@ -48,8 +46,6 @@ class Backup {
     }
 
     private fun initializeMedia() {
-        mMediaInfoBackupList = Command.getCachedMediaInfoBackupList(true)
-        mMediaInfoRestoreList = Command.getCachedMediaInfoRestoreList()
         dataBinding.progressMax.set(mMediaInfoBackupList.size)
         dataBinding.totalTip.set(GlobalString.ready)
         dataBinding.totalProgress.set("${GlobalString.selected} ${mMediaInfoBackupList.size} ${GlobalString.data}")
@@ -289,14 +285,13 @@ class Backup {
     }
 
     private fun saveAppInfoBackupList() {
-        val appInfoBackupList = Command.getCachedAppInfoBackupList(App.globalContext, false)
         for (i in mAppInfoBackupList) {
-            Command.addOrUpdateList(i, appInfoBackupList as MutableList<Any>) {
+            Command.addOrUpdateList(i, App.globalAppInfoBackupList as MutableList<Any>) {
                 (it as AppInfoBackup).infoBase.packageName == i.infoBase.packageName
             }
         }
         JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(appInfoBackupList as MutableList<Any>),
+            JSON.entityArrayToJsonArray(App.globalAppInfoBackupList as MutableList<Any>),
             Path.getAppInfoBackupListPath()
         )
     }
@@ -309,14 +304,13 @@ class Backup {
     }
 
     private fun saveMediaInfoBackupList() {
-        val mediaInfoBackupList = Command.getCachedMediaInfoBackupList(false)
         for (i in mMediaInfoBackupList) {
-            Command.addOrUpdateList(i, mediaInfoBackupList as MutableList<Any>) {
+            Command.addOrUpdateList(i, App.globalMediaInfoBackupList as MutableList<Any>) {
                 (it as MediaInfo).path == i.path
             }
         }
         JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mediaInfoBackupList as MutableList<Any>),
+            JSON.entityArrayToJsonArray(App.globalMediaInfoBackupList as MutableList<Any>),
             Path.getMediaInfoBackupListPath()
         )
     }

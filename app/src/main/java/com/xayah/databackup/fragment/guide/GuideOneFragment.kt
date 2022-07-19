@@ -33,12 +33,12 @@ class GuideOneFragment : Fragment() {
 
         hostActivity = requireActivity() as GuideActivity
         if (hostActivity.readInitializedVersionName() == App.versionName) {
+            App.initializeGlobalList()
             hostActivity.toMainActivity()
         }
 
         hostActivity.setBtnOnClickListener {
             nextStep()
-
         }
     }
 
