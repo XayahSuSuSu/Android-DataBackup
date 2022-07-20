@@ -3,6 +3,7 @@ package com.xayah.databackup.util
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
+import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.App
@@ -18,40 +19,40 @@ import java.util.*
 class Command {
     companion object {
         fun cat(path: String): Pair<Boolean, String> {
-            val exec = Shell.cmd("cat $path").exec()
+            val exec = execute("cat $path")
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
         fun ls(path: String): Boolean {
-            Shell.cmd("ls -i $path").exec().apply {
+            execute("ls -i $path").apply {
                 return this.isSuccess
             }
         }
 
         fun countFile(path: String): Int {
-            Shell.cmd("ls -i $path").exec().apply {
+            execute("ls -i $path").apply {
                 return this.out.size
             }
         }
 
         fun rm(path: String): Boolean {
-            Shell.cmd("rm -rf $path").exec().apply {
+            execute("rm -rf $path").apply {
                 return this.isSuccess
             }
         }
 
         fun mkdir(path: String): Boolean {
-            Shell.cmd("mkdir -p $path").exec().apply {
+            execute("mkdir -p $path").apply {
                 return this.isSuccess
             }
         }
 
         fun unzip(filePath: String, outPath: String) {
-            if (mkdir(outPath)) Shell.cmd("unzip $filePath -d $outPath").exec()
+            if (mkdir(outPath)) execute("unzip $filePath -d $outPath")
         }
 
         private fun cp(src: String, dst: String): Boolean {
-            return Shell.cmd("cp $src $dst").exec().isSuccess
+            return execute("cp $src $dst").isSuccess
         }
 
         fun unzipByZip4j(filePath: String, outPath: String) {
@@ -212,7 +213,7 @@ class Command {
                     }
                 }
             }
-            Shell.cmd("ls ${Path.getBackupDataSavePath()}").exec().apply {
+            execute("ls ${Path.getBackupDataSavePath()}").apply {
                 if (isSuccess) {
                     for (i in out) {
                         val tmp = cachedAppInfoRestoreList.find { it.infoBase.packageName == i }
@@ -568,11 +569,11 @@ class Command {
         }
 
         fun checkRoot(): Boolean {
-            return Shell.cmd("ls /").exec().isSuccess
+            return execute("ls /").isSuccess
         }
 
         fun checkBin(context: Context): Boolean {
-            Shell.cmd("ls -l ${Path.getFilesDir(context)}/bin").exec().out.apply {
+            execute("ls -l ${Path.getFilesDir(context)}/bin").out.apply {
                 val fileList = this.subList(1, this.size)
                 var count = 0
                 for (i in fileList) if (i.contains("-rwxrwxrwx")) count++
@@ -581,7 +582,7 @@ class Command {
         }
 
         fun checkBashrc(): Boolean {
-            return Shell.cmd("check_bashrc").exec().isSuccess
+            return execute("check_bashrc").isSuccess
         }
 
         fun getVersion(): String {
@@ -605,7 +606,7 @@ class Command {
         }
 
         fun saveShellLog(outPut: String) {
-            Shell.cmd("logcat | grep -E 'SHELL_IN|SHELLOUT' >> $outPut &").exec()
+            execute("logcat | grep -E 'SHELL_IN|SHELLOUT' >> $outPut &")
         }
 
         fun getCompressionTypeByPath(path: String): String {
@@ -622,6 +623,27 @@ class Command {
                     ""
                 }
             }
+        }
+
+        fun execute(cmd: String, callback: ((line: String) -> Unit)? = null): Shell.Result {
+            App.logcat.add("Shell_In: $cmd")
+            val shell = Shell.cmd(cmd)
+            callback?.apply {
+                val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
+                    override fun onAddElement(line: String?) {
+                        line?.apply {
+                            App.logcat.add("Shell_Out: $line")
+                            callback(line)
+                        }
+                    }
+                }
+                shell.to(callbackList)
+            }
+            val result = shell.exec()
+            result.apply {
+                for (i in this.out) App.logcat.add("Shell_Out: $i")
+            }
+            return result
         }
     }
 }

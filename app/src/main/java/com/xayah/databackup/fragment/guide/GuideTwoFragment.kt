@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.guide.GuideActivity
@@ -69,7 +68,7 @@ class GuideTwoFragment : Fragment() {
     }
 
     private fun rootAccess() {
-        val isRoot = Shell.cmd("ls /").exec().isSuccess
+        val isRoot = Command.execute("ls /").isSuccess
         if (isRoot) {
             Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
                 if (this) {
@@ -105,7 +104,7 @@ class GuideTwoFragment : Fragment() {
             )
             Bashrc.writeToFile(versionName, "${Path.getFilesDir(hostActivity)}/version")
         }
-        Shell.cmd("chmod 777 -R ${Path.getFilesDir(hostActivity)}").exec()
+        Command.execute("chmod 777 -R ${Path.getFilesDir(hostActivity)}")
         Command.checkBin(App.globalContext).apply {
             if (this) {
                 viewModel.releasePrebuiltBinariesCheck.set(GlobalString.symbolTick)
@@ -127,7 +126,7 @@ class GuideTwoFragment : Fragment() {
     }
 
     private fun checkBashrc() {
-        Shell.cmd("check_bashrc").exec().isSuccess.apply {
+        Command.execute("check_bashrc").isSuccess.apply {
             if (this) {
                 viewModel.activateBashrcCheck.set(GlobalString.symbolTick)
                 hostActivity.setBtnText(GlobalString.finish)

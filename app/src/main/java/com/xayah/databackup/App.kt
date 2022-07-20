@@ -10,10 +10,7 @@ import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.MediaInfo
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.JSON
-import com.xayah.databackup.util.Path
-import com.xayah.databackup.util.readIsDynamicColors
+import com.xayah.databackup.util.*
 import java.io.InputStream
 import java.text.Collator
 import java.util.*
@@ -24,8 +21,7 @@ class App : Application() {
             Shell.enableVerboseLogging = BuildConfig.DEBUG
             Shell.setDefaultBuilder(
                 Shell.Builder.create()
-                    .setFlags(Shell.FLAG_MOUNT_MASTER or Shell.FLAG_REDIRECT_STDERR)
-                    .setTimeout(10)
+                    .setFlags(Shell.FLAG_MOUNT_MASTER or Shell.FLAG_REDIRECT_STDERR).setTimeout(10)
                     .setInitializers(EnvInitializer::class.java)
             )
         }
@@ -38,6 +34,7 @@ class App : Application() {
         lateinit var globalMediaInfoBackupList: MutableList<MediaInfo>
         lateinit var globalMediaInfoRestoreList: MutableList<MediaInfo>
         lateinit var globalBackupInfoList: MutableList<BackupInfo>
+        val logcat = Logcat()
 
         fun saveGlobalList() {
             // 保存AppInfoBackupList
@@ -95,9 +92,7 @@ class App : Application() {
     class EnvInitializer : Shell.Initializer() {
         override fun onInit(context: Context, shell: Shell): Boolean {
             val bashrc: InputStream = context.resources.openRawResource(R.raw.bashrc)
-            shell.newJob()
-                .add(bashrc)
-                .add("export PATH=${Path.getFilesDir(context)}/bin:\$PATH")
+            shell.newJob().add(bashrc).add("export PATH=${Path.getFilesDir(context)}/bin:\$PATH")
                 .exec()
             return true
         }
@@ -108,7 +103,6 @@ class App : Application() {
         CrashHandler(this).initialize()
         globalContext = this
         versionName = packageManager.getPackageInfo(packageName, 0).versionName
-        if (globalContext.readIsDynamicColors())
-            DynamicColors.applyToActivitiesIfAvailable(this)
+        if (globalContext.readIsDynamicColors()) DynamicColors.applyToActivitiesIfAvailable(this)
     }
 }
