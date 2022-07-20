@@ -101,11 +101,16 @@ class GuideTwoFragment : Fragment() {
             Command.unzipByZip4j(
                 "${Path.getFilesDir(hostActivity)}/bin.zip", "${Path.getFilesDir(hostActivity)}/bin"
             )
-            ShellUtils.fastCmd("chmod 777 -R ${Path.getFilesDir(hostActivity)}")
             Bashrc.writeToFile(versionName, "${Path.getFilesDir(hostActivity)}/version")
         }
-        Shell.cmd("ls ${Path.getFilesDir(hostActivity)}/bin").exec().out.apply {
-            if (this.size == 4) {
+        Shell.cmd("chmod 777 -R ${Path.getFilesDir(hostActivity)}").exec()
+        Shell.cmd("ls -l ${Path.getFilesDir(hostActivity)}/bin").exec().out.apply {
+            val fileList = this.subList(1, this.size)
+            var count = 0
+            for (i in fileList)
+                if (i.contains("-rwxrwxrwx"))
+                    count++
+            if (count == 4) {
                 viewModel.releasePrebuiltBinariesCheck.set(GlobalString.symbolTick)
                 hostActivity.setBtnText(GlobalString.activateBashrc)
                 step++
