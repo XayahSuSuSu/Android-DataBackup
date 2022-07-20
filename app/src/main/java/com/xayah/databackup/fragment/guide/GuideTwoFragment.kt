@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.guide.GuideActivity
 import com.xayah.databackup.databinding.FragmentGuideTwoBinding
 import com.xayah.databackup.util.*
+import com.xayah.databackup.view.util.setWithConfirm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -116,6 +118,15 @@ class GuideTwoFragment : Fragment() {
                 step++
             } else {
                 viewModel.releasePrebuiltBinariesCheck.set(GlobalString.symbolCross)
+                CoroutineScope(Dispatchers.Main).launch {
+                    MaterialAlertDialogBuilder(hostActivity).apply {
+                        setWithConfirm(
+                            "${Path.getFilesDir(hostActivity)}/bin: ${GlobalString.binPermissionError}",
+                            cancelable = false,
+                            hasNegativeBtn = false
+                        ) {}
+                    }
+                }
             }
         }
     }

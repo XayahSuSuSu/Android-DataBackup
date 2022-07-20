@@ -102,5 +102,6 @@ class GlobalString {
         val log = App.globalContext.getString(R.string.log)
         val size = App.globalContext.getString(R.string.size)
         val storedIn = App.globalContext.getString(R.string.stored_in)
+        val binPermissionError = App.globalContext.getString(R.string.bin_permission_error)
     }
 }
