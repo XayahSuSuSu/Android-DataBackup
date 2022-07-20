@@ -106,13 +106,8 @@ class GuideTwoFragment : Fragment() {
             Bashrc.writeToFile(versionName, "${Path.getFilesDir(hostActivity)}/version")
         }
         Shell.cmd("chmod 777 -R ${Path.getFilesDir(hostActivity)}").exec()
-        Shell.cmd("ls -l ${Path.getFilesDir(hostActivity)}/bin").exec().out.apply {
-            val fileList = this.subList(1, this.size)
-            var count = 0
-            for (i in fileList)
-                if (i.contains("-rwxrwxrwx"))
-                    count++
-            if (count == 4) {
+        Command.checkBin(App.globalContext).apply {
+            if (this) {
                 viewModel.releasePrebuiltBinariesCheck.set(GlobalString.symbolTick)
                 hostActivity.setBtnText(GlobalString.activateBashrc)
                 step++

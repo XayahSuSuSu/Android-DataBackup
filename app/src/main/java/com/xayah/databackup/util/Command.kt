@@ -217,22 +217,14 @@ class Command {
                     for (i in out) {
                         val tmp = cachedAppInfoRestoreList.find { it.infoBase.packageName == i }
                         val tmpIndex = cachedAppInfoRestoreList.indexOf(tmp)
-                        if (tmpIndex == -1)
-                            cachedAppInfoRestoreActualList.add(
-                                AppInfoRestore(
-                                    null,
-                                    AppInfoBase(
-                                        GlobalString.appRetrieved,
-                                        i,
-                                        "",
-                                        0,
-                                        app = false,
-                                        data = false
-                                    )
+                        if (tmpIndex == -1) cachedAppInfoRestoreActualList.add(
+                            AppInfoRestore(
+                                null, AppInfoBase(
+                                    GlobalString.appRetrieved, i, "", 0, app = false, data = false
                                 )
                             )
-                        else
-                            cachedAppInfoRestoreActualList.add(cachedAppInfoRestoreList[tmpIndex])
+                        )
+                        else cachedAppInfoRestoreActualList.add(cachedAppInfoRestoreList[tmpIndex])
                     }
                 }
             }
@@ -267,10 +259,8 @@ class Command {
         fun addOrUpdateList(item: Any, dst: MutableList<Any>, callback: (item: Any) -> Boolean) {
             val tmp = dst.find { callback(it) }
             val tmpIndex = dst.indexOf(tmp)
-            if (tmpIndex == -1)
-                dst.add(item)
-            else
-                dst[tmpIndex] = item
+            if (tmpIndex == -1) dst.add(item)
+            else dst[tmpIndex] = item
         }
 
         fun getCachedMediaInfoBackupList(isFiltered: Boolean = false): MutableList<MediaInfo> {
@@ -582,24 +572,12 @@ class Command {
         }
 
         fun checkBin(context: Context): Boolean {
-            val versionName = App.versionName
-            val oldVersionName = ShellUtils.fastCmd("cat ${Path.getFilesDir(context)}/version")
-            if (versionName > oldVersionName) {
-                ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(context)}/bin")
-                ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(context)}/bin.zip")
+            Shell.cmd("ls -l ${Path.getFilesDir(context)}/bin").exec().out.apply {
+                val fileList = this.subList(1, this.size)
+                var count = 0
+                for (i in fileList) if (i.contains("-rwxrwxrwx")) count++
+                return count == 4
             }
-
-            if (!ls("${Path.getFilesDir(context)}/bin")) {
-                extractAssets(
-                    context, "${getABI()}/bin.zip", "bin.zip"
-                )
-                unzipByZip4j(
-                    "${Path.getFilesDir(context)}/bin.zip", "${Path.getFilesDir(context)}/bin"
-                )
-                ShellUtils.fastCmd("chmod 777 -R ${Path.getFilesDir(context)}")
-                Bashrc.writeToFile(versionName, "${Path.getFilesDir(context)}/version")
-            }
-            return Shell.cmd("ls ${Path.getFilesDir(context)}/bin").exec().out.size == 4
         }
 
         fun checkBashrc(): Boolean {
@@ -609,8 +587,7 @@ class Command {
         fun getVersion(): String {
             var version = ""
             version = App.globalContext.packageManager.getPackageInfo(
-                App.globalContext.packageName,
-                0
+                App.globalContext.packageName, 0
             ).versionName
             return version
         }

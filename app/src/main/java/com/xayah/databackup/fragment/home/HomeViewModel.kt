@@ -16,9 +16,9 @@ class HomeViewModel : ViewModel() {
     val root = "${GlobalString.symbolDot} Root"
     val bin = "${GlobalString.symbolDot} Bin"
     val bashrc = "${GlobalString.symbolDot} Bashrc"
-    var rootCheck = ObservableField(checkRoot())
-    var binCheck = ObservableField(checkBin())
-    var bashrcCheck = ObservableField(checkBashrc())
+    var rootCheck = ObservableField(GlobalString.symbolCross)
+    var binCheck = ObservableField(GlobalString.symbolCross)
+    var bashrcCheck = ObservableField(GlobalString.symbolCross)
     var architectureCurrent = ObservableField("")
     var architectureSupport = ObservableField("${GlobalString.support}: arm64-v8a, x86_64")
     var versionCurrent = ObservableField(App.versionName)
