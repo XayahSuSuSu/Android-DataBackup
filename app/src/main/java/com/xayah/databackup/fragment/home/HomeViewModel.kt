@@ -24,9 +24,7 @@ class HomeViewModel : ViewModel() {
     var versionCurrent = ObservableField(App.versionName)
     var versionLatest = ObservableField("")
     var downloadBtnVisible = ObservableBoolean(false)
-    var logEnable = ObservableBoolean(false)
     var logText = ObservableField("")
-    var isLogging = false
     var dynamicColorsEnable = ObservableBoolean(false)
 
     private fun checkRoot(): String {
@@ -84,47 +82,41 @@ class HomeViewModel : ViewModel() {
 
     fun initialize() {
         refresh()
-        setLogCard()
-        setDynamicColorsCard()
-    }
-
-    private fun setLogCard() {
-        logEnable.set(App.globalContext.readLogEnable())
         updateLogCard()
-        if (logEnable.get() && !isLogging) {
-            saveLog()
-            isLogging = true
-        }
+        setDynamicColorsCard()
     }
 
     private fun updateLogCard() {
         val logPath = Path.getShellLogPath()
-        logText.set("${Command.countFile(logPath)} ${GlobalString.log}, ${Command.countSize(logPath)} ${GlobalString.size}\n${GlobalString.storedIn} ${logPath}")
-    }
-
-    fun onLogEnableCheckedChanged(v: View, checked: Boolean) {
-        logEnable.set(checked)
-        App.globalContext.saveLogEnable(logEnable.get())
+        logText.set("${Command.countFile(logPath)} ${GlobalString.log}, ${Command.countSize(logPath)} ${GlobalString.size}\n${GlobalString.storedIn} $logPath")
     }
 
     fun onLogClearClick(v: View) {
-        val context = v.context
         CoroutineScope(Dispatchers.IO).launch {
             Command.rm(Path.getShellLogPath())
             withContext(Dispatchers.Main) {
                 Toast.makeText(
-                    context, GlobalString.success, Toast.LENGTH_SHORT
+                    v.context, GlobalString.success, Toast.LENGTH_SHORT
                 ).show()
                 refresh()
             }
         }
     }
 
-    private fun saveLog() {
+    fun onLogSaveClick(v: View) {
         CoroutineScope(Dispatchers.IO).launch {
-            val date = Command.getDate().replace(" ", "_")
-            Command.mkdir(Path.getShellLogPath())
-            Command.saveShellLog("${Path.getShellLogPath()}/${date}")
+            // 保存日志
+            Bashrc.writeToFile(
+                App.logcat.toString(),
+                "${Path.getShellLogPath()}/${App.openDate.replace(" ", "_")}"
+            )
+            App.logcat.clear()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    v.context, GlobalString.success, Toast.LENGTH_SHORT
+                ).show()
+                refresh()
+            }
         }
     }
 

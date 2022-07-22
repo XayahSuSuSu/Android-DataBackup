@@ -135,14 +135,6 @@ fun Context.readInitializedVersionName(): String {
     return readPreferencesString("initialized_version_name") ?: ""
 }
 
-fun Context.saveLogEnable(value: Boolean) {
-    savePreferences("log_enable", value)
-}
-
-fun Context.readLogEnable(): Boolean {
-    return readPreferencesBoolean("log_enable", false)
-}
-
 fun Context.saveCustomBackupSavePath(path: CharSequence?) {
     savePreferences("custom_backup_save_path", path.toString().trim())
 }

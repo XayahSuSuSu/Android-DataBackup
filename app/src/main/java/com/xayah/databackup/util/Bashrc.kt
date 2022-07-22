@@ -95,7 +95,7 @@ class Bashrc {
             }
             val newPath = prefix.joinToString(separator = "/")
             Command.mkdir(newPath)
-            val exec = Command.execute("write_to_file \'$content\' $path")
+            val exec = Command.execute("write_to_file \'$content\' \"$path\"", false)
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 

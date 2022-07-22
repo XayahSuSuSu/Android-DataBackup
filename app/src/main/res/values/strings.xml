@@ -126,7 +126,7 @@
     <string name="please_wait">Please wait</string>
     <string name="log">Log</string>
     <string name="settings">Settings</string>
-    <string name="log_title">Help the developer locate the problem. Restart to take effect</string>
+    <string name="log_title">Help the developer locate the problem.</string>
     <string name="clear">Clear</string>
     <string name="stored_in">Stored in</string>
     <string name="dynamic_colors">Dynamic colors</string>

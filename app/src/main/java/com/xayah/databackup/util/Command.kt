@@ -31,7 +31,10 @@ class Command {
 
         fun countFile(path: String): Int {
             execute("ls -i $path").apply {
-                return this.out.size
+                if (this.isSuccess)
+                    return this.out.size
+                else
+                    return 0
             }
         }
 
@@ -42,6 +45,8 @@ class Command {
         }
 
         fun mkdir(path: String): Boolean {
+            if (execute("ls -i $path").isSuccess)
+                return true
             execute("mkdir -p $path").apply {
                 return this.isSuccess
             }
@@ -561,10 +566,9 @@ class Command {
 
         fun countSize(path: String, type: Int = 0): String {
             Bashrc.countSize(path, type).apply {
-                if (!this.first) {
-                    return ""
-                }
-                return this.second
+                return if (!this.first) "0"
+                else if (this.second.isEmpty()) "0"
+                else this.second
             }
         }
 
@@ -605,10 +609,6 @@ class Command {
             return date
         }
 
-        fun saveShellLog(outPut: String) {
-            execute("logcat | grep -E 'SHELL_IN|SHELLOUT' >> $outPut &")
-        }
-
         fun getCompressionTypeByPath(path: String): String {
             ShellUtils.fastCmd("ls $path").apply {
                 return try {
@@ -625,14 +625,20 @@ class Command {
             }
         }
 
-        fun execute(cmd: String, callback: ((line: String) -> Unit)? = null): Shell.Result {
-            App.logcat.add("Shell_In: $cmd")
+        fun execute(
+            cmd: String,
+            isAddToLog: Boolean = true,
+            callback: ((line: String) -> Unit)? = null
+        ): Shell.Result {
+            if (isAddToLog)
+                App.logcat.add("Shell_In: $cmd")
             val shell = Shell.cmd(cmd)
             callback?.apply {
                 val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                     override fun onAddElement(line: String?) {
                         line?.apply {
-                            App.logcat.add("Shell_Out: $line")
+                            if (isAddToLog)
+                                App.logcat.add("Shell_Out: $line")
                             callback(line)
                         }
                     }
@@ -640,9 +646,10 @@ class Command {
                 shell.to(callbackList)
             }
             val result = shell.exec()
-            result.apply {
-                for (i in this.out) App.logcat.add("Shell_Out: $i")
-            }
+            if (isAddToLog)
+                result.apply {
+                    for (i in this.out) App.logcat.add("Shell_Out: $i")
+                }
             return result
         }
     }

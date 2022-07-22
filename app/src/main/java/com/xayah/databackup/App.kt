@@ -35,6 +35,7 @@ class App : Application() {
         lateinit var globalMediaInfoRestoreList: MutableList<MediaInfo>
         lateinit var globalBackupInfoList: MutableList<BackupInfo>
         val logcat = Logcat()
+        val openDate = Command.getDate()
 
         fun saveGlobalList() {
             // 保存AppInfoBackupList

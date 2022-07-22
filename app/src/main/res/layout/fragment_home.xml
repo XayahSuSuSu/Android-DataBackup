@@ -263,26 +263,11 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checked="@{viewModel.logEnable}"
-                                android:onCheckedChanged="@{(v, checked)->viewModel.onLogEnableCheckedChanged(v, checked)}" />
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:text="@string/log"
-                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
-
-                        </LinearLayout>
+                            android:text="@string/log"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
@@ -296,17 +281,32 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@{viewModel.logText}"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                            android:visibility="@{viewModel.logEnable ? View.VISIBLE : View.GONE}" />
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
                             android:layout_marginTop="8dp"
-                            android:onClick="@{(v)->viewModel.onLogClearClick(v)}"
-                            android:text="@string/clear"
-                            android:visibility="@{viewModel.logEnable ? View.VISIBLE : View.GONE}" />
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="8dp"
+                                android:layout_weight="1"
+                                android:onClick="@{(v)->viewModel.onLogClearClick(v)}"
+                                android:text="@string/clear" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="8dp"
+                                android:layout_weight="1"
+                                android:onClick="@{(v)->viewModel.onLogSaveClick(v)}"
+                                android:text="@string/save" />
+
+                        </LinearLayout>
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
