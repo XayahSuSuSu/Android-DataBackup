@@ -76,9 +76,11 @@ class GuideTwoFragment : Fragment() {
                     hostActivity.setBtnText(GlobalString.releasePrebuiltBinaries)
                     step++
                 } else {
-                    Toast.makeText(
-                        requireContext(), GlobalString.backupDirCreateFailed, Toast.LENGTH_SHORT
-                    ).show()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Toast.makeText(
+                            requireContext(), GlobalString.backupDirCreateFailed, Toast.LENGTH_SHORT
+                        ).show()
+                    }
                     viewModel.grantRootAccessCheck.set(GlobalString.symbolCross)
                 }
             }
