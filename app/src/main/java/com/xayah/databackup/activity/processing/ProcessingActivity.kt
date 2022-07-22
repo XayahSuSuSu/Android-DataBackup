@@ -1,16 +1,12 @@
 package com.xayah.databackup.activity.processing
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
-import com.xayah.databackup.App
+import com.xayah.databackup.activity.AppCompatActivityBase
 import com.xayah.databackup.databinding.ActivityProcessingBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class ProcessingActivity : AppCompatActivity() {
+class ProcessingActivity : AppCompatActivityBase() {
     private lateinit var binding: ActivityProcessingBinding
     private lateinit var viewModel: ProcessingViewModel
 
@@ -28,12 +24,5 @@ class ProcessingActivity : AppCompatActivity() {
             intent.getBooleanExtra("isRestore", false),
             intent.getBooleanExtra("isMedia", false)
         )
-    }
-
-    override fun onPause() {
-        super.onPause()
-        CoroutineScope(Dispatchers.IO).launch {
-            App.saveGlobalList()
-        }
     }
 }
