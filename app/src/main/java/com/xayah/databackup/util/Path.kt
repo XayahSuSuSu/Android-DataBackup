@@ -74,7 +74,7 @@ class Path {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/media"
         }
 
-        fun getBackInfoListPath(): String {
+        fun getBackupInfoListPath(): String {
             return "${App.globalContext.readBackupSavePath()}/config/backupList"
         }
 

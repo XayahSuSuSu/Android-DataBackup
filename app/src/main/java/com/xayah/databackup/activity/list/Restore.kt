@@ -5,16 +5,14 @@ import com.drakeet.multitype.MultiTypeAdapter
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.AppListAdapterRestore
 import com.xayah.databackup.adapter.AppListHeaderAdapterBase
+import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
-import com.xayah.databackup.util.JSON
-import com.xayah.databackup.util.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Restore(private val mAdapter: MultiTypeAdapter) {
-    private val mAppInfoRestoreList = App.globalAppInfoRestoreList
     var appNumFull = true
     var dataNumFull = true
 
@@ -28,25 +26,25 @@ class Restore(private val mAdapter: MultiTypeAdapter) {
                         updateChip(it)
                     }, onChipAppClick = {
                         appNumFull = !appNumFull
-                        for (i in mAppInfoRestoreList) i.infoBase.app = appNumFull
+                        for (i in getAppInfoRestoreList()) i.infoBase.app = appNumFull
                         mAdapter.notifyDataSetChanged()
                     }, onChipDataClick = {
                         dataNumFull = !dataNumFull
-                        for (i in mAppInfoRestoreList) i.infoBase.data = dataNumFull
+                        for (i in getAppInfoRestoreList()) i.infoBase.data = dataNumFull
                         mAdapter.notifyDataSetChanged()
                     }, onSearchViewQueryTextChange = { newText ->
                         adapterList.clear()
                         adapterList.add(0, "Header")
-                        adapterList.addAll(mAppInfoRestoreList.filter {
+                        adapterList.addAll(getAppInfoRestoreList().filter {
                             it.infoBase.appName.lowercase().contains(newText.toString().lowercase())
                         })
                         items = adapterList
                         mAdapter.notifyDataSetChanged()
                     })
                 )
-                register(AppListAdapterRestore(mAppInfoRestoreList))
+                register(AppListAdapterRestore(getAppInfoRestoreList()))
                 adapterList.add(0, "Header")
-                adapterList.addAll(mAppInfoRestoreList)
+                adapterList.addAll(getAppInfoRestoreList())
                 items = adapterList
                 withContext(Dispatchers.Main) {
                     onInitialized()
@@ -58,8 +56,8 @@ class Restore(private val mAdapter: MultiTypeAdapter) {
     private fun updateChip(binding: AdapterAppListHeaderBinding) {
         var appNum = 0
         var dataNum = 0
-        val size = mAppInfoRestoreList.size
-        for (i in mAppInfoRestoreList) {
+        val size = getAppInfoRestoreList().size
+        for (i in getAppInfoRestoreList()) {
             if (i.infoBase.app) appNum++
             if (i.infoBase.data) dataNum++
         }
@@ -67,5 +65,9 @@ class Restore(private val mAdapter: MultiTypeAdapter) {
         dataNumFull = dataNum == size
         binding.chipApp.isChecked = appNumFull
         binding.chipData.isChecked = dataNumFull
+    }
+
+    private fun getAppInfoRestoreList(): MutableList<AppInfoRestore> {
+        return App.globalAppInfoRestoreList
     }
 }

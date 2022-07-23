@@ -58,6 +58,11 @@ class App : Application() {
                 JSON.entityArrayToJsonArray(globalMediaInfoRestoreList as MutableList<Any>),
                 Path.getMediaInfoRestoreListPath()
             )
+            // 保存BackupInfoList
+            JSON.writeJSONToFile(
+                JSON.entityArrayToJsonArray(globalBackupInfoList as MutableList<Any>),
+                Path.getBackupInfoListPath()
+            )
         }
 
         fun initializeGlobalList() {

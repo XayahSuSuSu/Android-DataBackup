@@ -12,16 +12,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class Backup {
-    lateinit var dataBinding: DataBinding
-    private val mAppInfoBackupList =
-        App.globalAppInfoBackupList.filter { it.infoBase.app || it.infoBase.data }
-    private val mAppInfoRestoreList = App.globalAppInfoRestoreList
-    private val mMediaInfoBackupList = App.globalMediaInfoBackupList.filter { it.data }
-    private val mMediaInfoRestoreList = App.globalMediaInfoRestoreList
-    private val mBackupInfoList = App.globalBackupInfoList
-    var isMedia = false
-    var successNum = 0
-    var failedNum = 0
+    private lateinit var dataBinding: DataBinding
+    private var isMedia = false
+    private var successNum = 0
+    private var failedNum = 0
 
     fun initialize(mDataBinding: DataBinding, mIsMedia: Boolean) {
         dataBinding = mDataBinding.apply {
@@ -38,7 +32,7 @@ class Backup {
     }
 
     private fun initializeApp() {
-        dataBinding.progressMax.set(mAppInfoBackupList.size)
+        dataBinding.progressMax.set(getAppInfoBackupList().size)
         dataBinding.totalTip.set(GlobalString.ready)
         Command.getCachedAppInfoBackupListNum().apply {
             dataBinding.totalProgress.set("${GlobalString.selected} ${this.appNum} ${GlobalString.application}, ${this.dataNum} ${GlobalString.data}")
@@ -46,9 +40,9 @@ class Backup {
     }
 
     private fun initializeMedia() {
-        dataBinding.progressMax.set(mMediaInfoBackupList.size)
+        dataBinding.progressMax.set(getMediaInfoBackupList().size)
         dataBinding.totalTip.set(GlobalString.ready)
-        dataBinding.totalProgress.set("${GlobalString.selected} ${mMediaInfoBackupList.size} ${GlobalString.data}")
+        dataBinding.totalProgress.set("${GlobalString.selected} ${getMediaInfoBackupList().size} ${GlobalString.data}")
     }
 
     private fun setSizeAndSpeed(src: String?) {
@@ -77,10 +71,10 @@ class Backup {
     private fun onBackupAppClick(v: View) {
         val startTime = Command.getDate()
         val startSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
-        if (successNum + failedNum != mAppInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
+        if (successNum + failedNum != getAppInfoBackupList().size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.backupProcessing)
-            for ((index, i) in mAppInfoBackupList.withIndex()) {
+            for ((index, i) in getAppInfoBackupList().withIndex()) {
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.infoBase.appName)
                 dataBinding.packageName.set(i.infoBase.packageName)
@@ -180,7 +174,7 @@ class Backup {
                     successNum += 1
                     Command.addOrUpdateList(
                         AppInfoRestore(null, i.infoBase),
-                        mAppInfoRestoreList as MutableList<Any>
+                        getAppInfoRestoreList() as MutableList<Any>
                     ) {
                         (it as AppInfoRestore).infoBase.packageName == i.infoBase.packageName
                     }
@@ -189,7 +183,7 @@ class Backup {
             }
             val endTime = Command.getDate()
             val endSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
-            mBackupInfoList.add(
+            getBackupInfoList().add(
                 BackupInfo(
                     Command.getVersion(),
                     startTime,
@@ -204,7 +198,7 @@ class Backup {
             saveAppInfoBackupList() // 更新备份大小
             saveAppInfoRestoreList() //保存恢复信息
             dataBinding.totalTip.set(GlobalString.backupFinished)
-            dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mAppInfoBackupList.size} ${GlobalString.total}")
+            dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${getAppInfoBackupList().size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
         }
@@ -216,10 +210,10 @@ class Backup {
     private fun onBackupMediaClick(v: View) {
         val startTime = Command.getDate()
         val startSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
-        if (successNum + failedNum != mMediaInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
+        if (successNum + failedNum != getMediaInfoBackupList().size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.backupProcessing)
-            for ((index, i) in mMediaInfoBackupList.withIndex()) {
+            for ((index, i) in getMediaInfoBackupList().withIndex()) {
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.name)
                 dataBinding.packageName.set(i.path)
@@ -252,7 +246,7 @@ class Backup {
                 }
                 if (state) {
                     successNum += 1
-                    Command.addOrUpdateList(i, mMediaInfoRestoreList as MutableList<Any>) {
+                    Command.addOrUpdateList(i, getMediaInfoRestoreList() as MutableList<Any>) {
                         (it as MediaInfo).path == i.path
                     }
                 } else failedNum += 1
@@ -260,7 +254,7 @@ class Backup {
             }
             val endTime = Command.getDate()
             val endSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
-            mBackupInfoList.add(
+            getBackupInfoList().add(
                 BackupInfo(
                     Command.getVersion(),
                     startTime,
@@ -275,7 +269,7 @@ class Backup {
             saveMediaInfoBackupList() // 更新备份大小
             saveMediaInfoRestoreList() // 保存备份信息
             dataBinding.totalTip.set(GlobalString.backupFinished)
-            dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mMediaInfoBackupList.size} ${GlobalString.total}")
+            dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${getMediaInfoBackupList().size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
         }
@@ -285,7 +279,7 @@ class Backup {
     }
 
     private fun saveAppInfoBackupList() {
-        for (i in mAppInfoBackupList) {
+        for (i in getAppInfoBackupList()) {
             Command.addOrUpdateList(i, App.globalAppInfoBackupList as MutableList<Any>) {
                 (it as AppInfoBackup).infoBase.packageName == i.infoBase.packageName
             }
@@ -298,13 +292,13 @@ class Backup {
 
     private fun saveAppInfoRestoreList() {
         JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mAppInfoRestoreList as MutableList<Any>),
+            JSON.entityArrayToJsonArray(getAppInfoRestoreList() as MutableList<Any>),
             Path.getAppInfoRestoreListPath()
         )
     }
 
     private fun saveMediaInfoBackupList() {
-        for (i in mMediaInfoBackupList) {
+        for (i in getMediaInfoBackupList()) {
             Command.addOrUpdateList(i, App.globalMediaInfoBackupList as MutableList<Any>) {
                 (it as MediaInfo).path == i.path
             }
@@ -317,15 +311,35 @@ class Backup {
 
     private fun saveMediaInfoRestoreList() {
         JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mMediaInfoRestoreList as MutableList<Any>),
+            JSON.entityArrayToJsonArray(getMediaInfoRestoreList() as MutableList<Any>),
             Path.getMediaInfoRestoreListPath()
         )
     }
 
     private fun saveBackupInfoList() {
         JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(mBackupInfoList as MutableList<Any>),
-            Path.getBackInfoListPath()
+            JSON.entityArrayToJsonArray(getBackupInfoList() as MutableList<Any>),
+            Path.getBackupInfoListPath()
         )
+    }
+
+    private fun getAppInfoBackupList(): List<AppInfoBackup> {
+        return App.globalAppInfoBackupList.filter { it.infoBase.app || it.infoBase.data }
+    }
+
+    private fun getAppInfoRestoreList(): MutableList<AppInfoRestore> {
+        return App.globalAppInfoRestoreList
+    }
+
+    private fun getMediaInfoBackupList(): List<MediaInfo> {
+        return App.globalMediaInfoBackupList.filter { it.data }
+    }
+
+    private fun getMediaInfoRestoreList(): MutableList<MediaInfo> {
+        return App.globalMediaInfoRestoreList
+    }
+
+    private fun getBackupInfoList(): MutableList<BackupInfo> {
+        return App.globalBackupInfoList
     }
 }

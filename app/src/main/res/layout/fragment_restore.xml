@@ -61,7 +61,6 @@
                             android:orientation="horizontal">
 
                             <com.google.android.material.button.MaterialButton
-                                android:id="@+id/materialButton_change_backup_user"
                                 style="@style/Widget.Material3.Button.TextButton"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -83,7 +82,6 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:onClick="@{(v)->viewModel.onChangeUser(v)}"
                                 android:text="@{viewModel.restoreUser}"
                                 android:textColor="@color/yellow"
                                 app:icon="@drawable/ic_round_iphone"

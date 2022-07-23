@@ -345,7 +345,7 @@ class Command {
 
         fun getCachedBackupInfoList(): MutableList<BackupInfo> {
             val cachedBackupInfoList = mutableListOf<BackupInfo>()
-            cat(Path.getBackInfoListPath()).apply {
+            cat(Path.getBackupInfoListPath()).apply {
                 if (this.first) {
                     try {
                         val jsonArray = JSON.stringToJsonArray(this.second)

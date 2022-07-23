@@ -24,7 +24,6 @@ class RestoreFragment : Fragment() {
     private var _binding: FragmentRestoreBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: RestoreViewModel
-    private val mediaInfoList = App.globalMediaInfoRestoreList
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -40,21 +39,25 @@ class RestoreFragment : Fragment() {
     }
 
     private fun initialize() {
-        CoroutineScope(Dispatchers.IO).launch {
-            viewModel.initialize { setChipGroup() }
+        binding.materialButtonChangeRestoreUser.setOnClickListener {
+            viewModel.onChangeUser(it) {
+                initialize()
+            }
         }
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.initialize()
+        }
+        setChipGroup()
     }
 
     private fun setChipGroup() {
-        CoroutineScope(Dispatchers.Main).launch {
-            binding.chipGroup.removeAllViews()
-            for (i in mediaInfoList) {
-                addChip(i, mediaInfoList)
-            }
+        binding.chipGroup.removeAllViews()
+        for (i in getMediaInfoList()) {
+            addChip(i)
         }
     }
 
-    private fun addChip(mediaInfo: MediaInfo, mediaInfoList: MutableList<MediaInfo>) {
+    private fun addChip(mediaInfo: MediaInfo) {
         val chip = InputChip(layoutInflater, binding.chipGroup).apply {
             text = mediaInfo.name
             isChecked = mediaInfo.data
@@ -70,10 +73,9 @@ class RestoreFragment : Fragment() {
                         Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}.tar*")
                             .apply {
                                 if (this) {
-                                    mediaInfoList.remove(mediaInfo)
+                                    getMediaInfoList().remove(mediaInfo)
                                     binding.chipGroup.removeView(it)
-                                    val mediaInfoBackupList = App.globalMediaInfoBackupList
-                                    for (i in mediaInfoBackupList) {
+                                    for (i in App.globalMediaInfoBackupList) {
                                         if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
                                             // 清除媒体备份大小信息
                                             i.size = ""
@@ -94,6 +96,10 @@ class RestoreFragment : Fragment() {
             }
         }
         binding.chipGroup.addView(chip)
+    }
+
+    private fun getMediaInfoList(): MutableList<MediaInfo> {
+        return App.globalMediaInfoRestoreList
     }
 
     override fun onResume() {

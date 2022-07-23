@@ -24,7 +24,6 @@ class BackupFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: BackupViewModel
     private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
-    private val mediaInfoList = App.globalMediaInfoBackupList
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -41,31 +40,34 @@ class BackupFragment : Fragment() {
 
     private fun initialize() {
         CoroutineScope(Dispatchers.IO).launch {
-            binding.materialButtonAddMedia.setOnClickListener {
-                materialYouFileExplorer.apply {
-                    isFile = false
-                    toExplorer(requireContext()) { path, _ ->
-                        val mediaInfo = MediaInfo(path.split("/").last(), path, true, "")
-                        mediaInfoList.add(mediaInfo)
-                        addChip(mediaInfo, mediaInfoList)
-                    }
+            viewModel.initialize()
+        }
+        binding.materialButtonChangeBackupUser.setOnClickListener {
+            viewModel.onChangeUser(it) {
+                initialize()
+            }
+        }
+        binding.materialButtonAddMedia.setOnClickListener {
+            materialYouFileExplorer.apply {
+                isFile = false
+                toExplorer(requireContext()) { path, _ ->
+                    val mediaInfo = MediaInfo(path.split("/").last(), path, true, "")
+                    getMediaInfoList().add(mediaInfo)
+                    addChip(mediaInfo)
                 }
             }
-
-            viewModel.initialize { setChipGroup() }
         }
+        setChipGroup()
     }
 
     private fun setChipGroup() {
-        CoroutineScope(Dispatchers.Main).launch {
-            binding.chipGroup.removeAllViews()
-            for (i in mediaInfoList) {
-                addChip(i, mediaInfoList)
-            }
+        binding.chipGroup.removeAllViews()
+        for (i in getMediaInfoList()) {
+            addChip(i)
         }
     }
 
-    private fun addChip(mediaInfo: MediaInfo, mediaInfoList: MutableList<MediaInfo>) {
+    private fun addChip(mediaInfo: MediaInfo) {
         val chip = InputChip(layoutInflater, binding.chipGroup).apply {
             text = mediaInfo.name
             isChecked = mediaInfo.data
@@ -75,13 +77,17 @@ class BackupFragment : Fragment() {
             setOnCloseIconClickListener {
                 MaterialAlertDialogBuilder(requireContext()).apply {
                     setWithConfirm("${GlobalString.confirmRemove}${GlobalString.symbolQuestion}") {
-                        mediaInfoList.remove(mediaInfo)
+                        getMediaInfoList().remove(mediaInfo)
                         binding.chipGroup.removeView(it)
                     }
                 }
             }
         }
         binding.chipGroup.addView(chip)
+    }
+
+    private fun getMediaInfoList(): MutableList<MediaInfo> {
+        return App.globalMediaInfoBackupList
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
