@@ -25,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AppListAdapterRestore(val mAppInfoRestoreList: MutableList<AppInfoRestore>) :
+class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfoRestore>) :
     ItemViewDelegate<AppInfoRestore, AppListAdapterRestore.ViewHolder>() {
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -86,7 +86,6 @@ class AppListAdapterRestore(val mAppInfoRestoreList: MutableList<AppInfoRestore>
                                         setLoading()
                                         val that = this
                                         CoroutineScope(Dispatchers.IO).launch {
-                                            Command.retrieve(mAppInfoRestoreList)
                                             withContext(Dispatchers.Main) {
                                                 that.dismiss()
                                                 adapter.notifyItemRemoved(holder.bindingAdapterPosition)

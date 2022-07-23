@@ -25,8 +25,9 @@ class RestoreViewModel : ViewModel() {
     var restoreUser = ObservableField("${GlobalString.user}${App.globalContext.readRestoreUser()}")
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
+    var callback: () -> Unit = {}
 
-    fun onChangeUser(v: View, callback: () -> Unit) {
+    fun onChangeUser(v: View) {
         val context = v.context
         val items =
             if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf("0")
@@ -44,7 +45,6 @@ class RestoreViewModel : ViewModel() {
                         restoreUser.set("${GlobalString.user}${items[position]}")
                         App.initializeGlobalList()
                         withContext(Dispatchers.Main) {
-                            callback()
                             refresh()
                             dismiss()
                         }
@@ -80,9 +80,11 @@ class RestoreViewModel : ViewModel() {
             setLoading()
             val that = this
             CoroutineScope(Dispatchers.IO).launch {
+                App.saveGlobalList()
                 Command.retrieve(Command.getCachedAppInfoRestoreActualList())
                 App.initializeGlobalList()
                 withContext(Dispatchers.Main) {
+                    refresh()
                     that.dismiss()
                     Toast.makeText(v.context, GlobalString.retrieveFinish, Toast.LENGTH_SHORT)
                         .show()
@@ -102,12 +104,14 @@ class RestoreViewModel : ViewModel() {
                         Command.rm("${Path.getBackupDataSavePath()} ${Path.getAppInfoRestoreListPath()}")
                             .apply {
                                 if (this) {
+                                    App.saveGlobalList()
                                     Command.retrieve(Command.getCachedAppInfoRestoreActualList())
+                                    App.initializeGlobalList()
                                     withContext(Dispatchers.Main) {
+                                        refresh()
                                         Toast.makeText(
                                             context, GlobalString.success, Toast.LENGTH_SHORT
                                         ).show()
-                                        refresh()
                                     }
                                 } else withContext(Dispatchers.Main) {
                                     Toast.makeText(
@@ -135,6 +139,7 @@ class RestoreViewModel : ViewModel() {
     private fun refresh() {
         setNum()
         setUser()
+        callback()
     }
 
     private fun setUser() {
@@ -142,7 +147,8 @@ class RestoreViewModel : ViewModel() {
         restoreUser.set("${GlobalString.user}${App.globalContext.readRestoreUser()}")
     }
 
-    fun initialize() {
+    fun initialize(mCallback: () -> Unit) {
+        callback = mCallback
         refresh()
     }
 }

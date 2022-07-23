@@ -40,20 +40,19 @@ class RestoreFragment : Fragment() {
 
     private fun initialize() {
         binding.materialButtonChangeRestoreUser.setOnClickListener {
-            viewModel.onChangeUser(it) {
-                initialize()
-            }
+            viewModel.onChangeUser(it)
         }
         CoroutineScope(Dispatchers.IO).launch {
-            viewModel.initialize()
+            viewModel.initialize { setChipGroup() }
         }
-        setChipGroup()
     }
 
     private fun setChipGroup() {
-        binding.chipGroup.removeAllViews()
-        for (i in getMediaInfoList()) {
-            addChip(i)
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.chipGroup.removeAllViews()
+            for (i in getMediaInfoList()) {
+                addChip(i)
+            }
         }
     }
 

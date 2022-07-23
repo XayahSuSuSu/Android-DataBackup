@@ -40,12 +40,10 @@ class BackupFragment : Fragment() {
 
     private fun initialize() {
         CoroutineScope(Dispatchers.IO).launch {
-            viewModel.initialize()
+            viewModel.initialize { setChipGroup() }
         }
         binding.materialButtonChangeBackupUser.setOnClickListener {
-            viewModel.onChangeUser(it) {
-                initialize()
-            }
+            viewModel.onChangeUser(it)
         }
         binding.materialButtonAddMedia.setOnClickListener {
             materialYouFileExplorer.apply {
@@ -57,13 +55,14 @@ class BackupFragment : Fragment() {
                 }
             }
         }
-        setChipGroup()
     }
 
     private fun setChipGroup() {
-        binding.chipGroup.removeAllViews()
-        for (i in getMediaInfoList()) {
-            addChip(i)
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.chipGroup.removeAllViews()
+            for (i in getMediaInfoList()) {
+                addChip(i)
+            }
         }
     }
 
