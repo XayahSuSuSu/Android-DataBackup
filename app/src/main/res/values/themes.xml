@@ -4,18 +4,9 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
-
-        <item name="switchStyle">@style/Theme.DataBackup.Switch</item>
     </style>
 
     <style name="Theme.DataBackup" parent="Base.Theme.DataBackup" />
-
-    <style name="Theme.DataBackup.Switch" parent="Widget.Material3.CompoundButton.Switch">
-        <item name="android:thumb">@drawable/switch_thumb</item>
-        <item name="thumbTint">@color/switch_thumb_color</item>
-        <item name="track">@drawable/switch_track</item>
-        <item name="trackTint">@color/switch_track_color</item>
-    </style>
 
     <style name="Theme.DataBackup.SplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
