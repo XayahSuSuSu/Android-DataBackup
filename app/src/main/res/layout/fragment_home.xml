@@ -235,6 +235,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="end"
+                            android:onClick="@{(v)->viewModel.onDownloadBtnClick(v)}"
                             android:text="@string/download"
                             android:visibility="@{viewModel.downloadBtnVisible ? View.VISIBLE : View.INVISIBLE}" />
                     </LinearLayout>

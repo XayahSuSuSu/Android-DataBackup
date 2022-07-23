@@ -1,5 +1,7 @@
 package com.xayah.databackup.fragment.home
 
+import android.content.Intent
+import android.net.Uri
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.ObservableBoolean
@@ -24,6 +26,7 @@ class HomeViewModel : ViewModel() {
     var versionCurrent = ObservableField(App.versionName)
     var versionLatest = ObservableField("")
     var downloadBtnVisible = ObservableBoolean(false)
+    private var downloadLink = ObservableField("")
     var logText = ObservableField("")
     var dynamicColorsEnable = ObservableBoolean(false)
 
@@ -63,6 +66,7 @@ class HomeViewModel : ViewModel() {
                     versionLatest.set("${GlobalString.latest}: ${mReleaseList[0].name}")
                     if (!versionLatest.get()!!.contains(versionCurrent.get()!!)) {
                         downloadBtnVisible.set(true)
+                        downloadLink.set(mReleaseList[0].html_url)
                     }
                 }
             }, { versionLatest.set(GlobalString.fetchFailed) })
@@ -107,8 +111,7 @@ class HomeViewModel : ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             // 保存日志
             Bashrc.writeToFile(
-                App.logcat.toString(),
-                "${Path.getShellLogPath()}/${App.openDate.replace(" ", "_")}"
+                App.logcat.toString(), "${Path.getShellLogPath()}/${App.openDate.replace(" ", "_")}"
             )
             App.logcat.clear()
             withContext(Dispatchers.Main) {
@@ -127,5 +130,14 @@ class HomeViewModel : ViewModel() {
     fun onDynamicColorsEnableCheckedChanged(v: View, checked: Boolean) {
         dynamicColorsEnable.set(checked)
         App.globalContext.saveIsDynamicColors(dynamicColorsEnable.get())
+    }
+
+    fun onDownloadBtnClick(v: View) {
+        val url = downloadLink.get() ?: ""
+        if (url.isNotEmpty()) {
+            val uri = Uri.parse(url)
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            v.context.startActivity(intent)
+        }
     }
 }
