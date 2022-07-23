@@ -2,6 +2,7 @@ package com.xayah.databackup.view.card
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.annotation.AttrRes
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -239,10 +240,12 @@ class StorageRadioCard @JvmOverloads constructor(
             val that = this
             if (that.first == 0) {
                 val path = "${that.second}/DataBackup"
+                Command.mkdir(path)
                 val space = Bashrc.getStorageSpace(path)
                 if (space.first) {
                     try {
                         val string = space.second
+                        Log.d("fuck", string)
                         otgProgress = string.split(" ").last().replace("%", "").toInt()
                         otgPath = path
                         otgEnabled = true
