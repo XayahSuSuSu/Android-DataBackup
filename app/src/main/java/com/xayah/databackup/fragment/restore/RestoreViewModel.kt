@@ -73,6 +73,7 @@ class RestoreViewModel : ViewModel() {
             val that = this
             CoroutineScope(Dispatchers.IO).launch {
                 Command.retrieve(Command.getCachedAppInfoRestoreActualList())
+                App.initializeGlobalList()
                 withContext(Dispatchers.Main) {
                     that.dismiss()
                     Toast.makeText(v.context, GlobalString.retrieveFinish, Toast.LENGTH_SHORT)
