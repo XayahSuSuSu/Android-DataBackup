@@ -3,6 +3,7 @@ package com.xayah.databackup.fragment.backup
 import android.content.Intent
 import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -23,6 +24,8 @@ class BackupViewModel : ViewModel() {
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
     var callback: () -> Unit = {}
+    var backupItselfEnable = ObservableBoolean(false)
+
 
     fun onChangeUser(v: View) {
         val context = v.context
@@ -96,5 +99,15 @@ class BackupViewModel : ViewModel() {
     fun initialize(mCallback: () -> Unit) {
         callback = mCallback
         refresh()
+        setBackupItselfCard()
+    }
+
+    private fun setBackupItselfCard() {
+        backupItselfEnable.set(App.globalContext.readIsBackupItself())
+    }
+
+    fun onBackupItselfEnableCheckedChanged(v: View, checked: Boolean) {
+        backupItselfEnable.set(checked)
+        App.globalContext.saveIsBackupItself(backupItselfEnable.get())
     }
 }

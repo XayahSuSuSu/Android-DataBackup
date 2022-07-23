@@ -134,4 +134,6 @@
     <string name="tmp">Tmp</string>
     <string name="current_update">Current update</string>
     <string name="bin_permission_error">Prebuilt file permissions are incorrect, please manually grant [777]</string>
+    <string name="backup_itself">Backup itself</string>
+    <string name="backup_itself_title">When backing up the application, it automatically backs up its own installation package to the backup directory</string>
 </resources>

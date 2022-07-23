@@ -74,6 +74,13 @@ class Backup {
         if (successNum + failedNum != getAppInfoBackupList().size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.backupProcessing)
+            // 备份自身
+            if (App.globalContext.readIsBackupItself())
+                Command.backupItself(
+                    "com.xayah.databackup",
+                    App.globalContext.readBackupSavePath(),
+                    App.globalContext.readBackupUser()
+                )
             for ((index, i) in getAppInfoBackupList().withIndex()) {
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.infoBase.appName)

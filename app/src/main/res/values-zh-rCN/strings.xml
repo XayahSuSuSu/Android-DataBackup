@@ -120,4 +120,6 @@
     <string name="tmp">临时</string>
     <string name="current_update">当前更新</string>
     <string name="bin_permission_error">预编译二进制文件权限不正确, 请手动赋权[777]</string>
+    <string name="backup_itself">备份自身</string>
+    <string name="backup_itself_title">备份应用时自动备份自身安装包至备份目录下</string>
 </resources>

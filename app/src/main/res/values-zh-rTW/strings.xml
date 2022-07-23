@@ -120,4 +120,6 @@
     <string name="tmp">臨時</string>
     <string name="current_update">當前更新</string>
     <string name="bin_permission_error">預編譯二進製文件權限不正確, 請手動賦權[777]</string>
+    <string name="backup_itself">備份自身</string>
+    <string name="backup_itself_title">備份應用時自動備份自身安裝包至備份目錄下</string>
 </resources>
