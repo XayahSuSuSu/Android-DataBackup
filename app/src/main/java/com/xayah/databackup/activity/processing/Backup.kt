@@ -194,9 +194,7 @@ class Backup {
                     App.globalContext.readBackupUser()
                 )
             )
-            saveBackupInfoList() // 更新备份信息
-            saveAppInfoBackupList() // 更新备份大小
-            saveAppInfoRestoreList() //保存恢复信息
+            App.saveGlobalList()
             dataBinding.totalTip.set(GlobalString.backupFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${getAppInfoBackupList().size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
@@ -265,9 +263,7 @@ class Backup {
                     App.globalContext.readBackupUser()
                 )
             )
-            saveBackupInfoList() // 更新备份信息
-            saveMediaInfoBackupList() // 更新备份大小
-            saveMediaInfoRestoreList() // 保存备份信息
+            App.saveGlobalList()
             dataBinding.totalTip.set(GlobalString.backupFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${getMediaInfoBackupList().size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
@@ -276,51 +272,6 @@ class Backup {
         else {
             v.context.getActivity()?.finish()
         }
-    }
-
-    private fun saveAppInfoBackupList() {
-        for (i in getAppInfoBackupList()) {
-            Command.addOrUpdateList(i, App.globalAppInfoBackupList as MutableList<Any>) {
-                (it as AppInfoBackup).infoBase.packageName == i.infoBase.packageName
-            }
-        }
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(App.globalAppInfoBackupList as MutableList<Any>),
-            Path.getAppInfoBackupListPath()
-        )
-    }
-
-    private fun saveAppInfoRestoreList() {
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(getAppInfoRestoreList() as MutableList<Any>),
-            Path.getAppInfoRestoreListPath()
-        )
-    }
-
-    private fun saveMediaInfoBackupList() {
-        for (i in getMediaInfoBackupList()) {
-            Command.addOrUpdateList(i, App.globalMediaInfoBackupList as MutableList<Any>) {
-                (it as MediaInfo).path == i.path
-            }
-        }
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(App.globalMediaInfoBackupList as MutableList<Any>),
-            Path.getMediaInfoBackupListPath()
-        )
-    }
-
-    private fun saveMediaInfoRestoreList() {
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(getMediaInfoRestoreList() as MutableList<Any>),
-            Path.getMediaInfoRestoreListPath()
-        )
-    }
-
-    private fun saveBackupInfoList() {
-        JSON.writeJSONToFile(
-            JSON.entityArrayToJsonArray(getBackupInfoList() as MutableList<Any>),
-            Path.getBackupInfoListPath()
-        )
     }
 
     private fun getAppInfoBackupList(): List<AppInfoBackup> {

@@ -1,12 +1,12 @@
 package com.xayah.databackup.activity.processing
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
-import com.xayah.databackup.activity.AppCompatActivityBase
 import com.xayah.databackup.databinding.ActivityProcessingBinding
 
-class ProcessingActivity : AppCompatActivityBase() {
+class ProcessingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProcessingBinding
     private lateinit var viewModel: ProcessingViewModel
 

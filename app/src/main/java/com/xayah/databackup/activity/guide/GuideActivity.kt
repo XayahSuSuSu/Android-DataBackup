@@ -3,17 +3,17 @@ package com.xayah.databackup.activity.guide
 import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.IdRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.xayah.databackup.R
-import com.xayah.databackup.activity.AppCompatActivityBase
 import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.databinding.ActivityGuideBinding
 
-class GuideActivity : AppCompatActivityBase() {
+class GuideActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGuideBinding
     private lateinit var viewModel: GuideViewModel
     private lateinit var navHostFragment: NavHostFragment
