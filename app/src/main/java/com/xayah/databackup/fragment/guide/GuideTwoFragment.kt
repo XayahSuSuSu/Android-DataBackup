@@ -68,7 +68,7 @@ class GuideTwoFragment : Fragment() {
     }
 
     private fun rootAccess() {
-        val isRoot = Command.execute("ls /").isSuccess
+        val isRoot = Command.checkRoot()
         if (isRoot) {
             Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
                 if (this) {
