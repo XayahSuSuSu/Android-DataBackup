@@ -5,11 +5,17 @@ import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
+import com.xayah.databackup.view.setLoading
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BackupViewModel : ViewModel() {
     var backupUser = ObservableField("${GlobalString.user}${App.globalContext.readBackupUser()}")
@@ -26,13 +32,21 @@ class BackupViewModel : ViewModel() {
         ListPopupWindow(context).apply {
             fastInitialize(v, items, choice)
             setOnItemClickListener { _, _, position, _ ->
-                App.saveGlobalList()
-                context.saveBackupUser(items[position])
-                backupUser.set("${GlobalString.user}${items[position]}")
-                App.initializeGlobalList()
-                callback()
-                refresh()
                 dismiss()
+                BottomSheetDialog(v.context).apply {
+                    setLoading()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        App.saveGlobalList()
+                        context.saveBackupUser(items[position])
+                        backupUser.set("${GlobalString.user}${items[position]}")
+                        App.initializeGlobalList()
+                        withContext(Dispatchers.Main) {
+                            callback()
+                            refresh()
+                            dismiss()
+                        }
+                    }
+                }
             }
             show()
         }

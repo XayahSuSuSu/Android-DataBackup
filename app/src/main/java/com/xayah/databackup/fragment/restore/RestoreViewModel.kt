@@ -35,13 +35,21 @@ class RestoreViewModel : ViewModel() {
         ListPopupWindow(context).apply {
             fastInitialize(v, items, choice)
             setOnItemClickListener { _, _, position, _ ->
-                App.saveGlobalList()
-                context.saveRestoreUser(items[position])
-                restoreUser.set("${GlobalString.user}${items[position]}")
-                App.initializeGlobalList()
-                callback()
-                refresh()
                 dismiss()
+                BottomSheetDialog(v.context).apply {
+                    setLoading()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        App.saveGlobalList()
+                        context.saveRestoreUser(items[position])
+                        restoreUser.set("${GlobalString.user}${items[position]}")
+                        App.initializeGlobalList()
+                        withContext(Dispatchers.Main) {
+                            callback()
+                            refresh()
+                            dismiss()
+                        }
+                    }
+                }
             }
             show()
         }
