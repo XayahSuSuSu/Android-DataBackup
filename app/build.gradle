@@ -70,7 +70,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:5.0.3'
 
     // MaterialYouFileExplorer
-    implementation 'com.github.XayahSuSuSu:Android-MaterialYouFileExplorer:1.2.3'
+    implementation 'com.github.XayahSuSuSu:Android-MaterialYouFileExplorer:1.2.4'
 
     // zip4j
     implementation 'net.lingala.zip4j:zip4j:2.10.0'
