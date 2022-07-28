@@ -156,21 +156,19 @@ set_owner_and_SELinux() {
   # $2: package_name
   # $3: path
   # $4: user_id
-  case $1 in
-  user)
-    if [ -f /config/sdcardfs/$2/appid ]; then
-      owner="$(cat "/config/sdcardfs/$2/appid")"
-    else
-      owner="$(dumpsys package "$2" | grep -w 'userId' | head -1)"
-    fi
-    owner="$(echo "$owner" | grep -E -o '[0-9]+')"
-    if [ "$owner" != "" ]; then
-      chown -hR "$4$owner:$4$owner" "$3/"
-      restorecon -RFD "$3/"
-    fi
-    ;;
-  data | obb) chmod -R 0777 "$3" ;;
-  esac
+  if [ -f /config/sdcardfs/$2/appid ]; then
+    owner="$(cat "/config/sdcardfs/$2/appid")"
+  else
+    owner="$(dumpsys package "$2" | grep -w 'userId' | head -1)"
+  fi
+  owner="$(echo "$owner" | grep -E -o '[0-9]+')"
+  if [ "$owner" != "" ]; then
+    chown -hR "$4$owner:$4$owner" "$3/"
+    case $1 in
+      user) restorecon -RFD "$3/" ;;
+      data | obb) chmod -R 0777 "$3" ;;
+    esac
+  fi
 }
 
 decompress() {
