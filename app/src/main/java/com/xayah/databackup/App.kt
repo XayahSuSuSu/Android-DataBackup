@@ -98,7 +98,7 @@ class App : Application() {
     class EnvInitializer : Shell.Initializer() {
         override fun onInit(context: Context, shell: Shell): Boolean {
             val bashrc: InputStream = context.resources.openRawResource(R.raw.bashrc)
-            shell.newJob().add(bashrc).add("export PATH=${Path.getFilesDir(context)}/bin:\$PATH")
+            shell.newJob().add(bashrc).add("export PATH=${Path.getFilesDir()}/bin:\$PATH")
                 .exec()
             return true
         }

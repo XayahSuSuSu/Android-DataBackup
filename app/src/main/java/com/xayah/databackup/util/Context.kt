@@ -161,3 +161,6 @@ fun Context.getActivity(): Activity? {
     }
     return null
 }
+
+val List<String>.joinToLineString: String
+    get() = this.joinToString(separator = "\n")

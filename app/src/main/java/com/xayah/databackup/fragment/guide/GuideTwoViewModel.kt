@@ -1,6 +1,6 @@
 package com.xayah.databackup.fragment.guide
 
-import androidx.databinding.ObservableField
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.util.GlobalString
 
@@ -10,7 +10,13 @@ class GuideTwoViewModel : ViewModel() {
         "${GlobalString.symbolDot} ${GlobalString.releasePrebuiltBinaries}"
     val activateBashrc = "${GlobalString.symbolDot} ${GlobalString.activateBashrc}"
 
-    var grantRootAccessCheck = ObservableField("")
-    var releasePrebuiltBinariesCheck = ObservableField("")
-    var activateBashrcCheck = ObservableField("")
+    val grantRootAccessCheck by lazy {
+        MutableLiveData("")
+    }
+    val releasePrebuiltBinariesCheck by lazy {
+        MutableLiveData("")
+    }
+    val activateBashrcCheck by lazy {
+        MutableLiveData("")
+    }
 }

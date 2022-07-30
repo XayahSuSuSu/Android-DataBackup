@@ -42,7 +42,7 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun checkBin(): String {
-        return if (Command.checkBin(App.globalContext)) GlobalString.symbolTick else GlobalString.symbolCross
+        return if (Command.checkBin()) GlobalString.symbolTick else GlobalString.symbolCross
     }
 
     private fun checkBashrc(): String {

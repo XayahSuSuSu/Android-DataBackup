@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.activity.guide.GuideActivity
+import com.xayah.databackup.activity.guide.GuideViewModel
 import com.xayah.databackup.databinding.FragmentGuideUpdateBinding
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.readInitializedVersionName
@@ -18,7 +18,7 @@ import com.xayah.databackup.util.saveInitializedVersionName
 class GuideUpdateFragment : Fragment() {
     private var _binding: FragmentGuideUpdateBinding? = null
     private val binding get() = _binding!!
-    private lateinit var hostActivity: GuideActivity
+    private lateinit var guideViewModel: GuideViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -29,14 +29,14 @@ class GuideUpdateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        guideViewModel = ViewModelProvider(requireActivity())[GuideViewModel::class.java]
         val viewModel = ViewModelProvider(this)[GuideUpdateViewModel::class.java]
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
 
-        hostActivity = requireActivity() as GuideActivity
-        hostActivity.setBtnOnClickListener {
+        guideViewModel.btnOnClick.postValue {
             nextStep()
         }
-
         viewModel.initialize()
     }
 
@@ -46,13 +46,13 @@ class GuideUpdateFragment : Fragment() {
     }
 
     private fun nextStep() {
-        if (hostActivity.readInitializedVersionName().isNotEmpty()) {
-            hostActivity.saveInitializedVersionName(App.versionName)
+        if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
+            App.globalContext.saveInitializedVersionName(App.versionName)
             App.initializeGlobalList()
-            hostActivity.toMainActivity()
+            guideViewModel.finish.postValue(true)
         } else {
-            hostActivity.navigate(R.id.action_guideUpdateFragment_to_guideTwoFragment)
-            hostActivity.setBtnText(GlobalString.grantRootAccess)
+            guideViewModel.navigation.postValue(R.id.action_guideUpdateFragment_to_guideTwoFragment)
+            guideViewModel.btnText.postValue(GlobalString.grantRootAccess)
         }
     }
 }

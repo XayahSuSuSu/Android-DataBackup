@@ -365,7 +365,7 @@ class Command {
 
         fun extractAssets(mContext: Context, assetsPath: String, outName: String) {
             try {
-                val assets = File(Path.getFilesDir(mContext), outName)
+                val assets = File(Path.getFilesDir(), outName)
                 if (!assets.exists()) {
                     val outStream = FileOutputStream(assets)
                     val inputStream = mContext.resources.assets.open(assetsPath)
@@ -576,8 +576,8 @@ class Command {
             return execute("ls /").isSuccess
         }
 
-        fun checkBin(context: Context): Boolean {
-            execute("ls -l ${Path.getFilesDir(context)}/bin").out.apply {
+        fun checkBin(): Boolean {
+            execute("ls -l ${Path.getFilesDir()}/bin").out.apply {
                 val fileList = this.subList(1, this.size)
                 var count = 0
                 for (i in fileList) if (i.contains("-rwxrwxrwx")) count++

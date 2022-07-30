@@ -2,7 +2,6 @@ package com.xayah.databackup.activity.guide
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -27,33 +26,24 @@ class GuideActivity : AppCompatActivity() {
         binding = ActivityGuideBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this)[GuideViewModel::class.java]
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         setContentView(binding.root)
 
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_guide) as NavHostFragment
         navController = navHostFragment.navController
-    }
 
-    fun setBtnText(string: String) {
-        viewModel.btnText.set(string)
-    }
-
-    fun setBtnEnabled(boolean: Boolean) {
-        viewModel.btnEnabled.set(boolean)
-    }
-
-    fun setBtnOnClickListener(event: () -> Unit) {
-        binding.materialButton.setOnClickListener {
-            event()
+        viewModel.btnOnClick.observe(this) {
+            binding.materialButton.setOnClickListener(it)
         }
-    }
-
-    fun navigate(@IdRes id: Int) {
-        navController.navigate(id)
-    }
-
-    fun toMainActivity() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
+        viewModel.navigation.observe(this) {
+            navController.navigate(it)
+        }
+        viewModel.finish.observe(this) {
+            if (it) {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
+        }
     }
 }

@@ -6,8 +6,8 @@ import com.xayah.databackup.App
 
 class Path {
     companion object {
-        fun getFilesDir(context: Context): String {
-            return context.filesDir.path
+        fun getFilesDir(): String {
+            return App.globalContext.filesDir.path
         }
 
         fun getExternalFilesDir(context: Context): String? {

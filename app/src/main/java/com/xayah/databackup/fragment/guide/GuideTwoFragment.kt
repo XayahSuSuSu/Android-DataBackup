@@ -4,27 +4,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.App
-import com.xayah.databackup.activity.guide.GuideActivity
+import com.xayah.databackup.activity.guide.GuideViewModel
 import com.xayah.databackup.databinding.FragmentGuideTwoBinding
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.util.setWithConfirm
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class GuideTwoFragment : Fragment() {
     private var _binding: FragmentGuideTwoBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: GuideTwoViewModel
-    private lateinit var hostActivity: GuideActivity
-    private lateinit var versionName: String
+    private lateinit var guideViewModel: GuideViewModel
     private var step = 0
 
     override fun onCreateView(
@@ -36,16 +34,17 @@ class GuideTwoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        guideViewModel = ViewModelProvider(requireActivity())[GuideViewModel::class.java]
         viewModel = ViewModelProvider(this)[GuideTwoViewModel::class.java]
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
 
-        hostActivity = requireActivity() as GuideActivity
-        hostActivity.setBtnOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                hostActivity.setBtnEnabled(false)
+        guideViewModel.btnOnClick.postValue {
+            viewModel.viewModelScope.launch {
+                guideViewModel.btnEnabled.postValue(false)
                 when (step) {
                     0 -> {
-                        rootAccess()
+                        onRootAccess()
                     }
                     1 -> {
                         binRelease()
@@ -57,7 +56,7 @@ class GuideTwoFragment : Fragment() {
                         finish()
                     }
                 }
-                hostActivity.setBtnEnabled(true)
+                guideViewModel.btnEnabled.postValue(true)
             }
         }
     }
@@ -67,81 +66,78 @@ class GuideTwoFragment : Fragment() {
         _binding = null
     }
 
-    private fun rootAccess() {
-        val isRoot = Command.checkRoot()
+    private suspend fun onRootAccess() {
+        val isRoot = withContext(Dispatchers.IO) {
+            Command.checkRoot()
+        }
         if (isRoot) {
-            Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
-                if (this) {
-                    viewModel.grantRootAccessCheck.set(GlobalString.symbolTick)
-                    hostActivity.setBtnText(GlobalString.releasePrebuiltBinaries)
-                    step++
-                } else {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        Toast.makeText(
-                            requireContext(), GlobalString.backupDirCreateFailed, Toast.LENGTH_SHORT
-                        ).show()
+            viewModel.grantRootAccessCheck.postValue(GlobalString.symbolTick)
+            guideViewModel.btnText.postValue(GlobalString.releasePrebuiltBinaries)
+            step++
+            return
+        }
+        viewModel.grantRootAccessCheck.postValue(GlobalString.symbolCross)
+    }
+
+    private suspend fun binRelease() {
+        // 环境目录
+        val filesDirectory = Path.getFilesDir()
+        val versionPath = "${filesDirectory}/version"
+        val binPath = "${filesDirectory}/bin"
+        val binZipPath = "${filesDirectory}/bin.zip"
+        // 环境检测与释放
+        withContext(Dispatchers.IO) {
+            val oldVersionName = Command.execute("cat $versionPath").out.joinToLineString
+            if (App.versionName > oldVersionName) {
+                Command.execute("rm -rf $binPath $binZipPath")
+            }
+            val isBinReleased = Command.ls(binPath)
+            if (!isBinReleased) {
+                Command.extractAssets(
+                    requireContext(), "${Command.getABI()}/bin.zip", "bin.zip"
+                )
+                Command.unzipByZip4j(binZipPath, binPath)
+                Bashrc.writeToFile(App.versionName, versionPath)
+            }
+            Command.execute("chmod 777 -R $filesDirectory")
+            Command.checkBin().apply {
+                val that = this
+                withContext(Dispatchers.Main) {
+                    if (that) {
+                        viewModel.releasePrebuiltBinariesCheck.postValue(GlobalString.symbolTick)
+                        guideViewModel.btnText.postValue(GlobalString.activateBashrc)
+                        step++
+                    } else {
+                        viewModel.releasePrebuiltBinariesCheck.postValue(GlobalString.symbolCross)
+                        MaterialAlertDialogBuilder(requireContext()).apply {
+                            setWithConfirm(
+                                "${binPath}: ${GlobalString.binPermissionError}",
+                                cancelable = false,
+                                hasNegativeBtn = false
+                            ) {}
+                        }
                     }
-                    viewModel.grantRootAccessCheck.set(GlobalString.symbolCross)
                 }
             }
+        }
+    }
+
+    private suspend fun checkBashrc() {
+        val bashrcTest = withContext(Dispatchers.IO) {
+            Command.execute("check_bashrc").isSuccess
+        }
+        if (bashrcTest) {
+            viewModel.activateBashrcCheck.postValue(GlobalString.symbolTick)
+            guideViewModel.btnText.postValue(GlobalString.finish)
+            step++
         } else {
-            viewModel.grantRootAccessCheck.set(GlobalString.symbolCross)
-        }
-    }
-
-    private fun binRelease() {
-        versionName = App.versionName
-        val oldVersionName = ShellUtils.fastCmd("cat ${Path.getFilesDir(hostActivity)}/version")
-        if (versionName > oldVersionName) {
-            ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(hostActivity)}/bin")
-            ShellUtils.fastCmd("rm -rf ${Path.getFilesDir(hostActivity)}/bin.zip")
-        }
-
-        if (!Command.ls("${Path.getFilesDir(hostActivity)}/bin")) {
-            Command.extractAssets(
-                hostActivity, "${Command.getABI()}/bin.zip", "bin.zip"
-            )
-            Command.unzipByZip4j(
-                "${Path.getFilesDir(hostActivity)}/bin.zip", "${Path.getFilesDir(hostActivity)}/bin"
-            )
-            Bashrc.writeToFile(versionName, "${Path.getFilesDir(hostActivity)}/version")
-        }
-        Command.execute("chmod 777 -R ${Path.getFilesDir(hostActivity)}")
-        Command.checkBin(App.globalContext).apply {
-            if (this) {
-                viewModel.releasePrebuiltBinariesCheck.set(GlobalString.symbolTick)
-                hostActivity.setBtnText(GlobalString.activateBashrc)
-                step++
-            } else {
-                viewModel.releasePrebuiltBinariesCheck.set(GlobalString.symbolCross)
-                CoroutineScope(Dispatchers.Main).launch {
-                    MaterialAlertDialogBuilder(hostActivity).apply {
-                        setWithConfirm(
-                            "${Path.getFilesDir(hostActivity)}/bin: ${GlobalString.binPermissionError}",
-                            cancelable = false,
-                            hasNegativeBtn = false
-                        ) {}
-                    }
-                }
-            }
-        }
-    }
-
-    private fun checkBashrc() {
-        Command.execute("check_bashrc").isSuccess.apply {
-            if (this) {
-                viewModel.activateBashrcCheck.set(GlobalString.symbolTick)
-                hostActivity.setBtnText(GlobalString.finish)
-                step++
-            } else {
-                viewModel.activateBashrcCheck.set(GlobalString.symbolCross)
-            }
+            viewModel.activateBashrcCheck.postValue(GlobalString.symbolCross)
         }
     }
 
     private fun finish() {
-        hostActivity.saveInitializedVersionName(versionName)
+        App.globalContext.saveInitializedVersionName(App.versionName)
         App.initializeGlobalList()
-        hostActivity.toMainActivity()
+        guideViewModel.finish.postValue(true)
     }
 }
