@@ -149,6 +149,14 @@ fun Context.readBackupSaveIndex(): Int {
     return readPreferencesInt("backup_save_index", 0)
 }
 
+fun Context.saveAutoFixMultiUserContext(value: Boolean) {
+    savePreferences("auto_fix_multi_user_context", value)
+}
+
+fun Context.readAutoFixMultiUserContext(): Boolean {
+    return readPreferencesBoolean("auto_fix_multi_user_context", false)
+}
+
 fun Context.getActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {

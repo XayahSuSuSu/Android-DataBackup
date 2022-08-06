@@ -156,6 +156,7 @@ set_owner_and_SELinux() {
   # $2: package_name
   # $3: path
   # $4: user_id
+  # $5: support_fix_context
   if [ -f /config/sdcardfs/"$2"/appid ]; then
     owner="$(cat "/config/sdcardfs/$2/appid")"
   else
@@ -166,8 +167,10 @@ set_owner_and_SELinux() {
     chown -hR "$4$owner:$4$owner" "$3/"
     if [ "$1" = "user" ]; then
       restorecon -RFD "$3/"
-      context=$(ls -Zd "$3/../" | awk 'NF>1{print $1}' | sed -e "s/system_data_file/app_data_file/g")
-      chcon -hR "$context" "$3/"
+      if [ "$5" = "true" ]; then
+        context=$(ls -Zd "$3/../" | awk 'NF>1{print $1}' | sed -e "s/system_data_file/app_data_file/g")
+        chcon -hR "$context" "$3/"
+      fi
     fi
   fi
 }

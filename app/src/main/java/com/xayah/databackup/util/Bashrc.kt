@@ -71,10 +71,14 @@ class Bashrc {
         }
 
         suspend fun setOwnerAndSELinux(
-            dataType: String, packageName: String, path: String, userId: String
+            dataType: String,
+            packageName: String,
+            path: String,
+            userId: String,
+            supportFixContext: Boolean
         ): Pair<Boolean, String> {
             val exec =
-                runOnIO { Command.execute("set_owner_and_SELinux $dataType $packageName $path $userId") }
+                runOnIO { Command.execute("set_owner_and_SELinux $dataType $packageName $path $userId $supportFixContext") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 

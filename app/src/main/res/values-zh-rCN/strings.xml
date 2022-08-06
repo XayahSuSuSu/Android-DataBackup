@@ -122,4 +122,7 @@
     <string name="bin_permission_error">预编译二进制文件权限不正确, 请手动赋权[777]</string>
     <string name="backup_itself">备份自身</string>
     <string name="backup_itself_title">备份应用时自动备份自身安装包至备份目录下</string>
+    <string name="auto_fix_multi_user_context">Context修复</string>
+    <string name="auto_fix_multi_user_context_title">自动修复多用户Context, 免重启使用恢复后的多用户应用</string>
+    <string name="feature_not_supported">您的系统不支持此功能</string>
 </resources>

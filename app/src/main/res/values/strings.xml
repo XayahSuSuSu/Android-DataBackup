@@ -136,4 +136,7 @@
     <string name="bin_permission_error">Prebuilt file permissions are incorrect, please manually grant [777]</string>
     <string name="backup_itself">Backup itself</string>
     <string name="backup_itself_title">When backing up the application, it automatically backs up its own installation package to the backup directory</string>
+    <string name="auto_fix_multi_user_context">Context fix</string>
+    <string name="auto_fix_multi_user_context_title">Auto fix multi-user context, no restart needed for restored multi-user applications</string>
+    <string name="feature_not_supported">Feature not supported for your system</string>
 </resources>

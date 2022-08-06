@@ -527,13 +527,23 @@ class Command {
         }
 
         suspend fun setOwnerAndSELinux(
-            dataType: String, packageName: String, path: String, userId: String
+            dataType: String,
+            packageName: String,
+            path: String,
+            userId: String,
         ) {
-            Bashrc.setOwnerAndSELinux(dataType, packageName, path, userId).apply {
-                if (!this.first) {
-                    return
+            Bashrc.setOwnerAndSELinux(
+                dataType,
+                packageName,
+                path,
+                userId,
+                App.globalContext.readAutoFixMultiUserContext()
+            )
+                .apply {
+                    if (!this.first) {
+                        return
+                    }
                 }
-            }
         }
 
         private suspend fun getAppVersionCode(userId: String, packageName: String): String {
@@ -669,6 +679,10 @@ class Command {
                 }
             }
             return result
+        }
+
+        suspend fun checkLsZd(): Boolean {
+            return execute("ls -Zd").isSuccess
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -69,6 +70,7 @@ class RestoreViewModel : ViewModel() {
     var backupUser = ObservableField("${GlobalString.user}0")
     var restoreUser = ObservableField("${GlobalString.user}0")
 
+    var autoFixMultiUserContextEnable = ObservableBoolean(false)
     var onResume = {}
 
     init {
@@ -76,9 +78,13 @@ class RestoreViewModel : ViewModel() {
             if (isFirst) {
                 isFirst = false
             } else {
-                viewModelScope.launch {
-                    isInitialized = false
-                }
+                isInitialized = false
+            }
+        }
+        viewModelScope.launch {
+            Command.checkLsZd().apply {
+                autoFixMultiUserContextEnable.set(this)
+                App.globalContext.saveAutoFixMultiUserContext(this)
             }
         }
     }

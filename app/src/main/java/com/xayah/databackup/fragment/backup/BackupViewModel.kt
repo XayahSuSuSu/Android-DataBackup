@@ -75,9 +75,7 @@ class BackupViewModel : ViewModel() {
             if (isFirst) {
                 isFirst = false
             } else {
-                viewModelScope.launch {
-                    isInitialized = false
-                }
+                isInitialized = false
             }
         }
     }

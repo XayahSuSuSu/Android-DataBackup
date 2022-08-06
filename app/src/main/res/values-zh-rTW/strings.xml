@@ -122,4 +122,7 @@
     <string name="bin_permission_error">預編譯二進製文件權限不正確, 請手動賦權[777]</string>
     <string name="backup_itself">備份自身</string>
     <string name="backup_itself_title">備份應用時自動備份自身安裝包至備份目錄下</string>
+    <string name="auto_fix_multi_user_context">Context修復</string>
+    <string name="auto_fix_multi_user_context_title">自動修復多用戶Context, 免重啟使用恢復後的多用戶應用</string>
+    <string name="feature_not_supported">您的系統不支持此功能!</string>
 </resources>
