@@ -1,7 +1,10 @@
 package com.xayah.databackup.activity.processing
 
 import android.view.View
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
+import com.xayah.databackup.data.AppInfoBaseNum
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
@@ -9,38 +12,65 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class Restore {
-    lateinit var dataBinding: DataBinding
-    var isMedia = false
+class Restore(private val viewModel: ProcessingViewModel) {
+    private lateinit var dataBinding: DataBinding
+
+    // 应用恢复列表
+    private val _appInfoRestoreList by lazy {
+        MutableLiveData(mutableListOf<AppInfoRestore>())
+    }
+    private var appInfoRestoreList
+        get() = _appInfoRestoreList.value!!
+        set(value) = _appInfoRestoreList.postValue(value)
+    private val appInfoRestoreListNum
+        get() = run {
+            val appInfoBaseNum = AppInfoBaseNum(0, 0)
+            for (i in appInfoRestoreList) {
+                if (i.infoBase.app) appInfoBaseNum.appNum++
+                if (i.infoBase.data) appInfoBaseNum.dataNum++
+            }
+            appInfoBaseNum
+        }
+
+    // 媒体恢复列表
+    private val _mediaInfoRestoreList by lazy {
+        MutableLiveData(mutableListOf<MediaInfo>())
+    }
+    private var mediaInfoRestoreList
+        get() = _mediaInfoRestoreList.value!!
+        set(value) = _mediaInfoRestoreList.postValue(value)
+
     var successNum = 0
     var failedNum = 0
 
-    fun initialize(mDataBinding: DataBinding, mIsMedia: Boolean) {
-        dataBinding = mDataBinding.apply {
-            onRestoreClick = { v ->
-                if (isMedia) onRestoreMediaClick(v)
-                else onRestoreAppClick(v)
+    init {
+        viewModel.viewModelScope.launch {
+            // 加载列表
+            loadAllList()
+            dataBinding = viewModel.dataBinding.apply {
+                onRestoreClick = { v ->
+                    if (viewModel.isMedia) onRestoreMediaClick(v)
+                    else onRestoreAppClick(v)
+                }
+                btnText.set(GlobalString.restore)
             }
-            btnText.set(GlobalString.restore)
+            if (viewModel.isMedia) initializeMedia()
+            else initializeApp()
         }
-        isMedia = mIsMedia
-
-        if (isMedia) initializeMedia()
-        else initializeApp()
     }
 
     private fun initializeApp() {
-        dataBinding.progressMax.set(getAppInfoRestoreList().size)
+        dataBinding.progressMax.set(appInfoRestoreList.size)
         dataBinding.totalTip.set(GlobalString.ready)
-        Command.getCachedAppInfoRestoreListNum().apply {
+        appInfoRestoreListNum.apply {
             dataBinding.totalProgress.set("${GlobalString.selected} ${this.appNum} ${GlobalString.application}, ${this.dataNum} ${GlobalString.data}")
         }
     }
 
     private fun initializeMedia() {
-        dataBinding.progressMax.set(getMediaInfoRestoreList().size)
+        dataBinding.progressMax.set(mediaInfoRestoreList.size)
         dataBinding.totalTip.set(GlobalString.ready)
-        dataBinding.totalProgress.set("${GlobalString.selected} ${getMediaInfoRestoreList().size} ${GlobalString.data}")
+        dataBinding.totalProgress.set("${GlobalString.selected} ${mediaInfoRestoreList.size} ${GlobalString.data}")
     }
 
     private fun setSizeAndSpeed(src: String?) {
@@ -67,10 +97,10 @@ class Restore {
     }
 
     private fun onRestoreAppClick(v: View) {
-        if (successNum + failedNum != getAppInfoRestoreList().size) CoroutineScope(Dispatchers.IO).launch {
+        if (successNum + failedNum != appInfoRestoreList.size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.restoreProcessing)
-            for ((index, i) in getAppInfoRestoreList().withIndex()) {
+            for ((index, i) in appInfoRestoreList.withIndex()) {
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.infoBase.appName)
                 dataBinding.packageName.set(i.infoBase.packageName)
@@ -174,7 +204,7 @@ class Restore {
                 dataBinding.progress.set(index + 1)
             }
             dataBinding.totalTip.set(GlobalString.restoreFinished)
-            dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${getAppInfoRestoreList().size} ${GlobalString.total}")
+            dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${appInfoRestoreList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
         }
@@ -184,10 +214,10 @@ class Restore {
     }
 
     private fun onRestoreMediaClick(v: View) {
-        if (successNum + failedNum != getMediaInfoRestoreList().size) CoroutineScope(Dispatchers.IO).launch {
+        if (successNum + failedNum != mediaInfoRestoreList.size) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.restoreProcessing)
-            for ((index, i) in getMediaInfoRestoreList().withIndex()) {
+            for ((index, i) in mediaInfoRestoreList.withIndex()) {
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.name)
                 dataBinding.packageName.set(i.path)
@@ -219,7 +249,7 @@ class Restore {
                 dataBinding.progress.set(index + 1)
             }
             dataBinding.totalTip.set(GlobalString.restoreFinished)
-            dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${getMediaInfoRestoreList().size} ${GlobalString.total}")
+            dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mediaInfoRestoreList.size} ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
         }
@@ -228,11 +258,8 @@ class Restore {
         }
     }
 
-    private fun getAppInfoRestoreList(): List<AppInfoRestore> {
-        return App.globalAppInfoRestoreList.filter { it.infoBase.app || it.infoBase.data }
-    }
-
-    private fun getMediaInfoRestoreList(): List<MediaInfo> {
-        return App.globalMediaInfoRestoreList.filter { it.data }
+    private suspend fun loadAllList() {
+        appInfoRestoreList = Loader.loadAppInfoRestoreList()
+        mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
     }
 }

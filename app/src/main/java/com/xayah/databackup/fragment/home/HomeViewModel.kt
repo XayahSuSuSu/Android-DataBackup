@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +31,15 @@ class HomeViewModel : ViewModel() {
     var logText = ObservableField("")
     var dynamicColorsEnable = ObservableBoolean(false)
 
-    private fun checkRoot(): String {
+    init {
+        viewModelScope.launch {
+            refresh()
+            updateLogCard()
+            setDynamicColorsCard()
+        }
+    }
+
+    private suspend fun checkRoot(): String {
         Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
             if (!this) {
                 Toast.makeText(
@@ -41,11 +50,11 @@ class HomeViewModel : ViewModel() {
         return if (Command.checkRoot()) GlobalString.symbolTick else GlobalString.symbolCross
     }
 
-    private fun checkBin(): String {
+    private suspend fun checkBin(): String {
         return if (Command.checkBin()) GlobalString.symbolTick else GlobalString.symbolCross
     }
 
-    private fun checkBashrc(): String {
+    private suspend fun checkBashrc(): String {
         return if (Command.checkBashrc()) GlobalString.symbolTick else GlobalString.symbolCross
     }
 
@@ -84,13 +93,7 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun initialize() {
-        refresh()
-        updateLogCard()
-        setDynamicColorsCard()
-    }
-
-    private fun updateLogCard() {
+    private suspend fun updateLogCard() {
         val logPath = Path.getShellLogPath()
         logText.set("${Command.countFile(logPath)} ${GlobalString.log}, ${Command.countSize(logPath)} ${GlobalString.size}\n${GlobalString.storedIn} $logPath")
     }

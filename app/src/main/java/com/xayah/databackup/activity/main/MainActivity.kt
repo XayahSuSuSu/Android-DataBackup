@@ -2,6 +2,7 @@ package com.xayah.databackup.activity.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -11,10 +12,9 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.xayah.databackup.R
-import com.xayah.databackup.activity.AppCompatActivityBase
 import com.xayah.databackup.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivityBase() {
+class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivityBase() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         setContentView(binding.root)
 
         initialize()

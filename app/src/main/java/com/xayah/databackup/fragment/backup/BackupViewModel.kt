@@ -5,53 +5,112 @@ import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
+import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.AppInfoBaseNum
+import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.setLoading
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BackupViewModel : ViewModel() {
-    var backupUser = ObservableField("${GlobalString.user}${App.globalContext.readBackupUser()}")
-    var restoreUser = ObservableField("${GlobalString.user}${App.globalContext.readRestoreUser()}")
-    var appNum = ObservableField("0")
-    var dataNum = ObservableField("0")
-    var callback: () -> Unit = {}
-    var backupItselfEnable = ObservableBoolean(false)
+    val _isInitialized by lazy {
+        MutableLiveData(false)
+    }
+    private var isInitialized
+        get() = _isInitialized.value!!
+        set(value) = _isInitialized.postValue(value)
 
+    // 是否第一次进入Fragment
+    private val _isFirst by lazy {
+        MutableLiveData(true)
+    }
+    private var isFirst
+        get() = _isFirst.value!!
+        set(value) = _isFirst.postValue(value)
+
+    // 应用备份列表
+    private val _appInfoBackupList by lazy {
+        MutableLiveData(mutableListOf<AppInfoBackup>())
+    }
+    private var appInfoBackupList
+        get() = _appInfoBackupList.value!!.filter { it.infoBase.app || it.infoBase.data }
+            .toMutableList()
+        set(value) = _appInfoBackupList.postValue(value)
+    private val appInfoBackupListNum: LiveData<AppInfoBaseNum> =
+        Transformations.map(_appInfoBackupList) { appInfoBackupList ->
+            val appInfoBaseNum = AppInfoBaseNum(0, 0)
+            for (i in appInfoBackupList) {
+                if (i.infoBase.app) appInfoBaseNum.appNum++
+                if (i.infoBase.data) appInfoBaseNum.dataNum++
+            }
+            appInfoBaseNum
+        }
+    val appNum: LiveData<String> =
+        Transformations.map(appInfoBackupListNum) { num -> num.appNum.toString() }
+    val dataNum: LiveData<String> =
+        Transformations.map(appInfoBackupListNum) { num -> num.dataNum.toString() }
+
+    // 媒体备份列表
+    private val _mediaInfoBackupList by lazy {
+        MutableLiveData(mutableListOf<MediaInfo>())
+    }
+    var mediaInfoBackupList
+        get() = _mediaInfoBackupList.value!!
+        set(value) = _mediaInfoBackupList.postValue(value)
+
+    var backupUser = ObservableField("${GlobalString.user}0")
+    var restoreUser = ObservableField("${GlobalString.user}0")
+
+    var backupItselfEnable = ObservableBoolean(false)
+    var onResume = {}
+
+    init {
+        onResume = {
+            if (isFirst) {
+                isFirst = false
+            } else {
+                viewModelScope.launch {
+                    isInitialized = false
+                }
+            }
+        }
+    }
 
     fun onChangeUser(v: View) {
-        val context = v.context
-        val items =
-            if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf("0")
-        val choice = items.indexOf(App.globalContext.readBackupUser())
+        viewModelScope.launch {
+            val context = v.context
+            val items =
+                if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf(
+                    "0"
+                )
+            val choice = items.indexOf(App.globalContext.readBackupUser())
 
-        ListPopupWindow(context).apply {
-            fastInitialize(v, items, choice)
-            setOnItemClickListener { _, _, position, _ ->
-                dismiss()
-                BottomSheetDialog(v.context).apply {
-                    setLoading()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        App.saveGlobalList()
-                        context.saveBackupUser(items[position])
-                        backupUser.set("${GlobalString.user}${items[position]}")
-                        App.initializeGlobalList()
-                        withContext(Dispatchers.Main) {
-                            refresh()
-                            dismiss()
+            ListPopupWindow(context).apply {
+                fastInitialize(v, items, choice)
+                setOnItemClickListener { _, _, position, _ ->
+                    dismiss()
+                    BottomSheetDialog(v.context).apply {
+                        setLoading()
+                        viewModelScope.launch {
+                            withContext(Dispatchers.IO) {
+                                context.saveBackupUser(items[position])
+                                backupUser.set("${GlobalString.user}${items[position]}")
+                                isInitialized = false
+                                dismiss()
+                            }
                         }
                     }
                 }
+                show()
             }
-            show()
         }
     }
 
@@ -77,29 +136,9 @@ class BackupViewModel : ViewModel() {
         )
     }
 
-    private fun setNum() {
-        val that = this
-        Command.getCachedAppInfoBackupListNum().apply {
-            that.appNum.set(this.appNum.toString())
-            that.dataNum.set(this.dataNum.toString())
-        }
-    }
-
-    private fun refresh() {
-        setNum()
-        setUser()
-        callback()
-    }
-
     private fun setUser() {
         backupUser.set("${GlobalString.user}${App.globalContext.readBackupUser()}")
         restoreUser.set("${GlobalString.user}${App.globalContext.readRestoreUser()}")
-    }
-
-    fun initialize(mCallback: () -> Unit) {
-        callback = mCallback
-        refresh()
-        setBackupItselfCard()
     }
 
     private fun setBackupItselfCard() {
@@ -109,5 +148,18 @@ class BackupViewModel : ViewModel() {
     fun onBackupItselfEnableCheckedChanged(v: View, checked: Boolean) {
         backupItselfEnable.set(checked)
         App.globalContext.saveIsBackupItself(backupItselfEnable.get())
+    }
+
+    private suspend fun loadAllList() {
+        appInfoBackupList = Loader.loadAppInfoBackupList()
+        mediaInfoBackupList = Loader.loadMediaInfoBackupList()
+    }
+
+    suspend fun refresh() {
+        // 加载列表
+        loadAllList()
+        setUser()
+        setBackupItselfCard()
+        isInitialized = true
     }
 }

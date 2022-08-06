@@ -60,21 +60,17 @@ class ProcessingViewModel : ViewModel() {
         ObservableBoolean(false),
         ObservableBoolean(false),
         {}, {})
+
     var isRestore = false
+    var isMedia = false
     lateinit var backup: Backup
     lateinit var restore: Restore
 
-    fun initialize(mIsRestore: Boolean, mIsMedia: Boolean) {
-        isRestore = mIsRestore
-        val that = this
+    fun initialize() {
         if (isRestore)
-            restore = Restore().apply {
-                initialize(that.dataBinding, mIsMedia)
-            }
+            restore = Restore(this)
         else
-            backup = Backup().apply {
-                initialize(that.dataBinding, mIsMedia)
-            }
+            backup = Backup(this)
     }
 
     fun onBtnClick(v: View) {

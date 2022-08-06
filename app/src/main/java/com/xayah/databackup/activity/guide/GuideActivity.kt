@@ -8,9 +8,12 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.databinding.ActivityGuideBinding
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.readInitializedVersionName
 
 class GuideActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGuideBinding
@@ -29,6 +32,8 @@ class GuideActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         setContentView(binding.root)
 
+        judgePage()
+
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_guide) as NavHostFragment
         navController = navHostFragment.navController
@@ -40,9 +45,22 @@ class GuideActivity : AppCompatActivity() {
             navController.navigate(it)
         }
         viewModel.finish.observe(this) {
-            if (it) {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+            if (it) toMain()
+        }
+    }
+
+    private fun toMain() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
+    private fun judgePage() {
+        if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
+            if (App.globalContext.readInitializedVersionName() == App.versionName) {
+                toMain()
+            } else {
+                viewModel.navigation.postValue(R.id.action_guideOneFragment_to_guideUpdateFragment)
+                viewModel.btnText.postValue(GlobalString.finish)
             }
         }
     }

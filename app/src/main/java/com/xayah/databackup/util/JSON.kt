@@ -4,6 +4,12 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.data.BackupInfo
+import com.xayah.databackup.data.MediaInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class JSON {
@@ -39,7 +45,7 @@ class JSON {
             )
         }
 
-        fun writeJSONToFile(src: Any, outPut: String): Boolean {
+        suspend fun writeJSONToFile(src: Any, outPut: String): Boolean {
             try {
                 val json = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(src)
                 Bashrc.writeToFile(json, outPut).apply {
@@ -52,6 +58,51 @@ class JSON {
                 return false
             }
             return true
+        }
+
+        suspend fun saveAppInfoBackupList(appInfoBackupList: MutableList<AppInfoBackup>) {
+            withContext(Dispatchers.IO) {
+                writeJSONToFile(
+                    entityArrayToJsonArray(appInfoBackupList as MutableList<Any>),
+                    Path.getAppInfoBackupListPath()
+                )
+            }
+        }
+
+        suspend fun saveAppInfoRestoreList(appInfoRestoreList: MutableList<AppInfoRestore>) {
+            withContext(Dispatchers.IO) {
+                writeJSONToFile(
+                    entityArrayToJsonArray(appInfoRestoreList as MutableList<Any>),
+                    Path.getAppInfoRestoreListPath()
+                )
+            }
+        }
+
+        suspend fun saveMediaInfoBackupList(mediaInfoBackupList: MutableList<MediaInfo>) {
+            withContext(Dispatchers.IO) {
+                writeJSONToFile(
+                    entityArrayToJsonArray(mediaInfoBackupList as MutableList<Any>),
+                    Path.getMediaInfoBackupListPath()
+                )
+            }
+        }
+
+        suspend fun saveMediaInfoRestoreList(mediaInfoRestoreList: MutableList<MediaInfo>) {
+            withContext(Dispatchers.IO) {
+                writeJSONToFile(
+                    entityArrayToJsonArray(mediaInfoRestoreList as MutableList<Any>),
+                    Path.getMediaInfoRestoreListPath()
+                )
+            }
+        }
+
+        suspend fun saveBackupInfoList(backupInfoList: MutableList<BackupInfo>) {
+            withContext(Dispatchers.IO) {
+                writeJSONToFile(
+                    entityArrayToJsonArray(backupInfoList as MutableList<Any>),
+                    Path.getBackupInfoListPath()
+                )
+            }
         }
     }
 }

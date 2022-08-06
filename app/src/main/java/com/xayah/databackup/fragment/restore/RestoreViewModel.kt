@@ -5,53 +5,109 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
+import com.xayah.databackup.data.AppInfoBaseNum
+import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.setLoading
 import com.xayah.databackup.view.util.setWithConfirm
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class RestoreViewModel : ViewModel() {
-    var backupUser = ObservableField("${GlobalString.user}${App.globalContext.readBackupUser()}")
-    var restoreUser = ObservableField("${GlobalString.user}${App.globalContext.readRestoreUser()}")
-    var appNum = ObservableField("0")
-    var dataNum = ObservableField("0")
-    var callback: () -> Unit = {}
+    val _isInitialized by lazy {
+        MutableLiveData(false)
+    }
+    private var isInitialized
+        get() = _isInitialized.value!!
+        set(value) = _isInitialized.postValue(value)
+
+    // 是否第一次进入Fragment
+    private val _isFirst by lazy {
+        MutableLiveData(true)
+    }
+    private var isFirst
+        get() = _isFirst.value!!
+        set(value) = _isFirst.postValue(value)
+
+    // 应用恢复列表
+    private val _appInfoRestoreList by lazy {
+        MutableLiveData(mutableListOf<AppInfoRestore>())
+    }
+    private var appInfoRestoreList
+        get() = _appInfoRestoreList.value!!.filter { it.infoBase.app || it.infoBase.data }
+            .toMutableList()
+        set(value) = _appInfoRestoreList.postValue(value)
+    private val appInfoRestoreListNum: LiveData<AppInfoBaseNum> =
+        Transformations.map(_appInfoRestoreList) { appInfoRestoreList ->
+            val appInfoBaseNum = AppInfoBaseNum(0, 0)
+            for (i in appInfoRestoreList) {
+                if (i.infoBase.app) appInfoBaseNum.appNum++
+                if (i.infoBase.data) appInfoBaseNum.dataNum++
+            }
+            appInfoBaseNum
+        }
+    val appNum: LiveData<String> =
+        Transformations.map(appInfoRestoreListNum) { num -> num.appNum.toString() }
+    val dataNum: LiveData<String> =
+        Transformations.map(appInfoRestoreListNum) { num -> num.dataNum.toString() }
+
+    // 媒体恢复列表
+    private val _mediaInfoRestoreList by lazy {
+        MutableLiveData(mutableListOf<MediaInfo>())
+    }
+    var mediaInfoRestoreList
+        get() = _mediaInfoRestoreList.value!!
+        set(value) = _mediaInfoRestoreList.postValue(value)
+
+    var backupUser = ObservableField("${GlobalString.user}0")
+    var restoreUser = ObservableField("${GlobalString.user}0")
+
+    var onResume = {}
+
+    init {
+        onResume = {
+            if (isFirst) {
+                isFirst = false
+            } else {
+                viewModelScope.launch {
+                    isInitialized = false
+                }
+            }
+        }
+    }
 
     fun onChangeUser(v: View) {
-        val context = v.context
-        val items =
-            if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf("0")
-        val choice = items.indexOf(App.globalContext.readRestoreUser())
+        viewModelScope.launch {
+            val context = v.context
+            val items =
+                if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf(
+                    "0"
+                )
+            val choice = items.indexOf(App.globalContext.readRestoreUser())
 
-        ListPopupWindow(context).apply {
-            fastInitialize(v, items, choice)
-            setOnItemClickListener { _, _, position, _ ->
-                dismiss()
-                BottomSheetDialog(v.context).apply {
-                    setLoading()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        App.saveGlobalList()
-                        context.saveRestoreUser(items[position])
-                        restoreUser.set("${GlobalString.user}${items[position]}")
-                        App.initializeGlobalList()
-                        withContext(Dispatchers.Main) {
-                            refresh()
+            ListPopupWindow(context).apply {
+                fastInitialize(v, items, choice)
+                setOnItemClickListener { _, _, position, _ ->
+                    dismiss()
+                    BottomSheetDialog(v.context).apply {
+                        setLoading()
+                        viewModelScope.launch {
+                            context.saveRestoreUser(items[position])
+                            restoreUser.set("${GlobalString.user}${items[position]}")
+                            isInitialized = false
                             dismiss()
                         }
                     }
                 }
+                show()
             }
-            show()
         }
     }
 
@@ -79,16 +135,12 @@ class RestoreViewModel : ViewModel() {
         BottomSheetDialog(v.context).apply {
             setLoading()
             val that = this
-            CoroutineScope(Dispatchers.IO).launch {
-                App.saveGlobalList()
+            viewModelScope.launch {
                 Command.retrieve(Command.getCachedAppInfoRestoreActualList())
-                App.initializeGlobalList()
-                withContext(Dispatchers.Main) {
-                    refresh()
-                    that.dismiss()
-                    Toast.makeText(v.context, GlobalString.retrieveFinish, Toast.LENGTH_SHORT)
-                        .show()
-                }
+                refresh()
+                that.dismiss()
+                Toast.makeText(v.context, GlobalString.retrieveFinish, Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -100,55 +152,42 @@ class RestoreViewModel : ViewModel() {
                 BottomSheetDialog(v.context).apply {
                     setLoading()
                     val that = this
-                    CoroutineScope(Dispatchers.IO).launch {
+                    viewModelScope.launch {
                         Command.rm("${Path.getBackupDataSavePath()} ${Path.getAppInfoRestoreListPath()}")
                             .apply {
                                 if (this) {
-                                    App.saveGlobalList()
                                     Command.retrieve(Command.getCachedAppInfoRestoreActualList())
-                                    App.initializeGlobalList()
-                                    withContext(Dispatchers.Main) {
-                                        refresh()
-                                        Toast.makeText(
-                                            context, GlobalString.success, Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                } else withContext(Dispatchers.Main) {
+                                    refresh()
+                                    Toast.makeText(
+                                        context, GlobalString.success, Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
                                     Toast.makeText(
                                         context, GlobalString.failed, Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             }
-                        withContext(Dispatchers.Main) {
-                            that.dismiss()
-                        }
+                        that.dismiss()
                     }
                 }
             }
         }
     }
 
-    private fun setNum() {
-        val that = this
-        Command.getCachedAppInfoRestoreListNum().apply {
-            that.appNum.set(this.appNum.toString())
-            that.dataNum.set(this.dataNum.toString())
-        }
+    private suspend fun loadAllList() {
+        appInfoRestoreList = Loader.loadAppInfoRestoreList()
+        mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
     }
 
-    private fun refresh() {
-        setNum()
+    suspend fun refresh() {
+        // 加载列表
+        loadAllList()
         setUser()
-        callback()
+        isInitialized = true
     }
 
     private fun setUser() {
         backupUser.set("${GlobalString.user}${App.globalContext.readBackupUser()}")
         restoreUser.set("${GlobalString.user}${App.globalContext.readRestoreUser()}")
-    }
-
-    fun initialize(mCallback: () -> Unit) {
-        callback = mCallback
-        refresh()
     }
 }

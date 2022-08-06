@@ -2,7 +2,6 @@ package com.xayah.databackup.view.card
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.annotation.AttrRes
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -167,10 +166,12 @@ class StorageRadioCard @JvmOverloads constructor(
     }
 
     private fun update() {
-        setInternalStorage()
-        setOTG()
-        setCustom()
-        radioGroupCheckedIndex = App.globalContext.readBackupSaveIndex()
+        CoroutineScope(Dispatchers.Main).launch {
+            setInternalStorage()
+            setOTG()
+            setCustom()
+            radioGroupCheckedIndex = App.globalContext.readBackupSaveIndex()
+        }
     }
 
     private fun getPathByIndex(): String {
@@ -188,7 +189,7 @@ class StorageRadioCard @JvmOverloads constructor(
         return internalStoragePath.toString()
     }
 
-    private fun setInternalStorage() {
+    private suspend fun setInternalStorage() {
         val path = Path.getExternalStorageDataBackupDirectory()
         // 默认值
         internalStoragePath = GlobalString.fetching
@@ -209,7 +210,7 @@ class StorageRadioCard @JvmOverloads constructor(
         }
     }
 
-    private fun setCustom() {
+    private suspend fun setCustom() {
         val path = Path.getCustomDataBackupDirectory()
         // 默认值
         customPath = GlobalString.fetching
@@ -230,7 +231,7 @@ class StorageRadioCard @JvmOverloads constructor(
         }
     }
 
-    private fun setOTG() {
+    private suspend fun setOTG() {
         // 默认值
         otgPath = GlobalString.fetching
         otgProgress = 0
@@ -245,7 +246,6 @@ class StorageRadioCard @JvmOverloads constructor(
                 if (space.first) {
                     try {
                         val string = space.second
-                        Log.d("fuck", string)
                         otgProgress = string.split(" ").last().replace("%", "").toInt()
                         otgPath = path
                         otgEnabled = true
@@ -268,7 +268,6 @@ class StorageRadioCard @JvmOverloads constructor(
         BottomSheetDialog(context).apply {
             setLoading()
             CoroutineScope(Dispatchers.IO).launch {
-                App.initializeGlobalList()
                 dismiss()
             }
         }

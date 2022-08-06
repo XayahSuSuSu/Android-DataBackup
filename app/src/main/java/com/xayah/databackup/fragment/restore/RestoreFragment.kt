@@ -7,17 +7,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.util.setWithConfirm
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class RestoreFragment : Fragment() {
@@ -36,21 +35,24 @@ class RestoreFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[RestoreViewModel::class.java]
         binding.viewModel = viewModel
-    }
+        binding.lifecycleOwner = this
 
-    private fun initialize() {
-        binding.materialButtonChangeRestoreUser.setOnClickListener {
-            viewModel.onChangeUser(it)
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            viewModel.initialize { setChipGroup() }
+        viewModel._isInitialized.observe(viewLifecycleOwner) {
+            if (it) {
+                viewModel.viewModelScope.launch {
+                    setChipGroup()
+                }
+            } else
+                viewModel.viewModelScope.launch {
+                    viewModel.refresh()
+                }
         }
     }
 
     private fun setChipGroup() {
-        CoroutineScope(Dispatchers.Main).launch {
+        viewModel.viewModelScope.launch {
             binding.chipGroup.removeAllViews()
-            for (i in getMediaInfoList()) {
+            for (i in viewModel.mediaInfoRestoreList) {
                 addChip(i)
             }
         }
@@ -61,7 +63,10 @@ class RestoreFragment : Fragment() {
             text = mediaInfo.name
             isChecked = mediaInfo.data
             setOnCheckedChangeListener { _, isChecked ->
-                mediaInfo.data = isChecked
+                viewModel.viewModelScope.launch {
+                    mediaInfo.data = isChecked
+                    saveMediaInfoRestoreList()
+                }
             }
             setOnCloseIconClickListener {
                 MaterialAlertDialogBuilder(requireContext()).apply {
@@ -69,27 +74,30 @@ class RestoreFragment : Fragment() {
                         "${GlobalString.confirmRemove}${GlobalString.symbolQuestion}\n" +
                                 "${GlobalString.removeFilesToo}${GlobalString.symbolExclamation}"
                     ) {
-                        Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}.tar*")
-                            .apply {
-                                if (this) {
-                                    getMediaInfoList().remove(mediaInfo)
-                                    binding.chipGroup.removeView(it)
-                                    for (i in App.globalMediaInfoBackupList) {
-                                        if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
-                                            // 清除媒体备份大小信息
-                                            i.size = ""
-                                            break
+                        viewModel.viewModelScope.launch {
+                            Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}.tar*")
+                                .apply {
+                                    if (this) {
+                                        viewModel.mediaInfoRestoreList.remove(mediaInfo)
+                                        binding.chipGroup.removeView(it)
+                                        for (i in viewModel.mediaInfoRestoreList) {
+                                            if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
+                                                // 清除媒体备份大小信息
+                                                i.size = ""
+                                                break
+                                            }
                                         }
+                                        saveMediaInfoRestoreList()
+                                    } else {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "${GlobalString.removeFailed}${GlobalString.symbolExclamation}",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
                                     }
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "${GlobalString.removeFailed}${GlobalString.symbolExclamation}",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
                                 }
-                            }
+                        }
                     }
                 }
             }
@@ -97,13 +105,13 @@ class RestoreFragment : Fragment() {
         binding.chipGroup.addView(chip)
     }
 
-    private fun getMediaInfoList(): MutableList<MediaInfo> {
-        return App.globalMediaInfoRestoreList
+    private suspend fun saveMediaInfoRestoreList() {
+        JSON.saveMediaInfoRestoreList(viewModel.mediaInfoRestoreList)
     }
 
     override fun onResume() {
         super.onResume()
-        initialize()
+        viewModel.onResume()
     }
 
     override fun onDestroyView() {

@@ -136,8 +136,9 @@ class GuideTwoFragment : Fragment() {
     }
 
     private fun finish() {
-        App.globalContext.saveInitializedVersionName(App.versionName)
-        App.initializeGlobalList()
-        guideViewModel.finish.postValue(true)
+        viewModel.viewModelScope.launch {
+            App.globalContext.saveInitializedVersionName(App.versionName)
+            guideViewModel.finish.postValue(true)
+        }
     }
 }

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.guide.GuideViewModel
@@ -13,12 +14,14 @@ import com.xayah.databackup.databinding.FragmentGuideUpdateBinding
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.readInitializedVersionName
 import com.xayah.databackup.util.saveInitializedVersionName
+import kotlinx.coroutines.launch
 
 
 class GuideUpdateFragment : Fragment() {
     private var _binding: FragmentGuideUpdateBinding? = null
     private val binding get() = _binding!!
     private lateinit var guideViewModel: GuideViewModel
+    private lateinit var viewModel: GuideUpdateViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -30,7 +33,7 @@ class GuideUpdateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         guideViewModel = ViewModelProvider(requireActivity())[GuideViewModel::class.java]
-        val viewModel = ViewModelProvider(this)[GuideUpdateViewModel::class.java]
+        viewModel = ViewModelProvider(this)[GuideUpdateViewModel::class.java]
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -46,13 +49,14 @@ class GuideUpdateFragment : Fragment() {
     }
 
     private fun nextStep() {
-        if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
-            App.globalContext.saveInitializedVersionName(App.versionName)
-            App.initializeGlobalList()
-            guideViewModel.finish.postValue(true)
-        } else {
-            guideViewModel.navigation.postValue(R.id.action_guideUpdateFragment_to_guideTwoFragment)
-            guideViewModel.btnText.postValue(GlobalString.grantRootAccess)
+        viewModel.viewModelScope.launch {
+            if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
+                App.globalContext.saveInitializedVersionName(App.versionName)
+                guideViewModel.finish.postValue(true)
+            } else {
+                guideViewModel.navigation.postValue(R.id.action_guideUpdateFragment_to_guideTwoFragment)
+                guideViewModel.btnText.postValue(GlobalString.grantRootAccess)
+            }
         }
     }
 }

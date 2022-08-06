@@ -6,18 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.guide.GuideViewModel
 import com.xayah.databackup.databinding.FragmentGuideOneBinding
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.readInitializedVersionName
 
 
 class GuideOneFragment : Fragment() {
     private var _binding: FragmentGuideOneBinding? = null
     private val binding get() = _binding!!
     private lateinit var guideViewModel: GuideViewModel
+    private lateinit var viewModel: GuideOneViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -29,26 +27,12 @@ class GuideOneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         guideViewModel = ViewModelProvider(requireActivity())[GuideViewModel::class.java]
-        val viewModel = ViewModelProvider(this)[GuideOneViewModel::class.java]
+        viewModel = ViewModelProvider(this)[GuideOneViewModel::class.java]
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
         guideViewModel.btnOnClick.postValue {
             guideViewModel.navigation.postValue(R.id.action_guideOneFragment_to_guideUpdateFragment)
-        }
-
-        judgePage()
-    }
-
-    private fun judgePage() {
-        if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
-            if (App.globalContext.readInitializedVersionName() == App.versionName) {
-                App.initializeGlobalList()
-                guideViewModel.finish.postValue(true)
-            } else {
-                guideViewModel.navigation.postValue(R.id.action_guideOneFragment_to_guideUpdateFragment)
-                guideViewModel.btnText.postValue(GlobalString.finish)
-            }
         }
     }
 

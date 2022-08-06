@@ -98,8 +98,7 @@ fun Context.saveBackupUser(type: CharSequence?) {
 }
 
 fun Context.readBackupUser(): String {
-    return readPreferencesString("backup_user")
-        ?: if (Bashrc.listUsers().first && Bashrc.listUsers().second.isNotEmpty()) Bashrc.listUsers().second[0] else "0"
+    return readPreferencesString("backup_user") ?: "0"
 }
 
 fun Context.saveRestoreUser(type: CharSequence?) {
@@ -107,8 +106,7 @@ fun Context.saveRestoreUser(type: CharSequence?) {
 }
 
 fun Context.readRestoreUser(): String {
-    return readPreferencesString("restore_user")
-        ?: if (Bashrc.listUsers().first && Bashrc.listUsers().second.isNotEmpty()) Bashrc.listUsers().second[0] else "0"
+    return readPreferencesString("restore_user") ?: "0"
 }
 
 fun Context.saveIsSupportSystemApp(value: Boolean) {

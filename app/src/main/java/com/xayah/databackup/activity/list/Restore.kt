@@ -1,54 +1,77 @@
 package com.xayah.databackup.activity.list
 
-import android.annotation.SuppressLint
-import com.drakeet.multitype.MultiTypeAdapter
-import com.xayah.databackup.App
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.adapter.AppListAdapterRestore
 import com.xayah.databackup.adapter.AppListHeaderAdapterBase
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
-import kotlinx.coroutines.CoroutineScope
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.JSON
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.Collator
+import java.util.*
 
-class Restore(private val mAdapter: MultiTypeAdapter) {
-    var appNumFull = true
-    var dataNumFull = true
+class Restore(private val viewModel: AppListViewModel) {
+    private val _appInfoRestoreList by lazy {
+        MutableLiveData(mutableListOf<AppInfoRestore>())
+    }
+    private var appInfoRestoreList
+        get() = _appInfoRestoreList.value!!
+        set(value) = _appInfoRestoreList.postValue(value)
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun initialize(onInitialized: () -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-            mAdapter.apply {
+    private var appNumFull = true
+    private var dataNumFull = true
+
+    init {
+        viewModel.onPause = {
+            viewModel.viewModelScope.launch {
+                JSON.saveAppInfoRestoreList(appInfoRestoreList)
+            }
+        }
+        viewModel.onResume = {
+            if (viewModel.isFirst) {
+                viewModel.isFirst = false
+            } else {
+                viewModel.viewModelScope.launch {
+                    loadAppInfoRestoreList()
+                    viewModel.isInitialized = false
+                }
+            }
+        }
+        viewModel.viewModelScope.launch {
+            // 载入恢复列表
+            loadAppInfoRestoreList()
+            viewModel.mAdapter.apply {
                 val adapterList = mutableListOf<Any>()
                 register(
                     AppListHeaderAdapterBase(onInitialize = {
                         updateChip(it)
                     }, onChipAppClick = {
                         appNumFull = !appNumFull
-                        for (i in getAppInfoRestoreList()) i.infoBase.app = appNumFull
-                        mAdapter.notifyDataSetChanged()
+                        for (i in appInfoRestoreList) i.infoBase.app = appNumFull
+                        viewModel.mAdapter.notifyDataSetChanged()
                     }, onChipDataClick = {
                         dataNumFull = !dataNumFull
-                        for (i in getAppInfoRestoreList()) i.infoBase.data = dataNumFull
-                        mAdapter.notifyDataSetChanged()
+                        for (i in appInfoRestoreList) i.infoBase.data = dataNumFull
+                        viewModel.mAdapter.notifyDataSetChanged()
                     }, onSearchViewQueryTextChange = { newText ->
                         adapterList.clear()
                         adapterList.add(0, "Header")
-                        adapterList.addAll(getAppInfoRestoreList().filter {
+                        adapterList.addAll(appInfoRestoreList.filter {
                             it.infoBase.appName.lowercase().contains(newText.toString().lowercase())
                         })
                         items = adapterList
-                        mAdapter.notifyDataSetChanged()
+                        viewModel.mAdapter.notifyDataSetChanged()
                     })
                 )
-                register(AppListAdapterRestore(getAppInfoRestoreList()))
+                register(AppListAdapterRestore(appInfoRestoreList))
                 adapterList.add(0, "Header")
-                adapterList.addAll(getAppInfoRestoreList())
+                adapterList.addAll(appInfoRestoreList)
                 items = adapterList
-                withContext(Dispatchers.Main) {
-                    onInitialized()
-                }
+                viewModel.isInitialized = true
             }
         }
     }
@@ -56,8 +79,8 @@ class Restore(private val mAdapter: MultiTypeAdapter) {
     private fun updateChip(binding: AdapterAppListHeaderBinding) {
         var appNum = 0
         var dataNum = 0
-        val size = getAppInfoRestoreList().size
-        for (i in getAppInfoRestoreList()) {
+        val size = appInfoRestoreList.size
+        for (i in appInfoRestoreList) {
             if (i.infoBase.app) appNum++
             if (i.infoBase.data) dataNum++
         }
@@ -67,7 +90,15 @@ class Restore(private val mAdapter: MultiTypeAdapter) {
         binding.chipData.isChecked = dataNumFull
     }
 
-    private fun getAppInfoRestoreList(): MutableList<AppInfoRestore> {
-        return App.globalAppInfoRestoreList
+    private suspend fun loadAppInfoRestoreList() {
+        withContext(Dispatchers.IO) {
+            appInfoRestoreList = Command.getCachedAppInfoRestoreList().apply {
+                sortWith { appInfo1, appInfo2 ->
+                    val collator = Collator.getInstance(Locale.CHINA)
+                    collator.getCollationKey((appInfo1 as AppInfoRestore).infoBase.appName)
+                        .compareTo(collator.getCollationKey((appInfo2 as AppInfoRestore).infoBase.appName))
+                }
+            }
+        }
     }
 }

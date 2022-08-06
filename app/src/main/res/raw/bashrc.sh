@@ -34,7 +34,7 @@ pv_force() {
 
 pv_redirect() {
   # $1: path
-  pv -f -t -r -b >"$1"
+  pv -f -t -r -b > "$1"
 }
 
 compress_apk() {
@@ -42,10 +42,10 @@ compress_apk() {
   # $2: out_put
   mkdir -p "$2"
   case "$1" in
-  tar) tar -cf - ./*.apk | pv_redirect "${2}/apk.tar" ;;
-  zstd) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt | pv_force >"${2}/apk.tar.zst" ;;
-  lz4) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 | pv_force >"${2}/apk.tar.lz4" ;;
-  *) return 1 ;;
+    tar) tar -cf - ./*.apk | pv_redirect "${2}/apk.tar" ;;
+    zstd) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt | pv_force > "${2}/apk.tar.zst" ;;
+    lz4) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 | pv_force > "${2}/apk.tar.lz4" ;;
+    *) return 1 ;;
   esac
 }
 
@@ -58,40 +58,40 @@ compress() {
   mkdir -p "$4"
   am force-stop "$3"
   case "$2" in
-  user)
-    if [ -d "$5/$3" ]; then
-      case "$1" in
-      tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;
-      zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
-      lz4) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
-      esac
-    else
-      echo "No such path: $5"
-      return 1
-    fi
-    ;;
-  data | obb)
-    if [ -d "$5/$3" ]; then
-      case "$1" in
-      tar) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;
-      zstd) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/$2.tar.zst" ;;
-      lz4) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/$2.tar.lz4" ;;
-      esac
-    else
-      echo "No such path: $5/$3"
-    fi
-    ;;
-  media)
-    if [ -d "$5" ]; then
-      case "$1" in
-      tar) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_redirect "$4/${5##*/}.tar" ;;
-      zstd) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt >"$4/${5##*/}.tar.zst" ;;
-      lz4) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 >"$4/${5##*/}.tar.lz4" ;;
-      esac
-    else
-      echo "No such path: $5"
-    fi
-    ;;
+    user)
+      if [ -d "$5/$3" ]; then
+        case "$1" in
+          tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;
+          zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt > "$4/$2.tar.zst" ;;
+          lz4) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 > "$4/$2.tar.lz4" ;;
+        esac
+      else
+        echo "No such path: $5"
+        return 1
+      fi
+      ;;
+    data | obb)
+      if [ -d "$5/$3" ]; then
+        case "$1" in
+          tar) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;
+          zstd) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt > "$4/$2.tar.zst" ;;
+          lz4) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 > "$4/$2.tar.lz4" ;;
+        esac
+      else
+        echo "No such path: $5/$3"
+      fi
+      ;;
+    media)
+      if [ -d "$5" ]; then
+        case "$1" in
+          tar) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_redirect "$4/${5##*/}.tar" ;;
+          zstd) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt > "$4/${5##*/}.tar.zst" ;;
+          lz4) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 > "$4/${5##*/}.tar.lz4" ;;
+        esac
+      else
+        echo "No such path: $5"
+      fi
+      ;;
   esac
 }
 
@@ -113,21 +113,21 @@ install_apk() {
   mkdir -p "$tmp_dir"
   find "$1" -maxdepth 1 -name "apk.*" -type f | while read -r i; do
     case "${i##*.}" in
-    tar) pv_force "$i" | tar -xmpf - -C "$tmp_dir" ;;
-    zst | lz4) pv_force "$i" | tar -I zstd -xmpf - -C "$tmp_dir" ;;
+      tar) pv_force "$i" | tar -xmpf - -C "$tmp_dir" ;;
+      zst | lz4) pv_force "$i" | tar -I zstd -xmpf - -C "$tmp_dir" ;;
     esac
   done
   apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
   case "$apk_num" in
-  0) exit 1 ;;
-  1) pm_install "$3" ${tmp_dir}/*.apk ;;
-  *)
-    session=$(pm_install_create "$3" | grep -E -o '[0-9]+')
-    find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | while read -r i; do
-      pm install-write "$session" "${i##*/}" "$i"
-    done
-    pm install-commit "$session"
-    ;;
+    0) exit 1 ;;
+    1) pm_install "$3" ${tmp_dir}/*.apk ;;
+    *)
+      session=$(pm_install_create "$3" | grep -E -o '[0-9]+')
+      find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | while read -r i; do
+        pm install-write "$session" "${i##*/}" "$i"
+      done
+      pm install-commit "$session"
+      ;;
   esac
   rm -rf "$tmp_dir"
 }
@@ -180,18 +180,18 @@ decompress() {
   # $5: data_path
   am force-stop "$4"
   case "$2" in
-  media)
-    case "$1" in
-    tar) pv_force "$3" | tar --recursive-unlink -xpf - -C "$5" ;;
-    lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xpf - -C "$5" ;;
-    esac
-    ;;
-  *)
-    case "$1" in
-    tar) pv_force "$3" | tar --recursive-unlink -xmpf - -C "$5" ;;
-    lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xmpf - -C "$5" ;;
-    esac
-    ;;
+    media)
+      case "$1" in
+        tar) pv_force "$3" | tar --recursive-unlink -xpf - -C "$5" ;;
+        lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xpf - -C "$5" ;;
+      esac
+      ;;
+    *)
+      case "$1" in
+        tar) pv_force "$3" | tar --recursive-unlink -xmpf - -C "$5" ;;
+        lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xmpf - -C "$5" ;;
+      esac
+      ;;
   esac
 }
 
@@ -209,7 +209,7 @@ get_app_version_code() {
 write_to_file() {
   # $1: content
   # $2: path
-  echo "$1" >"$2"
+  echo "$1" > "$2"
 }
 
 check_bashrc() {
@@ -221,8 +221,8 @@ test_archive() {
   # $2: input_path
   if [ -e "$2" ]; then
     case "$1" in
-    tar) tar -t -f "$2" ;;
-    zstd | lz4) zstd -t "$2" ;;
+      tar) tar -t -f "$2" ;;
+      zstd | lz4) zstd -t "$2" ;;
     esac
   else
     echo "No such path: $2"
@@ -253,8 +253,8 @@ count_size() {
   # $2: type
   if [ -e "$1" ]; then
     case "$2" in
-    0) du -ksh "$1" | awk '{print $1}' ;;
-    *) du -ks "$1" | awk '{print $1}' ;;
+      0) du -ksh "$1" | awk '{print $1}' ;;
+      *) du -ks "$1" | awk '{print $1}' ;;
     esac
   fi
 }
@@ -262,17 +262,17 @@ count_size() {
 check_otg() {
   public="$(ls /dev/block/vold/public*)"
   if [ "$public" != "" ]; then
-    [ -f /proc/mounts ] && path="$(grep </proc/mounts -w "$public" | awk '{print $2}')"
+    [ -f /proc/mounts ] && path="$(grep < /proc/mounts -w "$public" | awk '{print $2}')"
     if [ -d "$path" ]; then
       info="$(df -T "$path" | sed -n 's|% /.*|%|p' | awk '{print $(NF-4)}')"
       echo "$path"
       case $info in
-      fuseblk | exfat | NTFS | ext4 | f2fs)
-        return 0
-        ;;
-      *)
-        return 1
-        ;;
+        fuseblk | exfat | NTFS | ext4 | f2fs)
+          return 0
+          ;;
+        *)
+          return 1
+          ;;
       esac
     fi
   else

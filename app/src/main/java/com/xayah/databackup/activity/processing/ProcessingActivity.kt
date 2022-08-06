@@ -17,12 +17,14 @@ class ProcessingActivity : AppCompatActivity() {
         binding = ActivityProcessingBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this)[ProcessingViewModel::class.java]
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         setContentView(binding.root)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
-        viewModel.initialize(
-            intent.getBooleanExtra("isRestore", false),
-            intent.getBooleanExtra("isMedia", false)
-        )
+        viewModel.apply {
+            isMedia = intent.getBooleanExtra("isMedia", false)
+            isRestore = intent.getBooleanExtra("isRestore", false)
+            initialize()
+        }
     }
 }

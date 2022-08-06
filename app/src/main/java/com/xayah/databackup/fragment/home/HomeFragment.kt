@@ -26,11 +26,11 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val viewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
 
         binding.storageRadioCard.apply {
             setMaterialYouFileExplorer(materialYouFileExplorer)
         }
-        viewModel.initialize()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

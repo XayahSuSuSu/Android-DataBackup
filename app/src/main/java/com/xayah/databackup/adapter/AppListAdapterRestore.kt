@@ -75,32 +75,38 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
             setOnClickListener {
                 MaterialAlertDialogBuilder(context).apply {
                     setWithConfirm("${GlobalString.confirmRemove}${GlobalString.symbolQuestion}") {
-                        Command.rm("${Path.getBackupDataSavePath()}/${item.infoBase.packageName}")
-                            .apply {
-                                if (this) {
-                                    val items = adapterItems.toMutableList()
-                                    items.remove(item)
-                                    mAppInfoRestoreList.remove(item)
-                                    adapterItems = items.toList()
-                                    BottomSheetDialog(context).apply {
-                                        setLoading()
-                                        val that = this
-                                        CoroutineScope(Dispatchers.IO).launch {
-                                            withContext(Dispatchers.Main) {
-                                                that.dismiss()
-                                                adapter.notifyItemRemoved(holder.bindingAdapterPosition)
-                                                Toast.makeText(
-                                                    context,
-                                                    GlobalString.success,
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            Command.rm("${Path.getBackupDataSavePath()}/${item.infoBase.packageName}")
+                                .apply {
+                                    if (this) {
+                                        val items = adapterItems.toMutableList()
+                                        items.remove(item)
+                                        mAppInfoRestoreList.remove(item)
+                                        adapterItems = items.toList()
+                                        BottomSheetDialog(context).apply {
+                                            setLoading()
+                                            val that = this
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                withContext(Dispatchers.Main) {
+                                                    that.dismiss()
+                                                    adapter.notifyItemRemoved(holder.bindingAdapterPosition)
+                                                    Toast.makeText(
+                                                        context,
+                                                        GlobalString.success,
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
                                             }
                                         }
-                                    }
-                                } else
-                                    Toast.makeText(context, GlobalString.failed, Toast.LENGTH_SHORT)
-                                        .show()
-                            }
+                                    } else
+                                        Toast.makeText(
+                                            context,
+                                            GlobalString.failed,
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                }
+                        }
                     }
                 }
             }

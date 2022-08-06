@@ -1,33 +1,42 @@
 package com.xayah.databackup.util
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 class Bashrc {
     companion object {
-        fun getStorageSpace(path: String): Pair<Boolean, String> {
-            val exec = Command.execute("get_storage_space $path")
+        private suspend fun <T> runOnIO(block: suspend () -> T): T {
+            return withContext(Dispatchers.IO) { block() }
+        }
+
+        suspend fun getStorageSpace(path: String): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("get_storage_space $path") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun getAPKPath(packageName: String, userId: String): Pair<Boolean, String> {
-            val exec = Command.execute("get_apk_path $packageName $userId")
+        suspend fun getAPKPath(packageName: String, userId: String): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("get_apk_path $packageName $userId") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun cd(path: String): Pair<Boolean, String> {
-            val exec = Command.execute("cd_to_path $path")
+        suspend fun cd(path: String): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("cd_to_path $path") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun compressAPK(
+        suspend fun compressAPK(
             compressionType: String, outPut: String, onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
-            val cmd = "compress_apk $compressionType $outPut"
-            val exec = Command.execute(cmd) {
-                onAddLine(it)
+            val exec = runOnIO {
+                val cmd = "compress_apk $compressionType $outPut"
+                Command.execute(cmd) {
+                    onAddLine(it)
+                }
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun compress(
+        suspend fun compress(
             compressionType: String,
             dataType: String,
             packageName: String,
@@ -35,36 +44,41 @@ class Bashrc {
             dataPath: String,
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
-            val cmd = "compress $compressionType $dataType $packageName $outPut $dataPath"
-            val exec = Command.execute(cmd) {
-                onAddLine(it)
+            val exec = runOnIO {
+                val cmd = "compress $compressionType $dataType $packageName $outPut $dataPath"
+                Command.execute(cmd) {
+                    onAddLine(it)
+                }
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun setInstallEnv(): Pair<Boolean, String> {
-            val exec = Command.execute("set_install_env")
+        suspend fun setInstallEnv(): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("set_install_env") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun installAPK(
+        suspend fun installAPK(
             inPath: String, packageName: String, userId: String, onAddLine: (line: String?) -> Unit
         ): Pair<Int, String> {
-            val cmd = "install_apk $inPath $packageName $userId"
-            val exec = Command.execute(cmd) {
-                onAddLine(it)
+            val exec = runOnIO {
+                val cmd = "install_apk $inPath $packageName $userId"
+                Command.execute(cmd) {
+                    onAddLine(it)
+                }
             }
             return Pair(exec.code, exec.out.joinToString(separator = "\n"))
         }
 
-        fun setOwnerAndSELinux(
+        suspend fun setOwnerAndSELinux(
             dataType: String, packageName: String, path: String, userId: String
         ): Pair<Boolean, String> {
-            val exec = Command.execute("set_owner_and_SELinux $dataType $packageName $path $userId")
+            val exec =
+                runOnIO { Command.execute("set_owner_and_SELinux $dataType $packageName $path $userId") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun decompress(
+        suspend fun decompress(
             compressionType: String,
             dataType: String,
             inputPath: String,
@@ -72,59 +86,65 @@ class Bashrc {
             dataPath: String,
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
-            val cmd = "decompress $compressionType $dataType $inputPath $packageName $dataPath"
-            val exec = Command.execute(cmd) {
-                onAddLine(it)
+            val exec = runOnIO {
+                val cmd = "decompress $compressionType $dataType $inputPath $packageName $dataPath"
+                Command.execute(cmd) {
+                    onAddLine(it)
+                }
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun getAppVersion(packageName: String): Pair<Boolean, String> {
-            val exec = Command.execute("get_app_version $packageName")
+        suspend fun getAppVersion(packageName: String): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("get_app_version $packageName") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun getAppVersionCode(userId: String, packageName: String): Pair<Boolean, String> {
-            val exec = Command.execute("get_app_version_code $userId $packageName")
+        suspend fun getAppVersionCode(userId: String, packageName: String): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("get_app_version_code $userId $packageName") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun writeToFile(content: String, path: String): Pair<Boolean, String> {
-            val prefix = path.split("/").toMutableList().apply {
-                removeLast()
+        suspend fun writeToFile(content: String, path: String): Pair<Boolean, String> {
+            val exec = runOnIO {
+                val prefix = path.split("/").toMutableList().apply {
+                    removeLast()
+                }
+                val newPath = prefix.joinToString(separator = "/")
+                Command.mkdir(newPath)
+                Command.execute("write_to_file \'$content\' \"$path\"", false)
             }
-            val newPath = prefix.joinToString(separator = "/")
-            Command.mkdir(newPath)
-            val exec = Command.execute("write_to_file \'$content\' \"$path\"", false)
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun testArchive(
+        suspend fun testArchive(
             compressionType: String,
             inputPath: String,
         ): Pair<Boolean, String> {
-            val cmd = "test_archive $compressionType $inputPath"
-            val exec = Command.execute(cmd) {}
+            val exec = runOnIO {
+                val cmd = "test_archive $compressionType $inputPath"
+                Command.execute(cmd) {}
+            }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun listUsers(): Pair<Boolean, MutableList<String>> {
-            val exec = Command.execute("list_users")
+        suspend fun listUsers(): Pair<Boolean, MutableList<String>> {
+            val exec = runOnIO { Command.execute("list_users") }
             return Pair(exec.isSuccess, exec.out)
         }
 
-        fun listPackages(userId: String): Pair<Boolean, MutableList<String>> {
-            val exec = Command.execute("list_packages $userId")
+        suspend fun listPackages(userId: String): Pair<Boolean, MutableList<String>> {
+            val exec = runOnIO { Command.execute("list_packages $userId") }
             return Pair(exec.isSuccess, exec.out)
         }
 
-        fun countSize(path: String, type: Int): Pair<Boolean, String> {
-            val exec = Command.execute("count_size $path $type")
+        suspend fun countSize(path: String, type: Int): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("count_size $path $type") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        fun checkOTG(): Pair<Int, String> {
-            val exec = Command.execute("check_otg")
+        suspend fun checkOTG(): Pair<Int, String> {
+            val exec = runOnIO { Command.execute("check_otg") }
             return Pair(exec.code, exec.out.joinToString(separator = "\n"))
         }
     }

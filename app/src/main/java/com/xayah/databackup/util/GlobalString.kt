@@ -97,7 +97,8 @@ class GlobalString {
         val user = App.globalContext.getString(R.string.user)
         val retrieveFinish = App.globalContext.getString(R.string.retrieve_finish)
         val appRetrieved = App.globalContext.getString(R.string.app_retrieved)
-        val confirmRemoveAllAppAndDataThatBackedUp = App.globalContext.getString(R.string.confirm_remove_all_app_and_data_that_backed_up)
+        val confirmRemoveAllAppAndDataThatBackedUp =
+            App.globalContext.getString(R.string.confirm_remove_all_app_and_data_that_backed_up)
         val pleaseWait = App.globalContext.getString(R.string.please_wait)
         val log = App.globalContext.getString(R.string.log)
         val size = App.globalContext.getString(R.string.size)
