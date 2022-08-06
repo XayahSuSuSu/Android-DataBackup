@@ -96,14 +96,10 @@ class RestoreViewModel : ViewModel() {
                 fastInitialize(v, items, choice)
                 setOnItemClickListener { _, _, position, _ ->
                     dismiss()
-                    BottomSheetDialog(v.context).apply {
-                        setLoading()
-                        viewModelScope.launch {
-                            context.saveRestoreUser(items[position])
-                            restoreUser.set("${GlobalString.user}${items[position]}")
-                            isInitialized = false
-                            dismiss()
-                        }
+                    viewModelScope.launch {
+                        context.saveRestoreUser(items[position])
+                        restoreUser.set("${GlobalString.user}${items[position]}")
+                        isInitialized = false
                     }
                 }
                 show()

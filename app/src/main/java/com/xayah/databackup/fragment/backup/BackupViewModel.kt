@@ -6,7 +6,6 @@ import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
@@ -15,7 +14,6 @@ import com.xayah.databackup.data.AppInfoBaseNum
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
-import com.xayah.databackup.view.setLoading
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -97,15 +95,11 @@ class BackupViewModel : ViewModel() {
                 fastInitialize(v, items, choice)
                 setOnItemClickListener { _, _, position, _ ->
                     dismiss()
-                    BottomSheetDialog(v.context).apply {
-                        setLoading()
-                        viewModelScope.launch {
-                            withContext(Dispatchers.IO) {
-                                context.saveBackupUser(items[position])
-                                backupUser.set("${GlobalString.user}${items[position]}")
-                                isInitialized = false
-                                dismiss()
-                            }
+                    viewModelScope.launch {
+                        withContext(Dispatchers.IO) {
+                            context.saveBackupUser(items[position])
+                            backupUser.set("${GlobalString.user}${items[position]}")
+                            isInitialized = false
                         }
                     }
                 }
