@@ -52,6 +52,8 @@ dependencies {
     def lifecycle_version = "2.4.1"
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
 
     // Crash
     implementation project(":crash")
