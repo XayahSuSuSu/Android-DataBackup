@@ -212,6 +212,7 @@ class Command {
         }
 
         suspend fun getCachedAppInfoRestoreActualList(): MutableList<AppInfoRestore> {
+            // 根据包名文件夹获取应用实际列表
             val cachedAppInfoRestoreActualList = mutableListOf<AppInfoRestore>()
             val cachedAppInfoRestoreList = mutableListOf<AppInfoRestore>()
             runOnIO {
@@ -242,8 +243,8 @@ class Command {
                                         i,
                                         "",
                                         0,
-                                        app = false,
-                                        data = false
+                                        app = true,
+                                        data = true
                                     )
                                 )
                             )
