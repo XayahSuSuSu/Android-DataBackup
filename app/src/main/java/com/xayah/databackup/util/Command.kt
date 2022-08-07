@@ -684,5 +684,9 @@ class Command {
         suspend fun checkLsZd(): Boolean {
             return execute("ls -Zd").isSuccess
         }
+
+        suspend fun listBackupUsers(): MutableList<String> {
+            return execute("ls ${Path.getBackupUserPath()}").out
+        }
     }
 }

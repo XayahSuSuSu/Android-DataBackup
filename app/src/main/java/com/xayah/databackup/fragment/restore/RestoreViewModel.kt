@@ -92,14 +92,18 @@ class RestoreViewModel : ViewModel() {
     fun onChangeBackupUser(v: View) {
         viewModelScope.launch {
             val context = v.context
-            val items =
-                if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf(
+            var items =
+                if (Bashrc.listUsers().first) Bashrc.listUsers().second else mutableListOf(
                     "0"
                 )
+            // 加入备份目录用户集
+            items.addAll(Command.listBackupUsers())
+            // 去重排序
+            items = items.toSortedSet().toMutableList()
             val choice = items.indexOf(App.globalContext.readBackupUser())
 
             ListPopupWindow(context).apply {
-                fastInitialize(v, items, choice)
+                fastInitialize(v, items.toTypedArray(), choice)
                 setOnItemClickListener { _, _, position, _ ->
                     dismiss()
                     context.saveBackupUser(items[position])
