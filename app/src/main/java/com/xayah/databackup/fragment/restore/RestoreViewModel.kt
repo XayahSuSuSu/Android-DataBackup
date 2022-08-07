@@ -89,7 +89,29 @@ class RestoreViewModel : ViewModel() {
         }
     }
 
-    fun onChangeUser(v: View) {
+    fun onChangeBackupUser(v: View) {
+        viewModelScope.launch {
+            val context = v.context
+            val items =
+                if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf(
+                    "0"
+                )
+            val choice = items.indexOf(App.globalContext.readBackupUser())
+
+            ListPopupWindow(context).apply {
+                fastInitialize(v, items, choice)
+                setOnItemClickListener { _, _, position, _ ->
+                    dismiss()
+                    context.saveBackupUser(items[position])
+                    backupUser.set("${GlobalString.user}${items[position]}")
+                    isInitialized = false
+                }
+                show()
+            }
+        }
+    }
+
+    fun onChangeRestoreUser(v: View) {
         viewModelScope.launch {
             val context = v.context
             val items =
@@ -102,11 +124,8 @@ class RestoreViewModel : ViewModel() {
                 fastInitialize(v, items, choice)
                 setOnItemClickListener { _, _, position, _ ->
                     dismiss()
-                    viewModelScope.launch {
-                        context.saveRestoreUser(items[position])
-                        restoreUser.set("${GlobalString.user}${items[position]}")
-                        isInitialized = false
-                    }
+                    context.saveRestoreUser(items[position])
+                    restoreUser.set("${GlobalString.user}${items[position]}")
                 }
                 show()
             }

@@ -14,9 +14,7 @@ import com.xayah.databackup.data.AppInfoBaseNum
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class BackupViewModel : ViewModel() {
     val _isInitialized by lazy {
@@ -80,7 +78,7 @@ class BackupViewModel : ViewModel() {
         }
     }
 
-    fun onChangeUser(v: View) {
+    fun onChangeBackupUser(v: View) {
         viewModelScope.launch {
             val context = v.context
             val items =
@@ -93,13 +91,30 @@ class BackupViewModel : ViewModel() {
                 fastInitialize(v, items, choice)
                 setOnItemClickListener { _, _, position, _ ->
                     dismiss()
-                    viewModelScope.launch {
-                        withContext(Dispatchers.IO) {
-                            context.saveBackupUser(items[position])
-                            backupUser.set("${GlobalString.user}${items[position]}")
-                            isInitialized = false
-                        }
-                    }
+                    context.saveBackupUser(items[position])
+                    backupUser.set("${GlobalString.user}${items[position]}")
+                    isInitialized = false
+                }
+                show()
+            }
+        }
+    }
+
+    fun onChangeRestoreUser(v: View) {
+        viewModelScope.launch {
+            val context = v.context
+            val items =
+                if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf(
+                    "0"
+                )
+            val choice = items.indexOf(App.globalContext.readRestoreUser())
+
+            ListPopupWindow(context).apply {
+                fastInitialize(v, items, choice)
+                setOnItemClickListener { _, _, position, _ ->
+                    dismiss()
+                    context.saveRestoreUser(items[position])
+                    restoreUser.set("${GlobalString.user}${items[position]}")
                 }
                 show()
             }
