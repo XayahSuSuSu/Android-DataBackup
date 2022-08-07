@@ -5,10 +5,7 @@ import android.content.Context
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.xayah.crash.CrashHandler
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.Logcat
-import com.xayah.databackup.util.Path
-import com.xayah.databackup.util.readIsDynamicColors
+import com.xayah.databackup.util.*
 import java.io.InputStream
 
 class App : Application() {
@@ -24,6 +21,7 @@ class App : Application() {
 
         lateinit var globalContext: Context
         lateinit var versionName: String
+        lateinit var server: Server
         val logcat = Logcat()
         val openDate = Command.getDate()
     }
@@ -42,6 +40,7 @@ class App : Application() {
         CrashHandler(this).initialize()
         globalContext = this
         versionName = packageManager.getPackageInfo(packageName, 0).versionName
+        server = Server()
         if (globalContext.readIsDynamicColors()) DynamicColors.applyToActivitiesIfAvailable(this)
     }
 }

@@ -10,10 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.util.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class HomeViewModel : ViewModel() {
     val root = "${GlobalString.symbolDot} Root"
@@ -66,8 +63,8 @@ class HomeViewModel : ViewModel() {
         // 设置默认值
         versionLatest.set(GlobalString.fetching)
         downloadBtnVisible.set(false)
-        CoroutineScope(Dispatchers.IO).launch {
-            Server.releases({ releaseList ->
+        viewModelScope.launch {
+            App.server.releases({ releaseList ->
                 val mReleaseList = releaseList.filter { !it.name.contains("Check") }
                 if (mReleaseList.isEmpty()) {
                     versionLatest.set(GlobalString.fetchFailed)
@@ -83,7 +80,7 @@ class HomeViewModel : ViewModel() {
     }
 
     fun refresh(v: View? = null) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             rootCheck.set(checkRoot())
             binCheck.set(checkBin())
             bashrcCheck.set(checkBashrc())
@@ -99,30 +96,27 @@ class HomeViewModel : ViewModel() {
     }
 
     fun onLogClearClick(v: View) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             Command.rm(Path.getShellLogPath())
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    v.context, GlobalString.success, Toast.LENGTH_SHORT
-                ).show()
-                refresh()
-            }
+            Toast.makeText(
+                v.context, GlobalString.success, Toast.LENGTH_SHORT
+            ).show()
+            refresh()
         }
     }
 
     fun onLogSaveClick(v: View) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             // 保存日志
             Bashrc.writeToFile(
-                App.logcat.toString(), "${Path.getShellLogPath()}/${App.openDate.replace(" ", "_")}"
+                App.logcat.toString(),
+                "${Path.getShellLogPath()}/${App.openDate.replace(" ", "_")}"
             )
             App.logcat.clear()
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    v.context, GlobalString.success, Toast.LENGTH_SHORT
-                ).show()
-                refresh()
-            }
+            Toast.makeText(
+                v.context, GlobalString.success, Toast.LENGTH_SHORT
+            ).show()
+            refresh()
         }
     }
 

@@ -2,10 +2,9 @@ package com.xayah.databackup.fragment.guide
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.xayah.databackup.App
 import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Server
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class GuideUpdateViewModel : ViewModel() {
@@ -17,8 +16,8 @@ class GuideUpdateViewModel : ViewModel() {
     }
 
     fun initialize() {
-        CoroutineScope(Dispatchers.IO).launch {
-            Server.releases({ releaseList ->
+        viewModelScope.launch {
+            App.server.releases({ releaseList ->
                 val mReleaseList = releaseList.filter { !it.name.contains("Check") }
                 if (mReleaseList.isEmpty()) {
                     subtitle.postValue(GlobalString.fetchFailed)

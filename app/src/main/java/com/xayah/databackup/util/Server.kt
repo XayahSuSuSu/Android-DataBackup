@@ -3,6 +3,8 @@ package com.xayah.databackup.util
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.xayah.databackup.data.Release
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
@@ -12,13 +14,16 @@ class Server {
     companion object {
         private const val releasesApi =
             "https://api.github.com/repos/XayahSuSuSu/Android-DataBackup/releases"
+    }
 
-        fun releases(
-            successCallback: (releaseList: MutableList<Release>) -> Unit,
-            failedCallback: () -> Unit
-        ) {
+    private val client = OkHttpClient()
+
+    suspend fun releases(
+        successCallback: (releaseList: MutableList<Release>) -> Unit,
+        failedCallback: () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
             try {
-                val client = OkHttpClient()
                 val request: Request = Request.Builder()
                     .url(releasesApi)
                     .build()

@@ -78,17 +78,18 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
                         CoroutineScope(Dispatchers.IO).launch {
                             Command.rm("${Path.getBackupDataSavePath()}/${item.infoBase.packageName}")
                                 .apply {
-                                    if (this) {
-                                        val items = adapterItems.toMutableList()
-                                        items.remove(item)
-                                        mAppInfoRestoreList.remove(item)
-                                        adapterItems = items.toList()
-                                        BottomSheetDialog(context).apply {
-                                            setLoading()
-                                            val that = this
-                                            CoroutineScope(Dispatchers.IO).launch {
+                                    val that = this
+                                    withContext(Dispatchers.Main) {
+                                        if (that) {
+                                            val items = adapterItems.toMutableList()
+                                            items.remove(item)
+                                            mAppInfoRestoreList.remove(item)
+                                            adapterItems = items.toList()
+                                            BottomSheetDialog(context).apply {
+                                                setLoading()
+                                                val dialog = this
                                                 withContext(Dispatchers.Main) {
-                                                    that.dismiss()
+                                                    dialog.dismiss()
                                                     adapter.notifyItemRemoved(holder.bindingAdapterPosition)
                                                     Toast.makeText(
                                                         context,
@@ -97,14 +98,15 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
                                                     ).show()
                                                 }
                                             }
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                GlobalString.failed,
+                                                Toast.LENGTH_SHORT
+                                            )
+                                                .show()
                                         }
-                                    } else
-                                        Toast.makeText(
-                                            context,
-                                            GlobalString.failed,
-                                            Toast.LENGTH_SHORT
-                                        )
-                                            .show()
+                                    }
                                 }
                         }
                     }
@@ -115,9 +117,7 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
             setOnCheckedChangeListener { _, checked ->
                 (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.app =
                     checked
-                CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
-                }
             }
             isChecked = item.infoBase.app
         }
@@ -125,9 +125,7 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
             setOnCheckedChangeListener { _, checked ->
                 (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.data =
                     checked
-                CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
-                }
             }
             isChecked = item.infoBase.data
         }
