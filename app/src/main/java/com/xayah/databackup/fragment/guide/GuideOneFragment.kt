@@ -31,8 +31,10 @@ class GuideOneFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        guideViewModel.btnOnClick.postValue {
-            guideViewModel.navigation.postValue(R.id.action_guideOneFragment_to_guideUpdateFragment)
+        guideViewModel.apply {
+            btnNextOnClick.postValue {
+                guideViewModel.navigation.postValue(R.id.action_guideOneFragment_to_guideUpdateFragment)
+            }
         }
     }
 

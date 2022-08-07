@@ -64,8 +64,8 @@
     <string name="activate_bashrc">激活Bashrc環境</string>
     <string name="finish">完成</string>
     <string name="welcome_to_use">歡迎使用</string>
-    <string name="guide_one_subtitle">在使用本應用之前, 你需要仔細閱讀以下內容</string>
-    <string name="guide_one_content">● 感謝你一直以來的支持與理解:)\n● 數據無價, 請謹慎使用本應用\n● 盡量使用備份時版本恢復數據\n● 本應用尚處於測試階段(Beta), 可能會存在不穩定性\n● 出現問題請及時反饋</string>
+    <string name="guide_one_subtitle">根據相關政策規定，你需要先仔細閱讀並同意以下《用戶協議》與《隱私政策》後才能開始使用本應用</string>
+    <string name="guide_one_content">● 本應用產生的所有數據均用於備份/恢復功能本身, 僅存於本地\n● 本應用嚴禁非法倒賣\n● 本應用權限說明:\nandroid.permission.QUERY_ALL_PACKAGES: 獲取本機所有應用包名信息，僅用於生成備份列表\nandroid.permission.INTERNET: 僅用於聯網獲取應用更新信息)\nandroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: 讀寫備份配置、存檔等文件\nRoot: 僅用於備份/恢復功能本身的特殊權限</string>
     <string name="guide_two_subtitle">要正確使用本應用, 需要通過如下檢測</string>
     <string name="next_step">下一步</string>
     <string name="refresh">刷新</string>
@@ -125,4 +125,6 @@
     <string name="auto_fix_multi_user_context">Context修復</string>
     <string name="auto_fix_multi_user_context_title">自動修復多用戶Context, 免重啟使用恢復後的多用戶應用</string>
     <string name="feature_not_supported">您的系統不支持此功能!</string>
+    <string name="disagree">不同意</string>
+    <string name="agree">同意</string>
 </resources>

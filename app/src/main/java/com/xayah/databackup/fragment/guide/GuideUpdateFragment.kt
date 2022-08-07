@@ -37,8 +37,12 @@ class GuideUpdateFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        guideViewModel.btnOnClick.postValue {
-            nextStep()
+        guideViewModel.apply {
+            btnPrevText.value = GlobalString.cancel
+            btnNextText.value = GlobalString.nextStep
+            btnNextOnClick.postValue {
+                nextStep()
+            }
         }
         viewModel.initialize()
     }
@@ -52,10 +56,10 @@ class GuideUpdateFragment : Fragment() {
         viewModel.viewModelScope.launch {
             if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
                 App.globalContext.saveInitializedVersionName(App.versionName)
-                guideViewModel.finish.postValue(true)
+                guideViewModel.finishAndEnter.postValue(true)
             } else {
                 guideViewModel.navigation.postValue(R.id.action_guideUpdateFragment_to_guideTwoFragment)
-                guideViewModel.btnText.postValue(GlobalString.grantRootAccess)
+                guideViewModel.btnNextText.postValue(GlobalString.grantRootAccess)
             }
         }
     }

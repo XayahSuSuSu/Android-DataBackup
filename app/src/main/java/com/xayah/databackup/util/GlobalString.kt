@@ -104,5 +104,8 @@ class GlobalString {
         val size = App.globalContext.getString(R.string.size)
         val storedIn = App.globalContext.getString(R.string.stored_in)
         val binPermissionError = App.globalContext.getString(R.string.bin_permission_error)
+        val disagree = App.globalContext.getString(R.string.disagree)
+        val agree = App.globalContext.getString(R.string.agree)
+        val cancel = App.globalContext.getString(R.string.cancel)
     }
 }

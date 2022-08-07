@@ -39,24 +39,26 @@ class GuideTwoFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        guideViewModel.btnOnClick.postValue {
-            viewModel.viewModelScope.launch {
-                guideViewModel.btnEnabled.postValue(false)
-                when (step) {
-                    0 -> {
-                        onRootAccess()
+        guideViewModel.apply {
+            btnNextOnClick.postValue {
+                viewModel.viewModelScope.launch {
+                    guideViewModel.btnEnabled.postValue(false)
+                    when (step) {
+                        0 -> {
+                            onRootAccess()
+                        }
+                        1 -> {
+                            binRelease()
+                        }
+                        2 -> {
+                            checkBashrc()
+                        }
+                        3 -> {
+                            finish()
+                        }
                     }
-                    1 -> {
-                        binRelease()
-                    }
-                    2 -> {
-                        checkBashrc()
-                    }
-                    3 -> {
-                        finish()
-                    }
+                    guideViewModel.btnEnabled.postValue(true)
                 }
-                guideViewModel.btnEnabled.postValue(true)
             }
         }
     }
@@ -72,7 +74,7 @@ class GuideTwoFragment : Fragment() {
         }
         if (isRoot) {
             viewModel.grantRootAccessCheck.postValue(GlobalString.symbolTick)
-            guideViewModel.btnText.postValue(GlobalString.releasePrebuiltBinaries)
+            guideViewModel.btnNextText.postValue(GlobalString.releasePrebuiltBinaries)
             step++
             return
         }
@@ -105,7 +107,7 @@ class GuideTwoFragment : Fragment() {
                 withContext(Dispatchers.Main) {
                     if (that) {
                         viewModel.releasePrebuiltBinariesCheck.postValue(GlobalString.symbolTick)
-                        guideViewModel.btnText.postValue(GlobalString.activateBashrc)
+                        guideViewModel.btnNextText.postValue(GlobalString.activateBashrc)
                         step++
                     } else {
                         viewModel.releasePrebuiltBinariesCheck.postValue(GlobalString.symbolCross)
@@ -128,7 +130,7 @@ class GuideTwoFragment : Fragment() {
         }
         if (bashrcTest) {
             viewModel.activateBashrcCheck.postValue(GlobalString.symbolTick)
-            guideViewModel.btnText.postValue(GlobalString.finish)
+            guideViewModel.btnNextText.postValue(GlobalString.finish)
             step++
         } else {
             viewModel.activateBashrcCheck.postValue(GlobalString.symbolCross)
@@ -138,7 +140,7 @@ class GuideTwoFragment : Fragment() {
     private fun finish() {
         viewModel.viewModelScope.launch {
             App.globalContext.saveInitializedVersionName(App.versionName)
-            guideViewModel.finish.postValue(true)
+            guideViewModel.finishAndEnter.postValue(true)
         }
     }
 }

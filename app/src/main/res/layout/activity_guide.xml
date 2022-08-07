@@ -26,23 +26,39 @@
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_constraintBottom_toTopOf="@id/materialButton"
+                app:layout_constraintBottom_toTopOf="@id/linearLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:navGraph="@navigation/nav_graph_guide" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/materialButton"
+            <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginBottom="16dp"
-                android:enabled="@{viewModel.btnEnabled}"
-                android:text="@{viewModel.btnText}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/materialButton_prev"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{viewModel.btnPrevText}" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/materialButton_next"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:enabled="@{viewModel.btnEnabled}"
+                    android:text="@{viewModel.btnNextText}" />
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

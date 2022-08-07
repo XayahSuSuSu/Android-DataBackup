@@ -38,14 +38,20 @@ class GuideActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_guide) as NavHostFragment
         navController = navHostFragment.navController
 
-        viewModel.btnOnClick.observe(this) {
-            binding.materialButton.setOnClickListener(it)
+        viewModel.btnPrevOnClick.observe(this) {
+            binding.materialButtonPrev.setOnClickListener(it)
+        }
+        viewModel.btnNextOnClick.observe(this) {
+            binding.materialButtonNext.setOnClickListener(it)
         }
         viewModel.navigation.observe(this) {
             navController.navigate(it)
         }
-        viewModel.finish.observe(this) {
+        viewModel.finishAndEnter.observe(this) {
             if (it) toMain()
+        }
+        viewModel.finish.observe(this) {
+            if (it) finish()
         }
     }
 
@@ -60,7 +66,7 @@ class GuideActivity : AppCompatActivity() {
                 toMain()
             } else {
                 viewModel.navigation.postValue(R.id.action_guideOneFragment_to_guideUpdateFragment)
-                viewModel.btnText.postValue(GlobalString.finish)
+                viewModel.btnNextText.postValue(GlobalString.finish)
             }
         }
     }
