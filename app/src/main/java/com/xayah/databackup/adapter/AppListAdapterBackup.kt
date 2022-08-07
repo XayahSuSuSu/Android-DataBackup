@@ -9,6 +9,9 @@ import com.drakeet.multitype.ItemViewDelegate
 import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.databinding.AdapterAppListBinding
 import com.xayah.databackup.view.util.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AppListAdapterBackup : ItemViewDelegate<AppInfoBackup, AppListAdapterBackup.ViewHolder>() {
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
@@ -54,7 +57,9 @@ class AppListAdapterBackup : ItemViewDelegate<AppInfoBackup, AppListAdapterBacku
             setOnCheckedChangeListener { _, checked ->
                 (adapterItems[holder.bindingAdapterPosition] as AppInfoBackup).infoBase.app =
                     checked
+                CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
+                }
             }
             isChecked = item.infoBase.app
         }
@@ -62,7 +67,9 @@ class AppListAdapterBackup : ItemViewDelegate<AppInfoBackup, AppListAdapterBacku
             setOnCheckedChangeListener { _, checked ->
                 (adapterItems[holder.bindingAdapterPosition] as AppInfoBackup).infoBase.data =
                     checked
+                CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
+                }
             }
             isChecked = item.infoBase.data
         }

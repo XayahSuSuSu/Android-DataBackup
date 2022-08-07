@@ -117,7 +117,9 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
             setOnCheckedChangeListener { _, checked ->
                 (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.app =
                     checked
+                CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
+                }
             }
             isChecked = item.infoBase.app
         }
@@ -125,7 +127,9 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
             setOnCheckedChangeListener { _, checked ->
                 (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.data =
                     checked
+                CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
+                }
             }
             isChecked = item.infoBase.data
         }
