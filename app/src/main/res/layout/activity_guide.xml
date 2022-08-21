@@ -24,8 +24,9 @@
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment_content_guide"
                 android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:defaultNavHost="true"
                 app:layout_constraintBottom_toTopOf="@id/linearLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -37,11 +38,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:orientation="horizontal"
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginBottom="16dp"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintLeft_toLeftOf="parent">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/materialButton_prev"
@@ -59,8 +59,6 @@
                     android:enabled="@{viewModel.btnEnabled}"
                     android:text="@{viewModel.btnNextText}" />
             </LinearLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
