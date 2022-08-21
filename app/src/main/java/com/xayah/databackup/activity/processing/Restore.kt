@@ -11,6 +11,7 @@ import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Restore(private val viewModel: ProcessingViewModel) {
     private lateinit var dataBinding: DataBinding
@@ -39,6 +40,14 @@ class Restore(private val viewModel: ProcessingViewModel) {
     private var mediaInfoRestoreList
         get() = _mediaInfoRestoreList.value!!
         set(value) = _mediaInfoRestoreList.postValue(value)
+    private val mediaInfoRestoreListNum
+        get() = run {
+            var num = 0
+            for (i in mediaInfoRestoreList) {
+                if (i.data) num++
+            }
+            num
+        }
 
     var successNum = 0
     var failedNum = 0
@@ -70,7 +79,10 @@ class Restore(private val viewModel: ProcessingViewModel) {
     private fun initializeMedia() {
         dataBinding.progressMax.set(mediaInfoRestoreList.size)
         dataBinding.totalTip.set(GlobalString.ready)
-        dataBinding.totalProgress.set("${GlobalString.selected} ${mediaInfoRestoreList.size} ${GlobalString.data}")
+        mediaInfoRestoreListNum.apply {
+            dataBinding.totalProgress.set("${GlobalString.selected} $this ${GlobalString.data}")
+        }
+
     }
 
     private fun setSizeAndSpeed(src: String?) {
@@ -259,7 +271,9 @@ class Restore(private val viewModel: ProcessingViewModel) {
     }
 
     private suspend fun loadAllList() {
-        appInfoRestoreList = Loader.loadAppInfoRestoreList()
-        mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
+        withContext(Dispatchers.IO) {
+            appInfoRestoreList = Loader.loadAppInfoRestoreList()
+            mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
+        }
     }
 }
