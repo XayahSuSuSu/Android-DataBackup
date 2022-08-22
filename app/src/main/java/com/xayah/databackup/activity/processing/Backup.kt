@@ -123,7 +123,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
     private fun onBackupAppClick(v: View) {
         viewModel.viewModelScope.launch {
             val startTime = Command.getDate()
-            val startSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
+            val startSize = Command.countSize(App.globalContext.readBackupSavePath())
             if (successNum + failedNum != appInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
@@ -242,7 +242,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     dataBinding.progress.set(index + 1)
                 }
                 val endTime = Command.getDate()
-                val endSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
+                val endSize = Command.countSize(App.globalContext.readBackupSavePath())
                 backupInfoList.add(
                     BackupInfo(
                         Command.getVersion(),
@@ -269,7 +269,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
     private fun onBackupMediaClick(v: View) {
         viewModel.viewModelScope.launch {
             val startTime = Command.getDate()
-            val startSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
+            val startSize = Command.countSize(App.globalContext.readBackupSavePath())
             if (successNum + failedNum != mediaInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
@@ -313,7 +313,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     dataBinding.progress.set(index + 1)
                 }
                 val endTime = Command.getDate()
-                val endSize = Command.countSize(Path.getExternalStorageDataBackupDirectory())
+                val endSize = Command.countSize(App.globalContext.readBackupSavePath())
                 backupInfoList.add(
                     BackupInfo(
                         Command.getVersion(),
