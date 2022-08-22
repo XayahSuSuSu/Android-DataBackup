@@ -107,5 +107,8 @@ class GlobalString {
         val disagree = App.globalContext.getString(R.string.disagree)
         val agree = App.globalContext.getString(R.string.agree)
         val cancel = App.globalContext.getString(R.string.cancel)
+        val backupDirNotExist = App.globalContext.getString(R.string.backup_dir_not_exist)
+        val pickDir = App.globalContext.getString(R.string.pick_dir)
+        val create = App.globalContext.getString(R.string.create)
     }
 }

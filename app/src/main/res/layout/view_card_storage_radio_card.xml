@@ -116,44 +116,5 @@
                     android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
             </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/materialRadioButton_custom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="自定义目录"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/linearProgressIndicator_custom"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:trackCornerRadius="3dp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/materialTextView_custom_path"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-            </LinearLayout>
-        </LinearLayout>
     </LinearLayout>
 </layout>

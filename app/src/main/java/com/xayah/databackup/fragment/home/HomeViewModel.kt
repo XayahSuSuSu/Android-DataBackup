@@ -37,13 +37,6 @@ class HomeViewModel : ViewModel() {
     }
 
     private suspend fun checkRoot(): String {
-        Command.mkdir(Path.getExternalStorageDataBackupDirectory()).apply {
-            if (!this) {
-                Toast.makeText(
-                    App.globalContext, GlobalString.backupDirCreateFailed, Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
         return if (Command.checkRoot()) GlobalString.symbolTick else GlobalString.symbolCross
     }
 

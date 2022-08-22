@@ -141,4 +141,7 @@
     <string name="feature_not_supported">Feature not supported for your system</string>
     <string name="disagree">Disagree</string>
     <string name="agree">Agree</string>
+    <string name="backup_dir_not_exist">Backup directory does not exist, want to create a default path?</string>
+    <string name="pick_dir">Pick directory</string>
+    <string name="create">Create</string>
 </resources>

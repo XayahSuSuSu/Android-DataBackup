@@ -127,4 +127,7 @@
     <string name="feature_not_supported">您的系统不支持此功能</string>
     <string name="disagree">不同意</string>
     <string name="agree">同意</string>
+    <string name="backup_dir_not_exist">备份目录不存在, 是否创建默认路径?</string>
+    <string name="pick_dir">选择目录</string>
+    <string name="create">创建</string>
 </resources>

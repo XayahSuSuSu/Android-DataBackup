@@ -4,13 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.annotation.AttrRes
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.databinding.ViewCardStorageRadioCardBinding
 import com.xayah.databackup.util.*
-import com.xayah.databackup.view.setLoading
 import com.xayah.databackup.view.util.dp
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +42,8 @@ class StorageRadioCard @JvmOverloads constructor(
             binding.linearProgressIndicatorInternalStorage.progress = value
         }
 
-    private var internalStoragePath: CharSequence?
+    private var internalStoragePath = App.globalContext.readCustomBackupSavePath()
+    private var internalStoragePathDisplay: CharSequence?
         get() = binding.materialTextViewInternalStoragePath.text
         set(value) {
             binding.materialTextViewInternalStoragePath.text = value
@@ -61,22 +61,11 @@ class StorageRadioCard @JvmOverloads constructor(
             binding.linearProgressIndicatorOtg.progress = value
         }
 
-    private var otgPath: CharSequence?
+    private var otgPath = ""
+    private var otgPathDisplay: CharSequence?
         get() = binding.materialTextViewOtgPath.text
         set(value) {
             binding.materialTextViewOtgPath.text = value
-        }
-
-    private var customProgress: Int
-        get() = binding.linearProgressIndicatorCustom.progress
-        set(value) {
-            binding.linearProgressIndicatorCustom.progress = value
-        }
-
-    private var customPath: CharSequence?
-        get() = binding.materialTextViewCustomPath.text
-        set(value) {
-            binding.materialTextViewCustomPath.text = value
         }
 
     private var radioGroupCheckedIndex: Int
@@ -85,20 +74,15 @@ class StorageRadioCard @JvmOverloads constructor(
             App.globalContext.saveBackupSaveIndex(value)
             when (value) {
                 0 -> {
-                    App.globalContext.saveBackupSavePath(internalStoragePath.toString())
+                    App.globalContext.saveBackupSavePath(internalStoragePath)
                 }
                 1 -> {
-                    App.globalContext.saveBackupSavePath(otgPath.toString())
-
-                }
-                2 -> {
-                    App.globalContext.saveBackupSavePath(customPath.toString())
+                    App.globalContext.saveBackupSavePath(otgPath)
 
                 }
             }
             binding.materialRadioButtonInternalStorage.isChecked = (value == 0)
             binding.materialRadioButtonOtg.isChecked = (value == 1)
-            binding.materialRadioButtonCustom.isChecked = (value == 2)
         }
 
     private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
@@ -132,108 +116,76 @@ class StorageRadioCard @JvmOverloads constructor(
                 radioGroupCheckedIndex = 1
             }
         }
-        binding.materialRadioButtonCustom.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                radioGroupCheckedIndex = 2
-            }
-        }
-        binding.materialRadioButtonInternalStorage.setOnClickListener {
-            initializeGlobalList()
-        }
-        binding.materialRadioButtonOtg.setOnClickListener {
-            initializeGlobalList()
-
-        }
-        binding.materialRadioButtonCustom.setOnClickListener {
-            initializeGlobalList()
-        }
         binding.materialButtonEdit.setOnClickListener {
-            val that = this
-            materialYouFileExplorer.apply {
-                defPath = getPathByIndex()
-                isFile = false
-                toExplorer(context) { path, _ ->
-                    radioGroupCheckedIndex = 2
-                    App.globalContext.saveCustomBackupSavePath(path)
-                    App.globalContext.saveBackupSavePath(path)
-                    update()
-                    initializeGlobalList()
-                }
-            }
+            pickPath()
         }
 
         update()
+    }
+
+    private fun pickPath() {
+        materialYouFileExplorer.apply {
+            isFile = false
+            toExplorer(context) { path, _ ->
+                radioGroupCheckedIndex = 0
+                internalStoragePath = path
+                internalStoragePathDisplay = path
+                App.globalContext.saveBackupSavePath(path)
+                App.globalContext.saveCustomBackupSavePath(path)
+                update()
+            }
+        }
     }
 
     private fun update() {
         CoroutineScope(Dispatchers.Main).launch {
             setInternalStorage()
             setOTG()
-            setCustom()
             radioGroupCheckedIndex = App.globalContext.readBackupSaveIndex()
         }
     }
 
-    private fun getPathByIndex(): String {
-        when (radioGroupCheckedIndex) {
-            0 -> {
-                return internalStoragePath.toString()
-            }
-            1 -> {
-                return otgPath.toString()
-            }
-            2 -> {
-                return customPath.toString()
+    private suspend fun setInternalStorage() {
+        val path = internalStoragePath
+        Command.ls(path).apply {
+            if (!this) {
+                MaterialAlertDialogBuilder(context).apply {
+                    setTitle(GlobalString.tips)
+                    setCancelable(false)
+                    setMessage(GlobalString.backupDirNotExist)
+                    setNeutralButton(GlobalString.pickDir) { _, _ -> pickPath() }
+                    setPositiveButton(GlobalString.create) { _, _ ->
+                        CoroutineScope(Dispatchers.Main).launch {
+                            Command.mkdir(path)
+                            update()
+                        }
+                    }
+                    show()
+                }
             }
         }
-        return internalStoragePath.toString()
-    }
-
-    private suspend fun setInternalStorage() {
-        val path = Path.getExternalStorageDataBackupDirectory()
         // 默认值
-        internalStoragePath = GlobalString.fetching
+        internalStoragePathDisplay = GlobalString.fetching
         internalStorageProgress = 0
 
         val space = Bashrc.getStorageSpace(path)
         val string = if (space.first) space.second else GlobalString.error
-        internalStoragePath = path
+        internalStoragePathDisplay = path
         if (space.first) {
             try {
                 internalStorageProgress = string.split(" ").last().replace("%", "").toInt()
             } catch (e: NumberFormatException) {
                 e.printStackTrace()
-                internalStoragePath = GlobalString.fetchFailed
+                internalStoragePathDisplay = GlobalString.fetchFailed
             }
         } else {
-            internalStoragePath = GlobalString.fetchFailed
-        }
-    }
-
-    private suspend fun setCustom() {
-        val path = Path.getCustomDataBackupDirectory()
-        // 默认值
-        customPath = GlobalString.fetching
-        customProgress = 0
-
-        val space = Bashrc.getStorageSpace(path)
-        val string = if (space.first) space.second else GlobalString.error
-        customPath = path
-        if (space.first) {
-            try {
-                customProgress = string.split(" ").last().replace("%", "").toInt()
-            } catch (e: NumberFormatException) {
-                e.printStackTrace()
-                customPath = GlobalString.fetchFailed
-            }
-        } else {
-            customPath = GlobalString.fetchFailed
+            internalStoragePathDisplay = GlobalString.fetchFailed
         }
     }
 
     private suspend fun setOTG() {
         // 默认值
-        otgPath = GlobalString.fetching
+        otgPathDisplay = GlobalString.fetching
         otgProgress = 0
         otgEnabled = false
         // 检查OTG连接情况
@@ -247,28 +199,20 @@ class StorageRadioCard @JvmOverloads constructor(
                     try {
                         val string = space.second
                         otgProgress = string.split(" ").last().replace("%", "").toInt()
+                        otgPathDisplay = path
                         otgPath = path
                         otgEnabled = true
                     } catch (e: NumberFormatException) {
-                        otgPath = GlobalString.fetchFailed
+                        otgPathDisplay = GlobalString.fetchFailed
                         e.printStackTrace()
                     }
                 }
             } else if (that.first == 1) {
                 if (radioGroupCheckedIndex == 1) radioGroupCheckedIndex = 0
-                otgPath = GlobalString.unsupportedFormat
+                otgPathDisplay = GlobalString.unsupportedFormat
             } else {
                 if (radioGroupCheckedIndex == 1) radioGroupCheckedIndex = 0
-                otgPath = GlobalString.notPluggedIn
-            }
-        }
-    }
-
-    private fun initializeGlobalList() {
-        BottomSheetDialog(context).apply {
-            setLoading()
-            CoroutineScope(Dispatchers.IO).launch {
-                dismiss()
+                otgPathDisplay = GlobalString.notPluggedIn
             }
         }
     }
