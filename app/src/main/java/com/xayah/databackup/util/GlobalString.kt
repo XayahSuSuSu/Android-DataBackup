@@ -111,5 +111,6 @@ class GlobalString {
         val pickDir = App.globalContext.getString(R.string.pick_dir)
         val create = App.globalContext.getString(R.string.create)
         val repeatToAdd = App.globalContext.getString(R.string.repeat_to_add)
+        val installing = App.globalContext.getString(R.string.installing)
     }
 }

@@ -119,6 +119,7 @@ install_apk() {
       zst | lz4) pv_force "$i" | tar -I zstd -xmpf - -C "$tmp_dir" ;;
     esac
   done
+  echo "install apk finished"
   apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
   case "$apk_num" in
     0) exit 1 ;;

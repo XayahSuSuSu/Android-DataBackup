@@ -145,4 +145,5 @@
     <string name="pick_dir">Pick directory</string>
     <string name="create">Create</string>
     <string name="repeat_to_add">Repeat to add!</string>
+    <string name="installing">Installing</string>
 </resources>

@@ -131,4 +131,5 @@
     <string name="pick_dir">選擇目錄</string>
     <string name="create">創建</string>
     <string name="repeat_to_add">重複添加!</string>
+    <string name="installing">安裝中</string>
 </resources>

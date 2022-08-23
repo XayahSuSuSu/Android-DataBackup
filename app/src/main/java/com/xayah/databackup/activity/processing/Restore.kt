@@ -98,15 +98,23 @@ class Restore(private val viewModel: ProcessingViewModel) {
 
     private fun setSizeAndSpeed(src: String?) {
         try {
-            val newSrc = src?.replace("[", "")?.replace("]", "")
-            val sizeSrc = newSrc?.split(" ")?.filter { item -> item != "" }?.get(0)
-            val speedSrc =
-                newSrc?.split(" ")?.filter { item -> item != "" }?.get(2)?.replace(" ", "")
-                    ?.replace("]", "")
-            dataBinding.size.set(sizeSrc?.filter { item -> item.isDigit() || item == '.' })
-            dataBinding.sizeUnit.set(sizeSrc?.filter { item -> item.isLetter() })
-            dataBinding.speed.set(speedSrc?.filter { item -> item.isDigit() || item == '.' })
-            dataBinding.speedUnit.set(speedSrc?.filter { item -> item.isLetter() || item == '/' })
+            if (src == "install apk finished") {
+                // 安装应用中
+                dataBinding.size.set("0")
+                dataBinding.sizeUnit.set("")
+                dataBinding.speed.set(GlobalString.installing)
+                dataBinding.speedUnit.set("")
+            } else {
+                val newSrc = src?.replace("[", "")?.replace("]", "")
+                val sizeSrc = newSrc?.split(" ")?.filter { item -> item != "" }?.get(0)
+                val speedSrc =
+                    newSrc?.split(" ")?.filter { item -> item != "" }?.get(2)?.replace(" ", "")
+                        ?.replace("]", "")
+                dataBinding.size.set(sizeSrc?.filter { item -> item.isDigit() || item == '.' })
+                dataBinding.sizeUnit.set(sizeSrc?.filter { item -> item.isLetter() })
+                dataBinding.speed.set(speedSrc?.filter { item -> item.isDigit() || item == '.' })
+                dataBinding.speedUnit.set(speedSrc?.filter { item -> item.isLetter() || item == '/' })
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
