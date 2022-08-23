@@ -110,5 +110,6 @@ class GlobalString {
         val backupDirNotExist = App.globalContext.getString(R.string.backup_dir_not_exist)
         val pickDir = App.globalContext.getString(R.string.pick_dir)
         val create = App.globalContext.getString(R.string.create)
+        val repeatToAdd = App.globalContext.getString(R.string.repeat_to_add)
     }
 }

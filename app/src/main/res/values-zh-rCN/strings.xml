@@ -130,4 +130,5 @@
     <string name="backup_dir_not_exist">备份目录不存在, 是否创建默认路径?</string>
     <string name="pick_dir">选择目录</string>
     <string name="create">创建</string>
+    <string name="repeat_to_add">重复添加!</string>
 </resources>

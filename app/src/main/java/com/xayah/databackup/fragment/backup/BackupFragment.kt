@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -44,7 +45,29 @@ class BackupFragment : Fragment() {
                 isFile = false
                 toExplorer(requireContext()) { path, _ ->
                     viewModel.viewModelScope.launch {
-                        val mediaInfo = MediaInfo(path.split("/").last(), path, true, "")
+                        var name = path.split("/").last()
+                        for (i in viewModel.mediaInfoBackupList) {
+                            if (path == i.path) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    GlobalString.repeatToAdd,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@launch
+                            }
+                            if (name == i.name) {
+                                // 重名媒体资料
+                                val nameList = name.split("_").toMutableList()
+                                val index = nameList.last().toIntOrNull()
+                                if (index == null) {
+                                    nameList.add("0")
+                                } else {
+                                    nameList[nameList.lastIndex] = (index + 1).toString()
+                                }
+                                name = nameList.joinToString(separator = "_")
+                            }
+                        }
+                        val mediaInfo = MediaInfo(name, path, true, "")
                         viewModel.mediaInfoBackupList.add(mediaInfo)
                         addChip(mediaInfo)
                         saveMediaInfoBackupList()
