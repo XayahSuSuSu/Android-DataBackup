@@ -83,11 +83,13 @@ compress() {
       ;;
     media)
       if [ -d "$5" ]; then
+        write_to_file "$5" "$5/com.xayah.databackup.PATH"
         case "$1" in
           tar) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_redirect "$4/${5##*/}.tar" ;;
           zstd) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt > "$4/${5##*/}.tar.zst" ;;
           lz4) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 > "$4/${5##*/}.tar.lz4" ;;
         esac
+        rm -rf "$5/com.xayah.databackup.PATH"
       else
         echo "No such path: $5"
       fi
@@ -184,10 +186,32 @@ decompress() {
   am force-stop "$4"
   case "$2" in
     media)
+      tmp_dir="/data/local/tmp/data_backup"
+      path_file_name='com.xayah.databackup.PATH'
+      mkdir "$tmp_dir"
       case "$1" in
-        tar) pv_force "$3" | tar --recursive-unlink -xpf - -C "$5" ;;
-        lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xpf - -C "$5" ;;
+        tar)
+          tar -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
+          data_path=$(cat "$tmp_dir/$4/$path_file_name")
+          if [ "$data_path" != "" ]; then
+            pv_force "$3" | tar --recursive-unlink -xpf - -C "${data_path%/*}"
+            rm -rf "${data_path:?}/$path_file_name"
+          else
+            exit 1
+          fi
+          ;;
+        lz4 | zstd)
+          tar -I zstd -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
+          data_path=$(cat "$tmp_dir/$4/$path_file_name")
+          if [ "$data_path" != "" ]; then
+            pv_force "$3" | tar --recursive-unlink -I zstd -xpf - -C "${data_path%/*}"
+            rm -rf "${data_path:?}/$path_file_name"
+          else
+            exit 1
+          fi
+          ;;
       esac
+      rm -rf "$tmp_dir"
       ;;
     *)
       case "$1" in

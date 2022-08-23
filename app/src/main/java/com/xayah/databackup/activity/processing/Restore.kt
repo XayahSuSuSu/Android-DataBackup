@@ -265,7 +265,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
                         Command.getCompressionTypeByPath(inputPath),
                         "media",
                         inputPath,
-                        "media",
+                        i.name,
                         i.path.replace("/${i.name}", "")
                     ) { setSizeAndSpeed(it) }.apply {
                         if (!this) state = false

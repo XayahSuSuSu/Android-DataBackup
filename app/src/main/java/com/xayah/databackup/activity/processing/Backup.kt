@@ -288,7 +288,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                         Command.compress(
                             "tar",
                             "media",
-                            "media",
+                            i.name,
                             Path.getBackupMediaSavePath(),
                             i.path,
                             i.size
