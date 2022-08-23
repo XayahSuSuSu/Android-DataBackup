@@ -379,22 +379,23 @@ class Command {
             return cachedMediaInfoList
         }
 
-        suspend fun getCachedMediaInfoRestoreList(isFiltered: Boolean = false): MutableList<MediaInfo> {
+        suspend fun getCachedMediaInfoRestoreList(): MutableList<MediaInfo> {
             val cachedMediaInfoRestoreList = mutableListOf<MediaInfo>()
             runOnIO {
-                cat(Path.getMediaInfoRestoreListPath()).apply {
-                    if (this.first) {
-                        try {
-                            val jsonArray = JSON.stringToJsonArray(this.second)
-                            for (i in jsonArray) {
-                                val item = JSON.jsonElementToEntity(
-                                    i, MediaInfo::class.java
-                                ) as MediaInfo
-                                if (isFiltered) if (!item.data) continue
-                                cachedMediaInfoRestoreList.add(item)
+                execute("find ${Path.getBackupMediaSavePath()} -name \"*\" -type f").apply {
+                    if (this.isSuccess) {
+                        for (i in this.out) {
+                            val info = i.split("/").last().split(".")
+                            if (info.isNotEmpty()) {
+                                cachedMediaInfoRestoreList.add(
+                                    MediaInfo(
+                                        info[0],
+                                        GlobalString.customDir,
+                                        true,
+                                        "-1"
+                                    )
+                                )
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
                     }
                 }
