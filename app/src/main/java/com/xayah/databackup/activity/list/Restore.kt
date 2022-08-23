@@ -51,11 +51,11 @@ class Restore(private val viewModel: AppListViewModel) {
                         updateChip(it)
                     }, onChipAppClick = {
                         appNumFull = !appNumFull
-                        for (i in appInfoRestoreList) i.infoBase.app = appNumFull
+                        for (i in appInfoRestoreList) if (i.hasApp) i.infoBase.app = appNumFull
                         viewModel.mAdapter.notifyDataSetChanged()
                     }, onChipDataClick = {
                         dataNumFull = !dataNumFull
-                        for (i in appInfoRestoreList) i.infoBase.data = dataNumFull
+                        for (i in appInfoRestoreList) if (i.hasData) i.infoBase.data = dataNumFull
                         viewModel.mAdapter.notifyDataSetChanged()
                     }, onSearchViewQueryTextChange = { newText ->
                         adapterList.clear()
@@ -78,14 +78,18 @@ class Restore(private val viewModel: AppListViewModel) {
 
     private fun updateChip(binding: AdapterAppListHeaderBinding) {
         var appNum = 0
+        var hasAppNum = 0
         var dataNum = 0
+        var hasDataNum = 0
         val size = appInfoRestoreList.size
         for (i in appInfoRestoreList) {
             if (i.infoBase.app) appNum++
+            if (i.hasApp) hasAppNum++
             if (i.infoBase.data) dataNum++
+            if (i.hasData) hasDataNum++
         }
-        appNumFull = appNum == size
-        dataNumFull = dataNum == size
+        appNumFull = appNum == hasAppNum
+        dataNumFull = dataNum == hasDataNum
         binding.chipApp.isChecked = appNumFull
         binding.chipData.isChecked = dataNumFull
     }

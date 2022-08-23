@@ -231,24 +231,57 @@ class Command {
                         }
                     }
                 }
-                execute("ls ${Path.getBackupDataSavePath()}").apply {
+                var hasApp = false
+                var hasData = false
+                execute("find ${Path.getBackupDataSavePath()} -name \"*\" -type f").apply {
                     if (isSuccess) {
-                        for (i in out) {
-                            val tmp = cachedAppInfoRestoreList.find { it.infoBase.packageName == i }
-                            val tmpIndex = cachedAppInfoRestoreList.indexOf(tmp)
-                            if (tmpIndex == -1) cachedAppInfoRestoreActualList.add(
-                                AppInfoRestore(
-                                    null, AppInfoBase(
-                                        GlobalString.appRetrieved,
-                                        i,
-                                        "",
-                                        0,
-                                        app = true,
-                                        data = true
-                                    )
-                                )
-                            )
-                            else cachedAppInfoRestoreActualList.add(cachedAppInfoRestoreList[tmpIndex])
+                        this.out.add("//") // 添加尾部元素, 保证原尾部元素参与
+                        for ((index, i) in this.out.withIndex()) {
+                            if (index < this.out.size - 1) {
+                                val info = i.replace(Path.getBackupDataSavePath(), "").split("/")
+                                val infoNext =
+                                    this.out[index + 1].replace(Path.getBackupDataSavePath(), "")
+                                        .split("/")
+                                if (info.size == 3) {
+                                    if (info[2].contains("apk.tar"))
+                                        hasApp = true
+                                    else if (info[2].contains("data.tar"))
+                                        hasData = true
+                                    else if (info[2].contains("obb.tar"))
+                                        hasData = true
+                                    else if (info[2].contains("user.tar"))
+                                        hasData = true
+                                    if (info[1] != infoNext[1]) {
+                                        // 与下一路径不同包名
+                                        val appInfoRestore = AppInfoRestore(
+                                            null, AppInfoBase(
+                                                GlobalString.appRetrieved,
+                                                info[1],
+                                                "",
+                                                0,
+                                                app = hasApp,
+                                                data = hasData
+                                            ), hasApp, hasData
+                                        )
+                                        val tmp =
+                                            cachedAppInfoRestoreList.find { it.infoBase.packageName == info[1] }
+                                        val tmpIndex = cachedAppInfoRestoreList.indexOf(tmp)
+                                        if (tmpIndex != -1) {
+                                            appInfoRestore.apply {
+                                                infoBase =
+                                                    cachedAppInfoRestoreList[tmpIndex].infoBase.apply {
+                                                        app = app && hasApp
+                                                        data = data && hasData
+                                                    }
+
+                                            }
+                                        }
+                                        cachedAppInfoRestoreActualList.add(appInfoRestore)
+                                        hasApp = false
+                                        hasData = false
+                                    }
+                                }
+                            }
                         }
                     }
                 }

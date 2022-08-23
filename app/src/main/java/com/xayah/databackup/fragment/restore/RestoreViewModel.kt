@@ -156,20 +156,6 @@ class RestoreViewModel : ViewModel() {
         })
     }
 
-    fun onFixBtnClick(v: View) {
-        BottomSheetDialog(v.context).apply {
-            setLoading()
-            val that = this
-            viewModelScope.launch {
-                Command.retrieve(Command.getCachedAppInfoRestoreActualList())
-                refresh()
-                that.dismiss()
-                Toast.makeText(v.context, GlobalString.retrieveFinish, Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-    }
-
     fun onRestoreAppClearBtnClick(v: View) {
         val context = v.context
         MaterialAlertDialogBuilder(context).apply {
@@ -200,6 +186,7 @@ class RestoreViewModel : ViewModel() {
     }
 
     private suspend fun loadAllList() {
+        Command.retrieve(Command.getCachedAppInfoRestoreActualList())
         appInfoRestoreList = Loader.loadAppInfoRestoreList()
         mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
     }

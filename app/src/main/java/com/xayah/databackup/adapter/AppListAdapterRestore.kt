@@ -133,5 +133,17 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
             }
             isChecked = item.infoBase.data
         }
+        if (!item.hasApp) {
+            binding.chipApplication.apply {
+                isChecked = false
+                isEnabled = false
+            }
+        }
+        if (!item.hasData) {
+            binding.chipData.apply {
+                isChecked = false
+                isEnabled = false
+            }
+        }
     }
 }

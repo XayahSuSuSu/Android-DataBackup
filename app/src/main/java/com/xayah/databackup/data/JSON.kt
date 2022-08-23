@@ -39,7 +39,9 @@ data class AppInfoBackup(
 
 data class AppInfoRestore(
     var appIcon: Drawable? = null,
-    @Expose val infoBase: AppInfoBase,
+    @Expose var infoBase: AppInfoBase,
+    @Expose val hasApp: Boolean = false,
+    @Expose val hasData: Boolean = false,
 )
 
 data class MediaInfo(
