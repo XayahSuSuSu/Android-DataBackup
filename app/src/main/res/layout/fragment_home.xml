@@ -284,30 +284,13 @@
                             android:text="@{viewModel.logText}"
                             android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
-                        <LinearLayout
+                        <com.google.android.material.button.MaterialButton
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="8dp"
                             android:layout_marginTop="8dp"
-                            android:orientation="horizontal">
-
-                            <com.google.android.material.button.MaterialButton
-                                style="@style/Widget.Material3.Button.TextButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="8dp"
-                                android:layout_weight="1"
-                                android:onClick="@{(v)->viewModel.onLogClearClick(v)}"
-                                android:text="@string/clear" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="8dp"
-                                android:layout_weight="1"
-                                android:onClick="@{(v)->viewModel.onLogSaveClick(v)}"
-                                android:text="@string/save" />
-
-                        </LinearLayout>
+                            android:onClick="@{(v)->viewModel.onLogClearClick(v)}"
+                            android:text="@string/clear" />
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>

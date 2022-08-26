@@ -23,7 +23,6 @@ class App : Application() {
         lateinit var versionName: String
         lateinit var server: Server
         val logcat = Logcat()
-        val openDate = Command.getDate()
     }
 
     class EnvInitializer : Shell.Initializer() {

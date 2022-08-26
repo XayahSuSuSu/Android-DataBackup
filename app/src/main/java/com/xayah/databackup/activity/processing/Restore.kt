@@ -12,6 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.util.*
 import kotlin.math.max
 
 class Restore(private val viewModel: ProcessingViewModel) {
@@ -241,6 +243,10 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, $appInfoRestoreListTotalNum ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
+            Bashrc.writeToFile(
+                App.logcat.toString(),
+                "${Path.getShellLogPath()}/restore_app_log_${LocalDateTime.now()}"
+            )
         }
         else {
             v.context.getActivity()?.finish()
@@ -289,6 +295,10 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, $mediaInfoRestoreListNum ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
             dataBinding.btnText.set(GlobalString.finish)
+            Bashrc.writeToFile(
+                App.logcat.toString(),
+                "${Path.getShellLogPath()}/restore_media_log_${Date().time}"
+            )
         }
         else {
             v.context.getActivity()?.finish()

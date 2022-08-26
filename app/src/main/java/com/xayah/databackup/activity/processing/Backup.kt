@@ -9,6 +9,7 @@ import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class Backup(private val viewModel: ProcessingViewModel) {
     private lateinit var dataBinding: DataBinding
@@ -259,6 +260,10 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${appInfoBackupList.size} ${GlobalString.total}")
                 dataBinding.isProcessing.set(false)
                 dataBinding.btnText.set(GlobalString.finish)
+                Bashrc.writeToFile(
+                    App.logcat.toString(),
+                    "${Path.getShellLogPath()}/backup_app_log_${LocalDateTime.now()}"
+                )
             }
             else {
                 v.context.getActivity()?.finish()
@@ -330,6 +335,10 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mediaInfoBackupList.size} ${GlobalString.total}")
                 dataBinding.isProcessing.set(false)
                 dataBinding.btnText.set(GlobalString.finish)
+                Bashrc.writeToFile(
+                    App.logcat.toString(),
+                    "${Path.getShellLogPath()}/backup_media_log_${LocalDateTime.now()}"
+                )
             }
             else {
                 v.context.getActivity()?.finish()

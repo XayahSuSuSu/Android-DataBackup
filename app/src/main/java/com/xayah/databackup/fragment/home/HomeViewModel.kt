@@ -28,11 +28,11 @@ class HomeViewModel : ViewModel() {
     var logText = ObservableField("")
     var dynamicColorsEnable = ObservableBoolean(false)
 
+    var onResume = {}
+
     init {
-        viewModelScope.launch {
+        onResume = {
             refresh()
-            updateLogCard()
-            setDynamicColorsCard()
         }
     }
 
@@ -80,6 +80,7 @@ class HomeViewModel : ViewModel() {
             setArchitecture()
             setUpdate()
             updateLogCard()
+            setDynamicColorsCard()
         }
     }
 
@@ -91,21 +92,6 @@ class HomeViewModel : ViewModel() {
     fun onLogClearClick(v: View) {
         viewModelScope.launch {
             Command.rm(Path.getShellLogPath())
-            Toast.makeText(
-                v.context, GlobalString.success, Toast.LENGTH_SHORT
-            ).show()
-            refresh()
-        }
-    }
-
-    fun onLogSaveClick(v: View) {
-        viewModelScope.launch {
-            // 保存日志
-            Bashrc.writeToFile(
-                App.logcat.toString(),
-                "${Path.getShellLogPath()}/${App.openDate.replace(" ", "_")}"
-            )
-            App.logcat.clear()
             Toast.makeText(
                 v.context, GlobalString.success, Toast.LENGTH_SHORT
             ).show()

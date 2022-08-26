@@ -13,6 +13,7 @@ import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var viewModel: HomeViewModel
     private lateinit var materialYouFileExplorer: MaterialYouFileExplorer
 
     override fun onCreateView(
@@ -24,7 +25,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -44,5 +45,10 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
     }
 }
