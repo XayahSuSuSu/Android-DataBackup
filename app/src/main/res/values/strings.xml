@@ -146,4 +146,5 @@
     <string name="create">Create</string>
     <string name="repeat_to_add">Repeat to add!</string>
     <string name="installing">Installing</string>
+    <string name="current_version">Current version</string>
 </resources>

@@ -17,17 +17,20 @@ class GuideUpdateViewModel : ViewModel() {
 
     fun initialize() {
         viewModelScope.launch {
+            subtitle.postValue("${GlobalString.currentVersion}: ${App.versionName}")
             App.server.releases({ releaseList ->
                 val mReleaseList = releaseList.filter { !it.name.contains("Check") }
                 if (mReleaseList.isEmpty()) {
-                    subtitle.postValue(GlobalString.fetchFailed)
                     content.postValue(GlobalString.fetchFailed)
                 } else {
-                    subtitle.postValue(mReleaseList[0].name)
-                    content.postValue(mReleaseList[0].body.replace("*", GlobalString.symbolDot))
+                    var info = ""
+                    for (i in mReleaseList) {
+                        info += "${i.name}\n"
+                        info += "${i.body.replace("*", GlobalString.symbolDot)}\n\n"
+                    }
+                    content.postValue(info)
                 }
             }, {
-                subtitle.postValue(GlobalString.fetchFailed)
                 content.postValue(GlobalString.fetchFailed)
             })
         }
