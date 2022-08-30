@@ -113,5 +113,6 @@ class GlobalString {
         val repeatToAdd = App.globalContext.getString(R.string.repeat_to_add)
         val installing = App.globalContext.getString(R.string.installing)
         val currentVersion = App.globalContext.getString(R.string.current_version)
+        val confirmExit = App.globalContext.getString(R.string.confirm_exit)
     }
 }

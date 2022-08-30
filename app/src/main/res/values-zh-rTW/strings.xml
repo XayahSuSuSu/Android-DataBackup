@@ -133,4 +133,5 @@
     <string name="repeat_to_add">重複添加!</string>
     <string name="installing">安裝中</string>
     <string name="current_version">當前版本</string>
+    <string name="confirm_exit">確定要退出嗎？</string>
 </resources>
