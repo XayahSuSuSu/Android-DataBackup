@@ -30,6 +30,7 @@ data class DataBinding(
     var processingUser: ObservableBoolean,
     var processingData: ObservableBoolean,
     var processingObb: ObservableBoolean,
+    var isReady: ObservableBoolean,
 
     var onBackupClick: (v: View) -> Unit,
     var onRestoreClick: (v: View) -> Unit
@@ -51,6 +52,7 @@ class ProcessingViewModel : ViewModel() {
         ObservableField(""),
         ObservableInt(0),
         ObservableInt(0),
+        ObservableBoolean(false),
         ObservableBoolean(false),
         ObservableBoolean(false),
         ObservableBoolean(false),

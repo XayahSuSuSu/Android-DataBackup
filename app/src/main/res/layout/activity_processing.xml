@@ -111,6 +111,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="end"
+                                android:enabled="@{viewModel.dataBinding.isReady}"
                                 android:onClick="@{(v)->viewModel.onBtnClick(v)}"
                                 android:text="@{viewModel.dataBinding.btnText}"
                                 android:visibility="@{viewModel.dataBinding.isProcessing() ? View.GONE : View.VISIBLE}" />

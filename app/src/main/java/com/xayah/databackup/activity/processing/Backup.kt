@@ -81,6 +81,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
             }
             if (viewModel.isMedia) initializeMedia()
             else initializeApp()
+            viewModel.dataBinding.isReady.set(true)
         }
     }
 

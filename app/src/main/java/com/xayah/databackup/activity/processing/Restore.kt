@@ -18,6 +18,7 @@ import kotlin.math.max
 
 class Restore(private val viewModel: ProcessingViewModel) {
     private lateinit var dataBinding: DataBinding
+    private lateinit var installedPackageList: MutableList<String>
 
     // 应用恢复列表
     private val _appInfoRestoreList by lazy {
@@ -72,6 +73,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             }
             if (viewModel.isMedia) initializeMedia()
             else initializeApp()
+            viewModel.dataBinding.isReady.set(true)
         }
     }
 
@@ -176,6 +178,17 @@ class Restore(private val viewModel: ProcessingViewModel) {
                         continue
                     }
                     initializeSizeAndSpeed()
+                }
+
+                // 判断是否安装该应用
+                val tmp = installedPackageList.find { it == i.infoBase.packageName }
+                val tmpIndex = installedPackageList.indexOf(tmp)
+                if (tmpIndex == -1) {
+                    // 未安装
+                    dataBinding.isBackupUser.set(false)
+                    dataBinding.isBackupData.set(false)
+                    dataBinding.isBackupObb.set(false)
+                    state = false
                 }
 
                 if (dataBinding.isBackupUser.get()) {
@@ -309,6 +322,12 @@ class Restore(private val viewModel: ProcessingViewModel) {
         withContext(Dispatchers.IO) {
             appInfoRestoreList = Loader.loadAppInfoRestoreList()
             mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
+            installedPackageList =
+                Bashrc.listPackages(App.globalContext.readBackupUser()).second.apply {
+                    for ((index, i) in this.withIndex()) {
+                        this[index] = i.replace("package:", "")
+                    }
+                }
         }
     }
 }
