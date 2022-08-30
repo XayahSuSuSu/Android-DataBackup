@@ -148,4 +148,6 @@
     <string name="installing">Installing</string>
     <string name="current_version">Current version</string>
     <string name="confirm_exit">Sure to quit?</string>
+    <string name="none">None</string>
+    <string name="not_selected">Not selected</string>
 </resources>

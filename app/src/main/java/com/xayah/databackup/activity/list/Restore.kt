@@ -62,6 +62,24 @@ class Restore(private val viewModel: AppListViewModel) {
                         })
                         items = adapterList
                         viewModel.mAdapter.notifyDataSetChanged()
+                    }, onNoneBtnClick = {
+                        adapterList.clear()
+                        adapterList.add(0, "Header")
+                        adapterList.addAll(appInfoRestoreList)
+                        items = adapterList
+                        viewModel.mAdapter.notifyDataSetChanged()
+                    }, onSelectedBtnClick = {
+                        adapterList.clear()
+                        adapterList.add(0, "Header")
+                        adapterList.addAll(appInfoRestoreList.filter { it.infoBase.app || it.infoBase.data })
+                        items = adapterList
+                        viewModel.mAdapter.notifyDataSetChanged()
+                    }, onNotSelectedBtnClick = {
+                        adapterList.clear()
+                        adapterList.add(0, "Header")
+                        adapterList.addAll(appInfoRestoreList.filter { !it.infoBase.app && !it.infoBase.data })
+                        items = adapterList
+                        viewModel.mAdapter.notifyDataSetChanged()
                     })
                 )
                 register(AppListAdapterRestore(appInfoRestoreList))

@@ -134,4 +134,6 @@
     <string name="installing">安裝中</string>
     <string name="current_version">當前版本</string>
     <string name="confirm_exit">確定要退出嗎？</string>
+    <string name="none">無</string>
+    <string name="not_selected">未選擇</string>
 </resources>

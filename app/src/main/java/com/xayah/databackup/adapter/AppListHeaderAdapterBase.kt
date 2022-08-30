@@ -3,6 +3,7 @@ package com.xayah.databackup.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
@@ -14,6 +15,9 @@ open class AppListHeaderAdapterBase(
     val onChipAppClick: (v: Chip) -> Unit,
     val onChipDataClick: (v: Chip) -> Unit,
     val onSearchViewQueryTextChange: (newText: String?) -> Unit,
+    val onNoneBtnClick: (v: Button) -> Unit,
+    val onSelectedBtnClick: (v: Button) -> Unit,
+    val onNotSelectedBtnClick: (v: Button) -> Unit,
 ) : ItemViewDelegate<String, AppListHeaderAdapterBase.ViewHolder>() {
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
@@ -45,6 +49,15 @@ open class AppListHeaderAdapterBase(
                 return true
             }
         })
+        binding.buttonNone.setOnClickListener {
+            onNoneBtnClick(binding.buttonNone)
+        }
+        binding.buttonSelected.setOnClickListener {
+            onSelectedBtnClick(binding.buttonNone)
+        }
+        binding.buttonNotSelected.setOnClickListener {
+            onNotSelectedBtnClick(binding.buttonNone)
+        }
     }
 
     class ViewHolder(val binding: AdapterAppListHeaderBinding) :
