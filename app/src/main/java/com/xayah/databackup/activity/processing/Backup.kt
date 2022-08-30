@@ -173,6 +173,11 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             else i.appSize = Command.countSize(
                                 Bashrc.getAPKPath(i.infoBase.packageName, userId).second, 1
                             )
+                            // 检测是否生成压缩包
+                            Command.ls("${outPutPath}/apk.tar*").apply {
+                                // 后续若直接令state = this会导致state非正常更新
+                                if (!this) state = false
+                            }
                         }
                         dataBinding.processingApk.set(false)
                         initializeSizeAndSpeed()
@@ -191,6 +196,10 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             if (!this) state = false
                             // 保存user大小
                             else i.userSize = Command.countSize(userPath, 1)
+                            // 检测是否生成压缩包
+                            Command.ls("${outPutPath}/user.tar*").apply {
+                                if (!this) state = false
+                            }
                         }
                         dataBinding.processingUser.set(false)
                         initializeSizeAndSpeed()
@@ -209,6 +218,10 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             if (!this) state = false
                             // 保存data大小
                             else i.dataSize = Command.countSize(dataPath, 1)
+                            // 检测是否生成压缩包
+                            Command.ls("${outPutPath}/data.tar*").apply {
+                                if (!this) state = false
+                            }
                         }
                         dataBinding.processingData.set(false)
                         initializeSizeAndSpeed()
@@ -227,6 +240,10 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             if (!this) state = false
                             // 保存obb大小
                             else i.obbSize = Command.countSize(obbPath, 1)
+                            // 检测是否生成压缩包
+                            Command.ls("${outPutPath}/obb.tar*").apply {
+                                if (!this) state = false
+                            }
                         }
                         dataBinding.processingObb.set(false)
                         initializeSizeAndSpeed()
@@ -275,6 +292,8 @@ class Backup(private val viewModel: ProcessingViewModel) {
         viewModel.viewModelScope.launch {
             val startTime = Command.getDate()
             val startSize = Command.countSize(App.globalContext.readBackupSavePath())
+            val outPutPath = Path.getBackupMediaSavePath()
+
             if (successNum + failedNum != mediaInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
@@ -294,7 +313,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             "tar",
                             "media",
                             i.name,
-                            Path.getBackupMediaSavePath(),
+                            outPutPath,
                             i.path,
                             i.size
                         ) {
@@ -305,6 +324,10 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             else i.size = Command.countSize(
                                 i.path, 1
                             )
+                            // 检测是否生成压缩包
+                            Command.ls("${outPutPath}/${i.name}.tar*").apply {
+                                if (!this) state = false
+                            }
                         }
                         dataBinding.processingData.set(false)
                         initializeSizeAndSpeed()
