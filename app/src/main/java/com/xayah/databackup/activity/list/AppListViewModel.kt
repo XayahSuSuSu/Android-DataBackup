@@ -23,8 +23,9 @@ class AppListViewModel : ViewModel() {
     val mAdapter = MultiTypeAdapter()
     lateinit var backup: Backup
     lateinit var restore: Restore
-    var onPause = {}
-    var onResume = {}
+    var onPause = suspend {}
+    var onResume = suspend {}
+    var isBack = false
 
     fun initialize(isRestore: Boolean) {
         if (isRestore) {

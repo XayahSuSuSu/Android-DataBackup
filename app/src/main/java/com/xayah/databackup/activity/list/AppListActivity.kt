@@ -5,9 +5,13 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.xayah.databackup.databinding.ActivityAppListBinding
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.notifyDataSetChanged
+import com.xayah.databackup.view.setLoading
+import kotlinx.coroutines.launch
 
 class AppListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAppListBinding
@@ -43,11 +47,28 @@ class AppListActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.onPause()
+        viewModel.viewModelScope.launch {
+            viewModel.onPause()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.onResume()
+        viewModel.viewModelScope.launch {
+            viewModel.onResume()
+        }
+    }
+
+    override fun onBackPressed() {
+        viewModel.isBack = false
+        BottomSheetDialog(this).apply {
+            setLoading()
+            viewModel.viewModelScope.launch {
+                viewModel.onPause()
+                viewModel.isBack = true
+                dismiss()
+                super.onBackPressed()
+            }
+        }
     }
 }

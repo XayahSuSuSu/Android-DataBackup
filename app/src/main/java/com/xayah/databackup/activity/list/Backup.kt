@@ -27,19 +27,16 @@ class Backup(private val viewModel: AppListViewModel) {
     private var dataNumFull = true
 
     init {
-        viewModel.onPause = {
-            viewModel.viewModelScope.launch {
+        viewModel.onPause = suspend {
+            if (!viewModel.isBack)
                 JSON.saveAppInfoBackupList(appInfoBackupList)
-            }
         }
-        viewModel.onResume = {
+        viewModel.onResume = suspend {
             if (viewModel.isFirst) {
                 viewModel.isFirst = false
             } else {
-                viewModel.viewModelScope.launch {
-                    loadAppInfoBackupList()
-                    viewModel.isInitialized = false
-                }
+                loadAppInfoBackupList()
+                viewModel.isInitialized = false
             }
         }
         viewModel.viewModelScope.launch {

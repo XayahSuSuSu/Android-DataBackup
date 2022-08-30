@@ -26,19 +26,16 @@ class Restore(private val viewModel: AppListViewModel) {
     private var dataNumFull = true
 
     init {
-        viewModel.onPause = {
-            viewModel.viewModelScope.launch {
+        viewModel.onPause = suspend {
+            if (!viewModel.isBack)
                 JSON.saveAppInfoRestoreList(appInfoRestoreList)
-            }
         }
-        viewModel.onResume = {
+        viewModel.onResume = suspend {
             if (viewModel.isFirst) {
                 viewModel.isFirst = false
             } else {
-                viewModel.viewModelScope.launch {
-                    loadAppInfoRestoreList()
-                    viewModel.isInitialized = false
-                }
+                loadAppInfoRestoreList()
+                viewModel.isInitialized = false
             }
         }
         viewModel.viewModelScope.launch {
