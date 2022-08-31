@@ -142,6 +142,14 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out)
         }
 
+        suspend fun findPackage(
+            userId: String,
+            packageName: String
+        ): Pair<Boolean, MutableList<String>> {
+            val exec = runOnIO { Command.execute("find_package $userId $packageName") }
+            return Pair(exec.isSuccess, exec.out)
+        }
+
         suspend fun countSize(path: String, type: Int): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("count_size $path $type") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
