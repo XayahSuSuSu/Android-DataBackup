@@ -82,6 +82,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
             if (viewModel.isMedia) initializeMedia()
             else initializeApp()
             viewModel.dataBinding.isReady.set(true)
+            viewModel.dataBinding.isFinished.set(false)
         }
     }
 
@@ -126,7 +127,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
         viewModel.viewModelScope.launch {
             val startTime = Command.getDate()
             val startSize = Command.countSize(App.globalContext.readBackupSavePath())
-            if (successNum + failedNum != appInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
+            if (!dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
                 // 备份自身
@@ -277,6 +278,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 dataBinding.totalTip.set(GlobalString.backupFinished)
                 dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${appInfoBackupList.size} ${GlobalString.total}")
                 dataBinding.isProcessing.set(false)
+                dataBinding.isFinished.set(true)
                 dataBinding.btnText.set(GlobalString.finish)
                 Bashrc.writeToFile(
                     App.logcat.toString(),
@@ -295,7 +297,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
             val startSize = Command.countSize(App.globalContext.readBackupSavePath())
             val outPutPath = Path.getBackupMediaSavePath()
 
-            if (successNum + failedNum != mediaInfoBackupList.size) CoroutineScope(Dispatchers.IO).launch {
+            if (dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
                 for ((index, i) in mediaInfoBackupList.withIndex()) {
@@ -358,6 +360,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 dataBinding.totalTip.set(GlobalString.backupFinished)
                 dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mediaInfoBackupList.size} ${GlobalString.total}")
                 dataBinding.isProcessing.set(false)
+                dataBinding.isFinished.set(true)
                 dataBinding.btnText.set(GlobalString.finish)
                 Bashrc.writeToFile(
                     App.logcat.toString(),

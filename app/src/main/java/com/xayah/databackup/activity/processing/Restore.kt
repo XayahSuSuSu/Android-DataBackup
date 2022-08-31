@@ -73,6 +73,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             if (viewModel.isMedia) initializeMedia()
             else initializeApp()
             viewModel.dataBinding.isReady.set(true)
+            viewModel.dataBinding.isFinished.set(false)
         }
     }
 
@@ -131,7 +132,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
     }
 
     private fun onRestoreAppClick(v: View) {
-        if (successNum + failedNum != appInfoRestoreListTotalNum) CoroutineScope(Dispatchers.IO).launch {
+        if (!dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.restoreProcessing)
             for ((index, i) in appInfoRestoreList.withIndex()) {
@@ -254,6 +255,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.totalTip.set(GlobalString.restoreFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, $appInfoRestoreListTotalNum ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
+            dataBinding.isFinished.set(true)
             dataBinding.btnText.set(GlobalString.finish)
             Bashrc.writeToFile(
                 App.logcat.toString(),
@@ -266,7 +268,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
     }
 
     private fun onRestoreMediaClick(v: View) {
-        if (successNum + failedNum != mediaInfoRestoreListNum) CoroutineScope(Dispatchers.IO).launch {
+        if (!dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.restoreProcessing)
             for ((index, i) in mediaInfoRestoreList.withIndex()) {
@@ -306,6 +308,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.totalTip.set(GlobalString.restoreFinished)
             dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, $mediaInfoRestoreListNum ${GlobalString.total}")
             dataBinding.isProcessing.set(false)
+            dataBinding.isFinished.set(true)
             dataBinding.btnText.set(GlobalString.finish)
             Bashrc.writeToFile(
                 App.logcat.toString(),
