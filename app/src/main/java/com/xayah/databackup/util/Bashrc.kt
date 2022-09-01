@@ -2,6 +2,7 @@ package com.xayah.databackup.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class Bashrc {
     companion object {
@@ -111,12 +112,23 @@ class Bashrc {
 
         suspend fun writeToFile(content: String, path: String): Pair<Boolean, String> {
             val exec = runOnIO {
+                var name = ""
                 val prefix = path.split("/").toMutableList().apply {
+                    name = last()
                     removeLast()
                 }
-                val newPath = prefix.joinToString(separator = "/")
-                Command.mkdir(newPath)
-                Command.execute("write_to_file \'$content\' \"$path\"", false)
+                if (name != "") {
+                    val newPath = prefix.joinToString(separator = "/")
+                    Command.mkdir(newPath)
+                    kotlin.runCatching {
+                        File("${Path.getFilesDir()}/$name").apply {
+                            createNewFile()
+                            writeText(content)
+                        }
+                    }
+
+                }
+                Command.execute("mv ${Path.getFilesDir()}/$name $path", true)
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
