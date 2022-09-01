@@ -635,7 +635,7 @@ class Command {
         }
 
         suspend fun checkRoot(): Boolean {
-            return execute("ls /").isSuccess
+            return execute("ls /").isSuccess && Shell.rootAccess()
         }
 
         suspend fun checkBin(): Boolean {
