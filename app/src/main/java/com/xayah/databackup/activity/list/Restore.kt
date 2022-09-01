@@ -111,7 +111,7 @@ class Restore(private val viewModel: AppListViewModel) {
 
     private suspend fun loadAppInfoRestoreList() {
         withContext(Dispatchers.IO) {
-            appInfoRestoreList = Command.getCachedAppInfoRestoreList().apply {
+            appInfoRestoreList = Command.getCachedAppInfoRestoreActualList().apply {
                 sortWith { appInfo1, appInfo2 ->
                     val collator = Collator.getInstance(Locale.CHINA)
                     collator.getCollationKey((appInfo1 as AppInfoRestore).infoBase.appName)

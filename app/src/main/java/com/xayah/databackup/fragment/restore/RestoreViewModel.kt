@@ -187,7 +187,7 @@ class RestoreViewModel : ViewModel() {
 
     private suspend fun loadAllList() {
         Command.retrieve(Command.getCachedAppInfoRestoreActualList())
-        appInfoRestoreList = Loader.loadAppInfoRestoreList()
+        appInfoRestoreList = Command.getCachedAppInfoRestoreActualList()
         mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
     }
 
