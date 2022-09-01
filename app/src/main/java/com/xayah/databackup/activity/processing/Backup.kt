@@ -297,7 +297,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
             val startSize = Command.countSize(App.globalContext.readBackupSavePath())
             val outPutPath = Path.getBackupMediaSavePath()
 
-            if (dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
+            if (!dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
                 for ((index, i) in mediaInfoBackupList.withIndex()) {
