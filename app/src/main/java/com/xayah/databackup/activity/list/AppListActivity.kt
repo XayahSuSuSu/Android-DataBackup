@@ -27,7 +27,7 @@ class AppListActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         setContentView(binding.root)
 
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
         binding.recyclerView.apply {
             adapter = viewModel.mAdapter
             fastInitialize()
