@@ -640,9 +640,13 @@ class Command {
 
         suspend fun checkBin(): Boolean {
             execute("ls -l ${Path.getFilesDir()}/bin").out.apply {
-                val fileList = this.subList(1, this.size)
                 var count = 0
-                for (i in fileList) if (i.contains("-rwxrwxrwx")) count++
+                try {
+                    val fileList = this.subList(1, this.size)
+                    for (i in fileList) if (i.contains("-rwxrwxrwx")) count++
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
                 return count == 4
             }
         }
