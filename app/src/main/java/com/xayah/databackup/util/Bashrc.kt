@@ -171,5 +171,25 @@ class Bashrc {
             val exec = runOnIO { Command.execute("check_otg") }
             return Pair(exec.code, exec.out.joinToString(separator = "\n"))
         }
+
+        suspend fun getKeyboard(): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("get_keyboard") }
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
+
+        suspend fun setKeyboard(keyboard: String): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("set_keyboard $keyboard") }
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
+
+        suspend fun getAccessibilityServices(): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("get_accessibility_services") }
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
+
+        suspend fun setAccessibilityServices(services: String): Pair<Boolean, String> {
+            val exec = runOnIO { Command.execute("set_accessibility_services $services") }
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
     }
 }

@@ -307,3 +307,30 @@ check_otg() {
     return 2
   fi
 }
+
+get_keyboard() {
+  settings get secure default_input_method
+}
+
+set_keyboard() {
+  # $1: keyboard
+  if [ "$1" != "" ]; then
+     ime enable "$1"
+     ime set "$1"
+     settings put secure default_input_method "$1"
+  fi
+}
+
+get_accessibility_services() {
+  settings get secure enabled_accessibility_services
+}
+
+set_accessibility_services() {
+  # $1: services
+  if [ "$1" != "" ]; then
+     if [ "$1" != null ]; then
+      settings put secure enabled_accessibility_services "$1"
+      settings put secure accessibility_enabled 1
+    fi
+  fi
+}

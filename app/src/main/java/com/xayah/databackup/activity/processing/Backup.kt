@@ -130,6 +130,11 @@ class Backup(private val viewModel: ProcessingViewModel) {
             if (!dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
+
+                // 获取默认输入法和无障碍
+                val keyboard = Bashrc.getKeyboard()
+                val services = Bashrc.getAccessibilityServices()
+
                 // 备份自身
                 if (App.globalContext.readIsBackupItself())
                     Command.backupItself(
@@ -280,6 +285,15 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 dataBinding.isProcessing.set(false)
                 dataBinding.isFinished.set(true)
                 dataBinding.btnText.set(GlobalString.finish)
+
+                // 恢复默认输入法和无障碍
+                keyboard.apply {
+                    if (this.first) Bashrc.setKeyboard(this.second)
+                }
+                services.apply {
+                    if (this.first) Bashrc.setAccessibilityServices(this.second)
+                }
+
                 Bashrc.writeToFile(
                     App.logcat.toString(),
                     "${Path.getShellLogPath()}/backup_app_log_${LocalDateTime.now()}"
