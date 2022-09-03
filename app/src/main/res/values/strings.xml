@@ -48,7 +48,7 @@
     <string name="history_version">History version</string>
     <string name="feature_foresight">Feature foresight</string>
     <string name="github" translatable="false">GitHub</string>
-    <string name="compression_type_help">tar: Pack only\n\nzstd: Pack and compress, slower than lz4, higher compression than lz4\n\nlz4: Pack and compress, faster than zstd, lower compression than zstd</string>
+    <string name="compression_type_help">Choose compression type of applications and data, which affects both backup and restore. If you don\'t know what this option is for, don\'t change it</string>
     <string name="backup_user_help">Set backup user for dual/multi-user backup, the backup user folder automatically selected by the backup/restore page. \n\nCurrently passed the test:\nMIUI dual-apps, UserManager, Island.</string>
     <string name="restore_user_help">Set the recovery user for dual/multi-user recovery, the target user for data recovery. \n\nDual-apps may break after the restoration, and a restart is required to make them work.</string>
     <string name="cautious_action">[Be cautious]</string>
@@ -150,4 +150,10 @@
     <string name="confirm_exit">Sure to quit?</string>
     <string name="none">None</string>
     <string name="not_selected">Not selected</string>
+    <string name="package_only">Package only</string>
+    <string name="comprehensively_better">Better</string>
+    <string name="faster">Faster</string>
+    <string name="tar" translatable="false">tar</string>
+    <string name="zstd" translatable="false">zstd</string>
+    <string name="lz4" translatable="false">lz4</string>
 </resources>

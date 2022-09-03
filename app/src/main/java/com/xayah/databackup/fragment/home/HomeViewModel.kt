@@ -4,12 +4,14 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.util.*
+import com.xayah.databackup.view.fastInitialize
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
@@ -27,12 +29,31 @@ class HomeViewModel : ViewModel() {
     private var downloadLink = ObservableField("")
     var logText = ObservableField("")
     var dynamicColorsEnable = ObservableBoolean(false)
+    var compressionType = ObservableField(App.globalContext.readCompressionType())
 
     var onResume = {}
 
     init {
         onResume = {
             refresh()
+        }
+    }
+
+    fun onChangeCompressionType(v: View) {
+        viewModelScope.launch {
+            val context = v.context
+            val items = arrayOf("tar", "zstd", "lz4")
+            val choice = items.indexOf(compressionType.get())
+
+            ListPopupWindow(context).apply {
+                fastInitialize(v, items, choice)
+                setOnItemClickListener { _, _, position, _ ->
+                    dismiss()
+                    context.saveCompressionType(items[position])
+                    compressionType.set(items[position])
+                }
+                show()
+            }
         }
     }
 
