@@ -379,27 +379,45 @@ class Command {
         }
 
         suspend fun getCachedMediaInfoRestoreList(): MutableList<MediaInfo> {
+            // 根据媒体文件获取实际列表
+            val cachedMediaInfoRestoreActualList = mutableListOf<MediaInfo>()
             val cachedMediaInfoRestoreList = mutableListOf<MediaInfo>()
             runOnIO {
+                cat(Path.getMediaInfoRestoreListPath()).apply {
+                    if (this.first) {
+                        try {
+                            val jsonArray = JSON.stringToJsonArray(this.second)
+                            for (i in jsonArray) {
+                                val item =
+                                    JSON.jsonElementToEntity(i, MediaInfo::class.java) as MediaInfo
+                                cachedMediaInfoRestoreList.add(item)
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
                 execute("find ${Path.getBackupMediaSavePath()} -name \"*\" -type f").apply {
                     if (this.isSuccess) {
                         for (i in this.out) {
                             val info = i.split("/").last().split(".")
                             if (info.isNotEmpty()) {
-                                cachedMediaInfoRestoreList.add(
-                                    MediaInfo(
-                                        info[0],
-                                        GlobalString.customDir,
-                                        true,
-                                        "-1"
-                                    )
-                                )
+                                val mediaInfo =
+                                    MediaInfo(info[0], GlobalString.customDir, true, "-1")
+                                val tmp = cachedMediaInfoRestoreList.find { it.name == info[0] }
+                                val tmpIndex = cachedMediaInfoRestoreList.indexOf(tmp)
+                                if (tmpIndex != -1) {
+                                    mediaInfo.apply {
+                                        data = cachedMediaInfoRestoreList[tmpIndex].data
+                                    }
+                                }
+                                cachedMediaInfoRestoreActualList.add(mediaInfo)
                             }
                         }
                     }
                 }
             }
-            return cachedMediaInfoRestoreList
+            return cachedMediaInfoRestoreActualList
         }
 
         suspend fun getCachedBackupInfoList(): MutableList<BackupInfo> {
