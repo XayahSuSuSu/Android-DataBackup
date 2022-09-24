@@ -21,7 +21,8 @@ data class AppInfoBase(
     @Expose var versionName: String,
     @Expose var versionCode: Long,
     @Expose var app: Boolean,
-    @Expose var data: Boolean
+    @Expose var data: Boolean,
+    var appIcon: Drawable? = null
 )
 
 data class AppInfoBaseNum(
@@ -29,7 +30,6 @@ data class AppInfoBaseNum(
 )
 
 data class AppInfoBackup(
-    var appIcon: Drawable? = null,
     @Expose var appSize: String,
     @Expose var userSize: String,
     @Expose var dataSize: String,
@@ -38,7 +38,6 @@ data class AppInfoBackup(
 )
 
 data class AppInfoRestore(
-    var appIcon: Drawable? = null,
     @Expose var infoBase: AppInfoBase,
     @Expose val hasApp: Boolean = false,
     @Expose val hasData: Boolean = false,

@@ -156,4 +156,5 @@
     <string name="tar" translatable="false">tar</string>
     <string name="zstd" translatable="false">zstd</string>
     <string name="lz4" translatable="false">lz4</string>
+    <string name="all">All</string>
 </resources>

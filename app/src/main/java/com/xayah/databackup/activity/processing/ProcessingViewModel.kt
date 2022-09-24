@@ -5,7 +5,10 @@ import android.view.View
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.drakeet.multitype.MultiTypeAdapter
+import com.xayah.databackup.data.AppInfoBase
 
 data class DataBinding(
     var appName: ObservableField<String>,
@@ -20,6 +23,8 @@ data class DataBinding(
     var btnText: ObservableField<String>,
     var totalTip: ObservableField<String>,
     var totalProgress: ObservableField<String>,
+    var successProgress: ObservableField<String>,
+    var failedProgress: ObservableField<String>,
     var progressMax: ObservableInt,
     var progress: ObservableInt,
     var isBackupApk: ObservableBoolean,
@@ -31,7 +36,7 @@ data class DataBinding(
     var processingData: ObservableBoolean,
     var processingObb: ObservableBoolean,
     var isReady: ObservableBoolean,
-    var isFinished: ObservableBoolean,
+    var isFinished: MutableLiveData<Boolean>,
 
     var onBackupClick: (v: View) -> Unit,
     var onRestoreClick: (v: View) -> Unit
@@ -51,6 +56,8 @@ class ProcessingViewModel : ViewModel() {
         ObservableField(""),
         ObservableField(""),
         ObservableField(""),
+        ObservableField(""),
+        ObservableField(""),
         ObservableInt(0),
         ObservableInt(0),
         ObservableBoolean(false),
@@ -62,13 +69,33 @@ class ProcessingViewModel : ViewModel() {
         ObservableBoolean(false),
         ObservableBoolean(false),
         ObservableBoolean(false),
-        ObservableBoolean(false),
+        MutableLiveData(false),
         {}, {})
 
     var isRestore = false
     var isMedia = false
     lateinit var backup: Backup
     lateinit var restore: Restore
+
+    val mAdapter: MultiTypeAdapter = MultiTypeAdapter()
+    val mAdapterSuccess: MultiTypeAdapter = MultiTypeAdapter()
+    val mAdapterFailed: MultiTypeAdapter = MultiTypeAdapter()
+
+    // 成功列表
+    val _successList by lazy {
+        MutableLiveData(mutableListOf<AppInfoBase>())
+    }
+    var successList
+        get() = _successList.value!!
+        set(value) = _successList.postValue(value)
+
+    // 失败列表
+    val _failedList by lazy {
+        MutableLiveData(mutableListOf<AppInfoBase>())
+    }
+    var failedList
+        get() = _failedList.value!!
+        set(value) = _failedList.postValue(value)
 
     fun initialize() {
         if (isRestore)

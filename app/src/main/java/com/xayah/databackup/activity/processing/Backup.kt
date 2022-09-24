@@ -4,6 +4,7 @@ import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
+import com.xayah.databackup.adapter.ProcessingTaskAdapter
 import com.xayah.databackup.data.*
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
@@ -82,19 +83,43 @@ class Backup(private val viewModel: ProcessingViewModel) {
             if (viewModel.isMedia) initializeMedia()
             else initializeApp()
             viewModel.dataBinding.isReady.set(true)
-            viewModel.dataBinding.isFinished.set(false)
+            viewModel.dataBinding.isFinished.postValue(false)
         }
     }
 
     private fun initializeApp() {
+        viewModel.mAdapter.apply {
+            val adapterList = mutableListOf<Any>()
+            for (i in appInfoBackupList) adapterList.add(i.infoBase)
+            register(ProcessingTaskAdapter())
+            items = adapterList
+            notifyDataSetChanged()
+        }
         dataBinding.progressMax.set(appInfoBackupList.size)
         dataBinding.totalTip.set(GlobalString.ready)
         appInfoBackupListNum.apply {
-            dataBinding.totalProgress.set("${GlobalString.selected} ${this.appNum} ${GlobalString.application}, ${this.dataNum} ${GlobalString.data}")
+            dataBinding.totalProgress.set("${GlobalString.selected} ${this.appNum} ${GlobalString.application}, ${this.dataNum} ${GlobalString.data}, ${App.globalContext.readBackupUser()} ${GlobalString.backupUser}")
         }
     }
 
     private fun initializeMedia() {
+        viewModel.mAdapter.apply {
+            val adapterList = mutableListOf<Any>()
+            for (i in mediaInfoBackupList) adapterList.add(
+                AppInfoBase(
+                    i.name,
+                    i.path,
+                    "",
+                    -1,
+                    app = false,
+                    data = true,
+                    null
+                )
+            )
+            register(ProcessingTaskAdapter())
+            items = adapterList
+            notifyDataSetChanged()
+        }
         dataBinding.progressMax.set(mediaInfoBackupList.size)
         dataBinding.totalTip.set(GlobalString.ready)
         dataBinding.totalProgress.set("${GlobalString.selected} ${mediaInfoBackupList.size} ${GlobalString.data}")
@@ -127,7 +152,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
         viewModel.viewModelScope.launch {
             val startTime = Command.getDate()
             val startSize = Command.countSize(App.globalContext.readBackupSavePath())
-            if (!dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
+            if (!dataBinding.isFinished.value!!) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
 
@@ -147,7 +172,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     dataBinding.appName.set(i.infoBase.appName)
                     dataBinding.packageName.set(i.infoBase.packageName)
                     dataBinding.appVersion.set(i.infoBase.versionName)
-                    dataBinding.appIcon.set(i.appIcon)
+                    dataBinding.appIcon.set(i.infoBase.appIcon)
                     dataBinding.isBackupApk.set(i.infoBase.app)
 
                     val packageName = dataBinding.packageName.get()!!
@@ -258,12 +283,16 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     if (state) {
                         successNum += 1
                         Command.addOrUpdateList(
-                            AppInfoRestore(null, i.infoBase),
+                            AppInfoRestore(i.infoBase),
                             appInfoRestoreList as MutableList<Any>
                         ) {
                             (it as AppInfoRestore).infoBase.packageName == i.infoBase.packageName
                         }
-                    } else failedNum += 1
+                        viewModel.successList.add(i.infoBase)
+                    } else {
+                        failedNum += 1
+                        viewModel.failedList.add(i.infoBase)
+                    }
                     dataBinding.progress.set(index + 1)
                 }
                 val endTime = Command.getDate()
@@ -281,9 +310,9 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 )
                 saveRestoreList()
                 dataBinding.totalTip.set(GlobalString.backupFinished)
-                dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${appInfoBackupList.size} ${GlobalString.total}")
+                dataBinding.totalProgress.set("${successNum + failedNum} ${GlobalString.total}")
                 dataBinding.isProcessing.set(false)
-                dataBinding.isFinished.set(true)
+                dataBinding.isFinished.postValue(true)
                 dataBinding.btnText.set(GlobalString.finish)
 
                 // 恢复默认输入法和无障碍
@@ -311,7 +340,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
             val startSize = Command.countSize(App.globalContext.readBackupSavePath())
             val outPutPath = Path.getBackupMediaSavePath()
 
-            if (!dataBinding.isFinished.get()) CoroutineScope(Dispatchers.IO).launch {
+            if (!dataBinding.isFinished.value!!) CoroutineScope(Dispatchers.IO).launch {
                 dataBinding.isProcessing.set(true)
                 dataBinding.totalTip.set(GlobalString.backupProcessing)
                 for ((index, i) in mediaInfoBackupList.withIndex()) {
@@ -354,7 +383,11 @@ class Backup(private val viewModel: ProcessingViewModel) {
                         Command.addOrUpdateList(i, mediaInfoRestoreList as MutableList<Any>) {
                             (it as MediaInfo).path == i.path
                         }
-                    } else failedNum += 1
+                        viewModel.successList.add(viewModel.mAdapter.items[index] as AppInfoBase)
+                    } else {
+                        failedNum += 1
+                        viewModel.failedList.add(viewModel.mAdapter.items[index] as AppInfoBase)
+                    }
                     dataBinding.progress.set(index + 1)
                 }
                 val endTime = Command.getDate()
@@ -372,9 +405,9 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 )
                 saveRestoreList()
                 dataBinding.totalTip.set(GlobalString.backupFinished)
-                dataBinding.totalProgress.set("$successNum ${GlobalString.success}, $failedNum ${GlobalString.failed}, ${mediaInfoBackupList.size} ${GlobalString.total}")
+                dataBinding.totalProgress.set("${successNum + failedNum} ${GlobalString.total}")
                 dataBinding.isProcessing.set(false)
-                dataBinding.isFinished.set(true)
+                dataBinding.isFinished.postValue(true)
                 dataBinding.btnText.set(GlobalString.finish)
                 Bashrc.writeToFile(
                     App.logcat.toString(),

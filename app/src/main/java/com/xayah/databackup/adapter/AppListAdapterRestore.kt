@@ -40,9 +40,9 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
     override fun onBindViewHolder(holder: ViewHolder, item: AppInfoRestore) {
         val binding = holder.binding
         binding.appIcon.setImageDrawable(
-            if (item.appIcon == null) AppCompatResources.getDrawable(
+            if (item.infoBase.appIcon == null) AppCompatResources.getDrawable(
                 binding.root.context, R.drawable.ic_round_android
-            ) else item.appIcon
+            ) else item.infoBase.appIcon
         )
         binding.appName.text = item.infoBase.appName
         binding.appPackage.text = item.infoBase.packageName

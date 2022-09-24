@@ -12,7 +12,6 @@
         <import type="android.view.View" />
     </data>
 
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -66,6 +65,80 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="30dp"
+                        android:layout_marginVertical="8dp"
+                        android:visibility="@{viewModel.dataBinding.isFinished() ? View.VISIBLE : View.GONE}"
+                        app:cardCornerRadius="24dp"
+                        app:contentPadding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/success"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{viewModel.dataBinding.successProgress}"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerView_success"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Filled"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="30dp"
+                        android:layout_marginVertical="16dp"
+                        android:visibility="@{viewModel.dataBinding.isFinished() ? View.VISIBLE : View.GONE}"
+                        app:cardCornerRadius="24dp"
+                        app:contentPadding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/failed"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{viewModel.dataBinding.failedProgress}"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerView_failed"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Filled"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="30dp"
                         android:layout_marginTop="8dp"
                         app:cardCornerRadius="24dp"
                         app:contentPadding="16dp">
@@ -105,6 +178,13 @@
                                 app:indicatorColor="@color/red"
                                 app:trackColor="?attr/colorOnError"
                                 app:trackCornerRadius="3dp" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:visibility="@{viewModel.dataBinding.isProcessing() || viewModel.dataBinding.isFinished()  ? View.GONE : View.VISIBLE}" />
 
                             <com.google.android.material.button.MaterialButton
                                 style="@style/Widget.Material3.Button.TextButton"

@@ -17,6 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.airbnb.lottie.LottieAnimationView
@@ -48,10 +49,12 @@ fun LinearProgressIndicator.fastInitialize() {
     }
 }
 
-fun RecyclerView.fastInitialize() {
+fun RecyclerView.fastInitialize(isHorizontal: Boolean = false) {
     this.apply {
         (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-        layoutManager = GridLayoutManager(this.context, 1)
+        layoutManager = GridLayoutManager(this.context, 1).apply {
+            if (isHorizontal) orientation = LinearLayoutManager.HORIZONTAL
+        }
         layoutAnimation = LayoutAnimationController(
             AnimationUtils.loadAnimation(
                 context,

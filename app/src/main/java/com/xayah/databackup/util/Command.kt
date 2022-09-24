@@ -110,7 +110,6 @@ class Command {
                         if (!context.readIsSupportSystemApp()) if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0) continue
                         // 寻找缓存数据
                         var appInfo = AppInfoBackup(
-                            null,
                             "",
                             "",
                             "",
@@ -128,7 +127,7 @@ class Command {
                         val versionName = i.versionName
                         val versionCode = i.longVersionCode
                         val packageName = i.packageName
-                        appInfo.appIcon = appIcon
+                        appInfo.infoBase.appIcon = appIcon
                         appInfo.apply {
                             infoBase.appName = appName
                             infoBase.packageName = packageName
@@ -254,7 +253,7 @@ class Command {
                                     if (info[1] != infoNext[1]) {
                                         // 与下一路径不同包名
                                         val appInfoRestore = AppInfoRestore(
-                                            null, AppInfoBase(
+                                            AppInfoBase(
                                                 GlobalString.appRetrieved,
                                                 info[1],
                                                 "",

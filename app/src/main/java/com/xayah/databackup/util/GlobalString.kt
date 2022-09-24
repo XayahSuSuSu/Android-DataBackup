@@ -114,5 +114,6 @@ class GlobalString {
         val installing = App.globalContext.getString(R.string.installing)
         val currentVersion = App.globalContext.getString(R.string.current_version)
         val confirmExit = App.globalContext.getString(R.string.confirm_exit)
+        val all = App.globalContext.getString(R.string.all)
     }
 }

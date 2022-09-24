@@ -26,7 +26,7 @@ class AppListAdapterBackup : ItemViewDelegate<AppInfoBackup, AppListAdapterBacku
 
     override fun onBindViewHolder(holder: ViewHolder, item: AppInfoBackup) {
         val binding = holder.binding
-        binding.appIcon.setImageDrawable(item.appIcon)
+        binding.appIcon.setImageDrawable(item.infoBase.appIcon)
         binding.appName.text = item.infoBase.appName
         binding.appPackage.text = item.infoBase.packageName
 

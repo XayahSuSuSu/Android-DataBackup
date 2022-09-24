@@ -139,4 +139,5 @@
     <string name="package_only">仅打包</string>
     <string name="comprehensively_better">综合更优</string>
     <string name="faster">更快</string>
+    <string name="all">全部</string>
 </resources>
