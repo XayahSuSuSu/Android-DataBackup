@@ -219,6 +219,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
                         dataBinding.isBackupData.set(false)
                         dataBinding.isBackupObb.set(false)
                         state = false
+                        App.logcat.add("${packageName}: Not installed")
                     }
                 }
 
