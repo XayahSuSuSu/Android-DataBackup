@@ -96,6 +96,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
             notifyDataSetChanged()
         }
         dataBinding.progressMax.set(appInfoBackupList.size)
+        dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
         dataBinding.totalTip.set(GlobalString.ready)
         appInfoBackupListNum.apply {
             dataBinding.totalProgress.set("${GlobalString.selected} ${this.appNum} ${GlobalString.application}, ${this.dataNum} ${GlobalString.data}, ${App.globalContext.readBackupUser()} ${GlobalString.backupUser}")
@@ -121,6 +122,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
             notifyDataSetChanged()
         }
         dataBinding.progressMax.set(mediaInfoBackupList.size)
+        dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
         dataBinding.totalTip.set(GlobalString.ready)
         dataBinding.totalProgress.set("${GlobalString.selected} ${mediaInfoBackupList.size} ${GlobalString.data}")
     }
@@ -294,6 +296,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                         viewModel.failedList.add(i.infoBase)
                     }
                     dataBinding.progress.set(index + 1)
+                    dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
                 }
                 val endTime = Command.getDate()
                 val endSize = Command.countSize(App.globalContext.readBackupSavePath())
@@ -389,6 +392,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                         viewModel.failedList.add(viewModel.mAdapter.items[index] as AppInfoBase)
                     }
                     dataBinding.progress.set(index + 1)
+                    dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
                 }
                 val endTime = Command.getDate()
                 val endSize = Command.countSize(App.globalContext.readBackupSavePath())

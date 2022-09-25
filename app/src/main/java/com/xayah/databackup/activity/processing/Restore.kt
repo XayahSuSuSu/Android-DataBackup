@@ -88,6 +88,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             notifyDataSetChanged()
         }
         dataBinding.progressMax.set(appInfoRestoreListTotalNum)
+        dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
         if (appInfoRestoreListTotalNum == 0) {
             dataBinding.btnText.set(GlobalString.finish)
         }
@@ -116,6 +117,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             notifyDataSetChanged()
         }
         dataBinding.progressMax.set(mediaInfoRestoreListNum)
+        dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
         if (mediaInfoRestoreListNum == 0) {
             dataBinding.btnText.set(GlobalString.finish)
         }
@@ -282,6 +284,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
                     viewModel.failedList.add(i.infoBase)
                 }
                 dataBinding.progress.set(index + 1)
+                dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
             }
             dataBinding.totalTip.set(GlobalString.restoreFinished)
             dataBinding.totalProgress.set("${successNum + failedNum} ${GlobalString.total}")
@@ -339,6 +342,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
                     viewModel.failedList.add(viewModel.mAdapter.items[index] as AppInfoBase)
                 }
                 dataBinding.progress.set(index + 1)
+                dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
             }
             dataBinding.totalTip.set(GlobalString.restoreFinished)
             dataBinding.totalProgress.set("${successNum + failedNum} ${GlobalString.total}")

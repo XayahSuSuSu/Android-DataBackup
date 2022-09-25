@@ -164,7 +164,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="@string/progress"
+                                android:text="@{viewModel.dataBinding.progressText}"
                                 android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                                 android:visibility="@{viewModel.dataBinding.isProcessing() ? View.VISIBLE : View.GONE}" />
 

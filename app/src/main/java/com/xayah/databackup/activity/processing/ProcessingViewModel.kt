@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.drakeet.multitype.MultiTypeAdapter
 import com.xayah.databackup.data.AppInfoBase
+import com.xayah.databackup.util.GlobalString
 
 data class DataBinding(
     var appName: ObservableField<String>,
@@ -25,6 +26,7 @@ data class DataBinding(
     var totalProgress: ObservableField<String>,
     var successProgress: ObservableField<String>,
     var failedProgress: ObservableField<String>,
+    var progressText: ObservableField<String>,
     var progressMax: ObservableInt,
     var progress: ObservableInt,
     var isBackupApk: ObservableBoolean,
@@ -58,6 +60,7 @@ class ProcessingViewModel : ViewModel() {
         ObservableField(""),
         ObservableField(""),
         ObservableField(""),
+        ObservableField(GlobalString.progress),
         ObservableInt(0),
         ObservableInt(0),
         ObservableBoolean(false),
