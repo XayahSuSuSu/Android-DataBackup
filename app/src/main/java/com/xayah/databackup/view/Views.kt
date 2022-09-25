@@ -192,7 +192,6 @@ fun BottomSheetDialog.setWithTopBar(): LinearLayout {
 
 fun BottomSheetDialog.setLoading() {
     this.apply {
-        setCancelable(false)
         val titleView =
             MaterialTextView(context).apply {
                 layoutParams = LinearLayoutCompat.LayoutParams(
@@ -221,5 +220,6 @@ fun BottomSheetDialog.setLoading() {
             addView(titleView)
             addView(lottieAnimationView)
         }
+        setCancelable(false)
     }
 }
