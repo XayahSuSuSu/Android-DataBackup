@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.util.*
-import kotlin.math.max
 
 class Restore(private val viewModel: ProcessingViewModel) {
     private lateinit var dataBinding: DataBinding
@@ -39,7 +38,11 @@ class Restore(private val viewModel: ProcessingViewModel) {
         }
     private val appInfoRestoreListTotalNum
         get() = run {
-            max(appInfoRestoreListNum.appNum, appInfoRestoreListNum.dataNum)
+            var totalNum = 0
+            for (i in appInfoRestoreList) {
+                if (i.infoBase.app || i.infoBase.data) totalNum++
+            }
+            totalNum
         }
 
     // 媒体恢复列表
