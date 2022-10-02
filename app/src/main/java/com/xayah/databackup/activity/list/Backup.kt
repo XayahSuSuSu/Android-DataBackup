@@ -60,8 +60,11 @@ class Backup(private val viewModel: AppListViewModel) {
                             adapterList.clear()
                             adapterList.add(0, "Header")
                             adapterList.addAll(appInfoBackupList.filter {
-                                it.infoBase.appName.lowercase()
-                                    .contains(newText.toString().lowercase())
+                                it.infoBase.appName.lowercase().contains(
+                                    newText.toString().lowercase()
+                                ) || it.infoBase.packageName.lowercase().contains(
+                                    newText.toString().lowercase()
+                                )
                             })
                             items = adapterList
                             viewModel.mAdapter.notifyDataSetChanged()
