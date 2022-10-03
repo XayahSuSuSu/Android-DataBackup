@@ -1,6 +1,6 @@
 <i>DataBackup</i> is based on <a href='https://github.com/YAWAsau/backup_script' target='_blank' rel='nofollow'>backup_script</a>. It was made with the consent of its author.
 
-<i>DataBackup</i> is intended to backup and restore the data of your apps. It works on Arm64 devices with Android 8 or higher.
+<i>DataBackup</i> is intended to backup and restore the data of your apps. It works on Arm64 devices with Android 9 or higher.
 
 <br><b>Features include:</b>
 
