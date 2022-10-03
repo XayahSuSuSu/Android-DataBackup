@@ -1,0 +1,10 @@
+<i>DataBackup</i> is based on <a href='https://github.com/YAWAsau/backup_script' target='_blank' rel='nofollow'>backup_script</a>. It was made with the consent of its author.
+
+<i>DataBackup</i> is intended to backup and restore the data of your apps. It works on Arm64 devices with Android 8 or higher.
+
+<br><b>Features include:</b>
+
+* <b>Support multi-user/dual backup:</b> Even backup/restore across partitions!
+* <b>100% Data Integrity:</b> All the data will be retained, and there is no need to log in again or download additional packages.
+* <b>Fast:</b> Support tar lz4 zstd(default).
+* <b>Easy:</b> Just a few simple steps!
