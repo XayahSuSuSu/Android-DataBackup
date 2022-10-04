@@ -114,7 +114,7 @@ class Command {
                             "",
                             "",
                             "",
-                            AppInfoBase("", "", "", 0, app = true, data = true),
+                            AppInfoBase("", "", "", 0, app = true, data = true, null, ""),
                         )
                         for (j in cachedAppInfoBackupList) {
                             if (i.packageName == j.infoBase.packageName) {
@@ -259,7 +259,9 @@ class Command {
                                                 "",
                                                 0,
                                                 app = hasApp,
-                                                data = hasData
+                                                data = hasData,
+                                                null,
+                                                ""
                                             ), hasApp, hasData
                                         )
                                         val tmp =

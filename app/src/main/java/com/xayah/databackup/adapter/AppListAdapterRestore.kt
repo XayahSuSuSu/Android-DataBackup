@@ -1,6 +1,10 @@
 package com.xayah.databackup.adapter
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.databinding.AdapterAppListBinding
@@ -44,6 +49,20 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
                 binding.root.context, R.drawable.ic_round_android
             ) else item.infoBase.appIcon
         )
+
+        item.infoBase.appIconString?.apply {
+            if (this.isNotEmpty()) {
+                try {
+                    val img = Base64.decode(this.toByteArray(), Base64.DEFAULT)
+                    val bitmap = BitmapFactory.decodeByteArray(img, 0, img.size)
+                    val drawable: Drawable = BitmapDrawable(App.globalContext.resources, bitmap)
+                    binding.appIcon.setImageDrawable(drawable)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
         binding.appName.text = item.infoBase.appName
         binding.appPackage.text = item.infoBase.packageName
 

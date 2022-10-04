@@ -106,13 +106,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             val adapterList = mutableListOf<Any>()
             for (i in mediaInfoRestoreList) if (i.data) adapterList.add(
                 AppInfoBase(
-                    i.name,
-                    i.path,
-                    "",
-                    -1,
-                    app = false,
-                    data = true,
-                    null
+                    i.name, i.path, "", -1, app = false, data = true, null, ""
                 )
             )
             register(ProcessingTaskAdapter())

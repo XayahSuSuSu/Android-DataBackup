@@ -1,6 +1,9 @@
 package com.xayah.databackup.activity.processing
 
+import android.graphics.Bitmap
+import android.util.Base64
 import android.view.View
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
@@ -10,6 +13,7 @@ import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
 
 class Backup(private val viewModel: ProcessingViewModel) {
@@ -108,13 +112,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
             val adapterList = mutableListOf<Any>()
             for (i in mediaInfoBackupList) adapterList.add(
                 AppInfoBase(
-                    i.name,
-                    i.path,
-                    "",
-                    -1,
-                    app = false,
-                    data = true,
-                    null
+                    i.name, i.path, "", -1, app = false, data = true, null, ""
                 )
             )
             register(ProcessingTaskAdapter())
@@ -176,6 +174,20 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     dataBinding.appVersion.set(i.infoBase.versionName)
                     dataBinding.appIcon.set(i.infoBase.appIcon)
                     dataBinding.isBackupApk.set(i.infoBase.app)
+
+                    if (App.globalContext.readIsBackupIcon()) {
+                        // 保存应用图标
+                        i.infoBase.appIcon?.apply {
+                            try {
+                                val stream = ByteArrayOutputStream()
+                                toBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream)
+                                i.infoBase.appIconString =
+                                    Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
 
                     val packageName = dataBinding.packageName.get()!!
                     val userId = App.globalContext.readBackupUser()

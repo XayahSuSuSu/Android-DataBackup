@@ -66,6 +66,7 @@ class BackupViewModel : ViewModel() {
     var restoreUser = ObservableField("${GlobalString.user}0")
 
     var backupItselfEnable = ObservableBoolean(false)
+    var backupIconEnable = ObservableBoolean(false)
     var onResume = {}
 
     init {
@@ -161,6 +162,15 @@ class BackupViewModel : ViewModel() {
         App.globalContext.saveIsBackupItself(backupItselfEnable.get())
     }
 
+    fun onBackupIconEnableCheckedChanged(v: View, checked: Boolean) {
+        backupIconEnable.set(checked)
+        App.globalContext.saveIsBackupIcon(backupIconEnable.get())
+    }
+
+    private fun setBackupIconCard() {
+        backupIconEnable.set(App.globalContext.readIsBackupIcon())
+    }
+
     private suspend fun loadAllList() {
         appInfoBackupList = Loader.loadAppInfoBackupList()
         mediaInfoBackupList = Loader.loadMediaInfoBackupList()
@@ -171,6 +181,7 @@ class BackupViewModel : ViewModel() {
         loadAllList()
         setUser()
         setBackupItselfCard()
+        setBackupIconCard()
         isInitialized = true
     }
 }

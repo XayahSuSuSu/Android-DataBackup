@@ -157,4 +157,6 @@
     <string name="zstd" translatable="false">zstd</string>
     <string name="lz4" translatable="false">lz4</string>
     <string name="all">All</string>
+    <string name="backup_icon">Backup icon</string>
+    <string name="backup_icon_title">Backup icon when backing up apps, used to show when restoring</string>
 </resources>

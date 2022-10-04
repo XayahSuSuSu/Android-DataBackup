@@ -140,4 +140,6 @@
     <string name="comprehensively_better">綜合更優</string>
     <string name="faster">更快</string>
     <string name="all">全部</string>
+    <string name="backup_icon">備份圖標</string>
+    <string name="backup_icon_title">備份應用時自動備份圖標, 用於恢復時讀取</string>
 </resources>
