@@ -14,8 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
-import java.util.*
 
 class Restore(private val viewModel: ProcessingViewModel) {
     private lateinit var dataBinding: DataBinding
@@ -213,7 +211,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
                         dataBinding.isBackupData.set(false)
                         dataBinding.isBackupObb.set(false)
                         state = false
-                        App.logcat.add("${packageName}: Not installed")
+                        App.logcat.addLine("${packageName}: Not installed")
                     }
                 }
 
@@ -289,10 +287,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.isProcessing.set(false)
             dataBinding.isFinished.postValue(true)
             dataBinding.btnText.set(GlobalString.finish)
-            Bashrc.writeToFile(
-                App.logcat.toString(),
-                "${Path.getShellLogPath()}/restore_app_log_${LocalDateTime.now()}"
-            )
+            Bashrc.moveLogToOut()
         }
         else {
             v.context.getActivity()?.finish()
@@ -347,10 +342,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.isProcessing.set(false)
             dataBinding.isFinished.postValue(true)
             dataBinding.btnText.set(GlobalString.finish)
-            Bashrc.writeToFile(
-                App.logcat.toString(),
-                "${Path.getShellLogPath()}/restore_media_log_${Date().time}"
-            )
+            Bashrc.moveLogToOut()
         }
         else {
             v.context.getActivity()?.finish()

@@ -1,17 +1,24 @@
 package com.xayah.databackup.util
 
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+
 class Logcat {
-    private val logs = mutableListOf<String>()
+    val logPath = "${Path.getFilesDir()}/log_${System.currentTimeMillis()}"
 
-    fun add(line: String) {
-        if (line.isNotEmpty()) logs.add(line)
-    }
-
-    fun clear() {
-        logs.clear()
-    }
-
-    override fun toString(): String {
-        return logs.joinToString(separator = "\n")
+    fun addLine(line: String) {
+        if (line.isNotEmpty()) {
+            try {
+                val file = File(logPath)
+                val bufferedWriter = BufferedWriter(FileWriter(file, true))
+                bufferedWriter.write(line)
+                bufferedWriter.newLine()
+                bufferedWriter.close()
+            } catch (g: IOException) {
+                g.printStackTrace()
+            }
+        }
     }
 }

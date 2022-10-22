@@ -1,5 +1,6 @@
 package com.xayah.databackup.util
 
+import com.xayah.databackup.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -107,6 +108,16 @@ class Bashrc {
 
         suspend fun getAppVersionCode(userId: String, packageName: String): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("get_app_version_code $userId $packageName") }
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+        }
+
+        suspend fun moveLogToOut(): Pair<Boolean, String> {
+            // 将内置日志移到备份目录
+            val exec = runOnIO {
+                val path = Path.getShellLogPath()
+                Command.mkdir(path)
+                Command.execute("mv ${App.logcat.logPath} $path", true)
+            }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 

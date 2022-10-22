@@ -715,14 +715,14 @@ class Command {
         ): Shell.Result {
             val result = runOnIO {
                 if (isAddToLog)
-                    App.logcat.add("Shell_In: $cmd")
+                    App.logcat.addLine("SHELL_IN: $cmd")
                 val shell = Shell.cmd(cmd)
                 callback?.apply {
                     val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
                         override fun onAddElement(line: String?) {
                             line?.apply {
                                 if (isAddToLog)
-                                    App.logcat.add("Shell_Out: $line")
+                                    App.logcat.addLine("SHELL_OUT: $line")
                                 callback(line)
                             }
                         }
@@ -732,7 +732,7 @@ class Command {
                 shell.exec().apply {
                     if (isAddToLog)
                         this.apply {
-                            for (i in this.out) App.logcat.add("Shell_Out: $i")
+                            for (i in this.out) App.logcat.addLine("Shell_Out: $i")
                         }
                 }
             }
