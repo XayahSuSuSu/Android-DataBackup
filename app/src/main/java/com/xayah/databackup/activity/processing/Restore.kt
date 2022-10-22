@@ -23,7 +23,8 @@ class Restore(private val viewModel: ProcessingViewModel) {
         MutableLiveData(mutableListOf<AppInfoRestore>())
     }
     private var appInfoRestoreList
-        get() = _appInfoRestoreList.value!!
+        get() = _appInfoRestoreList.value!!.filter { it.infoBase.app || it.infoBase.data }
+            .toMutableList()
         set(value) = _appInfoRestoreList.postValue(value)
     private val appInfoRestoreListNum
         get() = run {
@@ -35,29 +36,18 @@ class Restore(private val viewModel: ProcessingViewModel) {
             appInfoBaseNum
         }
     private val appInfoRestoreListTotalNum
-        get() = run {
-            var totalNum = 0
-            for (i in appInfoRestoreList) {
-                if (i.infoBase.app || i.infoBase.data) totalNum++
-            }
-            totalNum
-        }
+        get() = appInfoRestoreList.size
+
 
     // 媒体恢复列表
     private val _mediaInfoRestoreList by lazy {
         MutableLiveData(mutableListOf<MediaInfo>())
     }
     private var mediaInfoRestoreList
-        get() = _mediaInfoRestoreList.value!!
+        get() = _mediaInfoRestoreList.value!!.filter { it.data }.toMutableList()
         set(value) = _mediaInfoRestoreList.postValue(value)
     private val mediaInfoRestoreListNum
-        get() = run {
-            var num = 0
-            for (i in mediaInfoRestoreList) {
-                if (i.data) num++
-            }
-            num
-        }
+        get() = mediaInfoRestoreList.size
 
     private var successNum = 0
     private var failedNum = 0
@@ -83,7 +73,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
     private fun initializeApp() {
         viewModel.mAdapter.apply {
             val adapterList = mutableListOf<Any>()
-            for (i in appInfoRestoreList) if (i.infoBase.app || i.infoBase.data) adapterList.add(i.infoBase)
+            for (i in appInfoRestoreList) adapterList.add(i.infoBase)
             register(ProcessingTaskAdapter())
             items = adapterList
             notifyDataSetChanged()
@@ -102,7 +92,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
     private fun initializeMedia() {
         viewModel.mAdapter.apply {
             val adapterList = mutableListOf<Any>()
-            for (i in mediaInfoRestoreList) if (i.data) adapterList.add(
+            for (i in mediaInfoRestoreList) adapterList.add(
                 AppInfoBase(
                     i.name, i.path, "", -1, app = false, data = true, null, ""
                 )
@@ -159,8 +149,6 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.restoreProcessing)
             for ((index, i) in appInfoRestoreList.withIndex()) {
-                if (!i.infoBase.app && !i.infoBase.data) continue
-
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.infoBase.appName)
                 dataBinding.packageName.set(i.infoBase.packageName)
@@ -299,8 +287,6 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.isProcessing.set(true)
             dataBinding.totalTip.set(GlobalString.restoreProcessing)
             for ((index, i) in mediaInfoRestoreList.withIndex()) {
-                if (!i.data) continue
-
                 // 准备备份卡片数据
                 dataBinding.appName.set(i.name)
                 dataBinding.packageName.set(i.path)
