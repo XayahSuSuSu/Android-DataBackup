@@ -24,7 +24,7 @@ class Command {
         }
 
         private suspend fun cat(path: String): Pair<Boolean, String> {
-            val exec = execute("cat $path")
+            val exec = execute("cat $path", false)
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
