@@ -161,7 +161,7 @@ class Bashrc {
         }
 
         suspend fun listPackages(userId: String): Pair<Boolean, MutableList<String>> {
-            val exec = runOnIO { Command.execute("list_packages $userId") }
+            val exec = runOnIO { Command.execute("list_packages $userId", false) }
             return Pair(exec.isSuccess, exec.out)
         }
 
