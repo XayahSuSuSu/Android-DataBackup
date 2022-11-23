@@ -185,16 +185,6 @@
                                 android:layout_marginTop="16dp"
                                 android:visibility="@{viewModel.dataBinding.isProcessing() || viewModel.dataBinding.isFinished()  ? View.GONE : View.VISIBLE}" />
 
-                            <com.google.android.material.button.MaterialButton
-                                style="@style/Widget.Material3.Button.TextButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="end"
-                                android:enabled="@{viewModel.dataBinding.isReady}"
-                                android:onClick="@{(v)->viewModel.onBtnClick(v)}"
-                                android:text="@{viewModel.dataBinding.btnText}"
-                                android:visibility="@{viewModel.dataBinding.isProcessing() ? View.GONE : View.VISIBLE}" />
-
                         </LinearLayout>
 
                     </com.google.android.material.card.MaterialCardView>
@@ -447,5 +437,30 @@
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
+            style="@style/Widget.Material3.BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:visibility="@{viewModel.dataBinding.isProcessing() ? View.GONE : View.VISIBLE}">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.dataBinding.btnDesc}"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            android:enabled="@{viewModel.dataBinding.isReady}"
+            android:onClick="@{(v)->viewModel.onBtnClick(v)}"
+            android:visibility="@{viewModel.dataBinding.isProcessing() ? View.GONE : View.VISIBLE}"
+            app:layout_anchor="@id/bottomAppBar"
+            app:srcCompat="@drawable/ic_round_check" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

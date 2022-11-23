@@ -143,4 +143,6 @@
     <string name="all">Все</string>
     <string name="backup_icon">Бекап значков</string>
     <string name="backup_icon_title">Бекап значков при создании бекапа приложений. Используется для отображения при восстановлении.</string>
+    <string name="clickTheRightBtnToStart">Click the right button to start</string>
+    <string name="clickTheRightBtnToFinish">Click the right button to finish</string>
 </resources>

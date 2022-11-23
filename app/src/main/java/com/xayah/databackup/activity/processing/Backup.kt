@@ -82,6 +82,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     else onBackupAppClick(v)
                 }
                 btnText.set(GlobalString.backup)
+                btnDesc.set(GlobalString.clickTheRightBtnToStart)
             }
             if (viewModel.isMedia) initializeMedia()
             else initializeApp()
@@ -328,6 +329,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 dataBinding.isProcessing.set(false)
                 dataBinding.isFinished.postValue(true)
                 dataBinding.btnText.set(GlobalString.finish)
+                dataBinding.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
 
                 // 恢复默认输入法和无障碍
                 keyboard.apply {
@@ -421,6 +423,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 dataBinding.isProcessing.set(false)
                 dataBinding.isFinished.postValue(true)
                 dataBinding.btnText.set(GlobalString.finish)
+                dataBinding.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
                 Bashrc.moveLogToOut()
             }
             else {

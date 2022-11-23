@@ -62,6 +62,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
                     else onRestoreAppClick(v)
                 }
                 btnText.set(GlobalString.restore)
+                btnDesc.set(GlobalString.clickTheRightBtnToStart)
             }
             if (viewModel.isMedia) initializeMedia()
             else initializeApp()
@@ -82,6 +83,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
         dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
         if (appInfoRestoreListTotalNum == 0) {
             dataBinding.btnText.set(GlobalString.finish)
+            dataBinding.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
         }
         dataBinding.totalTip.set(GlobalString.ready)
         appInfoRestoreListNum.apply {
@@ -105,6 +107,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
         dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
         if (mediaInfoRestoreListNum == 0) {
             dataBinding.btnText.set(GlobalString.finish)
+            dataBinding.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
         }
         dataBinding.totalTip.set(GlobalString.ready)
         mediaInfoRestoreListNum.apply {
@@ -275,6 +278,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.isProcessing.set(false)
             dataBinding.isFinished.postValue(true)
             dataBinding.btnText.set(GlobalString.finish)
+            dataBinding.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
             Bashrc.moveLogToOut()
         }
         else {
@@ -328,6 +332,7 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.isProcessing.set(false)
             dataBinding.isFinished.postValue(true)
             dataBinding.btnText.set(GlobalString.finish)
+            dataBinding.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
             Bashrc.moveLogToOut()
         }
         else {

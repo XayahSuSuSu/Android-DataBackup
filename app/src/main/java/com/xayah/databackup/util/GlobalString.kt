@@ -116,5 +116,7 @@ class GlobalString {
         val confirmExit = App.globalContext.getString(R.string.confirm_exit)
         val all = App.globalContext.getString(R.string.all)
         val progress = App.globalContext.getString(R.string.progress)
+        val clickTheRightBtnToStart = App.globalContext.getString(R.string.clickTheRightBtnToStart)
+        val clickTheRightBtnToFinish = App.globalContext.getString(R.string.clickTheRightBtnToFinish)
     }
 }

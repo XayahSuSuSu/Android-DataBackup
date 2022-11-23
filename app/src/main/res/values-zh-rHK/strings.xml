@@ -142,4 +142,6 @@
     <string name="all">全部</string>
     <string name="backup_icon">備份圖標</string>
     <string name="backup_icon_title">備份應用時自動備份圖標, 用於恢復時讀取</string>
+    <string name="clickTheRightBtnToStart">單擊右側按鈕開始</string>
+    <string name="clickTheRightBtnToFinish">單擊右側按鈕完成</string>
 </resources>
