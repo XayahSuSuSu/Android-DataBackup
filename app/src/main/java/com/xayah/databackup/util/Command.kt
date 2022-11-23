@@ -481,11 +481,12 @@ class Command {
             onAddLine: (line: String?) -> Unit = {}
         ): Boolean {
             var ret = true
+            var update = true
             runOnIO {
                 if (dataType == "media") {
                     countSize(dataPath, 1).apply {
                         if (this == dataSize) {
-                            ret = true
+                            update = false
                         }
                     }
                 } else {
@@ -493,15 +494,17 @@ class Command {
                         "${dataPath}/${packageName}", 1
                     ).apply {
                         if (this == dataSize) {
-                            ret = true
+                            update = false
                         }
                     }
                 }
-                Bashrc.compress(
-                    compressionType, dataType, packageName, outPut, dataPath
-                ) { onAddLine(it) }.apply {
-                    if (!this.first) {
-                        ret = false
+                if (update) {
+                    Bashrc.compress(
+                        compressionType, dataType, packageName, outPut, dataPath
+                    ) { onAddLine(it) }.apply {
+                        if (!this.first) {
+                            ret = false
+                        }
                     }
                 }
             }
@@ -517,16 +520,23 @@ class Command {
             onAddLine: (line: String?) -> Unit = {}
         ): Boolean {
             var ret = true
+            var update = true
             runOnIO {
                 val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply { ret = this.first }
                 countSize(
                     apkPathPair.second, 1
-                ).apply { ret = this == apkSize }
-                Bashrc.cd(apkPathPair.second).apply { ret = this.first }
-                Bashrc.compressAPK(compressionType, outPut) {
-                    onAddLine(it)
-                }.apply { ret = this.first }
-                Bashrc.cd("~").apply { ret = this.first }
+                ).apply {
+                    if (this == apkSize) {
+                        update = false
+                    }
+                }
+                if (update) {
+                    Bashrc.cd(apkPathPair.second).apply { ret = this.first }
+                    Bashrc.compressAPK(compressionType, outPut) {
+                        onAddLine(it)
+                    }.apply { ret = this.first }
+                    Bashrc.cd("~").apply { ret = this.first }
+                }
             }
             return ret
         }

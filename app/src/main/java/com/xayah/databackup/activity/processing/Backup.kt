@@ -444,8 +444,10 @@ class Backup(private val viewModel: ProcessingViewModel) {
         if (!viewModel.isRestore) {
             JSON.saveBackupInfoList(backupInfoList)
             if (!viewModel.isMedia) {
+                JSON.saveAppInfoBackupList(_appInfoBackupList.value!!)
                 JSON.saveAppInfoRestoreList(appInfoRestoreList)
             } else {
+                JSON.saveMediaInfoBackupList(_mediaInfoBackupList.value!!)
                 JSON.saveMediaInfoRestoreList(mediaInfoRestoreList)
             }
         }
