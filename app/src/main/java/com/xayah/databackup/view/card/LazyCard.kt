@@ -19,7 +19,16 @@ class LazyCard @JvmOverloads constructor(
     private val binding =
         ViewCardLazyCardBinding.inflate(LayoutInflater.from(context), this, true)
 
-    private var lazy: Boolean = false
+    var lazy: Boolean = false
+        set(value) {
+            if (!value) {
+                for (i in children) {
+                    i.visibility = View.VISIBLE
+                }
+                getChildAt(0).visibility = View.GONE
+            }
+            field = value
+        }
 
     init {
         context.theme.obtainStyledAttributes(
@@ -31,14 +40,6 @@ class LazyCard @JvmOverloads constructor(
                 recycle()
             }
         }
-
-    }
-
-    fun setInitialized() {
-        for (i in children) {
-            i.visibility = View.VISIBLE
-        }
-        getChildAt(0).visibility = View.GONE
     }
 
     override fun onFinishInflate() {
