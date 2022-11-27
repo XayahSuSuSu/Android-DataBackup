@@ -754,7 +754,8 @@ class Command {
         }
 
         suspend fun listBackupUsers(): MutableList<String> {
-            return execute("ls ${Path.getBackupUserPath()}").out
+            val exec = execute("ls ${Path.getBackupUserPath()}")
+            return if (exec.isSuccess) exec.out else mutableListOf()
         }
     }
 }
