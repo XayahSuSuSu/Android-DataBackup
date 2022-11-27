@@ -4,4 +4,8 @@
         <attr name="title" format="string" />
         <attr name="text" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="LazyCard">
+        <attr name="lazy" format="boolean" />
+    </declare-styleable>
 </resources>
