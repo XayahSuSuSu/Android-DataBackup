@@ -125,11 +125,12 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <com.google.android.material.card.MaterialCardView
+                <com.xayah.databackup.view.card.LazyCard
                     style="@style/Widget.Material3.CardView.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    app:lazy="@{viewModel.lazyList}"
                     app:cardCornerRadius="24dp"
                     app:contentPadding="16dp">
 
@@ -231,7 +232,7 @@
 
                     </LinearLayout>
 
-                </com.google.android.material.card.MaterialCardView>
+                </com.xayah.databackup.view.card.LazyCard>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
@@ -241,11 +242,12 @@
                     android:text="@string/media"
                     android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
-                <com.google.android.material.card.MaterialCardView
+                <com.xayah.databackup.view.card.LazyCard
                     style="@style/Widget.Material3.CardView.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    app:lazy="@{viewModel.lazyChipGroup}"
                     app:cardCornerRadius="24dp"
                     app:contentPadding="16dp">
 
@@ -287,7 +289,7 @@
 
                     </LinearLayout>
 
-                </com.google.android.material.card.MaterialCardView>
+                </com.xayah.databackup.view.card.LazyCard>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"

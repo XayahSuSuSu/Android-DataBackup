@@ -37,6 +37,9 @@ class RestoreViewModel : ViewModel() {
         get() = _isFirst.value!!
         set(value) = _isFirst.postValue(value)
 
+    var lazyChipGroup = ObservableBoolean(true)
+    var lazyList = ObservableBoolean(true)
+
     // 应用恢复列表
     private val _appInfoRestoreList by lazy {
         MutableLiveData(mutableListOf<AppInfoRestore>())
@@ -79,6 +82,8 @@ class RestoreViewModel : ViewModel() {
                 isFirst = false
             } else {
                 isInitialized = false
+                lazyChipGroup.set(true)
+                lazyList.set(true)
             }
         }
         viewModelScope.launch {
@@ -193,8 +198,9 @@ class RestoreViewModel : ViewModel() {
 
     suspend fun refresh() {
         // 加载列表
-        loadAllList()
         setUser()
+        loadAllList()
+        lazyList.set(false)
         isInitialized = true
     }
 

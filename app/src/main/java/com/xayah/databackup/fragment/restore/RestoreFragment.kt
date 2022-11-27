@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
@@ -17,7 +16,6 @@ import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.view.InputChip
-import com.xayah.databackup.view.setLoading
 import com.xayah.databackup.view.util.setWithConfirm
 import kotlinx.coroutines.launch
 
@@ -44,11 +42,7 @@ class RestoreFragment : Fragment() {
                 if (it) {
                     setChipGroup()
                 } else {
-                    BottomSheetDialog(requireContext()).apply {
-                        setLoading()
-                        viewModel.refresh()
-                        dismiss()
-                    }
+                    viewModel.refresh()
                 }
             }
         }
@@ -60,6 +54,7 @@ class RestoreFragment : Fragment() {
             for (i in viewModel.mediaInfoRestoreList) {
                 addChip(i)
             }
+            viewModel.lazyChipGroup.set(false)
         }
     }
 

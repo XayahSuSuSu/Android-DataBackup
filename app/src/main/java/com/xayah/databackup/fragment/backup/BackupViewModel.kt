@@ -32,6 +32,9 @@ class BackupViewModel : ViewModel() {
         get() = _isFirst.value!!
         set(value) = _isFirst.postValue(value)
 
+    var lazyChipGroup = ObservableBoolean(true)
+    var lazyList = ObservableBoolean(true)
+
     // 应用备份列表
     private val _appInfoBackupList by lazy {
         MutableLiveData(mutableListOf<AppInfoBackup>())
@@ -75,6 +78,8 @@ class BackupViewModel : ViewModel() {
                 isFirst = false
             } else {
                 isInitialized = false
+                lazyChipGroup.set(true)
+                lazyList.set(true)
             }
         }
     }
@@ -178,10 +183,11 @@ class BackupViewModel : ViewModel() {
 
     suspend fun refresh() {
         // 加载列表
-        loadAllList()
         setUser()
         setBackupItselfCard()
         setBackupIconCard()
+        loadAllList()
+        lazyList.set(false)
         isInitialized = true
     }
 }
