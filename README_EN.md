@@ -16,5 +16,11 @@ The script has been **widely acclaimed** since the author made it. This app was 
 
 * **Easy**: Just a few simple steps!
 
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
+     alt="Get it on IzzyOnDroid"
+     height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.xayah.databackup)
+
+or get the APK from the [Releases Section](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest).
+
 ## LICENSE
 [GNU General Public License v3.0](./LICENSE)
