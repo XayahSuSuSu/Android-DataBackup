@@ -20,5 +20,13 @@
 
 * **易操作**：仅需简单几步即可备份App完整数据！
 
+
+## 获取
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
+     alt="Get it on IzzyOnDroid"
+     height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.xayah.databackup)
+
+或者从 [Releases](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest) 下载
+
 ## 开源证书
 [GNU General Public License v3.0](./LICENSE)

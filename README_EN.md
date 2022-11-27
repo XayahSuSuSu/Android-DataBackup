@@ -16,6 +16,7 @@ The script has been **widely acclaimed** since the author made it. This app was 
 
 * **Easy**: Just a few simple steps!
 
+## Download
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
      alt="Get it on IzzyOnDroid"
      height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.xayah.databackup)
