@@ -103,7 +103,7 @@ class BackupViewModel : ViewModel() {
                     dismiss()
                     context.saveBackupUser(items[position])
                     backupUser.set("${GlobalString.user}${items[position]}")
-                    isInitialized = false
+                    onResume()
                 }
                 show()
             }
