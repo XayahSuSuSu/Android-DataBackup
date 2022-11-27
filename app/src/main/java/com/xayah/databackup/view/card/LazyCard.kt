@@ -21,12 +21,8 @@ class LazyCard @JvmOverloads constructor(
 
     var lazy: Boolean = false
         set(value) {
-            if (!value) {
-                for (i in children) {
-                    i.visibility = View.VISIBLE
-                }
-                getChildAt(0).visibility = View.GONE
-            }
+            if (value) onLazy()
+            else onInitialized()
             field = value
         }
 
@@ -44,14 +40,21 @@ class LazyCard @JvmOverloads constructor(
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        if (lazy) {
-            for (i in children) {
-                i.visibility = View.GONE
-            }
-            getChildAt(0).visibility = View.VISIBLE
-        } else {
-            getChildAt(0).visibility = View.GONE
+        if (lazy) onLazy()
+    }
+
+    private fun onInitialized() {
+        for (i in children) {
+            i.visibility = View.VISIBLE
         }
+        getChildAt(0).visibility = View.GONE
+    }
+
+    private fun onLazy() {
+        for (i in children) {
+            i.visibility = View.GONE
+        }
+        getChildAt(0).visibility = View.VISIBLE
     }
 
     override fun onDraw(canvas: Canvas?) {
