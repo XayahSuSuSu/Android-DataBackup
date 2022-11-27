@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace 'com.xayah.databackup'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.xayah.databackup"
         minSdk 28
-        targetSdk 32
+        targetSdk 33
         versionCode 65
         versionName "Beta-4.2.10"
 
