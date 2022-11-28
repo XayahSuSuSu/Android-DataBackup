@@ -6,7 +6,14 @@ import java.io.FileWriter
 import java.io.IOException
 
 class Logcat {
-    val logPath = "${Path.getFilesDir()}/log_${System.currentTimeMillis()}"
+    private val logDir = "${Path.getFilesDir()}/log"
+    val logPath = "${logDir}/log_${System.currentTimeMillis()}"
+
+    init {
+        val dir = File(logDir)
+        dir.deleteRecursively()
+        dir.mkdir()
+    }
 
     fun addLine(line: String) {
         if (line.isNotEmpty()) {
