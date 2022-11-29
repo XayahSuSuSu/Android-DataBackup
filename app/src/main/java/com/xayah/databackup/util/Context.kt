@@ -117,12 +117,15 @@ fun Context.readRestoreUser(): String {
     return readPreferencesString("restore_user") ?: "0"
 }
 
-fun Context.saveIsSupportSystemApp(value: Boolean) {
-    savePreferences("support_system_app", value)
+fun Context.saveAppLoadType(value: Int) {
+    savePreferences("app_load_type", value)
 }
 
-fun Context.readIsSupportSystemApp(): Boolean {
-    return readPreferencesBoolean("support_system_app", false)
+// 0: 安装应用
+// 1: 系统应用
+// 2: 所有应用
+fun Context.readAppLoadType(): Int {
+    return readPreferencesInt("app_load_type", 0)
 }
 
 fun Context.saveFileExplorerPath(path: CharSequence?) {

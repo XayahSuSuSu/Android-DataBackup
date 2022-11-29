@@ -144,4 +144,6 @@
     <string name="backup_icon_title">备份应用时自动备份图标, 用于恢复时读取</string>
     <string name="clickTheRightBtnToStart">单击右侧按钮开始</string>
     <string name="clickTheRightBtnToFinish">单击右侧按钮完成</string>
+    <string name="installed_app">安装应用</string>
+    <string name="all_app">全部应用</string>
 </resources>

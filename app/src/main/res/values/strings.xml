@@ -161,4 +161,6 @@
     <string name="backup_icon_title">Backup icon when backing up apps, used to show when restoring</string>
     <string name="clickTheRightBtnToStart">Click the right button to start</string>
     <string name="clickTheRightBtnToFinish">Click the right button to finish</string>
+    <string name="installed_app">Installed app</string>
+    <string name="all_app">All app</string>
 </resources>

@@ -9,6 +9,8 @@ import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.JSON
+import com.xayah.databackup.util.readAppLoadType
+import com.xayah.databackup.util.saveAppLoadType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -86,7 +88,27 @@ class Backup(private val viewModel: AppListViewModel) {
                             adapterList.addAll(appInfoBackupList.filter { !it.infoBase.app && !it.infoBase.data })
                             items = adapterList
                             viewModel.mAdapter.notifyDataSetChanged()
-                        })
+                        }, showAppLoadType = true,
+                        onInstalledAppBtnClick = {
+                            viewModel.viewModelScope.launch {
+                                App.globalContext.saveAppLoadType(0)
+                                loadAppInfoBackupList()
+                                viewModel.isInitialized = false
+                            }
+                        }, onSystemAppBtnClick = {
+                            viewModel.viewModelScope.launch {
+                                App.globalContext.saveAppLoadType(1)
+                                loadAppInfoBackupList()
+                                viewModel.isInitialized = false
+                            }
+                        }, onAllAppBtnClick = {
+                            viewModel.viewModelScope.launch {
+                                App.globalContext.saveAppLoadType(2)
+                                loadAppInfoBackupList()
+                                viewModel.isInitialized = false
+                            }
+                        }, defAppLoadType = App.globalContext.readAppLoadType()
+                    )
                 )
                 register(AppListAdapterBackup())
                 adapterList.add(0, "Header")

@@ -2,12 +2,14 @@ package com.xayah.databackup.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
 import com.google.android.material.chip.Chip
+import com.xayah.databackup.R
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
 
 open class AppListHeaderAdapterBase(
@@ -18,6 +20,11 @@ open class AppListHeaderAdapterBase(
     val onNoneBtnClick: (v: Button) -> Unit,
     val onSelectedBtnClick: (v: Button) -> Unit,
     val onNotSelectedBtnClick: (v: Button) -> Unit,
+    val showAppLoadType: Boolean = false,
+    val onInstalledAppBtnClick: (v: Button) -> Unit = {},
+    val onSystemAppBtnClick: (v: Button) -> Unit = {},
+    val onAllAppBtnClick: (v: Button) -> Unit = {},
+    val defAppLoadType: Int = 0,
 ) : ItemViewDelegate<String, AppListHeaderAdapterBase.ViewHolder>() {
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
@@ -53,10 +60,38 @@ open class AppListHeaderAdapterBase(
             onNoneBtnClick(binding.buttonNone)
         }
         binding.buttonSelected.setOnClickListener {
-            onSelectedBtnClick(binding.buttonNone)
+            onSelectedBtnClick(binding.buttonSelected)
         }
         binding.buttonNotSelected.setOnClickListener {
-            onNotSelectedBtnClick(binding.buttonNone)
+            onNotSelectedBtnClick(binding.buttonNotSelected)
+        }
+        binding.materialButtonToggleGroupAppLoadType.visibility =
+            if (showAppLoadType) View.VISIBLE else View.GONE
+        binding.buttonInstalled.setOnClickListener {
+            onInstalledAppBtnClick(binding.buttonInstalled)
+            binding.materialButtonToggleGroupSelection.check(R.id.button_none)
+        }
+        binding.buttonSystem.setOnClickListener {
+            onSystemAppBtnClick(binding.buttonSystem)
+            binding.materialButtonToggleGroupSelection.check(R.id.button_none)
+        }
+        binding.buttonAll.setOnClickListener {
+            onAllAppBtnClick(binding.buttonAll)
+            binding.materialButtonToggleGroupSelection.check(R.id.button_none)
+        }
+        when (defAppLoadType) {
+            0 -> {
+                // 安装应用
+                binding.materialButtonToggleGroupAppLoadType.check(R.id.button_installed)
+            }
+            1 -> {
+                // 系统应用
+                binding.materialButtonToggleGroupAppLoadType.check(R.id.button_system)
+            }
+            2 -> {
+                // 全部应用
+                binding.materialButtonToggleGroupAppLoadType.check(R.id.button_all)
+            }
         }
     }
 
