@@ -24,6 +24,7 @@ class ProcessingActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         setContentView(binding.root)
+        setSupportActionBar(binding.bottomAppBar)
 
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
         binding.recyclerView.apply {
