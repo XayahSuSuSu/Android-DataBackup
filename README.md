@@ -1,5 +1,5 @@
 <div align="center">
-	<span style="font-weight: bold"> 中文 | <a href=README_EN.md> English </a> </span>
+	<span style="font-weight: bold"> 中文 | <a href=README_EN.md> English </a> | <a href=README_RU.md> Russian </a> | <a href=README_UK.md> Ukrainian </a> </span>
 </div>
 
 # 数据备份
