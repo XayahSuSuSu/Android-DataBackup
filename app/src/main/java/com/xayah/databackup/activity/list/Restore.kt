@@ -2,12 +2,15 @@ package com.xayah.databackup.activity.list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.xayah.databackup.App
 import com.xayah.databackup.adapter.AppListAdapterRestore
 import com.xayah.databackup.adapter.AppListHeaderAdapterBase
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.JSON
+import com.xayah.databackup.util.readRestoreAppLoadType
+import com.xayah.databackup.util.saveRestoreAppLoadType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -84,11 +87,44 @@ class Restore(private val viewModel: AppListViewModel) {
                         adapterList.addAll(appInfoRestoreList.filter { !it.infoBase.app && !it.infoBase.data })
                         items = adapterList
                         viewModel.mAdapter.notifyDataSetChanged()
-                    })
+                    }, showAppLoadType = true,
+                        onInstalledAppBtnClick = {
+                            viewModel.viewModelScope.launch {
+                                App.globalContext.saveRestoreAppLoadType(0)
+                                loadAppInfoRestoreList()
+                                viewModel.isInitialized = false
+                            }
+                        }, onSystemAppBtnClick = {
+                            viewModel.viewModelScope.launch {
+                                App.globalContext.saveRestoreAppLoadType(1)
+                                loadAppInfoRestoreList()
+                                viewModel.isInitialized = false
+                            }
+                        }, onAllAppBtnClick = {
+                            viewModel.viewModelScope.launch {
+                                App.globalContext.saveRestoreAppLoadType(2)
+                                loadAppInfoRestoreList()
+                                viewModel.isInitialized = false
+                            }
+                        }, onDefAppLoadType = { App.globalContext.readRestoreAppLoadType() }
+                    )
                 )
                 register(AppListAdapterRestore(appInfoRestoreList))
                 adapterList.add(0, "Header")
-                adapterList.addAll(appInfoRestoreList)
+                when (App.globalContext.readRestoreAppLoadType()) {
+                    0 -> {
+                        // 安装应用
+                        adapterList.addAll(appInfoRestoreList.filter { !it.infoBase.isSystemApp })
+                    }
+                    1 -> {
+                        // 系统应用
+                        adapterList.addAll(appInfoRestoreList.filter { it.infoBase.isSystemApp })
+                    }
+                    2 -> {
+                        // 全部应用
+                        adapterList.addAll(appInfoRestoreList)
+                    }
+                }
                 items = adapterList
                 viewModel.isInitialized = true
             }

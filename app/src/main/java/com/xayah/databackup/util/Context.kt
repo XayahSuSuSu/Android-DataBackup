@@ -117,15 +117,23 @@ fun Context.readRestoreUser(): String {
     return readPreferencesString("restore_user") ?: "0"
 }
 
-fun Context.saveAppLoadType(value: Int) {
-    savePreferences("app_load_type", value)
-}
-
 // 0: 安装应用
 // 1: 系统应用
 // 2: 所有应用
-fun Context.readAppLoadType(): Int {
-    return readPreferencesInt("app_load_type", 0)
+fun Context.saveBackupAppLoadType(value: Int) {
+    savePreferences("backup_app_load_type", value)
+}
+
+fun Context.readBackupAppLoadType(): Int {
+    return readPreferencesInt("backup_app_load_type", 0)
+}
+
+fun Context.saveRestoreAppLoadType(value: Int) {
+    savePreferences("restore_app_load_type", value)
+}
+
+fun Context.readRestoreAppLoadType(): Int {
+    return readPreferencesInt("restore_app_load_type", 0)
 }
 
 fun Context.saveFileExplorerPath(path: CharSequence?) {

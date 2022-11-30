@@ -24,7 +24,7 @@ open class AppListHeaderAdapterBase(
     val onInstalledAppBtnClick: (v: Button) -> Unit = {},
     val onSystemAppBtnClick: (v: Button) -> Unit = {},
     val onAllAppBtnClick: (v: Button) -> Unit = {},
-    val defAppLoadType: Int = 0,
+    val onDefAppLoadType: () -> Int = { 0 },
 ) : ItemViewDelegate<String, AppListHeaderAdapterBase.ViewHolder>() {
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
@@ -79,7 +79,7 @@ open class AppListHeaderAdapterBase(
             onAllAppBtnClick(binding.buttonAll)
             binding.materialButtonToggleGroupSelection.check(R.id.button_none)
         }
-        when (defAppLoadType) {
+        when (onDefAppLoadType()) {
             0 -> {
                 // 安装应用
                 binding.materialButtonToggleGroupAppLoadType.check(R.id.button_installed)

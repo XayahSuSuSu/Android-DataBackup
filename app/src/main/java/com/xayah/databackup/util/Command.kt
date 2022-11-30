@@ -107,14 +107,16 @@ class Command {
                         if (i.packageName == "com.xayah.databackup" || listPackages.indexOf(i.packageName) == -1)
                         // 自身或非指定用户应用
                             continue
-                        when (context.readAppLoadType()) {
+                        val isSystemApp =
+                            (i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                        when (context.readBackupAppLoadType()) {
                             0 -> {
                                 // 安装应用
-                                if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0) continue
+                                if (isSystemApp) continue
                             }
                             1 -> {
                                 // 系统应用
-                                if ((i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) continue
+                                if (isSystemApp.not()) continue
                             }
                             2 -> {
                                 // 全部应用
@@ -122,11 +124,21 @@ class Command {
                         }
                         // 寻找缓存数据
                         var appInfo = AppInfoBackup(
-                            "",
-                            "",
-                            "",
-                            "",
-                            AppInfoBase("", "", "", 0, app = true, data = true, null, ""),
+                            appSize = "",
+                            userSize = "",
+                            dataSize = "",
+                            obbSize = "",
+                            infoBase = AppInfoBase(
+                                appName = "",
+                                packageName = "",
+                                versionName = "",
+                                versionCode = 0,
+                                app = true,
+                                data = true,
+                                appIcon = null,
+                                appIconString = "",
+                                isSystemApp = isSystemApp
+                            ),
                         )
                         for (j in cachedAppInfoBackupList) {
                             if (i.packageName == j.infoBase.packageName) {

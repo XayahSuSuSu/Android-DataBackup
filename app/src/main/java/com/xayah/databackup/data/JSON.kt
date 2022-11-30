@@ -23,7 +23,8 @@ data class AppInfoBase(
     @Expose var app: Boolean,
     @Expose var data: Boolean,
     var appIcon: Drawable? = null,
-    @Expose var appIconString: String?
+    @Expose var appIconString: String?,
+    @Expose var isSystemApp: Boolean = false,
 )
 
 data class AppInfoBaseNum(

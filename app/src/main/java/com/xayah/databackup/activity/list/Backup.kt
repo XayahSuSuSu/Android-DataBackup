@@ -9,8 +9,8 @@ import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.databinding.AdapterAppListHeaderBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.JSON
-import com.xayah.databackup.util.readAppLoadType
-import com.xayah.databackup.util.saveAppLoadType
+import com.xayah.databackup.util.readBackupAppLoadType
+import com.xayah.databackup.util.saveBackupAppLoadType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -91,23 +91,23 @@ class Backup(private val viewModel: AppListViewModel) {
                         }, showAppLoadType = true,
                         onInstalledAppBtnClick = {
                             viewModel.viewModelScope.launch {
-                                App.globalContext.saveAppLoadType(0)
+                                App.globalContext.saveBackupAppLoadType(0)
                                 loadAppInfoBackupList()
                                 viewModel.isInitialized = false
                             }
                         }, onSystemAppBtnClick = {
                             viewModel.viewModelScope.launch {
-                                App.globalContext.saveAppLoadType(1)
+                                App.globalContext.saveBackupAppLoadType(1)
                                 loadAppInfoBackupList()
                                 viewModel.isInitialized = false
                             }
                         }, onAllAppBtnClick = {
                             viewModel.viewModelScope.launch {
-                                App.globalContext.saveAppLoadType(2)
+                                App.globalContext.saveBackupAppLoadType(2)
                                 loadAppInfoBackupList()
                                 viewModel.isInitialized = false
                             }
-                        }, defAppLoadType = App.globalContext.readAppLoadType()
+                        }, onDefAppLoadType = { App.globalContext.readBackupAppLoadType() }
                     )
                 )
                 register(AppListAdapterBackup())
