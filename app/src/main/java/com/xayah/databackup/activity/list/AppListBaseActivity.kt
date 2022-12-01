@@ -28,6 +28,12 @@ abstract class AppListBaseActivity : AppCompatActivity() {
         const val TAG = "AppListBaseActivity"
     }
 
+    abstract fun onAdapterRegister(multiTypeAdapter: MultiTypeAdapter)
+
+    abstract fun onAdapterListAdd(pref: AppListPreferences): MutableList<Any>
+
+    abstract suspend fun loadList(pref: AppListPreferences)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -39,35 +45,10 @@ abstract class AppListBaseActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.bottomAppBar)
 
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
-
-        binding.recyclerView.apply {
-            fastInitialize()
-            adapter = viewModel.mAdapter
-        }
-
         viewModel.pref = AppListPreferences()
-
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> {
-                        viewModel.pref.type = AppListType.InstalledApp
-                        initialize(viewModel.pref)
-                    }
-                    1 -> {
-                        viewModel.pref.type = AppListType.SystemApp
-                        initialize(viewModel.pref)
-                    }
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
-
         initialize(viewModel.pref)
+
+        bind()
     }
 
     private fun initialize(pref: AppListPreferences) {
@@ -90,9 +71,32 @@ abstract class AppListBaseActivity : AppCompatActivity() {
         }
     }
 
-    abstract fun onAdapterRegister(multiTypeAdapter: MultiTypeAdapter)
+    private fun bind() {
+        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
 
-    abstract fun onAdapterListAdd(pref: AppListPreferences): MutableList<Any>
+        binding.recyclerView.apply {
+            fastInitialize()
+            adapter = viewModel.mAdapter
+        }
 
-    abstract suspend fun loadList(pref: AppListPreferences)
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> {
+                        viewModel.pref.type = AppListType.InstalledApp
+                        initialize(viewModel.pref)
+                    }
+                    1 -> {
+                        viewModel.pref.type = AppListType.SystemApp
+                        initialize(viewModel.pref)
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+    }
+
 }
