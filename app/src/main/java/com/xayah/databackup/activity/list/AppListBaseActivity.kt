@@ -75,6 +75,7 @@ abstract class AppListBaseActivity : AppCompatActivity() {
             // 开始加载
             binding.circularProgressIndicator.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
+            binding.recyclerView.scrollToPosition(0)
 
             loadList(pref)
             viewModel.mAdapter.apply {
