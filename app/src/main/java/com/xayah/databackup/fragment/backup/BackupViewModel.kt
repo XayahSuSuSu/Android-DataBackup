@@ -7,7 +7,7 @@ import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
 import com.xayah.databackup.App
-import com.xayah.databackup.activity.list.AppListActivity
+import com.xayah.databackup.activity.list.AppListBackupActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
 import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.AppInfoBaseNum
@@ -132,7 +132,7 @@ class BackupViewModel : ViewModel() {
     }
 
     fun onSelectAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, AppListActivity::class.java).apply {
+        v.context.startActivity(Intent(v.context, AppListBackupActivity::class.java).apply {
             putExtra("isRestore", false)
         })
     }

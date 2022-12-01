@@ -10,7 +10,7 @@ import androidx.lifecycle.*
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
-import com.xayah.databackup.activity.list.AppListActivity
+import com.xayah.databackup.activity.list.AppListRestoreActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
 import com.xayah.databackup.data.AppInfoBaseNum
 import com.xayah.databackup.data.AppInfoRestore
@@ -142,7 +142,7 @@ class RestoreViewModel : ViewModel() {
     }
 
     fun onSelectAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, AppListActivity::class.java).apply {
+        v.context.startActivity(Intent(v.context, AppListRestoreActivity::class.java).apply {
             putExtra("isRestore", true)
         })
     }

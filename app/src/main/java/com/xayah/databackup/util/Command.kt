@@ -109,19 +109,6 @@ class Command {
                             continue
                         val isSystemApp =
                             (i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                        when (context.readBackupAppLoadType()) {
-                            0 -> {
-                                // 安装应用
-                                if (isSystemApp) continue
-                            }
-                            1 -> {
-                                // 系统应用
-                                if (isSystemApp.not()) continue
-                            }
-                            2 -> {
-                                // 全部应用
-                            }
-                        }
                         // 寻找缓存数据
                         var appInfo = AppInfoBackup(
                             appSize = "",

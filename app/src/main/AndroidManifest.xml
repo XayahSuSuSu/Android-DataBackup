@@ -22,7 +22,10 @@
             android:name=".activity.processing.ProcessingActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.list.AppListActivity"
+            android:name=".activity.list.AppListBackupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.list.AppListRestoreActivity"
             android:exported="false" />
         <activity
             android:name=".activity.guide.GuideActivity"
