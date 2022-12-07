@@ -7,7 +7,6 @@ import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
 import com.xayah.databackup.data.AppInfoBase
 import com.xayah.databackup.data.AppInfoBaseNum
-import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
@@ -19,13 +18,9 @@ class Restore(private val viewModel: ProcessingViewModel) {
     private lateinit var dataBinding: DataBinding
 
     // 应用恢复列表
-    private val _appInfoRestoreList by lazy {
-        MutableLiveData(mutableListOf<AppInfoRestore>())
-    }
-    private var appInfoRestoreList
-        get() = _appInfoRestoreList.value!!.filter { it.infoBase.app || it.infoBase.data }
+    private val appInfoRestoreList
+        get() = App.appInfoRestoreList.value.filter { it.infoBase.app || it.infoBase.data }
             .toMutableList()
-        set(value) = _appInfoRestoreList.postValue(value)
     private val appInfoRestoreListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
@@ -37,7 +32,6 @@ class Restore(private val viewModel: ProcessingViewModel) {
         }
     private val appInfoRestoreListTotalNum
         get() = appInfoRestoreList.size
-
 
     // 媒体恢复列表
     private val _mediaInfoRestoreList by lazy {
@@ -342,7 +336,6 @@ class Restore(private val viewModel: ProcessingViewModel) {
 
     private suspend fun loadAllList() {
         withContext(Dispatchers.IO) {
-            appInfoRestoreList = Loader.loadAppInfoRestoreList()
             mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
         }
     }

@@ -6,14 +6,15 @@ import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListRestoreActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
 import com.xayah.databackup.data.AppInfoBaseNum
-import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
@@ -38,18 +39,14 @@ class RestoreViewModel : ViewModel() {
         set(value) = _isFirst.postValue(value)
 
     var lazyChipGroup = ObservableBoolean(true)
-    var lazyList = ObservableBoolean(true)
+    var lazyList = ObservableBoolean(false)
 
     // 应用恢复列表
-    private val _appInfoRestoreList by lazy {
-        MutableLiveData(mutableListOf<AppInfoRestore>())
-    }
-    private var appInfoRestoreList
-        get() = _appInfoRestoreList.value!!.filter { it.infoBase.app || it.infoBase.data }
+    private val appInfoRestoreList
+        get() = App.appInfoRestoreList.value.filter { it.infoBase.app || it.infoBase.data }
             .toMutableList()
-        set(value) = _appInfoRestoreList.postValue(value)
-    private val appInfoRestoreListNum: LiveData<AppInfoBaseNum> =
-        Transformations.map(_appInfoRestoreList) { appInfoRestoreList ->
+    private val appInfoRestoreListNum
+        get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoRestoreList) {
                 if (i.infoBase.app) appInfoBaseNum.appNum++
@@ -57,10 +54,8 @@ class RestoreViewModel : ViewModel() {
             }
             appInfoBaseNum
         }
-    val appNum: LiveData<String> =
-        Transformations.map(appInfoRestoreListNum) { num -> num.appNum.toString() }
-    val dataNum: LiveData<String> =
-        Transformations.map(appInfoRestoreListNum) { num -> num.dataNum.toString() }
+    var appNum = ObservableField("0")
+    var dataNum = ObservableField("0")
 
     // 媒体恢复列表
     private val _mediaInfoRestoreList by lazy {
@@ -83,7 +78,6 @@ class RestoreViewModel : ViewModel() {
             } else {
                 isInitialized = false
                 lazyChipGroup.set(true)
-                lazyList.set(true)
             }
         }
         viewModelScope.launch {
@@ -172,7 +166,7 @@ class RestoreViewModel : ViewModel() {
                         Command.rm("${Path.getBackupDataSavePath()} ${Path.getAppInfoRestoreListPath()}")
                             .apply {
                                 if (this) {
-                                    Command.retrieve(Command.getCachedAppInfoRestoreActualList())
+                                    App.loadList()
                                     refresh()
                                     Toast.makeText(
                                         context, GlobalString.success, Toast.LENGTH_SHORT
@@ -191,8 +185,6 @@ class RestoreViewModel : ViewModel() {
     }
 
     private suspend fun loadAllList() {
-        Command.retrieve(Command.getCachedAppInfoRestoreActualList())
-        appInfoRestoreList = Command.getCachedAppInfoRestoreActualList()
         mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
     }
 
@@ -200,7 +192,8 @@ class RestoreViewModel : ViewModel() {
         // 加载列表
         setUser()
         loadAllList()
-        lazyList.set(false)
+        appNum.set(appInfoRestoreListNum.appNum.toString())
+        dataNum.set(appInfoRestoreListNum.dataNum.toString())
         isInitialized = true
     }
 

@@ -5,11 +5,12 @@ import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListBackupActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
-import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.AppInfoBaseNum
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
@@ -33,18 +34,15 @@ class BackupViewModel : ViewModel() {
         set(value) = _isFirst.postValue(value)
 
     var lazyChipGroup = ObservableBoolean(true)
-    var lazyList = ObservableBoolean(true)
+    var lazyList = ObservableBoolean(false)
 
     // 应用备份列表
-    private val _appInfoBackupList by lazy {
-        MutableLiveData(mutableListOf<AppInfoBackup>())
-    }
-    private var appInfoBackupList
-        get() = _appInfoBackupList.value!!.filter { it.infoBase.app || it.infoBase.data }
+    private val appInfoBackupList
+        get() = App.appInfoBackupList.value.filter { it.infoBase.app || it.infoBase.data }
             .toMutableList()
-        set(value) = _appInfoBackupList.postValue(value)
-    private val appInfoBackupListNum: LiveData<AppInfoBaseNum> =
-        Transformations.map(_appInfoBackupList) { appInfoBackupList ->
+
+    private val appInfoBackupListNum
+        get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoBackupList) {
                 if (i.infoBase.app) appInfoBaseNum.appNum++
@@ -52,10 +50,8 @@ class BackupViewModel : ViewModel() {
             }
             appInfoBaseNum
         }
-    val appNum: LiveData<String> =
-        Transformations.map(appInfoBackupListNum) { num -> num.appNum.toString() }
-    val dataNum: LiveData<String> =
-        Transformations.map(appInfoBackupListNum) { num -> num.dataNum.toString() }
+    var appNum = ObservableField("0")
+    var dataNum = ObservableField("0")
 
     // 媒体备份列表
     private val _mediaInfoBackupList by lazy {
@@ -79,7 +75,6 @@ class BackupViewModel : ViewModel() {
             } else {
                 isInitialized = false
                 lazyChipGroup.set(true)
-                lazyList.set(true)
             }
         }
     }
@@ -177,7 +172,6 @@ class BackupViewModel : ViewModel() {
     }
 
     private suspend fun loadAllList() {
-        appInfoBackupList = Loader.loadAppInfoBackupList()
         mediaInfoBackupList = Loader.loadMediaInfoBackupList()
     }
 
@@ -187,7 +181,8 @@ class BackupViewModel : ViewModel() {
         setBackupItselfCard()
         setBackupIconCard()
         loadAllList()
-        lazyList.set(false)
+        appNum.set(appInfoBackupListNum.appNum.toString())
+        dataNum.set(appInfoBackupListNum.dataNum.toString())
         isInitialized = true
     }
 }

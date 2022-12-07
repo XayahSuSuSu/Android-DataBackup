@@ -192,18 +192,6 @@ fun BottomSheetDialog.setWithTopBar(): LinearLayout {
 
 fun BottomSheetDialog.setLoading() {
     this.apply {
-        val titleView =
-            MaterialTextView(context).apply {
-                layoutParams = LinearLayoutCompat.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                ).also {
-                    it.topMargin = 16.dp
-                }
-                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_HeadlineMedium)
-                text = GlobalString.pleaseWait
-                gravity = Gravity.CENTER_HORIZONTAL
-            }
         val lottieAnimationView = LottieAnimationView(this.context).apply {
             layoutParams =
                 RelativeLayout.LayoutParams(
@@ -217,9 +205,23 @@ fun BottomSheetDialog.setLoading() {
             repeatCount = LottieDrawable.INFINITE
         }
         setWithTopBar().apply {
-            addView(titleView)
+            addView(title(GlobalString.pleaseWait))
             addView(lottieAnimationView)
         }
         setCancelable(false)
+    }
+}
+
+fun BottomSheetDialog.title(title: String): MaterialTextView {
+    return MaterialTextView(context).apply {
+        layoutParams = LinearLayoutCompat.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).also {
+            it.topMargin = 16.dp
+        }
+        setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_HeadlineMedium)
+        text = title
+        gravity = Gravity.CENTER_HORIZONTAL
     }
 }

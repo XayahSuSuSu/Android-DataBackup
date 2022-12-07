@@ -30,8 +30,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfoRestore>) :
-    ItemViewDelegate<AppInfoRestore, AppListAdapterRestore.ViewHolder>() {
+class AppListAdapterRestore(
+    val onChipClick: () -> Unit = {},
+    val appInfoList: MutableList<AppInfoRestore>
+) : ItemViewDelegate<AppInfoRestore, AppListAdapterRestore.ViewHolder>() {
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
@@ -102,7 +104,7 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
                                         if (that) {
                                             val items = adapterItems.toMutableList()
                                             items.remove(item)
-                                            mAppInfoRestoreList.remove(item)
+                                            appInfoList.remove(item)
                                             adapterItems = items.toList()
                                             BottomSheetDialog(context).apply {
                                                 setLoading()
@@ -138,6 +140,7 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
                     checked
                 CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
+                    onChipClick()
                 }
             }
             isChecked = item.infoBase.app
@@ -148,6 +151,7 @@ class AppListAdapterRestore(private val mAppInfoRestoreList: MutableList<AppInfo
                     checked
                 CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
+                    onChipClick()
                 }
             }
             isChecked = item.infoBase.data

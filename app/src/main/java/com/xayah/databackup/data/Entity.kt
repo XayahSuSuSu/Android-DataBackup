@@ -25,10 +25,15 @@ data class AppInfoBase(
     var appIcon: Drawable? = null,
     @Expose var appIconString: String?,
     @Expose var isSystemApp: Boolean = false,
+    @Expose var firstInstallTime: Long = 0,
 )
 
 data class AppInfoBaseNum(
     var appNum: Int, var dataNum: Int
+)
+
+data class AppInfoListSelectedNum(
+    var installed: Int, var system: Int
 )
 
 data class AppInfoBackup(

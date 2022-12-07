@@ -5,10 +5,11 @@ import android.content.Context
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.xayah.crash.CrashHandler
-import com.xayah.databackup.util.Logcat
-import com.xayah.databackup.util.Path
-import com.xayah.databackup.util.Server
-import com.xayah.databackup.util.readIsDynamicColors
+import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.AppInfoListSelectedNum
+import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.util.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.InputStream
 
 class App : Application() {
@@ -26,6 +27,48 @@ class App : Application() {
         lateinit var versionName: String
         lateinit var server: Server
         lateinit var logcat: Logcat
+
+        // 应用备份列表
+        val appInfoBackupList by lazy {
+            MutableStateFlow(mutableListOf<AppInfoBackup>())
+        }
+
+        // 应用备份列表计数
+        val appInfoBackupListNum
+            get() = run {
+                val num = AppInfoListSelectedNum(0, 0)
+                for (i in appInfoBackupList.value) {
+                    if (i.infoBase.app || i.infoBase.data) {
+                        if (i.infoBase.isSystemApp) num.system++
+                        else num.installed++
+                    }
+                }
+                num
+            }
+
+        // 应用恢复列表
+        val appInfoRestoreList by lazy {
+            MutableStateFlow(mutableListOf<AppInfoRestore>())
+        }
+
+        // 应用恢复列表计数
+        val appInfoRestoreListNum
+            get() = run {
+                val num = AppInfoListSelectedNum(0, 0)
+                for (i in appInfoRestoreList.value) {
+                    if (i.infoBase.app || i.infoBase.data) {
+                        if (i.infoBase.isSystemApp) num.system++
+                        else num.installed++
+                    }
+                }
+                num
+            }
+
+        suspend fun loadList() {
+            Command.retrieve(Command.getCachedAppInfoRestoreActualList())
+            appInfoBackupList.emit(Command.getAppInfoBackupList(globalContext))
+            appInfoRestoreList.emit(Command.getCachedAppInfoRestoreActualList())
+        }
     }
 
     class EnvInitializer : Shell.Initializer() {

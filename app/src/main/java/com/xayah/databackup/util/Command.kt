@@ -120,11 +120,12 @@ class Command {
                                 packageName = "",
                                 versionName = "",
                                 versionCode = 0,
-                                app = true,
-                                data = true,
+                                app = false,
+                                data = false,
                                 appIcon = null,
                                 appIconString = "",
-                                isSystemApp = isSystemApp
+                                isSystemApp = isSystemApp,
+                                firstInstallTime = 0,
                             ),
                         )
                         for (j in cachedAppInfoBackupList) {
@@ -138,12 +139,14 @@ class Command {
                         val versionName = i.versionName
                         val versionCode = i.longVersionCode
                         val packageName = i.packageName
+                        val firstInstallTime = i.firstInstallTime
                         appInfo.infoBase.appIcon = appIcon
                         appInfo.apply {
                             infoBase.appName = appName
                             infoBase.packageName = packageName
                             infoBase.versionName = versionName
                             infoBase.versionCode = versionCode
+                            infoBase.firstInstallTime = firstInstallTime
                         }
                         appInfoBackupList.add(appInfo)
                     } catch (e: Exception) {

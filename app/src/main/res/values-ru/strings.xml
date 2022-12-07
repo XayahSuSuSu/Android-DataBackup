@@ -147,4 +147,8 @@
     <string name="clickTheRightBtnToFinish">Нажмите правую кнопку, чтобы закончить</string>
     <string name="installed_app">установить приложение</string>
     <string name="all_app">применить все</string>
+    <string name="alphabet">Алфавит</string>
+    <string name="install_time">Время установки</string>
+    <string name="sort">Сортировать</string>
+    <string name="filter">фильтр</string>
 </resources>

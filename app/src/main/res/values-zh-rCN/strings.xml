@@ -146,4 +146,8 @@
     <string name="clickTheRightBtnToFinish">单击右侧按钮完成</string>
     <string name="installed_app">安装应用</string>
     <string name="all_app">全部应用</string>
+    <string name="alphabet">字母表序</string>
+    <string name="install_time">安装时间</string>
+    <string name="sort">排序</string>
+    <string name="filter">过滤</string>
 </resources>

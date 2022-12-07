@@ -6,5 +6,14 @@ enum class AppListType {
 }
 
 enum class AppListSort {
-    Alphabet,
+    AlphabetAscending,
+    AlphabetDescending,
+    FirstInstallTimeAscending,
+    FirstInstallTimeDescending,
+}
+
+enum class AppListFilter {
+    None,
+    Selected,
+    NotSelected,
 }

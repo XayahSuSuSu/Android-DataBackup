@@ -13,7 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AppListAdapterBackup : ItemViewDelegate<AppInfoBackup, AppListAdapterBackup.ViewHolder>() {
+class AppListAdapterBackup(
+    val onChipClick: () -> Unit = {}
+) : ItemViewDelegate<AppInfoBackup, AppListAdapterBackup.ViewHolder>() {
     class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
@@ -59,6 +61,7 @@ class AppListAdapterBackup : ItemViewDelegate<AppInfoBackup, AppListAdapterBacku
                     checked
                 CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
+                    onChipClick()
                 }
             }
             isChecked = item.infoBase.app
@@ -69,6 +72,7 @@ class AppListAdapterBackup : ItemViewDelegate<AppInfoBackup, AppListAdapterBacku
                     checked
                 CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
+                    onChipClick()
                 }
             }
             isChecked = item.infoBase.data

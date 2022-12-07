@@ -117,6 +117,13 @@ class GlobalString {
         val all = App.globalContext.getString(R.string.all)
         val progress = App.globalContext.getString(R.string.progress)
         val clickTheRightBtnToStart = App.globalContext.getString(R.string.clickTheRightBtnToStart)
-        val clickTheRightBtnToFinish = App.globalContext.getString(R.string.clickTheRightBtnToFinish)
+        val clickTheRightBtnToFinish =
+            App.globalContext.getString(R.string.clickTheRightBtnToFinish)
+        val symbolTriangle = App.globalContext.getString(R.string.symbol_triangle)
+        val symbolAntiTriangle = App.globalContext.getString(R.string.symbol_anti_triangle)
+        val alphabet = App.globalContext.getString(R.string.alphabet)
+        val installTime = App.globalContext.getString(R.string.install_time)
+        val sort = App.globalContext.getString(R.string.sort)
+        val filter = App.globalContext.getString(R.string.filter)
     }
 }

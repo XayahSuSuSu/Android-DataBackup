@@ -96,6 +96,7 @@
     <string name="edit">Edit</string>
     <string name="system_app">System app</string>
     <string name="symbol_triangle" translatable="false">▲</string>
+    <string name="symbol_anti_triangle" translatable="false">▼</string>
     <string name="speed">Speed</string>
     <string name="size">Size</string>
     <string name="letter_obb" translatable="false">OBB</string>
@@ -163,4 +164,8 @@
     <string name="clickTheRightBtnToFinish">Click the right button to finish</string>
     <string name="installed_app">Installed app</string>
     <string name="all_app">All app</string>
+    <string name="alphabet">Alphabet</string>
+    <string name="install_time">Install time</string>
+    <string name="sort">Sort</string>
+    <string name="filter">Filter</string>
 </resources>

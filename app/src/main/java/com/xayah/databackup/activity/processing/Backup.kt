@@ -19,13 +19,9 @@ class Backup(private val viewModel: ProcessingViewModel) {
     private lateinit var dataBinding: DataBinding
 
     // 应用备份列表
-    private val _appInfoBackupList by lazy {
-        MutableLiveData(mutableListOf<AppInfoBackup>())
-    }
-    private var appInfoBackupList
-        get() = _appInfoBackupList.value!!.filter { it.infoBase.app || it.infoBase.data }
+    private val appInfoBackupList
+        get() = App.appInfoBackupList.value.filter { it.infoBase.app || it.infoBase.data }
             .toMutableList()
-        set(value) = _appInfoBackupList.postValue(value)
     private val appInfoBackupListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
@@ -37,12 +33,9 @@ class Backup(private val viewModel: ProcessingViewModel) {
         }
 
     // 应用恢复列表
-    private val _appInfoRestoreList by lazy {
-        MutableLiveData(mutableListOf<AppInfoRestore>())
-    }
-    private var appInfoRestoreList
-        get() = _appInfoRestoreList.value!!
-        set(value) = _appInfoRestoreList.postValue(value)
+    private val appInfoRestoreList
+        get() = App.appInfoRestoreList.value.filter { it.infoBase.app || it.infoBase.data }
+            .toMutableList()
 
     // 媒体备份列表
     private val _mediaInfoBackupList by lazy {
@@ -67,7 +60,6 @@ class Backup(private val viewModel: ProcessingViewModel) {
     private var backupInfoList
         get() = _backupInfoList.value!!
         set(value) = _backupInfoList.postValue(value)
-
 
     private var successNum = 0
     private var failedNum = 0
@@ -434,8 +426,6 @@ class Backup(private val viewModel: ProcessingViewModel) {
 
     private suspend fun loadAllList() {
         backupInfoList = Loader.loadBackupInfoList()
-        appInfoBackupList = Loader.loadAppInfoBackupList()
-        appInfoRestoreList = Loader.loadAppInfoRestoreList()
         mediaInfoBackupList = Loader.loadMediaInfoBackupList()
         mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
     }
@@ -444,8 +434,8 @@ class Backup(private val viewModel: ProcessingViewModel) {
         if (!viewModel.isRestore) {
             JSON.saveBackupInfoList(backupInfoList)
             if (!viewModel.isMedia) {
-                JSON.saveAppInfoBackupList(_appInfoBackupList.value!!)
-                JSON.saveAppInfoRestoreList(appInfoRestoreList)
+                JSON.saveAppInfoBackupList(App.appInfoBackupList.value)
+                JSON.saveAppInfoRestoreList(App.appInfoRestoreList.value)
             } else {
                 JSON.saveMediaInfoBackupList(_mediaInfoBackupList.value!!)
                 JSON.saveMediaInfoRestoreList(mediaInfoRestoreList)
