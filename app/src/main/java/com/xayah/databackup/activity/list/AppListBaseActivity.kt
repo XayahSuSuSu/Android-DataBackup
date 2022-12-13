@@ -1,10 +1,7 @@
 package com.xayah.databackup.activity.list
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +27,7 @@ data class AppListPreferences(
     var type: AppListType = AppListType.InstalledApp,
     var sort: AppListSort = AppListSort.AlphabetAscending,
     var filter: AppListFilter = AppListFilter.None,
+    var searchKeyWord: String = "",
 )
 
 abstract class AppListBaseActivity : AppCompatActivity() {
@@ -257,6 +255,20 @@ abstract class AppListBaseActivity : AppCompatActivity() {
 
     private fun bind() {
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.searchView.editText.setOnEditorActionListener { _, _, event ->
+            if (event == null || event.action != KeyEvent.ACTION_DOWN) {
+                // 防止触发两次
+                return@setOnEditorActionListener false
+            }
+            runOnMainCoroutine {
+                val text = binding.searchView.text
+                viewModel.pref.searchKeyWord = text.toString()
+                initialize(viewModel.pref)
+                binding.searchBar.text = text
+                binding.searchView.hide()
+            }
+            false
+        }
 
         binding.recyclerView.apply {
             fastInitialize()

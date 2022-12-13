@@ -25,7 +25,14 @@
                 android:layout_height="?attr/actionBarSize"
                 app:navigationIcon="@drawable/ic_round_arrow_back"
                 app:title="@string/select_app"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
                 app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/searchBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@null" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
@@ -44,6 +51,15 @@
                     android:text="@string/system_app" />
             </com.google.android.material.tabs.TabLayout>
         </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.search.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:hint="@null"
+            android:imeOptions="actionSearch"
+            app:layout_anchor="@id/searchBar" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

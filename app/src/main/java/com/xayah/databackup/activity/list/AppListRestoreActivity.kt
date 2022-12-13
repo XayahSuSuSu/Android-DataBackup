@@ -94,6 +94,11 @@ class AppListRestoreActivity : AppListBaseActivity() {
                         .toMutableList())
                 }
             }
+            val keyWord = pref.searchKeyWord
+            mAppInfoList.emit(mAppInfoList.value.filter {
+                it.infoBase.appName.lowercase().contains(keyWord.lowercase()) ||
+                        it.infoBase.packageName.lowercase().contains(keyWord.lowercase())
+            }.toMutableList())
 
             // 计算已选中应用数量并应用Badges
             updateBadges(App.appInfoRestoreListNum)
