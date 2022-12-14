@@ -17,3 +17,11 @@ enum class AppListFilter {
     Selected,
     NotSelected,
 }
+
+enum class AppListSelection {
+    None,
+    App,
+    AppReverse,
+    All,
+    AllReverse,
+}

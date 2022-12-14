@@ -43,11 +43,55 @@ class AppListRestoreActivity : AppListBaseActivity() {
         when (pref.type) {
             AppListType.InstalledApp -> {
                 // 安装应用
-                adapterList.addAll(mAppInfoList.value.filter { !it.infoBase.isSystemApp })
+                val appList = mAppInfoList.value.filter { !it.infoBase.isSystemApp }
+                adapterList.addAll(appList)
+                when (pref.installedAppSelection) {
+                    AppListSelection.App -> {
+                        appList.forEach { it.infoBase.app = true }
+                    }
+                    AppListSelection.AppReverse -> {
+                        appList.forEach { it.infoBase.app = false }
+                    }
+                    AppListSelection.All -> {
+                        appList.forEach {
+                            it.infoBase.app = true
+                            it.infoBase.data = true
+                        }
+                    }
+                    AppListSelection.AllReverse -> {
+                        appList.forEach {
+                            it.infoBase.app = false
+                            it.infoBase.data = false
+                        }
+                    }
+                    else -> {}
+                }
             }
             AppListType.SystemApp -> {
                 // 系统应用
-                adapterList.addAll(mAppInfoList.value.filter { it.infoBase.isSystemApp })
+                val appList = mAppInfoList.value.filter { it.infoBase.isSystemApp }
+                adapterList.addAll(appList)
+                when (pref.systemAppSelection) {
+                    AppListSelection.App -> {
+                        appList.forEach { it.infoBase.app = true }
+                    }
+                    AppListSelection.AppReverse -> {
+                        appList.forEach { it.infoBase.app = false }
+                    }
+                    AppListSelection.All -> {
+                        appList.forEach {
+                            it.infoBase.app = true
+                            it.infoBase.data = true
+                        }
+                    }
+                    AppListSelection.AllReverse -> {
+                        appList.forEach {
+                            it.infoBase.app = false
+                            it.infoBase.data = false
+                        }
+                    }
+                    else -> {}
+                }
             }
         }
         return adapterList
@@ -59,6 +103,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
                 App.loadList()
                 isFirst = false
             }
+
             mAppInfoList.emit(App.appInfoRestoreList.value.apply {
                 when (pref.sort) {
                     AppListSort.AlphabetAscending -> {
@@ -83,6 +128,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
                     }
                 }
             })
+
             when (pref.filter) {
                 AppListFilter.None -> {}
                 AppListFilter.Selected -> {
@@ -94,6 +140,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
                         .toMutableList())
                 }
             }
+
             val keyWord = pref.searchKeyWord
             mAppInfoList.emit(mAppInfoList.value.filter {
                 it.infoBase.appName.lowercase().contains(keyWord.lowercase()) ||

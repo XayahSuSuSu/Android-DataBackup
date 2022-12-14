@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppListFilter
+import com.xayah.databackup.data.AppListSelection
 import com.xayah.databackup.data.AppListSort
 import com.xayah.databackup.data.AppListType
 import com.xayah.databackup.databinding.ActivityAppListBinding
@@ -28,6 +29,8 @@ data class AppListPreferences(
     var sort: AppListSort = AppListSort.AlphabetAscending,
     var filter: AppListFilter = AppListFilter.None,
     var searchKeyWord: String = "",
+    var installedAppSelection: AppListSelection = AppListSelection.None,
+    var systemAppSelection: AppListSelection = AppListSelection.None,
 )
 
 abstract class AppListBaseActivity : AppCompatActivity() {
@@ -224,6 +227,46 @@ abstract class AppListBaseActivity : AppCompatActivity() {
                         addView(bottomSheetFilterBinding.root)
                     }
                 }
+                true
+            }
+            R.id.menu_app -> {
+                when (viewModel.pref.type) {
+                    AppListType.InstalledApp -> {
+                        if (viewModel.pref.installedAppSelection == AppListSelection.App) {
+                            viewModel.pref.installedAppSelection = AppListSelection.AppReverse
+                        } else {
+                            viewModel.pref.installedAppSelection = AppListSelection.App
+                        }
+                    }
+                    AppListType.SystemApp -> {
+                        if (viewModel.pref.systemAppSelection == AppListSelection.App) {
+                            viewModel.pref.systemAppSelection = AppListSelection.AppReverse
+                        } else {
+                            viewModel.pref.systemAppSelection = AppListSelection.App
+                        }
+                    }
+                }
+                initialize(viewModel.pref)
+                true
+            }
+            R.id.menu_all -> {
+                when (viewModel.pref.type) {
+                    AppListType.InstalledApp -> {
+                        if (viewModel.pref.installedAppSelection == AppListSelection.All) {
+                            viewModel.pref.installedAppSelection = AppListSelection.AllReverse
+                        } else {
+                            viewModel.pref.installedAppSelection = AppListSelection.All
+                        }
+                    }
+                    AppListType.SystemApp -> {
+                        if (viewModel.pref.systemAppSelection == AppListSelection.All) {
+                            viewModel.pref.systemAppSelection = AppListSelection.AllReverse
+                        } else {
+                            viewModel.pref.systemAppSelection = AppListSelection.All
+                        }
+                    }
+                }
+                initialize(viewModel.pref)
                 true
             }
             else -> {
