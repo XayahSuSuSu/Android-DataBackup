@@ -34,8 +34,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
 
     // 应用恢复列表
     private val appInfoRestoreList
-        get() = App.appInfoRestoreList.value.filter { it.infoBase.app || it.infoBase.data }
-            .toMutableList()
+        get() = App.appInfoRestoreList.value
 
     // 媒体备份列表
     private val _mediaInfoBackupList by lazy {
