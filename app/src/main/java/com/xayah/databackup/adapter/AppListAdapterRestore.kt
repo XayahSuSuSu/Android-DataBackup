@@ -143,7 +143,8 @@ class AppListAdapterRestore(
                     onChipClick()
                 }
             }
-            isChecked = item.infoBase.app
+            isChecked = item.hasApp && item.infoBase.app
+            isEnabled = item.hasApp
         }
         binding.chipData.apply {
             setOnCheckedChangeListener { _, checked ->
@@ -154,19 +155,8 @@ class AppListAdapterRestore(
                     onChipClick()
                 }
             }
-            isChecked = item.infoBase.data
-        }
-        if (!item.hasApp) {
-            binding.chipApplication.apply {
-                isChecked = false
-                isEnabled = false
-            }
-        }
-        if (!item.hasData) {
-            binding.chipData.apply {
-                isChecked = false
-                isEnabled = false
-            }
+            isChecked = item.hasData && item.infoBase.data
+            isEnabled = item.hasData
         }
     }
 }
