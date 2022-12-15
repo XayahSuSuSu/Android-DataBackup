@@ -12,6 +12,9 @@
     <color name="blue">#0155D4</color>
     <color name="blueContainer">#D9E2FF</color>
 
+    <color name="purple">#8b35b1</color>
+    <color name="purpleContainer">#f8d8ff</color>
+
     <color name="bottom_sheet_dialog_topbar">#CCDFDFDF</color>
     <color name="bottom_sheet_dialog_topbar_activated">#CC444444</color>
 </resources>

@@ -102,6 +102,7 @@
     <string name="letter_obb" translatable="false">OBB</string>
     <string name="letter_data" translatable="false">DATA</string>
     <string name="letter_user" translatable="false">USER</string>
+    <string name="letter_user_de" translatable="false">USER_DE</string>
     <string name="letter_apk" translatable="false">APK</string>
     <string name="progress">Progress</string>
     <string name="total">Total</string>

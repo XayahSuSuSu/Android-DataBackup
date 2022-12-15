@@ -157,14 +157,17 @@ class Restore(private val viewModel: ProcessingViewModel) {
                 val userId = App.globalContext.readRestoreUser()
                 val inPath = "${Path.getBackupDataSavePath()}/${packageName}"
                 val userPath = "${Path.getBackupDataSavePath()}/${packageName}/user.tar*"
+                val userDePath = "${Path.getBackupDataSavePath()}/${packageName}/user_de.tar*"
                 val dataPath = "${Path.getBackupDataSavePath()}/${packageName}/data.tar*"
                 val obbPath = "${Path.getBackupDataSavePath()}/${packageName}/obb.tar*"
                 if (i.infoBase.data) {
                     Command.ls(userPath).apply { dataBinding.isBackupUser.set(this) }
+                    Command.ls(userDePath).apply { dataBinding.isBackupUserDe.set(this) }
                     Command.ls(dataPath).apply { dataBinding.isBackupData.set(this) }
                     Command.ls(obbPath).apply { dataBinding.isBackupObb.set(this) }
                 } else {
                     dataBinding.isBackupUser.set(false)
+                    dataBinding.isBackupUserDe.set(false)
                     dataBinding.isBackupData.set(false)
                     dataBinding.isBackupObb.set(false)
                 }
@@ -217,6 +220,28 @@ class Restore(private val viewModel: ProcessingViewModel) {
                         "user", packageName, "${Path.getUserPath(userId)}/${packageName}", userId
                     )
                     dataBinding.processingUser.set(false)
+                    initializeSizeAndSpeed()
+                }
+                if (dataBinding.isBackupUserDe.get()) {
+                    // 恢复User_de
+                    dataBinding.processingUserDe.set(true)
+                    val inputPath = "${inPath}/user_de.tar*"
+                    Command.decompress(
+                        Command.getCompressionTypeByPath(inputPath),
+                        "user_de",
+                        inputPath,
+                        packageName,
+                        Path.getUserDePath(userId)
+                    ) { setSizeAndSpeed(it) }.apply {
+                        if (!this) state = false
+                    }
+                    Command.setOwnerAndSELinux(
+                        "user_de",
+                        packageName,
+                        "${Path.getUserDePath(userId)}/${packageName}",
+                        userId
+                    )
+                    dataBinding.processingUserDe.set(false)
                     initializeSizeAndSpeed()
                 }
                 if (dataBinding.isBackupData.get()) {

@@ -58,7 +58,7 @@ compress() {
   mkdir -p "$4"
   am force-stop "$3"
   case "$2" in
-    user)
+    user | user_de)
       if [ -d "$5/$3" ]; then
         case "$1" in
           tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;

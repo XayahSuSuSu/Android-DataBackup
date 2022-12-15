@@ -16,8 +16,16 @@ class Path {
             return "/data/user/${App.globalContext.readBackupUser()}"
         }
 
+        fun getUserDePath(): String {
+            return "/data/user_de/${App.globalContext.readBackupUser()}"
+        }
+
         fun getUserPath(userId: String): String {
             return "/data/user/${userId}"
+        }
+
+        fun getUserDePath(userId: String): String {
+            return "/data/user_de/${userId}"
         }
 
         fun getDataPath(): String {

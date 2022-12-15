@@ -321,6 +321,38 @@
                                     android:layout_marginEnd="16dp"
                                     android:gravity="center"
                                     android:orientation="vertical"
+                                    android:visibility="@{viewModel.dataBinding.isBackupUserDe() ? View.VISIBLE : View.GONE}">
+
+                                    <androidx.constraintlayout.utils.widget.ImageFilterView
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@color/purpleContainer"
+                                        android:padding="8dp"
+                                        android:tint="@color/purple"
+                                        app:roundPercent="1"
+                                        app:srcCompat="@drawable/ic_round_person" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="@string/letter_user_de"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/symbol_triangle"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                        android:visibility="@{viewModel.dataBinding.processingUserDe ? View.VISIBLE : View.INVISIBLE}" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
                                     android:visibility="@{viewModel.dataBinding.isBackupData() ? View.VISIBLE : View.GONE}">
 
                                     <androidx.constraintlayout.utils.widget.ImageFilterView

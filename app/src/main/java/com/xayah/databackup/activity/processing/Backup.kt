@@ -186,14 +186,17 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     val compressionType = App.globalContext.readCompressionType()
                     val outPutPath = "${Path.getBackupDataSavePath()}/${packageName}"
                     val userPath = "${Path.getUserPath()}/${packageName}"
+                    val userDePath = "${Path.getUserDePath()}/${packageName}"
                     val dataPath = "${Path.getDataPath()}/${packageName}"
                     val obbPath = "${Path.getObbPath()}/${packageName}"
                     if (i.infoBase.data) {
                         Command.ls(userPath).apply { dataBinding.isBackupUser.set(this) }
+                        Command.ls(userDePath).apply { dataBinding.isBackupUserDe.set(this) }
                         Command.ls(dataPath).apply { dataBinding.isBackupData.set(this) }
                         Command.ls(obbPath).apply { dataBinding.isBackupObb.set(this) }
                     } else {
                         dataBinding.isBackupUser.set(false)
+                        dataBinding.isBackupUserDe.set(false)
                         dataBinding.isBackupData.set(false)
                         dataBinding.isBackupObb.set(false)
                     }
@@ -240,6 +243,28 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             }
                         }
                         dataBinding.processingUser.set(false)
+                        initializeSizeAndSpeed()
+                    }
+                    if (dataBinding.isBackupUserDe.get()) {
+                        // 备份User_de
+                        dataBinding.processingUserDe.set(true)
+                        Command.compress(
+                            compressionType,
+                            "user_de",
+                            packageName,
+                            outPutPath,
+                            Path.getUserDePath(),
+                            i.userSize
+                        ) { setSizeAndSpeed(it) }.apply {
+                            if (!this) state = false
+                            // 保存user_de大小
+                            else i.userSize = Command.countSize(userDePath, 1)
+                            // 检测是否生成压缩包
+                            Command.ls("${outPutPath}/user_de.tar*").apply {
+                                if (!this) state = false
+                            }
+                        }
+                        dataBinding.processingUserDe.set(false)
                         initializeSizeAndSpeed()
                     }
                     if (dataBinding.isBackupData.get()) {
