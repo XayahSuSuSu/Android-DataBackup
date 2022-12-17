@@ -15,7 +15,6 @@ import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListRestoreActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
 import com.xayah.databackup.data.AppInfoBaseNum
-import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.setLoading
@@ -57,13 +56,13 @@ class RestoreViewModel : ViewModel() {
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
 
+    // 媒体备份列表
+    val mediaInfoBackupList
+        get() = App.mediaInfoBackupList.value
+
     // 媒体恢复列表
-    private val _mediaInfoRestoreList by lazy {
-        MutableLiveData(mutableListOf<MediaInfo>())
-    }
-    var mediaInfoRestoreList
-        get() = _mediaInfoRestoreList.value!!
-        set(value) = _mediaInfoRestoreList.postValue(value)
+    val mediaInfoRestoreList
+        get() = App.mediaInfoRestoreList.value
 
     var backupUser = ObservableField("${GlobalString.user}0")
     var restoreUser = ObservableField("${GlobalString.user}0")
@@ -184,14 +183,9 @@ class RestoreViewModel : ViewModel() {
         }
     }
 
-    private suspend fun loadAllList() {
-        mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
-    }
-
     suspend fun refresh() {
         // 加载列表
         setUser()
-        loadAllList()
         appNum.set(appInfoRestoreListNum.appNum.toString())
         dataNum.set(appInfoRestoreListNum.dataNum.toString())
         isInitialized = true

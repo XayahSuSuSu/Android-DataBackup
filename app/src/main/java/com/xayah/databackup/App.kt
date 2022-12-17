@@ -8,6 +8,7 @@ import com.xayah.crash.CrashHandler
 import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.AppInfoListSelectedNum
 import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.InputStream
@@ -64,10 +65,30 @@ class App : Application() {
                 num
             }
 
+        // 媒体备份列表
+        val mediaInfoBackupList by lazy {
+            MutableStateFlow(mutableListOf<MediaInfo>())
+        }
+
+        // 媒体恢复列表
+        val mediaInfoRestoreList by lazy {
+            MutableStateFlow(mutableListOf<MediaInfo>())
+        }
+
         suspend fun loadList() {
             Command.retrieve(Command.getCachedAppInfoRestoreActualList())
             appInfoBackupList.emit(Command.getAppInfoBackupList(globalContext))
             appInfoRestoreList.emit(Command.getCachedAppInfoRestoreActualList())
+            mediaInfoBackupList.emit(Command.getCachedMediaInfoBackupList())
+            mediaInfoRestoreList.emit(Command.getCachedMediaInfoRestoreList())
+        }
+
+        suspend fun saveMediaInfoBackupList() {
+            JSON.saveMediaInfoBackupList(mediaInfoBackupList.value)
+        }
+
+        suspend fun saveMediaInfoRestoreList() {
+            JSON.saveMediaInfoRestoreList(mediaInfoRestoreList.value)
         }
     }
 

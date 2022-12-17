@@ -9,11 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentRestoreBinding
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.JSON
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.util.setWithConfirm
@@ -65,7 +65,7 @@ class RestoreFragment : Fragment() {
             setOnCheckedChangeListener { _, isChecked ->
                 viewModel.viewModelScope.launch {
                     mediaInfo.data = isChecked
-                    saveMediaInfoRestoreList()
+                    App.saveMediaInfoRestoreList()
                 }
             }
             setOnCloseIconClickListener {
@@ -80,6 +80,13 @@ class RestoreFragment : Fragment() {
                                     if (this) {
                                         viewModel.mediaInfoRestoreList.remove(mediaInfo)
                                         binding.chipGroup.removeView(it)
+                                        for (i in viewModel.mediaInfoBackupList) {
+                                            if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
+                                                // 清除媒体备份大小信息
+                                                i.size = ""
+                                                break
+                                            }
+                                        }
                                         for (i in viewModel.mediaInfoRestoreList) {
                                             if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
                                                 // 清除媒体备份大小信息
@@ -87,7 +94,8 @@ class RestoreFragment : Fragment() {
                                                 break
                                             }
                                         }
-                                        saveMediaInfoRestoreList()
+                                        App.saveMediaInfoBackupList()
+                                        App.saveMediaInfoRestoreList()
                                     } else {
                                         Toast.makeText(
                                             requireContext(),
@@ -103,10 +111,6 @@ class RestoreFragment : Fragment() {
             }
         }
         binding.chipGroup.addView(chip)
-    }
-
-    private suspend fun saveMediaInfoRestoreList() {
-        JSON.saveMediaInfoRestoreList(viewModel.mediaInfoRestoreList)
     }
 
     override fun onResume() {

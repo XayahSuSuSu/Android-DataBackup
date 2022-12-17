@@ -54,12 +54,8 @@ class BackupViewModel : ViewModel() {
     var dataNum = ObservableField("0")
 
     // 媒体备份列表
-    private val _mediaInfoBackupList by lazy {
-        MutableLiveData(mutableListOf<MediaInfo>())
-    }
-    var mediaInfoBackupList
-        get() = _mediaInfoBackupList.value!!
-        set(value) = _mediaInfoBackupList.postValue(value)
+    val mediaInfoBackupList
+        get() = App.mediaInfoBackupList.value
 
     var backupUser = ObservableField("${GlobalString.user}0")
     var restoreUser = ObservableField("${GlobalString.user}0")
@@ -171,16 +167,11 @@ class BackupViewModel : ViewModel() {
         backupIconEnable.set(App.globalContext.readIsBackupIcon())
     }
 
-    private suspend fun loadAllList() {
-        mediaInfoBackupList = Loader.loadMediaInfoBackupList()
-    }
-
     suspend fun refresh() {
         // 加载列表
         setUser()
         setBackupItselfCard()
         setBackupIconCard()
-        loadAllList()
         appNum.set(appInfoBackupListNum.appNum.toString())
         dataNum.set(appInfoBackupListNum.dataNum.toString())
         isInitialized = true

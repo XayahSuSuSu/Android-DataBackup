@@ -37,20 +37,12 @@ class Backup(private val viewModel: ProcessingViewModel) {
         get() = App.appInfoRestoreList.value
 
     // 媒体备份列表
-    private val _mediaInfoBackupList by lazy {
-        MutableLiveData(mutableListOf<MediaInfo>())
-    }
-    private var mediaInfoBackupList
-        get() = _mediaInfoBackupList.value!!.filter { it.data }.toMutableList()
-        set(value) = _mediaInfoBackupList.postValue(value)
+    private val mediaInfoBackupList
+        get() = App.mediaInfoBackupList.value.filter { it.data }.toMutableList()
 
     // 媒体恢复列表
-    private val _mediaInfoRestoreList by lazy {
-        MutableLiveData(mutableListOf<MediaInfo>())
-    }
-    private var mediaInfoRestoreList
-        get() = _mediaInfoRestoreList.value!!
-        set(value) = _mediaInfoRestoreList.postValue(value)
+    private val mediaInfoRestoreList
+        get() = App.mediaInfoRestoreList.value
 
     // 备份历史列表
     private val _backupInfoList by lazy {
@@ -450,8 +442,6 @@ class Backup(private val viewModel: ProcessingViewModel) {
 
     private suspend fun loadAllList() {
         backupInfoList = Loader.loadBackupInfoList()
-        mediaInfoBackupList = Loader.loadMediaInfoBackupList()
-        mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
     }
 
     private suspend fun saveRestoreList() {
@@ -461,8 +451,8 @@ class Backup(private val viewModel: ProcessingViewModel) {
                 JSON.saveAppInfoBackupList(App.appInfoBackupList.value)
                 JSON.saveAppInfoRestoreList(App.appInfoRestoreList.value)
             } else {
-                JSON.saveMediaInfoBackupList(_mediaInfoBackupList.value!!)
-                JSON.saveMediaInfoRestoreList(mediaInfoRestoreList)
+                App.saveMediaInfoBackupList()
+                App.saveMediaInfoRestoreList()
             }
         }
     }

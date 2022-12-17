@@ -34,12 +34,8 @@ class Restore(private val viewModel: ProcessingViewModel) {
         get() = appInfoRestoreList.size
 
     // 媒体恢复列表
-    private val _mediaInfoRestoreList by lazy {
-        MutableLiveData(mutableListOf<MediaInfo>())
-    }
-    private var mediaInfoRestoreList
-        get() = _mediaInfoRestoreList.value!!.filter { it.data }.toMutableList()
-        set(value) = _mediaInfoRestoreList.postValue(value)
+    private val mediaInfoRestoreList
+        get() = App.mediaInfoRestoreList.value.filter { it.data }.toMutableList()
     private val mediaInfoRestoreListNum
         get() = mediaInfoRestoreList.size
 
@@ -48,8 +44,6 @@ class Restore(private val viewModel: ProcessingViewModel) {
 
     init {
         viewModel.viewModelScope.launch {
-            // 加载列表
-            loadAllList()
             dataBinding = viewModel.dataBinding.apply {
                 onRestoreClick = { v ->
                     if (viewModel.isMedia) onRestoreMediaClick(v)
@@ -356,12 +350,6 @@ class Restore(private val viewModel: ProcessingViewModel) {
         }
         else {
             v.context.getActivity()?.finish()
-        }
-    }
-
-    private suspend fun loadAllList() {
-        withContext(Dispatchers.IO) {
-            mediaInfoRestoreList = Loader.loadMediaInfoRestoreList()
         }
     }
 }

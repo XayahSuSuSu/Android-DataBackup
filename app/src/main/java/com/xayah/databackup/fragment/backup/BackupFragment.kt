@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.util.GlobalString
@@ -68,7 +69,7 @@ class BackupFragment : Fragment() {
                         val mediaInfo = MediaInfo(name, path, true, "")
                         viewModel.mediaInfoBackupList.add(mediaInfo)
                         addChip(mediaInfo)
-                        saveMediaInfoBackupList()
+                        App.saveMediaInfoBackupList()
                     }
                 }
             }
@@ -101,7 +102,7 @@ class BackupFragment : Fragment() {
             setOnCheckedChangeListener { _, isChecked ->
                 viewModel.viewModelScope.launch {
                     mediaInfo.data = isChecked
-                    saveMediaInfoBackupList()
+                    App.saveMediaInfoBackupList()
                 }
             }
             setOnCloseIconClickListener {
@@ -110,7 +111,7 @@ class BackupFragment : Fragment() {
                         viewModel.viewModelScope.launch {
                             viewModel.mediaInfoBackupList.remove(mediaInfo)
                             binding.chipGroup.removeView(it)
-                            saveMediaInfoBackupList()
+                            App.saveMediaInfoBackupList()
                         }
                     }
                 }
@@ -125,10 +126,6 @@ class BackupFragment : Fragment() {
         materialYouFileExplorer = MaterialYouFileExplorer().apply {
             initialize(that)
         }
-    }
-
-    private suspend fun saveMediaInfoBackupList() {
-        JSON.saveMediaInfoBackupList(viewModel.mediaInfoBackupList)
     }
 
     override fun onResume() {
