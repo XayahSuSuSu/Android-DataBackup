@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DataBackup</string>
     <string name="backup">Бекап</string>
@@ -65,7 +64,7 @@
     <string name="activate_bashrc">Активация bashrc</string>
     <string name="finish">Готово</string>
     <string name="welcome_to_use">Добро пожаловать</string>
-    <string name="guide_one_subtitle">Согласно действующей политике, вам необходимо внимательно прочитать и согласиться со следующим Пользовательским соглашением и Политикой конфиденциальности, прежде чем вы начнете использовать это приложение.on</string>
+    <string name="guide_one_subtitle">Согласно действующей политике, вам необходимо внимательно прочитать и согласиться со следующим Пользовательским соглашением и Политикой конфиденциальности, прежде чем вы начнете использовать это приложение.</string>
     <string name="guide_one_content"> ● Все данные, сгенерированные этим приложением, используются для создания и восстановления бекапов, и хранятся только локально.\n●Незаконная перепродажа этого приложения строго запрещена.\n● Описание разрешений:\nandroid.permission.QUERY_ALL_PACKAGES: получение списка всех пакетов приложений, используется только для создания списка резервных копий.\nandroid.permission.INTERNET: используется только для получения информации об обновлении приложения онлайн:\nadroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: чтение и запись конфигурации резервного копирования, архива и т. д.\n● Root: разрешение только для самой функции создания и восстановления бекапов.</string>
     <string name="guide_two_subtitle">Чтобы правильно использовать это приложение, вам необходимо провести несколько тестов</string>
     <string name="next_step">Дальше</string>
@@ -128,7 +127,7 @@
     <string name="feature_not_supported">Функция не поддерживается вашей системой</string>
     <string name="disagree">Не согласен</string>
     <string name="agree">Согласен</string>
-    <string name="backup_dir_not_exist">Папка не существует. Создать используя путь по умолчанию?</string>
+    <string name="backup_dir_not_exist">Папка не существует. Создать, используя путь по умолчанию?</string>
     <string name="pick_dir">Выбор папки</string>
     <string name="create">Создать</string>
     <string name="repeat_to_add">Повторить, чтобы добавить!</string>
@@ -143,8 +142,8 @@
     <string name="all">Все</string>
     <string name="backup_icon">Бекап значков</string>
     <string name="backup_icon_title">Бекап значков при создании бекапа приложений. Используется для отображения при восстановлении.</string>
-    <string name="clickTheRightBtnToStart">Нажмите правую кнопку, чтобы начать</string>
-    <string name="clickTheRightBtnToFinish">Нажмите правую кнопку, чтобы закончить</string>
+    <string name="clickTheRightBtnToStart">Нажмите кнопку справа, чтобы начать</string>
+    <string name="clickTheRightBtnToFinish">Нажмите кнопку справа, чтобы закончить</string>
     <string name="installed_app">установить приложение</string>
     <string name="all_app">применить все</string>
     <string name="alphabet">Алфавит</string>
