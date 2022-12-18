@@ -158,5 +158,16 @@ class AppListAdapterRestore(
             isChecked = item.hasData && item.infoBase.data
             isEnabled = item.hasData
         }
+        binding.chipVersion.apply {
+            visibility = if (item.infoBase.versionName.isEmpty()) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
+            text = item.infoBase.versionName
+            setOnClickListener {
+                Toast.makeText(context, item.infoBase.versionName, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

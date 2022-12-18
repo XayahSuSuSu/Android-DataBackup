@@ -2,8 +2,10 @@ package com.xayah.databackup.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
 import com.xayah.databackup.data.AppInfoBackup
@@ -76,6 +78,17 @@ class AppListAdapterBackup(
                 }
             }
             isChecked = item.infoBase.data
+        }
+        binding.chipVersion.apply {
+            visibility = if (item.infoBase.versionName.isEmpty()) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
+            text = item.infoBase.versionName
+            setOnClickListener {
+                Toast.makeText(context, item.infoBase.versionName, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
