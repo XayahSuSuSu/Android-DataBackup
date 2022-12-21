@@ -8,10 +8,6 @@ class Path {
             return App.globalContext.filesDir.path
         }
 
-        fun getCustomDataBackupDirectory(): String {
-            return App.globalContext.readCustomBackupSavePath()
-        }
-
         fun getUserPath(): String {
             return "/data/user/${App.globalContext.readBackupUser()}"
         }
@@ -45,19 +41,19 @@ class Path {
         }
 
         fun getAppInfoBackupListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/${App.globalContext.readBackupUser()}/backup/appList"
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/backup/appList"
         }
 
         fun getAppInfoRestoreListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/${App.globalContext.readBackupUser()}/restore/appList"
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/restore/appList"
         }
 
         fun getMediaInfoBackupListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/${App.globalContext.readBackupUser()}/backup/mediaList"
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/backup/mediaList"
         }
 
         fun getMediaInfoRestoreListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/${App.globalContext.readBackupUser()}/restore/mediaList"
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/restore/mediaList"
         }
 
         fun getBackupDataSavePath(): String {
@@ -73,11 +69,11 @@ class Path {
         }
 
         fun getBackupInfoListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/config/backupList"
+            return "${App.globalContext.readBackupSavePath()}/backup/backupList"
         }
 
         fun getShellLogPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/log"
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/log"
         }
     }
 }
