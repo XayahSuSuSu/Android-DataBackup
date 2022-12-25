@@ -24,7 +24,7 @@ class AppListBackupActivity : AppListBaseActivity() {
 
     // 经过过滤或排序后的应用列表
     private val mAppInfoList by lazy {
-        MutableStateFlow(mutableListOf<AppInfoBackup>())
+        MutableStateFlow(mutableListOf<AppInfo>())
     }
 
     private lateinit var tabLayout: TabLayout
@@ -42,25 +42,25 @@ class AppListBackupActivity : AppListBaseActivity() {
         when (pref.type) {
             AppListType.InstalledApp -> {
                 // 安装应用
-                val appList = mAppInfoList.value.filter { !it.infoBase.isSystemApp }
+                val appList = mAppInfoList.value.filter { !it.isSystemApp }
                 adapterList.addAll(appList)
                 when (pref.installedAppSelection) {
                     AppListSelection.App -> {
-                        appList.forEach { it.infoBase.app = true }
+                        appList.forEach { it.backup.app = true }
                     }
                     AppListSelection.AppReverse -> {
-                        appList.forEach { it.infoBase.app = false }
+                        appList.forEach { it.backup.app = false }
                     }
                     AppListSelection.All -> {
                         appList.forEach {
-                            it.infoBase.app = true
-                            it.infoBase.data = true
+                            it.backup.app = true
+                            it.backup.data = true
                         }
                     }
                     AppListSelection.AllReverse -> {
                         appList.forEach {
-                            it.infoBase.app = false
-                            it.infoBase.data = false
+                            it.backup.app = false
+                            it.backup.data = false
                         }
                     }
                     else -> {}
@@ -68,25 +68,25 @@ class AppListBackupActivity : AppListBaseActivity() {
             }
             AppListType.SystemApp -> {
                 // 系统应用
-                val appList = mAppInfoList.value.filter { it.infoBase.isSystemApp }
+                val appList = mAppInfoList.value.filter { it.isSystemApp }
                 adapterList.addAll(appList)
                 when (pref.systemAppSelection) {
                     AppListSelection.App -> {
-                        appList.forEach { it.infoBase.app = true }
+                        appList.forEach { it.backup.app = true }
                     }
                     AppListSelection.AppReverse -> {
-                        appList.forEach { it.infoBase.app = false }
+                        appList.forEach { it.backup.app = false }
                     }
                     AppListSelection.All -> {
                         appList.forEach {
-                            it.infoBase.app = true
-                            it.infoBase.data = true
+                            it.backup.app = true
+                            it.backup.data = true
                         }
                     }
                     AppListSelection.AllReverse -> {
                         appList.forEach {
-                            it.infoBase.app = false
-                            it.infoBase.data = false
+                            it.backup.app = false
+                            it.backup.data = false
                         }
                     }
                     else -> {}
@@ -103,27 +103,29 @@ class AppListBackupActivity : AppListBaseActivity() {
                 isFirst = false
             }
 
-            mAppInfoList.emit(App.appInfoBackupList.value.apply {
+            mAppInfoList.emit(App.appInfoList.value.filter { it.isOnThisDevice }.toMutableList())
+
+            mAppInfoList.emit(mAppInfoList.value.apply {
                 when (pref.sort) {
                     AppListSort.AlphabetAscending -> {
                         sortWith { appInfo1, appInfo2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo1 as AppInfoBackup).infoBase.appName)
-                                .compareTo(collator.getCollationKey((appInfo2 as AppInfoBackup).infoBase.appName))
+                            collator.getCollationKey((appInfo1 as AppInfo).appName)
+                                .compareTo(collator.getCollationKey((appInfo2 as AppInfo).appName))
                         }
                     }
                     AppListSort.AlphabetDescending -> {
                         sortWith { appInfo1, appInfo2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo2 as AppInfoBackup).infoBase.appName)
-                                .compareTo(collator.getCollationKey((appInfo1 as AppInfoBackup).infoBase.appName))
+                            collator.getCollationKey((appInfo2 as AppInfo).appName)
+                                .compareTo(collator.getCollationKey((appInfo1 as AppInfo).appName))
                         }
                     }
                     AppListSort.FirstInstallTimeAscending -> {
-                        sortBy { it.infoBase.firstInstallTime }
+                        sortBy { it.firstInstallTime }
                     }
                     AppListSort.FirstInstallTimeDescending -> {
-                        sortByDescending { it.infoBase.firstInstallTime }
+                        sortByDescending { it.firstInstallTime }
                     }
                 }
             })
@@ -131,19 +133,19 @@ class AppListBackupActivity : AppListBaseActivity() {
             when (pref.filter) {
                 AppListFilter.None -> {}
                 AppListFilter.Selected -> {
-                    mAppInfoList.emit(mAppInfoList.value.filter { it.infoBase.app || it.infoBase.data }
+                    mAppInfoList.emit(mAppInfoList.value.filter { it.backup.app || it.backup.data }
                         .toMutableList())
                 }
                 AppListFilter.NotSelected -> {
-                    mAppInfoList.emit(mAppInfoList.value.filter { !it.infoBase.app && !it.infoBase.data }
+                    mAppInfoList.emit(mAppInfoList.value.filter { !it.backup.app && !it.backup.data }
                         .toMutableList())
                 }
             }
 
             val keyWord = pref.searchKeyWord
             mAppInfoList.emit(mAppInfoList.value.filter {
-                it.infoBase.appName.lowercase().contains(keyWord.lowercase()) ||
-                        it.infoBase.packageName.lowercase().contains(keyWord.lowercase())
+                it.appName.lowercase().contains(keyWord.lowercase()) ||
+                        it.packageName.lowercase().contains(keyWord.lowercase())
             }.toMutableList())
 
             // 计算已选中应用数量并应用Badges
@@ -168,7 +170,7 @@ class AppListBackupActivity : AppListBaseActivity() {
 
     override suspend fun onSave() {
         withContext(Dispatchers.IO) {
-            JSON.saveAppInfoBackupList(App.appInfoBackupList.value)
+            JSON.saveAppInfoList(App.appInfoList.value)
         }
     }
 

@@ -1,94 +1,47 @@
 package com.xayah.databackup.adapter
 
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.recyclerview.widget.RecyclerView
-import com.drakeet.multitype.ItemViewDelegate
-import com.xayah.databackup.data.AppInfoBackup
-import com.xayah.databackup.databinding.AdapterAppListBinding
-import com.xayah.databackup.view.util.dp
+import com.xayah.databackup.data.AppInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AppListAdapterBackup(
     val onChipClick: () -> Unit = {}
-) : ItemViewDelegate<AppInfoBackup, AppListAdapterBackup.ViewHolder>() {
-    class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
+) : AppListAdapterBase() {
 
-    override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
-        return ViewHolder(
-            AdapterAppListBinding.inflate(
-                LayoutInflater.from(context), parent, false
-            )
-        )
+    override fun onChipClickInvoke() {
+        onChipClick()
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, item: AppInfoBackup) {
-        val binding = holder.binding
-        binding.appIcon.setImageDrawable(item.infoBase.appIcon)
-        binding.appName.text = item.infoBase.appName
-        binding.appPackage.text = item.infoBase.packageName
+    override fun onBindViewHolder(holder: ViewHolder, item: AppInfo) {
+        super.onBindViewHolder(holder, item)
 
-        if (holder.bindingAdapterPosition == adapterItems.size - 1) {
-            binding.materialCardView.apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    topMargin = 16.dp
-                    bottomMargin = 16.dp
-                    marginStart = 20.dp
-                    marginEnd = 20.dp
-                }
-            }
-        } else {
-            binding.materialCardView.apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    topMargin = 16.dp
-                    marginStart = 20.dp
-                    marginEnd = 20.dp
-                }
-            }
-        }
-        // ----------------------------------------------------------------------------------------
+        val binding = holder.binding
+        val adapterItem = (adapterItems[holder.bindingAdapterPosition] as AppInfo)
+        // 应用Chip
         binding.chipApplication.apply {
             setOnCheckedChangeListener { _, checked ->
-                (adapterItems[holder.bindingAdapterPosition] as AppInfoBackup).infoBase.app =
+                adapterItem.backup.app =
                     checked
                 CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
-                    onChipClick()
+                    onChipClickInvoke()
                 }
             }
-            isChecked = item.infoBase.app
+            isChecked = item.backup.app
         }
+
+        // 数据Chip
         binding.chipData.apply {
             setOnCheckedChangeListener { _, checked ->
-                (adapterItems[holder.bindingAdapterPosition] as AppInfoBackup).infoBase.data =
+                adapterItem.backup.data =
                     checked
                 CoroutineScope(Dispatchers.Main).launch {
                     adapter.notifyItemChanged(0)
-                    onChipClick()
+                    onChipClickInvoke()
                 }
             }
-            isChecked = item.infoBase.data
-        }
-        binding.chipVersion.apply {
-            visibility = if (item.infoBase.versionName.isEmpty()) {
-                View.GONE
-            } else {
-                View.VISIBLE
-            }
-            text = item.infoBase.versionName
-            setOnClickListener {
-                Toast.makeText(context, item.infoBase.versionName, Toast.LENGTH_SHORT).show()
-            }
+            isChecked = item.backup.data
         }
     }
 }

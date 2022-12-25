@@ -8,7 +8,7 @@ import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.drakeet.multitype.MultiTypeAdapter
-import com.xayah.databackup.data.AppInfoBase
+import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.util.GlobalString
 
 data class DataBinding(
@@ -92,7 +92,7 @@ class ProcessingViewModel : ViewModel() {
 
     // 成功列表
     val _successList by lazy {
-        MutableLiveData(mutableListOf<AppInfoBase>())
+        MutableLiveData(mutableListOf<ProcessingTask>())
     }
     var successList
         get() = _successList.value!!
@@ -100,7 +100,7 @@ class ProcessingViewModel : ViewModel() {
 
     // 失败列表
     val _failedList by lazy {
-        MutableLiveData(mutableListOf<AppInfoBase>())
+        MutableLiveData(mutableListOf<ProcessingTask>())
     }
     var failedList
         get() = _failedList.value!!

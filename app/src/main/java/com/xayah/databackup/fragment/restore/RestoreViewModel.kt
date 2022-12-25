@@ -42,14 +42,14 @@ class RestoreViewModel : ViewModel() {
 
     // 应用恢复列表
     private val appInfoRestoreList
-        get() = App.appInfoRestoreList.value.filter { it.infoBase.app || it.infoBase.data }
+        get() = App.appInfoList.value.filter { if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app || it.restoreList[it.restoreIndex].data else false }
             .toMutableList()
     private val appInfoRestoreListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoRestoreList) {
-                if (i.infoBase.app) appInfoBaseNum.appNum++
-                if (i.infoBase.data) appInfoBaseNum.dataNum++
+                if (i.restoreList[i.restoreIndex].app) appInfoBaseNum.appNum++
+                if (i.restoreList[i.restoreIndex].data) appInfoBaseNum.dataNum++
             }
             appInfoBaseNum
         }

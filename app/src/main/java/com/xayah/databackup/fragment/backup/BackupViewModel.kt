@@ -12,7 +12,6 @@ import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListBackupActivity
 import com.xayah.databackup.activity.processing.ProcessingActivity
 import com.xayah.databackup.data.AppInfoBaseNum
-import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import kotlinx.coroutines.launch
@@ -38,15 +37,15 @@ class BackupViewModel : ViewModel() {
 
     // 应用备份列表
     private val appInfoBackupList
-        get() = App.appInfoBackupList.value.filter { it.infoBase.app || it.infoBase.data }
+        get() = App.appInfoList.value.filter { it.backup.app || it.backup.data }
             .toMutableList()
 
     private val appInfoBackupListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoBackupList) {
-                if (i.infoBase.app) appInfoBaseNum.appNum++
-                if (i.infoBase.data) appInfoBaseNum.dataNum++
+                if (i.backup.app) appInfoBaseNum.appNum++
+                if (i.backup.data) appInfoBaseNum.dataNum++
             }
             appInfoBaseNum
         }

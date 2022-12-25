@@ -8,7 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.AppInfoBaseNum
+import com.xayah.databackup.data.BackupInfo
+import com.xayah.databackup.data.MediaInfo
+import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,21 +23,17 @@ class Backup(private val viewModel: ProcessingViewModel) {
 
     // 应用备份列表
     private val appInfoBackupList
-        get() = App.appInfoBackupList.value.filter { it.infoBase.app || it.infoBase.data }
+        get() = App.appInfoList.value.filter { it.backup.app || it.backup.data }
             .toMutableList()
     private val appInfoBackupListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoBackupList) {
-                if (i.infoBase.app) appInfoBaseNum.appNum++
-                if (i.infoBase.data) appInfoBaseNum.dataNum++
+                if (i.backup.app) appInfoBaseNum.appNum++
+                if (i.backup.data) appInfoBaseNum.dataNum++
             }
             appInfoBaseNum
         }
-
-    // 应用恢复列表
-    private val appInfoRestoreList
-        get() = App.appInfoRestoreList.value
 
     // 媒体备份列表
     private val mediaInfoBackupList
@@ -76,10 +75,18 @@ class Backup(private val viewModel: ProcessingViewModel) {
 
     private fun initializeApp() {
         viewModel.mAdapter.apply {
-            val adapterList = mutableListOf<Any>()
-            for (i in appInfoBackupList) adapterList.add(i.infoBase)
+            val processingTaskList = mutableListOf<Any>()
+            for (i in appInfoBackupList) processingTaskList.add(
+                ProcessingTask(
+                    appName = i.appName,
+                    packageName = i.packageName,
+                    app = i.backup.app,
+                    data = i.backup.data,
+                    appIcon = i.appIcon
+                )
+            )
             register(ProcessingTaskAdapter())
-            items = adapterList
+            items = processingTaskList
             notifyDataSetChanged()
         }
         dataBinding.progressMax.set(appInfoBackupList.size)
@@ -92,14 +99,18 @@ class Backup(private val viewModel: ProcessingViewModel) {
 
     private fun initializeMedia() {
         viewModel.mAdapter.apply {
-            val adapterList = mutableListOf<Any>()
-            for (i in mediaInfoBackupList) adapterList.add(
-                AppInfoBase(
-                    i.name, i.path, "", -1, app = false, data = true, null, ""
+            val processingTaskList = mutableListOf<Any>()
+            for (i in mediaInfoBackupList) processingTaskList.add(
+                ProcessingTask(
+                    appName = i.name,
+                    packageName = i.path,
+                    app = false,
+                    data = true,
+                    appIcon = null
                 )
             )
             register(ProcessingTaskAdapter())
-            items = adapterList
+            items = processingTaskList
             notifyDataSetChanged()
         }
         dataBinding.progressMax.set(mediaInfoBackupList.size)
@@ -152,19 +163,19 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     )
                 for ((index, i) in appInfoBackupList.withIndex()) {
                     // 准备备份卡片数据
-                    dataBinding.appName.set(i.infoBase.appName)
-                    dataBinding.packageName.set(i.infoBase.packageName)
-                    dataBinding.appVersion.set(i.infoBase.versionName)
-                    dataBinding.appIcon.set(i.infoBase.appIcon)
-                    dataBinding.isBackupApk.set(i.infoBase.app)
+                    dataBinding.appName.set(i.appName)
+                    dataBinding.packageName.set(i.packageName)
+                    dataBinding.appVersion.set(i.backup.versionName)
+                    dataBinding.appIcon.set(i.appIcon)
+                    dataBinding.isBackupApk.set(i.backup.app)
 
                     if (App.globalContext.readIsBackupIcon()) {
                         // 保存应用图标
-                        i.infoBase.appIcon?.apply {
+                        i.appIcon?.apply {
                             try {
                                 val stream = ByteArrayOutputStream()
                                 toBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream)
-                                i.infoBase.appIconString =
+                                i.appIconString =
                                     Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -175,12 +186,13 @@ class Backup(private val viewModel: ProcessingViewModel) {
                     val packageName = dataBinding.packageName.get()!!
                     val userId = App.globalContext.readBackupUser()
                     val compressionType = App.globalContext.readCompressionType()
-                    val outPutPath = "${Path.getBackupDataSavePath()}/${packageName}"
+                    val date = App.getTimeStamp()
+                    val outPutPath = "${Path.getBackupDataSavePath()}/${packageName}/${date}"
                     val userPath = "${Path.getUserPath()}/${packageName}"
                     val userDePath = "${Path.getUserDePath()}/${packageName}"
                     val dataPath = "${Path.getDataPath()}/${packageName}"
                     val obbPath = "${Path.getObbPath()}/${packageName}"
-                    if (i.infoBase.data) {
+                    if (i.backup.data) {
                         Command.ls(userPath).apply { dataBinding.isBackupUser.set(this) }
                         Command.ls(userDePath).apply { dataBinding.isBackupUserDe.set(this) }
                         Command.ls(dataPath).apply { dataBinding.isBackupData.set(this) }
@@ -198,18 +210,13 @@ class Backup(private val viewModel: ProcessingViewModel) {
                         // 备份应用
                         dataBinding.processingApk.set(true)
                         Command.compressAPK(
-                            compressionType, packageName, outPutPath, userId, i.appSize
+                            compressionType, packageName, outPutPath, userId, i.backup.appSize
                         ) { setSizeAndSpeed(it) }.apply {
                             if (!this) state = false
                             // 保存apk大小
-                            else i.appSize = Command.countSize(
-                                Bashrc.getAPKPath(i.infoBase.packageName, userId).second, 1
+                            else i.backup.appSize = Command.countSize(
+                                Bashrc.getAPKPath(i.packageName, userId).second, 1
                             )
-                            // 检测是否生成压缩包
-                            Command.ls("${outPutPath}/apk.tar*").apply {
-                                // 后续若直接令state = this会导致state非正常更新
-                                if (!this) state = false
-                            }
                         }
                         dataBinding.processingApk.set(false)
                         initializeSizeAndSpeed()
@@ -223,15 +230,11 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             packageName,
                             outPutPath,
                             Path.getUserPath(),
-                            i.userSize
+                            i.backup.userSize
                         ) { setSizeAndSpeed(it) }.apply {
                             if (!this) state = false
                             // 保存user大小
-                            else i.userSize = Command.countSize(userPath, 1)
-                            // 检测是否生成压缩包
-                            Command.ls("${outPutPath}/user.tar*").apply {
-                                if (!this) state = false
-                            }
+                            else i.backup.userSize = Command.countSize(userPath, 1)
                         }
                         dataBinding.processingUser.set(false)
                         initializeSizeAndSpeed()
@@ -245,15 +248,11 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             packageName,
                             outPutPath,
                             Path.getUserDePath(),
-                            i.userSize
+                            i.backup.userDeSize
                         ) { setSizeAndSpeed(it) }.apply {
                             if (!this) state = false
                             // 保存user_de大小
-                            else i.userSize = Command.countSize(userDePath, 1)
-                            // 检测是否生成压缩包
-                            Command.ls("${outPutPath}/user_de.tar*").apply {
-                                if (!this) state = false
-                            }
+                            else i.backup.userDeSize = Command.countSize(userDePath, 1)
                         }
                         dataBinding.processingUserDe.set(false)
                         initializeSizeAndSpeed()
@@ -267,15 +266,11 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             packageName,
                             outPutPath,
                             Path.getDataPath(),
-                            i.dataSize
+                            i.backup.dataSize
                         ) { setSizeAndSpeed(it) }.apply {
                             if (!this) state = false
                             // 保存data大小
-                            else i.dataSize = Command.countSize(dataPath, 1)
-                            // 检测是否生成压缩包
-                            Command.ls("${outPutPath}/data.tar*").apply {
-                                if (!this) state = false
-                            }
+                            else i.backup.dataSize = Command.countSize(dataPath, 1)
                         }
                         dataBinding.processingData.set(false)
                         initializeSizeAndSpeed()
@@ -289,31 +284,31 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             packageName,
                             outPutPath,
                             Path.getObbPath(),
-                            i.obbSize
+                            i.backup.obbSize
                         ) { setSizeAndSpeed(it) }.apply {
                             if (!this) state = false
                             // 保存obb大小
-                            else i.obbSize = Command.countSize(obbPath, 1)
-                            // 检测是否生成压缩包
-                            Command.ls("${outPutPath}/obb.tar*").apply {
-                                if (!this) state = false
-                            }
+                            else i.backup.obbSize = Command.countSize(obbPath, 1)
                         }
                         dataBinding.processingObb.set(false)
                         initializeSizeAndSpeed()
                     }
+                    i.backup.date = date
+                    val processingTask = ProcessingTask(
+                        appName = i.appName,
+                        packageName = i.packageName,
+                        app = i.backup.app,
+                        data = i.backup.data,
+                        appIcon = i.appIcon
+                    )
                     if (state) {
                         successNum += 1
-                        Command.addOrUpdateList(
-                            AppInfoRestore(i.infoBase),
-                            appInfoRestoreList as MutableList<Any>
-                        ) {
-                            (it as AppInfoRestore).infoBase.packageName == i.infoBase.packageName
-                        }
-                        viewModel.successList.add(i.infoBase)
+                        i.restoreList.add(i.backup)
+                        i.restoreIndex++
+                        viewModel.successList.add(processingTask)
                     } else {
                         failedNum += 1
-                        viewModel.failedList.add(i.infoBase)
+                        viewModel.failedList.add(processingTask)
                     }
                     dataBinding.progress.set(index + 1)
                     dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
@@ -391,23 +386,26 @@ class Backup(private val viewModel: ProcessingViewModel) {
                             else i.size = Command.countSize(
                                 i.path, 1
                             )
-                            // 检测是否生成压缩包
-                            Command.ls("${outPutPath}/${i.name}.tar*").apply {
-                                if (!this) state = false
-                            }
                         }
                         dataBinding.processingData.set(false)
                         initializeSizeAndSpeed()
                     }
+                    val processingTask = ProcessingTask(
+                        appName = i.name,
+                        packageName = i.path,
+                        app = false,
+                        data = true,
+                        appIcon = null
+                    )
                     if (state) {
                         successNum += 1
                         Command.addOrUpdateList(i, mediaInfoRestoreList as MutableList<Any>) {
                             (it as MediaInfo).path == i.path
                         }
-                        viewModel.successList.add(viewModel.mAdapter.items[index] as AppInfoBase)
+                        viewModel.successList.add(processingTask)
                     } else {
                         failedNum += 1
-                        viewModel.failedList.add(viewModel.mAdapter.items[index] as AppInfoBase)
+                        viewModel.failedList.add(processingTask)
                     }
                     dataBinding.progress.set(index + 1)
                     dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
@@ -448,8 +446,7 @@ class Backup(private val viewModel: ProcessingViewModel) {
         if (!viewModel.isRestore) {
             JSON.saveBackupInfoList(backupInfoList)
             if (!viewModel.isMedia) {
-                JSON.saveAppInfoBackupList(App.appInfoBackupList.value)
-                JSON.saveAppInfoRestoreList(App.appInfoRestoreList.value)
+                JSON.saveAppInfoList(App.appInfoList.value)
             } else {
                 App.saveMediaInfoBackupList()
                 App.saveMediaInfoRestoreList()

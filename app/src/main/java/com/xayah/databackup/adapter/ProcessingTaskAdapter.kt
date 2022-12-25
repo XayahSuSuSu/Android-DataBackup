@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.drakeet.multitype.ItemViewDelegate
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.AppInfoBase
+import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.databinding.AdapterProcessingTaskBinding
 import com.xayah.databackup.util.GlobalString
 
-class ProcessingTaskAdapter : ItemViewDelegate<AppInfoBase, ProcessingTaskAdapter.ViewHolder>() {
+class ProcessingTaskAdapter : ItemViewDelegate<ProcessingTask, ProcessingTaskAdapter.ViewHolder>() {
     class ViewHolder(val binding: AdapterProcessingTaskBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -24,7 +24,7 @@ class ProcessingTaskAdapter : ItemViewDelegate<AppInfoBase, ProcessingTaskAdapte
         )
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, item: AppInfoBase) {
+    override fun onBindViewHolder(holder: ViewHolder, item: ProcessingTask) {
         val binding = holder.binding
         binding.appIcon.setImageDrawable(
             if (item.appIcon == null) AppCompatResources.getDrawable(
@@ -33,6 +33,7 @@ class ProcessingTaskAdapter : ItemViewDelegate<AppInfoBase, ProcessingTaskAdapte
         )
         binding.appName.text = item.appName
         binding.appType.setTextColor(App.globalContext.getColor(R.color.red))
+
         if (item.app) binding.appType.text = GlobalString.application
         if (item.data) binding.appType.text = GlobalString.data
         if (item.app && item.data) {

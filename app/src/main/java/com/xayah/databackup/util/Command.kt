@@ -6,7 +6,10 @@ import android.os.Build
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.AppInfo
+import com.xayah.databackup.data.AppInfoItem
+import com.xayah.databackup.data.BackupInfo
+import com.xayah.databackup.data.MediaInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -19,21 +22,35 @@ import java.util.*
 
 class Command {
     companion object {
+        const val TAG = "Command"
+
+        /**
+         * 切换至IO协程运行
+         */
         private suspend fun <T> runOnIO(block: suspend () -> T): T {
             return withContext(Dispatchers.IO) { block() }
         }
 
+        /**
+         * `cat`命令, 用于文件读取
+         */
         private suspend fun cat(path: String): Pair<Boolean, String> {
             val exec = execute("cat $path", false)
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * `ls -i`命令
+         */
         suspend fun ls(path: String): Boolean {
             execute("ls -i $path").apply {
                 return this.isSuccess
             }
         }
 
+        /**
+         * 利用`ls`计数
+         */
         suspend fun countFile(path: String): Int {
             execute("ls -i $path").apply {
                 return if (this.isSuccess)
@@ -43,12 +60,18 @@ class Command {
             }
         }
 
+        /**
+         * `rm -rf`命令, 用于删除文件, 可递归
+         */
         suspend fun rm(path: String): Boolean {
             execute("rm -rf $path").apply {
                 return this.isSuccess
             }
         }
 
+        /**
+         * `mkdir`命令, 用于文件夹创建, 可递归
+         */
         suspend fun mkdir(path: String): Boolean {
             if (execute("ls -i $path").isSuccess)
                 return true
@@ -57,14 +80,24 @@ class Command {
             }
         }
 
+        /**
+         * Deprecated, `unzip`命令, 用于解压zip, 不兼容部分机型
+         */
+        @Deprecated("unzip", ReplaceWith(""))
         suspend fun unzip(filePath: String, outPath: String) {
             if (mkdir(outPath)) execute("unzip $filePath -d $outPath")
         }
 
+        /**
+         * `cp`命令, 用于复制
+         */
         private suspend fun cp(src: String, dst: String): Boolean {
             return execute("cp $src $dst").isSuccess
         }
 
+        /**
+         * 使用`net.lingala.zip4j`库解压zip
+         */
         fun unzipByZip4j(filePath: String, outPath: String) {
             try {
                 ZipFile(filePath).extractAll(outPath)
@@ -73,264 +106,218 @@ class Command {
             }
         }
 
-        suspend fun getAppInfoBackupList(context: Context): MutableList<AppInfoBackup> {
-            val packageManager = context.packageManager
-            // 备份列表
-            val cachedAppInfoBackupList = mutableListOf<AppInfoBackup>()
-            val appInfoBackupList = mutableListOf<AppInfoBackup>()
-            runOnIO {
-                val userId = context.readBackupUser()
-                // 出于某些原因，只有getInstalledPackages()才能正确获取所有的应用信息
-                val packages = packageManager.getInstalledPackages(0)
-                // 获取指定用户的所有应用信息
-                val listPackages = Bashrc.listPackages(userId).second
-                for ((index, j) in listPackages.withIndex()) listPackages[index] =
-                    j.replace("package:", "")
-                cat(Path.getAppInfoBackupListPath()).apply {
-                    if (this.first) {
-                        try {
-                            val jsonArray = JSON.stringToJsonArray(this.second)
-                            for (i in jsonArray) {
-                                cachedAppInfoBackupList.add(
-                                    JSON.jsonElementToEntity(
-                                        i, AppInfoBackup::class.java
-                                    ) as AppInfoBackup
-                                )
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-                for (i in packages) {
-                    try {
-                        if (i.packageName == "com.xayah.databackup" || listPackages.indexOf(i.packageName) == -1)
-                        // 自身或非指定用户应用
-                            continue
-                        val isSystemApp =
-                            (i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                        // 寻找缓存数据
-                        var appInfo = AppInfoBackup(
-                            appSize = "",
-                            userSize = "",
-                            dataSize = "",
-                            obbSize = "",
-                            infoBase = AppInfoBase(
-                                appName = "",
-                                packageName = "",
-                                versionName = "",
-                                versionCode = 0,
-                                app = false,
-                                data = false,
-                                appIcon = null,
-                                appIconString = "",
-                                isSystemApp = isSystemApp,
-                                firstInstallTime = 0,
-                            ),
-                        )
-                        for (j in cachedAppInfoBackupList) {
-                            if (i.packageName == j.infoBase.packageName) {
-                                appInfo = j
-                                break
-                            }
-                        }
-                        val appIcon = i.applicationInfo.loadIcon(packageManager)
-                        val appName = i.applicationInfo.loadLabel(packageManager).toString()
-                        val versionName = i.versionName
-                        val versionCode = i.longVersionCode
-                        val packageName = i.packageName
-                        val firstInstallTime = i.firstInstallTime
-                        appInfo.infoBase.appIcon = appIcon
-                        appInfo.apply {
-                            infoBase.appName = appName
-                            infoBase.packageName = packageName
-                            infoBase.versionName = versionName
-                            infoBase.versionCode = versionCode
-                            infoBase.firstInstallTime = firstInstallTime
-                        }
-                        appInfoBackupList.add(appInfo)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-            return appInfoBackupList
-        }
+        /**
+         * 构建应用列表
+         */
+        suspend fun getAppInfoList(): MutableList<AppInfo> {
+            val appInfoList = mutableListOf<AppInfo>()
 
-        private suspend fun getCachedAppInfoBackupList(
-            context: Context, isFiltered: Boolean = false // 是否过滤应用和数据均未勾选的item
-        ): MutableList<AppInfoBackup> {
-            val packageManager = context.packageManager
-            // 备份列表
-            val cachedAppInfoBackupList = mutableListOf<AppInfoBackup>()
-            val appInfoBackupList = mutableListOf<AppInfoBackup>()
             runOnIO {
-                val userId = context.readBackupUser()
-                // 出于某些原因，只有getInstalledPackages()才能正确获取所有的应用信息
-                val packages = packageManager.getInstalledPackages(0)
-                // 获取指定用户的所有应用信息
-                val listPackages = Bashrc.listPackages(userId).second
-                for ((index, j) in listPackages.withIndex()) listPackages[index] =
-                    j.replace("package:", "")
-                cat(Path.getAppInfoBackupListPath()).apply {
+                // 读取应用列表配置文件
+                cat(Path.getAppInfoListPath()).apply {
                     if (this.first) {
-                        try {
-                            val jsonArray = JSON.stringToJsonArray(this.second)
-                            for (i in jsonArray) {
-                                cachedAppInfoBackupList.add(
-                                    JSON.jsonElementToEntity(
-                                        i, AppInfoBackup::class.java
-                                    ) as AppInfoBackup
-                                )
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                        val jsonArray = JSON.stringToJsonArray(this.second)
+                        for (i in jsonArray) {
+                            val item = JSON.jsonElementToEntity(i, AppInfo::class.java) as AppInfo
+                            appInfoList.add(item)
                         }
                     }
                 }
-                for (i in cachedAppInfoBackupList) {
-                    for (j in packages) {
-                        if (i.infoBase.packageName == j.packageName) {
-                            if (isFiltered) if (!i.infoBase.app && !i.infoBase.data) continue
-                            appInfoBackupList.add(i)
-                            break
-                        }
-                    }
-                }
-            }
-            return appInfoBackupList
-        }
 
-        suspend fun getCachedAppInfoRestoreList(isFiltered: Boolean = false): MutableList<AppInfoRestore> {
-            val cachedAppInfoRestoreList = mutableListOf<AppInfoRestore>()
-            runOnIO {
-                cat(Path.getAppInfoRestoreListPath()).apply {
-                    if (this.first) {
-                        try {
-                            val jsonArray = JSON.stringToJsonArray(this.second)
-                            for (i in jsonArray) {
-                                val item = JSON.jsonElementToEntity(
-                                    i, AppInfoRestore::class.java
-                                ) as AppInfoRestore
-                                if (isFiltered) if (!item.infoBase.app && !item.infoBase.data) continue
-                                cachedAppInfoRestoreList.add(item)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            }
-            return cachedAppInfoRestoreList
-        }
-
-        suspend fun getCachedAppInfoRestoreActualList(): MutableList<AppInfoRestore> {
-            // 根据包名文件夹获取应用实际列表
-            val cachedAppInfoRestoreActualList = mutableListOf<AppInfoRestore>()
-            val cachedAppInfoRestoreList = mutableListOf<AppInfoRestore>()
-            runOnIO {
-                cat(Path.getAppInfoRestoreListPath()).apply {
-                    if (this.first) {
-                        try {
-                            val jsonArray = JSON.stringToJsonArray(this.second)
-                            for (i in jsonArray) {
-                                val item = JSON.jsonElementToEntity(
-                                    i, AppInfoRestore::class.java
-                                ) as AppInfoRestore
-                                cachedAppInfoRestoreList.add(item)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
+                // 根据备份目录实际文件调整列表
                 var hasApp = false
                 var hasData = false
                 execute("find ${Path.getBackupDataSavePath()} -name \"*\" -type f").apply {
                     if (isSuccess) {
-                        this.out.add("//") // 添加尾部元素, 保证原尾部元素参与
+                        this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
+
+                        var restoreList = mutableListOf<AppInfoItem>()
+
                         for ((index, i) in this.out.withIndex()) {
                             if (index < this.out.size - 1) {
                                 val info = i.replace(Path.getBackupDataSavePath(), "").split("/")
                                 val infoNext =
                                     this.out[index + 1].replace(Path.getBackupDataSavePath(), "")
                                         .split("/")
-                                if (info.size == 3) {
-                                    if (info[2].contains("apk.tar"))
+                                val packageName = info[1]
+                                val packageNameNext = infoNext[1]
+                                val date = info[2]
+                                val dateNext = infoNext[2]
+                                val fileName = info[3]
+                                if (info.size == 4) {
+                                    if (fileName.contains("apk.tar"))
                                         hasApp = true
-                                    else if (info[2].contains("data.tar"))
+                                    else if (fileName.contains("data.tar"))
                                         hasData = true
-                                    else if (info[2].contains("obb.tar"))
+                                    else if (fileName.contains("obb.tar"))
                                         hasData = true
-                                    else if (info[2].contains("user.tar"))
+                                    else if (fileName.contains("user.tar"))
                                         hasData = true
-                                    if (info[1] != infoNext[1]) {
-                                        // 与下一路径不同包名
-                                        val appInfoRestore = AppInfoRestore(
-                                            AppInfoBase(
-                                                GlobalString.appRetrieved,
-                                                info[1],
-                                                "",
-                                                0,
-                                                app = hasApp,
-                                                data = hasData,
-                                                null,
-                                                ""
-                                            ), hasApp, hasData
-                                        )
-                                        val tmp =
-                                            cachedAppInfoRestoreList.find { it.infoBase.packageName == info[1] }
-                                        val tmpIndex = cachedAppInfoRestoreList.indexOf(tmp)
-                                        if (tmpIndex != -1) {
-                                            appInfoRestore.apply {
-                                                infoBase =
-                                                    cachedAppInfoRestoreList[tmpIndex].infoBase.apply {
-                                                        app = app && hasApp
-                                                        data = data && hasData
-                                                    }
+                                    else if (fileName.contains("user_de.tar"))
+                                        hasData = true
 
+                                    if (date != dateNext) {
+                                        // 与下一路径不同日期
+                                        // 尝试获取原列表数据
+                                        if (restoreList.isEmpty()) {
+                                            val appInfoIndex =
+                                                appInfoList.indexOfFirst { packageName == it.packageName }
+                                            if (appInfoIndex != -1) {
+                                                restoreList =
+                                                    appInfoList[appInfoIndex].restoreList
                                             }
                                         }
-                                        cachedAppInfoRestoreActualList.add(appInfoRestore)
+
+                                        val restoreListIndex =
+                                            restoreList.indexOfFirst { date == it.date }
+                                        val restore = if (restoreListIndex == -1) AppInfoItem(
+                                            app = false,
+                                            data = false,
+                                            hasApp = true,
+                                            hasData = true,
+                                            versionName = "",
+                                            versionCode = 0,
+                                            appSize = "",
+                                            userSize = "",
+                                            userDeSize = "",
+                                            dataSize = "",
+                                            obbSize = "",
+                                            date = date
+                                        ) else restoreList[restoreListIndex]
+
+                                        restore.apply {
+                                            this.hasApp = this.hasApp && hasApp
+                                            this.hasData = this.hasData && hasData
+                                            this.app = this.app && hasApp
+                                            this.data = this.data && hasData
+                                        }
+
+                                        if (restoreListIndex == -1) restoreList.add(restore)
+
                                         hasApp = false
                                         hasData = false
+                                    }
+                                    if (packageName != packageNameNext) {
+                                        // 与下一路径不同包名
+                                        // 寻找已保存的数据
+                                        val appInfoIndex =
+                                            appInfoList.indexOfFirst { packageName == it.packageName }
+                                        val appInfo = if (appInfoIndex == -1)
+                                            AppInfo(
+                                                appName = "",
+                                                packageName = "",
+                                                isSystemApp = false,
+                                                firstInstallTime = 0,
+                                                backup = AppInfoItem(
+                                                    app = false,
+                                                    data = false,
+                                                    hasApp = true,
+                                                    hasData = true,
+                                                    versionName = "",
+                                                    versionCode = 0,
+                                                    appSize = "",
+                                                    userSize = "",
+                                                    userDeSize = "",
+                                                    dataSize = "",
+                                                    obbSize = "",
+                                                    date = ""
+                                                ),
+                                                _restoreIndex = -1,
+                                                restoreList = mutableListOf(),
+                                                appIconString = "",
+                                            ) else appInfoList[appInfoIndex]
+
+                                        val appName = GlobalString.appRetrieved
+                                        appInfo.apply {
+                                            this.appName = appName
+                                            this.packageName = packageName
+                                            this.isOnThisDevice = false
+                                            this.restoreList = restoreList
+                                        }
+
+                                        if (appInfoIndex == -1) appInfoList.add(appInfo)
+
+                                        hasApp = false
+                                        hasData = false
+                                        restoreList = mutableListOf()
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-            return cachedAppInfoRestoreActualList
-        }
 
-        suspend fun retrieve(mAppInfoRestoreActualList: MutableList<AppInfoRestore>) {
-            runOnIO {
-                val mAppInfoBackupList = getCachedAppInfoBackupList(App.globalContext, false)
-                for (i in mAppInfoBackupList) {
-                    val tmp =
-                        mAppInfoRestoreActualList.find { it.infoBase.packageName == i.infoBase.packageName }
-                    val tmpIndex = mAppInfoRestoreActualList.indexOf(tmp)
-                    if (tmpIndex == -1) {
-                        i.apply {
-                            appSize = ""
-                            userSize = ""
-                            dataSize = ""
-                            obbSize = ""
+                // 根据本机应用调整列表
+                val packageManager = App.globalContext.packageManager
+                val userId = App.globalContext.readBackupUser()
+                // 通过PackageManager获取所有应用信息
+                val packages = packageManager.getInstalledPackages(0)
+                // 获取指定用户的所有应用信息
+                val listPackages = Bashrc.listPackages(userId).second
+                for ((index, j) in listPackages.withIndex()) listPackages[index] =
+                    j.replace("package:", "")
+                for (i in packages) {
+                    try {
+                        // 自身或非指定用户应用
+                        if (i.packageName == App.globalContext.packageName || listPackages.indexOf(i.packageName) == -1) continue
+                        val isSystemApp =
+                            (i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+
+                        // 寻找已保存的数据
+                        val appInfoIndex =
+                            appInfoList.indexOfFirst { i.packageName == it.packageName }
+                        val appInfo = if (appInfoIndex == -1)
+                            AppInfo(
+                                appName = "",
+                                packageName = "",
+                                isSystemApp = isSystemApp,
+                                firstInstallTime = 0,
+                                backup = AppInfoItem(
+                                    app = false,
+                                    data = false,
+                                    hasApp = true,
+                                    hasData = true,
+                                    versionName = "",
+                                    versionCode = 0,
+                                    appSize = "",
+                                    userSize = "",
+                                    userDeSize = "",
+                                    dataSize = "",
+                                    obbSize = "",
+                                    date = ""
+                                ),
+                                _restoreIndex = -1,
+                                restoreList = mutableListOf(),
+                                appIconString = "",
+                            ) else appInfoList[appInfoIndex]
+
+                        val appIcon = i.applicationInfo.loadIcon(packageManager)
+                        val appName = i.applicationInfo.loadLabel(packageManager).toString()
+                        val versionName = i.versionName
+                        val versionCode = i.longVersionCode
+                        val packageName = i.packageName
+                        val firstInstallTime = i.firstInstallTime
+                        appInfo.apply {
+                            this.appName = appName
+                            this.packageName = packageName
+                            this.firstInstallTime = firstInstallTime
+                            this.appIcon = appIcon
+                            this.backup.versionName = versionName
+                            this.backup.versionCode = versionCode
+                            this.isOnThisDevice = true
                         }
+                        if (appInfoIndex == -1) appInfoList.add(appInfo)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
-                JSON.writeJSONToFile(
-                    JSON.entityArrayToJsonArray(mAppInfoBackupList as MutableList<Any>),
-                    Path.getAppInfoBackupListPath()
-                )
-                JSON.writeJSONToFile(
-                    JSON.entityArrayToJsonArray(mAppInfoRestoreActualList as MutableList<Any>),
-                    Path.getAppInfoRestoreListPath()
-                )
             }
+            return appInfoList
         }
 
+        /**
+         * 列表操作, 添加或更新
+         */
         fun addOrUpdateList(
             item: Any,
             dst: MutableList<Any>,
@@ -500,7 +487,7 @@ class Command {
                 if (dataType == "media") {
                     countSize(dataPath, 1).apply {
                         if (this == dataSize) {
-                            update = false
+                            update = true
                         }
                     }
                 } else {
@@ -508,7 +495,7 @@ class Command {
                         "${dataPath}/${packageName}", 1
                     ).apply {
                         if (this == dataSize) {
-                            update = false
+                            update = true
                         }
                     }
                 }
@@ -518,6 +505,17 @@ class Command {
                     ) { onAddLine(it) }.apply {
                         if (!this.first) {
                             ret = false
+                        }
+                    }
+
+                    // 检测是否生成压缩包
+                    if (dataType == "media") {
+                        ls("${outPut}/${packageName}.tar*").apply {
+                            if (!this) ret = false
+                        }
+                    } else {
+                        ls("${outPut}/${dataType}.tar*").apply {
+                            if (!this) ret = false
                         }
                     }
                 }
@@ -541,7 +539,7 @@ class Command {
                     apkPathPair.second, 1
                 ).apply {
                     if (this == apkSize) {
-                        update = false
+                        update = true
                     }
                 }
                 if (update) {
@@ -550,6 +548,11 @@ class Command {
                         onAddLine(it)
                     }.apply { ret = this.first }
                     Bashrc.cd("~").apply { ret = this.first }
+
+                    ls("${outPut}/apk.tar*").apply {
+                        // 后续若直接令state = this会导致state非正常更新
+                        if (!this) ret = false
+                    }
                 }
             }
             return ret
@@ -704,11 +707,15 @@ class Command {
             ).versionName
         }
 
-        fun getDate(): String {
+        fun getDate(timeStamp: String = ""): String {
             var date = ""
             try {
                 SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).apply {
-                    date = format(Date())
+                    date = if (timeStamp == "") {
+                        format(Date())
+                    } else {
+                        format(Date(timeStamp.toLong()))
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -769,7 +776,16 @@ class Command {
 
         suspend fun listBackupUsers(): MutableList<String> {
             val exec = execute("ls ${Path.getBackupUserPath()}")
-            return if (exec.isSuccess) exec.out else mutableListOf()
+            val users = mutableListOf<String>()
+            for (i in exec.out) {
+                try {
+                    i.toInt()
+                    users.add(i)
+                } catch (e: NumberFormatException) {
+                    e.printStackTrace()
+                }
+            }
+            return users
         }
     }
 }

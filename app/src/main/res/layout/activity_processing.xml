@@ -218,6 +218,7 @@
                                     <com.google.android.material.textview.MaterialTextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:maxWidth="230dp"
                                         android:text="@{viewModel.dataBinding.appName}"
                                         android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                                         tools:ignore="TooDeepLayout" />

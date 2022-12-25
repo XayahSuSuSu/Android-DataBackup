@@ -85,6 +85,23 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button" />
 
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_date"
+                    style="@style/Widget.Material3.Chip.Suggestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:checkable="false"
+                    android:ellipsize="start"
+                    android:maxWidth="180dp"
+                    android:textColor="@color/blue"
+                    app:chipBackgroundColor="@color/blueContainer"
+                    app:chipStrokeColor="@color/blueContainer"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/chip_version"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

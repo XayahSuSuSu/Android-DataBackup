@@ -24,7 +24,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
 
     // 经过过滤或排序后的应用列表
     private val mAppInfoList by lazy {
-        MutableStateFlow(mutableListOf<AppInfoRestore>())
+        MutableStateFlow(mutableListOf<AppInfo>())
     }
 
     private lateinit var tabLayout: TabLayout
@@ -33,7 +33,6 @@ class AppListRestoreActivity : AppListBaseActivity() {
         multiTypeAdapter.register(
             AppListAdapterRestore(
                 onChipClick = { updateBadges(App.appInfoRestoreListNum) },
-                appInfoList = mAppInfoList.value
             )
         )
     }
@@ -43,25 +42,35 @@ class AppListRestoreActivity : AppListBaseActivity() {
         when (pref.type) {
             AppListType.InstalledApp -> {
                 // 安装应用
-                val appList = mAppInfoList.value.filter { !it.infoBase.isSystemApp }
+                val appList = mAppInfoList.value.filter { !it.isSystemApp }
                 adapterList.addAll(appList)
                 when (pref.installedAppSelection) {
                     AppListSelection.App -> {
-                        appList.forEach { it.infoBase.app = true }
+                        appList.forEach {
+                            if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
+                                true
+                        }
                     }
                     AppListSelection.AppReverse -> {
-                        appList.forEach { it.infoBase.app = false }
+                        appList.forEach {
+                            if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
+                                false
+                        }
                     }
                     AppListSelection.All -> {
                         appList.forEach {
-                            it.infoBase.app = true
-                            it.infoBase.data = true
+                            if (it.restoreList.isNotEmpty()) {
+                                it.restoreList[it.restoreIndex].app = true
+                                it.restoreList[it.restoreIndex].data = true
+                            }
                         }
                     }
                     AppListSelection.AllReverse -> {
                         appList.forEach {
-                            it.infoBase.app = false
-                            it.infoBase.data = false
+                            if (it.restoreList.isNotEmpty()) {
+                                it.restoreList[it.restoreIndex].app = false
+                                it.restoreList[it.restoreIndex].data = false
+                            }
                         }
                     }
                     else -> {}
@@ -69,25 +78,36 @@ class AppListRestoreActivity : AppListBaseActivity() {
             }
             AppListType.SystemApp -> {
                 // 系统应用
-                val appList = mAppInfoList.value.filter { it.infoBase.isSystemApp }
+                val appList = mAppInfoList.value.filter { it.isSystemApp }
                 adapterList.addAll(appList)
                 when (pref.systemAppSelection) {
                     AppListSelection.App -> {
-                        appList.forEach { it.infoBase.app = true }
+                        appList.forEach {
+                            if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
+                                true
+                        }
                     }
                     AppListSelection.AppReverse -> {
-                        appList.forEach { it.infoBase.app = false }
+                        appList.forEach {
+                            if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
+                                false
+                        }
                     }
                     AppListSelection.All -> {
                         appList.forEach {
-                            it.infoBase.app = true
-                            it.infoBase.data = true
+                            if (it.restoreList.isNotEmpty()) {
+                                it.restoreList[it.restoreIndex].app = true
+                                it.restoreList[it.restoreIndex].data = true
+                            }
+
                         }
                     }
                     AppListSelection.AllReverse -> {
                         appList.forEach {
-                            it.infoBase.app = false
-                            it.infoBase.data = false
+                            if (it.restoreList.isNotEmpty()) {
+                                it.restoreList[it.restoreIndex].app = false
+                                it.restoreList[it.restoreIndex].data = false
+                            }
                         }
                     }
                     else -> {}
@@ -103,28 +123,30 @@ class AppListRestoreActivity : AppListBaseActivity() {
                 App.loadList()
                 isFirst = false
             }
+            mAppInfoList.emit(App.appInfoList.value.filter { it.restoreList.isNotEmpty() }
+                .toMutableList())
 
-            mAppInfoList.emit(App.appInfoRestoreList.value.apply {
+            mAppInfoList.emit(mAppInfoList.value.apply {
                 when (pref.sort) {
                     AppListSort.AlphabetAscending -> {
                         sortWith { appInfo1, appInfo2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo1 as AppInfoRestore).infoBase.appName)
-                                .compareTo(collator.getCollationKey((appInfo2 as AppInfoRestore).infoBase.appName))
+                            collator.getCollationKey((appInfo1 as AppInfo).appName)
+                                .compareTo(collator.getCollationKey((appInfo2 as AppInfo).appName))
                         }
                     }
                     AppListSort.AlphabetDescending -> {
                         sortWith { appInfo1, appInfo2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo2 as AppInfoRestore).infoBase.appName)
-                                .compareTo(collator.getCollationKey((appInfo1 as AppInfoRestore).infoBase.appName))
+                            collator.getCollationKey((appInfo2 as AppInfo).appName)
+                                .compareTo(collator.getCollationKey((appInfo1 as AppInfo).appName))
                         }
                     }
                     AppListSort.FirstInstallTimeAscending -> {
-                        sortBy { it.infoBase.firstInstallTime }
+                        sortBy { it.firstInstallTime }
                     }
                     AppListSort.FirstInstallTimeDescending -> {
-                        sortByDescending { it.infoBase.firstInstallTime }
+                        sortByDescending { it.firstInstallTime }
                     }
                 }
             })
@@ -132,19 +154,19 @@ class AppListRestoreActivity : AppListBaseActivity() {
             when (pref.filter) {
                 AppListFilter.None -> {}
                 AppListFilter.Selected -> {
-                    mAppInfoList.emit(mAppInfoList.value.filter { it.infoBase.app || it.infoBase.data }
+                    mAppInfoList.emit(mAppInfoList.value.filter { if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app || it.restoreList[it.restoreIndex].data else false }
                         .toMutableList())
                 }
                 AppListFilter.NotSelected -> {
-                    mAppInfoList.emit(mAppInfoList.value.filter { !it.infoBase.app && !it.infoBase.data }
+                    mAppInfoList.emit(mAppInfoList.value.filter { if (it.restoreList.isNotEmpty()) !it.restoreList[it.restoreIndex].app && !it.restoreList[it.restoreIndex].data else false }
                         .toMutableList())
                 }
             }
 
             val keyWord = pref.searchKeyWord
             mAppInfoList.emit(mAppInfoList.value.filter {
-                it.infoBase.appName.lowercase().contains(keyWord.lowercase()) ||
-                        it.infoBase.packageName.lowercase().contains(keyWord.lowercase())
+                it.appName.lowercase().contains(keyWord.lowercase()) ||
+                        it.packageName.lowercase().contains(keyWord.lowercase())
             }.toMutableList())
 
             // 计算已选中应用数量并应用Badges
@@ -169,7 +191,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
 
     override suspend fun onSave() {
         withContext(Dispatchers.IO) {
-            JSON.saveAppInfoRestoreList(App.appInfoRestoreList.value)
+            JSON.saveAppInfoList(App.appInfoList.value)
         }
     }
 

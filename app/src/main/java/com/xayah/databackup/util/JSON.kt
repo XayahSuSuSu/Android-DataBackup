@@ -4,8 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
-import com.xayah.databackup.data.AppInfoBackup
-import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.data.AppInfo
 import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.MediaInfo
 import kotlinx.coroutines.Dispatchers
@@ -60,20 +59,11 @@ class JSON {
             return true
         }
 
-        suspend fun saveAppInfoBackupList(appInfoBackupList: MutableList<AppInfoBackup>) {
+        suspend fun saveAppInfoList(appInfoList: MutableList<AppInfo>) {
             withContext(Dispatchers.IO) {
                 writeJSONToFile(
-                    entityArrayToJsonArray(appInfoBackupList as MutableList<Any>),
-                    Path.getAppInfoBackupListPath()
-                )
-            }
-        }
-
-        suspend fun saveAppInfoRestoreList(appInfoRestoreList: MutableList<AppInfoRestore>) {
-            withContext(Dispatchers.IO) {
-                writeJSONToFile(
-                    entityArrayToJsonArray(appInfoRestoreList as MutableList<Any>),
-                    Path.getAppInfoRestoreListPath()
+                    entityArrayToJsonArray(appInfoList as MutableList<Any>),
+                    Path.getAppInfoListPath()
                 )
             }
         }

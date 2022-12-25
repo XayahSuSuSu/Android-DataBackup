@@ -5,9 +5,8 @@ import android.content.Context
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.xayah.crash.CrashHandler
-import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.AppInfo
 import com.xayah.databackup.data.AppInfoListSelectedNum
-import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,37 +28,34 @@ class App : Application() {
         lateinit var server: Server
         lateinit var logcat: Logcat
 
-        // 应用备份列表
-        val appInfoBackupList by lazy {
-            MutableStateFlow(mutableListOf<AppInfoBackup>())
+        // 应用列表
+        val appInfoList by lazy {
+            MutableStateFlow(mutableListOf<AppInfo>())
         }
 
         // 应用备份列表计数
         val appInfoBackupListNum
             get() = run {
                 val num = AppInfoListSelectedNum(0, 0)
-                for (i in appInfoBackupList.value) {
-                    if (i.infoBase.app || i.infoBase.data) {
-                        if (i.infoBase.isSystemApp) num.system++
+                for (i in appInfoList.value) {
+                    if (i.backup.app || i.backup.data) {
+                        if (i.isSystemApp) num.system++
                         else num.installed++
                     }
                 }
                 num
             }
 
-        // 应用恢复列表
-        val appInfoRestoreList by lazy {
-            MutableStateFlow(mutableListOf<AppInfoRestore>())
-        }
-
         // 应用恢复列表计数
         val appInfoRestoreListNum
             get() = run {
                 val num = AppInfoListSelectedNum(0, 0)
-                for (i in appInfoRestoreList.value) {
-                    if (i.infoBase.app || i.infoBase.data) {
-                        if (i.infoBase.isSystemApp) num.system++
-                        else num.installed++
+                for (i in appInfoList.value) {
+                    if (i.restoreList.isNotEmpty()) {
+                        if (i.restoreList[i.restoreIndex].app || i.restoreList[i.restoreIndex].data) {
+                            if (i.isSystemApp) num.system++
+                            else num.installed++
+                        }
                     }
                 }
                 num
@@ -76,11 +72,11 @@ class App : Application() {
         }
 
         suspend fun loadList() {
-            Command.retrieve(Command.getCachedAppInfoRestoreActualList())
-            appInfoBackupList.emit(Command.getAppInfoBackupList(globalContext))
-            appInfoRestoreList.emit(Command.getCachedAppInfoRestoreActualList())
-            mediaInfoBackupList.emit(Command.getCachedMediaInfoBackupList())
-            mediaInfoRestoreList.emit(Command.getCachedMediaInfoRestoreList())
+//            Command.retrieve(Command.getCachedAppInfoRestoreActualList())
+            appInfoList.emit(Command.getAppInfoList())
+//            appInfoRestoreList.emit(Command.getCachedAppInfoRestoreActualList())
+//            mediaInfoBackupList.emit(Command.getCachedMediaInfoBackupList())
+//            mediaInfoRestoreList.emit(Command.getCachedMediaInfoRestoreList())
         }
 
         suspend fun saveMediaInfoBackupList() {
@@ -89,6 +85,10 @@ class App : Application() {
 
         suspend fun saveMediaInfoRestoreList() {
             JSON.saveMediaInfoRestoreList(mediaInfoRestoreList.value)
+        }
+
+        fun getTimeStamp(): String {
+            return System.currentTimeMillis().toString()
         }
     }
 

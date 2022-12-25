@@ -1,29 +1,23 @@
 package com.xayah.databackup.adapter
 
-import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.recyclerview.widget.RecyclerView
-import com.drakeet.multitype.ItemViewDelegate
+import androidx.appcompat.widget.ListPopupWindow
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.AppInfoRestore
-import com.xayah.databackup.databinding.AdapterAppListBinding
+import com.xayah.databackup.data.AppInfo
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Path
+import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.setLoading
-import com.xayah.databackup.view.util.dp
 import com.xayah.databackup.view.util.setWithConfirm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,28 +25,26 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AppListAdapterRestore(
-    val onChipClick: () -> Unit = {},
-    val appInfoList: MutableList<AppInfoRestore>
-) : ItemViewDelegate<AppInfoRestore, AppListAdapterRestore.ViewHolder>() {
-    class ViewHolder(val binding: AdapterAppListBinding) : RecyclerView.ViewHolder(binding.root)
+    val onChipClick: () -> Unit = {}
+) : AppListAdapterBase() {
 
-    override fun onCreateViewHolder(context: Context, parent: ViewGroup): ViewHolder {
-        return ViewHolder(
-            AdapterAppListBinding.inflate(
-                LayoutInflater.from(context), parent, false
-            )
-        )
+    override fun onChipClickInvoke() {
+        onChipClick()
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, item: AppInfoRestore) {
-        val binding = holder.binding
-        binding.appIcon.setImageDrawable(
-            if (item.infoBase.appIcon == null) AppCompatResources.getDrawable(
-                binding.root.context, R.drawable.ic_round_android
-            ) else item.infoBase.appIcon
-        )
+    override fun onBindViewHolder(holder: ViewHolder, item: AppInfo) {
+        super.onBindViewHolder(holder, item)
 
-        item.infoBase.appIconString?.apply {
+        val binding = holder.binding
+        val adapterItem = (adapterItems[holder.bindingAdapterPosition] as AppInfo)
+
+        // 应用图标
+        binding.appIcon.setImageDrawable(
+            if (adapterItem.appIcon == null) AppCompatResources.getDrawable(
+                binding.root.context, R.drawable.ic_round_android
+            ) else adapterItem.appIcon
+        )
+        adapterItem.appIconString?.apply {
             if (this.isNotEmpty()) {
                 try {
                     val img = Base64.decode(this.toByteArray(), Base64.DEFAULT)
@@ -64,47 +56,73 @@ class AppListAdapterRestore(
                 }
             }
         }
-
-        binding.appName.text = item.infoBase.appName
-        binding.appPackage.text = item.infoBase.packageName
-
-        if (holder.bindingAdapterPosition == adapterItems.size - 1) {
-            binding.materialCardView.apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    topMargin = 16.dp
-                    bottomMargin = 16.dp
-                    marginStart = 20.dp
-                    marginEnd = 20.dp
+        // 应用Chip
+        binding.chipApplication.apply {
+            if (adapterItem.restoreList.isNotEmpty()) {
+                setOnCheckedChangeListener { _, checked ->
+                    adapterItem.restoreList[adapterItem.restoreIndex].app =
+                        checked
+                    CoroutineScope(Dispatchers.Main).launch {
+                        adapter.notifyItemChanged(0)
+                        onChipClickInvoke()
+                    }
                 }
+                isChecked = adapterItem.restoreList[adapterItem.restoreIndex].app
+                isEnabled = adapterItem.restoreList[adapterItem.restoreIndex].hasApp
             }
-        } else {
-            binding.materialCardView.apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    topMargin = 16.dp
-                    marginStart = 20.dp
-                    marginEnd = 20.dp
+
+        }
+
+        // 数据Chip
+        binding.chipData.apply {
+            if (adapterItem.restoreList.isNotEmpty()) {
+                setOnCheckedChangeListener { _, checked ->
+                    adapterItem.restoreList[adapterItem.restoreIndex].data =
+                        checked
+                    CoroutineScope(Dispatchers.Main).launch {
+                        adapter.notifyItemChanged(0)
+                        onChipClickInvoke()
+                    }
+                }
+                isChecked = adapterItem.restoreList[adapterItem.restoreIndex].data
+                isEnabled = adapterItem.restoreList[adapterItem.restoreIndex].hasData
+            }
+        }
+
+        // 日期Chip
+        binding.chipDate.apply {
+            setOnClickListener {
+                val choice = adapterItem.restoreIndex
+                val items = mutableListOf<String>()
+                adapterItem.restoreList.forEach { items.add(Command.getDate(it.date)) }
+
+                ListPopupWindow(context).apply {
+                    fastInitialize(binding.chipDate, items.toTypedArray(), choice)
+                    setOnItemClickListener { _, _, position, _ ->
+                        dismiss()
+                        adapterItem.restoreIndex = position
+                        adapter.notifyItemChanged(holder.bindingAdapterPosition)
+                    }
+                    show()
                 }
             }
         }
-        // ----------------------------------------------------------------------------------------
+
+        // 删除按钮
         binding.iconButton.apply {
             visibility = View.VISIBLE
             setOnClickListener {
                 MaterialAlertDialogBuilder(context).apply {
                     setWithConfirm("${GlobalString.confirmRemove}${GlobalString.symbolQuestion}") {
                         CoroutineScope(Dispatchers.IO).launch {
-                            Command.rm("${Path.getBackupDataSavePath()}/${item.infoBase.packageName}")
+                            Command.rm("${Path.getBackupDataSavePath()}/${item.packageName}")
                                 .apply {
                                     val that = this
                                     withContext(Dispatchers.Main) {
                                         if (that) {
                                             val items = adapterItems.toMutableList()
                                             items.remove(item)
-                                            appInfoList.remove(item)
+                                            App.appInfoList.value.remove(item)
                                             adapterItems = items.toList()
                                             BottomSheetDialog(context).apply {
                                                 setLoading()
@@ -132,41 +150,6 @@ class AppListAdapterRestore(
                         }
                     }
                 }
-            }
-        }
-        binding.chipApplication.apply {
-            setOnCheckedChangeListener { _, checked ->
-                (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.app =
-                    checked
-                CoroutineScope(Dispatchers.Main).launch {
-                    adapter.notifyItemChanged(0)
-                    onChipClick()
-                }
-            }
-            isChecked = item.hasApp && item.infoBase.app
-            isEnabled = item.hasApp
-        }
-        binding.chipData.apply {
-            setOnCheckedChangeListener { _, checked ->
-                (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore).infoBase.data =
-                    checked
-                CoroutineScope(Dispatchers.Main).launch {
-                    adapter.notifyItemChanged(0)
-                    onChipClick()
-                }
-            }
-            isChecked = item.hasData && item.infoBase.data
-            isEnabled = item.hasData
-        }
-        binding.chipVersion.apply {
-            visibility = if (item.infoBase.versionName.isEmpty()) {
-                View.GONE
-            } else {
-                View.VISIBLE
-            }
-            text = item.infoBase.versionName
-            setOnClickListener {
-                Toast.makeText(context, item.infoBase.versionName, Toast.LENGTH_SHORT).show()
             }
         }
     }

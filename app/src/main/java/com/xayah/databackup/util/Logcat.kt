@@ -1,5 +1,6 @@
 package com.xayah.databackup.util
 
+import com.xayah.databackup.App
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -7,7 +8,7 @@ import java.io.IOException
 
 class Logcat {
     private val logDir = "${Path.getFilesDir()}/log"
-    val logPath = "${logDir}/log_${System.currentTimeMillis()}"
+    val logPath = "${logDir}/log_${App.getTimeStamp()}"
 
     init {
         val dir = File(logDir)

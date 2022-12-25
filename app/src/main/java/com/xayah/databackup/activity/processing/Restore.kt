@@ -1,32 +1,29 @@
 package com.xayah.databackup.activity.processing
 
 import android.view.View
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
-import com.xayah.databackup.data.AppInfoBase
 import com.xayah.databackup.data.AppInfoBaseNum
-import com.xayah.databackup.data.MediaInfo
+import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class Restore(private val viewModel: ProcessingViewModel) {
     private lateinit var dataBinding: DataBinding
 
     // 应用恢复列表
     private val appInfoRestoreList
-        get() = App.appInfoRestoreList.value.filter { it.infoBase.app || it.infoBase.data }
+        get() = App.appInfoList.value.filter { if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app || it.restoreList[it.restoreIndex].data else false }
             .toMutableList()
     private val appInfoRestoreListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoRestoreList) {
-                if (i.infoBase.app) appInfoBaseNum.appNum++
-                if (i.infoBase.data) appInfoBaseNum.dataNum++
+                if (i.restoreList[i.restoreIndex].app) appInfoBaseNum.appNum++
+                if (i.restoreList[i.restoreIndex].data) appInfoBaseNum.dataNum++
             }
             appInfoBaseNum
         }
@@ -61,10 +58,18 @@ class Restore(private val viewModel: ProcessingViewModel) {
 
     private fun initializeApp() {
         viewModel.mAdapter.apply {
-            val adapterList = mutableListOf<Any>()
-            for (i in appInfoRestoreList) adapterList.add(i.infoBase)
+            val processingTaskList = mutableListOf<Any>()
+            for (i in appInfoRestoreList) processingTaskList.add(
+                ProcessingTask(
+                    appName = i.appName,
+                    packageName = i.packageName,
+                    app = i.restoreList[i.restoreIndex].app,
+                    data = i.restoreList[i.restoreIndex].data,
+                    appIcon = i.appIcon
+                )
+            )
             register(ProcessingTaskAdapter())
-            items = adapterList
+            items = processingTaskList
             notifyDataSetChanged()
         }
         dataBinding.progressMax.set(appInfoRestoreListTotalNum)
@@ -81,14 +86,18 @@ class Restore(private val viewModel: ProcessingViewModel) {
 
     private fun initializeMedia() {
         viewModel.mAdapter.apply {
-            val adapterList = mutableListOf<Any>()
-            for (i in mediaInfoRestoreList) adapterList.add(
-                AppInfoBase(
-                    i.name, i.path, "", -1, app = false, data = true, null, ""
+            val processingTaskList = mutableListOf<Any>()
+            for (i in mediaInfoRestoreList) processingTaskList.add(
+                ProcessingTask(
+                    appName = i.name,
+                    packageName = i.path,
+                    app = false,
+                    data = true,
+                    appIcon = null
                 )
             )
             register(ProcessingTaskAdapter())
-            items = adapterList
+            items = processingTaskList
             notifyDataSetChanged()
         }
         dataBinding.progressMax.set(mediaInfoRestoreListNum)
@@ -141,20 +150,21 @@ class Restore(private val viewModel: ProcessingViewModel) {
             dataBinding.totalTip.set(GlobalString.restoreProcessing)
             for ((index, i) in appInfoRestoreList.withIndex()) {
                 // 准备备份卡片数据
-                dataBinding.appName.set(i.infoBase.appName)
-                dataBinding.packageName.set(i.infoBase.packageName)
-                dataBinding.appVersion.set(i.infoBase.versionName)
-                dataBinding.appIcon.set(i.infoBase.appIcon)
-                dataBinding.isBackupApk.set(i.infoBase.app)
+                dataBinding.appName.set(i.appName)
+                dataBinding.packageName.set(i.packageName)
+                dataBinding.appVersion.set(i.restoreList[i.restoreIndex].versionName)
+                dataBinding.appIcon.set(i.appIcon)
+                dataBinding.isBackupApk.set(i.restoreList[i.restoreIndex].app)
 
                 val packageName = dataBinding.packageName.get()!!
                 val userId = App.globalContext.readRestoreUser()
-                val inPath = "${Path.getBackupDataSavePath()}/${packageName}"
-                val userPath = "${Path.getBackupDataSavePath()}/${packageName}/user.tar*"
-                val userDePath = "${Path.getBackupDataSavePath()}/${packageName}/user_de.tar*"
-                val dataPath = "${Path.getBackupDataSavePath()}/${packageName}/data.tar*"
-                val obbPath = "${Path.getBackupDataSavePath()}/${packageName}/obb.tar*"
-                if (i.infoBase.data) {
+                val date = i.restoreList[i.restoreIndex].date
+                val inPath = "${Path.getBackupDataSavePath()}/${packageName}/${date}"
+                val userPath = "${inPath}/user.tar*"
+                val userDePath = "${inPath}/user_de.tar*"
+                val dataPath = "${inPath}/data.tar*"
+                val obbPath = "${inPath}/obb.tar*"
+                if (i.restoreList[i.restoreIndex].data) {
                     Command.ls(userPath).apply { dataBinding.isBackupUser.set(this) }
                     Command.ls(userDePath).apply { dataBinding.isBackupUserDe.set(this) }
                     Command.ls(dataPath).apply { dataBinding.isBackupData.set(this) }
@@ -166,20 +176,31 @@ class Restore(private val viewModel: ProcessingViewModel) {
                     dataBinding.isBackupObb.set(false)
                 }
 
+                val processingTask = ProcessingTask(
+                    appName = i.appName,
+                    packageName = i.packageName,
+                    app = i.restoreList[i.restoreIndex].app,
+                    data = i.restoreList[i.restoreIndex].data,
+                    appIcon = i.appIcon
+                )
+
                 // 开始恢复
                 var state = true // 该任务是否成功完成
                 if (dataBinding.isBackupApk.get()) {
                     // 恢复应用
                     dataBinding.processingApk.set(true)
                     Command.installAPK(
-                        inPath, packageName, userId, i.infoBase.versionCode.toString()
+                        inPath,
+                        packageName,
+                        userId,
+                        i.restoreList[i.restoreIndex].versionCode.toString()
                     ) { setSizeAndSpeed(it) }.apply {
                         state = this
                     }
                     dataBinding.processingApk.set(false)
                     if (!state) {
                         failedNum += 1
-                        viewModel.failedList.add(i.infoBase)
+                        viewModel.failedList.add(processingTask)
                         continue
                     }
                     initializeSizeAndSpeed()
@@ -200,11 +221,10 @@ class Restore(private val viewModel: ProcessingViewModel) {
                 if (dataBinding.isBackupUser.get()) {
                     // 恢复User
                     dataBinding.processingUser.set(true)
-                    val inputPath = "${inPath}/user.tar*"
                     Command.decompress(
-                        Command.getCompressionTypeByPath(inputPath),
+                        Command.getCompressionTypeByPath(userPath),
                         "user",
-                        inputPath,
+                        userPath,
                         packageName,
                         Path.getUserPath(userId)
                     ) { setSizeAndSpeed(it) }.apply {
@@ -219,11 +239,10 @@ class Restore(private val viewModel: ProcessingViewModel) {
                 if (dataBinding.isBackupUserDe.get()) {
                     // 恢复User_de
                     dataBinding.processingUserDe.set(true)
-                    val inputPath = "${inPath}/user_de.tar*"
                     Command.decompress(
-                        Command.getCompressionTypeByPath(inputPath),
+                        Command.getCompressionTypeByPath(userDePath),
                         "user_de",
-                        inputPath,
+                        userDePath,
                         packageName,
                         Path.getUserDePath(userId)
                     ) { setSizeAndSpeed(it) }.apply {
@@ -241,11 +260,10 @@ class Restore(private val viewModel: ProcessingViewModel) {
                 if (dataBinding.isBackupData.get()) {
                     // 恢复Data
                     dataBinding.processingData.set(true)
-                    val inputPath = "${inPath}/data.tar*"
                     Command.decompress(
-                        Command.getCompressionTypeByPath(inputPath),
+                        Command.getCompressionTypeByPath(dataPath),
                         "data",
-                        inputPath,
+                        dataPath,
                         packageName,
                         Path.getDataPath(userId)
                     ) { setSizeAndSpeed(it) }.apply {
@@ -260,11 +278,10 @@ class Restore(private val viewModel: ProcessingViewModel) {
                 if (dataBinding.isBackupObb.get()) {
                     // 恢复Obb
                     dataBinding.processingObb.set(true)
-                    val inputPath = "${inPath}/obb.tar*"
                     Command.decompress(
-                        Command.getCompressionTypeByPath(inputPath),
+                        Command.getCompressionTypeByPath(obbPath),
                         "obb",
-                        inputPath,
+                        obbPath,
                         packageName,
                         Path.getObbPath(userId)
                     ) { setSizeAndSpeed(it) }.apply {
@@ -278,10 +295,10 @@ class Restore(private val viewModel: ProcessingViewModel) {
                 }
                 if (state) {
                     successNum += 1
-                    viewModel.successList.add(i.infoBase)
+                    viewModel.successList.add(processingTask)
                 } else {
                     failedNum += 1
-                    viewModel.failedList.add(i.infoBase)
+                    viewModel.failedList.add(processingTask)
                 }
                 dataBinding.progress.set(index + 1)
                 dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
@@ -330,12 +347,19 @@ class Restore(private val viewModel: ProcessingViewModel) {
                     dataBinding.processingData.set(false)
                     initializeSizeAndSpeed()
                 }
+                val processingTask = ProcessingTask(
+                    appName = i.name,
+                    packageName = i.path,
+                    app = false,
+                    data = true,
+                    appIcon = null
+                )
                 if (state) {
                     successNum += 1
-                    viewModel.successList.add(viewModel.mAdapter.items[index] as AppInfoBase)
+                    viewModel.successList.add(processingTask)
                 } else {
                     failedNum += 1
-                    viewModel.failedList.add(viewModel.mAdapter.items[index] as AppInfoBase)
+                    viewModel.failedList.add(processingTask)
                 }
                 dataBinding.progress.set(index + 1)
                 dataBinding.progressText.set("${GlobalString.progress}: ${dataBinding.progress.get()}/${dataBinding.progressMax.get()}")
