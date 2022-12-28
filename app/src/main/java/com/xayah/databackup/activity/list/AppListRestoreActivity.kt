@@ -4,7 +4,7 @@ import android.content.Intent
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.tabs.TabLayout
 import com.xayah.databackup.App
-import com.xayah.databackup.activity.processing.ProcessingActivity
+import com.xayah.databackup.activity.processing.ProcessingRestoreAppActivity
 import com.xayah.databackup.adapter.AppListAdapterRestore
 import com.xayah.databackup.data.*
 import com.xayah.databackup.util.JSON
@@ -48,7 +48,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
                     AppListSelection.App -> {
                         appList.forEach {
                             if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
-                                true
+                                true && it.restoreList[it.restoreIndex].hasApp
                         }
                     }
                     AppListSelection.AppReverse -> {
@@ -60,8 +60,10 @@ class AppListRestoreActivity : AppListBaseActivity() {
                     AppListSelection.All -> {
                         appList.forEach {
                             if (it.restoreList.isNotEmpty()) {
-                                it.restoreList[it.restoreIndex].app = true
-                                it.restoreList[it.restoreIndex].data = true
+                                it.restoreList[it.restoreIndex].app =
+                                    true && it.restoreList[it.restoreIndex].hasApp
+                                it.restoreList[it.restoreIndex].data =
+                                    true && it.restoreList[it.restoreIndex].hasData
                             }
                         }
                     }
@@ -84,7 +86,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
                     AppListSelection.App -> {
                         appList.forEach {
                             if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
-                                true
+                                true && it.restoreList[it.restoreIndex].hasApp
                         }
                     }
                     AppListSelection.AppReverse -> {
@@ -96,8 +98,10 @@ class AppListRestoreActivity : AppListBaseActivity() {
                     AppListSelection.All -> {
                         appList.forEach {
                             if (it.restoreList.isNotEmpty()) {
-                                it.restoreList[it.restoreIndex].app = true
-                                it.restoreList[it.restoreIndex].data = true
+                                it.restoreList[it.restoreIndex].app =
+                                    true && it.restoreList[it.restoreIndex].hasApp
+                                it.restoreList[it.restoreIndex].data =
+                                    true && it.restoreList[it.restoreIndex].hasData
                             }
 
                         }
@@ -196,10 +200,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
     }
 
     override fun onFloatingActionButtonClick(l: () -> Unit) {
-        startActivity(Intent(this, ProcessingActivity::class.java).apply {
-            putExtra("isRestore", true)
-            putExtra("isMedia", false)
-        })
+        startActivity(Intent(this, ProcessingRestoreAppActivity::class.java))
     }
 }
 

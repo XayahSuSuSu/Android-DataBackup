@@ -150,4 +150,9 @@
     <string name="install_time">Час установки</string>
     <string name="sort">Сортувати</string>
     <string name="filter">Фільтр</string>
+    <string name="backup_strategy">Backup strategy</string>
+    <string name="cover">Cover</string>
+    <string name="cover_desc">Overwrite existing backup files with each backup, or skip backups if there are no changes, so no matter what, only one copy of your data exists</string>
+    <string name="by_time">By time</string>
+    <string name="by_time_desc">Each backup is considered a new full backup and is separated according to the backup time, so your data may exist in multiple copies</string>
 </resources>

@@ -19,7 +19,16 @@
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
         <activity
-            android:name=".activity.processing.ProcessingActivity"
+            android:name=".activity.processing.ProcessingBackupAppActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.processing.ProcessingBackupMediaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.processing.ProcessingRestoreAppActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.processing.ProcessingRestoreMediaActivity"
             android:exported="false" />
         <activity
             android:name=".activity.list.AppListBackupActivity"

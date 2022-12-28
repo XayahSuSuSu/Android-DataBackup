@@ -13,7 +13,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListRestoreActivity
-import com.xayah.databackup.activity.processing.ProcessingActivity
+import com.xayah.databackup.activity.processing.ProcessingRestoreAppActivity
+import com.xayah.databackup.activity.processing.ProcessingRestoreMediaActivity
 import com.xayah.databackup.data.AppInfoBaseNum
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
@@ -56,13 +57,9 @@ class RestoreViewModel : ViewModel() {
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
 
-    // 媒体备份列表
-    val mediaInfoBackupList
-        get() = App.mediaInfoBackupList.value
-
-    // 媒体恢复列表
-    val mediaInfoRestoreList
-        get() = App.mediaInfoRestoreList.value
+    // 媒体列表
+    val mediaInfoList
+        get() = App.mediaInfoList.value
 
     var backupUser = ObservableField("${GlobalString.user}0")
     var restoreUser = ObservableField("${GlobalString.user}0")
@@ -135,23 +132,15 @@ class RestoreViewModel : ViewModel() {
     }
 
     fun onSelectAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, AppListRestoreActivity::class.java).apply {
-            putExtra("isRestore", true)
-        })
+        v.context.startActivity(Intent(v.context, AppListRestoreActivity::class.java))
     }
 
     fun onRestoreAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
-            putExtra("isRestore", true)
-            putExtra("isMedia", false)
-        })
+        v.context.startActivity(Intent(v.context, ProcessingRestoreAppActivity::class.java))
     }
 
     fun onRestoreMediaBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
-            putExtra("isRestore", true)
-            putExtra("isMedia", true)
-        })
+        v.context.startActivity(Intent(v.context, ProcessingRestoreMediaActivity::class.java))
     }
 
     fun onRestoreAppClearBtnClick(v: View) {

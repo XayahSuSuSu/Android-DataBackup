@@ -320,6 +320,7 @@ abstract class AppListBaseActivity : AppCompatActivity() {
 
         binding.floatingActionButton.setOnClickListener {
             onFloatingActionButtonClick {}
+            finish()
         }
 
         setTabLayout(binding.tabLayout)

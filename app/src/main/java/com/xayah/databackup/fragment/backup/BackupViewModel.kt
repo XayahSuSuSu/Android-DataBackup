@@ -10,8 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListBackupActivity
-import com.xayah.databackup.activity.processing.ProcessingActivity
+import com.xayah.databackup.activity.processing.ProcessingBackupAppActivity
+import com.xayah.databackup.activity.processing.ProcessingBackupMediaActivity
 import com.xayah.databackup.data.AppInfoBaseNum
+import com.xayah.databackup.data.BackupStrategy
+import com.xayah.databackup.data.ofBackupStrategy
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import kotlinx.coroutines.launch
@@ -52,12 +55,14 @@ class BackupViewModel : ViewModel() {
     var appNum = ObservableField("0")
     var dataNum = ObservableField("0")
 
-    // 媒体备份列表
-    val mediaInfoBackupList
-        get() = App.mediaInfoBackupList.value
+    // 媒体列表
+    val mediaInfoList
+        get() = App.mediaInfoList.value
 
     var backupUser = ObservableField("${GlobalString.user}0")
     var restoreUser = ObservableField("${GlobalString.user}0")
+
+    var backupStrategy = ObservableField(ofBackupStrategy(App.globalContext.readBackupStrategy()))
 
     var backupItselfEnable = ObservableBoolean(false)
     var backupIconEnable = ObservableBoolean(false)
@@ -121,26 +126,35 @@ class BackupViewModel : ViewModel() {
         }
     }
 
+    fun onChangeBackupStrategy(v: View) {
+        viewModelScope.launch {
+            val context = v.context
+            val items = arrayOf(GlobalString.cover, GlobalString.byTime)
+            val enumItems = arrayOf(BackupStrategy.Cover, BackupStrategy.ByTime)
+            val choice = items.indexOf(backupStrategy.get())
+
+            ListPopupWindow(context).apply {
+                fastInitialize(v, items, choice)
+                setOnItemClickListener { _, _, position, _ ->
+                    dismiss()
+                    context.saveBackupStrategy(enumItems[position])
+                    backupStrategy.set(items[position])
+                }
+                show()
+            }
+        }
+    }
+
     fun onSelectAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, AppListBackupActivity::class.java).apply {
-            putExtra("isRestore", false)
-        })
+        v.context.startActivity(Intent(v.context, AppListBackupActivity::class.java))
     }
 
     fun onBackupAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
-            putExtra("isRestore", false)
-            putExtra("isMedia", false)
-        })
+        v.context.startActivity(Intent(v.context, ProcessingBackupAppActivity::class.java))
     }
 
     fun onBackupMediaBtnClick(v: View) {
-        v.context.startActivity(
-            Intent(v.context, ProcessingActivity::class.java).apply {
-                putExtra("isRestore", false)
-                putExtra("isMedia", true)
-            }
-        )
+        v.context.startActivity(Intent(v.context, ProcessingBackupMediaActivity::class.java))
     }
 
     private fun setUser() {

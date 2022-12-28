@@ -61,30 +61,18 @@ class App : Application() {
                 num
             }
 
-        // 媒体备份列表
-        val mediaInfoBackupList by lazy {
-            MutableStateFlow(mutableListOf<MediaInfo>())
-        }
-
-        // 媒体恢复列表
-        val mediaInfoRestoreList by lazy {
+        // 媒体列表
+        val mediaInfoList by lazy {
             MutableStateFlow(mutableListOf<MediaInfo>())
         }
 
         suspend fun loadList() {
-//            Command.retrieve(Command.getCachedAppInfoRestoreActualList())
             appInfoList.emit(Command.getAppInfoList())
-//            appInfoRestoreList.emit(Command.getCachedAppInfoRestoreActualList())
-//            mediaInfoBackupList.emit(Command.getCachedMediaInfoBackupList())
-//            mediaInfoRestoreList.emit(Command.getCachedMediaInfoRestoreList())
+            mediaInfoList.emit(Command.getMediaInfoList())
         }
 
-        suspend fun saveMediaInfoBackupList() {
-            JSON.saveMediaInfoBackupList(mediaInfoBackupList.value)
-        }
-
-        suspend fun saveMediaInfoRestoreList() {
-            JSON.saveMediaInfoRestoreList(mediaInfoRestoreList.value)
+        suspend fun saveMediaInfoList() {
+            JSON.saveMediaInfoList(mediaInfoList.value)
         }
 
         fun getTimeStamp(): String {
@@ -106,7 +94,7 @@ class App : Application() {
         CrashHandler(this).initialize()
         globalContext = this
         logcat = Logcat()
-        versionName = packageManager.getPackageInfo(packageName, 0).versionName
+        versionName = Command.getVersion()
         server = Server()
         if (globalContext.readIsDynamicColors()) DynamicColors.applyToActivitiesIfAvailable(this)
     }

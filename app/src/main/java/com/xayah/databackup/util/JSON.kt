@@ -68,11 +68,11 @@ class JSON {
             }
         }
 
-        suspend fun saveMediaInfoBackupList(mediaInfoBackupList: MutableList<MediaInfo>) {
+        suspend fun saveMediaInfoList(mediaInfoBackupList: MutableList<MediaInfo>) {
             withContext(Dispatchers.IO) {
                 writeJSONToFile(
                     entityArrayToJsonArray(mediaInfoBackupList as MutableList<Any>),
-                    Path.getMediaInfoBackupListPath()
+                    Path.getMediaInfoListPath()
                 )
             }
         }

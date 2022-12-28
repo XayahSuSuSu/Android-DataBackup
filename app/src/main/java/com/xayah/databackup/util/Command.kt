@@ -3,13 +3,11 @@ package com.xayah.databackup.util
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
+import android.util.Log
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
-import com.xayah.databackup.data.AppInfo
-import com.xayah.databackup.data.AppInfoItem
-import com.xayah.databackup.data.BackupInfo
-import com.xayah.databackup.data.MediaInfo
+import com.xayah.databackup.data.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -123,6 +121,11 @@ class Command {
                         }
                     }
                 }
+                for (i in appInfoList) {
+                    if (i.restoreList.isNotEmpty()) {
+                        Log.d(TAG, "getAppInfoList: ${i.restoreList}")
+                    }
+                }
 
                 // 根据备份目录实际文件调整列表
                 var hasApp = false
@@ -144,6 +147,7 @@ class Command {
                                 val date = info[2]
                                 val dateNext = infoNext[2]
                                 val fileName = info[3]
+                                Log.d(TAG, "info: ${info}")
                                 if (info.size == 4) {
                                     if (fileName.contains("apk.tar"))
                                         hasApp = true
@@ -156,7 +160,7 @@ class Command {
                                     else if (fileName.contains("user_de.tar"))
                                         hasData = true
 
-                                    if (date != dateNext) {
+                                    if (date != dateNext || packageName != packageNameNext) {
                                         // 与下一路径不同日期
                                         // 尝试获取原列表数据
                                         if (restoreList.isEmpty()) {
@@ -246,6 +250,11 @@ class Command {
                         }
                     }
                 }
+                for (i in appInfoList) {
+                    if (i.restoreList.isNotEmpty()) {
+                        Log.d(TAG, "getAppInfoList1: ${i.restoreList}")
+                    }
+                }
 
                 // 根据本机应用调整列表
                 val packageManager = App.globalContext.packageManager
@@ -311,118 +320,155 @@ class Command {
                         e.printStackTrace()
                     }
                 }
+                for (i in appInfoList) {
+                    if (i.restoreList.isNotEmpty()) {
+                        Log.d(TAG, "getAppInfoList2: ${i.restoreList}")
+                    }
+                }
             }
             return appInfoList
         }
 
         /**
-         * 列表操作, 添加或更新
+         * 构建媒体列表
          */
-        fun addOrUpdateList(
-            item: Any,
-            dst: MutableList<Any>,
-            callback: (item: Any) -> Boolean
-        ) {
-            val tmp = dst.find { callback(it) }
-            val tmpIndex = dst.indexOf(tmp)
-            if (tmpIndex == -1) dst.add(item)
-            else dst[tmpIndex] = item
-        }
-
-        suspend fun getCachedMediaInfoBackupList(isFiltered: Boolean = false): MutableList<MediaInfo> {
-            // 媒体备份列表
-            var cachedMediaInfoList = mutableListOf<MediaInfo>()
+        suspend fun getMediaInfoList(): MutableList<MediaInfo> {
+            val mediaInfoList = mutableListOf<MediaInfo>()
             runOnIO {
-                cat(Path.getMediaInfoBackupListPath()).apply {
+                // 读取媒体列表配置文件
+                cat(Path.getMediaInfoListPath()).apply {
                     if (this.first) {
                         try {
                             val jsonArray = JSON.stringToJsonArray(this.second)
                             for (i in jsonArray) {
                                 val item =
                                     JSON.jsonElementToEntity(i, MediaInfo::class.java) as MediaInfo
-                                cachedMediaInfoList.add(item)
+                                mediaInfoList.add(item)
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
                 }
-                if (cachedMediaInfoList.isEmpty()) {
-                    cachedMediaInfoList.add(
-                        MediaInfo(
-                            "Pictures", "/storage/emulated/0/Pictures", false, ""
-                        )
-                    )
-                    cachedMediaInfoList.add(
-                        MediaInfo(
-                            "Download", "/storage/emulated/0/Download", false, ""
-                        )
-                    )
-                    cachedMediaInfoList.add(
-                        MediaInfo(
-                            "Music",
-                            "/storage/emulated/0/Music",
-                            false,
-                            ""
-                        )
-                    )
-                    cachedMediaInfoList.add(
-                        MediaInfo(
-                            "DCIM",
-                            "/storage/emulated/0/DCIM",
-                            false,
-                            ""
-                        )
-                    )
-                }
-                if (isFiltered) cachedMediaInfoList =
-                    cachedMediaInfoList.filter { it.data }.toMutableList()
-            }
-            return cachedMediaInfoList
-        }
 
-        suspend fun getCachedMediaInfoRestoreList(): MutableList<MediaInfo> {
-            // 根据媒体文件获取实际列表
-            val cachedMediaInfoRestoreActualList = mutableListOf<MediaInfo>()
-            val cachedMediaInfoRestoreList = mutableListOf<MediaInfo>()
-            runOnIO {
-                cat(Path.getMediaInfoRestoreListPath()).apply {
-                    if (this.first) {
-                        try {
-                            val jsonArray = JSON.stringToJsonArray(this.second)
-                            for (i in jsonArray) {
-                                val item =
-                                    JSON.jsonElementToEntity(i, MediaInfo::class.java) as MediaInfo
-                                cachedMediaInfoRestoreList.add(item)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                // 如果为空, 添加默认路径
+                if (mediaInfoList.isEmpty()) {
+                    val nameList = listOf("Pictures", "Download", "Music", "DCIM")
+                    val pathList = listOf(
+                        "/storage/emulated/0/Pictures",
+                        "/storage/emulated/0/Download",
+                        "/storage/emulated/0/Music",
+                        "/storage/emulated/0/DCIM"
+                    )
+                    for ((index, _) in nameList.withIndex()) {
+                        mediaInfoList.add(
+                            MediaInfo(
+                                name = nameList[index],
+                                path = pathList[index],
+                                backup = MediaInfoItem(
+                                    data = false,
+                                    size = "",
+                                    date = ""
+                                ),
+                                _restoreIndex = -1,
+                                restoreList = mutableListOf()
+                            )
+                        )
                     }
                 }
+
+                // 根据备份目录实际文件调整列表
+                var hasData = false
                 execute("find ${Path.getBackupMediaSavePath()} -name \"*\" -type f").apply {
-                    if (this.isSuccess) {
-                        for (i in this.out) {
-                            val info = i.split("/").last().split(".")
-                            if (info.isNotEmpty()) {
-                                val mediaInfo =
-                                    MediaInfo(info[0], GlobalString.customDir, true, "-1")
-                                val tmp = cachedMediaInfoRestoreList.find { it.name == info[0] }
-                                val tmpIndex = cachedMediaInfoRestoreList.indexOf(tmp)
-                                if (tmpIndex != -1) {
-                                    mediaInfo.apply {
-                                        data = cachedMediaInfoRestoreList[tmpIndex].data
+                    if (isSuccess) {
+                        this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
+
+                        var restoreList = mutableListOf<MediaInfoItem>()
+
+                        for ((index, i) in this.out.withIndex()) {
+                            if (index < this.out.size - 1) {
+                                val info = i.replace(Path.getBackupMediaSavePath(), "").split("/")
+                                val infoNext =
+                                    this.out[index + 1].replace(Path.getBackupMediaSavePath(), "")
+                                        .split("/")
+                                val name = info[1]
+                                val nameNext = infoNext[1]
+                                val date = info[2]
+                                val dateNext = infoNext[2]
+                                val fileName = info[3]
+                                if (info.size == 4) {
+                                    if (fileName.contains("${name}.tar"))
+                                        hasData = true
+
+                                    if (date != dateNext) {
+                                        // 与下一路径不同日期
+                                        // 尝试获取原列表数据
+                                        if (restoreList.isEmpty()) {
+                                            val mediaInfoIndex =
+                                                mediaInfoList.indexOfFirst { name == it.name }
+                                            if (mediaInfoIndex != -1) {
+                                                restoreList =
+                                                    mediaInfoList[mediaInfoIndex].restoreList
+                                            }
+                                        }
+
+                                        val restoreListIndex =
+                                            restoreList.indexOfFirst { date == it.date }
+                                        val restore = if (restoreListIndex == -1) MediaInfoItem(
+                                            data = false,
+                                            size = "",
+                                            date = ""
+                                        ) else restoreList[restoreListIndex]
+
+                                        restore.apply {
+                                            this.data = this.data && hasData
+                                            this.date = date
+                                        }
+
+                                        if (restoreListIndex == -1) restoreList.add(restore)
+
+                                        hasData = false
+                                    }
+                                    if (name != nameNext) {
+                                        // 与下一路径不同包名
+                                        // 寻找已保存的数据
+                                        val mediaInfoIndex =
+                                            mediaInfoList.indexOfFirst { name == it.name }
+                                        val mediaInfo = if (mediaInfoIndex == -1)
+                                            MediaInfo(
+                                                name = "",
+                                                path = "",
+                                                backup = MediaInfoItem(
+                                                    data = false,
+                                                    size = "",
+                                                    date = date
+                                                ),
+                                                _restoreIndex = -1,
+                                                restoreList = mutableListOf(),
+                                            ) else mediaInfoList[mediaInfoIndex]
+
+                                        mediaInfo.apply {
+                                            this.name = name
+                                            this.restoreList = restoreList
+                                        }
+
+                                        if (mediaInfoIndex == -1) mediaInfoList.add(mediaInfo)
+
+                                        hasData = false
+                                        restoreList = mutableListOf()
                                     }
                                 }
-                                cachedMediaInfoRestoreActualList.add(mediaInfo)
                             }
                         }
                     }
                 }
             }
-            return cachedMediaInfoRestoreActualList
+            return mediaInfoList
         }
 
+        /**
+         * 读取备份信息列表
+         */
         suspend fun getCachedBackupInfoList(): MutableList<BackupInfo> {
             val cachedBackupInfoList = mutableListOf<BackupInfo>()
             runOnIO {
@@ -445,7 +491,10 @@ class Command {
             return cachedBackupInfoList
         }
 
-        fun extractAssets(mContext: Context, assetsPath: String, outName: String) {
+        /**
+         * 释放资源文件
+         */
+        fun releaseAssets(mContext: Context, assetsPath: String, outName: String) {
             try {
                 val assets = File(Path.getFilesDir(), outName)
                 if (!assets.exists()) {
@@ -464,6 +513,9 @@ class Command {
             }
         }
 
+        /**
+         * 获取ABI
+         */
         fun getABI(): String {
             val mABIs = Build.SUPPORTED_ABIS
             if (mABIs.isNotEmpty()) {
@@ -472,6 +524,9 @@ class Command {
             return ""
         }
 
+        /**
+         * 压缩
+         */
         suspend fun compress(
             compressionType: String,
             dataType: String,
@@ -484,18 +539,31 @@ class Command {
             var ret = true
             var update = true
             runOnIO {
-                if (dataType == "media") {
-                    countSize(dataPath, 1).apply {
-                        if (this == dataSize) {
-                            update = true
+                if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
+                    // 当备份策略为覆盖时, 计算目录大小并判断是否更新
+                    if (dataType == "media") {
+                        countSize(dataPath, 1).apply {
+                            if (this == dataSize) {
+                                update = false
+                            }
+                        }
+                    } else {
+                        countSize(
+                            "${dataPath}/${packageName}", 1
+                        ).apply {
+                            if (this == dataSize) {
+                                update = false
+                            }
                         }
                     }
-                } else {
-                    countSize(
-                        "${dataPath}/${packageName}", 1
-                    ).apply {
-                        if (this == dataSize) {
-                            update = true
+                    // 检测是否实际存在压缩包, 若不存在则仍然更新
+                    if (dataType == "media") {
+                        ls("${outPut}/${packageName}.tar*").apply {
+                            if (!this) update = true
+                        }
+                    } else {
+                        ls("${outPut}/${dataType}.tar*").apply {
+                            if (!this) update = true
                         }
                     }
                 }
@@ -523,6 +591,9 @@ class Command {
             return ret
         }
 
+        /**
+         * 压缩APK
+         */
         suspend fun compressAPK(
             compressionType: String,
             packageName: String,
@@ -535,11 +606,19 @@ class Command {
             var update = true
             runOnIO {
                 val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply { ret = this.first }
-                countSize(
-                    apkPathPair.second, 1
-                ).apply {
-                    if (this == apkSize) {
-                        update = true
+                if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
+                    // 当备份策略为覆盖时, 计算目录大小并判断是否更新
+                    countSize(
+                        apkPathPair.second, 1
+                    ).apply {
+                        if (this == apkSize) {
+                            update = false
+                        }
+                    }
+                    // 检测是否实际存在压缩包, 若不存在则仍然更新
+                    ls("${outPut}/apk.tar*").apply {
+                        // 后续若直接令state = this会导致state非正常更新
+                        if (!this) update = true
                     }
                 }
                 if (update) {
@@ -558,6 +637,9 @@ class Command {
             return ret
         }
 
+        /**
+         * 解压
+         */
         suspend fun decompress(
             compressionType: String,
             dataType: String,
@@ -579,6 +661,9 @@ class Command {
             return ret
         }
 
+        /**
+         * 安装APK
+         */
         suspend fun installAPK(
             inPath: String,
             packageName: String,
@@ -607,6 +692,9 @@ class Command {
             return ret
         }
 
+        /**
+         * 配置Owner以及SELinux相关
+         */
         suspend fun setOwnerAndSELinux(
             dataType: String,
             packageName: String,
@@ -627,6 +715,9 @@ class Command {
                 }
         }
 
+        /**
+         * 获取应用版本代码
+         */
         private suspend fun getAppVersionCode(userId: String, packageName: String): String {
             Bashrc.getAppVersionCode(userId, packageName).apply {
                 if (!this.first) {
@@ -636,6 +727,9 @@ class Command {
             }
         }
 
+        /**
+         * 测试压缩包
+         */
         private suspend fun testArchive(
             compressionType: String,
             inputPath: String,
@@ -648,6 +742,9 @@ class Command {
             return true
         }
 
+        /**
+         * 备份自身
+         */
         suspend fun backupItself(
             packageName: String, outPut: String, userId: String
         ): Boolean {
@@ -672,6 +769,9 @@ class Command {
             return true
         }
 
+        /**
+         * 计算大小(占用)
+         */
         suspend fun countSize(path: String, type: Int = 0): String {
             Bashrc.countSize(path, type).apply {
                 return if (!this.first) "0"
@@ -680,10 +780,16 @@ class Command {
             }
         }
 
+        /**
+         * 检查ROOT
+         */
         suspend fun checkRoot(): Boolean {
             return execute("ls /").isSuccess && Shell.rootAccess()
         }
 
+        /**
+         * 检查二进制文件
+         */
         suspend fun checkBin(): Boolean {
             execute("ls -l ${Path.getFilesDir()}/bin").out.apply {
                 var count = 0
@@ -697,16 +803,25 @@ class Command {
             }
         }
 
+        /**
+         * 检查Bash环境
+         */
         suspend fun checkBashrc(): Boolean {
             return execute("check_bashrc").isSuccess
         }
 
+        /**
+         * 获取本应用版本名称
+         */
         fun getVersion(): String {
             return App.globalContext.packageManager.getPackageInfo(
                 App.globalContext.packageName, 0
             ).versionName
         }
 
+        /**
+         * 获取日期, `timeStamp`为空时获取当前日期, 否则为时间戳转日期
+         */
         fun getDate(timeStamp: String = ""): String {
             var date = ""
             try {
@@ -718,11 +833,15 @@ class Command {
                     }
                 }
             } catch (e: Exception) {
+                date = timeStamp
                 e.printStackTrace()
             }
             return date
         }
 
+        /**
+         * 通过路径解析压缩方式
+         */
         suspend fun getCompressionTypeByPath(path: String): String {
             execute("ls $path").out.joinToLineString.apply {
                 return try {
@@ -739,6 +858,9 @@ class Command {
             }
         }
 
+        /**
+         * 经由Log封装的执行函数
+         */
         suspend fun execute(
             cmd: String,
             isAddToLog: Boolean = true,
@@ -763,17 +885,23 @@ class Command {
                 shell.exec().apply {
                     if (isAddToLog)
                         this.apply {
-                            for (i in this.out) App.logcat.addLine("Shell_Out: $i")
+                            for (i in this.out) App.logcat.addLine("SHELL_OUT: $i")
                         }
                 }
             }
             return result
         }
 
+        /**
+         * 检查`ls -Zd`命令是否可用
+         */
         suspend fun checkLsZd(): Boolean {
             return execute("ls -Zd").isSuccess
         }
 
+        /**
+         * 列出备份用户
+         */
         suspend fun listBackupUsers(): MutableList<String> {
             val exec = execute("ls ${Path.getBackupUserPath()}")
             val users = mutableListOf<String>()

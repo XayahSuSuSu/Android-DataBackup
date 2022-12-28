@@ -4,7 +4,7 @@ import android.content.Intent
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.tabs.TabLayout
 import com.xayah.databackup.App
-import com.xayah.databackup.activity.processing.ProcessingActivity
+import com.xayah.databackup.activity.processing.ProcessingBackupAppActivity
 import com.xayah.databackup.adapter.AppListAdapterBackup
 import com.xayah.databackup.data.*
 import com.xayah.databackup.util.JSON
@@ -175,10 +175,7 @@ class AppListBackupActivity : AppListBaseActivity() {
     }
 
     override fun onFloatingActionButtonClick(l: () -> Unit) {
-        startActivity(Intent(this, ProcessingActivity::class.java).apply {
-            putExtra("isRestore", false)
-            putExtra("isMedia", false)
-        })
+        startActivity(Intent(this, ProcessingBackupAppActivity::class.java))
     }
 }
 

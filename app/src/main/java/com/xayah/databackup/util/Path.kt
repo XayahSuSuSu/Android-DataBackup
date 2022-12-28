@@ -48,8 +48,8 @@ class Path {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/restore/appList"
         }
 
-        fun getMediaInfoBackupListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/backup/mediaList"
+        fun getMediaInfoListPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/mediaList"
         }
 
         fun getMediaInfoRestoreListPath(): String {

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.ContextWrapper
+import com.xayah.databackup.data.BackupStrategy
+import com.xayah.databackup.data.toBackupStrategy
 
 fun Context.savePreferences(key: String, value: String) {
     getSharedPreferences("settings", MODE_PRIVATE).edit().apply {
@@ -50,6 +52,14 @@ fun Context.saveBackupSavePath(path: CharSequence?) {
 
 fun Context.readBackupSavePath(): String {
     return readPreferencesString("backup_save_path") ?: GlobalString.defaultBackupSavePath
+}
+
+fun Context.saveBackupStrategy(backupStrategy: BackupStrategy) {
+    savePreferences("backup_strategy", backupStrategy.toString().trim())
+}
+
+fun Context.readBackupStrategy(): BackupStrategy {
+    return toBackupStrategy(readPreferencesString("backup_strategy"))
 }
 
 fun Context.saveCompressionType(type: CharSequence?) {

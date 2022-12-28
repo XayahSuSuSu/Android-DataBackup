@@ -95,7 +95,7 @@ class GuideTwoFragment : Fragment() {
             }
             val isBinReleased = Command.ls(binPath)
             if (!isBinReleased) {
-                Command.extractAssets(
+                Command.releaseAssets(
                     requireContext(), "${Command.getABI()}/bin.zip", "bin.zip"
                 )
                 Command.unzipByZip4j(binZipPath, binPath)

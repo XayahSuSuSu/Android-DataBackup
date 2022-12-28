@@ -125,5 +125,7 @@ class GlobalString {
         val installTime = App.globalContext.getString(R.string.install_time)
         val sort = App.globalContext.getString(R.string.sort)
         val filter = App.globalContext.getString(R.string.filter)
+        val cover = App.globalContext.getString(R.string.cover)
+        val byTime = App.globalContext.getString(R.string.by_time)
     }
 }

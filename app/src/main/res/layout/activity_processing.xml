@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.xayah.databackup.activity.processing.ProcessingViewModel" />
+            type="com.xayah.databackup.activity.processing.ProcessingBaseViewModel" />
 
         <import type="android.view.View" />
     </data>
@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:navigationIcon="@drawable/ic_round_arrow_back"
-                app:title="@{viewModel.dataBinding.btnText}"
+                app:title="@{viewModel.btnText}"
                 app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
 
@@ -66,7 +66,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="30dp"
                         android:layout_marginVertical="8dp"
-                        android:visibility="@{viewModel.dataBinding.isFinished() ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{viewModel.isFinished() ? View.VISIBLE : View.GONE}"
                         app:cardCornerRadius="24dp"
                         app:contentPadding="16dp">
 
@@ -84,7 +84,7 @@
                             <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{viewModel.dataBinding.successProgress}"
+                                android:text="@{viewModel.successProgress}"
                                 android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                             <androidx.recyclerview.widget.RecyclerView
@@ -103,7 +103,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="30dp"
                         android:layout_marginVertical="16dp"
-                        android:visibility="@{viewModel.dataBinding.isFinished() ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{viewModel.isFinished() ? View.VISIBLE : View.GONE}"
                         app:cardCornerRadius="24dp"
                         app:contentPadding="16dp">
 
@@ -121,7 +121,7 @@
                             <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{viewModel.dataBinding.failedProgress}"
+                                android:text="@{viewModel.failedProgress}"
                                 android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                             <androidx.recyclerview.widget.RecyclerView
@@ -151,30 +151,30 @@
                             <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{viewModel.dataBinding.totalTip}"
+                                android:text="@{viewModel.totalTip}"
                                 android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{viewModel.dataBinding.totalProgress}"
+                                android:text="@{viewModel.totalProgress}"
                                 android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="@{viewModel.dataBinding.progressText}"
+                                android:text="@{viewModel.progressText}"
                                 android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-                                android:visibility="@{viewModel.dataBinding.isProcessing() ? View.VISIBLE : View.GONE}" />
+                                android:visibility="@{viewModel.isProcessing() ? View.VISIBLE : View.GONE}" />
 
                             <com.google.android.material.progressindicator.LinearProgressIndicator
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:max="@{viewModel.dataBinding.progressMax}"
-                                android:progress="@{viewModel.dataBinding.progress}"
-                                android:visibility="@{viewModel.dataBinding.isProcessing() ? View.VISIBLE : View.GONE}"
+                                android:max="@{viewModel.progressMax}"
+                                android:progress="@{viewModel.progress}"
+                                android:visibility="@{viewModel.isProcessing() ? View.VISIBLE : View.GONE}"
                                 app:indicatorColor="@color/red"
                                 app:trackCornerRadius="3dp" />
 
@@ -183,7 +183,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:visibility="@{viewModel.dataBinding.isProcessing() || viewModel.dataBinding.isFinished()  ? View.GONE : View.VISIBLE}" />
+                                android:visibility="@{viewModel.isProcessing() || viewModel.isFinished()  ? View.GONE : View.VISIBLE}" />
 
                         </LinearLayout>
 
@@ -195,7 +195,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="30dp"
                         android:layout_marginTop="24dp"
-                        android:visibility="@{viewModel.dataBinding.isProcessing() ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{viewModel.isProcessing() ? View.VISIBLE : View.GONE}"
                         app:cardCornerRadius="24dp"
                         app:contentPadding="16dp">
 
@@ -219,27 +219,27 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:maxWidth="230dp"
-                                        android:text="@{viewModel.dataBinding.appName}"
+                                        android:text="@{viewModel.appName}"
                                         android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                                         tools:ignore="TooDeepLayout" />
 
                                     <com.google.android.material.textview.MaterialTextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="@{viewModel.dataBinding.packageName}"
+                                        android:text="@{viewModel.packageName}"
                                         android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                                     <com.google.android.material.textview.MaterialTextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="@{viewModel.dataBinding.appVersion}"
+                                        android:text="@{viewModel.appVersion}"
                                         android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
                                 </LinearLayout>
 
                                 <com.google.android.material.imageview.ShapeableImageView
                                     android:layout_width="60dp"
                                     android:layout_height="60dp"
-                                    android:src="@{viewModel.dataBinding.appIcon}"
+                                    android:src="@{viewModel.appIcon}"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -258,7 +258,7 @@
                                     android:layout_marginEnd="16dp"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    android:visibility="@{viewModel.dataBinding.isBackupApk() ? View.VISIBLE : View.GONE}">
+                                    android:visibility="@{viewModel.isBackupApk() ? View.VISIBLE : View.GONE}">
 
                                     <androidx.constraintlayout.utils.widget.ImageFilterView
                                         android:layout_width="48dp"
@@ -281,7 +281,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/symbol_triangle"
                                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                                        android:visibility="@{viewModel.dataBinding.processingApk ? View.VISIBLE : View.INVISIBLE}" />
+                                        android:visibility="@{viewModel.processingApk ? View.VISIBLE : View.INVISIBLE}" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -290,7 +290,7 @@
                                     android:layout_marginEnd="16dp"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    android:visibility="@{viewModel.dataBinding.isBackupUser() ? View.VISIBLE : View.GONE}">
+                                    android:visibility="@{viewModel.isBackupUser() ? View.VISIBLE : View.GONE}">
 
                                     <androidx.constraintlayout.utils.widget.ImageFilterView
                                         android:layout_width="48dp"
@@ -313,7 +313,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/symbol_triangle"
                                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                                        android:visibility="@{viewModel.dataBinding.processingUser ? View.VISIBLE : View.INVISIBLE}" />
+                                        android:visibility="@{viewModel.processingUser ? View.VISIBLE : View.INVISIBLE}" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -322,7 +322,7 @@
                                     android:layout_marginEnd="16dp"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    android:visibility="@{viewModel.dataBinding.isBackupUserDe() ? View.VISIBLE : View.GONE}">
+                                    android:visibility="@{viewModel.isBackupUserDe() ? View.VISIBLE : View.GONE}">
 
                                     <androidx.constraintlayout.utils.widget.ImageFilterView
                                         android:layout_width="48dp"
@@ -345,7 +345,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/symbol_triangle"
                                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                                        android:visibility="@{viewModel.dataBinding.processingUserDe ? View.VISIBLE : View.INVISIBLE}" />
+                                        android:visibility="@{viewModel.processingUserDe ? View.VISIBLE : View.INVISIBLE}" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -354,7 +354,7 @@
                                     android:layout_marginEnd="16dp"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    android:visibility="@{viewModel.dataBinding.isBackupData() ? View.VISIBLE : View.GONE}">
+                                    android:visibility="@{viewModel.isBackupData() ? View.VISIBLE : View.GONE}">
 
                                     <androidx.constraintlayout.utils.widget.ImageFilterView
                                         android:layout_width="48dp"
@@ -377,7 +377,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/symbol_triangle"
                                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                                        android:visibility="@{viewModel.dataBinding.processingData ? View.VISIBLE : View.INVISIBLE}" />
+                                        android:visibility="@{viewModel.processingData ? View.VISIBLE : View.INVISIBLE}" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -386,7 +386,7 @@
                                     android:layout_marginEnd="16dp"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    android:visibility="@{viewModel.dataBinding.isBackupObb() ? View.VISIBLE : View.GONE}">
+                                    android:visibility="@{viewModel.isBackupObb() ? View.VISIBLE : View.GONE}">
 
                                     <androidx.constraintlayout.utils.widget.ImageFilterView
                                         android:layout_width="48dp"
@@ -409,7 +409,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/symbol_triangle"
                                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                                        android:visibility="@{viewModel.dataBinding.processingObb ? View.VISIBLE : View.INVISIBLE}" />
+                                        android:visibility="@{viewModel.processingObb ? View.VISIBLE : View.INVISIBLE}" />
                                 </LinearLayout>
 
                             </LinearLayout>
@@ -430,13 +430,13 @@
                                 <com.google.android.material.textview.MaterialTextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@{viewModel.dataBinding.size}"
+                                    android:text="@{viewModel.size}"
                                     android:textAppearance="@style/TextAppearance.Material3.DisplayLarge" />
 
                                 <com.google.android.material.textview.MaterialTextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@{viewModel.dataBinding.sizeUnit}"
+                                    android:text="@{viewModel.sizeUnit}"
                                     android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
                             </LinearLayout>
 
@@ -456,13 +456,13 @@
                                 <com.google.android.material.textview.MaterialTextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@{viewModel.dataBinding.speed}"
+                                    android:text="@{viewModel.speed}"
                                     android:textAppearance="@style/TextAppearance.Material3.DisplayLarge" />
 
                                 <com.google.android.material.textview.MaterialTextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@{viewModel.dataBinding.speedUnit}"
+                                    android:text="@{viewModel.speedUnit}"
                                     android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
                             </LinearLayout>
                         </LinearLayout>
@@ -478,22 +478,22 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:fitsSystemWindows="true"
-            android:visibility="@{viewModel.dataBinding.isProcessing() ? View.GONE : View.VISIBLE}">
+            android:visibility="@{viewModel.isProcessing() ? View.GONE : View.VISIBLE}">
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.dataBinding.btnDesc}"
+                android:text="@{viewModel.btnDesc}"
                 android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
         </com.google.android.material.bottomappbar.BottomAppBar>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@null"
-            android:enabled="@{viewModel.dataBinding.isReady}"
-            android:onClick="@{(v)->viewModel.onBtnClick(v)}"
-            android:visibility="@{viewModel.dataBinding.isProcessing() ? View.GONE : View.VISIBLE}"
+            android:enabled="@{viewModel.isReady}"
+            android:visibility="@{viewModel.isProcessing() ? View.GONE : View.VISIBLE}"
             app:layout_anchor="@id/bottomAppBar"
             app:srcCompat="@drawable/ic_round_check" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

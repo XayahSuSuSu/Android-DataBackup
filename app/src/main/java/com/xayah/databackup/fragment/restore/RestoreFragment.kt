@@ -51,7 +51,7 @@ class RestoreFragment : Fragment() {
     private fun setChipGroup() {
         viewModel.viewModelScope.launch {
             binding.chipGroup.removeAllViews()
-            for (i in viewModel.mediaInfoRestoreList) {
+            for (i in viewModel.mediaInfoList) {
                 addChip(i)
             }
             viewModel.lazyChipGroup.set(false)
@@ -59,58 +59,59 @@ class RestoreFragment : Fragment() {
     }
 
     private fun addChip(mediaInfo: MediaInfo) {
-        val chip = InputChip(layoutInflater, binding.chipGroup).apply {
-            text = mediaInfo.name
-            isChecked = mediaInfo.data
-            setOnCheckedChangeListener { _, isChecked ->
-                viewModel.viewModelScope.launch {
-                    mediaInfo.data = isChecked
-                    App.saveMediaInfoRestoreList()
+        if (mediaInfo.restoreList.isNotEmpty()) {
+            val chip = InputChip(layoutInflater, binding.chipGroup).apply {
+                text = mediaInfo.name
+                isChecked = mediaInfo.restoreList[mediaInfo.restoreIndex].data
+                setOnCheckedChangeListener { _, isChecked ->
+                    viewModel.viewModelScope.launch {
+                        mediaInfo.restoreList[mediaInfo.restoreIndex].data = isChecked
+                        App.saveMediaInfoList()
+                    }
                 }
-            }
-            setOnCloseIconClickListener {
-                MaterialAlertDialogBuilder(requireContext()).apply {
-                    setWithConfirm(
-                        "${GlobalString.confirmRemove}${GlobalString.symbolQuestion}\n" +
-                                "${GlobalString.removeFilesToo}${GlobalString.symbolExclamation}"
-                    ) {
-                        viewModel.viewModelScope.launch {
-                            Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}.tar*")
-                                .apply {
-                                    if (this) {
-                                        viewModel.mediaInfoRestoreList.remove(mediaInfo)
-                                        binding.chipGroup.removeView(it)
-                                        for (i in viewModel.mediaInfoBackupList) {
-                                            if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
-                                                // 清除媒体备份大小信息
-                                                i.size = ""
-                                                break
-                                            }
-                                        }
-                                        for (i in viewModel.mediaInfoRestoreList) {
-                                            if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
-                                                // 清除媒体备份大小信息
-                                                i.size = ""
-                                                break
-                                            }
-                                        }
-                                        App.saveMediaInfoBackupList()
-                                        App.saveMediaInfoRestoreList()
-                                    } else {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "${GlobalString.removeFailed}${GlobalString.symbolExclamation}",
-                                            Toast.LENGTH_SHORT
-                                        )
-                                            .show()
-                                    }
-                                }
+                setOnCloseIconClickListener {
+                    MaterialAlertDialogBuilder(requireContext()).apply {
+                        setWithConfirm(
+                            "${GlobalString.confirmRemove}${GlobalString.symbolQuestion}\n" +
+                                    "${GlobalString.removeFilesToo}${GlobalString.symbolExclamation}"
+                        ) {
+//                            viewModel.viewModelScope.launch {
+//                                Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}.tar*")
+//                                    .apply {
+//                                        if (this) {
+//                                            viewModel.mediaInfoRestoreList.remove(mediaInfo)
+//                                            binding.chipGroup.removeView(it)
+//                                            for (i in viewModel.mediaInfoBackupList) {
+//                                                if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
+//                                                    // 清除媒体备份大小信息
+//                                                    i.size = ""
+//                                                    break
+//                                                }
+//                                            }
+//                                            for (i in viewModel.mediaInfoRestoreList) {
+//                                                if (i.name == mediaInfo.name && i.path == mediaInfo.path) {
+//                                                    // 清除媒体备份大小信息
+//                                                    i.size = ""
+//                                                    break
+//                                                }
+//                                            }
+//                                            App.saveMediaInfoList()
+//                                        } else {
+//                                            Toast.makeText(
+//                                                requireContext(),
+//                                                "${GlobalString.removeFailed}${GlobalString.symbolExclamation}",
+//                                                Toast.LENGTH_SHORT
+//                                            )
+//                                                .show()
+//                                        }
+//                                    }
+//                            }
                         }
                     }
                 }
             }
+            binding.chipGroup.addView(chip)
         }
-        binding.chipGroup.addView(chip)
     }
 
     override fun onResume() {
