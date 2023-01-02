@@ -22,7 +22,11 @@ class HomeViewModel : ViewModel() {
     var binCheck = ObservableField(GlobalString.symbolCross)
     var bashrcCheck = ObservableField(GlobalString.symbolCross)
     var architectureCurrent = ObservableField("")
-    var architectureSupport = ObservableField("${GlobalString.support}: arm64-v8a, x86_64")
+    var architectureSupport = ObservableField(
+        "${GlobalString.support}: ${
+            App.globalContext.resources.assets.list("bin")!!.toList().joinToString(separator = ", ")
+        }"
+    )
     var versionCurrent = ObservableField(App.versionName)
     var versionLatest = ObservableField("")
     var downloadBtnVisible = ObservableBoolean(false)
