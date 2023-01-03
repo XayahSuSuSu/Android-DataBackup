@@ -124,11 +124,19 @@ class Command {
                 var hasApp = false
                 var hasData = false
                 execute("find ${Path.getBackupDataSavePath()} -name \"*\" -type f").apply {
+                    // 根据实际文件和配置调整RestoreList
+                    for ((index, i) in appInfoList.withIndex()) {
+                        val tmpList = mutableListOf<AppInfoItem>()
+                        for (j in i.restoreList) {
+                            if (this.out.toString().contains(j.date)) {
+                                tmpList.add(j)
+                            }
+                        }
+                        appInfoList[index].restoreList = tmpList
+                    }
                     if (isSuccess) {
                         this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
-
                         var restoreList = mutableListOf<AppInfoItem>()
-
                         for ((index, i) in this.out.withIndex()) {
                             if (index < this.out.size - 1) {
                                 val info = i.replace(Path.getBackupDataSavePath(), "").split("/")
@@ -154,16 +162,6 @@ class Command {
 
                                     if (date != dateNext || packageName != packageNameNext) {
                                         // 与下一路径不同日期
-                                        // 尝试获取原列表数据
-                                        if (restoreList.isEmpty()) {
-                                            val appInfoIndex =
-                                                appInfoList.indexOfFirst { packageName == it.packageName }
-                                            if (appInfoIndex != -1) {
-                                                restoreList =
-                                                    appInfoList[appInfoIndex].restoreList
-                                            }
-                                        }
-
                                         val restoreListIndex =
                                             restoreList.indexOfFirst { date == it.date }
                                         val restore = if (restoreListIndex == -1) AppInfoItem(
@@ -361,11 +359,19 @@ class Command {
                 // 根据备份目录实际文件调整列表
                 var hasData = false
                 execute("find ${Path.getBackupMediaSavePath()} -name \"*\" -type f").apply {
+                    // 根据实际文件和配置调整RestoreList
+                    for ((index, i) in mediaInfoList.withIndex()) {
+                        val tmpList = mutableListOf<MediaInfoItem>()
+                        for (j in i.restoreList) {
+                            if (this.out.toString().contains(j.date)) {
+                                tmpList.add(j)
+                            }
+                        }
+                        mediaInfoList[index].restoreList = tmpList
+                    }
                     if (isSuccess) {
                         this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
-
                         var restoreList = mutableListOf<MediaInfoItem>()
-
                         for ((index, i) in this.out.withIndex()) {
                             if (index < this.out.size - 1) {
                                 val info = i.replace(Path.getBackupMediaSavePath(), "").split("/")
@@ -383,16 +389,6 @@ class Command {
 
                                     if (date != dateNext || name != nameNext) {
                                         // 与下一路径不同日期
-                                        // 尝试获取原列表数据
-                                        if (restoreList.isEmpty()) {
-                                            val mediaInfoIndex =
-                                                mediaInfoList.indexOfFirst { name == it.name }
-                                            if (mediaInfoIndex != -1) {
-                                                restoreList =
-                                                    mediaInfoList[mediaInfoIndex].restoreList
-                                            }
-                                        }
-
                                         val restoreListIndex =
                                             restoreList.indexOfFirst { date == it.date }
                                         val restore = if (restoreListIndex == -1) MediaInfoItem(
