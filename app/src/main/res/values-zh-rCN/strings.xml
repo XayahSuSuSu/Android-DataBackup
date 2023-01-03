@@ -155,4 +155,6 @@
     <string name="cover_desc">每次备份时覆盖已存在的备份文件, 或在无变动的情况下跳过备份, 因此无论如何, 您的数据仅存在一份</string>
     <string name="by_time">分时</string>
     <string name="by_time_desc">每次备份均视为新的完整的备份, 并根据备份时间进行分隔, 因此, 您的数据可能会存在多份</string>
+    <string name="path">路径</string>
+    <string name="remove_selected_backup_files">移除当前选择的备份文件</string>
 </resources>

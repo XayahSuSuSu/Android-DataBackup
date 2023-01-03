@@ -3,7 +3,6 @@ package com.xayah.databackup.util
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
-import android.util.Log
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
@@ -121,12 +120,6 @@ class Command {
                         }
                     }
                 }
-                for (i in appInfoList) {
-                    if (i.restoreList.isNotEmpty()) {
-                        Log.d(TAG, "getAppInfoList: ${i.restoreList}")
-                    }
-                }
-
                 // 根据备份目录实际文件调整列表
                 var hasApp = false
                 var hasData = false
@@ -147,7 +140,6 @@ class Command {
                                 val date = info[2]
                                 val dateNext = infoNext[2]
                                 val fileName = info[3]
-                                Log.d(TAG, "info: ${info}")
                                 if (info.size == 4) {
                                     if (fileName.contains("apk.tar"))
                                         hasApp = true
@@ -250,12 +242,6 @@ class Command {
                         }
                     }
                 }
-                for (i in appInfoList) {
-                    if (i.restoreList.isNotEmpty()) {
-                        Log.d(TAG, "getAppInfoList1: ${i.restoreList}")
-                    }
-                }
-
                 // 根据本机应用调整列表
                 val packageManager = App.globalContext.packageManager
                 val userId = App.globalContext.readBackupUser()
@@ -318,11 +304,6 @@ class Command {
                         if (appInfoIndex == -1) appInfoList.add(appInfo)
                     } catch (e: Exception) {
                         e.printStackTrace()
-                    }
-                }
-                for (i in appInfoList) {
-                    if (i.restoreList.isNotEmpty()) {
-                        Log.d(TAG, "getAppInfoList2: ${i.restoreList}")
                     }
                 }
             }
@@ -400,7 +381,7 @@ class Command {
                                     if (fileName.contains("${name}.tar"))
                                         hasData = true
 
-                                    if (date != dateNext) {
+                                    if (date != dateNext || name != nameNext) {
                                         // 与下一路径不同日期
                                         // 尝试获取原列表数据
                                         if (restoreList.isEmpty()) {
@@ -417,12 +398,11 @@ class Command {
                                         val restore = if (restoreListIndex == -1) MediaInfoItem(
                                             data = false,
                                             size = "",
-                                            date = ""
+                                            date = date
                                         ) else restoreList[restoreListIndex]
 
                                         restore.apply {
                                             this.data = this.data && hasData
-                                            this.date = date
                                         }
 
                                         if (restoreListIndex == -1) restoreList.add(restore)
@@ -441,7 +421,7 @@ class Command {
                                                 backup = MediaInfoItem(
                                                     data = false,
                                                     size = "",
-                                                    date = date
+                                                    date = ""
                                                 ),
                                                 _restoreIndex = -1,
                                                 restoreList = mutableListOf(),

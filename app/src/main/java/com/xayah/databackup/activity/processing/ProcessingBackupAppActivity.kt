@@ -2,7 +2,6 @@ package com.xayah.databackup.activity.processing
 
 import android.graphics.Bitmap
 import android.util.Base64
-import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
@@ -99,6 +98,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                         App.globalContext.readBackupSavePath(),
                         App.globalContext.readBackupUser()
                     )
+
                 for ((index, i) in appInfoBackupList.withIndex()) {
                     val date =
                         if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
@@ -257,7 +257,6 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                             // RestoreList中已存在该Item
                             i.restoreList[itemIndex] = item
                         }
-                        Log.d("TAG", "onFabClick: ${i.restoreList}")
                         viewModel.successList.value.add(processingTaskList.value[index])
                     } else {
                         viewModel.failedList.value.add(processingTaskList.value[index])

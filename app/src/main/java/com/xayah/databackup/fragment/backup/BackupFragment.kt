@@ -1,6 +1,7 @@
 package com.xayah.databackup.fragment.backup
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,13 +9,18 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.data.MediaInfoItem
+import com.xayah.databackup.databinding.BottomSheetMediaDetailBinding
 import com.xayah.databackup.databinding.FragmentBackupBinding
+import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.view.InputChip
+import com.xayah.databackup.view.setWithTopBar
+import com.xayah.databackup.view.title
 import com.xayah.databackup.view.util.setWithConfirm
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.launch
@@ -109,11 +115,45 @@ class BackupFragment : Fragment() {
         val chip = InputChip(layoutInflater, binding.chipGroup).apply {
             text = mediaInfo.name
             isChecked = mediaInfo.backup.data
+            isCloseIconVisible = false
             setOnCheckedChangeListener { _, isChecked ->
                 viewModel.viewModelScope.launch {
                     mediaInfo.backup.data = isChecked
                     App.saveMediaInfoList()
                 }
+            }
+            setOnLongClickListener {
+                BottomSheetDialog(requireContext()).apply {
+                    setWithTopBar().apply {
+                        addView(title(mediaInfo.name))
+                        addView(
+                            BottomSheetMediaDetailBinding.inflate(
+                                LayoutInflater.from(requireContext()),
+                                null,
+                                false
+                            ).apply {
+                                textInputEditText.apply {
+                                    inputType = InputType.TYPE_NULL
+                                    setText(mediaInfo.path)
+                                }
+                                if (mediaInfo.restoreList.isNotEmpty()) {
+                                    chipDate.apply {
+                                        visibility = View.VISIBLE
+                                        text =
+                                            Command.getDate(mediaInfo.restoreList[mediaInfo.restoreIndex].date)
+                                    }
+                                }
+                                materialButtonConfirm.setOnClickListener {
+                                    viewModel.viewModelScope.launch {
+                                        dismiss()
+                                    }
+                                }
+                                materialButtonRemove.visibility = View.GONE
+                            }.root
+                        )
+                    }
+                }
+                false
             }
             setOnCloseIconClickListener {
                 MaterialAlertDialogBuilder(requireContext()).apply {

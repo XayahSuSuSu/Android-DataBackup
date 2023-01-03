@@ -151,7 +151,7 @@ class RestoreViewModel : ViewModel() {
                     setLoading()
                     val that = this
                     viewModelScope.launch {
-                        Command.rm("${Path.getBackupDataSavePath()} ${Path.getAppInfoRestoreListPath()}")
+                        Command.rm(Path.getBackupDataSavePath())
                             .apply {
                                 if (this) {
                                     App.loadList()

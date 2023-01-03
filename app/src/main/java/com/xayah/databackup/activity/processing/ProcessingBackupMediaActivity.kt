@@ -5,6 +5,7 @@ import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
 import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.BackupStrategy
+import com.xayah.databackup.data.MediaInfoItem
 import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.Dispatchers
@@ -69,10 +70,10 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
             val startTime = App.getTimeStamp()
             // 记录开始备份目录大小
             val startSize = Command.countSize(App.globalContext.readBackupSavePath())
-
             if (!viewModel.isFinished.value!!) withContext(Dispatchers.IO) {
                 viewModel.isProcessing.set(true)
                 viewModel.totalTip.set(GlobalString.backupProcessing)
+
                 for ((index, i) in mediaInfoList.withIndex()) {
                     val date =
                         if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
@@ -110,8 +111,21 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                     }
                     i.backup.date = date
                     if (state) {
-                        i.restoreList.add(i.backup)
-                        i.restoreIndex++
+                        val item = MediaInfoItem(
+                            data = false,
+                            size = i.backup.size,
+                            date = i.backup.date
+                        )
+                        val itemIndex = i.restoreList.indexOfFirst { date == it.date }
+                        if (itemIndex == -1) {
+                            // RestoreList中不存在该Item
+                            i.restoreList.add(item)
+                            i.restoreIndex++
+                        } else {
+                            // RestoreList中已存在该Item
+                            i.restoreList[itemIndex] = item
+                        }
+
                         viewModel.successList.value.add(processingTaskList.value[index])
                     } else {
                         viewModel.failedList.value.add(processingTaskList.value[index])
