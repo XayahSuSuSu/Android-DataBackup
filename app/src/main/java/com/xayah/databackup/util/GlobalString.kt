@@ -127,5 +127,6 @@ class GlobalString {
         val filter = App.globalContext.getString(R.string.filter)
         val cover = App.globalContext.getString(R.string.cover)
         val byTime = App.globalContext.getString(R.string.by_time)
+        val removeSelectedBackupFiles = App.globalContext.getString(R.string.remove_selected_backup_files)
     }
 }

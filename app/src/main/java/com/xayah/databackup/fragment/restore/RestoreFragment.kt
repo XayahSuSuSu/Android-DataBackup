@@ -147,6 +147,11 @@ class RestoreFragment : Fragment() {
                                                                 mediaInfo.restoreIndex--
                                                                 dismiss()
                                                                 App.saveMediaInfoList()
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    GlobalString.success,
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
                                                             } else {
                                                                 Toast.makeText(
                                                                     requireContext(),
