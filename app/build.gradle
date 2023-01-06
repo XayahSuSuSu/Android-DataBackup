@@ -35,6 +35,13 @@ android {
         viewBinding true
         dataBinding true
     }
+
+    android.applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                outputFileName = "DataBackup-${variant.versionName}.apk"
+            }
+    }
 }
 
 dependencies {
