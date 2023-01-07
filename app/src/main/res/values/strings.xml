@@ -176,4 +176,11 @@
     <string name="by_time_desc">Each backup is considered a new full backup and is separated according to the backup time, so your data may exist in multiple copies</string>
     <string name="path">Path</string>
     <string name="remove_selected_backup_files">Remove selected backup files</string>
+    <string name="cloud">Cloud</string>
+    <string name="import_locally">Import locally</string>
+    <string name="install_online">Install online</string>
+    <string name="rclone" translatable="false">Rclone</string>
+    <string name="fusermount" translatable="false">Fusermount</string>
+    <string name="prepare_for_downloading">Prepare for downloading</string>
+    <string name="dev_fuse" translatable="false">/dev/fuse</string>
 </resources>

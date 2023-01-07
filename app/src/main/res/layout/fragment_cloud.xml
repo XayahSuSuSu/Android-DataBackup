@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.xayah.databackup.fragment.cloud.CloudViewModel" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingHorizontal="30dp"
+                android:paddingBottom="30dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Material3.CardView.Filled"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardCornerRadius="24dp"
+                    app:contentPadding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="226dp"
+                            android:layout_height="52dp"
+                            android:layout_gravity="center"
+                            app:srcCompat="@drawable/logo_rclone_light" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:visibility="@{viewModel.isInstalling ? View.VISIBLE : View.GONE}">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/circularProgressIndicator"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:indeterminate="@{viewModel.isIndeterminate}"
+                                android:progress="@{viewModel.installProgress}" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/materialTextView_state"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="@{viewModel.installState}"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:orientation="vertical"
+                            android:visibility="@{viewModel.isReady ? View.VISIBLE : View.GONE}">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/rclone"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.rcloneVersion}"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/fusermount"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.fusermountVersion}"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/dev_fuse"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.fuseState}"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:orientation="horizontal"
+                            android:visibility="@{viewModel.isInstalling || viewModel.isReady ? View.GONE : View.VISIBLE}">
+
+                            <com.google.android.material.button.MaterialButton
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="8dp"
+                                android:layout_weight="1"
+                                android:onClick="@{(v)->viewModel.onImportLocallyBtnClick(v)}"
+                                android:text="@string/import_locally" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="8dp"
+                                android:layout_weight="1"
+                                android:onClick="@{(v)->viewModel.onInstallOnlineBtnClick(v)}"
+                                android:text="@string/install_online" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

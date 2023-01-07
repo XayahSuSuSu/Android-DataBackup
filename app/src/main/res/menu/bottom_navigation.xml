@@ -3,13 +3,18 @@
     <item
         android:id="@+id/backupFragment"
         android:enabled="true"
-        android:icon="@drawable/ic_outline_backup"
+        android:icon="@drawable/ic_round_acute"
         android:title="@string/backup" />
     <item
         android:id="@+id/homeFragment"
         android:enabled="true"
         android:icon="@drawable/ic_outline_home"
         android:title="@string/home" />
+    <item
+        android:id="@+id/cloudFragment"
+        android:enabled="true"
+        android:icon="@drawable/ic_round_cloud"
+        android:title="@string/cloud" />
     <item
         android:id="@+id/restoreFragment"
         android:enabled="true"

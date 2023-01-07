@@ -8,6 +8,10 @@
         android:name="com.xayah.databackup.fragment.home.HomeFragment"
         android:label="@string/app_name" />
     <fragment
+        android:id="@+id/cloudFragment"
+        android:name="com.xayah.databackup.fragment.cloud.CloudFragment"
+        android:label="@string/cloud" />
+    <fragment
         android:id="@+id/backupFragment"
         android:name="com.xayah.databackup.fragment.backup.BackupFragment"
         android:label="@string/backup" />

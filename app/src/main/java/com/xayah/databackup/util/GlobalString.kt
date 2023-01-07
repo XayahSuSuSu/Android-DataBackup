@@ -128,5 +128,7 @@ class GlobalString {
         val cover = App.globalContext.getString(R.string.cover)
         val byTime = App.globalContext.getString(R.string.by_time)
         val removeSelectedBackupFiles = App.globalContext.getString(R.string.remove_selected_backup_files)
+        val prepareForDownloading = App.globalContext.getString(R.string.prepare_for_downloading)
+        val devFuse = App.globalContext.getString(R.string.dev_fuse)
     }
 }

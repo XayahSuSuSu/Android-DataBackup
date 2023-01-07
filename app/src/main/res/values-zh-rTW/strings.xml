@@ -157,4 +157,8 @@
     <string name="by_time_desc">每次備份均視為新的完整的備份, 並根據備份時間進行分隔, 因此, 您的數據可能會存在多份</string>
     <string name="path">路徑</string>
     <string name="remove_selected_backup_files">移除當前選擇的備份文件</string>
+    <string name="cloud">雲端</string>
+    <string name="import_locally">本地導入</string>
+    <string name="install_online">在線安裝</string>
+    <string name="prepare_for_downloading">準備下載</string>
 </resources>
