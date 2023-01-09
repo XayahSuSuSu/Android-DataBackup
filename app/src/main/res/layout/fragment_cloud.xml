@@ -44,7 +44,7 @@
                             android:layout_width="226dp"
                             android:layout_height="52dp"
                             android:layout_gravity="center"
-                            app:srcCompat="@drawable/logo_rclone_light" />
+                            app:srcCompat="@drawable/logo_rclone" />
 
                         <LinearLayout
                             android:layout_width="match_parent"

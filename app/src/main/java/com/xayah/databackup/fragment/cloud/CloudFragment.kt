@@ -49,7 +49,7 @@ class CloudFragment : Fragment() {
         // 观察isRefreshed Flow
         viewModel.runOnScope {
             viewModel.isRefreshed.collect {
-                if (it.not()) {
+                if (it.not() && _binding != null) {
                     viewModel.initialize()
                     setChipGroup(binding.chipGroup)
                     viewModel.refresh(true)
