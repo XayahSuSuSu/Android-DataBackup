@@ -161,4 +161,14 @@
     <string name="import_locally">Import locally</string>
     <string name="install_online">Install online</string>
     <string name="prepare_for_downloading">Prepare for downloading</string>
+    <string name="configuration">Configuration</string>
+    <string name="server_address">Server address</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="remove">Remove</string>
+    <string name="name">Name</string>
+    <string name="server_address_empty_error">The server address is empty</string>
+    <string name="name_empty_error">The name is empty</string>
+    <string name="rclone_config_title">Add, manage or remove Rclone configurations here</string>
+    <string name="import_">Import</string>
 </resources>

@@ -142,3 +142,12 @@ data class BackupInfo(
     @Expose var type: String,
     @Expose var backupUser: String
 )
+
+data class RcloneConfig(
+    var name: String = "",
+    var type: String = "",
+    var url: String = "",
+    var vendor: String = "",
+    var user: String = "",
+    var pass: String = "",
+)

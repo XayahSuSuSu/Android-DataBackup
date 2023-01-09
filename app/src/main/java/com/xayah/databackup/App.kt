@@ -87,6 +87,7 @@ class App : Application() {
                 .add(bashrc)
                 .add("export PATH=${Path.getFilesDir()}/bin:\$PATH")
                 .add("export PATH=${Path.getFilesDir()}/extend:\$PATH")
+                .add("export HOME=${Path.getFilesDir()}")
                 .exec()
             return true
         }

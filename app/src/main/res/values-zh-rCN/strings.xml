@@ -111,7 +111,7 @@
     <string name="confirm_remove_all_app_and_data_that_backed_up">确定要移除所有已备份的应用和数据吗</string>
     <string name="please_wait">请稍等</string>
     <string name="log">日志</string>
-    <string name="settings">配置</string>
+    <string name="settings">设置</string>
     <string name="log_title">帮助开发者定位问题</string>
     <string name="clear">清除</string>
     <string name="stored_in">存放于</string>
@@ -161,4 +161,14 @@
     <string name="import_locally">本地导入</string>
     <string name="install_online">在线安装</string>
     <string name="prepare_for_downloading">准备下载</string>
+    <string name="configuration">配置</string>
+    <string name="server_address">服务器地址</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="remove">移除</string>
+    <string name="name">名称</string>
+    <string name="server_address_empty_error">服务器地址为空</string>
+    <string name="name_empty_error">名称为空</string>
+    <string name="rclone_config_title">在此处添加、管理或移除Rclone配置</string>
+    <string name="import_">导入</string>
 </resources>

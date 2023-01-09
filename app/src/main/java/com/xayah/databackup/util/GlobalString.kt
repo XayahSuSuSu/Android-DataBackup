@@ -25,8 +25,6 @@ class GlobalString {
         val decompress = App.globalContext.getString(R.string.decompress)
         val test = App.globalContext.getString(R.string.test)
         val defaultBackupSavePath = App.globalContext.getString(R.string.default_backup_save_path)
-        val defaultCustomDirectoryPath =
-            App.globalContext.getString(R.string.default_custom_directory_path)
         val pleaseTypeKeyWord = App.globalContext.getString(R.string.please_type_key_word)
         val pleaseExitSearchMode = App.globalContext.getString(R.string.please_exit_search_mode)
         val selected = App.globalContext.getString(R.string.selected)
@@ -130,5 +128,8 @@ class GlobalString {
         val removeSelectedBackupFiles = App.globalContext.getString(R.string.remove_selected_backup_files)
         val prepareForDownloading = App.globalContext.getString(R.string.prepare_for_downloading)
         val devFuse = App.globalContext.getString(R.string.dev_fuse)
+        val configuration = App.globalContext.getString(R.string.configuration)
+        val serverAddressEmptyError = App.globalContext.getString(R.string.server_address_empty_error)
+        val nameEmptyError = App.globalContext.getString(R.string.name_empty_error)
     }
 }

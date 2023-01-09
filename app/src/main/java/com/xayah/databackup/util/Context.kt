@@ -70,29 +70,12 @@ fun Context.readCompressionType(): String {
     return readPreferencesString("compression_type") ?: "zstd"
 }
 
-fun Context.saveIsCustomDirectoryPath(value: Boolean) {
-    savePreferences("is_custom_directory_path", value)
-}
-
-fun Context.readIsCustomDirectoryPath(): Boolean {
-    return readPreferencesBoolean("is_custom_directory_path")
-}
-
 fun Context.saveIsDynamicColors(value: Boolean) {
     savePreferences("is_dynamic_colors", value)
 }
 
 fun Context.readIsDynamicColors(): Boolean {
     return readPreferencesBoolean("is_dynamic_colors")
-}
-
-fun Context.saveCustomDirectoryPath(path: CharSequence?) {
-    savePreferences("custom_directory_path", path.toString().trim())
-}
-
-fun Context.readCustomDirectoryPath(): String {
-    return readPreferencesString("custom_directory_path")
-        ?: GlobalString.defaultCustomDirectoryPath
 }
 
 fun Context.saveIsBackupItself(value: Boolean) {
@@ -111,28 +94,20 @@ fun Context.readIsBackupIcon(): Boolean {
     return readPreferencesBoolean("is_backup_icon", true)
 }
 
-fun Context.saveBackupUser(type: CharSequence?) {
-    savePreferences("backup_user", type.toString().trim())
+fun Context.saveBackupUser(user: CharSequence?) {
+    savePreferences("backup_user", user.toString().trim())
 }
 
 fun Context.readBackupUser(): String {
     return readPreferencesString("backup_user") ?: "0"
 }
 
-fun Context.saveRestoreUser(type: CharSequence?) {
-    savePreferences("restore_user", type.toString().trim())
+fun Context.saveRestoreUser(user: CharSequence?) {
+    savePreferences("restore_user", user.toString().trim())
 }
 
 fun Context.readRestoreUser(): String {
     return readPreferencesString("restore_user") ?: "0"
-}
-
-fun Context.saveFileExplorerPath(path: CharSequence?) {
-    savePreferences("file_explorer_path", path.toString().trim())
-}
-
-fun Context.readFileExplorerPath(): String {
-    return readPreferencesString("file_explorer_path") ?: GlobalString.defaultBackupSavePath
 }
 
 fun Context.saveInitializedVersionName(value: CharSequence?) {
@@ -165,6 +140,14 @@ fun Context.saveAutoFixMultiUserContext(value: Boolean) {
 
 fun Context.readAutoFixMultiUserContext(): Boolean {
     return readPreferencesBoolean("auto_fix_multi_user_context", false)
+}
+
+fun Context.saveRcloneConfigName(name: CharSequence?) {
+    savePreferences("rclone_config_name", name.toString().trim())
+}
+
+fun Context.readRcloneConfigName(): String {
+    return readPreferencesString("rclone_config_name") ?: ""
 }
 
 fun Context.getActivity(): Activity? {

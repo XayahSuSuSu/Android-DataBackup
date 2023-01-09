@@ -37,7 +37,6 @@
     <string name="get_app_version_failed">Get app version failed</string>
     <string name="please_type_key_word">Please type key word</string>
     <string name="please_exit_search_mode">Please exit search mode</string>
-    <string name="default_custom_directory_path" translatable="false">/storage/emulated/0/Pictures\n/storage/emulated/0/Download\n/storage/emulated/0/Music\n/storage/emulated/0/DCIM</string>
     <string name="custom_dir">Custom directory</string>
     <string name="environment_detection">Environment detection</string>
     <string name="environment_detection_tip">To run correctly, the following detections need to pass:</string>
@@ -183,4 +182,14 @@
     <string name="fusermount" translatable="false">Fusermount</string>
     <string name="prepare_for_downloading">Prepare for downloading</string>
     <string name="dev_fuse" translatable="false">/dev/fuse</string>
+    <string name="configuration">Configuration</string>
+    <string name="server_address">Server address</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="remove">Remove</string>
+    <string name="name">Name</string>
+    <string name="server_address_empty_error">The server address is empty</string>
+    <string name="name_empty_error">The name is empty</string>
+    <string name="rclone_config_title">Add, manage or remove Rclone configurations here</string>
+    <string name="import_">Import</string>
 </resources>
