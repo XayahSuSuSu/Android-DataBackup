@@ -68,12 +68,13 @@ class ExtendCommand {
          * 检查Fusermount版本
          */
         suspend fun rcloneConfigCreate(
+            type: String,
             name: String,
             url: String,
             user: String,
             pass: String
         ): Boolean {
-            Command.execute("rclone config create \"${name}\" webdav url=\"${url}\" vendor=other user=\"${user}\" pass=\"${pass}\"")
+            Command.execute("rclone config create \"${name}\" $type url=\"${url}\" vendor=other user=\"${user}\" pass=\"${pass}\"")
                 .apply {
                     notifyForCommand(this.isSuccess)
                     return this.isSuccess

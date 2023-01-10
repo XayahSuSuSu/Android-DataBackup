@@ -195,4 +195,11 @@
     <string name="usage">Usage</string>
     <string name="mount">Mount</string>
     <string name="mount_directory_not_selected">Mount directory not selected</string>
+    <string name="type">Type</string>
+    <string-array name="rclone_config_type_array_key" translatable="false">
+        <item>WebDAV</item>
+    </string-array>
+    <string-array name="rclone_config_type_array_value" translatable="false">
+        <item>webdav</item>
+    </string-array>
 </resources>

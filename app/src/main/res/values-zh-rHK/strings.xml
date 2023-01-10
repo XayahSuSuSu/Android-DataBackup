@@ -174,4 +174,5 @@
     <string name="usage">使用</string>
     <string name="mount">掛載</string>
     <string name="mount_directory_not_selected">掛載目錄未選擇</string>
+    <string name="type">類型</string>
 </resources>

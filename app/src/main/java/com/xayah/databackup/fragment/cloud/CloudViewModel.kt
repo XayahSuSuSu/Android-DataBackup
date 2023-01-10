@@ -213,6 +213,12 @@ class CloudViewModel : ViewModel() {
             null,
             false
         ).apply {
+            val typeKeyList =
+                App.globalContext.resources.getStringArray(R.array.rclone_config_type_array_key)
+            val typeValueList =
+                App.globalContext.resources.getStringArray(R.array.rclone_config_type_array_value)
+            autoCompleteTextViewType.setText(typeKeyList[0])
+
             // 监听名称输入
             textInputEditTextName.addTextChangedListener {
                 emptyTextValidation(
@@ -233,6 +239,9 @@ class CloudViewModel : ViewModel() {
 
             // 确定按钮点击事件
             materialButtonConfirm.setOnClickListener {
+                val type = typeValueList[typeKeyList.indexOf(
+                    autoCompleteTextViewType.text.toString().trim()
+                )]
                 val name = textInputEditTextName.text.toString().trim()
                 val url = textInputEditTextServerAddress.text.toString().trim()
                 val user = textInputEditTextUsername.text.toString().trim()
@@ -256,7 +265,7 @@ class CloudViewModel : ViewModel() {
                 if (isValid)
                     runOnScope {
                         // 创建/修改配置
-                        ExtendCommand.rcloneConfigCreate(name, url, user, pass)
+                        ExtendCommand.rcloneConfigCreate(type, name, url, user, pass)
                         // 刷新
                         refresh(false)
                         onConfirm()
