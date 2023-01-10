@@ -151,3 +151,10 @@ data class RcloneConfig(
     var user: String = "",
     var pass: String = "",
 )
+
+data class RcloneMount(
+    @Expose var name: String = "",
+    @Expose var src: String = "",
+    @Expose var dest: String = "",
+    @Expose var mounted: Boolean = false,
+)

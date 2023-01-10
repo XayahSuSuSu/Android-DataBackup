@@ -75,5 +75,9 @@ class Path {
         fun getShellLogPath(): String {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/log"
         }
+
+        fun getRcloneMountListPath(): String {
+            return "${getFilesDir()}/.config/rclone/mountList"
+        }
     }
 }

@@ -171,4 +171,6 @@
     <string name="name_empty_error">名称为空</string>
     <string name="rclone_config_title">在此处添加、管理或移除Rclone配置</string>
     <string name="import_">导入</string>
+    <string name="usage">使用</string>
+    <string name="mount">挂载</string>
 </resources>

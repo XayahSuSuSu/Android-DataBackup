@@ -4,9 +4,11 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import com.xayah.databackup.data.AppInfo
 import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.MediaInfo
+import com.xayah.databackup.data.RcloneMount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -15,6 +17,18 @@ class JSON {
     companion object {
         fun stringToJsonArray(string: String): JsonArray {
             return JsonParser.parseString(string).asJsonArray
+        }
+
+        fun fromMountHashMapJson(string: String): HashMap<String, RcloneMount> {
+            val mapType = object : TypeToken<HashMap<String, RcloneMount>>() {}
+            return GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
+                .fromJson(string, mapType.type)
+        }
+
+        suspend fun saveMountHashMapJson(hashMap: HashMap<String, RcloneMount>) {
+            withContext(Dispatchers.IO) {
+                writeJSONToFile(hashMap, Path.getRcloneMountListPath())
+            }
         }
 
         fun entityArrayToJsonArray(entityArray: MutableList<Any>): JsonArray {
@@ -44,7 +58,7 @@ class JSON {
             )
         }
 
-        suspend fun writeJSONToFile(src: Any, outPut: String): Boolean {
+        private suspend fun writeJSONToFile(src: Any, outPut: String): Boolean {
             try {
                 val json = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(src)
                 Bashrc.writeToFile(json, outPut).apply {

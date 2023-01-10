@@ -31,7 +31,7 @@ class Command {
         /**
          * `cat`命令, 用于文件读取
          */
-        private suspend fun cat(path: String): Pair<Boolean, String> {
+        suspend fun cat(path: String): Pair<Boolean, String> {
             val exec = execute("cat $path", false)
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }

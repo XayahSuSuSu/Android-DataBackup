@@ -1,11 +1,21 @@
 package com.xayah.databackup.util
 
 import com.xayah.databackup.data.RcloneConfig
+import com.xayah.databackup.data.RcloneMount
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class ExtendCommand {
     companion object {
         private const val TAG = "ExtendCommand"
+
+        /**
+         * 切换至IO协程运行
+         */
+        private suspend fun <T> runOnIO(block: suspend () -> T): T {
+            return withContext(Dispatchers.IO) { block() }
+        }
 
         /**
          * 检查扩展文件
@@ -95,6 +105,57 @@ class ExtendCommand {
         suspend fun rcloneConfigDelete(name: String): Boolean {
             Command.execute("rclone config delete \"${name}\"").apply {
                 return this.isSuccess
+            }
+        }
+
+        /**
+         * 构建挂载列表
+         */
+        suspend fun getRcloneMountMap(): HashMap<String, RcloneMount> {
+            var rcloneMountMap = hashMapOf<String, RcloneMount>()
+            runOnIO {
+                // 读取应用列表配置文件
+                Command.cat(Path.getRcloneMountListPath()).apply {
+                    if (this.first) {
+                        rcloneMountMap = JSON.fromMountHashMapJson(this.second)
+                    }
+                }
+            }
+            return rcloneMountMap
+        }
+
+        /**
+         * Rclone挂载
+         */
+        suspend fun rcloneMount(name: String, dest: String): Boolean {
+            Command.execute("rclone mount \"${name}:\" \"${dest}\" --allow-non-empty --allow-other --allow-root --daemon --vfs-cache-mode off")
+                .apply {
+                    return this.isSuccess
+                }
+        }
+
+        /**
+         * Rclone挂载检验
+         */
+        suspend fun rcloneMountCheck(dest: String): Boolean {
+            Command.execute("df -h").apply {
+                return this.out.joinToLineString.contains(dest)
+            }
+        }
+
+        /**
+         * Rclone取消挂载
+         */
+        suspend fun rcloneUnmount(dest: String): Boolean {
+            Command.execute("fusermount -u $dest").apply {
+                var isSuccess = this.isSuccess
+                if (isSuccess.not()) {
+                    // 取消挂载失败, 尝试杀死进程
+                    Command.execute("pgrep 'rclone' | xargs kill -9").apply {
+                        isSuccess = this.isSuccess
+                    }
+                }
+                return isSuccess
             }
         }
     }

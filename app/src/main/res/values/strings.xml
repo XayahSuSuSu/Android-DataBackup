@@ -192,4 +192,6 @@
     <string name="name_empty_error">The name is empty</string>
     <string name="rclone_config_title">Add, manage or remove Rclone configurations here</string>
     <string name="import_">Import</string>
+    <string name="usage">Usage</string>
+    <string name="mount">Mount</string>
 </resources>

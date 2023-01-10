@@ -168,81 +168,190 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/configuration"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
-
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.Material3.CardView.Outlined"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:cardCornerRadius="24dp"
-                    app:contentPadding="16dp">
+                    android:orientation="vertical"
+                    android:visibility="@{viewModel.isReady ? View.VISIBLE : View.GONE}">
 
-                    <LinearLayout
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/configuration"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Outlined"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingHorizontal="8dp">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:text="@string/rclone_config_title"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                        <HorizontalScrollView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:scrollbars="none">
-
-                            <com.google.android.material.chip.ChipGroup
-                                android:id="@+id/chipGroup"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:animateLayoutChanges="true"
-                                app:singleLine="true"
-                                app:singleSelection="true">
-
-                            </com.google.android.material.chip.ChipGroup>
-                        </HorizontalScrollView>
-
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="24dp"
+                        app:contentPadding="16dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:orientation="horizontal">
+                            android:orientation="vertical"
+                            android:paddingHorizontal="8dp">
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/materialButton_add_media"
-                                style="@style/Widget.Material3.Button.TextButton"
+                            <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="8dp"
-                                android:layout_weight="1"
-                                android:enabled="false"
-                                android:text="@string/import_" />
+                                android:layout_marginBottom="8dp"
+                                android:text="@string/rclone_config_title"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:layout_width="wrap_content"
+                            <HorizontalScrollView
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="8dp"
-                                android:layout_weight="1"
-                                android:onClick="@{(v)->viewModel.onConfigAddBtnClick(v)}"
-                                android:text="@string/add" />
+                                android:scrollbars="none">
+
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/chipGroup"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:animateLayoutChanges="true"
+                                    app:singleLine="true"
+                                    app:singleSelection="true">
+
+                                </com.google.android.material.chip.ChipGroup>
+                            </HorizontalScrollView>
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/materialButton_add_media"
+                                    style="@style/Widget.Material3.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="8dp"
+                                    android:layout_weight="1"
+                                    android:enabled="false"
+                                    android:text="@string/import_" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="8dp"
+                                    android:layout_weight="1"
+                                    android:onClick="@{(v)->viewModel.onConfigAddBtnClick(v)}"
+                                    android:text="@string/add" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
-                    </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/usage"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="24dp"
+                        app:contentPadding="16dp"
+                        app:contentPaddingTop="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/mount"
+                                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    style="?attr/materialIconButtonOutlinedStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="end"
+                                    android:onClick="@{(v)->viewModel.onMountBtnClick(v)}"
+                                    app:icon="@{viewModel.mountIcon}"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:baselineAligned="false"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    style="?attr/materialIconButtonFilledTonalStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:onClick="@{(v)->viewModel.onMountChangeBtnClick(v)}"
+                                    app:backgroundTint="@color/yellowContainer"
+                                    app:icon="@drawable/ic_round_badge"
+                                    app:iconTint="@color/yellow" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.mountName}"
+                                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:baselineAligned="false"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    style="?attr/materialIconButtonFilledTonalStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:onClick="@{(v)->viewModel.onMountDestChangeBtnClick(v)}"
+                                    app:backgroundTint="@color/blueContainer"
+                                    app:icon="@drawable/ic_round_folder_open"
+                                    app:iconTint="@color/blue" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{viewModel.mountDest}"
+                                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
