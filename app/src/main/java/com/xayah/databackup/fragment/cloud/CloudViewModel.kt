@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.ObservableField
@@ -364,6 +365,15 @@ class CloudViewModel : ViewModel() {
      */
     fun onMountBtnClick(v: View) {
         val name = mountName.get()
+        val dest = mountDest.get()
+        if (dest == GlobalString.notSelected) {
+            Toast.makeText(
+                App.globalContext,
+                GlobalString.mountDirectoryNotSelected,
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
         rcloneMountMap.value[name]?.apply {
             runOnScope {
                 // 检查实际挂载状态

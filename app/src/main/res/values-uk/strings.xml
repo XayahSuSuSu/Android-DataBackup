@@ -173,4 +173,5 @@
     <string name="import_">Import</string>
     <string name="usage">Usage</string>
     <string name="mount">Mount</string>
+    <string name="mount_directory_not_selected">Mount directory not selected</string>
 </resources>
