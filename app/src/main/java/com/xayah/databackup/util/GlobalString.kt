@@ -133,5 +133,7 @@ class GlobalString {
         val nameEmptyError = App.globalContext.getString(R.string.name_empty_error)
         val notSelected = App.globalContext.getString(R.string.not_selected)
         val mountDirectoryNotSelected = App.globalContext.getString(R.string.mount_directory_not_selected)
+        val mounted = App.globalContext.getString(R.string.mounted)
+        val notMounted = App.globalContext.getString(R.string.not_mounted)
     }
 }

@@ -175,4 +175,6 @@
     <string name="mount">挂载</string>
     <string name="mount_directory_not_selected">挂载目录未选择</string>
     <string name="type">类型</string>
+    <string name="mounted">已挂载</string>
+    <string name="not_mounted">未挂载</string>
 </resources>

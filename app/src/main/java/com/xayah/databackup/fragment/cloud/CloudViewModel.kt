@@ -58,6 +58,7 @@ class CloudViewModel : ViewModel() {
     var fuseState: ObservableField<String> = ObservableField(GlobalString.symbolQuestion)
 
     // 挂载信息
+    var mountState: ObservableField<String> = ObservableField(GlobalString.notMounted)
     var mountName: ObservableField<String> = ObservableField(GlobalString.notSelected)
     var mountDest: ObservableField<String> = ObservableField(GlobalString.notSelected)
     var mountIcon: ObservableField<Drawable> =
@@ -347,8 +348,10 @@ class CloudViewModel : ViewModel() {
                     this.mounted = ExtendCommand.rcloneMountCheck(this.dest)
 
                     if (this.mounted) {
+                        mountState.set(GlobalString.mounted)
                         mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
                     } else {
+                        mountState.set(GlobalString.notMounted)
                         mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
                     }
 
@@ -396,11 +399,13 @@ class CloudViewModel : ViewModel() {
                         if (ExtendCommand.rcloneUnmount(this.dest)) {
                             // 取消挂载成功
                             this.mounted = this.mounted.not()
+                            mountState.set(GlobalString.notMounted)
                             mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
                         }
                     } else {
                         // 实际未挂载
                         this.mounted = this.mounted.not()
+                        mountState.set(GlobalString.notMounted)
                         mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
                     }
                 } else {
@@ -411,11 +416,13 @@ class CloudViewModel : ViewModel() {
                         if (ExtendCommand.rcloneMount(this.name, this.dest)) {
                             // 挂载成功
                             this.mounted = this.mounted.not()
+                            mountState.set(GlobalString.mounted)
                             mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
                         }
                     } else {
                         // 实际已挂载
                         this.mounted = this.mounted.not()
+                        mountState.set(GlobalString.mounted)
                         mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
                     }
                 }
