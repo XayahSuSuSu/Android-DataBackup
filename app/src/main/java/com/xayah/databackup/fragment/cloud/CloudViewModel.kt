@@ -162,6 +162,7 @@ class CloudViewModel : ViewModel() {
             toExplorer(v.context) { path, _ ->
                 runOnScope {
                     Command.cp(path, savePath)
+                    Command.execute("chmod 777 -R ${savePath}")
                     installExtendModule(savePath)
                 }
             }
