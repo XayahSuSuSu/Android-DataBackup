@@ -1,5 +1,7 @@
 package com.xayah.databackup.util
 
+import android.widget.Toast
+import com.xayah.databackup.App
 import com.xayah.databackup.data.RcloneConfig
 import com.xayah.databackup.data.RcloneMount
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +54,17 @@ class ExtendCommand {
         }
 
         /**
+         * 根据命令执行成功与否弹出相应Toast
+         */
+        fun notifyForCommand(isSuccess: Boolean) {
+            if (isSuccess) {
+                Toast.makeText(App.globalContext, GlobalString.success, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(App.globalContext, GlobalString.failed, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        /**
          * 检查Fusermount版本
          */
         suspend fun rcloneConfigCreate(
@@ -62,6 +75,7 @@ class ExtendCommand {
         ): Boolean {
             Command.execute("rclone config create \"${name}\" webdav url=\"${url}\" vendor=other user=\"${user}\" pass=\"${pass}\"")
                 .apply {
+                    notifyForCommand(this.isSuccess)
                     return this.isSuccess
                 }
         }
@@ -104,6 +118,7 @@ class ExtendCommand {
          */
         suspend fun rcloneConfigDelete(name: String): Boolean {
             Command.execute("rclone config delete \"${name}\"").apply {
+                notifyForCommand(this.isSuccess)
                 return this.isSuccess
             }
         }
@@ -130,6 +145,7 @@ class ExtendCommand {
         suspend fun rcloneMount(name: String, dest: String): Boolean {
             Command.execute("rclone mount \"${name}:\" \"${dest}\" --allow-non-empty --allow-other --allow-root --daemon --vfs-cache-mode off")
                 .apply {
+                    notifyForCommand(this.isSuccess)
                     return this.isSuccess
                 }
         }
@@ -155,6 +171,7 @@ class ExtendCommand {
                         isSuccess = this.isSuccess
                     }
                 }
+                notifyForCommand(this.isSuccess)
                 return isSuccess
             }
         }
