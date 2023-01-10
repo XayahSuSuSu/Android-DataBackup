@@ -72,8 +72,10 @@ class CloudFragment : Fragment() {
             viewModel.rcloneConfigList.emit(ExtendCommand.rcloneConfigParse())
             // 移除所有子Chip
             chipGroup.removeAllViews()
-            for (i in viewModel.rcloneConfigList.value) {
-                binding.chipGroup.addView(setChip(i))
+            if (_binding != null) {
+                for (i in viewModel.rcloneConfigList.value) {
+                    binding.chipGroup.addView(setChip(i))
+                }
             }
         }
     }
