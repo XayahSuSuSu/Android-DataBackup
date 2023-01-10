@@ -11,6 +11,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
+/**
+ * 过滤Release列表, 仅读取应用版本
+ */
+fun MutableList<Release>.appReleaseList(): MutableList<Release> {
+    return this.filter { !it.name.contains("Check") && !it.name.contains("Extend") }.toMutableList()
+}
 
 class Server {
     companion object {

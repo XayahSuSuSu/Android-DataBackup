@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.appReleaseList
 import kotlinx.coroutines.launch
 
 class GuideUpdateViewModel : ViewModel() {
@@ -19,7 +20,7 @@ class GuideUpdateViewModel : ViewModel() {
         viewModelScope.launch {
             subtitle.postValue("${GlobalString.currentVersion}: ${App.versionName}")
             App.server.releases({ releaseList ->
-                val mReleaseList = releaseList.filter { !it.name.contains("Check") }
+                val mReleaseList = releaseList.appReleaseList()
                 if (mReleaseList.isEmpty()) {
                     content.postValue(GlobalString.fetchFailed)
                 } else {
