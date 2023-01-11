@@ -70,11 +70,9 @@ class ExtendCommand {
         suspend fun rcloneConfigCreate(
             type: String,
             name: String,
-            url: String,
-            user: String,
-            pass: String
+            args: String,
         ): Boolean {
-            Command.execute("rclone config create \"${name}\" $type url=\"${url}\" vendor=other user=\"${user}\" pass=\"${pass}\"")
+            Command.execute("rclone config create \"${name}\" $type $args")
                 .apply {
                     notifyForCommand(this.isSuccess)
                     return this.isSuccess
@@ -105,10 +103,14 @@ class ExtendCommand {
                         val element = i.split(" = ")
                         when (element[0]) {
                             "type" -> rcloneConfig?.type = element[1]
-                            "url" -> rcloneConfig?.url = element[1]
-                            "vendor" -> rcloneConfig?.vendor = element[1]
                             "user" -> rcloneConfig?.user = element[1]
                             "pass" -> rcloneConfig?.pass = element[1]
+                            // WebDav
+                            "url" -> rcloneConfig?.url = element[1]
+                            "vendor" -> rcloneConfig?.vendor = element[1]
+                            // FTP
+                            "host" -> rcloneConfig?.host = element[1]
+                            "port" -> rcloneConfig?.port = element[1]
                         }
                     }
                 }

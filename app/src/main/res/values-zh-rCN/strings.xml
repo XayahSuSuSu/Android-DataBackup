@@ -177,4 +177,6 @@
     <string name="type">类型</string>
     <string name="mounted">已挂载</string>
     <string name="not_mounted">未挂载</string>
+    <string name="port">端口</string>
+    <string name="empty_error">此字段不可为空</string>
 </resources>

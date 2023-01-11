@@ -18,6 +18,8 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.RcloneConfig
 import com.xayah.databackup.data.RcloneMount
 import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailBinding
+import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailFtpBinding
+import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailWebdavBinding
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.setWithTopBar
@@ -226,7 +228,9 @@ class CloudViewModel : ViewModel() {
      */
     fun commonBottomSheetRcloneConfigDetailBinding(
         context: Context,
-        onConfirm: () -> Unit
+        onConfirm: () -> Unit,
+        rcloneConfig: RcloneConfig? = null,
+        onRemove: () -> Unit = {}
     ): BottomSheetRcloneConfigDetailBinding {
         return BottomSheetRcloneConfigDetailBinding.inflate(
             LayoutInflater.from(context),
@@ -237,60 +241,211 @@ class CloudViewModel : ViewModel() {
                 App.globalContext.resources.getStringArray(R.array.rclone_config_type_array_key)
             val typeValueList =
                 App.globalContext.resources.getStringArray(R.array.rclone_config_type_array_value)
-            autoCompleteTextViewType.setText(typeKeyList[0])
 
-            // 监听名称输入
-            textInputEditTextName.addTextChangedListener {
-                emptyTextValidation(
-                    textInputEditTextName,
-                    textInputLayoutName,
-                    GlobalString.nameEmptyError
-                )
+            autoCompleteTextViewType.setText(typeKeyList[0], false)
+            rcloneConfig?.apply {
+                val index = typeValueList.indexOf(type)
+                if (index != -1) {
+                    autoCompleteTextViewType.setText(typeKeyList[index], false)
+                    autoCompleteTextViewType.isEnabled = false
+                }
             }
 
-            // 监听服务器地址输入
-            textInputEditTextServerAddress.addTextChangedListener {
-                emptyTextValidation(
-                    textInputEditTextServerAddress,
-                    textInputLayoutServerAddress,
-                    GlobalString.serverAddressEmptyError
-                )
-            }
+            val judgeType = {
+                content.removeAllViews()
+                when (autoCompleteTextViewType.text.toString().trim()) {
+                    // WebDAV
+                    typeKeyList[0] -> {
+                        val binding = BottomSheetRcloneConfigDetailWebdavBinding.inflate(
+                            LayoutInflater.from(context),
+                            null,
+                            false
+                        ).apply {
+                            // 监听名称输入
+                            textInputEditTextName.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextName,
+                                    textInputLayoutName,
+                                    GlobalString.emptyError
+                                )
+                            }
 
-            // 确定按钮点击事件
-            materialButtonConfirm.setOnClickListener {
-                val type = typeValueList[typeKeyList.indexOf(
-                    autoCompleteTextViewType.text.toString().trim()
-                )]
-                val name = textInputEditTextName.text.toString().trim()
-                val url = textInputEditTextServerAddress.text.toString().trim()
-                val user = textInputEditTextUsername.text.toString().trim()
-                val pass = textInputEditTextPassword.text.toString()
+                            // 监听服务器地址输入
+                            textInputEditTextServerAddress.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextServerAddress,
+                                    textInputLayoutServerAddress,
+                                    GlobalString.emptyError
+                                )
+                            }
 
-                // 名称合法性验证
-                val nameValidation = emptyTextValidation(
-                    textInputEditTextName,
-                    textInputLayoutName,
-                    GlobalString.nameEmptyError
-                )
+                            if (rcloneConfig == null) {
+                                materialButtonRemove.isEnabled = false
+                            } else {
+                                // 读取配置
+                                textInputEditTextName.setText(rcloneConfig.name)
+                                textInputEditTextName.isEnabled = false
+                                textInputEditTextServerAddress.setText(rcloneConfig.url)
+                                textInputEditTextUsername.setText(rcloneConfig.user)
+                                textInputEditTextPassword.setText(rcloneConfig.pass)
 
-                // 服务器地址合法性验证
-                val serverAddressValidation = emptyTextValidation(
-                    textInputEditTextServerAddress,
-                    textInputLayoutServerAddress,
-                    GlobalString.serverAddressEmptyError
-                )
+                                // 移除按钮点击事件
+                                materialButtonRemove.setOnClickListener {
+                                    runOnScope {
+                                        ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                        onRemove()
+                                    }
+                                }
+                            }
+                        }
+                        // 确定按钮点击事件
+                        materialButtonConfirm.setOnClickListener {
+                            val type = typeValueList[typeKeyList.indexOf(
+                                autoCompleteTextViewType.text.toString().trim()
+                            )]
+                            val name = binding.textInputEditTextName.text.toString().trim()
+                            val url = binding.textInputEditTextServerAddress.text.toString().trim()
+                            val user = binding.textInputEditTextUsername.text.toString().trim()
+                            val pass = binding.textInputEditTextPassword.text.toString()
 
-                val isValid = nameValidation && serverAddressValidation
-                if (isValid)
-                    runOnScope {
-                        // 创建/修改配置
-                        ExtendCommand.rcloneConfigCreate(type, name, url, user, pass)
-                        // 刷新
-                        refresh(false)
-                        onConfirm()
+                            // 名称合法性验证
+                            val nameValidation = emptyTextValidation(
+                                binding.textInputEditTextName,
+                                binding.textInputLayoutName,
+                                GlobalString.emptyError
+                            )
+
+                            // 服务器地址合法性验证
+                            val serverAddressValidation = emptyTextValidation(
+                                binding.textInputEditTextServerAddress,
+                                binding.textInputLayoutServerAddress,
+                                GlobalString.emptyError
+                            )
+
+                            val isValid = nameValidation && serverAddressValidation
+                            if (isValid)
+                                runOnScope {
+                                    // 创建/修改配置
+                                    val args =
+                                        "url=\"${url}\" vendor=other user=\"${user}\" pass=\"${pass}\""
+                                    ExtendCommand.rcloneConfigCreate(type, name, args)
+                                    // 刷新
+                                    refresh(false)
+                                    onConfirm()
+                                }
+                        }
+                        content.addView(binding.root)
                     }
+                    // FTP
+                    typeKeyList[1] -> {
+                        val binding = BottomSheetRcloneConfigDetailFtpBinding.inflate(
+                            LayoutInflater.from(context),
+                            null,
+                            false
+                        ).apply {
+                            // 监听名称输入
+                            textInputEditTextName.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextName,
+                                    textInputLayoutName,
+                                    GlobalString.emptyError
+                                )
+                            }
+
+                            // 监听服务器地址输入
+                            textInputEditTextServerAddress.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextServerAddress,
+                                    textInputLayoutServerAddress,
+                                    GlobalString.emptyError
+                                )
+                            }
+
+                            // 监听端口输入
+                            textInputEditTextPort.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextPort,
+                                    textInputLayoutPort,
+                                    GlobalString.emptyError
+                                )
+                            }
+
+                            if (rcloneConfig == null) {
+                                materialButtonRemove.isEnabled = false
+                            } else {
+                                // 读取配置
+                                textInputEditTextName.setText(rcloneConfig.name)
+                                textInputEditTextName.isEnabled = false
+                                textInputEditTextServerAddress.setText(rcloneConfig.host)
+                                textInputEditTextPort.setText(rcloneConfig.port)
+                                textInputEditTextUsername.setText(rcloneConfig.user)
+                                textInputEditTextPassword.setText(rcloneConfig.pass)
+
+                                // 移除按钮点击事件
+                                materialButtonRemove.setOnClickListener {
+                                    runOnScope {
+                                        ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                        onRemove()
+                                    }
+                                }
+                            }
+                        }
+                        // 确定按钮点击事件
+                        materialButtonConfirm.setOnClickListener {
+                            val type = typeValueList[typeKeyList.indexOf(
+                                autoCompleteTextViewType.text.toString().trim()
+                            )]
+                            val name = binding.textInputEditTextName.text.toString().trim()
+                            val host = binding.textInputEditTextServerAddress.text.toString().trim()
+                            val port = binding.textInputEditTextPort.text.toString().trim()
+                            val user = binding.textInputEditTextUsername.text.toString().trim()
+                            val pass = binding.textInputEditTextPassword.text.toString()
+
+                            // 名称合法性验证
+                            val nameValidation = emptyTextValidation(
+                                binding.textInputEditTextName,
+                                binding.textInputLayoutName,
+                                GlobalString.emptyError
+                            )
+
+                            // 服务器地址合法性验证
+                            val serverAddressValidation = emptyTextValidation(
+                                binding.textInputEditTextServerAddress,
+                                binding.textInputLayoutServerAddress,
+                                GlobalString.emptyError
+                            )
+
+                            // 端口合法性验证
+                            val portValidation = emptyTextValidation(
+                                binding.textInputEditTextPort,
+                                binding.textInputLayoutPort,
+                                GlobalString.emptyError
+                            )
+
+                            val isValid =
+                                nameValidation && serverAddressValidation && portValidation
+                            if (isValid)
+                                runOnScope {
+                                    // 创建/修改配置
+                                    val args =
+                                        "host=\"${host}\" port=\"${port}\" user=\"${user}\" pass=\"${pass}\""
+                                    ExtendCommand.rcloneConfigCreate(type, name, args)
+                                    // 刷新
+                                    refresh(false)
+                                    onConfirm()
+                                }
+                        }
+                        content.addView(binding.root)
+                    }
+                }
             }
+
+            autoCompleteTextViewType.setOnItemClickListener { _, _, i, _ ->
+                autoCompleteTextViewType.setText(typeKeyList[i], false)
+                judgeType()
+            }
+
+            judgeType()
         }
     }
 
@@ -300,9 +455,7 @@ class CloudViewModel : ViewModel() {
     fun onConfigAddBtnClick(v: View) {
         BottomSheetDialog(v.context).apply {
             val binding =
-                commonBottomSheetRcloneConfigDetailBinding(v.context) { dismiss() }.apply {
-                    materialButtonRemove.isEnabled = false
-                }
+                commonBottomSheetRcloneConfigDetailBinding(v.context, { dismiss() }, null)
             setWithTopBar().apply {
                 addView(title(GlobalString.configuration))
                 addView(binding.root)
@@ -341,12 +494,16 @@ class CloudViewModel : ViewModel() {
      * 挂载目录改变按钮点击事件
      */
     fun onMountDestChangeBtnClick(v: View) {
-        val name = mountName.get()
+        val name = mountName.get()!!
         if (name != GlobalString.notSelected) {
             materialYouFileExplorer.apply {
                 isFile = false
                 toExplorer(v.context) { path, _ ->
                     mountDest.set(path)
+                    if (rcloneMountMap.value.containsKey(name).not()) {
+                        // 挂载哈希表中不存在该条目
+                        rcloneMountMap.value[name] = RcloneMount(name)
+                    }
                     rcloneMountMap.value[name]?.apply {
                         dest = path
                     }

@@ -146,10 +146,16 @@ data class BackupInfo(
 data class RcloneConfig(
     var name: String = "",
     var type: String = "",
-    var url: String = "",
-    var vendor: String = "",
     var user: String = "",
     var pass: String = "",
+
+    // WebDAV
+    var url: String = "",
+    var vendor: String = "",
+
+    // FPT
+    var host: String = "",
+    var port: String = "21",
 )
 
 data class RcloneMount(

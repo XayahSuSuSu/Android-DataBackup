@@ -130,6 +130,7 @@ class GlobalString {
         val devFuse = App.globalContext.getString(R.string.dev_fuse)
         val configuration = App.globalContext.getString(R.string.configuration)
         val serverAddressEmptyError = App.globalContext.getString(R.string.server_address_empty_error)
+        val emptyError = App.globalContext.getString(R.string.empty_error)
         val nameEmptyError = App.globalContext.getString(R.string.name_empty_error)
         val notSelected = App.globalContext.getString(R.string.not_selected)
         val mountDirectoryNotSelected = App.globalContext.getString(R.string.mount_directory_not_selected)

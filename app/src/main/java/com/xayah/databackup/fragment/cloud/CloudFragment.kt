@@ -98,24 +98,15 @@ class CloudFragment : Fragment() {
             setOnLongClickListener {
                 // 长按弹出配置BottomSheet
                 BottomSheetDialog(context).apply {
-                    val binding =
-                        viewModel.commonBottomSheetRcloneConfigDetailBinding(context) { dismiss() }
-                            .apply {
-                                // 读取配置
-                                textInputEditTextName.setText(rcloneConfig.name)
-                                textInputEditTextServerAddress.setText(rcloneConfig.url)
-                                textInputEditTextUsername.setText(rcloneConfig.user)
-                                textInputEditTextPassword.setText(rcloneConfig.pass)
-
-                                // 移除按钮点击事件
-                                materialButtonRemove.setOnClickListener {
-                                    viewModel.runOnScope {
-                                        ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
-                                        dismiss()
-                                        viewModel.refresh(false)
-                                    }
-                                }
-                            }
+                    val binding = viewModel.commonBottomSheetRcloneConfigDetailBinding(
+                        context = context,
+                        onConfirm = { dismiss() },
+                        rcloneConfig = rcloneConfig,
+                        onRemove = {
+                            dismiss()
+                            viewModel.refresh(false)
+                        }
+                    )
                     setWithTopBar().apply {
                         addView(title(GlobalString.configuration))
                         addView(binding.root)
