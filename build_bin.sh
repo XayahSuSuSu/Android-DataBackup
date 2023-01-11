@@ -16,6 +16,7 @@ COREUTLS_VERSION=9.1
 PV_VERSION=1.6.20
 LIBFUSE_VERSION=3.12.0
 RCLONE_VERSION=1.61.1
+EXTEND_VERSION=1.1.1
 
 ##################################################
 
@@ -287,7 +288,8 @@ zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df pv/bin/pv tar/bin/tar zstd/bin
 
 # Extend modules
 mkdir -p extend
-zip -pj extend/$TARGET_ARCH fuse/bin/fusermount rclone/rclone
+echo "$EXTEND_VERSION" > extend/version
+zip -pj extend/$TARGET_ARCH fuse/bin/fusermount rclone/rclone extend/version
 
 ##################################################
 
