@@ -164,13 +164,12 @@ class ExtendCommand {
                 if (isSuccess.not()) {
                     // 取消挂载失败, 尝试杀死进程
                     Command.execute("pgrep 'rclone'").apply {
-                        val pid = this.out.joinToLineString
-                        if (pid.isNotEmpty()) {
-                            Command.execute("kill -9 $pid").apply {
-                                isSuccess = this.isSuccess
+                        val pidList = this.out
+                        isSuccess = true
+                        for (i in pidList) {
+                            Command.execute("kill -9 $i").apply {
+                                if (this.isSuccess.not()) isSuccess = false
                             }
-                        } else {
-                            isSuccess = true
                         }
                     }
                 }
