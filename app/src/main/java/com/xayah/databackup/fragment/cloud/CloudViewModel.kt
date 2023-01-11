@@ -203,6 +203,7 @@ class CloudViewModel : ViewModel() {
             "${Path.getFilesDir()}/extend"
         )
         Command.execute("chmod 777 -R ${Path.getFilesDir()}")
+        isInstalling.set(false)
         initialize()
     }
 
