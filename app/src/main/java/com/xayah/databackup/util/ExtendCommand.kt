@@ -152,27 +152,26 @@ class ExtendCommand {
         }
 
         /**
-         * Rclone挂载检验
-         */
-        suspend fun rcloneMountCheck(dest: String): Boolean {
-            Command.execute("df -h").apply {
-                return this.out.joinToLineString.contains(dest)
-            }
-        }
-
-        /**
          * Rclone取消挂载
          */
-        suspend fun rcloneUnmount(dest: String): Boolean {
+        suspend fun rcloneUnmount(dest: String, notify: Boolean = true): Boolean {
             Command.execute("fusermount -u $dest").apply {
                 var isSuccess = this.isSuccess
                 if (isSuccess.not()) {
                     // 取消挂载失败, 尝试杀死进程
-                    Command.execute("pgrep 'rclone' | xargs kill -9").apply {
-                        isSuccess = this.isSuccess
+                    Command.execute("pgrep 'rclone'").apply {
+                        val pid = this.out.joinToLineString
+                        if (pid.isNotEmpty()) {
+                            Command.execute("kill -9 $pid").apply {
+                                isSuccess = this.isSuccess
+                            }
+                        } else {
+                            isSuccess = true
+                        }
                     }
                 }
-                notifyForCommand(this.isSuccess)
+                if (notify)
+                    notifyForCommand(this.isSuccess)
                 return isSuccess
             }
         }

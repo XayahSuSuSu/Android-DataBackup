@@ -344,9 +344,6 @@ class CloudViewModel : ViewModel() {
             if (rcloneMountMap.value.containsKey(rcloneConfig.name)) {
                 // 挂载哈希表中存在该条目
                 rcloneMountMap.value[rcloneConfig.name]?.apply {
-                    // 检查实际挂载情况
-                    this.mounted = ExtendCommand.rcloneMountCheck(this.dest)
-
                     if (this.mounted) {
                         mountState.set(GlobalString.mounted)
                         mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
@@ -363,10 +360,7 @@ class CloudViewModel : ViewModel() {
                 }
             } else {
                 // 不存在
-                rcloneMountMap.value[rcloneConfig.name] = RcloneMount(rcloneConfig.name).apply {
-                    // 检查实际挂载情况
-                    this.mounted = ExtendCommand.rcloneMountCheck(this.dest)
-                }
+                rcloneMountMap.value[rcloneConfig.name] = RcloneMount(rcloneConfig.name)
                 mountDest.set(GlobalString.notSelected)
             }
         }
@@ -388,22 +382,10 @@ class CloudViewModel : ViewModel() {
         }
         rcloneMountMap.value[name]?.apply {
             runOnScope {
-                // 检查实际挂载状态
-                val isMounted = ExtendCommand.rcloneMountCheck(this.dest)
-
                 if (this.mounted) {
                     // 当前为已挂载状态 -> 取消挂载
-
-                    if (isMounted) {
-                        // 实际已挂载
-                        if (ExtendCommand.rcloneUnmount(this.dest)) {
-                            // 取消挂载成功
-                            this.mounted = this.mounted.not()
-                            mountState.set(GlobalString.notMounted)
-                            mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
-                        }
-                    } else {
-                        // 实际未挂载
+                    if (ExtendCommand.rcloneUnmount(this.dest)) {
+                        // 取消挂载成功
                         this.mounted = this.mounted.not()
                         mountState.set(GlobalString.notMounted)
                         mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
@@ -411,16 +393,10 @@ class CloudViewModel : ViewModel() {
                 } else {
                     // 当前为未挂载状态 -> 执行挂载
 
-                    if (isMounted.not()) {
-                        // 实际未挂载
-                        if (ExtendCommand.rcloneMount(this.name, this.dest)) {
-                            // 挂载成功
-                            this.mounted = this.mounted.not()
-                            mountState.set(GlobalString.mounted)
-                            mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
-                        }
-                    } else {
-                        // 实际已挂载
+                    // 确保处于未挂载状态
+                    ExtendCommand.rcloneUnmount(this.dest, false)
+                    if (ExtendCommand.rcloneMount(this.name, this.dest)) {
+                        // 挂载成功
                         this.mounted = this.mounted.not()
                         mountState.set(GlobalString.mounted)
                         mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
