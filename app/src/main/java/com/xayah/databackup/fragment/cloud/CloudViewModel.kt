@@ -101,7 +101,7 @@ class CloudViewModel : ViewModel() {
             fusermountVersion.set(ExtendCommand.checkFusermountVersion())
             fuseState.set(if (Command.ls(GlobalString.devFuse)) GlobalString.symbolTick else GlobalString.symbolCross)
             rcloneMountMap.emit(ExtendCommand.getRcloneMountMap())
-            if (rcloneConfigList.value.isNotEmpty()) {
+            if (rcloneConfigList.value.isNotEmpty() && mountName.get() == GlobalString.notSelected) {
                 // 默认显示第一个配置
                 changeMount(rcloneConfigList.value.first())
             }
@@ -297,9 +297,13 @@ class CloudViewModel : ViewModel() {
     fun onMountChangeBtnClick(v: View) {
         runOnScope {
             val context = v.context
+            val name = mountName.get()
             val items = mutableListOf<String>()
             for (i in rcloneConfigList.value) items.add(i.name)
-            val choice = 0
+            var choice = items.indexOf(name)
+            if (choice == -1) {
+                choice = 0
+            }
 
             if (items.isNotEmpty()) {
                 ListPopupWindow(context).apply {
