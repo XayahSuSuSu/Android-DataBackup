@@ -96,32 +96,34 @@ class CloudViewModel : ViewModel() {
      * 初始化上方Rclone环境信息和挂载哈希表
      */
     fun initialize() {
-        isInstalling.set(false)
-        runOnScope {
-            App.server.releases({ releaseList ->
-                runOnScope {
-                    val mReleaseList = releaseList.filter { it.name.contains("Extend") }
-                    if (mReleaseList.isNotEmpty()) {
-                        // 检查是否有更新
-                        hasUpdate.set(
-                            ExtendCommand.checkExtendLocalVersion() != mReleaseList.first().name.replace(
-                                "Extend-",
-                                ""
+        if (isInstalling.get()!!.not()) {
+            isInstalling.set(false)
+            runOnScope {
+                App.server.releases({ releaseList ->
+                    runOnScope {
+                        val mReleaseList = releaseList.filter { it.name.contains("Extend") }
+                        if (mReleaseList.isNotEmpty()) {
+                            // 检查是否有更新
+                            hasUpdate.set(
+                                ExtendCommand.checkExtendLocalVersion() != mReleaseList.first().name.replace(
+                                    "Extend-",
+                                    ""
+                                )
                             )
-                        )
+                        }
                     }
+                }, { })
+                ExtendCommand.checkExtend().apply {
+                    isReady.set(this)
                 }
-            }, { })
-            ExtendCommand.checkExtend().apply {
-                isReady.set(this)
-            }
-            rcloneVersion.set(ExtendCommand.checkRcloneVersion())
-            fusermountVersion.set(ExtendCommand.checkFusermountVersion())
-            fuseState.set(if (Command.ls(GlobalString.devFuse)) GlobalString.symbolTick else GlobalString.symbolCross)
-            rcloneMountMap.emit(ExtendCommand.getRcloneMountMap())
-            if (rcloneConfigList.value.isNotEmpty() && mountName.get() == GlobalString.notSelected) {
-                // 默认显示第一个配置
-                changeMount(rcloneConfigList.value.first())
+                rcloneVersion.set(ExtendCommand.checkRcloneVersion())
+                fusermountVersion.set(ExtendCommand.checkFusermountVersion())
+                fuseState.set(if (Command.ls(GlobalString.devFuse)) GlobalString.symbolTick else GlobalString.symbolCross)
+                rcloneMountMap.emit(ExtendCommand.getRcloneMountMap())
+                if (rcloneConfigList.value.isNotEmpty() && mountName.get() == GlobalString.notSelected) {
+                    // 默认显示第一个配置
+                    changeMount(rcloneConfigList.value.first())
+                }
             }
         }
     }
