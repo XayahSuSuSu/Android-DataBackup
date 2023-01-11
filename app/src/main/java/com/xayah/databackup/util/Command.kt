@@ -138,104 +138,112 @@ class Command {
                         this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
                         var restoreList = mutableListOf<AppInfoItem>()
                         for ((index, i) in this.out.withIndex()) {
-                            if (index < this.out.size - 1) {
-                                val info = i.replace(Path.getBackupDataSavePath(), "").split("/")
-                                val infoNext =
-                                    this.out[index + 1].replace(Path.getBackupDataSavePath(), "")
-                                        .split("/")
-                                val packageName = info[1]
-                                val packageNameNext = infoNext[1]
-                                val date = info[2]
-                                val dateNext = infoNext[2]
-                                val fileName = info[3]
-                                if (info.size == 4) {
-                                    if (fileName.contains("apk.tar"))
-                                        hasApp = true
-                                    else if (fileName.contains("data.tar"))
-                                        hasData = true
-                                    else if (fileName.contains("obb.tar"))
-                                        hasData = true
-                                    else if (fileName.contains("user.tar"))
-                                        hasData = true
-                                    else if (fileName.contains("user_de.tar"))
-                                        hasData = true
+                            try {
+                                if (index < this.out.size - 1) {
+                                    val info =
+                                        i.replace(Path.getBackupDataSavePath(), "").split("/")
+                                    val infoNext =
+                                        this.out[index + 1].replace(
+                                            Path.getBackupDataSavePath(),
+                                            ""
+                                        )
+                                            .split("/")
+                                    val packageName = info[1]
+                                    val packageNameNext = infoNext[1]
+                                    val date = info[2]
+                                    val dateNext = infoNext[2]
+                                    val fileName = info[3]
+                                    if (info.size == 4) {
+                                        if (fileName.contains("apk.tar"))
+                                            hasApp = true
+                                        else if (fileName.contains("data.tar"))
+                                            hasData = true
+                                        else if (fileName.contains("obb.tar"))
+                                            hasData = true
+                                        else if (fileName.contains("user.tar"))
+                                            hasData = true
+                                        else if (fileName.contains("user_de.tar"))
+                                            hasData = true
 
-                                    if (date != dateNext || packageName != packageNameNext) {
-                                        // 与下一路径不同日期
-                                        val restoreListIndex =
-                                            restoreList.indexOfFirst { date == it.date }
-                                        val restore = if (restoreListIndex == -1) AppInfoItem(
-                                            app = false,
-                                            data = false,
-                                            hasApp = true,
-                                            hasData = true,
-                                            versionName = "",
-                                            versionCode = 0,
-                                            appSize = "",
-                                            userSize = "",
-                                            userDeSize = "",
-                                            dataSize = "",
-                                            obbSize = "",
-                                            date = date
-                                        ) else restoreList[restoreListIndex]
+                                        if (date != dateNext || packageName != packageNameNext) {
+                                            // 与下一路径不同日期
+                                            val restoreListIndex =
+                                                restoreList.indexOfFirst { date == it.date }
+                                            val restore = if (restoreListIndex == -1) AppInfoItem(
+                                                app = false,
+                                                data = false,
+                                                hasApp = true,
+                                                hasData = true,
+                                                versionName = "",
+                                                versionCode = 0,
+                                                appSize = "",
+                                                userSize = "",
+                                                userDeSize = "",
+                                                dataSize = "",
+                                                obbSize = "",
+                                                date = date
+                                            ) else restoreList[restoreListIndex]
 
-                                        restore.apply {
-                                            this.hasApp = this.hasApp && hasApp
-                                            this.hasData = this.hasData && hasData
-                                            this.app = this.app && hasApp
-                                            this.data = this.data && hasData
+                                            restore.apply {
+                                                this.hasApp = this.hasApp && hasApp
+                                                this.hasData = this.hasData && hasData
+                                                this.app = this.app && hasApp
+                                                this.data = this.data && hasData
+                                            }
+
+                                            if (restoreListIndex == -1) restoreList.add(restore)
+
+                                            hasApp = false
+                                            hasData = false
                                         }
+                                        if (packageName != packageNameNext) {
+                                            // 与下一路径不同包名
+                                            // 寻找已保存的数据
+                                            val appInfoIndex =
+                                                appInfoList.indexOfFirst { packageName == it.packageName }
+                                            val appInfo = if (appInfoIndex == -1)
+                                                AppInfo(
+                                                    appName = "",
+                                                    packageName = "",
+                                                    isSystemApp = false,
+                                                    firstInstallTime = 0,
+                                                    backup = AppInfoItem(
+                                                        app = false,
+                                                        data = false,
+                                                        hasApp = true,
+                                                        hasData = true,
+                                                        versionName = "",
+                                                        versionCode = 0,
+                                                        appSize = "",
+                                                        userSize = "",
+                                                        userDeSize = "",
+                                                        dataSize = "",
+                                                        obbSize = "",
+                                                        date = ""
+                                                    ),
+                                                    _restoreIndex = -1,
+                                                    restoreList = mutableListOf(),
+                                                    appIconString = "",
+                                                ) else appInfoList[appInfoIndex]
 
-                                        if (restoreListIndex == -1) restoreList.add(restore)
+                                            val appName = GlobalString.appRetrieved
+                                            appInfo.apply {
+                                                this.appName = appName
+                                                this.packageName = packageName
+                                                this.isOnThisDevice = false
+                                                this.restoreList = restoreList
+                                            }
 
-                                        hasApp = false
-                                        hasData = false
-                                    }
-                                    if (packageName != packageNameNext) {
-                                        // 与下一路径不同包名
-                                        // 寻找已保存的数据
-                                        val appInfoIndex =
-                                            appInfoList.indexOfFirst { packageName == it.packageName }
-                                        val appInfo = if (appInfoIndex == -1)
-                                            AppInfo(
-                                                appName = "",
-                                                packageName = "",
-                                                isSystemApp = false,
-                                                firstInstallTime = 0,
-                                                backup = AppInfoItem(
-                                                    app = false,
-                                                    data = false,
-                                                    hasApp = true,
-                                                    hasData = true,
-                                                    versionName = "",
-                                                    versionCode = 0,
-                                                    appSize = "",
-                                                    userSize = "",
-                                                    userDeSize = "",
-                                                    dataSize = "",
-                                                    obbSize = "",
-                                                    date = ""
-                                                ),
-                                                _restoreIndex = -1,
-                                                restoreList = mutableListOf(),
-                                                appIconString = "",
-                                            ) else appInfoList[appInfoIndex]
+                                            if (appInfoIndex == -1) appInfoList.add(appInfo)
 
-                                        val appName = GlobalString.appRetrieved
-                                        appInfo.apply {
-                                            this.appName = appName
-                                            this.packageName = packageName
-                                            this.isOnThisDevice = false
-                                            this.restoreList = restoreList
+                                            hasApp = false
+                                            hasData = false
+                                            restoreList = mutableListOf()
                                         }
-
-                                        if (appInfoIndex == -1) appInfoList.add(appInfo)
-
-                                        hasApp = false
-                                        hasData = false
-                                        restoreList = mutableListOf()
                                     }
                                 }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
                         }
                     }
