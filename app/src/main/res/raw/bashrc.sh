@@ -295,7 +295,7 @@ check_otg() {
       info="$(df -T "$path" | sed -n 's|% /.*|%|p' | awk '{print $(NF-4)}')"
       echo "$path"
       case $info in
-        fuseblk | exfat | NTFS | ext4 | f2fs)
+        sdfat | fuseblk | exfat | NTFS | ext4 | f2fs)
           return 0
           ;;
         *)
