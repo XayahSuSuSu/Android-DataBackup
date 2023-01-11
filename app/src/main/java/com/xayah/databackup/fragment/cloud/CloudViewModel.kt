@@ -64,6 +64,7 @@ class CloudViewModel : ViewModel() {
     var mountDest: ObservableField<String> = ObservableField(GlobalString.notSelected)
     var mountIcon: ObservableField<Drawable> =
         ObservableField(App.globalContext.getDrawable(R.drawable.ic_outline_light))
+    var isChangingMount: ObservableField<Boolean> = ObservableField(false)
 
     // 配置列表
     val rcloneConfigList by lazy {
@@ -392,6 +393,7 @@ class CloudViewModel : ViewModel() {
      * 挂载按钮点击事件
      */
     fun onMountBtnClick(v: View) {
+        isChangingMount.set(true)
         val name = mountName.get()
         val dest = mountDest.get()
         if (dest == GlobalString.notSelected) {
@@ -425,6 +427,7 @@ class CloudViewModel : ViewModel() {
                     }
                 }
                 JSON.saveMountHashMapJson(rcloneMountMap.value)
+                isChangingMount.set(false)
             }
         }
     }
