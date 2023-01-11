@@ -146,7 +146,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="24dp"
                             android:orientation="horizontal"
-                            android:visibility="@{viewModel.isInstalling || viewModel.isReady ? View.GONE : View.VISIBLE}">
+                            android:visibility="@{viewModel.isInstalling || (viewModel.isReady &amp;&amp; !viewModel.hasUpdate) ? View.GONE : View.VISIBLE}">
 
                             <com.google.android.material.button.MaterialButton
                                 style="@style/Widget.Material3.Button.TextButton"
@@ -163,7 +163,7 @@
                                 android:layout_marginHorizontal="8dp"
                                 android:layout_weight="1"
                                 android:onClick="@{(v)->viewModel.onInstallOnlineBtnClick(v)}"
-                                android:text="@string/install_online" />
+                                android:text="@string/update_online" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

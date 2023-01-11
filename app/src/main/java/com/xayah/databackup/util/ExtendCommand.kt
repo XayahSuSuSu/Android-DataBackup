@@ -31,7 +31,7 @@ class ExtendCommand {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                return count == 2
+                return count == 3
             }
         }
 
@@ -86,30 +86,34 @@ class ExtendCommand {
          */
         suspend fun rcloneConfigParse(): MutableList<RcloneConfig> {
             val rcloneConfigList = mutableListOf<RcloneConfig>()
-            val exec = Command.execute("rclone config show").apply {
-                this.out.add("[]")
-            }
-            var rcloneConfig: RcloneConfig? = null
-            for (i in exec.out) {
-                if (i.isEmpty()) continue
-                if (i.first() == '[' && i.last() == ']') {
-                    // 配置起始符
-                    if (rcloneConfig != null) {
-                        rcloneConfigList.add(rcloneConfig)
-                    }
-                    rcloneConfig = RcloneConfig(
-                        name = i.replace("[", "").replace("]", "")
-                    )
-                } else {
-                    val element = i.split(" = ")
-                    when (element[0]) {
-                        "type" -> rcloneConfig?.type = element[1]
-                        "url" -> rcloneConfig?.url = element[1]
-                        "vendor" -> rcloneConfig?.vendor = element[1]
-                        "user" -> rcloneConfig?.user = element[1]
-                        "pass" -> rcloneConfig?.pass = element[1]
+            try {
+                val exec = Command.execute("rclone config show").apply {
+                    this.out.add("[]")
+                }
+                var rcloneConfig: RcloneConfig? = null
+                for (i in exec.out) {
+                    if (i.isEmpty()) continue
+                    if (i.first() == '[' && i.last() == ']') {
+                        // 配置起始符
+                        if (rcloneConfig != null) {
+                            rcloneConfigList.add(rcloneConfig)
+                        }
+                        rcloneConfig = RcloneConfig(
+                            name = i.replace("[", "").replace("]", "")
+                        )
+                    } else {
+                        val element = i.split(" = ")
+                        when (element[0]) {
+                            "type" -> rcloneConfig?.type = element[1]
+                            "url" -> rcloneConfig?.url = element[1]
+                            "vendor" -> rcloneConfig?.vendor = element[1]
+                            "user" -> rcloneConfig?.user = element[1]
+                            "pass" -> rcloneConfig?.pass = element[1]
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
             return rcloneConfigList
         }
@@ -173,6 +177,19 @@ class ExtendCommand {
                 if (notify)
                     notifyForCommand(this.isSuccess)
                 return isSuccess
+            }
+        }
+
+        /**
+         * 检查本地扩展模块版本
+         */
+        suspend fun checkExtendLocalVersion(): String {
+            val extendVersionPath = "${Path.getFilesDir()}/extend/version"
+            Command.execute("cat $extendVersionPath").apply {
+                var version = ""
+                if (this.isSuccess)
+                    version = this.out.joinToLineString
+                return version
             }
         }
     }

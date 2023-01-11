@@ -159,7 +159,7 @@
     <string name="remove_selected_backup_files">移除当前选择的备份文件</string>
     <string name="cloud">云端</string>
     <string name="import_locally">本地导入</string>
-    <string name="install_online">在线安装</string>
+    <string name="update_online">在线更新</string>
     <string name="prepare_for_downloading">准备下载</string>
     <string name="configuration">配置</string>
     <string name="server_address">服务器地址</string>

@@ -89,7 +89,7 @@ class Command {
          * `cp`命令, 用于复制
          */
         suspend fun cp(src: String, dst: String): Boolean {
-            return execute("cp $src $dst").isSuccess
+            return execute("cp \"${src}\" \"${dst}\"  ").isSuccess
         }
 
         /**

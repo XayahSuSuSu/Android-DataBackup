@@ -53,6 +53,7 @@ class CloudViewModel : ViewModel() {
     // 扩展版本
     var rcloneVersion: ObservableField<String> = ObservableField(GlobalString.symbolQuestion)
     var fusermountVersion: ObservableField<String> = ObservableField(GlobalString.symbolQuestion)
+    var hasUpdate: ObservableField<Boolean> = ObservableField(false)
 
     // Fuse状态
     var fuseState: ObservableField<String> = ObservableField(GlobalString.symbolQuestion)
@@ -94,6 +95,20 @@ class CloudViewModel : ViewModel() {
     fun initialize() {
         isInstalling.set(false)
         runOnScope {
+            App.server.releases({ releaseList ->
+                runOnScope {
+                    val mReleaseList = releaseList.filter { it.name.contains("Extend") }
+                    if (mReleaseList.isNotEmpty()) {
+                        // 检查是否有更新
+                        hasUpdate.set(
+                            ExtendCommand.checkExtendLocalVersion() != mReleaseList.first().name.replace(
+                                "Extend-",
+                                ""
+                            )
+                        )
+                    }
+                }
+            }, { })
             ExtendCommand.checkExtend().apply {
                 isReady.set(this)
             }
@@ -112,13 +127,14 @@ class CloudViewModel : ViewModel() {
      * Rclone环境安装按钮点击事件
      */
     fun onInstallOnlineBtnClick(v: View) {
+        isReady.set(false)
         isInstalling.set(true)
         installState.set(GlobalString.prepareForDownloading)
         installProgress.set(0)
         val savePath = "${Path.getFilesDir()}/extend.zip"
 
         runOnScope {
-            App.server.releases({ releaseList ->
+            App.server.releases(successCallback = { releaseList ->
                 val mReleaseList = releaseList.filter { it.name.contains("Extend") }
                 if (mReleaseList.isEmpty()) {
                     isInstalling.set(false)
@@ -150,7 +166,9 @@ class CloudViewModel : ViewModel() {
                         }
                     }
                 }
-            }, { isInstalling.set(false) })
+            }, failedCallback = {
+                isInstalling.set(false)
+            })
         }
     }
 

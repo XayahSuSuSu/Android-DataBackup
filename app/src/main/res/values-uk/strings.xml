@@ -159,7 +159,7 @@
     <string name="remove_selected_backup_files">Remove selected backup files</string>
     <string name="cloud">Cloud</string>
     <string name="import_locally">Import locally</string>
-    <string name="install_online">Install online</string>
+    <string name="update_online">Update online</string>
     <string name="prepare_for_downloading">Prepare for downloading</string>
     <string name="configuration">Configuration</string>
     <string name="server_address">Server address</string>

@@ -1,7 +1,9 @@
 package com.xayah.databackup.util
 
+import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.xayah.databackup.App
 import com.xayah.databackup.data.Release
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -53,6 +55,10 @@ class Server {
                             successCallback(mReleaseList)
                         } catch (e: Exception) {
                             e.printStackTrace()
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(App.globalContext, e.message, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
                             failedCallback()
                         }
                     }
