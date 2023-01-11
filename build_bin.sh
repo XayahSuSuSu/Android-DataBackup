@@ -272,7 +272,7 @@ x86_64)
 esac
 
 mkdir $LOCAL_PATH/rclone
-GOOS=android GOARCH=$VAR_GOARCH go build -o $LOCAL_PATH/rclone
+CGO_ENABLED=1 CC=$TOOLCHAIN/bin/$TARGET$API-clang GOOS=android GOARCH=$VAR_GOARCH go build -o $LOCAL_PATH/rclone
 $STRIP $LOCAL_PATH/rclone/rclone
 cd ..
 rm -rf rclone-v$RCLONE_VERSION
