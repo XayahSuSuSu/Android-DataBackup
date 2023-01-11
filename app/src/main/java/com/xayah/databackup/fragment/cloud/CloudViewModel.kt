@@ -22,6 +22,7 @@ import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailFtpBinding
 import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailWebdavBinding
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
+import com.xayah.databackup.view.setLoading
 import com.xayah.databackup.view.setWithTopBar
 import com.xayah.databackup.view.title
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
@@ -563,30 +564,34 @@ class CloudViewModel : ViewModel() {
             ).show()
             return
         }
-        rcloneMountMap.value[name]?.apply {
-            runOnScope {
-                if (this.mounted) {
-                    // 当前为已挂载状态 -> 取消挂载
-                    if (ExtendCommand.rcloneUnmount(this.dest)) {
-                        // 取消挂载成功
-                        this.mounted = this.mounted.not()
-                        mountState.set(GlobalString.notMounted)
-                        mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
-                    }
-                } else {
-                    // 当前为未挂载状态 -> 执行挂载
+        BottomSheetDialog(v.context).apply {
+            setLoading()
+            rcloneMountMap.value[name]?.apply {
+                runOnScope {
+                    if (this.mounted) {
+                        // 当前为已挂载状态 -> 取消挂载
+                        if (ExtendCommand.rcloneUnmount(this.dest)) {
+                            // 取消挂载成功
+                            this.mounted = this.mounted.not()
+                            mountState.set(GlobalString.notMounted)
+                            mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
+                        }
+                    } else {
+                        // 当前为未挂载状态 -> 执行挂载
 
-                    // 确保处于未挂载状态
-                    ExtendCommand.rcloneUnmount(this.dest, false)
-                    if (ExtendCommand.rcloneMount(this.name, this.dest)) {
-                        // 挂载成功
-                        this.mounted = this.mounted.not()
-                        mountState.set(GlobalString.mounted)
-                        mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
+                        // 确保处于未挂载状态
+                        ExtendCommand.rcloneUnmount(this.dest, false)
+                        if (ExtendCommand.rcloneMount(this.name, this.dest)) {
+                            // 挂载成功
+                            this.mounted = this.mounted.not()
+                            mountState.set(GlobalString.mounted)
+                            mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
+                        }
                     }
+                    JSON.saveMountHashMapJson(rcloneMountMap.value)
+                    isChangingMount.set(false)
+                    dismiss()
                 }
-                JSON.saveMountHashMapJson(rcloneMountMap.value)
-                isChangingMount.set(false)
             }
         }
     }
