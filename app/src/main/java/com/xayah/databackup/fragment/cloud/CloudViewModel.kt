@@ -521,27 +521,25 @@ class CloudViewModel : ViewModel() {
     private fun changeMount(rcloneConfig: RcloneConfig) {
         runOnScope {
             mountName.set(rcloneConfig.name)
-            if (rcloneMountMap.value.containsKey(rcloneConfig.name)) {
-                // 挂载哈希表中存在该条目
-                rcloneMountMap.value[rcloneConfig.name]?.apply {
-                    if (this.mounted) {
-                        mountState.set(GlobalString.mounted)
-                        mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
-                    } else {
-                        mountState.set(GlobalString.notMounted)
-                        mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
-                    }
 
-                    if (this.dest.isNotEmpty()) {
-                        mountDest.set(this.dest)
-                    } else {
-                        mountDest.set(GlobalString.notSelected)
-                    }
-                }
-            } else {
-                // 不存在
+            if (rcloneMountMap.value.containsKey(rcloneConfig.name).not()) {
+                // 挂载哈希表中不存在该条目
                 rcloneMountMap.value[rcloneConfig.name] = RcloneMount(rcloneConfig.name)
-                mountDest.set(GlobalString.notSelected)
+            }
+            rcloneMountMap.value[rcloneConfig.name]?.apply {
+                if (this.mounted) {
+                    mountState.set(GlobalString.mounted)
+                    mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
+                } else {
+                    mountState.set(GlobalString.notMounted)
+                    mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
+                }
+
+                if (this.dest.isNotEmpty()) {
+                    mountDest.set(this.dest)
+                } else {
+                    mountDest.set(GlobalString.notSelected)
+                }
             }
         }
     }
@@ -554,6 +552,7 @@ class CloudViewModel : ViewModel() {
         val name = mountName.get()
         val dest = mountDest.get()
         if (dest == GlobalString.notSelected) {
+            isChangingMount.set(false)
             Toast.makeText(
                 App.globalContext,
                 GlobalString.mountDirectoryNotSelected,
