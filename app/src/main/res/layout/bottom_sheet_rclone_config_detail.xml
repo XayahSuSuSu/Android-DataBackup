@@ -12,6 +12,7 @@
         android:paddingTop="24dp">
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout_type"
             style="?attr/textInputOutlinedExposedDropdownMenuStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -252,10 +252,17 @@ class CloudViewModel : ViewModel() {
 
             autoCompleteTextViewType.setText(typeKeyList[0], false)
             rcloneConfig?.apply {
-                val index = typeValueList.indexOf(type)
-                if (index != -1) {
-                    autoCompleteTextViewType.setText(typeKeyList[index], false)
-                    autoCompleteTextViewType.isEnabled = false
+                if (type.isNotEmpty()) {
+                    val index = typeValueList.indexOf(type)
+                    if (index != -1) {
+                        autoCompleteTextViewType.setText(typeKeyList[index], false)
+                        autoCompleteTextViewType.isEnabled = false
+                        textInputLayoutType.isEnabled = false
+                    } else {
+                        autoCompleteTextViewType.setText(GlobalString.rcloneTypeOther, false)
+                        autoCompleteTextViewType.isEnabled = false
+                        textInputLayoutType.isEnabled = false
+                    }
                 }
             }
 
@@ -446,6 +453,21 @@ class CloudViewModel : ViewModel() {
                                 }
                         }
                         content.addView(binding.root)
+                    }
+                    // Other
+                    else -> {
+                        // 移除按钮点击事件
+                        materialButtonRemove.setOnClickListener {
+                            runOnScope {
+                                ExtendCommand.rcloneConfigDelete(rcloneConfig!!.name)
+                                rcloneMountMap.value.remove(rcloneConfig.name)
+                                onRemove()
+                            }
+                        }
+
+                        materialButtonConfirm.setOnClickListener {
+                            onConfirm()
+                        }
                     }
                 }
             }

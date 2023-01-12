@@ -201,6 +201,7 @@
     <string name="port">Port</string>
     <string name="port_default" translatable="false">21</string>
     <string name="empty_error">This filed couldn\'t be empty</string>
+    <string name="rclone_type_other" translatable="false">Other</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
         <item>WebDAV</item>
         <item>FTP</item>
