@@ -121,9 +121,13 @@ class CloudViewModel : ViewModel() {
                 fusermountVersion.set(ExtendCommand.checkFusermountVersion())
                 fuseState.set(if (Command.ls(GlobalString.devFuse)) GlobalString.symbolTick else GlobalString.symbolCross)
                 rcloneMountMap.emit(ExtendCommand.getRcloneMountMap())
-                if (rcloneConfigList.value.isNotEmpty() && mountName.get() == GlobalString.notSelected) {
+                if (rcloneConfigList.value.isNotEmpty()) {
                     // 默认显示第一个配置
-                    changeMount(rcloneConfigList.value.first())
+                    if (rcloneConfigList.value.indexOfFirst { it.name == mountName.get() } == -1)
+                        changeMount(rcloneConfigList.value.first())
+                } else {
+                    mountName.set(GlobalString.notSelected)
+                    mountDest.set(GlobalString.notSelected)
                 }
             }
         }
@@ -297,6 +301,7 @@ class CloudViewModel : ViewModel() {
                                 materialButtonRemove.setOnClickListener {
                                     runOnScope {
                                         ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                        rcloneMountMap.value.remove(rcloneConfig.name)
                                         onRemove()
                                     }
                                 }
@@ -389,6 +394,7 @@ class CloudViewModel : ViewModel() {
                                 materialButtonRemove.setOnClickListener {
                                     runOnScope {
                                         ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                        rcloneMountMap.value.remove(rcloneConfig.name)
                                         onRemove()
                                     }
                                 }
