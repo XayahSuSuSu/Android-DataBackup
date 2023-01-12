@@ -113,10 +113,15 @@ class Command {
                 // 读取应用列表配置文件
                 cat(Path.getAppInfoListPath()).apply {
                     if (this.first) {
-                        val jsonArray = JSON.stringToJsonArray(this.second)
-                        for (i in jsonArray) {
-                            val item = JSON.jsonElementToEntity(i, AppInfo::class.java) as AppInfo
-                            appInfoList.add(item)
+                        try {
+                            val jsonArray = JSON.stringToJsonArray(this.second)
+                            for (i in jsonArray) {
+                                val item =
+                                    JSON.jsonElementToEntity(i, AppInfo::class.java) as AppInfo
+                                appInfoList.add(item)
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     }
                 }
