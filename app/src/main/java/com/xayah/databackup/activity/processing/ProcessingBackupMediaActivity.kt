@@ -65,102 +65,106 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
     }
 
     override fun onFabClick() {
-        viewModel.viewModelScope.launch {
-            // 记录开始时间戳
-            val startTime = App.getTimeStamp()
-            // 记录开始备份目录大小
-            val startSize = Command.countSize(App.globalContext.readBackupSavePath())
-            if (!viewModel.isFinished.value!!) withContext(Dispatchers.IO) {
+        if (!viewModel.isFinished.value!!) {
+            if (viewModel.isProcessing.get().not()) {
                 viewModel.isProcessing.set(true)
                 viewModel.totalTip.set(GlobalString.backupProcessing)
+                viewModel.viewModelScope.launch {
+                    withContext(Dispatchers.IO) {
+                        // 记录开始时间戳
+                        val startTime = App.getTimeStamp()
+                        // 记录开始备份目录大小
+                        val startSize = Command.countSize(App.globalContext.readBackupSavePath())
 
-                for ((index, i) in mediaInfoList.withIndex()) {
-                    val date =
-                        if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
-                    // 准备备份卡片数据
-                    viewModel.appName.set(i.name)
-                    viewModel.packageName.set(i.path)
-                    viewModel.isBackupData.set(i.backup.data)
+                        for ((index, i) in mediaInfoList.withIndex()) {
+                            val date =
+                                if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
+                            // 准备备份卡片数据
+                            viewModel.appName.set(i.name)
+                            viewModel.packageName.set(i.path)
+                            viewModel.isBackupData.set(i.backup.data)
 
-                    val outPutPath = "${Path.getBackupMediaSavePath()}/${i.name}/${date}"
+                            val outPutPath = "${Path.getBackupMediaSavePath()}/${i.name}/${date}"
 
-                    // 开始备份
-                    var state = true // 该任务是否成功完成
-                    if (viewModel.isBackupData.get()) {
-                        // 备份Data
-                        viewModel.processingData.set(true)
-                        // 备份目录
-                        Command.compress(
-                            "tar",
-                            "media",
-                            i.name,
-                            outPutPath,
-                            i.path,
-                            i.backup.size
-                        ) {
-                            setSizeAndSpeed(viewModel, it)
-                        }.apply {
-                            if (!this) state = false
-                            // 保存大小
-                            else i.backup.size = Command.countSize(
-                                i.path, 1
+                            // 开始备份
+                            var state = true // 该任务是否成功完成
+                            if (viewModel.isBackupData.get()) {
+                                // 备份Data
+                                viewModel.processingData.set(true)
+                                // 备份目录
+                                Command.compress(
+                                    "tar",
+                                    "media",
+                                    i.name,
+                                    outPutPath,
+                                    i.path,
+                                    i.backup.size
+                                ) {
+                                    setSizeAndSpeed(viewModel, it)
+                                }.apply {
+                                    if (!this) state = false
+                                    // 保存大小
+                                    else i.backup.size = Command.countSize(
+                                        i.path, 1
+                                    )
+                                }
+                                viewModel.processingData.set(false)
+                                initializeSizeAndSpeed(viewModel)
+                            }
+                            i.backup.date = date
+                            if (state) {
+                                val item = MediaInfoItem(
+                                    data = false,
+                                    size = i.backup.size,
+                                    date = i.backup.date
+                                )
+                                val itemIndex = i.restoreList.indexOfFirst { date == it.date }
+                                if (itemIndex == -1) {
+                                    // RestoreList中不存在该Item
+                                    i.restoreList.add(item)
+                                    i.restoreIndex++
+                                } else {
+                                    // RestoreList中已存在该Item
+                                    i.restoreList[itemIndex] = item
+                                }
+
+                                viewModel.successList.value.add(processingTaskList.value[index])
+                            } else {
+                                viewModel.failedList.value.add(processingTaskList.value[index])
+                            }
+                            viewModel.progress.set(index + 1)
+                            viewModel.progressText.set("${GlobalString.progress}: ${viewModel.progress.get()}/${viewModel.progressMax.get()}")
+                        }
+                        val endTime = App.getTimeStamp()
+                        val endSize = Command.countSize(App.globalContext.readBackupSavePath())
+                        backupInfoList.value.add(
+                            BackupInfo(
+                                Command.getVersion(),
+                                startTime,
+                                endTime,
+                                startSize,
+                                endSize,
+                                "media",
+                                App.globalContext.readBackupUser()
                             )
-                        }
-                        viewModel.processingData.set(false)
-                        initializeSizeAndSpeed(viewModel)
-                    }
-                    i.backup.date = date
-                    if (state) {
-                        val item = MediaInfoItem(
-                            data = false,
-                            size = i.backup.size,
-                            date = i.backup.date
                         )
-                        val itemIndex = i.restoreList.indexOfFirst { date == it.date }
-                        if (itemIndex == -1) {
-                            // RestoreList中不存在该Item
-                            i.restoreList.add(item)
-                            i.restoreIndex++
-                        } else {
-                            // RestoreList中已存在该Item
-                            i.restoreList[itemIndex] = item
-                        }
+                        viewModel.totalTip.set(GlobalString.backupFinished)
+                        viewModel.totalProgress.set("${viewModel.successNum + viewModel.failedNum} ${GlobalString.total}")
+                        viewModel.isProcessing.set(false)
+                        viewModel.isFinished.postValue(true)
+                        viewModel.btnText.set(GlobalString.finish)
+                        viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
 
-                        viewModel.successList.value.add(processingTaskList.value[index])
-                    } else {
-                        viewModel.failedList.value.add(processingTaskList.value[index])
+                        // 保存列表数据
+                        App.saveMediaInfoList()
+                        JSON.saveBackupInfoList(backupInfoList.value)
+                        // 移动日志数据
+                        Bashrc.moveLogToOut()
                     }
-                    viewModel.progress.set(index + 1)
-                    viewModel.progressText.set("${GlobalString.progress}: ${viewModel.progress.get()}/${viewModel.progressMax.get()}")
                 }
-                val endTime = App.getTimeStamp()
-                val endSize = Command.countSize(App.globalContext.readBackupSavePath())
-                backupInfoList.value.add(
-                    BackupInfo(
-                        Command.getVersion(),
-                        startTime,
-                        endTime,
-                        startSize,
-                        endSize,
-                        "media",
-                        App.globalContext.readBackupUser()
-                    )
-                )
-                viewModel.totalTip.set(GlobalString.backupFinished)
-                viewModel.totalProgress.set("${viewModel.successNum + viewModel.failedNum} ${GlobalString.total}")
-                viewModel.isProcessing.set(false)
-                viewModel.isFinished.postValue(true)
-                viewModel.btnText.set(GlobalString.finish)
-                viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
-
-                // 保存列表数据
-                App.saveMediaInfoList()
-                JSON.saveBackupInfoList(backupInfoList.value)
-                // 移动日志数据
-                Bashrc.moveLogToOut()
-            } else {
-                finish()
             }
+        } else {
+            finish()
         }
     }
 }

@@ -60,56 +60,60 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
     }
 
     override fun onFabClick() {
-        viewModel.viewModelScope.launch {
-            if (!viewModel.isFinished.value!!) withContext(Dispatchers.IO) {
+        if (!viewModel.isFinished.value!!) {
+            if (viewModel.isProcessing.get().not()) {
                 viewModel.isProcessing.set(true)
                 viewModel.totalTip.set(GlobalString.restoreProcessing)
-                for ((index, i) in mediaInfoList.withIndex()) {
-                    // 准备备份卡片数据
-                    viewModel.appName.set(i.name)
-                    viewModel.packageName.set(i.path)
-                    viewModel.isBackupData.set(i.restoreList[i.restoreIndex].data)
+                viewModel.viewModelScope.launch {
+                    withContext(Dispatchers.IO) {
+                        for ((index, i) in mediaInfoList.withIndex()) {
+                            // 准备备份卡片数据
+                            viewModel.appName.set(i.name)
+                            viewModel.packageName.set(i.path)
+                            viewModel.isBackupData.set(i.restoreList[i.restoreIndex].data)
 
-                    val inPath =
-                        "${Path.getBackupMediaSavePath()}/${i.name}/${i.restoreList[i.restoreIndex].date}"
+                            val inPath =
+                                "${Path.getBackupMediaSavePath()}/${i.name}/${i.restoreList[i.restoreIndex].date}"
 
-                    // 开始恢复
-                    var state = true // 该任务是否成功完成
-                    if (viewModel.isBackupData.get()) {
-                        // 恢复Data
-                        viewModel.processingData.set(true)
-                        // 恢复目录
-                        val inputPath = "${inPath}/${i.name}.tar*"
-                        Command.decompress(
-                            Command.getCompressionTypeByPath(inputPath),
-                            "media",
-                            inputPath,
-                            i.name,
-                            i.path.replace("/${i.name}", "")
-                        ) { setSizeAndSpeed(viewModel, it) }.apply {
-                            if (!this) state = false
+                            // 开始恢复
+                            var state = true // 该任务是否成功完成
+                            if (viewModel.isBackupData.get()) {
+                                // 恢复Data
+                                viewModel.processingData.set(true)
+                                // 恢复目录
+                                val inputPath = "${inPath}/${i.name}.tar*"
+                                Command.decompress(
+                                    Command.getCompressionTypeByPath(inputPath),
+                                    "media",
+                                    inputPath,
+                                    i.name,
+                                    i.path.replace("/${i.name}", "")
+                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                    if (!this) state = false
+                                }
+                                viewModel.processingData.set(false)
+                                initializeSizeAndSpeed(viewModel)
+                            }
+                            if (state) {
+                                viewModel.successList.value.add(processingTaskList.value[index])
+                            } else {
+                                viewModel.failedList.value.add(processingTaskList.value[index])
+                            }
+                            viewModel.progress.set(index + 1)
+                            viewModel.progressText.set("${GlobalString.progress}: ${viewModel.progress.get()}/${viewModel.progressMax.get()}")
                         }
-                        viewModel.processingData.set(false)
-                        initializeSizeAndSpeed(viewModel)
+                        viewModel.totalTip.set(GlobalString.restoreFinished)
+                        viewModel.totalProgress.set("${viewModel.successNum + viewModel.failedNum} ${GlobalString.total}")
+                        viewModel.isProcessing.set(false)
+                        viewModel.isFinished.postValue(true)
+                        viewModel.btnText.set(GlobalString.finish)
+                        viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
+                        Bashrc.moveLogToOut()
                     }
-                    if (state) {
-                        viewModel.successList.value.add(processingTaskList.value[index])
-                    } else {
-                        viewModel.failedList.value.add(processingTaskList.value[index])
-                    }
-                    viewModel.progress.set(index + 1)
-                    viewModel.progressText.set("${GlobalString.progress}: ${viewModel.progress.get()}/${viewModel.progressMax.get()}")
                 }
-                viewModel.totalTip.set(GlobalString.restoreFinished)
-                viewModel.totalProgress.set("${viewModel.successNum + viewModel.failedNum} ${GlobalString.total}")
-                viewModel.isProcessing.set(false)
-                viewModel.isFinished.postValue(true)
-                viewModel.btnText.set(GlobalString.finish)
-                viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
-                Bashrc.moveLogToOut()
-            } else {
-                finish()
             }
+        } else {
+            finish()
         }
     }
 }
