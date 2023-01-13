@@ -94,6 +94,14 @@ fun Context.readIsBackupIcon(): Boolean {
     return readPreferencesBoolean("is_backup_icon", true)
 }
 
+fun Context.saveIsBackupTest(value: Boolean) {
+    savePreferences("is_backup_test", value)
+}
+
+fun Context.readIsBackupTest(): Boolean {
+    return readPreferencesBoolean("is_backup_test", true)
+}
+
 fun Context.saveBackupUser(user: CharSequence?) {
     savePreferences("backup_user", user.toString().trim())
 }

@@ -202,6 +202,9 @@
     <string name="port_default" translatable="false">21</string>
     <string name="empty_error">This filed couldn\'t be empty</string>
     <string name="rclone_type_other" translatable="false">Other</string>
+    <string name="backup_test">Backup test</string>
+    <string name="backup_test_title">Automatically test backup files during backup</string>
+    <string name="testing">Testing</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
         <item>WebDAV</item>
         <item>FTP</item>

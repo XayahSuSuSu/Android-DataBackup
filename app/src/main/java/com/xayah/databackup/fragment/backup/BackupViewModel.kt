@@ -66,6 +66,7 @@ class BackupViewModel : ViewModel() {
 
     var backupItselfEnable = ObservableBoolean(false)
     var backupIconEnable = ObservableBoolean(false)
+    var backupTestEnable = ObservableBoolean(false)
     var onResume = {}
 
     init {
@@ -176,8 +177,17 @@ class BackupViewModel : ViewModel() {
         App.globalContext.saveIsBackupIcon(backupIconEnable.get())
     }
 
+    fun onBackupTestEnableCheckedChanged(v: View, checked: Boolean) {
+        backupTestEnable.set(checked)
+        App.globalContext.saveIsBackupTest(backupTestEnable.get())
+    }
+
     private fun setBackupIconCard() {
         backupIconEnable.set(App.globalContext.readIsBackupIcon())
+    }
+
+    private fun setBackupTestCard() {
+        backupTestEnable.set(App.globalContext.readIsBackupTest())
     }
 
     suspend fun refresh() {
@@ -185,6 +195,7 @@ class BackupViewModel : ViewModel() {
         setUser()
         setBackupItselfCard()
         setBackupIconCard()
+        setBackupTestCard()
         appNum.set(appInfoBackupListNum.appNum.toString())
         dataNum.set(appInfoBackupListNum.dataNum.toString())
         isInitialized = true

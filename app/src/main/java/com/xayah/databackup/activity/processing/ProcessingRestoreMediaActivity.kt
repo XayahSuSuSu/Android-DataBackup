@@ -4,10 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
 import com.xayah.databackup.data.ProcessingTask
-import com.xayah.databackup.util.Bashrc
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -81,7 +78,9 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                                 // 恢复Data
                                 viewModel.processingData.set(true)
                                 // 恢复目录
-                                val inputPath = "${inPath}/${i.name}.tar*"
+                                val compressionType = App.globalContext.readCompressionType()
+                                val suffix = Command.getSuffixByCompressionType(compressionType)
+                                val inputPath = "${inPath}/${i.name}.tar.$suffix"
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(inputPath),
                                     "media",

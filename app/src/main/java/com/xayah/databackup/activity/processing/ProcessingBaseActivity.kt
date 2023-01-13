@@ -15,22 +15,33 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
     companion object {
         fun setSizeAndSpeed(viewModel: ProcessingBaseViewModel, src: String?) {
             try {
-                if (src == "install apk finished") {
-                    // 安装应用中
-                    viewModel.size.set("0")
-                    viewModel.sizeUnit.set("")
-                    viewModel.speed.set(GlobalString.installing)
-                    viewModel.speedUnit.set("")
-                } else {
-                    val newSrc = src?.replace("[", "")?.replace("]", "")
-                    val sizeSrc = newSrc?.split(" ")?.filter { item -> item != "" }?.get(0)
-                    val speedSrc =
-                        newSrc?.split(" ")?.filter { item -> item != "" }?.get(2)?.replace(" ", "")
-                            ?.replace("]", "")
-                    viewModel.size.set(sizeSrc?.filter { item -> item.isDigit() || item == '.' })
-                    viewModel.sizeUnit.set(sizeSrc?.filter { item -> item.isLetter() })
-                    viewModel.speed.set(speedSrc?.filter { item -> item.isDigit() || item == '.' })
-                    viewModel.speedUnit.set(speedSrc?.filter { item -> item.isLetter() || item == '/' })
+                when (src) {
+                    "install apk finished" -> {
+                        // 安装应用中
+                        viewModel.size.set("0")
+                        viewModel.sizeUnit.set("")
+                        viewModel.speed.set(GlobalString.installing)
+                        viewModel.speedUnit.set("")
+                    }
+                    "testing" -> {
+                        // 安装应用中
+                        viewModel.size.set("0")
+                        viewModel.sizeUnit.set("")
+                        viewModel.speed.set(GlobalString.testing)
+                        viewModel.speedUnit.set("")
+                    }
+                    else -> {
+                        val newSrc = src?.replace("[", "")?.replace("]", "")
+                        val sizeSrc = newSrc?.split(" ")?.filter { item -> item != "" }?.get(0)
+                        val speedSrc =
+                            newSrc?.split(" ")?.filter { item -> item != "" }?.get(2)
+                                ?.replace(" ", "")
+                                ?.replace("]", "")
+                        viewModel.size.set(sizeSrc?.filter { item -> item.isDigit() || item == '.' })
+                        viewModel.sizeUnit.set(sizeSrc?.filter { item -> item.isLetter() })
+                        viewModel.speed.set(speedSrc?.filter { item -> item.isDigit() || item == '.' })
+                        viewModel.speedUnit.set(speedSrc?.filter { item -> item.isLetter() || item == '/' })
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

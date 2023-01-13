@@ -179,4 +179,7 @@
     <string name="not_mounted">未挂载</string>
     <string name="port">端口</string>
     <string name="empty_error">此字段不可为空</string>
+    <string name="backup_test">备份校验</string>
+    <string name="backup_test_title">备份时自动校验备份文件</string>
+    <string name="testing">校验中</string>
 </resources>

@@ -137,5 +137,6 @@ class GlobalString {
         val mounted = App.globalContext.getString(R.string.mounted)
         val notMounted = App.globalContext.getString(R.string.not_mounted)
         val rcloneTypeOther = App.globalContext.getString(R.string.rclone_type_other)
+        val testing = App.globalContext.getString(R.string.testing)
     }
 }

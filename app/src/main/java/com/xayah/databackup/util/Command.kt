@@ -527,6 +527,12 @@ class Command {
         ): Boolean {
             var ret = true
             var update = true
+            val filePath = if (dataType == "media") {
+                "${outPut}/${packageName}.tar.${getSuffixByCompressionType(compressionType)}"
+            } else {
+                "${outPut}/${dataType}.tar.${getSuffixByCompressionType(compressionType)}"
+            }
+
             runOnIO {
                 if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
                     // 当备份策略为覆盖时, 计算目录大小并判断是否更新
@@ -546,14 +552,8 @@ class Command {
                         }
                     }
                     // 检测是否实际存在压缩包, 若不存在则仍然更新
-                    if (dataType == "media") {
-                        ls("${outPut}/${packageName}.tar*").apply {
-                            if (!this) update = true
-                        }
-                    } else {
-                        ls("${outPut}/${dataType}.tar*").apply {
-                            if (!this) update = true
-                        }
+                    ls(filePath).apply {
+                        if (!this) update = true
                     }
                 }
                 if (update) {
@@ -564,15 +564,15 @@ class Command {
                             ret = false
                         }
                     }
-
-                    // 检测是否生成压缩包
-                    if (dataType == "media") {
-                        ls("${outPut}/${packageName}.tar*").apply {
-                            if (!this) ret = false
-                        }
-                    } else {
-                        ls("${outPut}/${dataType}.tar*").apply {
-                            if (!this) ret = false
+                }
+                // 检测是否生成压缩包
+                ls(filePath).apply {
+                    if (!this) ret = false
+                    else {
+                        if (App.globalContext.readIsBackupTest()) {
+                            // 校验
+                            onAddLine("testing")
+                            testArchive(compressionType, filePath)
                         }
                     }
                 }
@@ -593,6 +593,7 @@ class Command {
         ): Boolean {
             var ret = true
             var update = true
+            val filePath = "${outPut}/apk.tar.${getSuffixByCompressionType(compressionType)}"
             runOnIO {
                 val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply { ret = this.first }
                 if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
@@ -605,7 +606,7 @@ class Command {
                         }
                     }
                     // 检测是否实际存在压缩包, 若不存在则仍然更新
-                    ls("${outPut}/apk.tar*").apply {
+                    ls(filePath).apply {
                         // 后续若直接令state = this会导致state非正常更新
                         if (!this) update = true
                     }
@@ -616,10 +617,17 @@ class Command {
                         onAddLine(it)
                     }.apply { ret = this.first }
                     Bashrc.cd("~").apply { ret = this.first }
-
-                    ls("${outPut}/apk.tar*").apply {
-                        // 后续若直接令state = this会导致state非正常更新
-                        if (!this) ret = false
+                }
+                // 检测是否生成压缩包
+                ls(filePath).apply {
+                    // 后续若直接令state = this会导致state非正常更新
+                    if (!this) ret = false
+                    else {
+                        if (App.globalContext.readIsBackupTest()) {
+                            // 校验
+                            onAddLine("testing")
+                            testArchive(compressionType, filePath)
+                        }
                     }
                 }
             }
@@ -844,6 +852,18 @@ class Command {
                     e.printStackTrace()
                     ""
                 }
+            }
+        }
+
+        /**
+         * 通过压缩方式得到后缀
+         */
+        fun getSuffixByCompressionType(type: String): String {
+            return when (type) {
+                "tar" -> "tar"
+                "lz4" -> "lz4"
+                "zstd" -> "zst"
+                else -> ""
             }
         }
 
