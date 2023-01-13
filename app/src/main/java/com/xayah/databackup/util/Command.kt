@@ -231,9 +231,9 @@ class Command {
                                                     appIconString = "",
                                                 ) else appInfoList[appInfoIndex]
 
-                                            val appName = GlobalString.appRetrieved
                                             appInfo.apply {
-                                                this.appName = appName
+                                                if (appInfoIndex == -1) this.appName =
+                                                    GlobalString.appRetrieved
                                                 this.packageName = packageName
                                                 this.isOnThisDevice = false
                                                 this.restoreList = restoreList
