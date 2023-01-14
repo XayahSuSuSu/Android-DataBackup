@@ -528,9 +528,9 @@ class Command {
             var ret = true
             var update = true
             val filePath = if (dataType == "media") {
-                "${outPut}/${packageName}.tar.${getSuffixByCompressionType(compressionType)}"
+                "${outPut}/${packageName}.${getSuffixByCompressionType(compressionType)}"
             } else {
-                "${outPut}/${dataType}.tar.${getSuffixByCompressionType(compressionType)}"
+                "${outPut}/${dataType}.${getSuffixByCompressionType(compressionType)}"
             }
 
             runOnIO {
@@ -593,7 +593,7 @@ class Command {
         ): Boolean {
             var ret = true
             var update = true
-            val filePath = "${outPut}/apk.tar.${getSuffixByCompressionType(compressionType)}"
+            val filePath = "${outPut}/apk.${getSuffixByCompressionType(compressionType)}"
             runOnIO {
                 val apkPathPair = Bashrc.getAPKPath(packageName, userId).apply { ret = this.first }
                 if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
@@ -861,8 +861,8 @@ class Command {
         fun getSuffixByCompressionType(type: String): String {
             return when (type) {
                 "tar" -> "tar"
-                "lz4" -> "lz4"
-                "zstd" -> "zst"
+                "lz4" -> "tar.lz4"
+                "zstd" -> "tar.zst"
                 else -> ""
             }
         }

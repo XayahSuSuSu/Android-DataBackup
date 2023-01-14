@@ -87,10 +87,10 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                             val date = i.restoreList[i.restoreIndex].date
                             val inPath = "${Path.getBackupDataSavePath()}/${packageName}/${date}"
                             val suffix = Command.getSuffixByCompressionType(compressionType)
-                            val userPath = "${inPath}/user.tar.$suffix"
-                            val userDePath = "${inPath}/user_de.tar.$suffix"
-                            val dataPath = "${inPath}/data.tar.$suffix"
-                            val obbPath = "${inPath}/obb.tar.$suffix"
+                            val userPath = "${inPath}/user.$suffix"
+                            val userDePath = "${inPath}/user_de.$suffix"
+                            val dataPath = "${inPath}/data.$suffix"
+                            val obbPath = "${inPath}/obb.$suffix"
                             if (i.restoreList[i.restoreIndex].data) {
                                 Command.ls(userPath).apply { viewModel.isBackupUser.set(this) }
                                 Command.ls(userDePath).apply { viewModel.isBackupUserDe.set(this) }

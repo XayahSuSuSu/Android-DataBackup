@@ -78,9 +78,7 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                                 // 恢复Data
                                 viewModel.processingData.set(true)
                                 // 恢复目录
-                                val compressionType = App.globalContext.readCompressionType()
-                                val suffix = Command.getSuffixByCompressionType(compressionType)
-                                val inputPath = "${inPath}/${i.name}.tar.$suffix"
+                                val inputPath = "${inPath}/${i.name}.tar"
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(inputPath),
                                     "media",
