@@ -40,81 +40,9 @@
             android:textColor="@color/red" />
 
         <LinearLayout
+            android:id="@+id/linearLayout_root"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/materialRadioButton_internal_storage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/internal_storage"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/linearProgressIndicator_internal_storage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:trackCornerRadius="3dp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/materialTextView_internal_storage_path"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/materialRadioButton_otg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/otg"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/linearProgressIndicator_otg"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:trackCornerRadius="3dp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/materialTextView_otg_path"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-            </LinearLayout>
-        </LinearLayout>
+            android:orientation="vertical" />
     </LinearLayout>
 </layout>
