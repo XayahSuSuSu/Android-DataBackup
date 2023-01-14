@@ -201,7 +201,7 @@ class CloudViewModel : ViewModel() {
             toExplorer(v.context) { path, _ ->
                 runOnScope {
                     Command.cp(path, savePath)
-                    Command.execute("chmod 777 -R ${savePath}")
+                    Command.execute("chmod 777 -R $savePath")
                     installExtendModule(savePath)
                 }
             }
@@ -571,10 +571,20 @@ class CloudViewModel : ViewModel() {
             rcloneMountMap.value[rcloneConfig.name]?.apply {
                 if (this.mounted) {
                     mountState.set(GlobalString.mounted)
-                    mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
+                    mountIcon.set(
+                        AppCompatResources.getDrawable(
+                            App.globalContext,
+                            R.drawable.ic_filled_light
+                        )
+                    )
                 } else {
                     mountState.set(GlobalString.notMounted)
-                    mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
+                    mountIcon.set(
+                        AppCompatResources.getDrawable(
+                            App.globalContext,
+                            R.drawable.ic_outline_light
+                        )
+                    )
                 }
 
                 if (this.dest.isNotEmpty()) {
@@ -608,22 +618,32 @@ class CloudViewModel : ViewModel() {
                 runOnScope {
                     if (this.mounted) {
                         // 当前为已挂载状态 -> 取消挂载
-                        if (ExtendCommand.rcloneUnmount(this.dest)) {
+                        if (ExtendCommand.rcloneUnmount(this.name)) {
                             // 取消挂载成功
                             this.mounted = this.mounted.not()
                             mountState.set(GlobalString.notMounted)
-                            mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_outline_light))
+                            mountIcon.set(
+                                AppCompatResources.getDrawable(
+                                    App.globalContext,
+                                    R.drawable.ic_outline_light
+                                )
+                            )
                         }
                     } else {
                         // 当前为未挂载状态 -> 执行挂载
 
                         // 确保处于未挂载状态
-                        ExtendCommand.rcloneUnmount(this.dest, false)
+                        ExtendCommand.rcloneUnmount(this.name, false)
                         if (ExtendCommand.rcloneMount(this.name, this.dest)) {
                             // 挂载成功
                             this.mounted = this.mounted.not()
                             mountState.set(GlobalString.mounted)
-                            mountIcon.set(App.globalContext.getDrawable(R.drawable.ic_filled_light))
+                            mountIcon.set(
+                                AppCompatResources.getDrawable(
+                                    App.globalContext,
+                                    R.drawable.ic_filled_light
+                                )
+                            )
                         }
                     }
                     JSON.saveMountHashMapJson(rcloneMountMap.value)

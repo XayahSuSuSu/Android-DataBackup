@@ -160,25 +160,24 @@ class ExtendCommand {
         /**
          * Rclone取消挂载
          */
-        suspend fun rcloneUnmount(dest: String, notify: Boolean = true): Boolean {
-            Command.execute("fusermount -u $dest").apply {
-                var isSuccess = this.isSuccess
-                if (isSuccess.not()) {
-                    // 取消挂载失败, 尝试杀死进程
-                    Command.execute("pgrep 'rclone'").apply {
-                        val pidList = this.out
-                        isSuccess = true
-                        for (i in pidList) {
-                            Command.execute("kill -9 $i").apply {
-                                if (this.isSuccess.not()) isSuccess = false
-                            }
+        suspend fun rcloneUnmount(name: String, notify: Boolean = true): Boolean {
+            var isSuccess = true
+
+            Command.execute("mount").apply {
+                for (i in this.out) {
+                    if (i.contains("${name}:") && i.contains("rclone")) {
+                        val path = i.split(" ")[2]
+                        Command.execute("umount -f $path").apply {
+                            if (this.isSuccess.not()
+                                && this.out.joinToLineString.contains("Invalid argument").not()
+                            ) isSuccess = false
                         }
                     }
                 }
-                if (notify)
-                    notifyForCommand(this.isSuccess)
-                return isSuccess
             }
+            if (notify)
+                notifyForCommand(isSuccess)
+            return isSuccess
         }
 
         /**
