@@ -9,17 +9,18 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.data.RcloneConfig
 import com.xayah.databackup.databinding.FragmentCloudBinding
-import com.xayah.databackup.util.ExtendCommand
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.readRcloneConfigName
-import com.xayah.databackup.util.saveRcloneConfigName
+import com.xayah.databackup.util.*
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.setWithTopBar
 import com.xayah.databackup.view.title
+import com.xayah.databackup.view.util.setWithConfirm
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class CloudFragment : Fragment() {
@@ -44,6 +45,22 @@ class CloudFragment : Fragment() {
         val that = this
         viewModel.materialYouFileExplorer = MaterialYouFileExplorer().apply {
             initialize(that)
+        }
+
+        viewModel.onCheckExtendPermission = {
+            ExtendCommand.checkExtend().apply {
+                withContext(Dispatchers.Main) {
+                    if (this@apply.not()) {
+                        MaterialAlertDialogBuilder(requireContext()).apply {
+                            setWithConfirm(
+                                "${Path.getFilesDir()}/extend: ${GlobalString.binPermissionError}",
+                                cancelable = false,
+                                hasNegativeBtn = false
+                            ) {}
+                        }
+                    }
+                }
+            }
         }
 
         // 观察isRefreshed Flow

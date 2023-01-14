@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.ObservableField
@@ -53,6 +54,9 @@ class CloudViewModel : ViewModel() {
     // 安装交互提示
     var installState: ObservableField<String> = ObservableField(GlobalString.symbolQuestion)
 
+    // 检查扩展模块权限回调
+    var onCheckExtendPermission = suspend {}
+
     // 扩展版本
     var rcloneVersion: ObservableField<String> = ObservableField(GlobalString.symbolQuestion)
     var fusermountVersion: ObservableField<String> = ObservableField(GlobalString.symbolQuestion)
@@ -66,7 +70,12 @@ class CloudViewModel : ViewModel() {
     var mountName: ObservableField<String> = ObservableField(GlobalString.notSelected)
     var mountDest: ObservableField<String> = ObservableField(GlobalString.notSelected)
     var mountIcon: ObservableField<Drawable> =
-        ObservableField(App.globalContext.getDrawable(R.drawable.ic_outline_light))
+        ObservableField(
+            AppCompatResources.getDrawable(
+                App.globalContext,
+                R.drawable.ic_outline_light
+            )
+        )
     var isChangingMount: ObservableField<Boolean> = ObservableField(false)
 
     // 配置列表
@@ -208,6 +217,7 @@ class CloudViewModel : ViewModel() {
             "${Path.getFilesDir()}/extend"
         )
         Command.execute("chmod 777 -R ${Path.getFilesDir()}")
+        onCheckExtendPermission()
         isInstalling.set(false)
         initialize()
     }
