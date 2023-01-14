@@ -124,6 +124,7 @@ class StorageRadioCard @JvmOverloads constructor(
             setOTG()
             setMount()
             radioGroupCheckedIndex = App.globalContext.readBackupSaveIndex()
+            if (radioGroupCheckedIndex >= itemBindings.size) radioGroupCheckedIndex = 0
         }
     }
 
