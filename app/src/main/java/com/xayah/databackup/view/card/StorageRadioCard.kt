@@ -245,7 +245,7 @@ class StorageRadioCard @JvmOverloads constructor(
                 path.set("")
                 materialRadioButton.setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
-                        radioGroupCheckedIndex = 0
+                        radioGroupCheckedIndex = 1
                     }
                 }
             }
