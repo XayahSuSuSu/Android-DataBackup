@@ -141,4 +141,10 @@ class HomeViewModel : ViewModel() {
             v.context.startActivity(intent)
         }
     }
+
+    fun onOpenSourceLinkBtnClick(v: View) {
+        val uri = Uri.parse("https://github.com/XayahSuSuSu/Android-DataBackup")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        v.context.startActivity(intent)
+    }
 }

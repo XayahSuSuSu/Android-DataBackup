@@ -182,4 +182,5 @@
     <string name="backup_test">備份校驗</string>
     <string name="backup_test_title">備份時自動校驗備份文件</string>
     <string name="testing">校驗中</string>
+    <string name="opensource_link">開源地址</string>
 </resources>

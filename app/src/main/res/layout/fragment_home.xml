@@ -244,6 +244,59 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Material3.CardView.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardCornerRadius="24dp"
+                    app:contentPadding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:padding="4dp"
+                            app:srcCompat="@drawable/logo_github" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="8dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/opensource_link"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/app_name"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            style="?attr/materialIconButtonFilledTonalStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:onClick="@{(v)->viewModel.onOpenSourceLinkBtnClick(v)}"
+                            app:icon="@drawable/ic_round_link" />
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -498,7 +551,6 @@
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
-
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

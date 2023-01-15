@@ -182,4 +182,5 @@
     <string name="backup_test">Backup test</string>
     <string name="backup_test_title">Automatically test backup files during backup</string>
     <string name="testing">Testing</string>
+    <string name="opensource_link">Open source link</string>
 </resources>
