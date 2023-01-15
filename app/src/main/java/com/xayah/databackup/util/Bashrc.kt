@@ -12,17 +12,17 @@ class Bashrc {
         }
 
         suspend fun getStorageSpace(path: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("get_storage_space $path") }
+            val exec = runOnIO { Command.execute("get_storage_space \"${path}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
         suspend fun getAPKPath(packageName: String, userId: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("get_apk_path $packageName $userId") }
+            val exec = runOnIO { Command.execute("get_apk_path \"${packageName}\" \"${userId}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
         suspend fun cd(path: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("cd_to_path $path") }
+            val exec = runOnIO { Command.execute("cd_to_path \"${path}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -30,7 +30,7 @@ class Bashrc {
             compressionType: String, outPut: String, onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
             val exec = runOnIO {
-                val cmd = "compress_apk $compressionType $outPut"
+                val cmd = "compress_apk \"${compressionType}\" \"${outPut}\""
                 Command.execute(cmd) {
                     onAddLine(it)
                 }
@@ -47,7 +47,7 @@ class Bashrc {
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
             val exec = runOnIO {
-                val cmd = "compress $compressionType $dataType $packageName $outPut $dataPath"
+                val cmd = "compress \"${compressionType}\" \"${dataType}\" \"${packageName}\" \"${outPut}\" \"${dataPath}\""
                 Command.execute(cmd) {
                     onAddLine(it)
                 }
@@ -64,7 +64,7 @@ class Bashrc {
             inPath: String, packageName: String, userId: String, onAddLine: (line: String?) -> Unit
         ): Pair<Int, String> {
             val exec = runOnIO {
-                val cmd = "install_apk $inPath $packageName $userId"
+                val cmd = "install_apk \"${inPath}\" \"${packageName}\" \"${userId}\""
                 Command.execute(cmd) {
                     onAddLine(it)
                 }
@@ -80,7 +80,7 @@ class Bashrc {
             supportFixContext: Boolean
         ): Pair<Boolean, String> {
             val exec =
-                runOnIO { Command.execute("set_owner_and_SELinux $dataType $packageName $path $userId $supportFixContext") }
+                runOnIO { Command.execute("set_owner_and_SELinux \"${dataType}\" \"${packageName}\" \"${path}\" \"${userId}\" \"${supportFixContext}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -93,7 +93,7 @@ class Bashrc {
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
             val exec = runOnIO {
-                val cmd = "decompress $compressionType $dataType $inputPath $packageName $dataPath"
+                val cmd = "decompress \"${compressionType}\" \"${dataType}\" \"${inputPath}\" \"${packageName}\" \"${dataPath}\""
                 Command.execute(cmd) {
                     onAddLine(it)
                 }
@@ -102,12 +102,12 @@ class Bashrc {
         }
 
         suspend fun getAppVersion(packageName: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("get_app_version $packageName") }
+            val exec = runOnIO { Command.execute("get_app_version \"${packageName}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
         suspend fun getAppVersionCode(userId: String, packageName: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("get_app_version_code $userId $packageName") }
+            val exec = runOnIO { Command.execute("get_app_version_code \"${userId}\" \"${packageName}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -116,7 +116,7 @@ class Bashrc {
             val exec = runOnIO {
                 val path = Path.getShellLogPath()
                 Command.mkdir(path)
-                Command.execute("mv ${App.logcat.logPath} $path", true)
+                Command.execute("mv \"${App.logcat.logPath}\" \"${path}\"", true)
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
@@ -139,7 +139,7 @@ class Bashrc {
                     }
 
                 }
-                Command.execute("mv ${Path.getFilesDir()}/$name $path", true)
+                Command.execute("mv \"${Path.getFilesDir()}/${name}\" \"${path}\"", true)
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
@@ -149,7 +149,7 @@ class Bashrc {
             inputPath: String,
         ): Pair<Boolean, String> {
             val exec = runOnIO {
-                val cmd = "test_archive $compressionType $inputPath"
+                val cmd = "test_archive \"${compressionType}\" \"${inputPath}\""
                 Command.execute(cmd) {}
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
@@ -161,7 +161,7 @@ class Bashrc {
         }
 
         suspend fun listPackages(userId: String): Pair<Boolean, MutableList<String>> {
-            val exec = runOnIO { Command.execute("list_packages $userId", false) }
+            val exec = runOnIO { Command.execute("list_packages \"${userId}\"", false) }
             return Pair(exec.isSuccess, exec.out)
         }
 
@@ -169,12 +169,12 @@ class Bashrc {
             userId: String,
             packageName: String
         ): Pair<Boolean, MutableList<String>> {
-            val exec = runOnIO { Command.execute("find_package $userId $packageName") }
+            val exec = runOnIO { Command.execute("find_package \"${userId}\" \"${packageName}\"") }
             return Pair(exec.isSuccess, exec.out)
         }
 
         suspend fun countSize(path: String, type: Int): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("count_size $path $type") }
+            val exec = runOnIO { Command.execute("count_size \"${path}\" \"${type}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -189,7 +189,7 @@ class Bashrc {
         }
 
         suspend fun setKeyboard(keyboard: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("set_keyboard $keyboard") }
+            val exec = runOnIO { Command.execute("set_keyboard \"${keyboard}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -199,7 +199,7 @@ class Bashrc {
         }
 
         suspend fun setAccessibilityServices(services: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("set_accessibility_services $services") }
+            val exec = runOnIO { Command.execute("set_accessibility_services \"${services}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
     }

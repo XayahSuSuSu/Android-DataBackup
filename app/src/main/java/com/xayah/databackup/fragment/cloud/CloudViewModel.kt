@@ -201,7 +201,7 @@ class CloudViewModel : ViewModel() {
             toExplorer(v.context) { path, _ ->
                 runOnScope {
                     Command.cp(path, savePath)
-                    Command.execute("chmod 777 -R $savePath")
+                    Command.execute("chmod 777 -R \"${savePath}\"")
                     installExtendModule(savePath)
                 }
             }
@@ -216,7 +216,7 @@ class CloudViewModel : ViewModel() {
             savePath,
             "${Path.getFilesDir()}/extend"
         )
-        Command.execute("chmod 777 -R ${Path.getFilesDir()}")
+        Command.execute("chmod 777 -R \"${Path.getFilesDir()}\"")
         onCheckExtendPermission()
         isInstalling.set(false)
         initialize()

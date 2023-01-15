@@ -23,7 +23,7 @@ class ExtendCommand {
          * 检查扩展文件
          */
         suspend fun checkExtend(): Boolean {
-            Command.execute("ls -l ${Path.getFilesDir()}/extend").out.apply {
+            Command.execute("ls -l \"${Path.getFilesDir()}/extend\"").out.apply {
                 var count = 0
                 try {
                     val fileList = this.subList(1, this.size)
@@ -56,7 +56,7 @@ class ExtendCommand {
         /**
          * 根据命令执行成功与否弹出相应Toast
          */
-        fun notifyForCommand(isSuccess: Boolean) {
+        private fun notifyForCommand(isSuccess: Boolean) {
             if (isSuccess) {
                 Toast.makeText(App.globalContext, GlobalString.success, Toast.LENGTH_SHORT).show()
             } else {
@@ -72,7 +72,7 @@ class ExtendCommand {
             name: String,
             args: String,
         ): Boolean {
-            Command.execute("rclone config create \"${name}\" $type $args")
+            Command.execute("rclone config create \"${name}\" \"${type}\" \"${args}\"")
                 .apply {
                     notifyForCommand(this.isSuccess)
                     return this.isSuccess
@@ -167,7 +167,7 @@ class ExtendCommand {
                 for (i in this.out) {
                     if (i.contains("${name}:") && i.contains("rclone")) {
                         val path = i.split(" ")[2]
-                        Command.execute("umount -f $path").apply {
+                        Command.execute("umount -f \"${path}\"").apply {
                             if (this.isSuccess.not()
                                 && this.out.joinToLineString.contains("Invalid argument").not()
                             ) isSuccess = false
@@ -185,7 +185,7 @@ class ExtendCommand {
          */
         suspend fun checkExtendLocalVersion(): String {
             val extendVersionPath = "${Path.getFilesDir()}/extend/version"
-            Command.execute("cat $extendVersionPath").apply {
+            Command.execute("cat \"${extendVersionPath}\"").apply {
                 var version = ""
                 if (this.isSuccess)
                     version = this.out.joinToLineString

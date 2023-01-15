@@ -89,9 +89,9 @@ class GuideTwoFragment : Fragment() {
         val binZipPath = "${filesDirectory}/bin.zip"
         // 环境检测与释放
         withContext(Dispatchers.IO) {
-            val oldVersionName = Command.execute("cat $versionPath").out.joinToLineString
+            val oldVersionName = Command.execute("cat \"${versionPath}\"").out.joinToLineString
             if (App.versionName > oldVersionName) {
-                Command.execute("rm -rf $binPath $binZipPath")
+                Command.execute("rm -rf \"${binPath}\" \"${binZipPath}\"")
             }
             val isBinReleased = Command.ls(binPath)
             if (!isBinReleased) {
@@ -101,7 +101,7 @@ class GuideTwoFragment : Fragment() {
                 Command.unzipByZip4j(binZipPath, binPath)
                 Bashrc.writeToFile(App.versionName, versionPath)
             }
-            Command.execute("chmod 777 -R $filesDirectory")
+            Command.execute("chmod 777 -R \"${filesDirectory}\"")
             Command.checkBin().apply {
                 val that = this
                 withContext(Dispatchers.Main) {

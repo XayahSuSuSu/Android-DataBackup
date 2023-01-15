@@ -32,7 +32,7 @@ class Command {
          * `cat`命令, 用于文件读取
          */
         suspend fun cat(path: String): Pair<Boolean, String> {
-            val exec = execute("cat $path", false)
+            val exec = execute("cat \"${path}\"", false)
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -40,7 +40,7 @@ class Command {
          * `ls -i`命令
          */
         suspend fun ls(path: String): Boolean {
-            execute("ls -i $path").apply {
+            execute("ls -i \"${path}\"").apply {
                 return this.isSuccess
             }
         }
@@ -49,7 +49,7 @@ class Command {
          * 利用`ls`计数
          */
         suspend fun countFile(path: String): Int {
-            execute("ls -i $path").apply {
+            execute("ls -i \"${path}\"").apply {
                 return if (this.isSuccess)
                     this.out.size
                 else
@@ -61,7 +61,7 @@ class Command {
          * `rm -rf`命令, 用于删除文件, 可递归
          */
         suspend fun rm(path: String): Boolean {
-            execute("rm -rf $path").apply {
+            execute("rm -rf \"${path}\"").apply {
                 return this.isSuccess
             }
         }
@@ -70,9 +70,9 @@ class Command {
          * `mkdir`命令, 用于文件夹创建, 可递归
          */
         suspend fun mkdir(path: String): Boolean {
-            if (execute("ls -i $path").isSuccess)
+            if (execute("ls -i \"${path}\"").isSuccess)
                 return true
-            execute("mkdir -p $path").apply {
+            execute("mkdir -p \"${path}\"").apply {
                 return this.isSuccess
             }
         }
@@ -82,14 +82,14 @@ class Command {
          */
         @Deprecated("unzip", ReplaceWith(""))
         suspend fun unzip(filePath: String, outPath: String) {
-            if (mkdir(outPath)) execute("unzip $filePath -d $outPath")
+            if (mkdir(outPath)) execute("unzip \"${filePath}\" -d \"${outPath}\"")
         }
 
         /**
          * `cp`命令, 用于复制
          */
         suspend fun cp(src: String, dst: String): Boolean {
-            return execute("cp \"${src}\" \"${dst}\"  ").isSuccess
+            return execute("cp \"${src}\" \"${dst}\"").isSuccess
         }
 
         /**
@@ -128,7 +128,7 @@ class Command {
                 // 根据备份目录实际文件调整列表
                 var hasApp = false
                 var hasData = false
-                execute("find ${Path.getBackupDataSavePath()} -name \"*\" -type f").apply {
+                execute("find \"${Path.getBackupDataSavePath()}\" -name \"*\" -type f").apply {
                     // 根据实际文件和配置调整RestoreList
                     for ((index, i) in appInfoList.withIndex()) {
                         val tmpList = mutableListOf<AppInfoItem>()
@@ -371,7 +371,7 @@ class Command {
 
                 // 根据备份目录实际文件调整列表
                 var hasData = false
-                execute("find ${Path.getBackupMediaSavePath()} -name \"*\" -type f").apply {
+                execute("find \"${Path.getBackupMediaSavePath()}\" -name \"*\" -type f").apply {
                     // 根据实际文件和配置调整RestoreList
                     for ((index, i) in mediaInfoList.withIndex()) {
                         val tmpList = mutableListOf<MediaInfoItem>()
@@ -616,7 +616,7 @@ class Command {
                     Bashrc.compressAPK(compressionType, outPut) {
                         onAddLine(it)
                     }.apply { ret = this.first }
-                    Bashrc.cd("~").apply { ret = this.first }
+                    Bashrc.cd("/").apply { ret = this.first }
                 }
                 // 检测是否生成压缩包
                 ls(filePath).apply {
@@ -788,7 +788,7 @@ class Command {
          * 检查二进制文件
          */
         suspend fun checkBin(): Boolean {
-            execute("ls -l ${Path.getFilesDir()}/bin").out.apply {
+            execute("ls -l \"${Path.getFilesDir()}/bin\"").out.apply {
                 var count = 0
                 try {
                     val fileList = this.subList(1, this.size)
@@ -840,7 +840,7 @@ class Command {
          * 通过路径解析压缩方式
          */
         suspend fun getCompressionTypeByPath(path: String): String {
-            execute("ls $path").out.joinToLineString.apply {
+            execute("ls \"$path\"").out.joinToLineString.apply {
                 return try {
                     when (this.split("/").last().split(".").last()) {
                         "tar" -> "tar"
@@ -912,7 +912,7 @@ class Command {
          * 列出备份用户
          */
         suspend fun listBackupUsers(): MutableList<String> {
-            val exec = execute("ls ${Path.getBackupUserPath()}")
+            val exec = execute("ls \"${Path.getBackupUserPath()}\"")
             val users = mutableListOf<String>()
             for (i in exec.out) {
                 try {
