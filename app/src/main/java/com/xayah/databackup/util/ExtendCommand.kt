@@ -72,7 +72,7 @@ class ExtendCommand {
             name: String,
             args: String,
         ): Boolean {
-            Command.execute("rclone config create \"${name}\" \"${type}\" \"${args}\"")
+            Command.execute("rclone config create \"${name}\" \"${type}\" $args")
                 .apply {
                     notifyForCommand(this.isSuccess)
                     return this.isSuccess
