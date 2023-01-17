@@ -40,7 +40,7 @@ class BackupViewModel : ViewModel() {
 
     // 应用备份列表
     private val appInfoBackupList
-        get() = App.appInfoList.value.filter { it.backup.app || it.backup.data }
+        get() = App.appInfoList.value.filter { (it.backup.app || it.backup.data) && it.isOnThisDevice }
             .toMutableList()
 
     private val appInfoBackupListNum

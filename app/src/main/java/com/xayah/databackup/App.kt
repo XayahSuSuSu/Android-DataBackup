@@ -1,5 +1,6 @@
 package com.xayah.databackup
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import com.google.android.material.color.DynamicColors
@@ -23,6 +24,7 @@ class App : Application() {
             )
         }
 
+        @SuppressLint("StaticFieldLeak")
         lateinit var globalContext: Context
         lateinit var versionName: String
         lateinit var server: Server
@@ -38,7 +40,7 @@ class App : Application() {
             get() = run {
                 val num = AppInfoListSelectedNum(0, 0)
                 for (i in appInfoList.value) {
-                    if (i.backup.app || i.backup.data) {
+                    if ((i.backup.app || i.backup.data) && i.isOnThisDevice) {
                         if (i.isSystemApp) num.system++
                         else num.installed++
                     }
