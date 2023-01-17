@@ -58,7 +58,7 @@ class GuideUpdateFragment : Fragment() {
                 App.globalContext.saveInitializedVersionName(App.versionName)
                 guideViewModel.finishAndEnter.postValue(true)
             } else {
-                guideViewModel.navigation.postValue(R.id.action_guideUpdateFragment_to_guideTwoFragment)
+                guideViewModel.navigation.postValue(R.id.action_guideUpdateFragment_to_guideEnvFragment)
                 guideViewModel.btnNextText.postValue(GlobalString.grantRootAccess)
             }
         }

@@ -8,32 +8,32 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.guide.GuideViewModel
-import com.xayah.databackup.databinding.FragmentGuideOneBinding
+import com.xayah.databackup.databinding.FragmentGuideIntroductionBinding
 
 
-class GuideOneFragment : Fragment() {
-    private var _binding: FragmentGuideOneBinding? = null
+class GuideIntroductionFragment : Fragment() {
+    private var _binding: FragmentGuideIntroductionBinding? = null
     private val binding get() = _binding!!
     private lateinit var guideViewModel: GuideViewModel
-    private lateinit var viewModel: GuideOneViewModel
+    private lateinit var viewModel: GuideIntroductionViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentGuideOneBinding.inflate(inflater, container, false)
+        _binding = FragmentGuideIntroductionBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         guideViewModel = ViewModelProvider(requireActivity())[GuideViewModel::class.java]
-        viewModel = ViewModelProvider(this)[GuideOneViewModel::class.java]
+        viewModel = ViewModelProvider(this)[GuideIntroductionViewModel::class.java]
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
         guideViewModel.apply {
             btnNextOnClick.postValue {
-                guideViewModel.navigation.postValue(R.id.action_guideOneFragment_to_guideUpdateFragment)
+                guideViewModel.navigation.postValue(R.id.action_guideIntroductionFragment_to_guideUpdateFragment)
             }
         }
     }

@@ -13,6 +13,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.databinding.ActivityGuideBinding
 import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.checkPackageUsageStatsPermission
 import com.xayah.databackup.util.readInitializedVersionName
 
 class GuideActivity : AppCompatActivity() {
@@ -61,12 +62,17 @@ class GuideActivity : AppCompatActivity() {
     }
 
     private fun judgePage() {
+        // 并非第一次打开
         if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
-            if (App.globalContext.readInitializedVersionName() == App.versionName) {
-                toMain()
-            } else {
-                viewModel.navigation.postValue(R.id.action_guideOneFragment_to_guideUpdateFragment)
+            if (App.globalContext.readInitializedVersionName() != App.versionName) {
+                // 版本更新
+                viewModel.navigation.postValue(R.id.action_guideIntroductionFragment_to_guideUpdateFragment)
                 viewModel.btnNextText.postValue(GlobalString.finish)
+            } else if (App.globalContext.checkPackageUsageStatsPermission().not()) {
+                // 权限不够
+                viewModel.navigation.postValue(R.id.action_guideIntroductionFragment_to_guideEnvFragment)
+            } else {
+                toMain()
             }
         }
     }

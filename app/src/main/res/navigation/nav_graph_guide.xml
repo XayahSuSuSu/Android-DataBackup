@@ -1,31 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@id/guideOneFragment">
+    app:startDestination="@id/guideIntroductionFragment">
 
     <fragment
-        android:id="@+id/guideOneFragment"
-        android:name="com.xayah.databackup.fragment.guide.GuideOneFragment"
-        android:label="GuideOneFragment">
+        android:id="@+id/guideIntroductionFragment"
+        android:name="com.xayah.databackup.fragment.guide.GuideIntroductionFragment"
+        android:label="GuideIntroductionFragment">
         <action
-            android:id="@+id/action_guideOneFragment_to_guideUpdateFragment"
+            android:id="@+id/action_guideIntroductionFragment_to_guideUpdateFragment"
             app:destination="@id/guideUpdateFragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_guideIntroductionFragment_to_guideEnvFragment"
+            app:destination="@id/guideEnvFragment"
             app:enterAnim="@animator/nav_default_enter_anim"
             app:exitAnim="@animator/nav_default_exit_anim"
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"
             app:popExitAnim="@animator/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
-        android:id="@+id/guideTwoFragment"
-        android:name="com.xayah.databackup.fragment.guide.GuideTwoFragment"
-        android:label="GuideTwoFragment" />
+        android:id="@+id/guideEnvFragment"
+        android:name="com.xayah.databackup.fragment.guide.GuideEnvFragment"
+        android:label="GuideEnvFragment" />
     <fragment
         android:id="@+id/guideUpdateFragment"
         android:name="com.xayah.databackup.fragment.guide.GuideUpdateFragment"
         android:label="GuideUpdateFragment">
         <action
-            android:id="@+id/action_guideUpdateFragment_to_guideTwoFragment"
-            app:destination="@id/guideTwoFragment"
+            android:id="@+id/action_guideUpdateFragment_to_guideEnvFragment"
+            app:destination="@id/guideEnvFragment"
             app:enterAnim="@animator/nav_default_enter_anim"
             app:exitAnim="@animator/nav_default_exit_anim"
             app:popEnterAnim="@animator/nav_default_pop_enter_anim"

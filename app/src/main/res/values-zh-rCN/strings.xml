@@ -65,7 +65,7 @@
     <string name="finish">完成</string>
     <string name="welcome_to_use">欢迎使用</string>
     <string name="guide_one_subtitle">根据相关政策规定，你需要先仔细阅读并同意以下《用户协议》与《隐私政策》后才能开始使用本应用</string>
-    <string name="guide_one_content">● 本应用产生的所有数据均用于备份/恢复功能本身, 仅存于本地\n● 本应用严禁非法倒卖\n● 本应用权限说明:\nandroid.permission.QUERY_ALL_PACKAGES: 获取本机所有应用包名信息，仅用于生成备份列表\nandroid.permission.INTERNET: 仅用于联网获取应用更新信息)\nandroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: 读写备份配置、存档等文件\nRoot: 仅用于备份/恢复功能本身的特殊权限</string>
+    <string name="guide_one_content">● 本应用产生的所有数据均用于备份/恢复功能本身, 仅存于本地\n● 本应用严禁非法倒卖\n● 本应用权限说明:\nandroid.permission.QUERY_ALL_PACKAGES: 获取本机所有应用包名信息，仅用于生成备份列表\nandroid.permission.INTERNET: 仅用于联网获取应用更新信息)\nandroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: 读写备份配置、存档等文件\nandroid.permission.PACKAGE_USAGE_STATS: 用于获取应用数据大小\nRoot: 仅用于备份/恢复功能本身的特殊权限</string>
     <string name="guide_two_subtitle">要正确使用本应用, 需要通过如下检测</string>
     <string name="next_step">下一步</string>
     <string name="refresh">刷新</string>
@@ -183,4 +183,5 @@
     <string name="backup_test_title">备份时自动校验备份文件</string>
     <string name="testing">校验中</string>
     <string name="opensource_link">开源地址</string>
+    <string name="check_package_usage_stats_permission">检查应用使用情况权限</string>
 </resources>

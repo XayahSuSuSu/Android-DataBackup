@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.xayah.databackup.fragment.guide.GuideOneViewModel" />
+            type="com.xayah.databackup.fragment.guide.GuideIntroductionViewModel" />
 
         <import type="android.view.View" />
     </data>

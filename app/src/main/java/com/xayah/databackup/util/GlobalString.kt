@@ -140,5 +140,6 @@ class GlobalString {
         val testing = App.globalContext.getString(R.string.testing)
         val internalStorage = App.globalContext.getString(R.string.internal_storage)
         val otg = App.globalContext.getString(R.string.otg)
+        val checkPackageUsageStatsPermission = App.globalContext.getString(R.string.check_package_usage_stats_permission)
     }
 }

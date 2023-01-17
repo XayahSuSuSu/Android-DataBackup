@@ -65,7 +65,7 @@
     <string name="finish">Готово</string>
     <string name="welcome_to_use">Ласкаво просимо</string>
     <string name="guide_one_subtitle">Згідно з діючою політикою, вам необхідно уважно прочитати і погодитися з наступною Угодою користувача та Політикою конфіденційності, перш ніж ви почнете використовувати цю програму.</string>
-    <string name="guide_one_content"> ● Всі дані, згенеровані цим додатком, використовуються для створення та відновлення бекапів, і зберігаються лише локально.\n●Незаконний перепродаж цього додатка суворо заборонено.\n● Опис дозволів:\nandroid.permission.QUERY_ALL_PACKAGES: отримання списку всіх пакетів програм, використовується лише для створення списку резервних копій.\nandroid.permission.INTERNET: використовується тільки для отримання інформації про оновлення онлайн:\nadroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: читання та запис конфігурації резервного копіювання, архіву і т. д.\n● Root: дозвіл тільки для самої функції створення та відновлення бекапів.</string>
+    <string name="guide_one_content"> ● Всі дані, згенеровані цим додатком, використовуються для створення та відновлення бекапів, і зберігаються лише локально.\n●Незаконний перепродаж цього додатка суворо заборонено.\n● Опис дозволів:\nandroid.permission.QUERY_ALL_PACKAGES: отримання списку всіх пакетів програм, використовується лише для створення списку резервних копій.\nandroid.permission.INTERNET: використовується тільки для отримання інформації про оновлення онлайн:\nadroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: читання та запис конфігурації резервного копіювання, архіву і т. д.\nandroid.permission.PACKAGE_USAGE_STATS: Used to get application data size.\n● Root: дозвіл тільки для самої функції створення та відновлення бекапів.</string>
     <string name="guide_two_subtitle">Запрошуємо до користування</string>
     <string name="next_step">Далі</string>
     <string name="refresh">Оновити</string>
@@ -183,4 +183,5 @@
     <string name="backup_test_title">Automatically test backup files during backup</string>
     <string name="testing">Testing</string>
     <string name="opensource_link">Open source link</string>
+    <string name="check_package_usage_stats_permission">Check package usage stats permission</string>
 </resources>

@@ -1,9 +1,13 @@
 package com.xayah.databackup.util
 
 import android.app.Activity
+import android.app.AppOpsManager
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.ContextWrapper
+import android.os.Build
+import android.os.Process
+import com.xayah.databackup.App
 import com.xayah.databackup.data.BackupStrategy
 import com.xayah.databackup.data.toBackupStrategy
 
@@ -171,3 +175,22 @@ fun Context.getActivity(): Activity? {
 
 val List<String>.joinToLineString: String
     get() = this.joinToString(separator = "\n")
+
+fun Context.checkPackageUsageStatsPermission(): Boolean {
+    val appOpsService =
+        this.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+    val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        appOpsService.unsafeCheckOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            Process.myUid(),
+            App.globalContext.packageName
+        )
+    } else {
+        appOpsService.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            Process.myUid(),
+            App.globalContext.packageName
+        )
+    }
+    return mode == AppOpsManager.MODE_ALLOWED
+}

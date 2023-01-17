@@ -65,7 +65,7 @@
     <string name="finish">Готово</string>
     <string name="welcome_to_use">Добро пожаловать</string>
     <string name="guide_one_subtitle">Согласно действующей политике, вам необходимо внимательно прочитать и согласиться со следующим Пользовательским соглашением и Политикой конфиденциальности, прежде чем вы начнете использовать это приложение.</string>
-    <string name="guide_one_content"> ● Все данные, сгенерированные этим приложением, используются для создания и восстановления бекапов, и хранятся только локально.\n●Незаконная перепродажа этого приложения строго запрещена.\n● Описание разрешений:\nandroid.permission.QUERY_ALL_PACKAGES: получение списка всех пакетов приложений, используется только для создания списка резервных копий.\nandroid.permission.INTERNET: используется только для получения информации об обновлении приложения онлайн:\nadroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: чтение и запись конфигурации резервного копирования, архива и т. д.\n● Root: разрешение только для самой функции создания и восстановления бекапов.</string>
+    <string name="guide_one_content"> ● Все данные, сгенерированные этим приложением, используются для создания и восстановления бекапов, и хранятся только локально.\n●Незаконная перепродажа этого приложения строго запрещена.\n● Описание разрешений:\nandroid.permission.QUERY_ALL_PACKAGES: получение списка всех пакетов приложений, используется только для создания списка резервных копий.\nandroid.permission.INTERNET: используется только для получения информации об обновлении приложения онлайн:\nadroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: чтение и запись конфигурации резервного копирования, архива и т. д.\nandroid.permission.PACKAGE_USAGE_STATS: Used to get application data size.\n● Root: разрешение только для самой функции создания и восстановления бекапов.</string>
     <string name="guide_two_subtitle">Чтобы правильно использовать это приложение, вам необходимо провести несколько тестов</string>
     <string name="next_step">Дальше</string>
     <string name="refresh">Обновить</string>
@@ -183,4 +183,5 @@
     <string name="backup_test_title">Automatically test backup files during backup</string>
     <string name="testing">Testing</string>
     <string name="opensource_link">Open source link</string>
+    <string name="check_package_usage_stats_permission">Check package usage stats permission</string>
 </resources>

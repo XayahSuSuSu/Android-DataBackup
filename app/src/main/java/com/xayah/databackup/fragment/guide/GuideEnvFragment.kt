@@ -1,6 +1,9 @@
 package com.xayah.databackup.fragment.guide
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.guide.GuideViewModel
-import com.xayah.databackup.databinding.FragmentGuideTwoBinding
+import com.xayah.databackup.databinding.FragmentGuideEnvBinding
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.util.setWithConfirm
 import kotlinx.coroutines.Dispatchers
@@ -18,24 +21,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class GuideTwoFragment : Fragment() {
-    private var _binding: FragmentGuideTwoBinding? = null
+class GuideEnvFragment : Fragment() {
+    private var _binding: FragmentGuideEnvBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: GuideTwoViewModel
+    private lateinit var viewModel: GuideEnvViewModel
     private lateinit var guideViewModel: GuideViewModel
     private var step = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentGuideTwoBinding.inflate(inflater, container, false)
+        _binding = FragmentGuideEnvBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         guideViewModel = ViewModelProvider(requireActivity())[GuideViewModel::class.java]
-        viewModel = ViewModelProvider(this)[GuideTwoViewModel::class.java]
+        viewModel = ViewModelProvider(this)[GuideEnvViewModel::class.java]
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
@@ -54,6 +57,9 @@ class GuideTwoFragment : Fragment() {
                             checkBashrc()
                         }
                         3 -> {
+                            checkPackageUsageStatsPermission()
+                        }
+                        4 -> {
                             finish()
                         }
                     }
@@ -130,10 +136,24 @@ class GuideTwoFragment : Fragment() {
         }
         if (bashrcTest) {
             viewModel.activateBashrcCheck.postValue(GlobalString.symbolTick)
-            guideViewModel.btnNextText.postValue(GlobalString.finish)
+            guideViewModel.btnNextText.postValue(GlobalString.checkPackageUsageStatsPermission)
             step++
         } else {
             viewModel.activateBashrcCheck.postValue(GlobalString.symbolCross)
+        }
+    }
+
+    private fun checkPackageUsageStatsPermission() {
+        if (App.globalContext.checkPackageUsageStatsPermission()) {
+            // 已获取权限
+            viewModel.packageUsageStatsPermissionCheck.postValue(GlobalString.symbolTick)
+            guideViewModel.btnNextText.postValue(GlobalString.finish)
+            step++
+        } else {
+            viewModel.packageUsageStatsPermissionCheck.postValue(GlobalString.symbolQuestion)
+            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+            intent.data = Uri.parse("package:${App.globalContext.packageName}")
+            startActivity(intent)
         }
     }
 
