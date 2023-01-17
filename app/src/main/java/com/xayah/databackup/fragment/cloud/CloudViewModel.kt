@@ -317,8 +317,11 @@ class CloudViewModel : ViewModel() {
                                 // 移除按钮点击事件
                                 materialButtonRemove.setOnClickListener {
                                     runOnScope {
-                                        ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
-                                        rcloneMountMap.value.remove(rcloneConfig.name)
+                                        if (ExtendCommand.rcloneUnmount(rcloneConfig.name)){
+                                            ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                            rcloneMountMap.value.remove(rcloneConfig.name)
+                                            JSON.saveMountHashMapJson(rcloneMountMap.value)
+                                        }
                                         onRemove()
                                     }
                                 }
@@ -410,8 +413,11 @@ class CloudViewModel : ViewModel() {
                                 // 移除按钮点击事件
                                 materialButtonRemove.setOnClickListener {
                                     runOnScope {
-                                        ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
-                                        rcloneMountMap.value.remove(rcloneConfig.name)
+                                        if (ExtendCommand.rcloneUnmount(rcloneConfig.name)){
+                                            ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                            rcloneMountMap.value.remove(rcloneConfig.name)
+                                            JSON.saveMountHashMapJson(rcloneMountMap.value)
+                                        }
                                         onRemove()
                                     }
                                 }
@@ -469,8 +475,11 @@ class CloudViewModel : ViewModel() {
                         // 移除按钮点击事件
                         materialButtonRemove.setOnClickListener {
                             runOnScope {
-                                ExtendCommand.rcloneConfigDelete(rcloneConfig!!.name)
-                                rcloneMountMap.value.remove(rcloneConfig.name)
+                               if (ExtendCommand.rcloneUnmount(rcloneConfig!!.name)){
+                                   ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                   rcloneMountMap.value.remove(rcloneConfig.name)
+                                   JSON.saveMountHashMapJson(rcloneMountMap.value)
+                               }
                                 onRemove()
                             }
                         }
