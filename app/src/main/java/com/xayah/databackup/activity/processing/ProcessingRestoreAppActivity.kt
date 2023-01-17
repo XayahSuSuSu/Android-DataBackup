@@ -1,5 +1,9 @@
 package com.xayah.databackup.activity.processing
 
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.Base64
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
@@ -38,15 +42,31 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
         viewModel.viewModelScope.launch {
             // 设置适配器
             viewModel.mAdapter.apply {
-                for (i in appInfoRestoreList) processingTaskList.value.add(
-                    ProcessingTask(
+                for (i in appInfoRestoreList) {
+                    val task = ProcessingTask(
                         appName = i.appName,
                         packageName = i.packageName,
                         app = i.restoreList[i.restoreIndex].app,
                         data = i.restoreList[i.restoreIndex].data,
                         appIcon = i.appIcon
                     )
-                )
+                    if (task.appIcon == null) {
+                        i.appIconString?.apply {
+                            if (this.isNotEmpty()) {
+                                try {
+                                    val img = Base64.decode(this.toByteArray(), Base64.DEFAULT)
+                                    val bitmap = BitmapFactory.decodeByteArray(img, 0, img.size)
+                                    val drawable: Drawable =
+                                        BitmapDrawable(App.globalContext.resources, bitmap)
+                                    task.appIcon = drawable
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                    }
+                    processingTaskList.value.add(task)
+                }
                 register(ProcessingTaskAdapter())
                 items = processingTaskList.value
                 notifyDataSetChanged()
