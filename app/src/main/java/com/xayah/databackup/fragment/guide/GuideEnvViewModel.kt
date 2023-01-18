@@ -5,17 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.xayah.databackup.util.GlobalString
 
 class GuideEnvViewModel : ViewModel() {
-    val grantRootAccess = "${GlobalString.symbolDot} ${GlobalString.grantRootAccess}"
-    val releasePrebuiltBinaries =
-        "${GlobalString.symbolDot} ${GlobalString.releasePrebuiltBinaries}"
-    val activateBashrc = "${GlobalString.symbolDot} ${GlobalString.activateBashrc}"
-    val packageUsageStatsPermission =
-        "${GlobalString.symbolDot} ${GlobalString.checkPackageUsageStatsPermission}"
-
-    val grantRootAccessCheck: ObservableField<String> = ObservableField(GlobalString.notSelected)
+    val grantRootAccessCheck: ObservableField<String> = ObservableField(GlobalString.notDetected)
     val releasePrebuiltBinariesCheck: ObservableField<String> =
-        ObservableField(GlobalString.notSelected)
-    val activateBashrcCheck: ObservableField<String> = ObservableField(GlobalString.notSelected)
+        ObservableField(GlobalString.notDetected)
+    val activateBashrcCheck: ObservableField<String> = ObservableField(GlobalString.notDetected)
     val packageUsageStatsPermissionCheck: ObservableField<String> =
-        ObservableField(GlobalString.notSelected)
+        ObservableField(GlobalString.notDetected)
 }

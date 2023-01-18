@@ -4,15 +4,12 @@
     <string name="restore">Restore</string>
     <string name="home">Home</string>
     <string name="root" translatable="false">Root</string>
-    <string name="storage_space">Storage space</string>
     <string name="error">Error</string>
     <string name="application">Application</string>
     <string name="data">Data</string>
     <string name="confirm">Confirm</string>
-    <string name="backup_apk_processing">Backup apk…</string>
     <string name="backup_finished">Backup finished</string>
     <string name="restore_finished">Restore finished</string>
-    <string name="install_apk_processing">Install apk…</string>
     <string name="default_backup_save_path" translatable="false">/storage/emulated/0/DataBackup</string>
     <string name="backup_dir">Backup directory</string>
     <string name="compression_type">Compression type</string>
@@ -22,47 +19,16 @@
     <string name="success">Success</string>
     <string name="backup_processing">Backup processing</string>
     <string name="restore_processing">Restore processing</string>
-    <string name="get_apk_path">Get apk path</string>
-    <string name="compress_apk">Compress apk</string>
     <string name="compress">Compress</string>
-    <string name="install">Install</string>
-    <string name="set_SELinux">Set SELinux</string>
     <string name="decompress">Decompress</string>
-    <string name="compress_failed">Compress failed</string>
-    <string name="path_not_exist">Path not exist</string>
-    <string name="compress_apk_failed">Compress apk failed</string>
-    <string name="decompress_failed">Decompress failed</string>
-    <string name="install_apk_failed">Install apk failed!</string>
-    <string name="set_SELinux_failed">Set SELinux failed</string>
-    <string name="get_app_version_failed">Get app version failed</string>
-    <string name="please_type_key_word">Please type key word</string>
-    <string name="please_exit_search_mode">Please exit search mode</string>
-    <string name="custom_dir">Custom directory</string>
     <string name="environment_detection">Environment detection</string>
-    <string name="environment_detection_tip">To run correctly, the following detections need to pass:</string>
-    <string name="test">Test</string>
-    <string name="broken">Broken</string>
     <string name="selected">Selected</string>
     <string name="backup_user">Backup user</string>
-    <string name="history_version">History version</string>
-    <string name="feature_foresight">Feature foresight</string>
-    <string name="github" translatable="false">GitHub</string>
     <string name="compression_type_help">Choose compression type of applications and data, which affects both backup and restore. If you don\'t know what this option is for, don\'t change it</string>
     <string name="backup_user_help">Set backup user for dual/multi-user backup, the backup user folder automatically selected by the backup/restore page. \n\nCurrently passed the test:\nMIUI dual-apps, UserManager, Island.</string>
     <string name="restore_user_help">Set the recovery user for dual/multi-user recovery, the target user for data recovery. \n\nDual-apps may break after the restoration, and a restart is required to make them work.</string>
-    <string name="cautious_action">[Be cautious]</string>
-    <string name="backup_version" translatable="false">1</string>
-    <string name="generate_backup_info_failed">Generate backup info failed!</string>
-    <string name="backup_not_support">No backup detected or the current version is not compatible with the selected backup! If the backup already exists, please use the historical version to restore.</string>
-    <string name="generate_media_info_failed">Generate media info failed!</string>
     <string name="restore_user">Restore user</string>
-    <string name="delete_confirm">Delete?</string>
-    <string name="install_apk_installed">Apk installed</string>
-    <string name="get_app_version_code_failed">Get app version code failed</string>
-    <string name="no_update_and_skip">No update, skip</string>
     <string name="failed">Failed</string>
-    <string name="otg_change_dir">OTG detected. Do you want to change the backup directory to OTG directory?</string>
-    <string name="otg_not_support">The current OTG format does not support file transfers larger than 4G\nPlease format it into one of the following formats:\nFuseblk, ExFAT (recommended), NTFS, ext4, f2fs</string>
     <string name="symbol_tick" translatable="false">✔</string>
     <string name="symbol_cross" translatable="false">✖</string>
     <string name="grant_root_access">Grant root access</string>
@@ -71,8 +37,6 @@
     <string name="finish">Finish</string>
     <string name="welcome_to_use">Welcome to use</string>
     <string name="start_subtitle">According to relevant policies, you need to carefully read and agree to the following User Agreement and Privacy Policy before you start using this application</string>
-    <string name="guide_one_content">● All data generated by this application is used for the backup/restore function itself and is only stored locally\n● Illegal reselling of this application is strictly prohibited\n● Permission description:\nandroid.permission.QUERY_ALL_PACKAGES: Get all the application packages, only used to generate backup list\nandroid.permission.INTERNET: Only used to get application update information online)\nandroid.permission.READ_EXTERNAL_STORAGE/android.permission.WRITE_EXTERNAL_STORAGE/android.permission.MANAGE_EXTERNAL_STORAGE: Read and write backup configuration, archive, etc.\nandroid.permission.PACKAGE_USAGE_STATS: Used to get application data size.\nRoot: Special permission only for the backup/restore function itself</string>
-    <string name="guide_two_subtitle">To use this app correctly, you need to pass the following tests</string>
     <string name="symbol_dot" translatable="false">●</string>
     <string name="next_step">Next step</string>
     <string name="refresh">Refresh</string>
@@ -107,8 +71,6 @@
     <string name="total">Total</string>
     <string name="ready">Ready</string>
     <string name="add">Add</string>
-    <string name="backup_dir_create_failed">Backup dir create failed!</string>
-    <string name="restore_dir">Restore directory</string>
     <string name="restore_app_title">Restore your apps and data here</string>
     <string name="start_restore">Start restore</string>
     <string name="restore_media_title">Restore your media, or custom directory</string>
@@ -117,10 +79,7 @@
     <string name="remove_files_too">This will remove related files, too</string>
     <string name="symbol_exclamation">!</string>
     <string name="remove_failed">Remove failed</string>
-    <string name="retrieve">Retrieve</string>
-    <string name="retrieve_title">Repair or clear invalid application configuration</string>
     <string name="start">Start</string>
-    <string name="retrieve_finish">Retrieved</string>
     <string name="app_retrieved">The retrieved app</string>
     <string name="backup_whole_dir_for_safe">For archiving, please select the entire DataBackup directory to prevent loss of configuration</string>
     <string name="confirm_remove_all_app_and_data_that_backed_up">Sure to remove all apps and data that backed up</string>
@@ -132,7 +91,6 @@
     <string name="stored_in">Stored in</string>
     <string name="dynamic_colors">Dynamic colors</string>
     <string name="dynamic_colors_title">Better Material You. Restart to take effect</string>
-    <string name="tmp">Tmp</string>
     <string name="current_update">Current update</string>
     <string name="bin_permission_error">Prebuilt file permissions are incorrect, please manually grant [777]</string>
     <string name="backup_itself">Backup itself</string>
@@ -163,7 +121,6 @@
     <string name="clickTheRightBtnToStart">Click the right button to start</string>
     <string name="clickTheRightBtnToFinish">Click the right button to finish</string>
     <string name="installed_app">Installed app</string>
-    <string name="all_app">All app</string>
     <string name="alphabet">Alphabet</string>
     <string name="install_time">Install time</string>
     <string name="sort">Sort</string>
@@ -188,8 +145,6 @@
     <string name="password">Password</string>
     <string name="remove">Remove</string>
     <string name="name">Name</string>
-    <string name="server_address_empty_error">The server address is empty</string>
-    <string name="name_empty_error">The name is empty</string>
     <string name="rclone_config_title">Add, manage or remove Rclone configurations here</string>
     <string name="import_">Import</string>
     <string name="usage">Usage</string>
