@@ -1,6 +1,6 @@
 package com.xayah.databackup.fragment.guide
 
-import androidx.lifecycle.MutableLiveData
+import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.util.GlobalString
 
@@ -12,16 +12,10 @@ class GuideEnvViewModel : ViewModel() {
     val packageUsageStatsPermission =
         "${GlobalString.symbolDot} ${GlobalString.checkPackageUsageStatsPermission}"
 
-    val grantRootAccessCheck by lazy {
-        MutableLiveData("")
-    }
-    val releasePrebuiltBinariesCheck by lazy {
-        MutableLiveData("")
-    }
-    val activateBashrcCheck by lazy {
-        MutableLiveData("")
-    }
-    val packageUsageStatsPermissionCheck by lazy {
-        MutableLiveData("")
-    }
+    val grantRootAccessCheck: ObservableField<String> = ObservableField(GlobalString.notSelected)
+    val releasePrebuiltBinariesCheck: ObservableField<String> =
+        ObservableField(GlobalString.notSelected)
+    val activateBashrcCheck: ObservableField<String> = ObservableField(GlobalString.notSelected)
+    val packageUsageStatsPermissionCheck: ObservableField<String> =
+        ObservableField(GlobalString.notSelected)
 }

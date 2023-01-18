@@ -16,6 +16,19 @@
         android:fitsSystemWindows="true"
         tools:context=".activity.guide.GuideActivity">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="@{viewModel.title}"
+                app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
+        </com.google.android.material.appbar.AppBarLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -27,38 +40,55 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:defaultNavHost="true"
-                app:layout_constraintBottom_toTopOf="@id/linearLayout"
+                app:layout_constraintBottom_toTopOf="@id/bottomBar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:navGraph="@navigation/nav_graph_guide" />
 
-            <LinearLayout
-                android:id="@+id/linearLayout"
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/bottomBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginBottom="16dp"
                 app:layout_constraintLeft_toLeftOf="parent">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/materialButton_prev"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="0dp"
+                <com.google.android.material.bottomappbar.BottomAppBar
+                    android:id="@+id/bottomAppBar"
+                    style="@style/Widget.Material3.BottomAppBar"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{viewModel.btnPrevText}" />
+                    android:layout_gravity="bottom"
+                    android:fitsSystemWindows="true">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/materialButton_next"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:enabled="@{viewModel.btnEnabled}"
-                    android:text="@{viewModel.btnNextText}" />
-            </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/linearLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="32dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/materialButton_prev"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@{viewModel.btnPrevText}" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/materialButton_next"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:enabled="@{viewModel.btnEnabled}"
+                            android:text="@{viewModel.btnNextText}" />
+                    </LinearLayout>
+                </com.google.android.material.bottomappbar.BottomAppBar>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

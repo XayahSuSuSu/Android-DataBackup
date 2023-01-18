@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.guide.GuideViewModel
 import com.xayah.databackup.databinding.FragmentGuideIntroductionBinding
-
+import com.xayah.databackup.util.GlobalString
 
 class GuideIntroductionFragment : Fragment() {
     private var _binding: FragmentGuideIntroductionBinding? = null
@@ -30,6 +30,9 @@ class GuideIntroductionFragment : Fragment() {
         viewModel = ViewModelProvider(this)[GuideIntroductionViewModel::class.java]
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+
+        // 标题
+        guideViewModel.title.set(GlobalString.welcomeToUse)
 
         guideViewModel.apply {
             btnNextOnClick.postValue {

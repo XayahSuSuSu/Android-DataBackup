@@ -12,8 +12,8 @@ import com.xayah.databackup.R
 import com.xayah.databackup.activity.guide.GuideViewModel
 import com.xayah.databackup.databinding.FragmentGuideUpdateBinding
 import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.readInitializedVersionName
-import com.xayah.databackup.util.saveInitializedVersionName
+import com.xayah.databackup.util.appReleaseList
+import io.noties.markwon.Markwon
 import kotlinx.coroutines.launch
 
 
@@ -37,6 +37,9 @@ class GuideUpdateFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
+        // 标题
+        guideViewModel.title.set(GlobalString.currentUpdate)
+
         guideViewModel.apply {
             btnPrevText.value = GlobalString.cancel
             btnNextText.value = GlobalString.nextStep
@@ -44,7 +47,35 @@ class GuideUpdateFragment : Fragment() {
                 nextStep()
             }
         }
-        viewModel.initialize()
+        val markwon = Markwon.create(requireContext())
+        viewModel.apply {
+            runOnScope {
+                subtitle.emit("${GlobalString.currentVersion}: ${App.versionName}")
+                App.server.releases({ releaseList ->
+                    runOnScope {
+                        val mReleaseList = releaseList.appReleaseList()
+                        if (mReleaseList.isEmpty()) {
+                            content.emit(GlobalString.fetchFailed)
+                        } else {
+                            var info = ""
+                            for (i in mReleaseList) {
+                                info += "## ${i.name}\n\n"
+                                info += "${i.body}\n\n"
+                            }
+                            content.emit(info)
+                        }
+                        if (_binding != null)
+                            markwon.setMarkdown(binding.content, content.value)
+                    }
+                }, {
+                    runOnScope {
+                        content.emit(GlobalString.fetchFailed)
+                        if (_binding != null)
+                            markwon.setMarkdown(binding.content, content.value)
+                    }
+                })
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -54,13 +85,7 @@ class GuideUpdateFragment : Fragment() {
 
     private fun nextStep() {
         viewModel.viewModelScope.launch {
-            if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
-                App.globalContext.saveInitializedVersionName(App.versionName)
-                guideViewModel.finishAndEnter.postValue(true)
-            } else {
-                guideViewModel.navigation.postValue(R.id.action_guideUpdateFragment_to_guideEnvFragment)
-                guideViewModel.btnNextText.postValue(GlobalString.grantRootAccess)
-            }
+            guideViewModel.navigation.postValue(R.id.action_guideUpdateFragment_to_guideEnvFragment)
         }
     }
 }

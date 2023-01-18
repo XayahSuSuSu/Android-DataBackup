@@ -42,13 +42,16 @@ class GuideEnvFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
+        // 标题
+        guideViewModel.title.set(GlobalString.environmentDetection)
+
         guideViewModel.apply {
             btnNextOnClick.postValue {
                 viewModel.viewModelScope.launch {
                     guideViewModel.btnEnabled.postValue(false)
                     when (step) {
                         0 -> {
-                            onRootAccess()
+                            checkRootAccess()
                         }
                         1 -> {
                             binRelease()
@@ -74,17 +77,16 @@ class GuideEnvFragment : Fragment() {
         _binding = null
     }
 
-    private suspend fun onRootAccess() {
+    private suspend fun checkRootAccess() {
         val isRoot = withContext(Dispatchers.IO) {
             Command.checkRoot()
         }
         if (isRoot) {
-            viewModel.grantRootAccessCheck.postValue(GlobalString.symbolTick)
-            guideViewModel.btnNextText.postValue(GlobalString.releasePrebuiltBinaries)
+            viewModel.grantRootAccessCheck.set(GlobalString.success)
             step++
             return
         }
-        viewModel.grantRootAccessCheck.postValue(GlobalString.symbolCross)
+        viewModel.grantRootAccessCheck.set(GlobalString.failed)
     }
 
     private suspend fun binRelease() {
@@ -112,11 +114,10 @@ class GuideEnvFragment : Fragment() {
                 val that = this
                 withContext(Dispatchers.Main) {
                     if (that) {
-                        viewModel.releasePrebuiltBinariesCheck.postValue(GlobalString.symbolTick)
-                        guideViewModel.btnNextText.postValue(GlobalString.activateBashrc)
+                        viewModel.releasePrebuiltBinariesCheck.set(GlobalString.success)
                         step++
                     } else {
-                        viewModel.releasePrebuiltBinariesCheck.postValue(GlobalString.symbolCross)
+                        viewModel.releasePrebuiltBinariesCheck.set(GlobalString.failed)
                         MaterialAlertDialogBuilder(requireContext()).apply {
                             setWithConfirm(
                                 "${binPath}: ${GlobalString.binPermissionError}",
@@ -135,22 +136,20 @@ class GuideEnvFragment : Fragment() {
             Command.execute("check_bashrc").isSuccess
         }
         if (bashrcTest) {
-            viewModel.activateBashrcCheck.postValue(GlobalString.symbolTick)
-            guideViewModel.btnNextText.postValue(GlobalString.checkPackageUsageStatsPermission)
+            viewModel.activateBashrcCheck.set(GlobalString.success)
             step++
         } else {
-            viewModel.activateBashrcCheck.postValue(GlobalString.symbolCross)
+            viewModel.activateBashrcCheck.set(GlobalString.failed)
         }
     }
 
-    private fun checkPackageUsageStatsPermission() {
+    private suspend fun checkPackageUsageStatsPermission() {
         if (App.globalContext.checkPackageUsageStatsPermission()) {
             // 已获取权限
-            viewModel.packageUsageStatsPermissionCheck.postValue(GlobalString.symbolTick)
+            viewModel.packageUsageStatsPermissionCheck.set(GlobalString.success)
             guideViewModel.btnNextText.postValue(GlobalString.finish)
             step++
         } else {
-            viewModel.packageUsageStatsPermissionCheck.postValue(GlobalString.symbolQuestion)
             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             intent.data = Uri.parse("package:${App.globalContext.packageName}")
             startActivity(intent)

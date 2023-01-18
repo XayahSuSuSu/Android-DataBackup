@@ -141,5 +141,8 @@ class GlobalString {
         val internalStorage = App.globalContext.getString(R.string.internal_storage)
         val otg = App.globalContext.getString(R.string.otg)
         val checkPackageUsageStatsPermission = App.globalContext.getString(R.string.check_package_usage_stats_permission)
+        val welcomeToUse = App.globalContext.getString(R.string.welcome_to_use)
+        val currentUpdate = App.globalContext.getString(R.string.current_update)
+        val notDetected = App.globalContext.getString(R.string.not_detected)
     }
 }

@@ -15,20 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
+            android:paddingBottom="16dp"
             android:layout_height="match_parent">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/current_update"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottieAnimationView"
@@ -36,8 +27,6 @@
                 android:layout_height="300dp"
                 android:layout_marginTop="16dp"
                 android:paddingHorizontal="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/title"
                 app:lottie_autoPlay="true"
                 app:lottie_loop="true"
                 app:lottie_rawRes="@raw/crown" />
@@ -49,20 +38,16 @@
                 android:layout_marginHorizontal="16dp"
                 android:textColor="@color/red"
                 android:text="@{viewModel.subtitle}"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lottieAnimationView" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:paddingHorizontal="16dp"
-                android:text="@{viewModel.content}"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/subtitle" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>

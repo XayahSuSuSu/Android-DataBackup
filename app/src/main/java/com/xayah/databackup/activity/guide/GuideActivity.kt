@@ -61,8 +61,10 @@ class GuideActivity : AppCompatActivity() {
         finish()
     }
 
+    /**
+     * 判断是否是第一次打开
+     */
     private fun judgePage() {
-        // 并非第一次打开
         if (App.globalContext.readInitializedVersionName().isNotEmpty()) {
             if (App.globalContext.readInitializedVersionName() != App.versionName) {
                 // 版本更新

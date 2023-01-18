@@ -1,11 +1,13 @@
 package com.xayah.databackup.activity.guide
 
 import android.view.View
+import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.util.GlobalString
 
 class GuideViewModel : ViewModel() {
+    var title = ObservableField("")
     val btnEnabled by lazy {
         MutableLiveData(true)
     }
