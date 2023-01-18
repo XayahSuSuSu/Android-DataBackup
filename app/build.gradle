@@ -90,4 +90,7 @@ dependencies {
 
     // splashscreen
     implementation 'androidx.core:core-splashscreen:1.0.0'
+
+    // Markwon
+    implementation "io.noties.markwon:core:4.6.2"
 }
