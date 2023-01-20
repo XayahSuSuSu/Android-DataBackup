@@ -18,10 +18,7 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.RcloneConfig
 import com.xayah.databackup.data.RcloneMount
-import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailBinding
-import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailFtpBinding
-import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailSmbBinding
-import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailWebdavBinding
+import com.xayah.databackup.databinding.*
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.setLoading
@@ -30,6 +27,8 @@ import com.xayah.databackup.view.title
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.io.BufferedReader
+import java.io.File
 
 class CloudViewModel : ViewModel() {
     // 文件浏览器
@@ -596,6 +595,34 @@ class CloudViewModel : ViewModel() {
                 commonBottomSheetRcloneConfigDetailBinding(v.context, { dismiss() }, null)
             setWithTopBar().apply {
                 addView(title(GlobalString.configuration))
+                addView(binding.root)
+            }
+        }
+    }
+
+    /**
+     * Rclone日志按钮点击事件
+     */
+    fun onLogBtnClick(v: View) {
+        BottomSheetDialog(v.context).apply {
+            val binding = BottomSheetRcloneLogBinding.inflate(
+                LayoutInflater.from(context),
+                null,
+                false
+            ).apply {
+                runOnScope {
+                    Command.execute("chmod 777 -R \"${ExtendCommand.logDir}\"")
+                    try {
+                        val bufferedReader: BufferedReader =
+                            File(ExtendCommand.logPath).bufferedReader()
+                        log.text = bufferedReader.use { it.readText() }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            setWithTopBar().apply {
+                addView(title(GlobalString.log))
                 addView(binding.root)
             }
         }

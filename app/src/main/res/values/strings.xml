@@ -146,7 +146,6 @@
     <string name="remove">Remove</string>
     <string name="name">Name</string>
     <string name="rclone_config_title">Add, manage or remove Rclone configurations here</string>
-    <string name="import_">Import</string>
     <string name="usage">Usage</string>
     <string name="mount">Mount</string>
     <string name="mount_directory_not_selected">Mount directory not selected</string>

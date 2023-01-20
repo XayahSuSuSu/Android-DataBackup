@@ -127,7 +127,6 @@
     <string name="remove">移除</string>
     <string name="name">名称</string>
     <string name="rclone_config_title">在此处添加、管理或移除Rclone配置</string>
-    <string name="import_">导入</string>
     <string name="usage">使用</string>
     <string name="mount">挂载</string>
     <string name="mount_directory_not_selected">挂载目录未选择</string>

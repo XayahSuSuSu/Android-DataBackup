@@ -11,8 +11,8 @@ import kotlinx.coroutines.withContext
 class ExtendCommand {
     companion object {
         private const val TAG = "ExtendCommand"
-        private val logDir = "${Path.getFilesDir()}/log"
-        private val logPath = "${logDir}/rclone_log_${App.getTimeStamp()}"
+        val logDir = "${Path.getFilesDir()}/log"
+        val logPath = "${logDir}/rclone_log_${App.getTimeStamp()}"
 
         /**
          * 切换至IO协程运行
