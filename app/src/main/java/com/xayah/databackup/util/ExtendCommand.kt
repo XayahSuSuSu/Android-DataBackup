@@ -11,6 +11,8 @@ import kotlinx.coroutines.withContext
 class ExtendCommand {
     companion object {
         private const val TAG = "ExtendCommand"
+        private val logDir = "${Path.getFilesDir()}/log"
+        private val logPath = "${logDir}/rclone_log_${App.getTimeStamp()}"
 
         /**
          * 切换至IO协程运行
@@ -72,7 +74,7 @@ class ExtendCommand {
             name: String,
             args: String,
         ): Boolean {
-            Command.execute("rclone config create \"${name}\" \"${type}\" $args")
+            Command.execute("rclone config create \"${name}\" \"${type}\" $args --log-file $logPath")
                 .apply {
                     notifyForCommand(this.isSuccess)
                     return this.isSuccess
@@ -85,9 +87,11 @@ class ExtendCommand {
         suspend fun rcloneConfigParse(): MutableList<RcloneConfig> {
             val rcloneConfigList = mutableListOf<RcloneConfig>()
             try {
-                val exec = Command.execute("rclone config show").apply {
-                    this.out.add("[]")
-                }
+                val exec =
+                    Command.execute("rclone config show --log-file $logPath")
+                        .apply {
+                            this.out.add("[]")
+                        }
                 var rcloneConfig: RcloneConfig? = null
                 for (i in exec.out) {
                     if (i.isEmpty()) continue
@@ -124,10 +128,11 @@ class ExtendCommand {
          * Rclone配置移除
          */
         suspend fun rcloneConfigDelete(name: String): Boolean {
-            Command.execute("rclone config delete \"${name}\"").apply {
-                notifyForCommand(this.isSuccess)
-                return this.isSuccess
-            }
+            Command.execute("rclone config delete \"${name}\" --log-file $logPath")
+                .apply {
+                    notifyForCommand(this.isSuccess)
+                    return this.isSuccess
+                }
         }
 
         /**
@@ -150,7 +155,7 @@ class ExtendCommand {
          * Rclone挂载
          */
         suspend fun rcloneMount(name: String, dest: String): Boolean {
-            Command.execute("rclone mount \"${name}:\" \"${dest}\" --allow-non-empty --allow-other --allow-root --daemon --vfs-cache-mode off")
+            Command.execute("rclone mount \"${name}:\" \"${dest}\" --allow-non-empty --allow-other --allow-root --daemon --vfs-cache-mode off --log-file $logPath")
                 .apply {
                     notifyForCommand(this.isSuccess)
                     return this.isSuccess
