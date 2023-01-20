@@ -20,6 +20,7 @@ import com.xayah.databackup.data.RcloneConfig
 import com.xayah.databackup.data.RcloneMount
 import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailBinding
 import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailFtpBinding
+import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailSmbBinding
 import com.xayah.databackup.databinding.BottomSheetRcloneConfigDetailWebdavBinding
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
@@ -279,94 +280,8 @@ class CloudViewModel : ViewModel() {
             val judgeType = {
                 content.removeAllViews()
                 when (autoCompleteTextViewType.text.toString().trim()) {
-                    // WebDAV
-                    typeKeyList[0] -> {
-                        val binding = BottomSheetRcloneConfigDetailWebdavBinding.inflate(
-                            LayoutInflater.from(context),
-                            null,
-                            false
-                        ).apply {
-                            // 监听名称输入
-                            textInputEditTextName.addTextChangedListener {
-                                emptyTextValidation(
-                                    textInputEditTextName,
-                                    textInputLayoutName,
-                                    GlobalString.emptyError
-                                )
-                            }
-
-                            // 监听服务器地址输入
-                            textInputEditTextServerAddress.addTextChangedListener {
-                                emptyTextValidation(
-                                    textInputEditTextServerAddress,
-                                    textInputLayoutServerAddress,
-                                    GlobalString.emptyError
-                                )
-                            }
-
-                            if (rcloneConfig == null) {
-                                materialButtonRemove.isEnabled = false
-                            } else {
-                                // 读取配置
-                                textInputEditTextName.setText(rcloneConfig.name)
-                                textInputEditTextName.isEnabled = false
-                                textInputEditTextServerAddress.setText(rcloneConfig.url)
-                                textInputEditTextUsername.setText(rcloneConfig.user)
-                                textInputEditTextPassword.setText(rcloneConfig.pass)
-
-                                // 移除按钮点击事件
-                                materialButtonRemove.setOnClickListener {
-                                    runOnScope {
-                                        if (ExtendCommand.rcloneUnmount(rcloneConfig.name)){
-                                            ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
-                                            rcloneMountMap.value.remove(rcloneConfig.name)
-                                            JSON.saveMountHashMapJson(rcloneMountMap.value)
-                                        }
-                                        onRemove()
-                                    }
-                                }
-                            }
-                        }
-                        // 确定按钮点击事件
-                        materialButtonConfirm.setOnClickListener {
-                            val type = typeValueList[typeKeyList.indexOf(
-                                autoCompleteTextViewType.text.toString().trim()
-                            )]
-                            val name = binding.textInputEditTextName.text.toString().trim()
-                            val url = binding.textInputEditTextServerAddress.text.toString().trim()
-                            val user = binding.textInputEditTextUsername.text.toString().trim()
-                            val pass = binding.textInputEditTextPassword.text.toString()
-
-                            // 名称合法性验证
-                            val nameValidation = emptyTextValidation(
-                                binding.textInputEditTextName,
-                                binding.textInputLayoutName,
-                                GlobalString.emptyError
-                            )
-
-                            // 服务器地址合法性验证
-                            val serverAddressValidation = emptyTextValidation(
-                                binding.textInputEditTextServerAddress,
-                                binding.textInputLayoutServerAddress,
-                                GlobalString.emptyError
-                            )
-
-                            val isValid = nameValidation && serverAddressValidation
-                            if (isValid)
-                                runOnScope {
-                                    // 创建/修改配置
-                                    val args =
-                                        "url=\"${url}\" vendor=other user=\"${user}\" pass=\"${pass}\""
-                                    ExtendCommand.rcloneConfigCreate(type, name, args)
-                                    // 刷新
-                                    refresh(false)
-                                    onConfirm()
-                                }
-                        }
-                        content.addView(binding.root)
-                    }
                     // FTP
-                    typeKeyList[1] -> {
+                    typeKeyList[0] -> {
                         val binding = BottomSheetRcloneConfigDetailFtpBinding.inflate(
                             LayoutInflater.from(context),
                             null,
@@ -462,6 +377,178 @@ class CloudViewModel : ViewModel() {
                                     // 创建/修改配置
                                     val args =
                                         "host=\"${host}\" port=\"${port}\" user=\"${user}\" pass=\"${pass}\""
+                                    ExtendCommand.rcloneConfigCreate(type, name, args)
+                                    // 刷新
+                                    refresh(false)
+                                    onConfirm()
+                                }
+                        }
+                        content.addView(binding.root)
+                    }
+                    // WebDAV
+                    typeKeyList[1] -> {
+                        val binding = BottomSheetRcloneConfigDetailWebdavBinding.inflate(
+                            LayoutInflater.from(context),
+                            null,
+                            false
+                        ).apply {
+                            // 监听名称输入
+                            textInputEditTextName.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextName,
+                                    textInputLayoutName,
+                                    GlobalString.emptyError
+                                )
+                            }
+
+                            // 监听服务器地址输入
+                            textInputEditTextServerAddress.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextServerAddress,
+                                    textInputLayoutServerAddress,
+                                    GlobalString.emptyError
+                                )
+                            }
+
+                            if (rcloneConfig == null) {
+                                materialButtonRemove.isEnabled = false
+                            } else {
+                                // 读取配置
+                                textInputEditTextName.setText(rcloneConfig.name)
+                                textInputEditTextName.isEnabled = false
+                                textInputEditTextServerAddress.setText(rcloneConfig.url)
+                                textInputEditTextUsername.setText(rcloneConfig.user)
+                                textInputEditTextPassword.setText(rcloneConfig.pass)
+
+                                // 移除按钮点击事件
+                                materialButtonRemove.setOnClickListener {
+                                    runOnScope {
+                                        if (ExtendCommand.rcloneUnmount(rcloneConfig.name)){
+                                            ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                            rcloneMountMap.value.remove(rcloneConfig.name)
+                                            JSON.saveMountHashMapJson(rcloneMountMap.value)
+                                        }
+                                        onRemove()
+                                    }
+                                }
+                            }
+                        }
+                        // 确定按钮点击事件
+                        materialButtonConfirm.setOnClickListener {
+                            val type = typeValueList[typeKeyList.indexOf(
+                                autoCompleteTextViewType.text.toString().trim()
+                            )]
+                            val name = binding.textInputEditTextName.text.toString().trim()
+                            val url = binding.textInputEditTextServerAddress.text.toString().trim()
+                            val user = binding.textInputEditTextUsername.text.toString().trim()
+                            val pass = binding.textInputEditTextPassword.text.toString()
+
+                            // 名称合法性验证
+                            val nameValidation = emptyTextValidation(
+                                binding.textInputEditTextName,
+                                binding.textInputLayoutName,
+                                GlobalString.emptyError
+                            )
+
+                            // 服务器地址合法性验证
+                            val serverAddressValidation = emptyTextValidation(
+                                binding.textInputEditTextServerAddress,
+                                binding.textInputLayoutServerAddress,
+                                GlobalString.emptyError
+                            )
+
+                            val isValid = nameValidation && serverAddressValidation
+                            if (isValid)
+                                runOnScope {
+                                    // 创建/修改配置
+                                    val args =
+                                        "url=\"${url}\" vendor=other user=\"${user}\" pass=\"${pass}\""
+                                    ExtendCommand.rcloneConfigCreate(type, name, args)
+                                    // 刷新
+                                    refresh(false)
+                                    onConfirm()
+                                }
+                        }
+                        content.addView(binding.root)
+                    }
+                    // SMB
+                    typeKeyList[2] -> {
+                        val binding = BottomSheetRcloneConfigDetailSmbBinding.inflate(
+                            LayoutInflater.from(context),
+                            null,
+                            false
+                        ).apply {
+                            // 监听名称输入
+                            textInputEditTextName.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextName,
+                                    textInputLayoutName,
+                                    GlobalString.emptyError
+                                )
+                            }
+
+                            // 监听服务器地址输入
+                            textInputEditTextServerAddress.addTextChangedListener {
+                                emptyTextValidation(
+                                    textInputEditTextServerAddress,
+                                    textInputLayoutServerAddress,
+                                    GlobalString.emptyError
+                                )
+                            }
+
+                            if (rcloneConfig == null) {
+                                materialButtonRemove.isEnabled = false
+                            } else {
+                                // 读取配置
+                                textInputEditTextName.setText(rcloneConfig.name)
+                                textInputEditTextName.isEnabled = false
+                                textInputEditTextServerAddress.setText(rcloneConfig.host)
+                                textInputEditTextUsername.setText(rcloneConfig.user)
+                                textInputEditTextPassword.setText(rcloneConfig.pass)
+
+                                // 移除按钮点击事件
+                                materialButtonRemove.setOnClickListener {
+                                    runOnScope {
+                                        if (ExtendCommand.rcloneUnmount(rcloneConfig.name)){
+                                            ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
+                                            rcloneMountMap.value.remove(rcloneConfig.name)
+                                            JSON.saveMountHashMapJson(rcloneMountMap.value)
+                                        }
+                                        onRemove()
+                                    }
+                                }
+                            }
+                        }
+                        // 确定按钮点击事件
+                        materialButtonConfirm.setOnClickListener {
+                            val type = typeValueList[typeKeyList.indexOf(
+                                autoCompleteTextViewType.text.toString().trim()
+                            )]
+                            val name = binding.textInputEditTextName.text.toString().trim()
+                            val host = binding.textInputEditTextServerAddress.text.toString().trim()
+                            val user = binding.textInputEditTextUsername.text.toString().trim()
+                            val pass = binding.textInputEditTextPassword.text.toString()
+
+                            // 名称合法性验证
+                            val nameValidation = emptyTextValidation(
+                                binding.textInputEditTextName,
+                                binding.textInputLayoutName,
+                                GlobalString.emptyError
+                            )
+
+                            // 服务器地址合法性验证
+                            val serverAddressValidation = emptyTextValidation(
+                                binding.textInputEditTextServerAddress,
+                                binding.textInputLayoutServerAddress,
+                                GlobalString.emptyError
+                            )
+
+                            val isValid = nameValidation && serverAddressValidation
+                            if (isValid)
+                                runOnScope {
+                                    // 创建/修改配置
+                                    val args =
+                                        "host=\"${host}\" user=\"${user}\" pass=\"${pass}\""
                                     ExtendCommand.rcloneConfigCreate(type, name, args)
                                     // 刷新
                                     refresh(false)

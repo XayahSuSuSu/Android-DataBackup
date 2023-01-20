@@ -173,11 +173,13 @@
     <string name="storage_desc">Used for backup configuration, archive read and write</string>
     <string name="not_detected">Not detected</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
-        <item>WebDAV</item>
         <item>FTP</item>
+        <item>WebDAV</item>
+        <item>SMB</item>
     </string-array>
     <string-array name="rclone_config_type_array_value" translatable="false">
-        <item>webdav</item>
         <item>ftp</item>
+        <item>webdav</item>
+        <item>smb</item>
     </string-array>
 </resources>
