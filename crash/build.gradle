@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace 'com.xayah.crash'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         minSdk 28
-        targetSdk 32
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -36,8 +36,8 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
@@ -50,5 +50,5 @@ dependencies {
     implementation 'com.airbnb.android:lottie:5.0.3'
 
     // MaterialYouFileExplorer
-    implementation 'com.github.XayahSuSuSu:Android-MaterialYouFileExplorer:1.2.2'
+    implementation 'com.github.XayahSuSuSu:Android-MaterialYouFileExplorer:1.3.2'
 }
