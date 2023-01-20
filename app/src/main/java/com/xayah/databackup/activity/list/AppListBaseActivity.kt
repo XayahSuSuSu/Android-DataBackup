@@ -132,6 +132,10 @@ abstract class AppListBaseActivity : AppCompatActivity() {
                                 // 安装时间
                                 materialButtonToggleGroup.check(R.id.button_first_install_time)
                             }
+                            AppListSort.DataSizeAscending, AppListSort.DataSizeDescending -> {
+                                // 数据大小
+                                materialButtonToggleGroup.check(R.id.button_data_size)
+                            }
                         }
                         // 字母表序
                         buttonAlphabet.apply {
@@ -177,6 +181,30 @@ abstract class AppListBaseActivity : AppCompatActivity() {
                                 } else {
                                     viewModel.pref.sort = AppListSort.FirstInstallTimeAscending
                                     text = firstInstallTimeAscendingText
+                                }
+                                initialize(viewModel.pref)
+                            }
+                        }
+                        // 数据大小
+                        buttonDataSize.apply {
+                            val dataSizeAscendingText =
+                                "${GlobalString.dataSize} ${GlobalString.symbolTriangle}"
+                            val dataSizeDescendingText =
+                                "${GlobalString.dataSize} ${GlobalString.symbolAntiTriangle}"
+                            if (viewModel.pref.sort == AppListSort.DataSizeAscending) {
+                                // 升序
+                                buttonDataSize.text = dataSizeAscendingText
+                            } else {
+                                // 降序
+                                buttonDataSize.text = dataSizeDescendingText
+                            }
+                            setOnClickListener {
+                                if (viewModel.pref.sort == AppListSort.DataSizeAscending) {
+                                    viewModel.pref.sort = AppListSort.DataSizeDescending
+                                    text = dataSizeDescendingText
+                                } else {
+                                    viewModel.pref.sort = AppListSort.DataSizeAscending
+                                    text = dataSizeAscendingText
                                 }
                                 initialize(viewModel.pref)
                             }

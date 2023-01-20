@@ -98,5 +98,6 @@ class GlobalString {
         val welcomeToUse = App.globalContext.getString(R.string.welcome_to_use)
         val currentUpdate = App.globalContext.getString(R.string.current_update)
         val notDetected = App.globalContext.getString(R.string.not_detected)
+        val dataSize = App.globalContext.getString(R.string.data_size)
     }
 }

@@ -18,6 +18,8 @@ enum class AppListSort {
     AlphabetDescending,         // 字母表顺序降序
     FirstInstallTimeAscending,  // 首次安装时间升序
     FirstInstallTimeDescending, // 首次安装时间降序
+    DataSizeAscending,          // 数据大小升序
+    DataSizeDescending,         // 数据大小降序
 }
 
 /**

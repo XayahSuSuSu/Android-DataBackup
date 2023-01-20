@@ -148,4 +148,5 @@
     <string name="storage">存储</string>
     <string name="storage_desc">用于备份配置、存档读写</string>
     <string name="not_detected">未检测</string>
+    <string name="data_size">数据大小</string>
 </resources>

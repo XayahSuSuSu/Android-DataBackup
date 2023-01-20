@@ -152,6 +152,12 @@ class AppListRestoreActivity : AppListBaseActivity() {
                     AppListSort.FirstInstallTimeDescending -> {
                         sortByDescending { it.firstInstallTime }
                     }
+                    AppListSort.DataSizeAscending -> {
+                        sortBy { it.sizeBytes }
+                    }
+                    AppListSort.DataSizeDescending -> {
+                        sortByDescending { it.sizeBytes }
+                    }
                 }
             })
 
