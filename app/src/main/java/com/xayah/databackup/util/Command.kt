@@ -1,8 +1,10 @@
 package com.xayah.databackup.util
 
+import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
+import android.os.Process
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
@@ -20,6 +22,9 @@ import java.util.*
 class Command {
     companion object {
         const val TAG = "Command"
+
+        private val storageStatsManager =
+            App.globalContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
 
         /**
          * 切换至IO协程运行
@@ -229,6 +234,7 @@ class Command {
                                                     _restoreIndex = -1,
                                                     restoreList = mutableListOf(),
                                                     appIconString = "",
+                                                    storageStats = StorageStats()
                                                 ) else appInfoList[appInfoIndex]
 
                                             appInfo.apply {
@@ -295,6 +301,7 @@ class Command {
                                 _restoreIndex = -1,
                                 restoreList = mutableListOf(),
                                 appIconString = "",
+                                storageStats = StorageStats()
                             ) else appInfoList[appInfoIndex]
 
                         val appIcon = i.applicationInfo.loadIcon(packageManager)
@@ -311,6 +318,21 @@ class Command {
                             this.backup.versionName = versionName
                             this.backup.versionCode = versionCode
                             this.isOnThisDevice = true
+                        }
+                        try {
+                            storageStatsManager.queryStatsForPackage(
+                                i.applicationInfo.storageUuid,
+                                i.packageName,
+                                Process.myUserHandle()
+                            ).apply {
+                                val storageStats = StorageStats(appBytes, cacheBytes, dataBytes)
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    storageStats.externalCacheBytes = externalCacheBytes
+                                }
+                                appInfo.storageStats = storageStats
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                         if (appInfoIndex == -1) appInfoList.add(appInfo)
                     } catch (e: Exception) {

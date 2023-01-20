@@ -64,7 +64,9 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -73,16 +75,26 @@
                     style="@style/Widget.Material3.Chip.Suggestion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
                     android:checkable="false"
                     android:ellipsize="end"
                     android:maxWidth="120dp"
                     android:textColor="@color/red"
                     app:chipBackgroundColor="@color/redContainer"
                     app:chipStrokeColor="@color/redContainer"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_size"
+                    style="@style/Widget.Material3.Chip.Suggestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:checkable="false"
+                    android:ellipsize="start"
+                    android:maxWidth="120dp"
+                    android:textColor="@color/yellow"
+                    app:chipBackgroundColor="@color/yellowContainer"
+                    app:chipStrokeColor="@color/yellowContainer"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button" />
 
                 <com.google.android.material.chip.Chip
@@ -90,19 +102,16 @@
                     style="@style/Widget.Material3.Chip.Suggestion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginStart="8dp"
                     android:checkable="false"
                     android:ellipsize="start"
                     android:maxWidth="180dp"
                     android:textColor="@color/blue"
                     app:chipBackgroundColor="@color/blueContainer"
                     app:chipStrokeColor="@color/blueContainer"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/chip_version"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Button" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

@@ -3,6 +3,7 @@ package com.xayah.databackup.data
 import android.graphics.drawable.Drawable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.text.DecimalFormat
 import kotlin.math.absoluteValue
 
 data class Release(
@@ -35,6 +36,13 @@ data class AppInfoItem(
     @Expose var date: String,        // 备份日期(10位时间戳)
 )
 
+data class StorageStats(
+    @Expose var appBytes: Long = 0,           // 应用大小
+    @Expose var cacheBytes: Long = 0,         // 缓存大小
+    @Expose var dataBytes: Long = 0,          // 数据大小
+    @Expose var externalCacheBytes: Long = 0, // 外部共享存储缓存数据大小
+)
+
 /**
  * 应用信息
  */
@@ -47,6 +55,7 @@ data class AppInfo(
     @Expose var _restoreIndex: Int,                      // 恢复选中索引
     @Expose var restoreList: MutableList<AppInfoItem>,   // 恢复信息列表
     @Expose var appIconString: String?,                  // 应用图标(以String方式存储)
+    @Expose var storageStats: StorageStats?,              // 存储相关
     var isOnThisDevice: Boolean = false,
     var appIcon: Drawable? = null,
 ) {
@@ -71,6 +80,38 @@ data class AppInfo(
             } else {
                 value
             }
+        }
+
+    val sizeBytes: Long
+        get() = run {
+            if (storageStats != null) {
+                storageStats!!.appBytes + storageStats!!.dataBytes
+            } else {
+                0L
+            }
+        }
+
+    val sizeDisplay: String
+        get() = run {
+            var unit = "Bytes"
+            var size = sizeBytes.toDouble()
+            val gb = (1000 * 1000 * 1000).toDouble()
+            val mb = (1000 * 1000).toDouble()
+            val kb = (1000).toDouble()
+            if (sizeBytes > gb) {
+                // GB
+                size = sizeBytes / gb
+                unit = "GB"
+            } else if (sizeBytes > mb) {
+                // GB
+                size = sizeBytes / mb
+                unit = "MB"
+            } else if (sizeBytes > kb) {
+                // GB
+                size = sizeBytes / kb
+                unit = "KB"
+            }
+            "${DecimalFormat("#.00").format(size)} $unit"
         }
 }
 

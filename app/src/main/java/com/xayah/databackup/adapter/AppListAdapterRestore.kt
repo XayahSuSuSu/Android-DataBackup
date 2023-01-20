@@ -87,6 +87,11 @@ class AppListAdapterRestore(
             }
         }
 
+        // 存储Chip
+        binding.chipSize.apply {
+            visibility = View.GONE
+        }
+
         // 日期Chip
         binding.chipDate.apply {
             setOnClickListener {

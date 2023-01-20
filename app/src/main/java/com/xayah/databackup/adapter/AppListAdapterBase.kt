@@ -69,6 +69,16 @@ abstract class AppListAdapterBase : ItemViewDelegate<AppInfo, AppListAdapterBase
             }
         }
 
+        // 存储Chip
+        binding.chipSize.apply {
+            if (item.sizeBytes != 0L) {
+                visibility = View.VISIBLE
+                text = item.sizeDisplay
+            } else {
+                visibility = View.GONE
+            }
+        }
+
         // 日期Chip
         binding.chipDate.apply {
             if (item.restoreList.isNotEmpty()) {
