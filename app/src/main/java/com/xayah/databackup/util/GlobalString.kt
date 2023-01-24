@@ -94,10 +94,17 @@ class GlobalString {
         val testing = App.globalContext.getString(R.string.testing)
         val internalStorage = App.globalContext.getString(R.string.internal_storage)
         val otg = App.globalContext.getString(R.string.otg)
-        val checkPackageUsageStatsPermission = App.globalContext.getString(R.string.check_package_usage_stats_permission)
+        val checkPackageUsageStatsPermission =
+            App.globalContext.getString(R.string.check_package_usage_stats_permission)
         val welcomeToUse = App.globalContext.getString(R.string.welcome_to_use)
         val currentUpdate = App.globalContext.getString(R.string.current_update)
         val notDetected = App.globalContext.getString(R.string.not_detected)
         val dataSize = App.globalContext.getString(R.string.data_size)
+        val settingSELinux = App.globalContext.getString(R.string.setting_SELinux)
+        val compressing = App.globalContext.getString(R.string.compressing)
+        val decompressing = App.globalContext.getString(R.string.decompressing)
+        val finished = App.globalContext.getString(R.string.finished)
+        val noChangeAndSkip = App.globalContext.getString(R.string.no_change_and_skip)
+        val speed = App.globalContext.getString(R.string.speed)
     }
 }

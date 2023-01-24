@@ -6,9 +6,9 @@ import android.graphics.drawable.Drawable
 import android.util.Base64
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
+import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
-import com.xayah.databackup.data.AppInfoBaseNum
-import com.xayah.databackup.data.ProcessingTask
+import com.xayah.databackup.data.*
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +35,11 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
     // 任务列表
     private val processingTaskList by lazy {
         MutableStateFlow(mutableListOf<ProcessingTask>())
+    }
+
+    // Processing项目哈希表
+    private val processingItemMap by lazy {
+        MutableStateFlow(hashMapOf<String, ProcessingItem>())
     }
 
     override fun initialize(viewModel: ProcessingBaseViewModel) {
@@ -72,6 +77,10 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                 notifyDataSetChanged()
             }
 
+            viewModel.mAdapterItems.apply {
+                register(ProcessingItemAdapter())
+            }
+
             // 设置备份状态
             viewModel.btnText.set(GlobalString.restore)
             viewModel.btnDesc.set(GlobalString.clickTheRightBtnToStart)
@@ -99,7 +108,6 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                             viewModel.packageName.set(i.packageName)
                             viewModel.appVersion.set(i.restoreList[i.restoreIndex].versionName)
                             viewModel.appIcon.set(i.appIcon)
-                            viewModel.isBackupApk.set(i.restoreList[i.restoreIndex].app)
 
                             val packageName = viewModel.packageName.get()!!
                             val userId = App.globalContext.readRestoreUser()
@@ -111,61 +119,100 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                             val userDePath = "${inPath}/user_de.$suffix"
                             val dataPath = "${inPath}/data.$suffix"
                             val obbPath = "${inPath}/obb.$suffix"
-                            if (i.restoreList[i.restoreIndex].data) {
-                                Command.ls(userPath).apply { viewModel.isBackupUser.set(this) }
-                                Command.ls(userDePath).apply { viewModel.isBackupUserDe.set(this) }
-                                Command.ls(dataPath).apply { viewModel.isBackupData.set(this) }
-                                Command.ls(obbPath).apply { viewModel.isBackupObb.set(this) }
-                            } else {
-                                viewModel.isBackupUser.set(false)
-                                viewModel.isBackupUserDe.set(false)
-                                viewModel.isBackupData.set(false)
-                                viewModel.isBackupObb.set(false)
+
+                            // 设置适配器
+                            viewModel.mAdapterItems.apply {
+                                processingItemMap.value.clear()
+                                if (i.restoreList[i.restoreIndex].app) {
+                                    // 检查是否备份APK
+                                    processingItemMap.value[ProcessingItemTypeAPK] =
+                                        ProcessingItem.APK()
+                                }
+                                if (i.restoreList[i.restoreIndex].data) {
+                                    // 检查是否备份数据
+                                    Command.ls(userPath).apply {
+                                        if (this)
+                                            processingItemMap.value[ProcessingItemTypeUSER] =
+                                                ProcessingItem.USER()
+                                    }
+                                    Command.ls(userDePath).apply {
+                                        if (this)
+                                            processingItemMap.value[ProcessingItemTypeUSERDE] =
+                                                ProcessingItem.USERDE()
+                                    }
+                                    Command.ls(dataPath).apply {
+                                        if (this)
+                                            processingItemMap.value[ProcessingItemTypeDATA] =
+                                                ProcessingItem.DATA()
+                                    }
+                                    Command.ls(obbPath).apply {
+                                        if (this)
+                                            processingItemMap.value[ProcessingItemTypeOBB] =
+                                                ProcessingItem.OBB()
+                                    }
+                                }
+                                items = processingItemMap.value.values.sortedBy { it.weight }
+                                viewModel.viewModelScope.launch {
+                                    refreshProcessingItems(viewModel)
+                                }
                             }
 
                             // 开始恢复
                             var state = true // 该任务是否成功完成
-                            if (viewModel.isBackupApk.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeAPK)) {
                                 // 恢复应用
-                                viewModel.processingApk.set(true)
                                 Command.installAPK(
                                     inPath,
                                     packageName,
                                     userId,
                                     i.restoreList[i.restoreIndex].versionCode.toString()
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeAPK]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     state = this
                                 }
-                                viewModel.processingApk.set(false)
                                 if (!state) {
                                     viewModel.failedList.value.add(processingTaskList.value[index])
                                     continue
                                 }
-                                initializeSizeAndSpeed(viewModel)
                             }
 
                             // 判断是否安装该应用
                             Bashrc.findPackage(userId, packageName).apply {
                                 if (!this.first) {
                                     // 未安装
-                                    viewModel.isBackupUser.set(false)
-                                    viewModel.isBackupData.set(false)
-                                    viewModel.isBackupObb.set(false)
+                                    processingItemMap.value.remove(ProcessingItemTypeUSER)
+                                    processingItemMap.value.remove(ProcessingItemTypeUSERDE)
+                                    processingItemMap.value.remove(ProcessingItemTypeDATA)
+                                    processingItemMap.value.remove(ProcessingItemTypeOBB)
                                     state = false
                                     App.logcat.addLine("${packageName}: Not installed")
                                 }
                             }
 
-                            if (viewModel.isBackupUser.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeUSER)) {
                                 // 恢复User
-                                viewModel.processingUser.set(true)
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(userPath),
                                     "user",
                                     userPath,
                                     packageName,
                                     Path.getUserPath(userId)
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeUSER]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                 }
                                 Command.setOwnerAndSELinux(
@@ -173,20 +220,33 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     "${Path.getUserPath(userId)}/${packageName}",
                                     userId
-                                )
-                                viewModel.processingUser.set(false)
-                                initializeSizeAndSpeed(viewModel)
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeUSER]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }
                             }
-                            if (viewModel.isBackupUserDe.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeUSERDE)) {
                                 // 恢复User_de
-                                viewModel.processingUserDe.set(true)
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(userDePath),
                                     "user_de",
                                     userDePath,
                                     packageName,
                                     Path.getUserDePath(userId)
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeUSERDE]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                 }
                                 Command.setOwnerAndSELinux(
@@ -194,20 +254,33 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     "${Path.getUserDePath(userId)}/${packageName}",
                                     userId
-                                )
-                                viewModel.processingUserDe.set(false)
-                                initializeSizeAndSpeed(viewModel)
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeUSERDE]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }
                             }
-                            if (viewModel.isBackupData.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeDATA)) {
                                 // 恢复Data
-                                viewModel.processingData.set(true)
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(dataPath),
                                     "data",
                                     dataPath,
                                     packageName,
                                     Path.getDataPath(userId)
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeDATA]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                 }
                                 Command.setOwnerAndSELinux(
@@ -215,20 +288,33 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     "${Path.getDataPath(userId)}/${packageName}",
                                     userId
-                                )
-                                viewModel.processingData.set(false)
-                                initializeSizeAndSpeed(viewModel)
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeDATA]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }
                             }
-                            if (viewModel.isBackupObb.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeOBB)) {
                                 // 恢复Obb
-                                viewModel.processingObb.set(true)
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(obbPath),
                                     "obb",
                                     obbPath,
                                     packageName,
                                     Path.getObbPath(userId)
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeOBB]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                 }
                                 Command.setOwnerAndSELinux(
@@ -236,9 +322,15 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     "${Path.getObbPath(userId)}/${packageName}",
                                     userId
-                                )
-                                viewModel.processingObb.set(false)
-                                initializeSizeAndSpeed(viewModel)
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeOBB]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }
                             }
                             if (state) {
                                 viewModel.successList.value.add(processingTaskList.value[index])

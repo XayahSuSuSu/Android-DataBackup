@@ -42,9 +42,9 @@ compress_apk() {
   # $2: out_put
   mkdir -p "$2"
   case "$1" in
-    tar) tar -cf - ./*.apk | pv_redirect "${2}/apk.tar" ;;
-    zstd) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt | pv_force > "${2}/apk.tar.zst" ;;
-    lz4) tar -cf - ./*.apk | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 | pv_force > "${2}/apk.tar.lz4" ;;
+    tar) tar --totals -cf "${2}/apk.tar" ./*.apk ;;
+    zstd) tar --totals -cf "${2}/apk.tar.zst" ./*.apk "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
+    lz4) tar --totals -cf "${2}/apk.tar.lz4" ./*.apk "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
     *) return 1 ;;
   esac
 }
@@ -61,9 +61,9 @@ compress() {
     user | user_de)
       if [ -d "$5/$3" ]; then
         case "$1" in
-          tar) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;
-          zstd) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt > "$4/$2.tar.zst" ;;
-          lz4) tar --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 > "$4/$2.tar.lz4" ;;
+          tar) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar" -C "$5" "$3" ;;
+          zstd) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar.zst" -C "$5" "$3" "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
+          lz4) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar.lz4" -C "$5" "$3" "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
         esac
       else
         echo "No such path: $5"
@@ -73,9 +73,9 @@ compress() {
     data | obb)
       if [ -d "$5/$3" ]; then
         case "$1" in
-          tar) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_redirect "$4/$2.tar" ;;
-          zstd) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt > "$4/$2.tar.zst" ;;
-          lz4) tar --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 > "$4/$2.tar.lz4" ;;
+          tar) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar" -C "$5" "$3" ;;
+          zstd) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar.zst" -C "$5" "$3" "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
+          lz4) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar.lz4" -C "$5" "$3" "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
         esac
       else
         echo "No such path: $5/$3"
@@ -85,9 +85,9 @@ compress() {
       if [ -d "$5" ]; then
         write_to_file "$5" "$5/com.xayah.databackup.PATH"
         case "$1" in
-          tar) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_redirect "$4/${5##*/}.tar" ;;
-          zstd) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt > "$4/${5##*/}.tar.zst" ;;
-          lz4) tar --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | pv_force | zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4 > "$4/${5##*/}.tar.lz4" ;;
+          tar) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar" -C "${5%/*}" "${5##*/}" ;;
+          zstd) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar.zst" -C "${5%/*}" "${5##*/}" "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
+          lz4) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar.lz4" -C "${5%/*}" "${5##*/}" "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
         esac
         rm -rf "$5/com.xayah.databackup.PATH"
       else
@@ -115,11 +115,10 @@ install_apk() {
   mkdir -p "$tmp_dir"
   find "$1" -maxdepth 1 -name "apk.*" -type f | while read -r i; do
     case "${i##*.}" in
-      tar) pv_force "$i" | tar -xmpf - -C "$tmp_dir" ;;
-      zst | lz4) pv_force "$i" | tar -I zstd -xmpf - -C "$tmp_dir" ;;
+      tar) tar --totals -xmpf "$i" -C "$tmp_dir" ;;
+      zst | lz4) tar --totals "-I zstd" -xmpf "$i" -C "$tmp_dir" ;;
     esac
   done
-  echo "install apk finished"
   apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
   case "$apk_num" in
     0) exit 1 ;;
@@ -192,20 +191,20 @@ decompress() {
       mkdir "$tmp_dir"
       case "$1" in
         tar)
-          tar -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
+          tar --totals -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
           data_path=$(cat "$tmp_dir/$4/$path_file_name")
           if [ "$data_path" != "" ]; then
-            pv_force "$3" | tar --recursive-unlink -xpf - -C "${data_path%/*}"
+            tar --totals --recursive-unlink -xpf "$3" -C "${data_path%/*}"
             rm -rf "${data_path:?}/$path_file_name"
           else
             exit 1
           fi
           ;;
         lz4 | zstd)
-          tar -I zstd -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
+          tar --totals "-I zstd" -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
           data_path=$(cat "$tmp_dir/$4/$path_file_name")
           if [ "$data_path" != "" ]; then
-            pv_force "$3" | tar --recursive-unlink -I zstd -xpf - -C "${data_path%/*}"
+            tar --totals --recursive-unlink "-I zstd" -xpf "$3" -C "${data_path%/*}"
             rm -rf "${data_path:?}/$path_file_name"
           else
             exit 1
@@ -216,8 +215,8 @@ decompress() {
       ;;
     *)
       case "$1" in
-        tar) pv_force "$3" | tar --recursive-unlink -xmpf - -C "$5" ;;
-        lz4 | zstd) pv_force "$3" | tar --recursive-unlink -I zstd -xmpf - -C "$5" ;;
+        tar) tar --totals --recursive-unlink -xmpf "$3" -C "$5" ;;
+        lz4 | zstd) tar --totals --recursive-unlink "-I zstd" -xmpf "$3" -C "$5" ;;
       esac
       ;;
   esac

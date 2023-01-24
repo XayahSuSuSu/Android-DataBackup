@@ -2,11 +2,9 @@ package com.xayah.databackup.activity.processing
 
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
+import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
-import com.xayah.databackup.data.BackupInfo
-import com.xayah.databackup.data.BackupStrategy
-import com.xayah.databackup.data.MediaInfoItem
-import com.xayah.databackup.data.ProcessingTask
+import com.xayah.databackup.data.*
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +50,10 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                 notifyDataSetChanged()
             }
 
+            viewModel.mAdapterItems.apply {
+                register(ProcessingItemAdapter())
+            }
+
             // 设置备份状态
             viewModel.btnText.set(GlobalString.backup)
             viewModel.btnDesc.set(GlobalString.clickTheRightBtnToStart)
@@ -82,15 +84,21 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                             // 准备备份卡片数据
                             viewModel.appName.set(i.name)
                             viewModel.packageName.set(i.path)
-                            viewModel.isBackupData.set(i.backup.data)
 
                             val outPutPath = "${Path.getBackupMediaSavePath()}/${i.name}/${date}"
 
                             // 开始备份
                             var state = true // 该任务是否成功完成
-                            if (viewModel.isBackupData.get()) {
-                                // 备份Data
-                                viewModel.processingData.set(true)
+                            if (i.backup.data) {
+                                val processingItem = ProcessingItem.DATA()
+                                // 设置适配器
+                                viewModel.mAdapterItems.apply {
+                                    items = mutableListOf(processingItem)
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }
+
                                 // 备份目录
                                 Command.compress(
                                     "tar",
@@ -100,7 +108,13 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                                     i.path,
                                     i.backup.size
                                 ) {
-                                    setSizeAndSpeed(viewModel, it)
+                                    setProcessingItem(
+                                        it,
+                                        processingItem
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
                                 }.apply {
                                     if (!this) state = false
                                     // 保存大小
@@ -108,8 +122,6 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                                         i.path, 1
                                     )
                                 }
-                                viewModel.processingData.set(false)
-                                initializeSizeAndSpeed(viewModel)
                             }
                             i.backup.date = date
                             if (state) {

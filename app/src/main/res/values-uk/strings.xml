@@ -148,4 +148,9 @@
     <string name="storage_desc">Used for backup configuration, archive read and write</string>
     <string name="not_detected">Not detected</string>
     <string name="data_size">Data size</string>
+    <string name="setting_SELinux">Setting SELinux</string>
+    <string name="compressing">Compressing</string>
+    <string name="decompressing">Decompressing</string>
+    <string name="finished">Finished</string>
+    <string name="no_change_and_skip">No change, skip</string>
 </resources>

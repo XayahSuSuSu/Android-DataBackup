@@ -49,10 +49,10 @@ fun LinearProgressIndicator.fastInitialize() {
     }
 }
 
-fun RecyclerView.fastInitialize(isHorizontal: Boolean = false) {
+fun RecyclerView.fastInitialize(isHorizontal: Boolean = false, spanCount: Int = 1) {
     this.apply {
         (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-        layoutManager = GridLayoutManager(this.context, 1).apply {
+        layoutManager = GridLayoutManager(this.context, spanCount).apply {
             if (isHorizontal) orientation = LinearLayoutManager.HORIZONTAL
         }
         layoutAnimation = LayoutAnimationController(

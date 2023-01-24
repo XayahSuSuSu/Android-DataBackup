@@ -6,53 +6,87 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
+import com.xayah.databackup.data.*
 import com.xayah.databackup.databinding.ActivityProcessingBinding
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.util.setWithConfirm
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 abstract class ProcessingBaseActivity : AppCompatActivity() {
     companion object {
-        fun setSizeAndSpeed(viewModel: ProcessingBaseViewModel, src: String?) {
+        /**
+         * 刷新Processing项目
+         */
+        suspend fun refreshProcessingItems(viewModel: ProcessingBaseViewModel) {
+            withContext(Dispatchers.Main) {
+                viewModel.mAdapterItems.notifyDataSetChanged()
+            }
+        }
+
+        /**
+         * 根据String信息设置ProcessingItem
+         */
+        fun setProcessingItem(
+            src: String?,
+            processingItem: ProcessingItem?
+        ) {
             try {
                 when (src) {
-                    "install apk finished" -> {
-                        // 安装应用中
-                        viewModel.size.set("0")
-                        viewModel.sizeUnit.set("")
-                        viewModel.speed.set(GlobalString.installing)
-                        viewModel.speedUnit.set("")
+                    ProcessFinished -> {
+                        // 完成
+                        processingItem?.title = GlobalString.finished
                     }
-                    "testing" -> {
-                        // 安装应用中
-                        viewModel.size.set("0")
-                        viewModel.sizeUnit.set("")
-                        viewModel.speed.set(GlobalString.testing)
-                        viewModel.speedUnit.set("")
+                    ProcessSkip -> {
+                        // 跳过
+                        processingItem?.subtitle = GlobalString.noChangeAndSkip
+                    }
+                    ProcessCompressing -> {
+                        // 压缩中
+                        processingItem?.title = GlobalString.compressing
+                    }
+                    ProcessDecompressing -> {
+                        // 解压中
+                        processingItem?.title = GlobalString.decompressing
+                    }
+                    ProcessTesting -> {
+                        // 测试中
+                        processingItem?.title = GlobalString.testing
+                    }
+                    ProcessSettingSELinux -> {
+                        // 设置SELinux中
+                        processingItem?.title = GlobalString.settingSELinux
+                    }
+                    ProcessInstallingApk -> {
+                        // 安装APK中
+                        processingItem?.title = GlobalString.installing
                     }
                     else -> {
-                        val newSrc = src?.replace("[", "")?.replace("]", "")
-                        val sizeSrc = newSrc?.split(" ")?.filter { item -> item != "" }?.get(0)
-                        val speedSrc =
-                            newSrc?.split(" ")?.filter { item -> item != "" }?.get(2)
-                                ?.replace(" ", "")
-                                ?.replace("]", "")
-                        viewModel.size.set(sizeSrc?.filter { item -> item.isDigit() || item == '.' })
-                        viewModel.sizeUnit.set(sizeSrc?.filter { item -> item.isLetter() })
-                        viewModel.speed.set(speedSrc?.filter { item -> item.isDigit() || item == '.' })
-                        viewModel.speedUnit.set(speedSrc?.filter { item -> item.isLetter() || item == '/' })
+                        src?.apply {
+                            // Total bytes written: 74311680 (71MiB, 238MiB/s)
+                            try {
+                                "\\((.*?)\\)".toRegex().find(src)?.apply {
+                                    // (71MiB, 238MiB/s)
+                                    val newSrc = this.value
+                                        .replace("(", "")
+                                        .replace(")", "")
+                                        .replace(",", "")
+                                        .trim()
+                                    val info = newSrc.split(" ")
+                                    processingItem?.title = GlobalString.finished
+                                    processingItem?.subtitle =
+                                        "${GlobalString.size}: ${info[0]}, ${GlobalString.speed}: ${info[1]}"
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }
-
-        fun initializeSizeAndSpeed(viewModel: ProcessingBaseViewModel) {
-            viewModel.size.set("0")
-            viewModel.sizeUnit.set("Mib")
-            viewModel.speed.set("0")
-            viewModel.speedUnit.set("Mib/s")
         }
     }
 
@@ -87,6 +121,10 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
         binding.recyclerViewFailed.apply {
             adapter = viewModel.mAdapterFailed
             fastInitialize(true)
+        }
+        binding.recyclerViewItems.apply {
+            adapter = viewModel.mAdapterItems
+            fastInitialize()
         }
 
 

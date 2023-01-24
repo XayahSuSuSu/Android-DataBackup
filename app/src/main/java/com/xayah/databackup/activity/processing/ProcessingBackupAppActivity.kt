@@ -5,6 +5,7 @@ import android.util.Base64
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
+import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
 import com.xayah.databackup.data.*
 import com.xayah.databackup.util.*
@@ -41,6 +42,11 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
         MutableStateFlow(mutableListOf<ProcessingTask>())
     }
 
+    // Processing项目哈希表
+    private val processingItemMap by lazy {
+        MutableStateFlow(hashMapOf<String, ProcessingItem>())
+    }
+
     override fun initialize(viewModel: ProcessingBaseViewModel) {
         this.viewModel = viewModel
         viewModel.viewModelScope.launch {
@@ -61,6 +67,10 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                 register(ProcessingTaskAdapter())
                 items = processingTaskList.value
                 notifyDataSetChanged()
+            }
+
+            viewModel.mAdapterItems.apply {
+                register(ProcessingItemAdapter())
             }
 
             // 设置备份状态
@@ -109,7 +119,6 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                             viewModel.packageName.set(i.packageName)
                             viewModel.appVersion.set(i.backup.versionName)
                             viewModel.appIcon.set(i.appIcon)
-                            viewModel.isBackupApk.set(i.backup.app)
 
                             if (App.globalContext.readIsBackupIcon()) {
                                 // 保存应用图标
@@ -136,42 +145,76 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                             val userDePath = "${Path.getUserDePath()}/${packageName}"
                             val dataPath = "${Path.getDataPath()}/${packageName}"
                             val obbPath = "${Path.getObbPath()}/${packageName}"
-                            if (i.backup.data) {
-                                Command.ls(userPath).apply { viewModel.isBackupUser.set(this) }
-                                Command.ls(userDePath).apply { viewModel.isBackupUserDe.set(this) }
-                                Command.ls(dataPath).apply { viewModel.isBackupData.set(this) }
-                                Command.ls(obbPath).apply { viewModel.isBackupObb.set(this) }
-                            } else {
-                                viewModel.isBackupUser.set(false)
-                                viewModel.isBackupUserDe.set(false)
-                                viewModel.isBackupData.set(false)
-                                viewModel.isBackupObb.set(false)
+
+                            // 设置适配器
+                            viewModel.mAdapterItems.apply {
+                                processingItemMap.value.clear()
+                                if (i.backup.app) {
+                                    // 检查是否备份APK
+                                    processingItemMap.value[ProcessingItemTypeAPK] =
+                                        ProcessingItem.APK()
+                                }
+                                if (i.backup.data) {
+                                    // 检查是否备份数据
+                                    Command.ls(userPath).apply {
+                                        if (this) processingItemMap.value[ProcessingItemTypeUSER] =
+                                            ProcessingItem.USER()
+                                    }
+                                    Command.ls(userDePath).apply {
+                                        if (this) processingItemMap.value[ProcessingItemTypeUSERDE] =
+                                            ProcessingItem.USERDE()
+                                    }
+                                    Command.ls(dataPath).apply {
+                                        if (this) processingItemMap.value[ProcessingItemTypeDATA] =
+                                            ProcessingItem.DATA()
+                                    }
+                                    Command.ls(obbPath).apply {
+                                        if (this) processingItemMap.value[ProcessingItemTypeOBB] =
+                                            ProcessingItem.OBB()
+                                    }
+                                }
+                                items =
+                                    processingItemMap.value.values.sortedBy { it.weight }
+                                refreshProcessingItems(viewModel)
                             }
 
                             // 开始备份
                             var state = true // 该任务是否成功完成
-                            if (viewModel.isBackupApk.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeAPK)) {
+                                processingItemMap.value[ProcessingItemTypeAPK]?.isProcessing = true
+                                refreshProcessingItems(viewModel)
+
                                 // 备份应用
-                                viewModel.processingApk.set(true)
                                 Command.compressAPK(
                                     compressionType,
                                     packageName,
                                     outPutPath,
                                     userId,
                                     i.backup.appSize
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeAPK]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                     // 保存apk大小
                                     else i.backup.appSize = Command.countSize(
                                         Bashrc.getAPKPath(i.packageName, userId).second, 1
                                     )
                                 }
-                                viewModel.processingApk.set(false)
-                                initializeSizeAndSpeed(viewModel)
+
+                                processingItemMap.value[ProcessingItemTypeAPK]?.isProcessing = false
+                                refreshProcessingItems(viewModel)
                             }
-                            if (viewModel.isBackupUser.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeUSER)) {
+                                processingItemMap.value[ProcessingItemTypeUSER]?.isProcessing = true
+                                refreshProcessingItems(viewModel)
+
                                 // 备份User
-                                viewModel.processingUser.set(true)
                                 Command.compress(
                                     compressionType,
                                     "user",
@@ -179,17 +222,30 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     outPutPath,
                                     Path.getUserPath(),
                                     i.backup.userSize
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeUSER]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                     // 保存user大小
                                     else i.backup.userSize = Command.countSize(userPath, 1)
                                 }
-                                viewModel.processingUser.set(false)
-                                initializeSizeAndSpeed(viewModel)
+
+                                processingItemMap.value[ProcessingItemTypeUSER]?.isProcessing =
+                                    false
+                                refreshProcessingItems(viewModel)
                             }
-                            if (viewModel.isBackupUserDe.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeUSERDE)) {
+                                processingItemMap.value[ProcessingItemTypeUSERDE]?.isProcessing =
+                                    true
+                                refreshProcessingItems(viewModel)
+
                                 // 备份User_de
-                                viewModel.processingUserDe.set(true)
                                 Command.compress(
                                     compressionType,
                                     "user_de",
@@ -197,17 +253,29 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     outPutPath,
                                     Path.getUserDePath(),
                                     i.backup.userDeSize
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeUSERDE]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                     // 保存user_de大小
                                     else i.backup.userDeSize = Command.countSize(userDePath, 1)
                                 }
-                                viewModel.processingUserDe.set(false)
-                                initializeSizeAndSpeed(viewModel)
+
+                                processingItemMap.value[ProcessingItemTypeUSERDE]?.isProcessing =
+                                    false
+                                refreshProcessingItems(viewModel)
                             }
-                            if (viewModel.isBackupData.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeDATA)) {
+                                processingItemMap.value[ProcessingItemTypeDATA]?.isProcessing = true
+                                refreshProcessingItems(viewModel)
+
                                 // 备份Data
-                                viewModel.processingData.set(true)
                                 Command.compress(
                                     compressionType,
                                     "data",
@@ -215,17 +283,29 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     outPutPath,
                                     Path.getDataPath(),
                                     i.backup.dataSize
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeDATA]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                     // 保存data大小
                                     else i.backup.dataSize = Command.countSize(dataPath, 1)
                                 }
-                                viewModel.processingData.set(false)
-                                initializeSizeAndSpeed(viewModel)
+
+                                processingItemMap.value[ProcessingItemTypeDATA]?.isProcessing =
+                                    false
+                                refreshProcessingItems(viewModel)
                             }
-                            if (viewModel.isBackupObb.get()) {
+                            if (processingItemMap.value.containsKey(ProcessingItemTypeOBB)) {
+                                processingItemMap.value[ProcessingItemTypeOBB]?.isProcessing = true
+                                refreshProcessingItems(viewModel)
+
                                 // 备份Obb
-                                viewModel.processingObb.set(true)
                                 Command.compress(
                                     compressionType,
                                     "obb",
@@ -233,13 +313,22 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     outPutPath,
                                     Path.getObbPath(),
                                     i.backup.obbSize
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItemMap.value[ProcessingItemTypeOBB]
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                     // 保存obb大小
                                     else i.backup.obbSize = Command.countSize(obbPath, 1)
                                 }
-                                viewModel.processingObb.set(false)
-                                initializeSizeAndSpeed(viewModel)
+
+                                processingItemMap.value[ProcessingItemTypeOBB]?.isProcessing = false
+                                refreshProcessingItems(viewModel)
                             }
                             i.backup.date = date
                             if (state) {

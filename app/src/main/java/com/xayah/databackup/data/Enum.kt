@@ -71,3 +71,23 @@ fun ofBackupStrategy(backupStrategy: BackupStrategy): String {
         }
     }
 }
+
+/**
+ * 备份/恢复状态
+ */
+const val ProcessFinished = "Finished"
+const val ProcessSkip = "Skip"
+const val ProcessCompressing = "Compressing"
+const val ProcessDecompressing = "Decompressing"
+const val ProcessTesting = "Testing"
+const val ProcessSettingSELinux = "SettingSELinux"
+const val ProcessInstallingApk = "InstallingApk"
+
+/**
+ * Processing项目类型
+ */
+const val ProcessingItemTypeAPK = "APK"
+const val ProcessingItemTypeUSER = "USER"
+const val ProcessingItemTypeUSERDE = "USER_DE"
+const val ProcessingItemTypeDATA = "DATA"
+const val ProcessingItemTypeOBB = "OBB"

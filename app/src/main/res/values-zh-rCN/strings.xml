@@ -148,4 +148,9 @@
     <string name="storage_desc">用于备份配置、存档读写</string>
     <string name="not_detected">未检测</string>
     <string name="data_size">数据大小</string>
+    <string name="setting_SELinux">设置SELinux中</string>
+    <string name="compressing">压缩中</string>
+    <string name="decompressing">解压中</string>
+    <string name="finished">已完成</string>
+    <string name="no_change_and_skip">目标未发生变化, 跳过</string>
 </resources>

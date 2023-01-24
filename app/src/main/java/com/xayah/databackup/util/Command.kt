@@ -579,6 +579,7 @@ class Command {
                     }
                 }
                 if (update) {
+                    onAddLine(ProcessCompressing)
                     Bashrc.compress(
                         compressionType, dataType, packageName, outPut, dataPath
                     ) { onAddLine(it) }.apply {
@@ -586,6 +587,8 @@ class Command {
                             ret = false
                         }
                     }
+                } else {
+                    onAddLine(ProcessSkip)
                 }
                 // 检测是否生成压缩包
                 ls(filePath).apply {
@@ -593,12 +596,13 @@ class Command {
                     else {
                         if (App.globalContext.readIsBackupTest()) {
                             // 校验
-                            onAddLine("testing")
+                            onAddLine(ProcessTesting)
                             testArchive(compressionType, filePath)
                         }
                     }
                 }
             }
+            onAddLine(ProcessFinished)
             return ret
         }
 
@@ -634,11 +638,14 @@ class Command {
                     }
                 }
                 if (update) {
+                    onAddLine(ProcessCompressing)
                     Bashrc.cd(apkPathPair.second).apply { ret = this.first }
                     Bashrc.compressAPK(compressionType, outPut) {
                         onAddLine(it)
                     }.apply { ret = this.first }
                     Bashrc.cd("/").apply { ret = this.first }
+                } else {
+                    onAddLine(ProcessSkip)
                 }
                 // 检测是否生成压缩包
                 ls(filePath).apply {
@@ -647,12 +654,13 @@ class Command {
                     else {
                         if (App.globalContext.readIsBackupTest()) {
                             // 校验
-                            onAddLine("testing")
+                            onAddLine(ProcessTesting)
                             testArchive(compressionType, filePath)
                         }
                     }
                 }
             }
+            onAddLine(ProcessFinished)
             return ret
         }
 
@@ -669,6 +677,7 @@ class Command {
         ): Boolean {
             var ret = true
             runOnIO {
+                onAddLine(ProcessDecompressing)
                 Bashrc.decompress(
                     compressionType,
                     dataType,
@@ -677,6 +686,7 @@ class Command {
                     dataPath
                 ) { onAddLine(it) }.apply { ret = this.first }
             }
+            onAddLine(ProcessFinished)
             return ret
         }
 
@@ -697,6 +707,7 @@ class Command {
                 // 禁止APK验证
                 Bashrc.setInstallEnv()
                 // 安装APK
+                onAddLine(ProcessInstallingApk)
                 Bashrc.installAPK(inPath, packageName, userId) {
                     onAddLine(it)
                 }.apply {
@@ -708,6 +719,7 @@ class Command {
                     }
                 }
             }
+            onAddLine(ProcessFinished)
             return ret
         }
 
@@ -719,7 +731,9 @@ class Command {
             packageName: String,
             path: String,
             userId: String,
+            onAddLine: (line: String?) -> Unit = {}
         ) {
+            onAddLine(ProcessSettingSELinux)
             Bashrc.setOwnerAndSELinux(
                 dataType,
                 packageName,
@@ -732,6 +746,7 @@ class Command {
                         return
                     }
                 }
+            onAddLine(ProcessFinished)
         }
 
         /**

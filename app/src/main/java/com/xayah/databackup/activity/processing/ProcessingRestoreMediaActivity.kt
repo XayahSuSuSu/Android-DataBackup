@@ -2,9 +2,14 @@ package com.xayah.databackup.activity.processing
 
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
+import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
+import com.xayah.databackup.data.ProcessingItem
 import com.xayah.databackup.data.ProcessingTask
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.Bashrc
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.Path
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -42,6 +47,10 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                 notifyDataSetChanged()
             }
 
+            viewModel.mAdapterItems.apply {
+                register(ProcessingItemAdapter())
+            }
+
             // 设置备份状态
             viewModel.btnText.set(GlobalString.restore)
             viewModel.btnDesc.set(GlobalString.clickTheRightBtnToStart)
@@ -67,16 +76,24 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                             // 准备备份卡片数据
                             viewModel.appName.set(i.name)
                             viewModel.packageName.set(i.path)
-                            viewModel.isBackupData.set(i.restoreList[i.restoreIndex].data)
 
                             val inPath =
                                 "${Path.getBackupMediaSavePath()}/${i.name}/${i.restoreList[i.restoreIndex].date}"
 
                             // 开始恢复
                             var state = true // 该任务是否成功完成
-                            if (viewModel.isBackupData.get()) {
+                            if (i.restoreList[i.restoreIndex].data) {
+                                val processingItem = ProcessingItem.DATA()
+
+                                // 设置适配器
+                                viewModel.mAdapterItems.apply {
+                                    items = mutableListOf(processingItem)
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }
+
                                 // 恢复Data
-                                viewModel.processingData.set(true)
                                 // 恢复目录
                                 val inputPath = "${inPath}/${i.name}.tar"
                                 Command.decompress(
@@ -85,11 +102,17 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                                     inputPath,
                                     i.name,
                                     i.path.replace("/${i.name}", "")
-                                ) { setSizeAndSpeed(viewModel, it) }.apply {
+                                ) {
+                                    setProcessingItem(
+                                        it,
+                                        processingItem
+                                    )
+                                    viewModel.viewModelScope.launch {
+                                        refreshProcessingItems(viewModel)
+                                    }
+                                }.apply {
                                     if (!this) state = false
                                 }
-                                viewModel.processingData.set(false)
-                                initializeSizeAndSpeed(viewModel)
                             }
                             if (state) {
                                 viewModel.successList.value.add(processingTaskList.value[index])
