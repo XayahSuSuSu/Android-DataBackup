@@ -156,7 +156,9 @@ class GuideEnvFragment : Fragment() {
                 intent.data = Uri.parse("package:${App.globalContext.packageName}")
                 startActivity(intent)
             } catch (e: Exception) {
+                guideViewModel.btnNextText.postValue(GlobalString.finish)
                 App.globalContext.saveIsSupportUsageAccess(false)
+                step++
                 e.printStackTrace()
             }
         }
