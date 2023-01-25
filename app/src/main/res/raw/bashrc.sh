@@ -191,7 +191,7 @@ decompress() {
       mkdir "$tmp_dir"
       case "$1" in
         tar)
-          tar --totals -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
+          tar -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
           data_path=$(cat "$tmp_dir/$4/$path_file_name")
           if [ "$data_path" != "" ]; then
             tar --totals --recursive-unlink -xpf "$3" -C "${data_path%/*}"
@@ -201,7 +201,7 @@ decompress() {
           fi
           ;;
         lz4 | zstd)
-          tar --totals "-I zstd" -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
+          tar "-I zstd" -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
           data_path=$(cat "$tmp_dir/$4/$path_file_name")
           if [ "$data_path" != "" ]; then
             tar --totals --recursive-unlink "-I zstd" -xpf "$3" -C "${data_path%/*}"

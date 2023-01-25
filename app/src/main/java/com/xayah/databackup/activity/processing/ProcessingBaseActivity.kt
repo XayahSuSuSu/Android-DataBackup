@@ -74,7 +74,6 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
                                         .replace(",", "")
                                         .trim()
                                     val info = newSrc.split(" ")
-                                    processingItem?.title = GlobalString.finished
                                     processingItem?.subtitle =
                                         "${GlobalString.size}: ${info[0]}, ${GlobalString.speed}: ${info[1]}"
                                 }

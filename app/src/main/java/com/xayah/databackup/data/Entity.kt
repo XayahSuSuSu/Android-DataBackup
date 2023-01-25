@@ -152,7 +152,7 @@ data class ProcessingItem(
         fun APK(): ProcessingItem {
             return ProcessingItem(
                 type = ProcessingItemTypeAPK,
-                title = "",
+                title = GlobalString.ready,
                 subtitle = GlobalString.pleaseWait,
                 isProcessing = false,
                 weight = 1
@@ -162,7 +162,7 @@ data class ProcessingItem(
         fun USER(): ProcessingItem {
             return ProcessingItem(
                 type = ProcessingItemTypeUSER,
-                title = "",
+                title = GlobalString.ready,
                 subtitle = GlobalString.pleaseWait,
                 isProcessing = false,
                 weight = 2
@@ -172,7 +172,7 @@ data class ProcessingItem(
         fun USERDE(): ProcessingItem {
             return ProcessingItem(
                 type = ProcessingItemTypeUSERDE,
-                title = "",
+                title = GlobalString.ready,
                 subtitle = GlobalString.pleaseWait,
                 isProcessing = false,
                 weight = 3
@@ -182,7 +182,7 @@ data class ProcessingItem(
         fun DATA(): ProcessingItem {
             return ProcessingItem(
                 type = ProcessingItemTypeDATA,
-                title = "",
+                title = GlobalString.ready,
                 subtitle = GlobalString.pleaseWait,
                 isProcessing = false,
                 weight = 4
@@ -192,7 +192,7 @@ data class ProcessingItem(
         fun OBB(): ProcessingItem {
             return ProcessingItem(
                 type = ProcessingItemTypeOBB,
-                title = "",
+                title = GlobalString.ready,
                 subtitle = GlobalString.pleaseWait,
                 isProcessing = false,
                 weight = 5
