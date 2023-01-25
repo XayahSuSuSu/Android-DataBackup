@@ -162,6 +162,14 @@ fun Context.readRcloneConfigName(): String {
     return readPreferencesString("rclone_config_name") ?: ""
 }
 
+fun Context.saveIsSupportUsageAccess(value: Boolean) {
+    savePreferences("is_support_usage_access", value)
+}
+
+fun Context.readIsSupportUsageAccess(): Boolean {
+    return readPreferencesBoolean("is_support_usage_access", true)
+}
+
 fun Context.getActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {

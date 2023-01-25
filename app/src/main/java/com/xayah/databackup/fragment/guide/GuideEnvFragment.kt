@@ -148,11 +148,17 @@ class GuideEnvFragment : Fragment() {
             // 已获取权限
             viewModel.packageUsageStatsPermissionCheck.set(GlobalString.success)
             guideViewModel.btnNextText.postValue(GlobalString.finish)
+            App.globalContext.saveIsSupportUsageAccess(true)
             step++
         } else {
-            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-            intent.data = Uri.parse("package:${App.globalContext.packageName}")
-            startActivity(intent)
+            try {
+                val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                intent.data = Uri.parse("package:${App.globalContext.packageName}")
+                startActivity(intent)
+            } catch (e: Exception) {
+                App.globalContext.saveIsSupportUsageAccess(false)
+                e.printStackTrace()
+            }
         }
     }
 

@@ -15,6 +15,7 @@ import com.xayah.databackup.databinding.ActivityGuideBinding
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.checkPackageUsageStatsPermission
 import com.xayah.databackup.util.readInitializedVersionName
+import com.xayah.databackup.util.readIsSupportUsageAccess
 
 class GuideActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGuideBinding
@@ -70,7 +71,9 @@ class GuideActivity : AppCompatActivity() {
                 // 版本更新
                 viewModel.navigation.postValue(R.id.action_guideIntroductionFragment_to_guideUpdateFragment)
                 viewModel.btnNextText.postValue(GlobalString.finish)
-            } else if (App.globalContext.checkPackageUsageStatsPermission().not()) {
+            } else if (App.globalContext.checkPackageUsageStatsPermission().not()
+                && App.globalContext.readIsSupportUsageAccess()
+            ) {
                 // 权限不够
                 viewModel.navigation.postValue(R.id.action_guideIntroductionFragment_to_guideEnvFragment)
             } else {
