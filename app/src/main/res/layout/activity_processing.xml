@@ -29,8 +29,6 @@
                 app:navigationIcon="@drawable/ic_round_arrow_back"
                 app:title="@{viewModel.btnText}"
                 app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
-
-
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,8 +37,12 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@id/bottomBar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -253,32 +255,40 @@
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/bottomAppBar"
-            style="@style/Widget.Material3.BottomAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:fitsSystemWindows="true"
-            android:visibility="@{viewModel.isProcessing() ? View.GONE : View.VISIBLE}">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/bottomBar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.btnDesc}"
-                android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-        </com.google.android.material.bottomappbar.BottomAppBar>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@null"
-            android:enabled="@{viewModel.isReady}"
-            android:visibility="@{viewModel.isProcessing() ? View.GONE : View.VISIBLE}"
-            app:layout_anchor="@id/bottomAppBar"
-            app:srcCompat="@drawable/ic_round_check" />
+                <com.google.android.material.bottomappbar.BottomAppBar
+                    android:id="@+id/bottomAppBar"
+                    style="@style/Widget.Material3.BottomAppBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:fitsSystemWindows="true"
+                    android:visibility="@{viewModel.isProcessing() ? View.GONE : View.VISIBLE}">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.btnDesc}"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+                </com.google.android.material.bottomappbar.BottomAppBar>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/floatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@null"
+                    android:enabled="@{viewModel.isReady}"
+                    android:visibility="@{viewModel.isProcessing() ? View.GONE : View.VISIBLE}"
+                    app:layout_anchor="@id/bottomAppBar"
+                    app:srcCompat="@drawable/ic_round_check" />
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
