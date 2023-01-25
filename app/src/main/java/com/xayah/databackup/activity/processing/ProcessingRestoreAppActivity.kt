@@ -160,6 +160,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                             // 开始恢复
                             var state = true // 该任务是否成功完成
                             if (processingItemMap.value.containsKey(ProcessingItemTypeAPK)) {
+                                processingItemMap.value[ProcessingItemTypeAPK]?.isProcessing = true
+                                refreshProcessingItems(viewModel)
+
                                 // 恢复应用
                                 Command.installAPK(
                                     inPath,
@@ -181,6 +184,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     viewModel.failedList.value.add(processingTaskList.value[index])
                                     continue
                                 }
+
+                                processingItemMap.value[ProcessingItemTypeAPK]?.isProcessing = false
+                                refreshProcessingItems(viewModel)
                             }
 
                             // 判断是否安装该应用
@@ -197,6 +203,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                             }
 
                             if (processingItemMap.value.containsKey(ProcessingItemTypeUSER)) {
+                                processingItemMap.value[ProcessingItemTypeUSER]?.isProcessing = true
+                                refreshProcessingItems(viewModel)
+
                                 // 恢复User
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(userPath),
@@ -229,8 +238,16 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                         refreshProcessingItems(viewModel)
                                     }
                                 }
+
+                                processingItemMap.value[ProcessingItemTypeUSER]?.isProcessing =
+                                    false
+                                refreshProcessingItems(viewModel)
                             }
                             if (processingItemMap.value.containsKey(ProcessingItemTypeUSERDE)) {
+                                processingItemMap.value[ProcessingItemTypeUSERDE]?.isProcessing =
+                                    true
+                                refreshProcessingItems(viewModel)
+
                                 // 恢复User_de
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(userDePath),
@@ -263,8 +280,15 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                         refreshProcessingItems(viewModel)
                                     }
                                 }
+
+                                processingItemMap.value[ProcessingItemTypeUSERDE]?.isProcessing =
+                                    false
+                                refreshProcessingItems(viewModel)
                             }
                             if (processingItemMap.value.containsKey(ProcessingItemTypeDATA)) {
+                                processingItemMap.value[ProcessingItemTypeDATA]?.isProcessing = true
+                                refreshProcessingItems(viewModel)
+
                                 // 恢复Data
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(dataPath),
@@ -297,8 +321,15 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                         refreshProcessingItems(viewModel)
                                     }
                                 }
+
+                                processingItemMap.value[ProcessingItemTypeDATA]?.isProcessing =
+                                    false
+                                refreshProcessingItems(viewModel)
                             }
                             if (processingItemMap.value.containsKey(ProcessingItemTypeOBB)) {
+                                processingItemMap.value[ProcessingItemTypeOBB]?.isProcessing = true
+                                refreshProcessingItems(viewModel)
+
                                 // 恢复Obb
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(obbPath),
@@ -331,6 +362,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                         refreshProcessingItems(viewModel)
                                     }
                                 }
+
+                                processingItemMap.value[ProcessingItemTypeOBB]?.isProcessing = false
+                                refreshProcessingItems(viewModel)
                             }
                             if (state) {
                                 viewModel.successList.value.add(processingTaskList.value[index])

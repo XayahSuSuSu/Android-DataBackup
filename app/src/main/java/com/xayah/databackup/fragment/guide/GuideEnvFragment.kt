@@ -143,7 +143,7 @@ class GuideEnvFragment : Fragment() {
         }
     }
 
-    private suspend fun checkPackageUsageStatsPermission() {
+    private fun checkPackageUsageStatsPermission() {
         if (App.globalContext.checkPackageUsageStatsPermission()) {
             // 已获取权限
             viewModel.packageUsageStatsPermissionCheck.set(GlobalString.success)

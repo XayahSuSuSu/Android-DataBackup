@@ -90,7 +90,9 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                             // 开始备份
                             var state = true // 该任务是否成功完成
                             if (i.backup.data) {
-                                val processingItem = ProcessingItem.DATA()
+                                val processingItem = ProcessingItem.DATA().apply {
+                                    isProcessing = true
+                                }
                                 // 设置适配器
                                 viewModel.mAdapterItems.apply {
                                     items = mutableListOf(processingItem)
@@ -122,6 +124,9 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                                         i.path, 1
                                     )
                                 }
+
+                                processingItem.isProcessing = false
+                                refreshProcessingItems(viewModel)
                             }
                             i.backup.date = date
                             if (state) {

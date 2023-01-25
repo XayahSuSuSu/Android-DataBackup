@@ -83,7 +83,9 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                             // 开始恢复
                             var state = true // 该任务是否成功完成
                             if (i.restoreList[i.restoreIndex].data) {
-                                val processingItem = ProcessingItem.DATA()
+                                val processingItem = ProcessingItem.DATA().apply {
+                                    isProcessing = true
+                                }
 
                                 // 设置适配器
                                 viewModel.mAdapterItems.apply {
@@ -93,7 +95,6 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                                     }
                                 }
 
-                                // 恢复Data
                                 // 恢复目录
                                 val inputPath = "${inPath}/${i.name}.tar"
                                 Command.decompress(
@@ -113,6 +114,9 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                                 }.apply {
                                     if (!this) state = false
                                 }
+
+                                processingItem.isProcessing = false
+                                refreshProcessingItems(viewModel)
                             }
                             if (state) {
                                 viewModel.successList.value.add(processingTaskList.value[index])
