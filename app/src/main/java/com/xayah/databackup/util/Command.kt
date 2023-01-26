@@ -597,7 +597,7 @@ class Command {
                         if (App.globalContext.readIsBackupTest()) {
                             // 校验
                             onAddLine(ProcessTesting)
-                            testArchive(compressionType, filePath)
+                            ret = testArchive(compressionType, filePath)
                         }
                     }
                 }
@@ -655,7 +655,7 @@ class Command {
                         if (App.globalContext.readIsBackupTest()) {
                             // 校验
                             onAddLine(ProcessTesting)
-                            testArchive(compressionType, filePath)
+                            ret = testArchive(compressionType, filePath)
                         }
                     }
                 }

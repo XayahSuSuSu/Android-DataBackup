@@ -247,10 +247,7 @@ test_archive() {
   # $1: compression_type
   # $2: input_path
   if [ -e "$2" ]; then
-    case "$1" in
-      tar) tar -t -f "$2" ;;
-      zstd | lz4) zstd -t "$2" ;;
-    esac
+    tar -t -f "$2" > /dev/null 2>&1
   else
     echo "No such path: $2"
   fi
