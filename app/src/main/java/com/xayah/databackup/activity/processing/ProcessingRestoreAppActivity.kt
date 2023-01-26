@@ -122,7 +122,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
 
                             // 设置适配器
                             viewModel.mAdapterItems.apply {
+                                val size = processingItemMap.value.size
                                 processingItemMap.value.clear()
+                                clearProcessingItems(viewModel, size)
                                 if (i.restoreList[i.restoreIndex].app) {
                                     // 检查是否备份APK
                                     processingItemMap.value[ProcessingItemTypeAPK] =

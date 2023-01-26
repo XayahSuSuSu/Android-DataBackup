@@ -26,6 +26,15 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
         }
 
         /**
+         * 刷新Processing项目
+         */
+        suspend fun clearProcessingItems(viewModel: ProcessingBaseViewModel, size: Int) {
+            withContext(Dispatchers.Main) {
+                viewModel.mAdapterItems.notifyItemRangeRemoved(0, size)
+            }
+        }
+
+        /**
          * 根据String信息设置ProcessingItem
          */
         fun setProcessingItem(
