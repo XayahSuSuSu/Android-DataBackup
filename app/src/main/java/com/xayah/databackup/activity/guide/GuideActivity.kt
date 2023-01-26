@@ -26,7 +26,6 @@ class GuideActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-        installSplashScreen()
 
         binding = ActivityGuideBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this)[GuideViewModel::class.java]

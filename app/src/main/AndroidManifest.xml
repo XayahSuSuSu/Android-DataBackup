@@ -41,6 +41,9 @@
             android:exported="false" />
         <activity
             android:name=".activity.guide.GuideActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.screen.ScreenActivity"
             android:exported="true"
             android:theme="@style/Theme.DataBackup.SplashScreen">
             <intent-filter>
