@@ -731,6 +731,7 @@ class Command {
             packageName: String,
             path: String,
             userId: String,
+            context: String,
             onAddLine: (line: String?) -> Unit = {}
         ) {
             onAddLine(ProcessSettingSELinux)
@@ -739,7 +740,8 @@ class Command {
                 packageName,
                 path,
                 userId,
-                App.globalContext.readAutoFixMultiUserContext()
+                App.globalContext.readAutoFixMultiUserContext(),
+                context
             )
                 .apply {
                     if (!this.first) {

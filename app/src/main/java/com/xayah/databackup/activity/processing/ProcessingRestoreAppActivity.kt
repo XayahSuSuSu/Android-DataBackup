@@ -208,6 +208,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 processingItemMap.value[ProcessingItemTypeUSER]?.isProcessing = true
                                 refreshProcessingItems(viewModel)
 
+                                // 读取原有SELinux context
+                                val contextSELinux =
+                                    Bashrc.getSELinuxContext("${Path.getUserPath(userId)}/${packageName}")
                                 // 恢复User
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(userPath),
@@ -230,7 +233,8 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     "user",
                                     packageName,
                                     "${Path.getUserPath(userId)}/${packageName}",
-                                    userId
+                                    userId,
+                                    contextSELinux
                                 ) {
                                     setProcessingItem(
                                         it,
@@ -250,6 +254,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     true
                                 refreshProcessingItems(viewModel)
 
+                                // 读取原有SELinux context
+                                val contextSELinux =
+                                    Bashrc.getSELinuxContext("${Path.getUserDePath(userId)}/${packageName}")
                                 // 恢复User_de
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(userDePath),
@@ -272,7 +279,8 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     "user_de",
                                     packageName,
                                     "${Path.getUserDePath(userId)}/${packageName}",
-                                    userId
+                                    userId,
+                                    contextSELinux
                                 ) {
                                     setProcessingItem(
                                         it,
@@ -291,6 +299,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 processingItemMap.value[ProcessingItemTypeDATA]?.isProcessing = true
                                 refreshProcessingItems(viewModel)
 
+                                // 读取原有SELinux context
+                                val contextSELinux =
+                                    Bashrc.getSELinuxContext("${Path.getDataPath(userId)}/${packageName}")
                                 // 恢复Data
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(dataPath),
@@ -313,7 +324,8 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     "data",
                                     packageName,
                                     "${Path.getDataPath(userId)}/${packageName}",
-                                    userId
+                                    userId,
+                                    contextSELinux
                                 ) {
                                     setProcessingItem(
                                         it,
@@ -332,6 +344,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 processingItemMap.value[ProcessingItemTypeOBB]?.isProcessing = true
                                 refreshProcessingItems(viewModel)
 
+                                // 读取原有SELinux context
+                                val contextSELinux =
+                                    Bashrc.getSELinuxContext("${Path.getObbPath(userId)}/${packageName}")
                                 // 恢复Obb
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(obbPath),
@@ -354,7 +369,8 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     "obb",
                                     packageName,
                                     "${Path.getObbPath(userId)}/${packageName}",
-                                    userId
+                                    userId,
+                                    contextSELinux
                                 ) {
                                     setProcessingItem(
                                         it,

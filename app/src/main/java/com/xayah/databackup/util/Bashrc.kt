@@ -72,15 +72,23 @@ class Bashrc {
             return Pair(exec.code, exec.out.joinToString(separator = "\n"))
         }
 
+        suspend fun getSELinuxContext(
+            path: String,
+        ): String {
+            val exec = runOnIO { Command.execute("get_SELinux_context \"${path}\"") }
+            return if (exec.isSuccess) exec.out.joinToString(separator = "\n") else ""
+        }
+
         suspend fun setOwnerAndSELinux(
             dataType: String,
             packageName: String,
             path: String,
             userId: String,
-            supportFixContext: Boolean
+            supportFixContext: Boolean,
+            context: String,
         ): Pair<Boolean, String> {
             val exec =
-                runOnIO { Command.execute("set_owner_and_SELinux \"${dataType}\" \"${packageName}\" \"${path}\" \"${userId}\" \"${supportFixContext}\"") }
+                runOnIO { Command.execute("set_owner_and_SELinux \"${dataType}\" \"${packageName}\" \"${path}\" \"${userId}\" \"${supportFixContext}\" \"${context}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 

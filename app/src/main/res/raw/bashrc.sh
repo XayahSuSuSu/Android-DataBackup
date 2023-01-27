@@ -153,12 +153,18 @@ pm_install_create() {
   fi
 }
 
+get_SELinux_context() {
+  # $1: path
+  ls -Zd "$1" | awk 'NF>1{print $1}'
+}
+
 set_owner_and_SELinux() {
   # $1: data_type
   # $2: package_name
   # $3: path
   # $4: user_id
   # $5: support_fix_context
+  # $6: context
   if [ -f /config/sdcardfs/"$2"/appid ]; then
     owner="$(cat "/config/sdcardfs/$2/appid")"
   else
@@ -170,8 +176,12 @@ set_owner_and_SELinux() {
     if [ "$1" = "user" ]; then
       restorecon -RFD "$3/"
       if [ "$5" = "true" ]; then
-        context=$(ls -Zd "$3/../" | awk 'NF>1{print $1}' | sed -e "s/system_data_file/app_data_file/g")
-        chcon -hR "$context" "$3/"
+        if [ "$6" != "" ]; then
+          chcon -hR "$6" "$3/"
+        else
+          context=$(ls -Zd "$3/../" | awk 'NF>1{print $1}' | sed -e "s/system_data_file/app_data_file/g")
+          chcon -hR "$context" "$3/"
+        fi
       fi
     fi
   fi
