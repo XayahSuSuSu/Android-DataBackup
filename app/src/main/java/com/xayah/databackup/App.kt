@@ -28,8 +28,6 @@ class App : Application() {
         @SuppressLint("StaticFieldLeak")
         lateinit var globalContext: Context
         lateinit var versionName: String
-        lateinit var server: Server
-        lateinit var logcat: Logcat
 
         // 应用列表
         val appInfoList by lazy {
@@ -100,9 +98,7 @@ class App : Application() {
         super.onCreate()
         CrashHandler(this).initialize()
         globalContext = this
-        logcat = Logcat()
         versionName = Command.getVersion()
-        server = Server()
         if (globalContext.readIsDynamicColors()) DynamicColors.applyToActivitiesIfAvailable(this)
     }
 }

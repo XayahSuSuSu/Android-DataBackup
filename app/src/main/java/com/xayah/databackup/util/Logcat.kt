@@ -7,6 +7,14 @@ import java.io.FileWriter
 import java.io.IOException
 
 class Logcat {
+    object Instance {
+        val instance = Logcat()
+    }
+
+    companion object {
+        fun getInstance() = Instance.instance
+    }
+
     private val logDir = "${Path.getFilesDir()}/log"
     val logPath = "${logDir}/log_${App.getTimeStamp()}"
 

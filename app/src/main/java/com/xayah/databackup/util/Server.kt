@@ -19,7 +19,13 @@ fun MutableList<Release>.appReleaseList(): MutableList<Release> {
 }
 
 class Server {
+    object Instance {
+        val instance = Server()
+    }
+
     companion object {
+        fun getInstance() = Instance.instance
+
         private const val releasesApi =
             "https://api.github.com/repos/XayahSuSuSu/Android-DataBackup/releases"
     }

@@ -200,7 +200,7 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     processingItemMap.value.remove(ProcessingItemTypeDATA)
                                     processingItemMap.value.remove(ProcessingItemTypeOBB)
                                     state = false
-                                    App.logcat.addLine("${packageName}: Not installed")
+                                    Logcat.getInstance().addLine("${packageName}: Not installed")
                                 }
                             }
 

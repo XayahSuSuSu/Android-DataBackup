@@ -109,7 +109,7 @@ class CloudViewModel : ViewModel() {
         if (isInstalling.get()!!.not()) {
             isInstalling.set(false)
             runOnScope {
-                App.server.releases({ releaseList ->
+                Server.getInstance().releases({ releaseList ->
                     runOnScope {
                         val mReleaseList = releaseList.filter { it.name.contains("Extend") }
                         if (mReleaseList.isNotEmpty()) {
@@ -153,7 +153,7 @@ class CloudViewModel : ViewModel() {
         val savePath = "${Path.getFilesDir()}/extend.zip"
 
         runOnScope {
-            App.server.releases(successCallback = { releaseList ->
+            Server.getInstance().releases(successCallback = { releaseList ->
                 val mReleaseList = releaseList.filter { it.name.contains("Extend") }
                 if (mReleaseList.isEmpty()) {
                     isInstalling.set(false)
@@ -161,7 +161,7 @@ class CloudViewModel : ViewModel() {
                     for (i in mReleaseList.first().assets) {
                         if (i.browser_download_url.contains(Command.getABI())) {
                             runOnScope {
-                                App.server.download(
+                                Server.getInstance().download(
                                     url = i.browser_download_url,
                                     savePath = savePath,
                                     onDownload = { current, total ->

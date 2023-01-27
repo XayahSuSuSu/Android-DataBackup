@@ -82,7 +82,7 @@ class HomeViewModel : ViewModel() {
         versionLatest.set(GlobalString.fetching)
         downloadBtnVisible.set(false)
         viewModelScope.launch {
-            App.server.releases({ releaseList ->
+            Server.getInstance().releases({ releaseList ->
                 val mReleaseList = releaseList.appReleaseList()
                 if (mReleaseList.isEmpty()) {
                     versionLatest.set(GlobalString.fetchFailed)

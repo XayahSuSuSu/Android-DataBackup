@@ -1,6 +1,5 @@
 package com.xayah.databackup.util
 
-import com.xayah.databackup.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -124,7 +123,7 @@ class Bashrc {
             val exec = runOnIO {
                 val path = Path.getShellLogPath()
                 Command.mkdir(path)
-                Command.execute("mv \"${App.logcat.logPath}\" \"${path}\"", true)
+                Command.execute("mv \"${Logcat.getInstance().logPath}\" \"${path}\"", true)
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }

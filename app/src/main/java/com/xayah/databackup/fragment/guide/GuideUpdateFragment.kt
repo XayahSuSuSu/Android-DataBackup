@@ -12,6 +12,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.activity.guide.GuideViewModel
 import com.xayah.databackup.databinding.FragmentGuideUpdateBinding
 import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.Server
 import com.xayah.databackup.util.appReleaseList
 import io.noties.markwon.Markwon
 import kotlinx.coroutines.launch
@@ -51,7 +52,7 @@ class GuideUpdateFragment : Fragment() {
         viewModel.apply {
             runOnScope {
                 subtitle.emit("${GlobalString.currentVersion}: ${App.versionName}")
-                App.server.releases({ releaseList ->
+                Server.getInstance().releases({ releaseList ->
                     runOnScope {
                         val mReleaseList = releaseList.appReleaseList()
                         if (mReleaseList.isEmpty()) {
