@@ -67,8 +67,9 @@ dependencies {
 
     // LibSU
     def libsuVersion = '5.0.3'
-    // The core module that provides APIs to a shell
     implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
+    implementation "com.github.topjohnwu.libsu:service:${libsuVersion}"
+    implementation "com.github.topjohnwu.libsu:nio:${libsuVersion}"
 
     // MultiType
     implementation 'com.drakeet.multitype:multitype:4.3.0'
