@@ -49,10 +49,21 @@ fun LinearProgressIndicator.fastInitialize() {
     }
 }
 
+class GridLayoutManagerWithCatch(context: Context, spanCount: Int) :
+    GridLayoutManager(context, spanCount) {
+    override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
+        try {
+            super.onLayoutChildren(recycler, state)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+}
+
 fun RecyclerView.fastInitialize(isHorizontal: Boolean = false, spanCount: Int = 1) {
     this.apply {
         (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
-        layoutManager = GridLayoutManager(this.context, spanCount).apply {
+        layoutManager = GridLayoutManagerWithCatch(this.context, spanCount).apply {
             if (isHorizontal) orientation = LinearLayoutManager.HORIZONTAL
         }
         layoutAnimation = LayoutAnimationController(
