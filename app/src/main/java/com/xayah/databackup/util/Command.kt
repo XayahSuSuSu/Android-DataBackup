@@ -304,29 +304,24 @@ class Command {
         }
 
         /**
-         * 构建媒体列表
+         * 构建媒体备份哈希表
          */
-        suspend fun getMediaInfoList(): MutableList<MediaInfo> {
-            val mediaInfoList = mutableListOf<MediaInfo>()
+        suspend fun getMediaInfoBackupMap(): MediaInfoBackupMap {
+            var mediaInfoBackupMap: MediaInfoBackupMap = hashMapOf()
+
             runOnIO {
                 // 读取媒体列表配置文件
-                cat(Path.getMediaInfoListPath()).apply {
-                    if (this.first) {
-                        try {
-                            val jsonArray = JSON.stringToJsonArray(this.second)
-                            for (i in jsonArray) {
-                                val item =
-                                    JSON.jsonElementToEntity(i, MediaInfo::class.java) as MediaInfo
-                                mediaInfoList.add(item)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                try {
+                    SuFile(Path.getMediaInfoBackupMapPath()).apply {
+                        mediaInfoBackupMap =
+                            GsonUtil.getInstance().fromMediaInfoBackupMapJson(readText())
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
 
                 // 如果为空, 添加默认路径
-                if (mediaInfoList.isEmpty()) {
+                if (mediaInfoBackupMap.isEmpty()) {
                     val nameList = listOf("Pictures", "Download", "Music", "DCIM")
                     val pathList = listOf(
                         "/storage/emulated/0/Pictures",
@@ -335,38 +330,54 @@ class Command {
                         "/storage/emulated/0/DCIM"
                     )
                     for ((index, _) in nameList.withIndex()) {
-                        mediaInfoList.add(
-                            MediaInfo(
-                                name = nameList[index],
-                                path = pathList[index],
-                                backup = MediaInfoItem(
-                                    data = false,
-                                    size = "",
-                                    date = ""
-                                ),
-                                _restoreIndex = -1,
-                                restoreList = mutableListOf()
-                            )
-                        )
+                        mediaInfoBackupMap[nameList[index]] = MediaInfoBackup().apply {
+                            this.name = nameList[index]
+                            this.path = pathList[index]
+                            this.backupDetail.apply {
+                                this.data = false
+                                this.size = ""
+                                this.date = ""
+                            }
+                        }
                     }
+                }
+            }
+            return mediaInfoBackupMap
+        }
+
+        /**
+         * 构建媒体恢复哈希表
+         */
+        suspend fun getMediaInfoRestoreMap(): MediaInfoRestoreMap {
+            var mediaInfoRestoreMap: MediaInfoRestoreMap = hashMapOf()
+
+            runOnIO {
+                // 读取媒体列表配置文件
+                try {
+                    SuFile(Path.getMediaInfoRestoreMapPath()).apply {
+                        mediaInfoRestoreMap =
+                            GsonUtil.getInstance().fromMediaInfoRestoreMapJson(readText())
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
 
                 // 根据备份目录实际文件调整列表
                 var hasData = false
                 execute("find \"${Path.getBackupMediaSavePath()}\" -name \"*\" -type f").apply {
                     // 根据实际文件和配置调整RestoreList
-                    for ((index, i) in mediaInfoList.withIndex()) {
-                        val tmpList = mutableListOf<MediaInfoItem>()
-                        for (j in i.restoreList) {
+                    for (i in mediaInfoRestoreMap) {
+                        val tmpList = mutableListOf<MediaInfoDetailBase>()
+                        for (j in i.value.detailRestoreList) {
                             if (this.out.toString().contains(j.date)) {
                                 tmpList.add(j)
                             }
                         }
-                        mediaInfoList[index].restoreList = tmpList
+                        mediaInfoRestoreMap[i.key]!!.detailRestoreList = tmpList
                     }
                     if (isSuccess) {
                         this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
-                        var restoreList = mutableListOf<MediaInfoItem>()
+                        var detailList = mutableListOf<MediaInfoDetailBase>()
                         for ((index, i) in this.out.withIndex()) {
                             if (index < this.out.size - 1) {
                                 val info = i.replace(Path.getBackupMediaSavePath(), "").split("/")
@@ -384,49 +395,38 @@ class Command {
 
                                     if (date != dateNext || name != nameNext) {
                                         // 与下一路径不同日期
-                                        val restoreListIndex =
-                                            restoreList.indexOfFirst { date == it.date }
-                                        val restore = if (restoreListIndex == -1) MediaInfoItem(
-                                            data = false,
-                                            size = "",
-                                            date = date
-                                        ) else restoreList[restoreListIndex]
+                                        val detailListIndex =
+                                            detailList.indexOfFirst { date == it.date }
+                                        val detail =
+                                            if (detailListIndex == -1) MediaInfoDetailBase().apply {
+                                                this.data = false
+                                                this.size = ""
+                                                this.date = ""
+                                            } else detailList[detailListIndex]
 
-                                        restore.apply {
+                                        detail.apply {
                                             this.data = this.data && hasData
                                         }
 
-                                        if (restoreListIndex == -1) restoreList.add(restore)
+                                        if (detailListIndex == -1) detailList.add(detail)
 
                                         hasData = false
                                     }
                                     if (name != nameNext) {
                                         // 与下一路径不同包名
                                         // 寻找已保存的数据
-                                        val mediaInfoIndex =
-                                            mediaInfoList.indexOfFirst { name == it.name }
-                                        val mediaInfo = if (mediaInfoIndex == -1)
-                                            MediaInfo(
-                                                name = "",
-                                                path = "",
-                                                backup = MediaInfoItem(
-                                                    data = false,
-                                                    size = "",
-                                                    date = ""
-                                                ),
-                                                _restoreIndex = -1,
-                                                restoreList = mutableListOf(),
-                                            ) else mediaInfoList[mediaInfoIndex]
+                                        if (mediaInfoRestoreMap.containsKey(name).not()) {
+                                            mediaInfoRestoreMap[name] = MediaInfoRestore()
+                                        }
+                                        val mediaInfoRestore = mediaInfoRestoreMap[name]!!
 
-                                        mediaInfo.apply {
+                                        mediaInfoRestore.apply {
                                             this.name = name
-                                            this.restoreList = restoreList
+                                            this.detailRestoreList = detailList
                                         }
 
-                                        if (mediaInfoIndex == -1) mediaInfoList.add(mediaInfo)
-
                                         hasData = false
-                                        restoreList = mutableListOf()
+                                        detailList = mutableListOf()
                                     }
                                 }
                             }
@@ -434,7 +434,7 @@ class Command {
                     }
                 }
             }
-            return mediaInfoList
+            return mediaInfoRestoreMap
         }
 
         /**

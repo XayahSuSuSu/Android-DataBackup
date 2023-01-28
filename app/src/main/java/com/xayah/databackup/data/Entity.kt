@@ -21,34 +21,6 @@ data class Issue(
 )
 
 /**
- * 应用信息单项
- */
-data class AppInfoItem(
-    @Expose var app: Boolean,        // 是否选中APK
-    @Expose var data: Boolean,       // 是否选中数据
-    @Expose var hasApp: Boolean,     // 是否含有APK(仅作为恢复项有效)
-    @Expose var hasData: Boolean,    // 是否含有数据(仅作为恢复项有效)
-    @Expose var versionName: String, // 版本名称
-    @Expose var versionCode: Long,   // 版本代码
-    @Expose var appSize: String,     // APK大小
-    @Expose var userSize: String,    // User数据大小
-    @Expose var userDeSize: String,  // User_de数据大小
-    @Expose var dataSize: String,    // Data数据大小
-    @Expose var obbSize: String,     // Obb数据大小
-    @Expose var date: String,        // 备份日期(10位时间戳)
-)
-
-/**
- * 应用存储信息
- */
-data class StorageStats(
-    @Expose var appBytes: Long = 0,           // 应用大小
-    @Expose var cacheBytes: Long = 0,         // 缓存大小
-    @Expose var dataBytes: Long = 0,          // 数据大小
-    @Expose var externalCacheBytes: Long = 0, // 外部共享存储缓存数据大小
-)
-
-/**
  * 应用存储信息
  */
 data class AppInfoStorageStats(
@@ -87,7 +59,7 @@ data class AppInfoStorageStats(
 }
 
 /**
- * 应用详情
+ * 应用详情基类
  */
 data class AppInfoDetailBase(
     @Expose var isSystemApp: Boolean = false,    // 是否为系统应用
@@ -207,79 +179,6 @@ data class AppInfoRestore(
 }
 
 /**
- * 应用信息
- */
-data class AppInfo(
-    @Expose var appName: String,                         // 应用名称
-    @Expose var packageName: String,                     // 应用包名
-    @Expose var isSystemApp: Boolean = false,            // 是否为系统应用
-    @Expose var firstInstallTime: Long = 0,              // 首次安装时间
-    @Expose var backup: AppInfoItem,                     // 备份信息
-    @Expose var _restoreIndex: Int,                      // 恢复选中索引
-    @Expose var restoreList: MutableList<AppInfoItem>,   // 恢复信息列表
-    @Expose var appIconString: String?,                  // 应用图标(以String方式存储)
-    @Expose var storageStats: StorageStats?,             // 存储相关
-    var isOnThisDevice: Boolean = false,
-    var appIcon: Drawable? = null,
-) {
-    @SerializedName("restoreIndex")
-    @Expose
-    var restoreIndex: Int = -1
-        get() = run {
-            var value = field
-            value = _restoreIndex
-            if (value == -1 || value.absoluteValue >= restoreList.size) {
-                // 如果索引异常, 则恢复索引至列表尾部
-                value = restoreList.size - 1
-                restoreIndex = value
-            } else {
-                value = _restoreIndex
-            }
-            value
-        }
-        set(value) {
-            _restoreIndex = if (value.absoluteValue >= restoreList.size) {
-                // 如果索引异常, 则恢复索引至列表尾部
-                restoreList.size - 1
-            } else {
-                value
-            }
-        }
-
-    val sizeBytes: Long
-        get() = run {
-            if (storageStats != null) {
-                storageStats!!.appBytes + storageStats!!.dataBytes
-            } else {
-                0L
-            }
-        }
-
-    val sizeDisplay: String
-        get() = run {
-            var unit = "Bytes"
-            var size = sizeBytes.toDouble()
-            val gb = (1000 * 1000 * 1000).toDouble()
-            val mb = (1000 * 1000).toDouble()
-            val kb = (1000).toDouble()
-            if (sizeBytes > gb) {
-                // GB
-                size = sizeBytes / gb
-                unit = "GB"
-            } else if (sizeBytes > mb) {
-                // GB
-                size = sizeBytes / mb
-                unit = "MB"
-            } else if (sizeBytes > kb) {
-                // GB
-                size = sizeBytes / kb
-                unit = "KB"
-            }
-            "${DecimalFormat("#.00").format(size)} $unit"
-        }
-}
-
-/**
  * 应用信息列表计数
  */
 data class AppInfoBaseNum(
@@ -395,6 +294,45 @@ data class MediaInfo(
             _restoreIndex = if (value.absoluteValue >= restoreList.size) {
                 // 如果索引异常, 则恢复索引至列表尾部
                 restoreList.size - 1
+            } else {
+                value
+            }
+        }
+}
+
+data class MediaInfoDetailBase(
+    @Expose var data: Boolean = false, // 是否选中
+    @Expose var size: String = "",     // 数据大小
+    @Expose var date: String = "",     // 备份日期(10位时间戳)
+)
+
+abstract class MediaInfoBase(
+    @Expose open var name: String = "",     // 媒体名称
+    @Expose open var path: String = "",     // 媒体路径
+)
+
+data class MediaInfoBackup(
+    @Expose var backupDetail: MediaInfoDetailBase = MediaInfoDetailBase(),
+) : MediaInfoBase()
+
+data class MediaInfoRestore(
+    @Expose var detailRestoreList: MutableList<MediaInfoDetailBase> = mutableListOf(),
+) : MediaInfoBase() {
+    @Expose
+    var restoreIndex: Int = -1
+        get() = run {
+            var value = field
+            if (value == -1 || value.absoluteValue >= detailRestoreList.size) {
+                // 如果索引异常, 则恢复索引至列表尾部
+                value = detailRestoreList.size - 1
+                restoreIndex = value
+            }
+            value
+        }
+        set(value) {
+            field = if (value.absoluteValue >= detailRestoreList.size) {
+                // 如果索引异常, 则恢复索引至列表尾部
+                detailRestoreList.size - 1
             } else {
                 value
             }

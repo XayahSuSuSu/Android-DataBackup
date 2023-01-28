@@ -48,6 +48,14 @@ class Path {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/appRestoreMap"
         }
 
+        fun getMediaInfoBackupMapPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/mediaBackupMap"
+        }
+
+        fun getMediaInfoRestoreMapPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/mediaRestoreMap"
+        }
+
         fun getMediaInfoListPath(): String {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/mediaList"
         }

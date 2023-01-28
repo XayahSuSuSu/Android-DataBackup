@@ -41,7 +41,7 @@ class BackupViewModel : ViewModel() {
     /**
      * 全局单例对象
      */
-    private val globalObject = GlobalObject.getInstance()
+    val globalObject = GlobalObject.getInstance()
 
     // 应用备份列表
     private val appInfoBackupList
@@ -62,8 +62,8 @@ class BackupViewModel : ViewModel() {
     var dataNum = ObservableField("0")
 
     // 媒体列表
-    val mediaInfoList
-        get() = App.mediaInfoList.value
+    val mediaInfoBackupMap
+        get() = globalObject.mediaInfoBackupMap.value
 
     var backupUser = ObservableField("${GlobalString.user}0")
     var restoreUser = ObservableField("${GlobalString.user}0")

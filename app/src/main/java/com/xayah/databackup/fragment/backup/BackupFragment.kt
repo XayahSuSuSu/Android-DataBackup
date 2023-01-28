@@ -12,12 +12,13 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.App
-import com.xayah.databackup.data.MediaInfo
-import com.xayah.databackup.data.MediaInfoItem
+import com.xayah.databackup.data.MediaInfoBackup
 import com.xayah.databackup.databinding.BottomSheetMediaDetailBinding
 import com.xayah.databackup.databinding.FragmentBackupBinding
 import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalObject
 import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.setWithTopBar
 import com.xayah.databackup.view.title
@@ -51,7 +52,7 @@ class BackupFragment : Fragment() {
                 toExplorer(requireContext()) { path, _ ->
                     viewModel.viewModelScope.launch {
                         var name = path.split("/").last()
-                        for (i in viewModel.mediaInfoList) {
+                        for (i in viewModel.mediaInfoBackupMap.values) {
                             if (path == i.path) {
                                 Toast.makeText(
                                     requireContext(),
@@ -72,20 +73,18 @@ class BackupFragment : Fragment() {
                                 name = nameList.joinToString(separator = "_")
                             }
                         }
-                        val mediaInfo = MediaInfo(
-                            name = name,
-                            path = path,
-                            backup = MediaInfoItem(
-                                data = true,
-                                size = "",
-                                date = ""
-                            ),
-                            _restoreIndex = -1,
-                            restoreList = mutableListOf()
-                        )
-                        viewModel.mediaInfoList.add(mediaInfo)
+                        val mediaInfo = MediaInfoBackup().apply {
+                            this.name = name
+                            this.path = path
+                            this.backupDetail.apply {
+                                this.data = true
+                                this.size = ""
+                                this.date = ""
+                            }
+                        }
+                        viewModel.mediaInfoBackupMap[mediaInfo.name] = mediaInfo
                         addChip(mediaInfo)
-                        App.saveMediaInfoList()
+                        GsonUtil.saveMediaInfoBackupMapToFile(viewModel.globalObject.mediaInfoBackupMap.value)
                     }
                 }
             }
@@ -103,23 +102,27 @@ class BackupFragment : Fragment() {
 
     private fun setChipGroup() {
         viewModel.viewModelScope.launch {
+            if (viewModel.globalObject.mediaInfoBackupMap.value.isEmpty()) {
+                GlobalObject.getInstance().mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap())
+            }
+
             binding.chipGroup.removeAllViews()
-            for (i in viewModel.mediaInfoList) {
+            for (i in viewModel.mediaInfoBackupMap.values) {
                 addChip(i)
             }
             viewModel.lazyChipGroup.set(false)
         }
     }
 
-    private fun addChip(mediaInfo: MediaInfo) {
+    private fun addChip(mediaInfo: MediaInfoBackup) {
         val chip = InputChip(layoutInflater, binding.chipGroup).apply {
             text = mediaInfo.name
-            isChecked = mediaInfo.backup.data
+            isChecked = mediaInfo.backupDetail.data
             isCloseIconVisible = false
             setOnCheckedChangeListener { _, isChecked ->
                 viewModel.viewModelScope.launch {
-                    mediaInfo.backup.data = isChecked
-                    App.saveMediaInfoList()
+                    mediaInfo.backupDetail.data = isChecked
+                    GsonUtil.saveMediaInfoBackupMapToFile(viewModel.globalObject.mediaInfoBackupMap.value)
                 }
             }
             setOnLongClickListener {
@@ -135,13 +138,6 @@ class BackupFragment : Fragment() {
                                 textInputEditText.apply {
                                     inputType = InputType.TYPE_NULL
                                     setText(mediaInfo.path)
-                                }
-                                if (mediaInfo.restoreList.isNotEmpty()) {
-                                    chipDate.apply {
-                                        visibility = View.VISIBLE
-                                        text =
-                                            Command.getDate(mediaInfo.restoreList[mediaInfo.restoreIndex].date)
-                                    }
                                 }
                                 materialButtonConfirm.setOnClickListener {
                                     viewModel.viewModelScope.launch {
@@ -159,9 +155,9 @@ class BackupFragment : Fragment() {
                 MaterialAlertDialogBuilder(requireContext()).apply {
                     setWithConfirm("${GlobalString.confirmRemove}${GlobalString.symbolQuestion}") {
                         viewModel.viewModelScope.launch {
-                            viewModel.mediaInfoList.remove(mediaInfo)
+                            viewModel.mediaInfoBackupMap.remove(mediaInfo.name)
                             binding.chipGroup.removeView(it)
-                            App.saveMediaInfoList()
+                            GsonUtil.saveMediaInfoBackupMapToFile(viewModel.globalObject.mediaInfoBackupMap.value)
                         }
                     }
                 }

@@ -12,13 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.xayah.databackup.App
-import com.xayah.databackup.data.MediaInfo
+import com.xayah.databackup.data.MediaInfoRestore
 import com.xayah.databackup.databinding.BottomSheetMediaDetailBinding
 import com.xayah.databackup.databinding.FragmentRestoreBinding
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 import com.xayah.databackup.view.InputChip
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.setWithTopBar
@@ -57,24 +54,29 @@ class RestoreFragment : Fragment() {
 
     private fun setChipGroup() {
         viewModel.viewModelScope.launch {
+            if (viewModel.globalObject.mediaInfoRestoreMap.value.isEmpty()) {
+                GlobalObject.getInstance().mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap())
+            }
+
             binding.chipGroup.removeAllViews()
-            for (i in viewModel.mediaInfoList) {
-                addChip(i)
+            for (i in viewModel.mediaInfoRestoreMap.values) {
+                if (i.detailRestoreList.isNotEmpty())
+                    addChip(i)
             }
             viewModel.lazyChipGroup.set(false)
         }
     }
 
-    private fun addChip(mediaInfo: MediaInfo) {
-        if (mediaInfo.restoreList.isNotEmpty()) {
+    private fun addChip(mediaInfo: MediaInfoRestore) {
+        if (mediaInfo.detailRestoreList.isNotEmpty()) {
             val chip = InputChip(layoutInflater, binding.chipGroup).apply {
                 text = mediaInfo.name
-                isChecked = mediaInfo.restoreList[mediaInfo.restoreIndex].data
+                isChecked = mediaInfo.detailRestoreList[mediaInfo.restoreIndex].data
                 isCloseIconVisible = false
                 setOnCheckedChangeListener { _, isChecked ->
                     viewModel.viewModelScope.launch {
-                        mediaInfo.restoreList[mediaInfo.restoreIndex].data = isChecked
-                        App.saveMediaInfoList()
+                        mediaInfo.detailRestoreList[mediaInfo.restoreIndex].data = isChecked
+                        GsonUtil.saveMediaInfoRestoreMapToFile(viewModel.globalObject.mediaInfoRestoreMap.value)
                     }
                 }
                 setOnLongClickListener {
@@ -91,15 +93,15 @@ class RestoreFragment : Fragment() {
                                         inputType = InputType.TYPE_NULL
                                         setText(mediaInfo.path)
                                     }
-                                    if (mediaInfo.restoreList.isNotEmpty()) {
+                                    if (mediaInfo.detailRestoreList.isNotEmpty()) {
                                         chipDate.apply {
                                             visibility = View.VISIBLE
                                             text =
-                                                Command.getDate(mediaInfo.restoreList[mediaInfo.restoreIndex].date)
+                                                Command.getDate(mediaInfo.detailRestoreList[mediaInfo.restoreIndex].date)
                                             setOnClickListener {
                                                 val choice = mediaInfo.restoreIndex
                                                 val items = mutableListOf<String>()
-                                                mediaInfo.restoreList.forEach {
+                                                mediaInfo.detailRestoreList.forEach {
                                                     items.add(
                                                         Command.getDate(
                                                             it.date
@@ -117,7 +119,7 @@ class RestoreFragment : Fragment() {
                                                         dismiss()
                                                         mediaInfo.restoreIndex = position
                                                         text =
-                                                            Command.getDate(mediaInfo.restoreList[mediaInfo.restoreIndex].date)
+                                                            Command.getDate(mediaInfo.detailRestoreList[mediaInfo.restoreIndex].date)
                                                     }
                                                     show()
                                                 }
@@ -127,7 +129,7 @@ class RestoreFragment : Fragment() {
                                     materialButtonConfirm.setOnClickListener {
                                         viewModel.viewModelScope.launch {
                                             dismiss()
-                                            App.saveMediaInfoList()
+                                            GsonUtil.saveMediaInfoRestoreMapToFile(viewModel.globalObject.mediaInfoRestoreMap.value)
                                         }
 
                                     }
@@ -138,15 +140,18 @@ class RestoreFragment : Fragment() {
                                                         "${GlobalString.removeFilesToo}${GlobalString.symbolExclamation}"
                                             ) {
                                                 viewModel.viewModelScope.launch {
-                                                    Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}/${mediaInfo.restoreList[mediaInfo.restoreIndex].date}")
+                                                    Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfo.name}/${mediaInfo.detailRestoreList[mediaInfo.restoreIndex].date}")
                                                         .apply {
                                                             if (this) {
-                                                                mediaInfo.restoreList.remove(
-                                                                    mediaInfo.restoreList[mediaInfo.restoreIndex]
+                                                                mediaInfo.detailRestoreList.remove(
+                                                                    mediaInfo.detailRestoreList[mediaInfo.restoreIndex]
                                                                 )
                                                                 mediaInfo.restoreIndex--
                                                                 dismiss()
-                                                                App.saveMediaInfoList()
+                                                                viewModel.isInitialized = false
+                                                                GsonUtil.saveMediaInfoRestoreMapToFile(
+                                                                    viewModel.globalObject.mediaInfoRestoreMap.value
+                                                                )
                                                                 Toast.makeText(
                                                                     context,
                                                                     GlobalString.success,

@@ -26,7 +26,7 @@ class RestoreViewModel : ViewModel() {
     val _isInitialized by lazy {
         MutableLiveData(false)
     }
-    private var isInitialized
+    var isInitialized
         get() = _isInitialized.value!!
         set(value) = _isInitialized.postValue(value)
 
@@ -44,7 +44,7 @@ class RestoreViewModel : ViewModel() {
     /**
      * 全局单例对象
      */
-    private val globalObject = GlobalObject.getInstance()
+    val globalObject = GlobalObject.getInstance()
 
     // 应用恢复列表
     private val appInfoRestoreList
@@ -64,8 +64,8 @@ class RestoreViewModel : ViewModel() {
     var dataNum = ObservableField("0")
 
     // 媒体列表
-    val mediaInfoList
-        get() = App.mediaInfoList.value
+    val mediaInfoRestoreMap
+        get() = globalObject.mediaInfoRestoreMap.value
 
     var backupUser = ObservableField("${GlobalString.user}0")
     var restoreUser = ObservableField("${GlobalString.user}0")
@@ -162,7 +162,6 @@ class RestoreViewModel : ViewModel() {
                         Command.rm(Path.getBackupDataSavePath())
                             .apply {
                                 if (this) {
-                                    App.loadList()
                                     refresh()
                                     Toast.makeText(
                                         context, GlobalString.success, Toast.LENGTH_SHORT

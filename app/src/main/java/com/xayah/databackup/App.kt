@@ -6,9 +6,7 @@ import android.content.Context
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.xayah.crash.CrashHandler
-import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
-import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.InputStream
 
 class App : Application() {
@@ -26,19 +24,6 @@ class App : Application() {
         @SuppressLint("StaticFieldLeak")
         lateinit var globalContext: Context
         lateinit var versionName: String
-
-        // 媒体列表
-        val mediaInfoList by lazy {
-            MutableStateFlow(mutableListOf<MediaInfo>())
-        }
-
-        suspend fun loadList() {
-            mediaInfoList.emit(Command.getMediaInfoList())
-        }
-
-        suspend fun saveMediaInfoList() {
-            JSON.saveMediaInfoList(mediaInfoList.value)
-        }
 
         fun getTimeStamp(): String {
             return System.currentTimeMillis().toString()

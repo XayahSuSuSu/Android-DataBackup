@@ -5,9 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.topjohnwu.superuser.io.SuFile
-import com.xayah.databackup.data.AppInfo
-import com.xayah.databackup.data.AppInfoBackupMap
-import com.xayah.databackup.data.AppInfoRestoreMap
+import com.xayah.databackup.data.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -70,14 +68,41 @@ class GsonUtil {
                 }
             }
         }
+
+        /**
+         * 保存媒体备份哈希表
+         */
+        suspend fun saveMediaInfoBackupMapToFile(map: MediaInfoBackupMap) {
+            withContext(Dispatchers.IO) {
+                try {
+                    saveToFile(
+                        Path.getMediaInfoBackupMapPath(),
+                        getInstance().toMediaInfoBackupMapJson(map)
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        /**
+         * 保存媒体恢复哈希表
+         */
+        suspend fun saveMediaInfoRestoreMapToFile(map: MediaInfoRestoreMap) {
+            withContext(Dispatchers.IO) {
+                try {
+                    saveToFile(
+                        Path.getMediaInfoRestoreMapPath(),
+                        getInstance().toMediaInfoRestoreMapJson(map)
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private val gson: Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-
-    fun fromAppInfoListJson(value: String): MutableList<AppInfo> {
-        val mapType = object : TypeToken<MutableList<AppInfo>>() {}
-        return gson.fromJson(value, mapType.type)
-    }
 
     /**
      * Json转AppInfoBackupMap
@@ -106,6 +131,36 @@ class GsonUtil {
      * AppInfoRestoreMap转Json
      */
     fun toAppInfoRestoreMapJson(value: AppInfoRestoreMap): String {
+        return gson.toJson(value)
+    }
+
+    /**
+     * Json转MediaInfoBackupMap
+     */
+    fun fromMediaInfoBackupMapJson(value: String): MediaInfoBackupMap {
+        val mapType = object : TypeToken<MediaInfoBackupMap>() {}
+        return gson.fromJson(value, mapType.type)
+    }
+
+    /**
+     * MediaInfoBackupMap转Json
+     */
+    fun toMediaInfoBackupMapJson(value: MediaInfoBackupMap): String {
+        return gson.toJson(value)
+    }
+
+    /**
+     * Json转MediaInfoRestoreMap
+     */
+    fun fromMediaInfoRestoreMapJson(value: String): MediaInfoRestoreMap {
+        val mapType = object : TypeToken<MediaInfoRestoreMap>() {}
+        return gson.fromJson(value, mapType.type)
+    }
+
+    /**
+     * MediaInfoRestoreMap转Json
+     */
+    fun toMediaInfoRestoreMapJson(value: MediaInfoRestoreMap): String {
         return gson.toJson(value)
     }
 }

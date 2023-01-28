@@ -1,8 +1,6 @@
 package com.xayah.databackup.util
 
-import com.xayah.databackup.data.AppInfoBackupMap
-import com.xayah.databackup.data.AppInfoListSelectedNum
-import com.xayah.databackup.data.AppInfoRestoreMap
+import com.xayah.databackup.data.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class GlobalObject {
@@ -51,4 +49,14 @@ class GlobalObject {
             }
             num
         }
+
+    // 媒体备份哈希表
+    val mediaInfoBackupMap by lazy {
+        MutableStateFlow<MediaInfoBackupMap>(hashMapOf())
+    }
+
+    // 媒体恢复哈希表
+    val mediaInfoRestoreMap by lazy {
+        MutableStateFlow<MediaInfoRestoreMap>(hashMapOf())
+    }
 }

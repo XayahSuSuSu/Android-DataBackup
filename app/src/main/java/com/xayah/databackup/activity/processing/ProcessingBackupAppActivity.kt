@@ -16,6 +16,11 @@ import kotlinx.coroutines.withContext
 class ProcessingBackupAppActivity : ProcessingBaseActivity() {
     lateinit var viewModel: ProcessingBaseViewModel
 
+    /**
+     * 全局单例对象
+     */
+    private val globalObject = GlobalObject.getInstance()
+
     // 备份信息列表
     private val backupInfoList by lazy {
         MutableStateFlow(mutableListOf<BackupInfo>())
@@ -49,8 +54,14 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
     override fun initialize(viewModel: ProcessingBaseViewModel) {
         this.viewModel = viewModel
         viewModel.viewModelScope.launch {
-            // 加载备份列表
+            // 加载配置
             backupInfoList.emit(Command.getCachedBackupInfoList())
+            if (globalObject.appInfoBackupMap.value.isEmpty()) {
+                globalObject.appInfoBackupMap.emit(Command.getAppInfoBackupMap())
+            }
+            if (globalObject.appInfoRestoreMap.value.isEmpty()) {
+                globalObject.appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
+            }
 
             // 设置适配器
             viewModel.mAdapter.apply {

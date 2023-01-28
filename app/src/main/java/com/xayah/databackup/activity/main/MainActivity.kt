@@ -65,9 +65,6 @@ class MainActivity : AppCompatActivity() {
             // 暂时禁用底部导航
             binding.bottomNavigation.menu.forEach { it.isEnabled = false }
 
-            // 加载列表
-            App.loadList()
-
             binding.linearProgressIndicator.visibility = View.GONE
 
             // 加载结束，启用底部导航

@@ -1,15 +1,11 @@
 package com.xayah.databackup.activity.processing
 
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
 import com.xayah.databackup.data.ProcessingItem
 import com.xayah.databackup.data.ProcessingTask
-import com.xayah.databackup.util.Bashrc
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -18,9 +14,15 @@ import kotlinx.coroutines.withContext
 class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
     lateinit var viewModel: ProcessingBaseViewModel
 
+    /**
+     * 全局单例对象
+     */
+    private val globalObject = GlobalObject.getInstance()
+
     // 媒体列表
-    private val mediaInfoList
-        get() = App.mediaInfoList.value.filter { if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].data else false }
+    private val mediaInfoRestoreMap
+        get() = globalObject.mediaInfoRestoreMap.value.values.toList()
+            .filter { if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].data else false }
             .toMutableList()
 
     // 任务列表
@@ -33,7 +35,7 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
         viewModel.viewModelScope.launch {
             // 设置适配器
             viewModel.mAdapter.apply {
-                for (i in mediaInfoList) processingTaskList.value.add(
+                for (i in mediaInfoRestoreMap) processingTaskList.value.add(
                     ProcessingTask(
                         appName = i.name,
                         packageName = i.path,
@@ -54,10 +56,10 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
             // 设置备份状态
             viewModel.btnText.set(GlobalString.restore)
             viewModel.btnDesc.set(GlobalString.clickTheRightBtnToStart)
-            viewModel.progressMax.set(mediaInfoList.size)
+            viewModel.progressMax.set(mediaInfoRestoreMap.size)
             viewModel.progressText.set("${GlobalString.progress}: ${viewModel.progress.get()}/${viewModel.progressMax.get()}")
             viewModel.totalTip.set(GlobalString.ready)
-            mediaInfoList.size.apply {
+            mediaInfoRestoreMap.size.apply {
                 viewModel.totalProgress.set("${GlobalString.selected} $this ${GlobalString.data}")
             }
             viewModel.isReady.set(true)
@@ -72,17 +74,17 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                 viewModel.totalTip.set(GlobalString.restoreProcessing)
                 viewModel.viewModelScope.launch {
                     withContext(Dispatchers.IO) {
-                        for ((index, i) in mediaInfoList.withIndex()) {
+                        for ((index, i) in mediaInfoRestoreMap.withIndex()) {
                             // 准备备份卡片数据
                             viewModel.appName.set(i.name)
                             viewModel.packageName.set(i.path)
 
                             val inPath =
-                                "${Path.getBackupMediaSavePath()}/${i.name}/${i.restoreList[i.restoreIndex].date}"
+                                "${Path.getBackupMediaSavePath()}/${i.name}/${i.detailRestoreList[i.restoreIndex].date}"
 
                             // 开始恢复
                             var state = true // 该任务是否成功完成
-                            if (i.restoreList[i.restoreIndex].data) {
+                            if (i.detailRestoreList[i.restoreIndex].data) {
                                 val processingItem = ProcessingItem.DATA().apply {
                                     isProcessing = true
                                 }
