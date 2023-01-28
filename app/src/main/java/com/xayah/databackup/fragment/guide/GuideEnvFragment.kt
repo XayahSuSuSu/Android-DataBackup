@@ -88,12 +88,9 @@ class GuideEnvFragment : Fragment() {
             Command.checkRoot()
         }
         if (isRoot) {
-            App.globalContext.saveIsAllowRoot(true)
             viewModel.grantRootAccessCheck.set(GlobalString.success)
             step++
             return
-        } else {
-            App.globalContext.saveIsAllowRoot(false)
         }
         viewModel.grantRootAccessCheck.set(GlobalString.failed)
     }

@@ -68,8 +68,7 @@ dependencies {
     // LibSU
     def libsuVersion = '5.0.3'
     implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
-    implementation "com.github.topjohnwu.libsu:service:${libsuVersion}"
-    implementation "com.github.topjohnwu.libsu:nio:${libsuVersion}"
+    implementation "com.github.topjohnwu.libsu:io:${libsuVersion}"
 
     // MultiType
     implementation 'com.drakeet.multitype:multitype:4.3.0'

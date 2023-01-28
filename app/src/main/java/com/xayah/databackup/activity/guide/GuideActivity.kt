@@ -11,7 +11,10 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.databinding.ActivityGuideBinding
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.checkPackageUsageStatsPermission
+import com.xayah.databackup.util.readInitializedVersionName
+import com.xayah.databackup.util.readIsSupportUsageAccess
 
 class GuideActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGuideBinding
@@ -45,11 +48,7 @@ class GuideActivity : AppCompatActivity() {
             navController.navigate(it)
         }
         viewModel.finishAndEnter.observe(this) {
-            if (it) {
-                GlobalObject.getInstance().suFile.initialize(App.globalContext) {
-                    toMain()
-                }
-            }
+            if (it) toMain()
         }
         viewModel.finish.observe(this) {
             if (it) finish()

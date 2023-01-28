@@ -9,5 +9,4 @@ class GlobalObject {
         fun getInstance() = Instance.instance
     }
 
-    val suFile = SuFile.getInstance()
 }
