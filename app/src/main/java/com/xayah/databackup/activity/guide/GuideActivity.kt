@@ -3,7 +3,6 @@ package com.xayah.databackup.activity.guide
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -12,10 +11,7 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.databinding.ActivityGuideBinding
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.checkPackageUsageStatsPermission
-import com.xayah.databackup.util.readInitializedVersionName
-import com.xayah.databackup.util.readIsSupportUsageAccess
+import com.xayah.databackup.util.*
 
 class GuideActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGuideBinding
@@ -49,7 +45,11 @@ class GuideActivity : AppCompatActivity() {
             navController.navigate(it)
         }
         viewModel.finishAndEnter.observe(this) {
-            if (it) toMain()
+            if (it) {
+                GlobalObject.getInstance().suFile.initialize(App.globalContext) {
+                    toMain()
+                }
+            }
         }
         viewModel.finish.observe(this) {
             if (it) finish()

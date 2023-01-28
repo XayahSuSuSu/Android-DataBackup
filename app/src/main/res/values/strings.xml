@@ -177,6 +177,7 @@
     <string name="decompressing">Decompressing</string>
     <string name="finished">Finished</string>
     <string name="no_change_and_skip">No change, skip</string>
+    <string name="check_storage_management_permission">Check storage management permission</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
         <item>FTP</item>
         <item>WebDAV</item>

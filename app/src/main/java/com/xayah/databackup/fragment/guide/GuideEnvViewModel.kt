@@ -9,6 +9,8 @@ class GuideEnvViewModel : ViewModel() {
     val releasePrebuiltBinariesCheck: ObservableField<String> =
         ObservableField(GlobalString.notDetected)
     val activateBashrcCheck: ObservableField<String> = ObservableField(GlobalString.notDetected)
+    val storageManagementPermissionCheck: ObservableField<String> =
+        ObservableField(GlobalString.notDetected)
     val packageUsageStatsPermissionCheck: ObservableField<String> =
         ObservableField(GlobalString.notDetected)
 }

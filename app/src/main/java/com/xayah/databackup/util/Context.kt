@@ -170,6 +170,14 @@ fun Context.readIsSupportUsageAccess(): Boolean {
     return readPreferencesBoolean("is_support_usage_access", true)
 }
 
+fun Context.saveIsAllowRoot(value: Boolean) {
+    savePreferences("is_allow_root", value)
+}
+
+fun Context.readIsAllowRoot(): Boolean {
+    return readPreferencesBoolean("is_allow_root", false)
+}
+
 fun Context.getActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {

@@ -153,4 +153,5 @@
     <string name="decompressing">解壓中</string>
     <string name="finished">已完成</string>
     <string name="no_change_and_skip">目標未發生變化, 跳過</string>
+    <string name="check_storage_management_permission">檢查存儲管理權限</string>
 </resources>

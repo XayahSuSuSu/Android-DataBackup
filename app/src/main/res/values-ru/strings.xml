@@ -153,4 +153,5 @@
     <string name="decompressing">Decompressing</string>
     <string name="finished">Finished</string>
     <string name="no_change_and_skip">No change, skip</string>
+    <string name="check_storage_management_permission">Check storage management permission</string>
 </resources>

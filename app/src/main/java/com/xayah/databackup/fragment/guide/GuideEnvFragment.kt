@@ -1,7 +1,9 @@
 package com.xayah.databackup.fragment.guide
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -11,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.permissionx.guolindev.PermissionX
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.guide.GuideViewModel
 import com.xayah.databackup.databinding.FragmentGuideEnvBinding
@@ -60,9 +63,12 @@ class GuideEnvFragment : Fragment() {
                             checkBashrc()
                         }
                         3 -> {
-                            checkPackageUsageStatsPermission()
+                            checkStorageManagementPermission()
                         }
                         4 -> {
+                            checkPackageUsageStatsPermission()
+                        }
+                        5 -> {
                             finish()
                         }
                     }
@@ -82,9 +88,12 @@ class GuideEnvFragment : Fragment() {
             Command.checkRoot()
         }
         if (isRoot) {
+            App.globalContext.saveIsAllowRoot(true)
             viewModel.grantRootAccessCheck.set(GlobalString.success)
             step++
             return
+        } else {
+            App.globalContext.saveIsAllowRoot(false)
         }
         viewModel.grantRootAccessCheck.set(GlobalString.failed)
     }
@@ -140,6 +149,33 @@ class GuideEnvFragment : Fragment() {
             step++
         } else {
             viewModel.activateBashrcCheck.set(GlobalString.failed)
+        }
+    }
+
+    private fun checkStorageManagementPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            PermissionX.init(this).permissions(
+                Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+            ).request { allGranted, _, _ ->
+                if (!allGranted) {
+                    val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                    intent.data = Uri.parse("package:${requireContext().packageName}")
+                    startActivity(intent)
+                } else {
+                    viewModel.storageManagementPermissionCheck.set(GlobalString.success)
+                    step++
+                }
+            }
+        } else {
+            PermissionX.init(this).permissions(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            ).request { allGranted, _, _ ->
+                if (allGranted) {
+                    viewModel.storageManagementPermissionCheck.set(GlobalString.success)
+                    step++
+                }
+            }
         }
     }
 
