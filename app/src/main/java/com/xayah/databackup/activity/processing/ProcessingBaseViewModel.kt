@@ -7,7 +7,7 @@ import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.drakeet.multitype.MultiTypeAdapter
-import com.xayah.databackup.data.ProcessingTask
+import com.xayah.databackup.data.*
 import com.xayah.databackup.util.GlobalString
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -17,7 +17,6 @@ class ProcessingBaseViewModel : ViewModel() {
     val mAdapter: MultiTypeAdapter = MultiTypeAdapter()
     val mAdapterSuccess: MultiTypeAdapter = MultiTypeAdapter()
     val mAdapterFailed: MultiTypeAdapter = MultiTypeAdapter()
-    val mAdapterItems: MultiTypeAdapter = MultiTypeAdapter()
 
     // 状态相关
     var appName: ObservableField<String> = ObservableField("")
@@ -51,4 +50,34 @@ class ProcessingBaseViewModel : ViewModel() {
     val failedNum
         get() = failedList.value.size
 
+    // 备份过程
+    var apkNeedProcessing: ObservableBoolean = ObservableBoolean(false)
+    var apkIsProcessing: ObservableBoolean = ObservableBoolean(false)
+    var apkType: ObservableField<String> = ObservableField(ProcessingItemTypeAPK)
+    var apkTitle: ObservableField<String> = ObservableField(GlobalString.ready)
+    var apkSubtitle: ObservableField<String> = ObservableField(GlobalString.pleaseWait)
+
+    var userNeedProcessing: ObservableBoolean = ObservableBoolean(false)
+    var userIsProcessing: ObservableBoolean = ObservableBoolean(false)
+    var userType: ObservableField<String> = ObservableField(ProcessingItemTypeUSER)
+    var userTitle: ObservableField<String> = ObservableField(GlobalString.ready)
+    var userSubtitle: ObservableField<String> = ObservableField(GlobalString.pleaseWait)
+
+    var userDeNeedProcessing: ObservableBoolean = ObservableBoolean(false)
+    var userDeIsProcessing: ObservableBoolean = ObservableBoolean(false)
+    var userDeType: ObservableField<String> = ObservableField(ProcessingItemTypeUSERDE)
+    var userDeTitle: ObservableField<String> = ObservableField(GlobalString.ready)
+    var userDeSubtitle: ObservableField<String> = ObservableField(GlobalString.pleaseWait)
+
+    var dataNeedProcessing: ObservableBoolean = ObservableBoolean(false)
+    var dataIsProcessing: ObservableBoolean = ObservableBoolean(false)
+    var dataType: ObservableField<String> = ObservableField(ProcessingItemTypeDATA)
+    var dataTitle: ObservableField<String> = ObservableField(GlobalString.ready)
+    var dataSubtitle: ObservableField<String> = ObservableField(GlobalString.pleaseWait)
+
+    var obbNeedProcessing: ObservableBoolean = ObservableBoolean(false)
+    var obbIsProcessing: ObservableBoolean = ObservableBoolean(false)
+    var obbType: ObservableField<String> = ObservableField(ProcessingItemTypeOBB)
+    var obbTitle: ObservableField<String> = ObservableField(GlobalString.ready)
+    var obbSubtitle: ObservableField<String> = ObservableField(GlobalString.pleaseWait)
 }

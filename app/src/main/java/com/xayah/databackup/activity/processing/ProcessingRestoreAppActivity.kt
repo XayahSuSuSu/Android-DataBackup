@@ -5,9 +5,9 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.viewModelScope
 import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
-import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.AppInfoBaseNum
+import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,11 +37,6 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
         MutableStateFlow(mutableListOf<ProcessingTask>())
     }
 
-    // Processing项目哈希表
-    private val processingItemMap by lazy {
-        MutableStateFlow(hashMapOf<String, ProcessingItem>())
-    }
-
     override fun initialize(viewModel: ProcessingBaseViewModel) {
         this.viewModel = viewModel
         viewModel.viewModelScope.launch {
@@ -69,10 +64,6 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                 register(ProcessingTaskAdapter())
                 items = processingTaskList.value
                 notifyDataSetChanged()
-            }
-
-            viewModel.mAdapterItems.apply {
-                register(ProcessingItemAdapter())
             }
 
             // 设置备份状态
@@ -114,50 +105,54 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                             val dataPath = "${inPath}/data.$suffix"
                             val obbPath = "${inPath}/obb.$suffix"
 
-                            // 设置适配器
-                            viewModel.mAdapterItems.apply {
-                                val size = processingItemMap.value.size
-                                processingItemMap.value.clear()
-                                clearProcessingItems(viewModel, size)
-                                if (i.detailRestoreList[i.restoreIndex].selectApp) {
-                                    // 检查是否备份APK
-                                    processingItemMap.value[ProcessingItemTypeAPK] =
-                                        ProcessingItem.APK()
+                            // 设置匹配项
+                            if (i.detailRestoreList[i.restoreIndex].selectApp) {
+                                // 检查是否备份APK
+                                viewModel.apkTitle.set(GlobalString.ready)
+                                viewModel.apkSubtitle.set(GlobalString.pleaseWait)
+                                viewModel.apkIsProcessing.set(false)
+                            }
+                            viewModel.apkNeedProcessing.set(i.detailRestoreList[i.restoreIndex].selectApp)
+                            if (i.detailRestoreList[i.restoreIndex].selectData) {
+                                // 检查是否备份数据
+                                Command.ls(userPath).apply {
+                                    if (this) {
+                                        viewModel.userTitle.set(GlobalString.ready)
+                                        viewModel.userSubtitle.set(GlobalString.pleaseWait)
+                                        viewModel.userIsProcessing.set(false)
+                                    }
+                                    viewModel.userNeedProcessing.set(this)
                                 }
-                                if (i.detailRestoreList[i.restoreIndex].selectData) {
-                                    // 检查是否备份数据
-                                    Command.ls(userPath).apply {
-                                        if (this)
-                                            processingItemMap.value[ProcessingItemTypeUSER] =
-                                                ProcessingItem.USER()
+                                Command.ls(userDePath).apply {
+                                    if (this) {
+                                        viewModel.userDeTitle.set(GlobalString.ready)
+                                        viewModel.userDeSubtitle.set(GlobalString.pleaseWait)
+                                        viewModel.userDeIsProcessing.set(false)
                                     }
-                                    Command.ls(userDePath).apply {
-                                        if (this)
-                                            processingItemMap.value[ProcessingItemTypeUSERDE] =
-                                                ProcessingItem.USERDE()
-                                    }
-                                    Command.ls(dataPath).apply {
-                                        if (this)
-                                            processingItemMap.value[ProcessingItemTypeDATA] =
-                                                ProcessingItem.DATA()
-                                    }
-                                    Command.ls(obbPath).apply {
-                                        if (this)
-                                            processingItemMap.value[ProcessingItemTypeOBB] =
-                                                ProcessingItem.OBB()
-                                    }
+                                    viewModel.userDeNeedProcessing.set(this)
                                 }
-                                items = processingItemMap.value.values.sortedBy { it.weight }
-                                viewModel.viewModelScope.launch {
-                                    refreshProcessingItems(viewModel)
+                                Command.ls(dataPath).apply {
+                                    if (this) {
+                                        viewModel.dataTitle.set(GlobalString.ready)
+                                        viewModel.dataSubtitle.set(GlobalString.pleaseWait)
+                                        viewModel.dataIsProcessing.set(false)
+                                    }
+                                    viewModel.dataNeedProcessing.set(this)
+                                }
+                                Command.ls(obbPath).apply {
+                                    if (this) {
+                                        viewModel.obbTitle.set(GlobalString.ready)
+                                        viewModel.obbSubtitle.set(GlobalString.pleaseWait)
+                                        viewModel.obbIsProcessing.set(false)
+                                    }
+                                    viewModel.obbNeedProcessing.set(this)
                                 }
                             }
 
                             // 开始恢复
                             var state = true // 该任务是否成功完成
-                            if (processingItemMap.value.containsKey(ProcessingItemTypeAPK)) {
-                                processingItemMap.value[ProcessingItemTypeAPK]?.isProcessing = true
-                                refreshProcessingItems(viewModel)
+                            if (viewModel.apkNeedProcessing.get()) {
+                                viewModel.apkIsProcessing.set(true)
 
                                 // 恢复应用
                                 Command.installAPK(
@@ -168,11 +163,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeAPK]
+                                        viewModel.apkTitle,
+                                        viewModel.apkSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }.apply {
                                     state = this
                                 }
@@ -181,26 +174,24 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     continue
                                 }
 
-                                processingItemMap.value[ProcessingItemTypeAPK]?.isProcessing = false
-                                refreshProcessingItems(viewModel)
+                                viewModel.apkIsProcessing.set(false)
                             }
 
                             // 判断是否安装该应用
                             Bashrc.findPackage(userId, packageName).apply {
                                 if (!this.first) {
                                     // 未安装
-                                    processingItemMap.value.remove(ProcessingItemTypeUSER)
-                                    processingItemMap.value.remove(ProcessingItemTypeUSERDE)
-                                    processingItemMap.value.remove(ProcessingItemTypeDATA)
-                                    processingItemMap.value.remove(ProcessingItemTypeOBB)
+                                    viewModel.userNeedProcessing.set(false)
+                                    viewModel.userDeNeedProcessing.set(false)
+                                    viewModel.dataNeedProcessing.set(false)
+                                    viewModel.obbNeedProcessing.set(false)
                                     state = false
                                     Logcat.getInstance().addLine("${packageName}: Not installed")
                                 }
                             }
 
-                            if (processingItemMap.value.containsKey(ProcessingItemTypeUSER)) {
-                                processingItemMap.value[ProcessingItemTypeUSER]?.isProcessing = true
-                                refreshProcessingItems(viewModel)
+                            if (viewModel.userNeedProcessing.get()) {
+                                viewModel.userIsProcessing.set(true)
 
                                 // 读取原有SELinux context
                                 val contextSELinux =
@@ -215,11 +206,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeUSER]
+                                        viewModel.userTitle,
+                                        viewModel.userSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }.apply {
                                     if (!this) state = false
                                 }
@@ -232,21 +221,15 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeUSER]
+                                        viewModel.userTitle,
+                                        viewModel.userSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }
 
-                                processingItemMap.value[ProcessingItemTypeUSER]?.isProcessing =
-                                    false
-                                refreshProcessingItems(viewModel)
+                                viewModel.userIsProcessing.set(false)
                             }
-                            if (processingItemMap.value.containsKey(ProcessingItemTypeUSERDE)) {
-                                processingItemMap.value[ProcessingItemTypeUSERDE]?.isProcessing =
-                                    true
-                                refreshProcessingItems(viewModel)
+                            if (viewModel.userDeNeedProcessing.get()) {
+                                viewModel.userDeIsProcessing.set(true)
 
                                 // 读取原有SELinux context
                                 val contextSELinux =
@@ -261,11 +244,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeUSERDE]
+                                        viewModel.userDeTitle,
+                                        viewModel.userDeSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }.apply {
                                     if (!this) state = false
                                 }
@@ -278,20 +259,15 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeUSERDE]
+                                        viewModel.userDeTitle,
+                                        viewModel.userDeSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }
 
-                                processingItemMap.value[ProcessingItemTypeUSERDE]?.isProcessing =
-                                    false
-                                refreshProcessingItems(viewModel)
+                                viewModel.userDeIsProcessing.set(false)
                             }
-                            if (processingItemMap.value.containsKey(ProcessingItemTypeDATA)) {
-                                processingItemMap.value[ProcessingItemTypeDATA]?.isProcessing = true
-                                refreshProcessingItems(viewModel)
+                            if (viewModel.dataNeedProcessing.get()) {
+                                viewModel.dataIsProcessing.set(true)
 
                                 // 读取原有SELinux context
                                 val contextSELinux =
@@ -306,11 +282,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeDATA]
+                                        viewModel.dataTitle,
+                                        viewModel.dataSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }.apply {
                                     if (!this) state = false
                                 }
@@ -323,20 +297,15 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeDATA]
+                                        viewModel.dataTitle,
+                                        viewModel.dataSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }
 
-                                processingItemMap.value[ProcessingItemTypeDATA]?.isProcessing =
-                                    false
-                                refreshProcessingItems(viewModel)
+                                viewModel.dataIsProcessing.set(false)
                             }
-                            if (processingItemMap.value.containsKey(ProcessingItemTypeOBB)) {
-                                processingItemMap.value[ProcessingItemTypeOBB]?.isProcessing = true
-                                refreshProcessingItems(viewModel)
+                            if (viewModel.obbNeedProcessing.get()) {
+                                viewModel.obbIsProcessing.set(true)
 
                                 // 读取原有SELinux context
                                 val contextSELinux =
@@ -351,11 +320,9 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeOBB]
+                                        viewModel.obbTitle,
+                                        viewModel.obbSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }.apply {
                                     if (!this) state = false
                                 }
@@ -368,15 +335,12 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItemMap.value[ProcessingItemTypeOBB]
+                                        viewModel.obbTitle,
+                                        viewModel.obbSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }
 
-                                processingItemMap.value[ProcessingItemTypeOBB]?.isProcessing = false
-                                refreshProcessingItems(viewModel)
+                                viewModel.obbIsProcessing.set(false)
                             }
                             if (state) {
                                 viewModel.successList.value.add(processingTaskList.value[index])

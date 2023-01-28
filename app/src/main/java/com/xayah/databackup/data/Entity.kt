@@ -2,7 +2,6 @@ package com.xayah.databackup.data
 
 import android.graphics.drawable.Drawable
 import com.google.gson.annotations.Expose
-import com.xayah.databackup.util.GlobalString
 import okhttp3.internal.toLongOrDefault
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue
@@ -198,69 +197,6 @@ data class ProcessingTask(
     @Expose var data: Boolean,         // 是否选中数据
     var appIcon: Drawable? = null,
 )
-
-/**
- * Processing项目
- */
-data class ProcessingItem(
-    @Expose var type: String,          // 项目类型: APK, USER, USER_DE, DATA, OBB
-    @Expose var title: String,         // 项目标题
-    @Expose var subtitle: String,      // 项目副标题
-    @Expose var isProcessing: Boolean, // 是否正在进行中, 决定了CircularProgressIndicator是否显示
-    var weight: Int,               // 排序权重
-) {
-    companion object {
-        fun APK(): ProcessingItem {
-            return ProcessingItem(
-                type = ProcessingItemTypeAPK,
-                title = GlobalString.ready,
-                subtitle = GlobalString.pleaseWait,
-                isProcessing = false,
-                weight = 1
-            )
-        }
-
-        fun USER(): ProcessingItem {
-            return ProcessingItem(
-                type = ProcessingItemTypeUSER,
-                title = GlobalString.ready,
-                subtitle = GlobalString.pleaseWait,
-                isProcessing = false,
-                weight = 2
-            )
-        }
-
-        fun USERDE(): ProcessingItem {
-            return ProcessingItem(
-                type = ProcessingItemTypeUSERDE,
-                title = GlobalString.ready,
-                subtitle = GlobalString.pleaseWait,
-                isProcessing = false,
-                weight = 3
-            )
-        }
-
-        fun DATA(): ProcessingItem {
-            return ProcessingItem(
-                type = ProcessingItemTypeDATA,
-                title = GlobalString.ready,
-                subtitle = GlobalString.pleaseWait,
-                isProcessing = false,
-                weight = 4
-            )
-        }
-
-        fun OBB(): ProcessingItem {
-            return ProcessingItem(
-                type = ProcessingItemTypeOBB,
-                title = GlobalString.ready,
-                subtitle = GlobalString.pleaseWait,
-                isProcessing = false,
-                weight = 5
-            )
-        }
-    }
-}
 
 /**
  * 媒体详细信息基类

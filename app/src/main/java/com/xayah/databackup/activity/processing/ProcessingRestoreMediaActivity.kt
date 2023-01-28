@@ -1,9 +1,7 @@
 package com.xayah.databackup.activity.processing
 
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
-import com.xayah.databackup.data.ProcessingItem
 import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalObject
@@ -52,10 +50,6 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                 notifyDataSetChanged()
             }
 
-            viewModel.mAdapterItems.apply {
-                register(ProcessingItemAdapter())
-            }
-
             // 设置备份状态
             viewModel.btnText.set(GlobalString.restore)
             viewModel.btnDesc.set(GlobalString.clickTheRightBtnToStart)
@@ -88,18 +82,11 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                             // 开始恢复
                             var state = true // 该任务是否成功完成
                             if (i.detailRestoreList[i.restoreIndex].data) {
-                                val processingItem = ProcessingItem.DATA().apply {
-                                    isProcessing = true
-                                }
+                                viewModel.dataTitle.set(GlobalString.ready)
+                                viewModel.dataSubtitle.set(GlobalString.pleaseWait)
+                                viewModel.dataIsProcessing.set(false)
 
-                                // 设置适配器
-                                viewModel.mAdapterItems.apply {
-                                    items = mutableListOf(processingItem)
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
-                                }
-
+                                viewModel.dataIsProcessing.set(true)
                                 // 恢复目录
                                 val inputPath = "${inPath}/${i.name}.tar"
                                 Command.decompress(
@@ -111,17 +98,14 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                                 ) {
                                     setProcessingItem(
                                         it,
-                                        processingItem
+                                        viewModel.dataTitle,
+                                        viewModel.dataSubtitle
                                     )
-                                    viewModel.viewModelScope.launch {
-                                        refreshProcessingItems(viewModel)
-                                    }
                                 }.apply {
                                     if (!this) state = false
                                 }
 
-                                processingItem.isProcessing = false
-                                refreshProcessingItems(viewModel)
+                                viewModel.dataIsProcessing.set(false)
                             }
                             if (state) {
                                 viewModel.successList.value.add(processingTaskList.value[index])

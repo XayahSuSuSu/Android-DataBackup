@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
@@ -12,65 +13,46 @@ import com.xayah.databackup.databinding.ActivityProcessingBinding
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.util.setWithConfirm
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 abstract class ProcessingBaseActivity : AppCompatActivity() {
     companion object {
-        /**
-         * 刷新Processing项目
-         */
-        suspend fun refreshProcessingItems(viewModel: ProcessingBaseViewModel) {
-            withContext(Dispatchers.Main) {
-                viewModel.mAdapterItems.notifyDataSetChanged()
-            }
-        }
-
-        /**
-         * 刷新Processing项目
-         */
-        suspend fun clearProcessingItems(viewModel: ProcessingBaseViewModel, size: Int) {
-            withContext(Dispatchers.Main) {
-                viewModel.mAdapterItems.notifyItemRangeRemoved(0, size)
-            }
-        }
-
         /**
          * 根据String信息设置ProcessingItem
          */
         fun setProcessingItem(
             src: String?,
-            processingItem: ProcessingItem?
+            title: ObservableField<String>,
+            subtitle: ObservableField<String>,
         ) {
             try {
                 when (src) {
                     ProcessFinished -> {
                         // 完成
-                        processingItem?.title = GlobalString.finished
+                        title.set(GlobalString.finished)
                     }
                     ProcessSkip -> {
                         // 跳过
-                        processingItem?.subtitle = GlobalString.noChangeAndSkip
+                        subtitle.set(GlobalString.noChangeAndSkip)
                     }
                     ProcessCompressing -> {
                         // 压缩中
-                        processingItem?.title = GlobalString.compressing
+                        title.set(GlobalString.compressing)
                     }
                     ProcessDecompressing -> {
                         // 解压中
-                        processingItem?.title = GlobalString.decompressing
+                        title.set(GlobalString.decompressing)
                     }
                     ProcessTesting -> {
                         // 测试中
-                        processingItem?.title = GlobalString.testing
+                        title.set(GlobalString.testing)
                     }
                     ProcessSettingSELinux -> {
                         // 设置SELinux中
-                        processingItem?.title = GlobalString.settingSELinux
+                        title.set(GlobalString.settingSELinux)
                     }
                     ProcessInstallingApk -> {
                         // 安装APK中
-                        processingItem?.title = GlobalString.installing
+                        title.set(GlobalString.installing)
                     }
                     else -> {
                         src?.apply {
@@ -84,8 +66,7 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
                                         .replace(",", "")
                                         .trim()
                                     val info = newSrc.split(" ")
-                                    processingItem?.subtitle =
-                                        "${GlobalString.size}: ${info[0]}, ${GlobalString.speed}: ${info[1]}"
+                                    subtitle.set("${GlobalString.size}: ${info[0]}, ${GlobalString.speed}: ${info[1]}")
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -131,7 +112,7 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
             }
         })
 
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         binding.recyclerView.apply {
             adapter = viewModel.mAdapter
@@ -145,11 +126,6 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
             adapter = viewModel.mAdapterFailed
             fastInitialize(true)
         }
-        binding.recyclerViewItems.apply {
-            adapter = viewModel.mAdapterItems
-            fastInitialize()
-        }
-
 
         viewModel.apply {
             isFinished.observe(this@ProcessingBaseActivity) {

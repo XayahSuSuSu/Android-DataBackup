@@ -203,6 +203,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:animateLayoutChanges="true"
                             android:orientation="vertical">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
@@ -246,11 +247,305 @@
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerView_items"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp" />
+                                android:layout_marginVertical="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="@{viewModel.apkNeedProcessing ? View.VISIBLE : View.GONE}">
+
+                                <androidx.constraintlayout.utils.widget.ImageFilterView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/redContainer"
+                                    android:padding="8dp"
+                                    android:tint="@color/red"
+                                    app:roundPercent="1"
+                                    app:srcCompat="@drawable/ic_round_android" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center_vertical"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.apkTitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.apkSubtitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+                                </LinearLayout>
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="@{viewModel.apkType}"
+                                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                    android:textColor="@color/red"
+                                    android:visibility="@{viewModel.apkIsProcessing ? View.GONE : View.VISIBLE}" />
+
+                                <com.google.android.material.progressindicator.CircularProgressIndicator
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:indeterminate="true"
+                                    android:visibility="@{viewModel.apkIsProcessing ? View.VISIBLE : View.GONE}" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginVertical="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="@{viewModel.userNeedProcessing ? View.VISIBLE : View.GONE}">
+
+                                <androidx.constraintlayout.utils.widget.ImageFilterView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/yellowContainer"
+                                    android:padding="8dp"
+                                    android:tint="@color/yellow"
+                                    app:roundPercent="1"
+                                    app:srcCompat="@drawable/ic_round_person" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center_vertical"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.userTitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.userSubtitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+                                </LinearLayout>
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="@{viewModel.userType}"
+                                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                    android:textColor="@color/yellow"
+                                    android:visibility="@{viewModel.userIsProcessing ? View.GONE : View.VISIBLE}" />
+
+                                <com.google.android.material.progressindicator.CircularProgressIndicator
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:indeterminate="true"
+                                    android:visibility="@{viewModel.userIsProcessing ? View.VISIBLE : View.GONE}" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginVertical="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="@{viewModel.userDeNeedProcessing ? View.VISIBLE : View.GONE}">
+
+                                <androidx.constraintlayout.utils.widget.ImageFilterView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/purpleContainer"
+                                    android:padding="8dp"
+                                    android:tint="@color/purple"
+                                    app:roundPercent="1"
+                                    app:srcCompat="@drawable/ic_round_person" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center_vertical"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.userDeTitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.userDeSubtitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+                                </LinearLayout>
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="@{viewModel.userDeType}"
+                                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                    android:textColor="@color/purple"
+                                    android:visibility="@{viewModel.userDeIsProcessing ? View.GONE : View.VISIBLE}" />
+
+                                <com.google.android.material.progressindicator.CircularProgressIndicator
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:indeterminate="true"
+                                    android:visibility="@{viewModel.userDeIsProcessing ? View.VISIBLE : View.GONE}" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginVertical="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="@{viewModel.dataNeedProcessing ? View.VISIBLE : View.GONE}">
+
+                                <androidx.constraintlayout.utils.widget.ImageFilterView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/greenContainer"
+                                    android:padding="8dp"
+                                    android:tint="@color/green"
+                                    app:roundPercent="1"
+                                    app:srcCompat="@drawable/ic_round_database" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center_vertical"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.dataTitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.dataSubtitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+                                </LinearLayout>
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="@{viewModel.dataType}"
+                                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                    android:textColor="@color/green"
+                                    android:visibility="@{viewModel.dataIsProcessing ? View.GONE : View.VISIBLE}" />
+
+                                <com.google.android.material.progressindicator.CircularProgressIndicator
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:indeterminate="true"
+                                    android:visibility="@{viewModel.dataIsProcessing ? View.VISIBLE : View.GONE}" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginVertical="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="@{viewModel.obbNeedProcessing ? View.VISIBLE : View.GONE}">
+
+                                <androidx.constraintlayout.utils.widget.ImageFilterView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/blueContainer"
+                                    android:padding="8dp"
+                                    android:tint="@color/blue"
+                                    app:roundPercent="1"
+                                    app:srcCompat="@drawable/ic_round_esports" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center_vertical"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.obbTitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:text="@{viewModel.obbSubtitle}"
+                                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+                                </LinearLayout>
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="@{viewModel.obbType}"
+                                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                    android:textColor="@color/blue"
+                                    android:visibility="@{viewModel.obbIsProcessing ? View.GONE : View.VISIBLE}" />
+
+                                <com.google.android.material.progressindicator.CircularProgressIndicator
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:indeterminate="true"
+                                    android:visibility="@{viewModel.obbIsProcessing ? View.VISIBLE : View.GONE}" />
+                            </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
