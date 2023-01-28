@@ -38,7 +38,7 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
         this.viewModel = viewModel
         viewModel.viewModelScope.launch {
             // 加载配置
-            backupInfoList.emit(Command.getCachedBackupInfoList())
+            backupInfoList.emit(Command.getBackupInfoList())
             if (globalObject.mediaInfoBackupMap.value.isEmpty()) {
                 globalObject.mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap())
             }
@@ -202,9 +202,7 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                         // 保存列表数据
                         GsonUtil.saveMediaInfoBackupMapToFile(globalObject.mediaInfoBackupMap.value)
                         GsonUtil.saveMediaInfoRestoreMapToFile(globalObject.mediaInfoRestoreMap.value)
-                        JSON.saveBackupInfoList(backupInfoList.value)
-                        // 移动日志数据
-                        Bashrc.moveLogToOut()
+                        GsonUtil.saveBackupInfoListToFile(backupInfoList.value)
                     }
                 }
             }

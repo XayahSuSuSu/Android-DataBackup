@@ -2,7 +2,6 @@ package com.xayah.databackup.data
 
 import android.graphics.drawable.Drawable
 import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
 import com.xayah.databackup.util.GlobalString
 import okhttp3.internal.toLongOrDefault
 import java.text.DecimalFormat
@@ -263,58 +262,33 @@ data class ProcessingItem(
     }
 }
 
-data class MediaInfoItem(
-    @Expose var data: Boolean, // 是否选中
-    @Expose var size: String,  // 数据大小
-    @Expose var date: String,  // 备份日期(10位时间戳)
-)
-
-data class MediaInfo(
-    @Expose var name: String,                              // 媒体名称
-    @Expose var path: String,                              // 媒体路径
-    @Expose var backup: MediaInfoItem,                     // 备份信息
-    @Expose var _restoreIndex: Int,                        // 恢复选中索引
-    @Expose var restoreList: MutableList<MediaInfoItem>,   // 恢复信息列表
-) {
-    @SerializedName("restoreIndex")
-    var restoreIndex: Int = -1
-        get() = run {
-            var value = field
-            value = _restoreIndex
-            if (value == -1 || value.absoluteValue >= restoreList.size) {
-                // 如果索引异常, 则恢复索引至列表尾部
-                value = restoreList.size - 1
-                restoreIndex = value
-            } else {
-                value = _restoreIndex
-            }
-            value
-        }
-        set(value) {
-            _restoreIndex = if (value.absoluteValue >= restoreList.size) {
-                // 如果索引异常, 则恢复索引至列表尾部
-                restoreList.size - 1
-            } else {
-                value
-            }
-        }
-}
-
+/**
+ * 媒体详细信息基类
+ */
 data class MediaInfoDetailBase(
     @Expose var data: Boolean = false, // 是否选中
     @Expose var size: String = "",     // 数据大小
     @Expose var date: String = "",     // 备份日期(10位时间戳)
 )
 
+/**
+ * 媒体信息基类
+ */
 abstract class MediaInfoBase(
     @Expose open var name: String = "",     // 媒体名称
     @Expose open var path: String = "",     // 媒体路径
 )
 
+/**
+ * 媒体备份信息
+ */
 data class MediaInfoBackup(
     @Expose var backupDetail: MediaInfoDetailBase = MediaInfoDetailBase(),
 ) : MediaInfoBase()
 
+/**
+ * 媒体恢复信息
+ */
 data class MediaInfoRestore(
     @Expose var detailRestoreList: MutableList<MediaInfoDetailBase> = mutableListOf(),
 ) : MediaInfoBase() {
@@ -339,6 +313,9 @@ data class MediaInfoRestore(
         }
 }
 
+/**
+ * 备份记录
+ */
 data class BackupInfo(
     @Expose var version: String,
     @Expose var startTimeStamp: String,
@@ -349,6 +326,9 @@ data class BackupInfo(
     @Expose var backupUser: String
 )
 
+/**
+ * Rclone配置信息
+ */
 data class RcloneConfig(
     var name: String = "",
     var type: String = "",
@@ -364,6 +344,9 @@ data class RcloneConfig(
     var port: String = "21",
 )
 
+/**
+ * Rclone挂载信息
+ */
 data class RcloneMount(
     @Expose var name: String = "",
     @Expose var src: String = "",

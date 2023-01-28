@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.xayah.databackup.App
 import com.xayah.databackup.data.MediaInfoBackup
 import com.xayah.databackup.databinding.BottomSheetMediaDetailBinding
 import com.xayah.databackup.databinding.FragmentBackupBinding
@@ -25,7 +24,6 @@ import com.xayah.databackup.view.title
 import com.xayah.databackup.view.util.setWithConfirm
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.launch
-
 
 class BackupFragment : Fragment() {
     private var _binding: FragmentBackupBinding? = null

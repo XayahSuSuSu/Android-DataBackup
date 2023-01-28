@@ -2,29 +2,43 @@ package com.xayah.databackup.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
 
 class Bashrc {
     companion object {
+        /**
+         * 切换至IO协程运行
+         */
         private suspend fun <T> runOnIO(block: suspend () -> T): T {
             return withContext(Dispatchers.IO) { block() }
         }
 
+        /**
+         * 读取存储空间
+         */
         suspend fun getStorageSpace(path: String): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("get_storage_space \"${path}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 获取APK路径
+         */
         suspend fun getAPKPath(packageName: String, userId: String): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("get_apk_path \"${packageName}\" \"${userId}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 路径跳转命令
+         */
         suspend fun cd(path: String): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("cd_to_path \"${path}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 压缩APK
+         */
         suspend fun compressAPK(
             compressionType: String, outPut: String, onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
@@ -37,6 +51,9 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 压缩
+         */
         suspend fun compress(
             compressionType: String,
             dataType: String,
@@ -46,7 +63,8 @@ class Bashrc {
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
             val exec = runOnIO {
-                val cmd = "compress \"${compressionType}\" \"${dataType}\" \"${packageName}\" \"${outPut}\" \"${dataPath}\""
+                val cmd =
+                    "compress \"${compressionType}\" \"${dataType}\" \"${packageName}\" \"${outPut}\" \"${dataPath}\""
                 Command.execute(cmd) {
                     onAddLine(it)
                 }
@@ -54,11 +72,17 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 设置安装环境
+         */
         suspend fun setInstallEnv(): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("set_install_env") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 安装APK
+         */
         suspend fun installAPK(
             inPath: String, packageName: String, userId: String, onAddLine: (line: String?) -> Unit
         ): Pair<Int, String> {
@@ -71,6 +95,9 @@ class Bashrc {
             return Pair(exec.code, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 读取SELinux上下文
+         */
         suspend fun getSELinuxContext(
             path: String,
         ): String {
@@ -78,6 +105,9 @@ class Bashrc {
             return if (exec.isSuccess) exec.out.joinToString(separator = "\n") else ""
         }
 
+        /**
+         * 设置所有者和SELinux上下文
+         */
         suspend fun setOwnerAndSELinux(
             dataType: String,
             packageName: String,
@@ -91,6 +121,9 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 解压
+         */
         suspend fun decompress(
             compressionType: String,
             dataType: String,
@@ -100,7 +133,8 @@ class Bashrc {
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
             val exec = runOnIO {
-                val cmd = "decompress \"${compressionType}\" \"${dataType}\" \"${inputPath}\" \"${packageName}\" \"${dataPath}\""
+                val cmd =
+                    "decompress \"${compressionType}\" \"${dataType}\" \"${inputPath}\" \"${packageName}\" \"${dataPath}\""
                 Command.execute(cmd) {
                     onAddLine(it)
                 }
@@ -108,49 +142,26 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 读取应用版本
+         */
         suspend fun getAppVersion(packageName: String): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("get_app_version \"${packageName}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 读取应用版本代码
+         */
         suspend fun getAppVersionCode(userId: String, packageName: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("get_app_version_code \"${userId}\" \"${packageName}\"") }
+            val exec =
+                runOnIO { Command.execute("get_app_version_code \"${userId}\" \"${packageName}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
-        suspend fun moveLogToOut(): Pair<Boolean, String> {
-            // 将内置日志移到备份目录
-            val exec = runOnIO {
-                val path = Path.getShellLogPath()
-                Command.mkdir(path)
-                Command.execute("mv \"${Logcat.getInstance().logPath}\" \"${path}\"", true)
-            }
-            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
-        }
-
-        suspend fun writeToFile(content: String, path: String): Pair<Boolean, String> {
-            val exec = runOnIO {
-                var name = ""
-                val prefix = path.split("/").toMutableList().apply {
-                    name = last()
-                    removeLast()
-                }
-                if (name != "") {
-                    val newPath = prefix.joinToString(separator = "/")
-                    Command.mkdir(newPath)
-                    kotlin.runCatching {
-                        File("${Path.getFilesDir()}/$name").apply {
-                            createNewFile()
-                            writeText(content)
-                        }
-                    }
-
-                }
-                Command.execute("mv \"${Path.getFilesDir()}/${name}\" \"${path}\"", true)
-            }
-            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
-        }
-
+        /**
+         * 测试压缩包
+         */
         suspend fun testArchive(
             compressionType: String,
             inputPath: String,
@@ -162,16 +173,25 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 列出当前所有用户
+         */
         suspend fun listUsers(): Pair<Boolean, MutableList<String>> {
             val exec = runOnIO { Command.execute("list_users") }
             return Pair(exec.isSuccess, exec.out)
         }
 
+        /**
+         * 列出`userId`用户的所有应用包名
+         */
         suspend fun listPackages(userId: String): Pair<Boolean, MutableList<String>> {
             val exec = runOnIO { Command.execute("list_packages \"${userId}\"", false) }
             return Pair(exec.isSuccess, exec.out)
         }
 
+        /**
+         * 查询是否安装该应用
+         */
         suspend fun findPackage(
             userId: String,
             packageName: String
@@ -180,31 +200,49 @@ class Bashrc {
             return Pair(exec.isSuccess, exec.out)
         }
 
+        /**
+         * 计算`path`占用大小
+         */
         suspend fun countSize(path: String, type: Int): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("count_size \"${path}\" \"${type}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 检查OTG
+         */
         suspend fun checkOTG(): Pair<Int, String> {
             val exec = runOnIO { Command.execute("check_otg") }
             return Pair(exec.code, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 读取输入法信息
+         */
         suspend fun getKeyboard(): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("get_keyboard") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 设置输入法
+         */
         suspend fun setKeyboard(keyboard: String): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("set_keyboard \"${keyboard}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 读取无障碍信息
+         */
         suspend fun getAccessibilityServices(): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("get_accessibility_services") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
+        /**
+         * 设置无障碍
+         */
         suspend fun setAccessibilityServices(services: String): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("set_accessibility_services \"${services}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))

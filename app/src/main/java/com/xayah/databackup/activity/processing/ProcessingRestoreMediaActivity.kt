@@ -5,7 +5,10 @@ import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
 import com.xayah.databackup.data.ProcessingItem
 import com.xayah.databackup.data.ProcessingTask
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.Path
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -134,7 +137,6 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
                         viewModel.isFinished.postValue(true)
                         viewModel.btnText.set(GlobalString.finish)
                         viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
-                        Bashrc.moveLogToOut()
                     }
                 }
             }

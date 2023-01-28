@@ -103,7 +103,7 @@ class GuideEnvFragment : Fragment() {
         val binZipPath = "${filesDirectory}/bin.zip"
         // 环境检测与释放
         withContext(Dispatchers.IO) {
-            val oldVersionName = Command.execute("cat \"${versionPath}\"").out.joinToLineString
+            val oldVersionName = requireContext().readAppVersion()
             if (App.versionName > oldVersionName) {
                 Command.execute("rm -rf \"${binPath}\" \"${binZipPath}\"")
             }
@@ -113,7 +113,7 @@ class GuideEnvFragment : Fragment() {
                     requireContext(), "bin/${Command.getABI()}/bin.zip", "bin.zip"
                 )
                 Command.unzipByZip4j(binZipPath, binPath)
-                Bashrc.writeToFile(App.versionName, versionPath)
+                requireContext().saveAppVersion(App.versionName)
             }
             Command.execute("chmod 777 -R \"${filesDirectory}\"")
             Command.checkBin().apply {

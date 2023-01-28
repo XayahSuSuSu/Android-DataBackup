@@ -330,7 +330,7 @@ class CloudViewModel : ViewModel() {
                                         if (ExtendCommand.rcloneUnmount(rcloneConfig.name)){
                                             ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
                                             rcloneMountMap.value.remove(rcloneConfig.name)
-                                            JSON.saveMountHashMapJson(rcloneMountMap.value)
+                                            GsonUtil.saveRcloneMountMapToFile(rcloneMountMap.value)
                                         }
                                         onRemove()
                                     }
@@ -425,7 +425,7 @@ class CloudViewModel : ViewModel() {
                                         if (ExtendCommand.rcloneUnmount(rcloneConfig.name)){
                                             ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
                                             rcloneMountMap.value.remove(rcloneConfig.name)
-                                            JSON.saveMountHashMapJson(rcloneMountMap.value)
+                                            GsonUtil.saveRcloneMountMapToFile(rcloneMountMap.value)
                                         }
                                         onRemove()
                                     }
@@ -511,7 +511,7 @@ class CloudViewModel : ViewModel() {
                                         if (ExtendCommand.rcloneUnmount(rcloneConfig.name)){
                                             ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
                                             rcloneMountMap.value.remove(rcloneConfig.name)
-                                            JSON.saveMountHashMapJson(rcloneMountMap.value)
+                                            GsonUtil.saveRcloneMountMapToFile(rcloneMountMap.value)
                                         }
                                         onRemove()
                                     }
@@ -564,7 +564,7 @@ class CloudViewModel : ViewModel() {
                                if (ExtendCommand.rcloneUnmount(rcloneConfig!!.name)){
                                    ExtendCommand.rcloneConfigDelete(rcloneConfig.name)
                                    rcloneMountMap.value.remove(rcloneConfig.name)
-                                   JSON.saveMountHashMapJson(rcloneMountMap.value)
+                                   GsonUtil.saveRcloneMountMapToFile(rcloneMountMap.value)
                                }
                                 onRemove()
                             }
@@ -673,7 +673,7 @@ class CloudViewModel : ViewModel() {
                         dest = path
                     }
                     runOnScope {
-                        JSON.saveMountHashMapJson(rcloneMountMap.value)
+                        GsonUtil.saveRcloneMountMapToFile(rcloneMountMap.value)
                     }
                 }
             }
@@ -769,7 +769,7 @@ class CloudViewModel : ViewModel() {
                             )
                         }
                     }
-                    JSON.saveMountHashMapJson(rcloneMountMap.value)
+                    GsonUtil.saveRcloneMountMapToFile(rcloneMountMap.value)
                     isChangingMount.set(false)
                     dismiss()
                 }

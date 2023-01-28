@@ -1,6 +1,7 @@
 package com.xayah.databackup.activity.processing
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
@@ -116,6 +117,20 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.bottomAppBar)
 
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewModel.isProcessing.get()) {
+                    MaterialAlertDialogBuilder(this@ProcessingBaseActivity).apply {
+                        setWithConfirm(GlobalString.confirmExit) {
+                            finish()
+                        }
+                    }
+                } else {
+                    finish()
+                }
+            }
+        })
+
         binding.toolbar.setNavigationOnClickListener { onBackPressed() }
 
         binding.recyclerView.apply {
@@ -157,18 +172,6 @@ abstract class ProcessingBaseActivity : AppCompatActivity() {
         // `initialize()`之后继承的Activity才持有viewModel
         binding.floatingActionButton.setOnClickListener {
             onFabClick()
-        }
-    }
-
-    override fun onBackPressed() {
-        if (viewModel.isProcessing.get()) {
-            MaterialAlertDialogBuilder(this).apply {
-                setWithConfirm(GlobalString.confirmExit) {
-                    super.onBackPressed()
-                }
-            }
-        } else {
-            super.onBackPressed()
         }
     }
 }

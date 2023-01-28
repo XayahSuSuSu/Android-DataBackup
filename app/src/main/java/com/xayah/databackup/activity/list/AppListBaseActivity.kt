@@ -85,14 +85,6 @@ abstract class AppListBaseActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        runOnMainCoroutine {
-            // 为优化用户体验，不再阻塞保存操作
-            onSave()
-        }
-        super.onBackPressed()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)

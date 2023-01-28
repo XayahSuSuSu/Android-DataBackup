@@ -7,7 +7,6 @@ import com.xayah.databackup.data.RcloneMount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-
 class ExtendCommand {
     companion object {
         private const val TAG = "ExtendCommand"
@@ -144,7 +143,7 @@ class ExtendCommand {
                 // 读取应用列表配置文件
                 Command.cat(Path.getRcloneMountListPath()).apply {
                     if (this.first) {
-                        rcloneMountMap = JSON.fromMountHashMapJson(this.second)
+                        rcloneMountMap = GsonUtil.getInstance().fromRcloneMountMapJson(this.second)
                     }
                 }
             }

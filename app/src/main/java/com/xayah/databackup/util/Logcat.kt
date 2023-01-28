@@ -1,9 +1,8 @@
 package com.xayah.databackup.util
 
+import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
-import java.io.BufferedWriter
 import java.io.File
-import java.io.FileWriter
 import java.io.IOException
 
 class Logcat {
@@ -15,7 +14,7 @@ class Logcat {
         fun getInstance() = Instance.instance
     }
 
-    private val logDir = "${Path.getFilesDir()}/log"
+    private val logDir = Path.getShellLogPath()
     val logPath = "${logDir}/log_${App.getTimeStamp()}"
 
     init {
@@ -27,11 +26,10 @@ class Logcat {
     fun addLine(line: String) {
         if (line.isNotEmpty()) {
             try {
-                val file = File(logPath)
-                val bufferedWriter = BufferedWriter(FileWriter(file, true))
-                bufferedWriter.write(line)
-                bufferedWriter.newLine()
-                bufferedWriter.close()
+                SuFile(logPath).apply {
+                    appendText(line)
+                    appendText("\n")
+                }
             } catch (g: IOException) {
                 g.printStackTrace()
             }

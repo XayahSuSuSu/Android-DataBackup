@@ -392,7 +392,6 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                         viewModel.isFinished.postValue(true)
                         viewModel.btnText.set(GlobalString.finish)
                         viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
-                        Bashrc.moveLogToOut()
                     }
                 }
             }

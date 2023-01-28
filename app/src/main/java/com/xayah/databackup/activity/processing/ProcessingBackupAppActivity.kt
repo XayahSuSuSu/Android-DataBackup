@@ -55,7 +55,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
         this.viewModel = viewModel
         viewModel.viewModelScope.launch {
             // 加载配置
-            backupInfoList.emit(Command.getCachedBackupInfoList())
+            backupInfoList.emit(Command.getBackupInfoList())
             if (globalObject.appInfoBackupMap.value.isEmpty()) {
                 globalObject.appInfoBackupMap.emit(Command.getAppInfoBackupMap())
             }
@@ -418,8 +418,6 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                         // 保存列表数据
                         GsonUtil.saveAppInfoBackupMapToFile(GlobalObject.getInstance().appInfoBackupMap.value)
                         GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
-                        // 移动日志数据
-                        Bashrc.moveLogToOut()
                     }
                 }
             }

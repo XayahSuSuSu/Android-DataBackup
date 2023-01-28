@@ -19,7 +19,6 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class Command {
     companion object {
         const val TAG = "Command"
@@ -116,7 +115,7 @@ class Command {
             var appInfoBackupMap: AppInfoBackupMap = hashMapOf()
 
             runOnIO {
-                // 读取应用列表配置文件
+                // 读取配置文件
                 try {
                     SuFile(Path.getAppInfoBackupMapPath()).apply {
                         appInfoBackupMap =
@@ -194,7 +193,7 @@ class Command {
             var appInfoRestoreMap: AppInfoRestoreMap = hashMapOf()
 
             runOnIO {
-                // 读取应用列表配置文件
+                // 读取配置文件
                 try {
                     SuFile(Path.getAppInfoRestoreMapPath()).apply {
                         appInfoRestoreMap =
@@ -310,7 +309,7 @@ class Command {
             var mediaInfoBackupMap: MediaInfoBackupMap = hashMapOf()
 
             runOnIO {
-                // 读取媒体列表配置文件
+                // 读取配置文件
                 try {
                     SuFile(Path.getMediaInfoBackupMapPath()).apply {
                         mediaInfoBackupMap =
@@ -352,7 +351,7 @@ class Command {
             var mediaInfoRestoreMap: MediaInfoRestoreMap = hashMapOf()
 
             runOnIO {
-                // 读取媒体列表配置文件
+                // 读取配置文件
                 try {
                     SuFile(Path.getMediaInfoRestoreMapPath()).apply {
                         mediaInfoRestoreMap =
@@ -438,28 +437,23 @@ class Command {
         }
 
         /**
-         * 读取备份信息列表
+         * 读取备份记录
          */
-        suspend fun getCachedBackupInfoList(): MutableList<BackupInfo> {
-            val cachedBackupInfoList = mutableListOf<BackupInfo>()
+        suspend fun getBackupInfoList(): BackupInfoList {
+            var backupInfoList: BackupInfoList = mutableListOf()
+
             runOnIO {
-                cat(Path.getBackupInfoListPath()).apply {
-                    if (this.first) {
-                        try {
-                            val jsonArray = JSON.stringToJsonArray(this.second)
-                            for (i in jsonArray) {
-                                val item = JSON.jsonElementToEntity(
-                                    i, BackupInfo::class.java
-                                ) as BackupInfo
-                                cachedBackupInfoList.add(item)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                // 读取配置文件
+                try {
+                    SuFile(Path.getBackupInfoListPath()).apply {
+                        backupInfoList =
+                            GsonUtil.getInstance().fromBackupInfoListJson(readText())
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
-            return cachedBackupInfoList
+            return backupInfoList
         }
 
         /**

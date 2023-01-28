@@ -100,6 +100,38 @@ class GsonUtil {
                 }
             }
         }
+
+        /**
+         * 保存Rclone挂载哈希表
+         */
+        suspend fun saveRcloneMountMapToFile(map: RcloneMountMap) {
+            withContext(Dispatchers.IO) {
+                try {
+                    saveToFile(
+                        Path.getRcloneMountListPath(),
+                        getInstance().toRcloneMountMapJson(map)
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        /**
+         * 保存备份记录
+         */
+        suspend fun saveBackupInfoListToFile(list: BackupInfoList) {
+            withContext(Dispatchers.IO) {
+                try {
+                    saveToFile(
+                        Path.getBackupInfoListPath(),
+                        getInstance().toBackupInfoListJson(list)
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private val gson: Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
@@ -161,6 +193,37 @@ class GsonUtil {
      * MediaInfoRestoreMap转Json
      */
     fun toMediaInfoRestoreMapJson(value: MediaInfoRestoreMap): String {
+        return gson.toJson(value)
+    }
+
+
+    /**
+     * Json转RcloneMountMap
+     */
+    fun fromRcloneMountMapJson(value: String): RcloneMountMap {
+        val mapType = object : TypeToken<RcloneMountMap>() {}
+        return gson.fromJson(value, mapType.type)
+    }
+
+    /**
+     * RcloneMountMap转Json
+     */
+    fun toRcloneMountMapJson(value: RcloneMountMap): String {
+        return gson.toJson(value)
+    }
+
+    /**
+     * Json转BackupInfoList
+     */
+    fun fromBackupInfoListJson(value: String): BackupInfoList {
+        val mapType = object : TypeToken<BackupInfoList>() {}
+        return gson.fromJson(value, mapType.type)
+    }
+
+    /**
+     * BackupInfoList转Json
+     */
+    fun toBackupInfoListJson(value: BackupInfoList): String {
         return gson.toJson(value)
     }
 }

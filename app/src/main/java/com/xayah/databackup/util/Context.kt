@@ -170,6 +170,14 @@ fun Context.readIsSupportUsageAccess(): Boolean {
     return readPreferencesBoolean("is_support_usage_access", true)
 }
 
+fun Context.saveAppVersion(value: String) {
+    savePreferences("app_version", value)
+}
+
+fun Context.readAppVersion(): String {
+    return readPreferencesString("app_version") ?: ""
+}
+
 fun Context.getActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {
