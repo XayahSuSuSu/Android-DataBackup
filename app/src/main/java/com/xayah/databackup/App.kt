@@ -6,8 +6,6 @@ import android.content.Context
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.xayah.crash.CrashHandler
-import com.xayah.databackup.data.AppInfo
-import com.xayah.databackup.data.AppInfoListSelectedNum
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,46 +27,12 @@ class App : Application() {
         lateinit var globalContext: Context
         lateinit var versionName: String
 
-        // 应用列表
-        val appInfoList by lazy {
-            MutableStateFlow(mutableListOf<AppInfo>())
-        }
-
-        // 应用备份列表计数
-        val appInfoBackupListNum
-            get() = run {
-                val num = AppInfoListSelectedNum(0, 0)
-                for (i in appInfoList.value) {
-                    if ((i.backup.app || i.backup.data) && i.isOnThisDevice) {
-                        if (i.isSystemApp) num.system++
-                        else num.installed++
-                    }
-                }
-                num
-            }
-
-        // 应用恢复列表计数
-        val appInfoRestoreListNum
-            get() = run {
-                val num = AppInfoListSelectedNum(0, 0)
-                for (i in appInfoList.value) {
-                    if (i.restoreList.isNotEmpty()) {
-                        if (i.restoreList[i.restoreIndex].app || i.restoreList[i.restoreIndex].data) {
-                            if (i.isSystemApp) num.system++
-                            else num.installed++
-                        }
-                    }
-                }
-                num
-            }
-
         // 媒体列表
         val mediaInfoList by lazy {
             MutableStateFlow(mutableListOf<MediaInfo>())
         }
 
         suspend fun loadList() {
-            appInfoList.emit(Command.getAppInfoList())
             mediaInfoList.emit(Command.getMediaInfoList())
         }
 

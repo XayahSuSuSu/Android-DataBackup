@@ -5,7 +5,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.xayah.databackup.data.AppInfo
 import com.xayah.databackup.data.BackupInfo
 import com.xayah.databackup.data.MediaInfo
 import com.xayah.databackup.data.RcloneMount
@@ -31,7 +30,7 @@ class JSON {
             }
         }
 
-        fun entityArrayToJsonArray(entityArray: MutableList<Any>): JsonArray {
+        private fun entityArrayToJsonArray(entityArray: MutableList<Any>): JsonArray {
             val jsonArray = JsonArray()
             for (i in entityArray) {
                 jsonArray.add(entityToJsonElement(i))
@@ -40,19 +39,13 @@ class JSON {
             return jsonArray
         }
 
-        fun jsonArrayToEntityArray(
-            jsonArray: JsonArray, classEntity: Class<MutableList<*>>
-        ): MutableList<Any> {
-            return GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-                .fromJson(jsonArray, classEntity) as MutableList<Any>
-        }
 
         fun jsonElementToEntity(jsonElement: JsonElement, classEntity: Class<*>): Any {
             return GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
                 .fromJson(jsonElement, classEntity)
         }
 
-        fun entityToJsonElement(src: Any): JsonElement? {
+        private fun entityToJsonElement(src: Any): JsonElement? {
             return JsonParser.parseString(
                 GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(src)
             )
@@ -73,29 +66,11 @@ class JSON {
             return true
         }
 
-        suspend fun saveAppInfoList(appInfoList: MutableList<AppInfo>) {
-            withContext(Dispatchers.IO) {
-                writeJSONToFile(
-                    entityArrayToJsonArray(appInfoList as MutableList<Any>),
-                    Path.getAppInfoListPath()
-                )
-            }
-        }
-
         suspend fun saveMediaInfoList(mediaInfoBackupList: MutableList<MediaInfo>) {
             withContext(Dispatchers.IO) {
                 writeJSONToFile(
                     entityArrayToJsonArray(mediaInfoBackupList as MutableList<Any>),
                     Path.getMediaInfoListPath()
-                )
-            }
-        }
-
-        suspend fun saveMediaInfoRestoreList(mediaInfoRestoreList: MutableList<MediaInfo>) {
-            withContext(Dispatchers.IO) {
-                writeJSONToFile(
-                    entityArrayToJsonArray(mediaInfoRestoreList as MutableList<Any>),
-                    Path.getMediaInfoRestoreListPath()
                 )
             }
         }

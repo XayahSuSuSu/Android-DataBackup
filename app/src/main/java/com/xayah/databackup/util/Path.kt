@@ -40,20 +40,16 @@ class Path {
             return "/data/media/${userId}/Android/obb"
         }
 
-        fun getAppInfoListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/appList"
+        fun getAppInfoBackupMapPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/appBackupMap"
         }
 
-        fun getAppInfoRestoreListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/restore/appList"
+        fun getAppInfoRestoreMapPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/appRestoreMap"
         }
 
         fun getMediaInfoListPath(): String {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/mediaList"
-        }
-
-        fun getMediaInfoRestoreListPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/restore/mediaList"
         }
 
         fun getBackupDataSavePath(): String {

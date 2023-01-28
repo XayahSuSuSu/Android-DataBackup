@@ -3,11 +3,12 @@ package com.xayah.databackup.activity.list
 import android.content.Intent
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.tabs.TabLayout
-import com.xayah.databackup.App
 import com.xayah.databackup.activity.processing.ProcessingRestoreAppActivity
 import com.xayah.databackup.adapter.AppListAdapterRestore
 import com.xayah.databackup.data.*
-import com.xayah.databackup.util.JSON
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.GsonUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
@@ -19,12 +20,14 @@ class AppListRestoreActivity : AppListBaseActivity() {
         const val TAG = "AppListRestoreActivity"
     }
 
-    // 是否第一次访问
-    private var isFirst = true
+    /**
+     * 全局单例对象
+     */
+    private val globalObject = GlobalObject.getInstance()
 
     // 经过过滤或排序后的应用列表
-    private val mAppInfoList by lazy {
-        MutableStateFlow(mutableListOf<AppInfo>())
+    private val mAppInfoRestoreList by lazy {
+        MutableStateFlow(mutableListOf<AppInfoRestore>())
     }
 
     private lateinit var tabLayout: TabLayout
@@ -32,7 +35,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
     override fun onAdapterRegister(multiTypeAdapter: MultiTypeAdapter) {
         multiTypeAdapter.register(
             AppListAdapterRestore(
-                onChipClick = { updateBadges(App.appInfoRestoreListNum) },
+                onChipClick = { updateBadges(globalObject.appInfoRestoreMapNum) },
             )
         )
     }
@@ -42,36 +45,36 @@ class AppListRestoreActivity : AppListBaseActivity() {
         when (pref.type) {
             AppListType.InstalledApp -> {
                 // 安装应用
-                val appList = mAppInfoList.value.filter { !it.isSystemApp }
+                val appList = mAppInfoRestoreList.value.filter { !it.detailBase.isSystemApp }
                 adapterList.addAll(appList)
                 when (pref.installedAppSelection) {
                     AppListSelection.App -> {
                         appList.forEach {
-                            if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
-                                true && it.restoreList[it.restoreIndex].hasApp
+                            if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].selectApp =
+                                true && it.detailRestoreList[it.restoreIndex].hasApp
                         }
                     }
                     AppListSelection.AppReverse -> {
                         appList.forEach {
-                            if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
+                            if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].selectApp =
                                 false
                         }
                     }
                     AppListSelection.All -> {
                         appList.forEach {
-                            if (it.restoreList.isNotEmpty()) {
-                                it.restoreList[it.restoreIndex].app =
-                                    true && it.restoreList[it.restoreIndex].hasApp
-                                it.restoreList[it.restoreIndex].data =
-                                    true && it.restoreList[it.restoreIndex].hasData
+                            if (it.detailRestoreList.isNotEmpty()) {
+                                it.detailRestoreList[it.restoreIndex].selectApp =
+                                    true && it.detailRestoreList[it.restoreIndex].hasApp
+                                it.detailRestoreList[it.restoreIndex].selectData =
+                                    true && it.detailRestoreList[it.restoreIndex].hasData
                             }
                         }
                     }
                     AppListSelection.AllReverse -> {
                         appList.forEach {
-                            if (it.restoreList.isNotEmpty()) {
-                                it.restoreList[it.restoreIndex].app = false
-                                it.restoreList[it.restoreIndex].data = false
+                            if (it.detailRestoreList.isNotEmpty()) {
+                                it.detailRestoreList[it.restoreIndex].selectApp = false
+                                it.detailRestoreList[it.restoreIndex].selectData = false
                             }
                         }
                     }
@@ -80,37 +83,37 @@ class AppListRestoreActivity : AppListBaseActivity() {
             }
             AppListType.SystemApp -> {
                 // 系统应用
-                val appList = mAppInfoList.value.filter { it.isSystemApp }
+                val appList = mAppInfoRestoreList.value.filter { it.detailBase.isSystemApp }
                 adapterList.addAll(appList)
                 when (pref.systemAppSelection) {
                     AppListSelection.App -> {
                         appList.forEach {
-                            if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
-                                true && it.restoreList[it.restoreIndex].hasApp
+                            if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].selectApp =
+                                true && it.detailRestoreList[it.restoreIndex].hasApp
                         }
                     }
                     AppListSelection.AppReverse -> {
                         appList.forEach {
-                            if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app =
+                            if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].selectApp =
                                 false
                         }
                     }
                     AppListSelection.All -> {
                         appList.forEach {
-                            if (it.restoreList.isNotEmpty()) {
-                                it.restoreList[it.restoreIndex].app =
-                                    true && it.restoreList[it.restoreIndex].hasApp
-                                it.restoreList[it.restoreIndex].data =
-                                    true && it.restoreList[it.restoreIndex].hasData
+                            if (it.detailRestoreList.isNotEmpty()) {
+                                it.detailRestoreList[it.restoreIndex].selectApp =
+                                    true && it.detailRestoreList[it.restoreIndex].hasApp
+                                it.detailRestoreList[it.restoreIndex].selectData =
+                                    true && it.detailRestoreList[it.restoreIndex].hasData
                             }
 
                         }
                     }
                     AppListSelection.AllReverse -> {
                         appList.forEach {
-                            if (it.restoreList.isNotEmpty()) {
-                                it.restoreList[it.restoreIndex].app = false
-                                it.restoreList[it.restoreIndex].data = false
+                            if (it.detailRestoreList.isNotEmpty()) {
+                                it.detailRestoreList[it.restoreIndex].selectApp = false
+                                it.detailRestoreList[it.restoreIndex].selectData = false
                             }
                         }
                     }
@@ -123,27 +126,26 @@ class AppListRestoreActivity : AppListBaseActivity() {
 
     override suspend fun refreshList(pref: AppListPreferences) {
         withContext(Dispatchers.IO) {
-            if (isFirst) {
-                App.loadList()
-                isFirst = false
+            if (GlobalObject.getInstance().appInfoRestoreMap.value.isEmpty()) {
+                GlobalObject.getInstance().appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
             }
-            mAppInfoList.emit(App.appInfoList.value.filter { it.restoreList.isNotEmpty() }
-                .toMutableList())
 
-            mAppInfoList.emit(mAppInfoList.value.apply {
+            mAppInfoRestoreList.emit(GlobalObject.getInstance().appInfoRestoreMap.value.values.toMutableList())
+
+            mAppInfoRestoreList.emit(mAppInfoRestoreList.value.apply {
                 when (pref.sort) {
                     AppListSort.AlphabetAscending -> {
                         sortWith { appInfo1, appInfo2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo1 as AppInfo).appName)
-                                .compareTo(collator.getCollationKey((appInfo2 as AppInfo).appName))
+                            collator.getCollationKey((appInfo1 as AppInfoRestore).detailBase.appName)
+                                .compareTo(collator.getCollationKey((appInfo2 as AppInfoRestore).detailBase.appName))
                         }
                     }
                     AppListSort.AlphabetDescending -> {
                         sortWith { appInfo1, appInfo2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo2 as AppInfo).appName)
-                                .compareTo(collator.getCollationKey((appInfo1 as AppInfo).appName))
+                            collator.getCollationKey((appInfo2 as AppInfoRestore).detailBase.appName)
+                                .compareTo(collator.getCollationKey((appInfo1 as AppInfoRestore).detailBase.appName))
                         }
                     }
                     AppListSort.FirstInstallTimeAscending -> {
@@ -153,10 +155,10 @@ class AppListRestoreActivity : AppListBaseActivity() {
                         sortByDescending { it.firstInstallTime }
                     }
                     AppListSort.DataSizeAscending -> {
-                        sortBy { it.sizeBytes }
+                        sortBy { it.detailRestoreList[it.restoreIndex].sizeBytes }
                     }
                     AppListSort.DataSizeDescending -> {
-                        sortByDescending { it.sizeBytes }
+                        sortByDescending { it.detailRestoreList[it.restoreIndex].sizeBytes }
                     }
                 }
             })
@@ -164,23 +166,23 @@ class AppListRestoreActivity : AppListBaseActivity() {
             when (pref.filter) {
                 AppListFilter.None -> {}
                 AppListFilter.Selected -> {
-                    mAppInfoList.emit(mAppInfoList.value.filter { if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app || it.restoreList[it.restoreIndex].data else false }
+                    mAppInfoRestoreList.emit(mAppInfoRestoreList.value.filter { if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].selectApp || it.detailRestoreList[it.restoreIndex].selectData else false }
                         .toMutableList())
                 }
                 AppListFilter.NotSelected -> {
-                    mAppInfoList.emit(mAppInfoList.value.filter { if (it.restoreList.isNotEmpty()) !it.restoreList[it.restoreIndex].app && !it.restoreList[it.restoreIndex].data else false }
+                    mAppInfoRestoreList.emit(mAppInfoRestoreList.value.filter { if (it.detailRestoreList.isNotEmpty()) !it.detailRestoreList[it.restoreIndex].selectApp && !it.detailRestoreList[it.restoreIndex].selectData else false }
                         .toMutableList())
                 }
             }
 
             val keyWord = pref.searchKeyWord
-            mAppInfoList.emit(mAppInfoList.value.filter {
-                it.appName.lowercase().contains(keyWord.lowercase()) ||
-                        it.packageName.lowercase().contains(keyWord.lowercase())
+            mAppInfoRestoreList.emit(mAppInfoRestoreList.value.filter {
+                it.detailBase.appName.lowercase().contains(keyWord.lowercase()) ||
+                        it.detailBase.packageName.lowercase().contains(keyWord.lowercase())
             }.toMutableList())
 
             // 计算已选中应用数量并应用Badges
-            updateBadges(App.appInfoRestoreListNum)
+            updateBadges(globalObject.appInfoRestoreMapNum)
         }
     }
 
@@ -200,9 +202,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
     }
 
     override suspend fun onSave() {
-        withContext(Dispatchers.IO) {
-            JSON.saveAppInfoList(App.appInfoList.value)
-        }
+        GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
     }
 
     override fun onFloatingActionButtonClick(l: () -> Unit) {

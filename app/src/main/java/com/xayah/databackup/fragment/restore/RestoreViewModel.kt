@@ -41,16 +41,22 @@ class RestoreViewModel : ViewModel() {
     var lazyChipGroup = ObservableBoolean(true)
     var lazyList = ObservableBoolean(false)
 
+    /**
+     * 全局单例对象
+     */
+    private val globalObject = GlobalObject.getInstance()
+
     // 应用恢复列表
     private val appInfoRestoreList
-        get() = App.appInfoList.value.filter { if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app || it.restoreList[it.restoreIndex].data else false }
+        get() = globalObject.appInfoRestoreMap.value.values.toList()
+            .filter { if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].selectApp || it.detailRestoreList[it.restoreIndex].selectData else false }
             .toMutableList()
     private val appInfoRestoreListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoRestoreList) {
-                if (i.restoreList[i.restoreIndex].app) appInfoBaseNum.appNum++
-                if (i.restoreList[i.restoreIndex].data) appInfoBaseNum.dataNum++
+                if (i.detailRestoreList[i.restoreIndex].selectApp) appInfoBaseNum.appNum++
+                if (i.detailRestoreList[i.restoreIndex].selectData) appInfoBaseNum.dataNum++
             }
             appInfoBaseNum
         }
@@ -101,6 +107,8 @@ class RestoreViewModel : ViewModel() {
                 fastInitialize(v, items.toTypedArray(), choice)
                 setOnItemClickListener { _, _, position, _ ->
                     dismiss()
+                    GlobalObject.getInstance().appInfoBackupMap.value.clear()
+                    GlobalObject.getInstance().appInfoRestoreMap.value.clear()
                     context.saveBackupUser(items[position])
                     backupUser.set("${GlobalString.user}${items[position]}")
                     onResume()

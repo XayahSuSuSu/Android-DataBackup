@@ -38,17 +38,23 @@ class BackupViewModel : ViewModel() {
     var lazyChipGroup = ObservableBoolean(true)
     var lazyList = ObservableBoolean(false)
 
+    /**
+     * 全局单例对象
+     */
+    private val globalObject = GlobalObject.getInstance()
+
     // 应用备份列表
     private val appInfoBackupList
-        get() = App.appInfoList.value.filter { (it.backup.app || it.backup.data) && it.isOnThisDevice }
+        get() = globalObject.appInfoBackupMap.value.values.toList()
+            .filter { (it.detailBackup.selectApp || it.detailBackup.selectData) && it.isOnThisDevice }
             .toMutableList()
 
     private val appInfoBackupListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoBackupList) {
-                if (i.backup.app) appInfoBaseNum.appNum++
-                if (i.backup.data) appInfoBaseNum.dataNum++
+                if (i.detailBackup.selectApp) appInfoBaseNum.appNum++
+                if (i.detailBackup.selectData) appInfoBaseNum.dataNum++
             }
             appInfoBaseNum
         }
@@ -97,6 +103,8 @@ class BackupViewModel : ViewModel() {
                 fastInitialize(v, items.toTypedArray(), choice)
                 setOnItemClickListener { _, _, position, _ ->
                     dismiss()
+                    GlobalObject.getInstance().appInfoBackupMap.value.clear()
+                    GlobalObject.getInstance().appInfoRestoreMap.value.clear()
                     context.saveBackupUser(items[position])
                     backupUser.set("${GlobalString.user}${items[position]}")
                     onResume()

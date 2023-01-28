@@ -1,10 +1,9 @@
 package com.xayah.databackup.activity.processing
 
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.util.Base64
+import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.viewModelScope
+import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingItemAdapter
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
@@ -20,14 +19,15 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
 
     // 应用恢复列表
     private val appInfoRestoreList
-        get() = App.appInfoList.value.filter { if (it.restoreList.isNotEmpty()) it.restoreList[it.restoreIndex].app || it.restoreList[it.restoreIndex].data else false }
+        get() = GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
+            .filter { if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].selectApp || it.detailRestoreList[it.restoreIndex].selectData else false }
             .toMutableList()
     private val appInfoRestoreListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoRestoreList) {
-                if (i.restoreList[i.restoreIndex].app) appInfoBaseNum.appNum++
-                if (i.restoreList[i.restoreIndex].data) appInfoBaseNum.dataNum++
+                if (i.detailRestoreList[i.restoreIndex].selectApp) appInfoBaseNum.appNum++
+                if (i.detailRestoreList[i.restoreIndex].selectData) appInfoBaseNum.dataNum++
             }
             appInfoBaseNum
         }
@@ -49,25 +49,19 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
             viewModel.mAdapter.apply {
                 for (i in appInfoRestoreList) {
                     val task = ProcessingTask(
-                        appName = i.appName,
-                        packageName = i.packageName,
-                        app = i.restoreList[i.restoreIndex].app,
-                        data = i.restoreList[i.restoreIndex].data,
-                        appIcon = i.appIcon
+                        appName = i.detailBase.appName,
+                        packageName = i.detailBase.packageName,
+                        app = i.detailRestoreList[i.restoreIndex].selectApp,
+                        data = i.detailRestoreList[i.restoreIndex].selectData,
+                        appIcon = i.detailBase.appIcon
                     )
                     if (task.appIcon == null) {
-                        i.appIconString?.apply {
-                            if (this.isNotEmpty()) {
-                                try {
-                                    val img = Base64.decode(this.toByteArray(), Base64.DEFAULT)
-                                    val bitmap = BitmapFactory.decodeByteArray(img, 0, img.size)
-                                    val drawable: Drawable =
-                                        BitmapDrawable(App.globalContext.resources, bitmap)
-                                    task.appIcon = drawable
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-                            }
+                        val outPutIconPath =
+                            "${Path.getBackupDataSavePath()}/${i.detailBase.packageName}/icon.png"
+                        SuFile(outPutIconPath).apply {
+                            val bytes = readBytes()
+                            task.appIcon = (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                .toDrawable(this@ProcessingRestoreAppActivity.resources))
                         }
                     }
                     processingTaskList.value.add(task)
@@ -104,15 +98,15 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                     withContext(Dispatchers.IO) {
                         for ((index, i) in appInfoRestoreList.withIndex()) {
                             // 准备备份卡片数据
-                            viewModel.appName.set(i.appName)
-                            viewModel.packageName.set(i.packageName)
-                            viewModel.appVersion.set(i.restoreList[i.restoreIndex].versionName)
-                            viewModel.appIcon.set(i.appIcon)
+                            viewModel.appName.set(i.detailBase.appName)
+                            viewModel.packageName.set(i.detailBase.packageName)
+                            viewModel.appVersion.set(i.detailRestoreList[i.restoreIndex].versionName)
+                            viewModel.appIcon.set(i.detailBase.appIcon)
 
                             val packageName = viewModel.packageName.get()!!
                             val userId = App.globalContext.readRestoreUser()
                             val compressionType = App.globalContext.readCompressionType()
-                            val date = i.restoreList[i.restoreIndex].date
+                            val date = i.detailRestoreList[i.restoreIndex].date
                             val inPath = "${Path.getBackupDataSavePath()}/${packageName}/${date}"
                             val suffix = Command.getSuffixByCompressionType(compressionType)
                             val userPath = "${inPath}/user.$suffix"
@@ -125,12 +119,12 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                 val size = processingItemMap.value.size
                                 processingItemMap.value.clear()
                                 clearProcessingItems(viewModel, size)
-                                if (i.restoreList[i.restoreIndex].app) {
+                                if (i.detailRestoreList[i.restoreIndex].selectApp) {
                                     // 检查是否备份APK
                                     processingItemMap.value[ProcessingItemTypeAPK] =
                                         ProcessingItem.APK()
                                 }
-                                if (i.restoreList[i.restoreIndex].data) {
+                                if (i.detailRestoreList[i.restoreIndex].selectData) {
                                     // 检查是否备份数据
                                     Command.ls(userPath).apply {
                                         if (this)
@@ -170,7 +164,7 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     inPath,
                                     packageName,
                                     userId,
-                                    i.restoreList[i.restoreIndex].versionCode.toString()
+                                    i.detailRestoreList[i.restoreIndex].versionCode.toString()
                                 ) {
                                     setProcessingItem(
                                         it,

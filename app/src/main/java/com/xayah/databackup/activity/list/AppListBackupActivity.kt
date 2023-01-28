@@ -3,11 +3,12 @@ package com.xayah.databackup.activity.list
 import android.content.Intent
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.tabs.TabLayout
-import com.xayah.databackup.App
 import com.xayah.databackup.activity.processing.ProcessingBackupAppActivity
 import com.xayah.databackup.adapter.AppListAdapterBackup
 import com.xayah.databackup.data.*
-import com.xayah.databackup.util.JSON
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.GsonUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
@@ -19,12 +20,14 @@ class AppListBackupActivity : AppListBaseActivity() {
         const val TAG = "AppListBackupActivity"
     }
 
-    // 是否第一次访问
-    private var isFirst = true
+    /**
+     * 全局单例对象
+     */
+    private val globalObject = GlobalObject.getInstance()
 
     // 经过过滤或排序后的应用列表
-    private val mAppInfoList by lazy {
-        MutableStateFlow(mutableListOf<AppInfo>())
+    private val mAppInfoBackupList by lazy {
+        MutableStateFlow(mutableListOf<AppInfoBackup>())
     }
 
     private lateinit var tabLayout: TabLayout
@@ -32,7 +35,7 @@ class AppListBackupActivity : AppListBaseActivity() {
     override fun onAdapterRegister(multiTypeAdapter: MultiTypeAdapter) {
         multiTypeAdapter.register(
             AppListAdapterBackup(
-                onChipClick = { updateBadges(App.appInfoBackupListNum) }
+                onChipClick = { updateBadges(globalObject.appInfoBackupMapNum) }
             )
         )
     }
@@ -42,25 +45,25 @@ class AppListBackupActivity : AppListBaseActivity() {
         when (pref.type) {
             AppListType.InstalledApp -> {
                 // 安装应用
-                val appList = mAppInfoList.value.filter { !it.isSystemApp }
+                val appList = mAppInfoBackupList.value.filter { !it.detailBase.isSystemApp }
                 adapterList.addAll(appList)
                 when (pref.installedAppSelection) {
                     AppListSelection.App -> {
-                        appList.forEach { it.backup.app = true }
+                        appList.forEach { it.detailBackup.selectApp = true }
                     }
                     AppListSelection.AppReverse -> {
-                        appList.forEach { it.backup.app = false }
+                        appList.forEach { it.detailBackup.selectApp = false }
                     }
                     AppListSelection.All -> {
                         appList.forEach {
-                            it.backup.app = true
-                            it.backup.data = true
+                            it.detailBackup.selectApp = true
+                            it.detailBackup.selectData = true
                         }
                     }
                     AppListSelection.AllReverse -> {
                         appList.forEach {
-                            it.backup.app = false
-                            it.backup.data = false
+                            it.detailBackup.selectApp = false
+                            it.detailBackup.selectData = false
                         }
                     }
                     else -> {}
@@ -68,25 +71,25 @@ class AppListBackupActivity : AppListBaseActivity() {
             }
             AppListType.SystemApp -> {
                 // 系统应用
-                val appList = mAppInfoList.value.filter { it.isSystemApp }
+                val appList = mAppInfoBackupList.value.filter { it.detailBase.isSystemApp }
                 adapterList.addAll(appList)
                 when (pref.systemAppSelection) {
                     AppListSelection.App -> {
-                        appList.forEach { it.backup.app = true }
+                        appList.forEach { it.detailBackup.selectApp = true }
                     }
                     AppListSelection.AppReverse -> {
-                        appList.forEach { it.backup.app = false }
+                        appList.forEach { it.detailBackup.selectApp = false }
                     }
                     AppListSelection.All -> {
                         appList.forEach {
-                            it.backup.app = true
-                            it.backup.data = true
+                            it.detailBackup.selectApp = true
+                            it.detailBackup.selectData = true
                         }
                     }
                     AppListSelection.AllReverse -> {
                         appList.forEach {
-                            it.backup.app = false
-                            it.backup.data = false
+                            it.detailBackup.selectApp = false
+                            it.detailBackup.selectData = false
                         }
                     }
                     else -> {}
@@ -98,27 +101,28 @@ class AppListBackupActivity : AppListBaseActivity() {
 
     override suspend fun refreshList(pref: AppListPreferences) {
         withContext(Dispatchers.IO) {
-            if (isFirst) {
-                App.loadList()
-                isFirst = false
+            if (GlobalObject.getInstance().appInfoBackupMap.value.isEmpty()) {
+                GlobalObject.getInstance().appInfoBackupMap.emit(Command.getAppInfoBackupMap())
             }
+            mAppInfoBackupList.emit(
+                GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
+                    .filter { it.isOnThisDevice }.toMutableList()
+            )
 
-            mAppInfoList.emit(App.appInfoList.value.filter { it.isOnThisDevice }.toMutableList())
-
-            mAppInfoList.emit(mAppInfoList.value.apply {
+            mAppInfoBackupList.emit(mAppInfoBackupList.value.apply {
                 when (pref.sort) {
                     AppListSort.AlphabetAscending -> {
                         sortWith { appInfo1, appInfo2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo1 as AppInfo).appName)
-                                .compareTo(collator.getCollationKey((appInfo2 as AppInfo).appName))
+                            collator.getCollationKey((appInfo1 as AppInfoBackup).detailBase.appName)
+                                .compareTo(collator.getCollationKey((appInfo2 as AppInfoBackup).detailBase.appName))
                         }
                     }
                     AppListSort.AlphabetDescending -> {
                         sortWith { appInfo1, appInfo2 ->
                             val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo2 as AppInfo).appName)
-                                .compareTo(collator.getCollationKey((appInfo1 as AppInfo).appName))
+                            collator.getCollationKey((appInfo2 as AppInfoBackup).detailBase.appName)
+                                .compareTo(collator.getCollationKey((appInfo1 as AppInfoBackup).detailBase.appName))
                         }
                     }
                     AppListSort.FirstInstallTimeAscending -> {
@@ -128,10 +132,10 @@ class AppListBackupActivity : AppListBaseActivity() {
                         sortByDescending { it.firstInstallTime }
                     }
                     AppListSort.DataSizeAscending -> {
-                        sortBy { it.sizeBytes }
+                        sortBy { it.storageStats.sizeBytes }
                     }
                     AppListSort.DataSizeDescending -> {
-                        sortByDescending { it.sizeBytes }
+                        sortByDescending { it.storageStats.sizeBytes }
                     }
                 }
             })
@@ -139,23 +143,23 @@ class AppListBackupActivity : AppListBaseActivity() {
             when (pref.filter) {
                 AppListFilter.None -> {}
                 AppListFilter.Selected -> {
-                    mAppInfoList.emit(mAppInfoList.value.filter { it.backup.app || it.backup.data }
+                    mAppInfoBackupList.emit(mAppInfoBackupList.value.filter { it.detailBackup.selectApp || it.detailBackup.selectData }
                         .toMutableList())
                 }
                 AppListFilter.NotSelected -> {
-                    mAppInfoList.emit(mAppInfoList.value.filter { !it.backup.app && !it.backup.data }
+                    mAppInfoBackupList.emit(mAppInfoBackupList.value.filter { !it.detailBackup.selectApp && !it.detailBackup.selectData }
                         .toMutableList())
                 }
             }
 
             val keyWord = pref.searchKeyWord
-            mAppInfoList.emit(mAppInfoList.value.filter {
-                it.appName.lowercase().contains(keyWord.lowercase()) ||
-                        it.packageName.lowercase().contains(keyWord.lowercase())
+            mAppInfoBackupList.emit(mAppInfoBackupList.value.filter {
+                it.detailBase.appName.lowercase().contains(keyWord.lowercase()) ||
+                        it.detailBase.packageName.lowercase().contains(keyWord.lowercase())
             }.toMutableList())
 
             // 计算已选中应用数量并应用Badges
-            updateBadges(App.appInfoBackupListNum)
+            updateBadges(globalObject.appInfoBackupMapNum)
         }
     }
 
@@ -175,9 +179,7 @@ class AppListBackupActivity : AppListBaseActivity() {
     }
 
     override suspend fun onSave() {
-        withContext(Dispatchers.IO) {
-            JSON.saveAppInfoList(App.appInfoList.value)
-        }
+        GsonUtil.saveAppInfoBackupMapToFile(GlobalObject.getInstance().appInfoBackupMap.value)
     }
 
     override fun onFloatingActionButtonClick(l: () -> Unit) {

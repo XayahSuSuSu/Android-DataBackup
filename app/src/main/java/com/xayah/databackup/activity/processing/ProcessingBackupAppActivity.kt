@@ -1,7 +1,6 @@
 package com.xayah.databackup.activity.processing
 
 import android.graphics.Bitmap
-import android.util.Base64
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
@@ -13,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 
 class ProcessingBackupAppActivity : ProcessingBaseActivity() {
     lateinit var viewModel: ProcessingBaseViewModel
@@ -25,14 +23,15 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
 
     // 应用备份列表
     private val appInfoBackupList
-        get() = App.appInfoList.value.filter { (it.backup.app || it.backup.data) && it.isOnThisDevice }
+        get() = GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
+            .filter { (it.detailBackup.selectApp || it.detailBackup.selectData) && it.isOnThisDevice }
             .toMutableList()
     private val appInfoBackupListNum
         get() = run {
             val appInfoBaseNum = AppInfoBaseNum(0, 0)
             for (i in appInfoBackupList) {
-                if (i.backup.app) appInfoBaseNum.appNum++
-                if (i.backup.data) appInfoBaseNum.dataNum++
+                if (i.detailBackup.selectApp) appInfoBaseNum.appNum++
+                if (i.detailBackup.selectData) appInfoBaseNum.dataNum++
             }
             appInfoBaseNum
         }
@@ -57,11 +56,11 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
             viewModel.mAdapter.apply {
                 for (i in appInfoBackupList) processingTaskList.value.add(
                     ProcessingTask(
-                        appName = i.appName,
-                        packageName = i.packageName,
-                        app = i.backup.app,
-                        data = i.backup.data,
-                        appIcon = i.appIcon
+                        appName = i.detailBase.appName,
+                        packageName = i.detailBase.packageName,
+                        app = i.detailBackup.selectApp,
+                        data = i.detailBackup.selectData,
+                        appIcon = i.detailBase.appIcon
                     )
                 )
                 register(ProcessingTaskAdapter())
@@ -115,32 +114,17 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                             val date =
                                 if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
                             // 准备备份卡片数据
-                            viewModel.appName.set(i.appName)
-                            viewModel.packageName.set(i.packageName)
-                            viewModel.appVersion.set(i.backup.versionName)
-                            viewModel.appIcon.set(i.appIcon)
-
-                            if (App.globalContext.readIsBackupIcon()) {
-                                // 保存应用图标
-                                i.appIcon?.apply {
-                                    try {
-                                        val stream = ByteArrayOutputStream()
-                                        toBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream)
-                                        i.appIconString =
-                                            Base64.encodeToString(
-                                                stream.toByteArray(),
-                                                Base64.DEFAULT
-                                            )
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }
-                                }
-                            }
+                            viewModel.appName.set(i.detailBase.appName)
+                            viewModel.packageName.set(i.detailBase.packageName)
+                            viewModel.appVersion.set(i.detailBackup.versionName)
+                            viewModel.appIcon.set(i.detailBase.appIcon)
 
                             val packageName = viewModel.packageName.get()!!
                             val userId = App.globalContext.readBackupUser()
                             val compressionType = App.globalContext.readCompressionType()
                             val outPutPath = "${Path.getBackupDataSavePath()}/${packageName}/$date"
+                            val outPutIconPath =
+                                "${Path.getBackupDataSavePath()}/${packageName}/icon.png"
                             val userPath = "${Path.getUserPath()}/${packageName}"
                             val userDePath = "${Path.getUserDePath()}/${packageName}"
                             val dataPath = "${Path.getDataPath()}/${packageName}"
@@ -151,12 +135,12 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                 val size = processingItemMap.value.size
                                 processingItemMap.value.clear()
                                 clearProcessingItems(viewModel, size)
-                                if (i.backup.app) {
+                                if (i.detailBackup.selectApp) {
                                     // 检查是否备份APK
                                     processingItemMap.value[ProcessingItemTypeAPK] =
                                         ProcessingItem.APK()
                                 }
-                                if (i.backup.data) {
+                                if (i.detailBackup.selectData) {
                                     // 检查是否备份数据
                                     Command.ls(userPath).apply {
                                         if (this) processingItemMap.value[ProcessingItemTypeUSER] =
@@ -192,7 +176,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     outPutPath,
                                     userId,
-                                    i.backup.appSize
+                                    i.detailBackup.appSize
                                 ) {
                                     setProcessingItem(
                                         it,
@@ -204,8 +188,9 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                 }.apply {
                                     if (!this) state = false
                                     // 保存apk大小
-                                    else i.backup.appSize = Command.countSize(
-                                        Bashrc.getAPKPath(i.packageName, userId).second, 1
+                                    else i.detailBackup.appSize = Command.countSize(
+                                        Bashrc.getAPKPath(i.detailBase.packageName, userId).second,
+                                        1
                                     )
                                 }
 
@@ -223,7 +208,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     outPutPath,
                                     Path.getUserPath(),
-                                    i.backup.userSize
+                                    i.detailBackup.userSize
                                 ) {
                                     setProcessingItem(
                                         it,
@@ -235,7 +220,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                 }.apply {
                                     if (!this) state = false
                                     // 保存user大小
-                                    else i.backup.userSize = Command.countSize(userPath, 1)
+                                    else i.detailBackup.userSize = Command.countSize(userPath, 1)
                                 }
 
                                 processingItemMap.value[ProcessingItemTypeUSER]?.isProcessing =
@@ -254,7 +239,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     outPutPath,
                                     Path.getUserDePath(),
-                                    i.backup.userDeSize
+                                    i.detailBackup.userDeSize
                                 ) {
                                     setProcessingItem(
                                         it,
@@ -266,7 +251,8 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                 }.apply {
                                     if (!this) state = false
                                     // 保存user_de大小
-                                    else i.backup.userDeSize = Command.countSize(userDePath, 1)
+                                    else i.detailBackup.userDeSize =
+                                        Command.countSize(userDePath, 1)
                                 }
 
                                 processingItemMap.value[ProcessingItemTypeUSERDE]?.isProcessing =
@@ -284,7 +270,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     outPutPath,
                                     Path.getDataPath(),
-                                    i.backup.dataSize
+                                    i.detailBackup.dataSize
                                 ) {
                                     setProcessingItem(
                                         it,
@@ -296,7 +282,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                 }.apply {
                                     if (!this) state = false
                                     // 保存data大小
-                                    else i.backup.dataSize = Command.countSize(dataPath, 1)
+                                    else i.detailBackup.dataSize = Command.countSize(dataPath, 1)
                                 }
 
                                 processingItemMap.value[ProcessingItemTypeDATA]?.isProcessing =
@@ -314,7 +300,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     packageName,
                                     outPutPath,
                                     Path.getObbPath(),
-                                    i.backup.obbSize
+                                    i.detailBackup.obbSize
                                 ) {
                                     setProcessingItem(
                                         it,
@@ -326,36 +312,62 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                 }.apply {
                                     if (!this) state = false
                                     // 保存obb大小
-                                    else i.backup.obbSize = Command.countSize(obbPath, 1)
+                                    else i.detailBackup.obbSize = Command.countSize(obbPath, 1)
                                 }
 
                                 processingItemMap.value[ProcessingItemTypeOBB]?.isProcessing = false
                                 refreshProcessingItems(viewModel)
                             }
-                            i.backup.date = date
+                            i.detailBackup.date = date
+
+                            // 保存应用图标
+                            if (App.globalContext.readIsBackupIcon()) {
+                                com.topjohnwu.superuser.io.SuFile(outPutIconPath).apply {
+                                    val outputStream = outputStream()
+                                    i.detailBase.appIcon?.toBitmap()
+                                        ?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                                    outputStream.flush()
+                                    outputStream.close()
+                                }
+                            }
+
                             if (state) {
-                                val item = AppInfoItem(
-                                    app = false,
-                                    data = false,
-                                    hasApp = true,
-                                    hasData = true,
-                                    versionName = i.backup.versionName,
-                                    versionCode = i.backup.versionCode,
-                                    appSize = i.backup.appSize,
-                                    userSize = i.backup.userSize,
-                                    userDeSize = i.backup.userDeSize,
-                                    dataSize = i.backup.dataSize,
-                                    obbSize = i.backup.obbSize,
-                                    date = i.backup.date
-                                )
-                                val itemIndex = i.restoreList.indexOfFirst { date == it.date }
+                                val detail = AppInfoDetailRestore().apply {
+                                    this.selectApp = false
+                                    this.selectData = false
+                                    this.hasApp = true
+                                    this.hasData = true
+                                    this.versionName = i.detailBackup.versionName
+                                    this.versionCode = i.detailBackup.versionCode
+                                    this.appSize = i.detailBackup.appSize
+                                    this.userSize = i.detailBackup.userSize
+                                    this.userDeSize = i.detailBackup.userDeSize
+                                    this.dataSize = i.detailBackup.dataSize
+                                    this.obbSize = i.detailBackup.obbSize
+                                    this.date = i.detailBackup.date
+                                }
+                                if (GlobalObject.getInstance().appInfoRestoreMap.value.containsKey(
+                                        packageName
+                                    ).not()
+                                ) {
+                                    GlobalObject.getInstance().appInfoRestoreMap.value[packageName] =
+                                        AppInfoRestore().apply {
+                                            this.detailBase = i.detailBase
+                                            this.firstInstallTime = i.firstInstallTime
+                                        }
+                                }
+                                val appInfoRestore =
+                                    GlobalObject.getInstance().appInfoRestoreMap.value[packageName]!!
+
+                                val itemIndex =
+                                    appInfoRestore.detailRestoreList.indexOfFirst { date == it.date }
                                 if (itemIndex == -1) {
                                     // RestoreList中不存在该Item
-                                    i.restoreList.add(item)
-                                    i.restoreIndex++
+                                    appInfoRestore.detailRestoreList.add(detail)
+                                    appInfoRestore.restoreIndex++
                                 } else {
                                     // RestoreList中已存在该Item
-                                    i.restoreList[itemIndex] = item
+                                    appInfoRestore.detailRestoreList[itemIndex] = detail
                                 }
                                 viewModel.successList.value.add(processingTaskList.value[index])
                             } else {
@@ -393,8 +405,8 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                         }
 
                         // 保存列表数据
-                        JSON.saveBackupInfoList(backupInfoList.value)
-                        JSON.saveAppInfoList(App.appInfoList.value)
+                        GsonUtil.saveAppInfoBackupMapToFile(GlobalObject.getInstance().appInfoBackupMap.value)
+                        GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
                         // 移动日志数据
                         Bashrc.moveLogToOut()
                     }
