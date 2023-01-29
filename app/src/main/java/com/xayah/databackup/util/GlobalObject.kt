@@ -59,4 +59,11 @@ class GlobalObject {
     val mediaInfoRestoreMap by lazy {
         MutableStateFlow<MediaInfoRestoreMap>(hashMapOf())
     }
+
+    /**
+     * 单次启动全局时间戳
+     */
+    val timeStampOnStart by lazy {
+        System.currentTimeMillis().toString()
+    }
 }

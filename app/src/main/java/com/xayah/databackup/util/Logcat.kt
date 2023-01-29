@@ -1,6 +1,6 @@
 package com.xayah.databackup.util
 
-import com.xayah.databackup.App
+import android.annotation.SuppressLint
 
 class Logcat {
     object Instance {
@@ -9,18 +9,34 @@ class Logcat {
 
     companion object {
         fun getInstance() = Instance.instance
-    }
 
-    private val logPath = "${Path.getShellLogPath()}/log_${App.getTimeStamp()}"
-
-    fun addLine(line: String) {
-        if (line.isNotEmpty()) {
-            SafeFile.create(logPath) {
+        @SuppressLint("SetWorldWritable")
+        fun appendToFile(path: String, content: String) {
+            SafeFile.create(path) {
                 it.apply {
-                    appendText(line)
-                    appendText("\n")
+                    if (exists().not()) {
+                        createNewFile()
+                    }
+                    appendText(content)
                 }
             }
+        }
+    }
+
+    val shellLogPath =
+        "${Path.getShellLogPath()}/log_${GlobalObject.getInstance().timeStampOnStart}"
+    val actionLogPath =
+        "${Path.getActionLogPath()}/log_${GlobalObject.getInstance().timeStampOnStart}"
+
+    fun shellLogAddLine(line: String) {
+        if (line.isNotEmpty()) {
+            appendToFile(shellLogPath, "${line}\n")
+        }
+    }
+
+    fun actionLogAddLine(line: String) {
+        if (line.isNotEmpty()) {
+            appendToFile(actionLogPath, "${line}\n")
         }
     }
 }

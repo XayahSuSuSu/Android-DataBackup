@@ -11,7 +11,15 @@ class SafeFile {
             try {
                 callback(SuFile(path))
             } catch (e: Exception) {
-                e.printStackTrace()
+                Logcat.getInstance().actionLogAddLine("File(${path}): ${e.message}")
+            }
+        }
+
+        fun mkdirs(path: String) {
+            try {
+                SuFile(path).mkdirs()
+            } catch (e: Exception) {
+                Logcat.getInstance().actionLogAddLine("File(${path}): ${e.message}")
             }
         }
     }

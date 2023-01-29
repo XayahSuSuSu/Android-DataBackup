@@ -77,7 +77,11 @@ class Path {
         }
 
         fun getShellLogPath(): String {
-            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/log"
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/log/shell"
+        }
+
+        fun getActionLogPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/log/action"
         }
 
         fun getInternalLogPath(): String {

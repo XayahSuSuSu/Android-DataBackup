@@ -185,7 +185,7 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     viewModel.dataNeedProcessing.set(false)
                                     viewModel.obbNeedProcessing.set(false)
                                     state = false
-                                    Logcat.getInstance().addLine("${packageName}: Not installed")
+                                    Logcat.getInstance().shellLogAddLine("${packageName}: Not installed")
                                 }
                             }
 
