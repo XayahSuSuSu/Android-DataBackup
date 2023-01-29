@@ -57,13 +57,16 @@ class RestoreFragment : Fragment() {
             if (viewModel.globalObject.mediaInfoRestoreMap.value.isEmpty()) {
                 GlobalObject.getInstance().mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap())
             }
-
-            binding.chipGroup.removeAllViews()
-            for (i in viewModel.mediaInfoRestoreMap.values) {
-                if (i.detailRestoreList.isNotEmpty())
-                    addChip(i)
+            try {
+                binding.chipGroup.removeAllViews()
+                for (i in viewModel.mediaInfoRestoreMap.values) {
+                    if (i.detailRestoreList.isNotEmpty())
+                        addChip(i)
+                }
+                viewModel.lazyChipGroup.set(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            viewModel.lazyChipGroup.set(false)
         }
     }
 

@@ -104,11 +104,15 @@ class BackupFragment : Fragment() {
                 GlobalObject.getInstance().mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap())
             }
 
-            binding.chipGroup.removeAllViews()
-            for (i in viewModel.mediaInfoBackupMap.values) {
-                addChip(i)
+            try {
+                binding.chipGroup.removeAllViews()
+                for (i in viewModel.mediaInfoBackupMap.values) {
+                    addChip(i)
+                }
+                viewModel.lazyChipGroup.set(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            viewModel.lazyChipGroup.set(false)
         }
     }
 
