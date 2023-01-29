@@ -11,10 +11,10 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.databinding.ActivityGuideBinding
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.checkPackageUsageStatsPermission
-import com.xayah.databackup.util.readInitializedVersionName
-import com.xayah.databackup.util.readIsSupportUsageAccess
+import com.xayah.databackup.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class GuideActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGuideBinding
@@ -56,6 +56,10 @@ class GuideActivity : AppCompatActivity() {
     }
 
     private fun toMain() {
+        // 强制取消挂载所有配置
+        CoroutineScope(Dispatchers.IO).launch {
+            ExtendCommand.rcloneUnmountAll()
+        }
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }

@@ -7,9 +7,6 @@ import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 import com.xayah.crash.CrashHandler
 import com.xayah.databackup.util.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.InputStream
 
 class App : Application() {
@@ -52,10 +49,5 @@ class App : Application() {
         globalContext = this
         versionName = Command.getVersion()
         if (globalContext.readIsDynamicColors()) DynamicColors.applyToActivitiesIfAvailable(this)
-
-        // 强制取消挂载所有配置
-        CoroutineScope(Dispatchers.IO).launch {
-            ExtendCommand.rcloneUnmountAll()
-        }
     }
 }
