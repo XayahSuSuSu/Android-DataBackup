@@ -1,5 +1,7 @@
 package com.xayah.databackup.util
 
+import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -16,7 +18,15 @@ class Bashrc {
          * 读取存储空间
          */
         suspend fun getStorageSpace(path: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("get_storage_space \"${path}\"") }
+            val tmpList = mutableListOf<String>()
+            val tmpShell = Shell.Builder.create()
+                .setFlags(Shell.FLAG_MOUNT_MASTER or Shell.FLAG_REDIRECT_STDERR)
+                .setTimeout(8)
+                .setInitializers(App.EnvInitializer::class.java)
+                .build()
+            val exec = runOnIO {
+                tmpShell.newJob().to(tmpList).add("get_storage_space \"${path}\"").exec()
+            }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
