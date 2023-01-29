@@ -81,6 +81,7 @@ class ProcessingRestoreMediaActivity : ProcessingBaseActivity() {
 
                             // 开始恢复
                             var state = true // 该任务是否成功完成
+                            viewModel.dataNeedProcessing.set(i.detailRestoreList[i.restoreIndex].data)
                             if (i.detailRestoreList[i.restoreIndex].data) {
                                 viewModel.dataTitle.set(GlobalString.ready)
                                 viewModel.dataSubtitle.set(GlobalString.pleaseWait)
