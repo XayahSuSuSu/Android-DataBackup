@@ -173,6 +173,11 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     }
                                     viewModel.obbNeedProcessing.set(this)
                                 }
+                            } else {
+                                viewModel.userNeedProcessing.set(false)
+                                viewModel.userDeNeedProcessing.set(false)
+                                viewModel.dataNeedProcessing.set(false)
+                                viewModel.obbNeedProcessing.set(false)
                             }
 
                             // 开始备份
@@ -324,8 +329,8 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                 val detail = AppInfoDetailRestore().apply {
                                     this.selectApp = false
                                     this.selectData = false
-                                    this.hasApp = true
-                                    this.hasData = true
+                                    this.hasApp = i.detailBackup.selectApp
+                                    this.hasData = i.detailBackup.selectData
                                     this.versionName = i.detailBackup.versionName
                                     this.versionCode = i.detailBackup.versionCode
                                     this.appSize = i.detailBackup.appSize
@@ -396,6 +401,7 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                         // 保存列表数据
                         GsonUtil.saveAppInfoBackupMapToFile(GlobalObject.getInstance().appInfoBackupMap.value)
                         GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
+                        GlobalObject.getInstance().appInfoRestoreMap.value.clear()
                     }
                 }
             }

@@ -189,7 +189,7 @@ class Command {
                 // 根据备份目录实际文件调整列表
                 var hasApp = false
                 var hasData = false
-                execute("find \"${Path.getBackupDataSavePath()}\" -name \"*\" -type f").apply {
+                execute("find \"${Path.getBackupDataSavePath()}\" -name \"*.tar*\" -type f").apply {
                     // 根据实际文件和配置调整RestoreList
                     for (i in appInfoRestoreMap) {
                         val tmpList = mutableListOf<AppInfoDetailRestore>()
@@ -241,8 +241,8 @@ class Command {
                                                 } else detailList[detailListIndex]
 
                                             detail.apply {
-                                                this.hasApp = this.hasApp && hasApp
-                                                this.hasData = this.hasData && hasData
+                                                this.hasApp = hasApp
+                                                this.hasData = hasData
                                                 this.selectApp = this.selectApp && hasApp
                                                 this.selectData = this.selectData && hasData
                                             }
@@ -338,7 +338,7 @@ class Command {
 
                 // 根据备份目录实际文件调整列表
                 var hasData = false
-                execute("find \"${Path.getBackupMediaSavePath()}\" -name \"*\" -type f").apply {
+                execute("find \"${Path.getBackupMediaSavePath()}\" -name \"*.tar*\" -type f").apply {
                     // 根据实际文件和配置调整RestoreList
                     for (i in mediaInfoRestoreMap) {
                         val tmpList = mutableListOf<MediaInfoDetailBase>()

@@ -146,6 +146,11 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                                     }
                                     viewModel.obbNeedProcessing.set(this)
                                 }
+                            } else {
+                                viewModel.userNeedProcessing.set(false)
+                                viewModel.userDeNeedProcessing.set(false)
+                                viewModel.dataNeedProcessing.set(false)
+                                viewModel.obbNeedProcessing.set(false)
                             }
 
                             // 开始恢复
