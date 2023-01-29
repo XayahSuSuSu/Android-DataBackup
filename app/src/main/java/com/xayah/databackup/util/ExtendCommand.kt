@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.widget.Toast
+import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.data.RcloneConfig
 import com.xayah.databackup.data.RcloneMount
@@ -201,8 +202,29 @@ class ExtendCommand {
          * Rclone取消挂载所有配置
          */
         suspend fun rcloneUnmountAll() {
+            val tmpList = mutableListOf<String>()
+            val tmpShell = Shell.Builder.create()
+                .setFlags(Shell.FLAG_MOUNT_MASTER or Shell.FLAG_REDIRECT_STDERR)
+                .setTimeout(8)
+                .setInitializers(App.EnvInitializer::class.java)
+                .build()
             // Kill Rclone守护进程
-            Command.execute("kill -9 \$(ps -A | grep rclone | awk '{print \$2}')")
+            tmpShell.newJob().to(tmpList).add("kill -9 \$(ps -A | grep rclone | awk '{print \$2}')")
+                .exec()
+            tmpShell.newJob().to(tmpList).add("mount").exec().apply {
+                for (i in this.out) {
+                    if (i.contains("fuse.rclone")) {
+                        val path = i.split(" ")[2]
+                        Command.execute("umount -f \"${path}\"")
+                    }
+                }
+            }
+            tmpShell.waitAndClose()
+            val map = getRcloneMountMap()
+            for (i in map.values) {
+                i.mounted = false
+            }
+            GsonUtil.saveRcloneMountMapToFile(map)
         }
 
         /**

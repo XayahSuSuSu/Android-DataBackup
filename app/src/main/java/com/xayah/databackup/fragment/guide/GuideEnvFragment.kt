@@ -84,9 +84,7 @@ class GuideEnvFragment : Fragment() {
     }
 
     private suspend fun checkRootAccess() {
-        val isRoot = withContext(Dispatchers.IO) {
-            Command.checkRoot()
-        }
+        val isRoot = Command.checkRoot()
         if (isRoot) {
             viewModel.grantRootAccessCheck.set(GlobalString.success)
             step++

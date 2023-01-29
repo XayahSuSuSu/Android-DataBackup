@@ -27,6 +27,7 @@ class Bashrc {
             val exec = runOnIO {
                 tmpShell.newJob().to(tmpList).add("get_storage_space \"${path}\"").exec()
             }
+            tmpShell.waitAndClose()
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
