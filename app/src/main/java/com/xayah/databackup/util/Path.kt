@@ -4,7 +4,7 @@ import com.xayah.databackup.App
 
 class Path {
     companion object {
-        fun getFilesDir(): String {
+        fun getAppInternalFilesPath(): String {
             return App.globalContext.filesDir.path
         }
 
@@ -80,8 +80,12 @@ class Path {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/log"
         }
 
+        fun getInternalLogPath(): String {
+            return "${getAppInternalFilesPath()}/log"
+        }
+
         fun getRcloneMountListPath(): String {
-            return "${getFilesDir()}/.config/rclone/mountList"
+            return "${getAppInternalFilesPath()}/.config/rclone/mountList"
         }
     }
 }

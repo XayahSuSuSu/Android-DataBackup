@@ -53,7 +53,7 @@ class CloudFragment : Fragment() {
                     if (this@apply.not()) {
                         MaterialAlertDialogBuilder(requireContext()).apply {
                             setWithConfirm(
-                                "${Path.getFilesDir()}/extend: ${GlobalString.binPermissionError}",
+                                "${Path.getAppInternalFilesPath()}/extend: ${GlobalString.binPermissionError}",
                                 cancelable = false,
                                 hasNegativeBtn = false
                             ) {}

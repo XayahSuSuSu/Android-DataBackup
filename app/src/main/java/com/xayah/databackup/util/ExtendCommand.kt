@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.widget.Toast
+import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.data.RcloneConfig
 import com.xayah.databackup.data.RcloneMount
@@ -8,10 +9,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ExtendCommand {
+    init {
+        SuFile(Path.getInternalLogPath()).apply {
+            deleteRecursively()
+            mkdirs()
+        }
+    }
+
     companion object {
         private const val TAG = "ExtendCommand"
-        val logDir = "${Path.getFilesDir()}/log"
-        val logPath = "${logDir}/rclone_log_${App.getTimeStamp()}"
+        val logPath = "${Path.getInternalLogPath()}/rclone_log_${App.getTimeStamp()}"
 
         /**
          * 切换至IO协程运行
@@ -24,7 +31,7 @@ class ExtendCommand {
          * 检查扩展文件
          */
         suspend fun checkExtend(): Boolean {
-            Command.execute("ls -l \"${Path.getFilesDir()}/extend\"").out.apply {
+            Command.execute("ls -l \"${Path.getAppInternalFilesPath()}/extend\"").out.apply {
                 var count = 0
                 try {
                     val fileList = this.subList(1, this.size)
@@ -41,7 +48,11 @@ class ExtendCommand {
          */
         suspend fun checkRcloneVersion(): String {
             Command.execute("rclone --version").out.apply {
-                return this[0].replace("rclone", "").trim()
+                return try {
+                    this[0].replace("rclone", "").trim()
+                } catch (e: Exception) {
+                    ""
+                }
             }
         }
 
@@ -87,7 +98,7 @@ class ExtendCommand {
             val rcloneConfigList = mutableListOf<RcloneConfig>()
             try {
                 val exec =
-                    Command.execute("rclone config show --log-file $logPath")
+                    Command.execute("rclone config show")
                         .apply {
                             this.out.add("[]")
                         }
@@ -140,11 +151,13 @@ class ExtendCommand {
         suspend fun getRcloneMountMap(): HashMap<String, RcloneMount> {
             var rcloneMountMap = hashMapOf<String, RcloneMount>()
             runOnIO {
-                // 读取应用列表配置文件
-                Command.cat(Path.getRcloneMountListPath()).apply {
-                    if (this.first) {
-                        rcloneMountMap = GsonUtil.getInstance().fromRcloneMountMapJson(this.second)
+                // 读取配置文件
+                try {
+                    SuFile(Path.getRcloneMountListPath()).apply {
+                        rcloneMountMap = GsonUtil.getInstance().fromRcloneMountMapJson(readText())
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
             return rcloneMountMap
@@ -167,6 +180,8 @@ class ExtendCommand {
         suspend fun rcloneUnmount(name: String, notify: Boolean = true): Boolean {
             var isSuccess = true
 
+            // Kill Rclone守护进程
+            Command.execute("kill -9 \$(ps -A | grep rclone | awk '{print \$2}')")
             Command.execute("mount").apply {
                 for (i in this.out) {
                     if (i.contains("${name}:") && i.contains("rclone")) {
@@ -185,16 +200,23 @@ class ExtendCommand {
         }
 
         /**
+         * Rclone取消挂载所有配置
+         */
+        suspend fun rcloneUnmountAll() {
+            // Kill Rclone守护进程
+            Command.execute("kill -9 \$(ps -A | grep rclone | awk '{print \$2}')")
+        }
+
+        /**
          * 检查本地扩展模块版本
          */
         suspend fun checkExtendLocalVersion(): String {
-            val extendVersionPath = "${Path.getFilesDir()}/extend/version"
-            Command.execute("cat \"${extendVersionPath}\"").apply {
-                var version = ""
-                if (this.isSuccess)
-                    version = this.out.joinToLineString
-                return version
+            var version = ""
+            withContext(Dispatchers.IO) {
+                val extendVersionPath = "${Path.getAppInternalFilesPath()}/extend/version"
+                version = SuFile(extendVersionPath).readText()
             }
+            return version
         }
     }
 }

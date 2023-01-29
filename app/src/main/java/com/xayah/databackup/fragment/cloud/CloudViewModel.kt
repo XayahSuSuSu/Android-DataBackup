@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.RcloneConfig
@@ -128,7 +129,7 @@ class CloudViewModel : ViewModel() {
                 }
                 rcloneVersion.set(ExtendCommand.checkRcloneVersion())
                 fusermountVersion.set(ExtendCommand.checkFusermountVersion())
-                fuseState.set(if (Command.ls(GlobalString.devFuse)) GlobalString.symbolTick else GlobalString.symbolCross)
+                fuseState.set(if (SuFile(GlobalString.devFuse).exists()) GlobalString.symbolTick else GlobalString.symbolCross)
                 rcloneMountMap.emit(ExtendCommand.getRcloneMountMap())
                 if (rcloneConfigList.value.isNotEmpty()) {
                     // 默认显示第一个配置
@@ -150,7 +151,7 @@ class CloudViewModel : ViewModel() {
         isInstalling.set(true)
         installState.set(GlobalString.prepareForDownloading)
         installProgress.set(0)
-        val savePath = "${Path.getFilesDir()}/extend.zip"
+        val savePath = "${Path.getAppInternalFilesPath()}/extend.zip"
 
         runOnScope {
             Server.getInstance().releases(successCallback = { releaseList ->
@@ -195,7 +196,7 @@ class CloudViewModel : ViewModel() {
      * Rclone环境本地导入点击事件
      */
     fun onImportLocallyBtnClick(v: View) {
-        val savePath = "${Path.getFilesDir()}/extend.zip"
+        val savePath = "${Path.getAppInternalFilesPath()}/extend.zip"
         materialYouFileExplorer.apply {
             isFile = true
             toExplorer(v.context) { path, _ ->
@@ -214,9 +215,9 @@ class CloudViewModel : ViewModel() {
     private suspend fun installExtendModule(savePath: String) {
         Command.unzipByZip4j(
             savePath,
-            "${Path.getFilesDir()}/extend"
+            "${Path.getAppInternalFilesPath()}/extend"
         )
-        Command.execute("chmod 777 -R \"${Path.getFilesDir()}\"")
+        Command.execute("chmod 777 -R \"${Path.getAppInternalFilesPath()}\"")
         onCheckExtendPermission()
         isInstalling.set(false)
         initialize()
@@ -611,7 +612,7 @@ class CloudViewModel : ViewModel() {
                 false
             ).apply {
                 runOnScope {
-                    Command.execute("chmod 777 -R \"${ExtendCommand.logDir}\"")
+                    Command.execute("chmod 777 -R \"${Path.getInternalLogPath()}\"")
                     try {
                         val bufferedReader: BufferedReader =
                             File(ExtendCommand.logPath).bufferedReader()

@@ -35,9 +35,9 @@ class App : Application() {
             val bashrc: InputStream = context.resources.openRawResource(R.raw.bashrc)
             shell.newJob()
                 .add(bashrc)
-                .add("export PATH=${Path.getFilesDir()}/bin:\$PATH")
-                .add("export PATH=${Path.getFilesDir()}/extend:\$PATH")
-                .add("export HOME=${Path.getFilesDir()}")
+                .add("export PATH=${Path.getAppInternalFilesPath()}/bin:\$PATH")
+                .add("export PATH=${Path.getAppInternalFilesPath()}/extend:\$PATH")
+                .add("export HOME=${Path.getAppInternalFilesPath()}")
                 .exec()
             return true
         }

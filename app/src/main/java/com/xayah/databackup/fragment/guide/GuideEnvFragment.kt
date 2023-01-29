@@ -97,7 +97,7 @@ class GuideEnvFragment : Fragment() {
 
     private suspend fun binRelease() {
         // 环境目录
-        val filesDirectory = Path.getFilesDir()
+        val filesDirectory = Path.getAppInternalFilesPath()
         val versionPath = "${filesDirectory}/version"
         val binPath = "${filesDirectory}/bin"
         val binZipPath = "${filesDirectory}/bin.zip"

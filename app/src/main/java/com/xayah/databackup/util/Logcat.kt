@@ -14,14 +14,7 @@ class Logcat {
         fun getInstance() = Instance.instance
     }
 
-    private val logDir = Path.getShellLogPath()
-    val logPath = "${logDir}/log_${App.getTimeStamp()}"
-
-    init {
-        val dir = File(logDir)
-        dir.deleteRecursively()
-        dir.mkdir()
-    }
+    private val logPath = "${Path.getShellLogPath()}/log_${App.getTimeStamp()}"
 
     fun addLine(line: String) {
         if (line.isNotEmpty()) {

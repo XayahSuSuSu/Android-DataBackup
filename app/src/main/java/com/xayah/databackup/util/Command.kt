@@ -34,14 +34,6 @@ class Command {
         }
 
         /**
-         * `cat`命令, 用于文件读取
-         */
-        suspend fun cat(path: String): Pair<Boolean, String> {
-            val exec = execute("cat \"${path}\"", false)
-            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
-        }
-
-        /**
          * `ls -i`命令
          */
         suspend fun ls(path: String): Boolean {
@@ -461,7 +453,7 @@ class Command {
          */
         fun releaseAssets(mContext: Context, assetsPath: String, outName: String) {
             try {
-                val assets = File(Path.getFilesDir(), outName)
+                val assets = File(Path.getAppInternalFilesPath(), outName)
                 if (!assets.exists()) {
                     val outStream = FileOutputStream(assets)
                     val inputStream = mContext.resources.assets.open(assetsPath)
@@ -781,7 +773,7 @@ class Command {
          * 检查二进制文件
          */
         suspend fun checkBin(): Boolean {
-            execute("ls -l \"${Path.getFilesDir()}/bin\"").out.apply {
+            execute("ls -l \"${Path.getAppInternalFilesPath()}/bin\"").out.apply {
                 var count = 0
                 try {
                     val fileList = this.subList(1, this.size)
