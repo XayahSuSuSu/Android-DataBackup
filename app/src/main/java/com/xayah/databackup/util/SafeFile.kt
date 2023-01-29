@@ -11,7 +11,7 @@ class SafeFile {
             try {
                 callback(SuFile(path))
             } catch (e: Exception) {
-                Logcat.getInstance().actionLogAddLine("File(${path}): ${e.message}")
+                e.printStackTrace()
             }
         }
 
@@ -19,7 +19,7 @@ class SafeFile {
             try {
                 SuFile(path).mkdirs()
             } catch (e: Exception) {
-                Logcat.getInstance().actionLogAddLine("File(${path}): ${e.message}")
+                e.printStackTrace()
             }
         }
     }
