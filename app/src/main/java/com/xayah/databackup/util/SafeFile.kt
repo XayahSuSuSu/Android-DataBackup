@@ -1,15 +1,15 @@
 package com.xayah.databackup.util
 
-import com.topjohnwu.superuser.io.SuFile
+import java.io.File
 
 /**
  * 自动捕获异常SuFile
  */
 class SafeFile {
     companion object {
-        fun create(path: String, callback: (suFile: SuFile) -> Unit) {
+        fun create(path: String, callback: (suFile: File) -> Unit) {
             try {
-                callback(SuFile(path))
+                callback(File(path))
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -17,7 +17,7 @@ class SafeFile {
 
         fun mkdirs(path: String) {
             try {
-                SuFile(path).mkdirs()
+                File(path).mkdirs()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
