@@ -373,9 +373,7 @@ class Command {
                                             detailList.indexOfFirst { date == it.date }
                                         val detail =
                                             if (detailListIndex == -1) MediaInfoDetailBase().apply {
-                                                this.data = false
-                                                this.size = ""
-                                                this.date = ""
+                                                this.date = date
                                             } else detailList[detailListIndex]
 
                                         detail.apply {
