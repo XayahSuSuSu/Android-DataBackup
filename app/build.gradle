@@ -66,7 +66,7 @@ dependencies {
     implementation project(":crash")
 
     // LibSU
-    def libsuVersion = '5.0.3'
+    def libsuVersion = '5.0.4'
     implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
     implementation "com.github.topjohnwu.libsu:io:${libsuVersion}"
 
