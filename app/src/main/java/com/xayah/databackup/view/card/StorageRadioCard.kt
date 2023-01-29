@@ -43,6 +43,11 @@ class StorageRadioCard @JvmOverloads constructor(
         MutableStateFlow(hashMapOf<String, RcloneMount>())
     }
 
+    /**
+     * 全局单例对象
+     */
+    val globalObject = GlobalObject.getInstance()
+
     // 绑定列表
     private val itemBindings = mutableListOf<ViewCardStorageRadioCardItemBinding>()
 
@@ -66,6 +71,12 @@ class StorageRadioCard @JvmOverloads constructor(
                 if (value == index) {
                     i.item?.apply {
                         App.globalContext.saveBackupSavePath(this.path.get())
+                        SafeFile.mkdirs(Path.getShellLogPath())
+                        SafeFile.mkdirs(Path.getActionLogPath())
+                        globalObject.appInfoBackupMap.value.clear()
+                        globalObject.appInfoRestoreMap.value.clear()
+                        globalObject.mediaInfoBackupMap.value.clear()
+                        globalObject.mediaInfoRestoreMap.value.clear()
                     }
                 }
                 i.materialRadioButton.isChecked = value == index
