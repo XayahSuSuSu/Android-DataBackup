@@ -3,7 +3,6 @@ package com.xayah.databackup.activity.processing
 import android.graphics.BitmapFactory
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.viewModelScope
-import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.ProcessingTaskAdapter
 import com.xayah.databackup.data.AppInfoBaseNum
@@ -51,12 +50,12 @@ class ProcessingRestoreAppActivity : ProcessingBaseActivity() {
                         appIcon = i.detailBase.appIcon
                     )
                     if (task.appIcon == null) {
-                        val outPutIconPath =
-                            "${Path.getBackupDataSavePath()}/${i.detailBase.packageName}/icon.png"
-                        SuFile(outPutIconPath).apply {
-                            val bytes = readBytes()
-                            task.appIcon = (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                .toDrawable(this@ProcessingRestoreAppActivity.resources))
+                        SafeFile.create("${Path.getBackupDataSavePath()}/${i.detailBase.packageName}/icon.png") {
+                            it.apply {
+                                val bytes = readBytes()
+                                task.appIcon = (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                    .toDrawable(this@ProcessingRestoreAppActivity.resources))
+                            }
                         }
                     }
                     processingTaskList.value.add(task)

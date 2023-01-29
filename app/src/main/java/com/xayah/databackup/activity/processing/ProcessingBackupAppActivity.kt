@@ -309,12 +309,14 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
 
                             // 保存应用图标
                             if (App.globalContext.readIsBackupIcon()) {
-                                com.topjohnwu.superuser.io.SuFile(outPutIconPath).apply {
-                                    val outputStream = outputStream()
-                                    i.detailBase.appIcon?.toBitmap()
-                                        ?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                                    outputStream.flush()
-                                    outputStream.close()
+                                SafeFile.create(outPutIconPath) {
+                                    it.apply {
+                                        val outputStream = outputStream()
+                                        i.detailBase.appIcon?.toBitmap()
+                                            ?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                                        outputStream.flush()
+                                        outputStream.close()
+                                    }
                                 }
                             }
 

@@ -10,12 +10,12 @@ import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.graphics.drawable.toDrawable
 import com.drakeet.multitype.ItemViewDelegate
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.SafeFile
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.util.setWithConfirm
 import kotlinx.coroutines.CoroutineScope
@@ -46,14 +46,14 @@ class AppListAdapterRestore(val onChipClick: () -> Unit = {}) :
             ) else adapterItem.detailBase.appIcon
         )
 
-        val outPutIconPath =
-            "${Path.getBackupDataSavePath()}/${item.detailBase.packageName}/icon.png"
-        SuFile(outPutIconPath).apply {
-            val bytes = readBytes()
-            binding.appIcon.setImageDrawable(
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    .toDrawable(binding.root.context.resources)
-            )
+        SafeFile.create("${Path.getBackupDataSavePath()}/${item.detailBase.packageName}/icon.png") {
+            it.apply {
+                val bytes = readBytes()
+                binding.appIcon.setImageDrawable(
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        .toDrawable(binding.root.context.resources)
+                )
+            }
         }
 
         // 应用Chip

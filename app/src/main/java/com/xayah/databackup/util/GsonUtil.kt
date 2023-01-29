@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.data.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,16 +22,20 @@ class GsonUtil {
                 val parent = path.split("/").toMutableList().apply {
                     removeLast()
                 }.joinToString(separator = "/")
-                SuFile(parent).apply {
-                    if (exists().not()) mkdirs()
+                SafeFile.create(parent) {
+                    it.apply {
+                        if (exists().not()) mkdirs()
+                    }
                 }
-                SuFile(path).apply {
-                    delete()
-                    createNewFile()
-                    setExecutable(true, false)
-                    setWritable(true, false)
-                    setExecutable(true, false)
-                    writeText(content)
+                SafeFile.create(path) {
+                    it.apply {
+                        delete()
+                        createNewFile()
+                        setExecutable(true, false)
+                        setWritable(true, false)
+                        setExecutable(true, false)
+                        writeText(content)
+                    }
                 }
             }
         }

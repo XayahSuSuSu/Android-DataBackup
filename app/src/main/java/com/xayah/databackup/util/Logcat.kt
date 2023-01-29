@@ -1,9 +1,6 @@
 package com.xayah.databackup.util
 
-import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
-import java.io.File
-import java.io.IOException
 
 class Logcat {
     object Instance {
@@ -18,13 +15,11 @@ class Logcat {
 
     fun addLine(line: String) {
         if (line.isNotEmpty()) {
-            try {
-                SuFile(logPath).apply {
+            SafeFile.create(logPath) {
+                it.apply {
                     appendText(line)
                     appendText("\n")
                 }
-            } catch (g: IOException) {
-                g.printStackTrace()
             }
         }
     }

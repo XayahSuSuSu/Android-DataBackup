@@ -14,7 +14,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.RcloneConfig
@@ -129,7 +128,11 @@ class CloudViewModel : ViewModel() {
                 }
                 rcloneVersion.set(ExtendCommand.checkRcloneVersion())
                 fusermountVersion.set(ExtendCommand.checkFusermountVersion())
-                fuseState.set(if (SuFile(GlobalString.devFuse).exists()) GlobalString.symbolTick else GlobalString.symbolCross)
+                var isFuseExists = false
+                SafeFile.create(GlobalString.devFuse) {
+                    isFuseExists = it.exists()
+                }
+                fuseState.set(if (isFuseExists) GlobalString.symbolTick else GlobalString.symbolCross)
                 rcloneMountMap.emit(ExtendCommand.getRcloneMountMap())
                 if (rcloneConfigList.value.isNotEmpty()) {
                     // 默认显示第一个配置

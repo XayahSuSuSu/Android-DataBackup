@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Process
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
-import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.data.*
 import kotlinx.coroutines.Dispatchers
@@ -108,13 +107,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                try {
-                    SuFile(Path.getAppInfoBackupMapPath()).apply {
-                        appInfoBackupMap =
-                            GsonUtil.getInstance().fromAppInfoBackupMapJson(readText())
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                SafeFile.create(Path.getAppInfoBackupMapPath()) {
+                    appInfoBackupMap =
+                        GsonUtil.getInstance().fromAppInfoBackupMapJson(it.readText())
                 }
 
                 // 根据本机应用调整列表
@@ -186,13 +181,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                try {
-                    SuFile(Path.getAppInfoRestoreMapPath()).apply {
-                        appInfoRestoreMap =
-                            GsonUtil.getInstance().fromAppInfoRestoreMapJson(readText())
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                SafeFile.create(Path.getAppInfoRestoreMapPath()) {
+                    appInfoRestoreMap =
+                        GsonUtil.getInstance().fromAppInfoRestoreMapJson(it.readText())
                 }
 
                 // 根据备份目录实际文件调整列表
@@ -302,13 +293,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                try {
-                    SuFile(Path.getMediaInfoBackupMapPath()).apply {
-                        mediaInfoBackupMap =
-                            GsonUtil.getInstance().fromMediaInfoBackupMapJson(readText())
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                SafeFile.create(Path.getMediaInfoBackupMapPath()) {
+                    mediaInfoBackupMap =
+                        GsonUtil.getInstance().fromMediaInfoBackupMapJson(it.readText())
                 }
 
                 // 如果为空, 添加默认路径
@@ -344,13 +331,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                try {
-                    SuFile(Path.getMediaInfoRestoreMapPath()).apply {
-                        mediaInfoRestoreMap =
-                            GsonUtil.getInstance().fromMediaInfoRestoreMapJson(readText())
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                SafeFile.create(Path.getMediaInfoRestoreMapPath()) {
+                    mediaInfoRestoreMap =
+                        GsonUtil.getInstance().fromMediaInfoRestoreMapJson(it.readText())
                 }
 
                 // 根据备份目录实际文件调整列表
@@ -436,13 +419,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                try {
-                    SuFile(Path.getBackupInfoListPath()).apply {
-                        backupInfoList =
-                            GsonUtil.getInstance().fromBackupInfoListJson(readText())
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                SafeFile.create(Path.getBackupInfoListPath()) {
+                    backupInfoList =
+                        GsonUtil.getInstance().fromBackupInfoListJson(it.readText())
                 }
             }
             return backupInfoList

@@ -1,7 +1,6 @@
 package com.xayah.databackup.util
 
 import android.widget.Toast
-import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.data.RcloneConfig
 import com.xayah.databackup.data.RcloneMount
@@ -9,14 +8,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ExtendCommand {
-    init {
-        SuFile(Path.getInternalLogPath()).apply {
-            deleteRecursively()
-            mkdirs()
-        }
-    }
 
     companion object {
+        init {
+            SafeFile.create(Path.getInternalLogPath()) {
+                it.apply {
+                    deleteRecursively()
+                    mkdirs()
+                }
+            }
+        }
+
         private const val TAG = "ExtendCommand"
         val logPath = "${Path.getInternalLogPath()}/rclone_log_${App.getTimeStamp()}"
 
@@ -152,12 +154,8 @@ class ExtendCommand {
             var rcloneMountMap = hashMapOf<String, RcloneMount>()
             runOnIO {
                 // 读取配置文件
-                try {
-                    SuFile(Path.getRcloneMountListPath()).apply {
-                        rcloneMountMap = GsonUtil.getInstance().fromRcloneMountMapJson(readText())
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                SafeFile.create(Path.getRcloneMountListPath()) {
+                    rcloneMountMap = GsonUtil.getInstance().fromRcloneMountMapJson(it.readText())
                 }
             }
             return rcloneMountMap
@@ -214,7 +212,9 @@ class ExtendCommand {
             var version = ""
             withContext(Dispatchers.IO) {
                 val extendVersionPath = "${Path.getAppInternalFilesPath()}/extend/version"
-                version = SuFile(extendVersionPath).readText()
+                SafeFile.create(extendVersionPath) {
+                    version = it.readText()
+                }
             }
             return version
         }
