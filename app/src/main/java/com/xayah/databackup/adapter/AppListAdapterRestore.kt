@@ -12,10 +12,7 @@ import com.drakeet.multitype.ItemViewDelegate
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Path
-import com.xayah.databackup.util.SafeFile
+import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import com.xayah.databackup.view.util.setWithConfirm
 import kotlinx.coroutines.CoroutineScope
@@ -144,6 +141,9 @@ class AppListAdapterRestore(val onChipClick: () -> Unit = {}) :
                                             if (item.detailRestoreList.isNotEmpty()) {
                                                 adapter.notifyItemChanged(holder.bindingAdapterPosition)
                                             } else {
+                                                GlobalObject.getInstance().appInfoRestoreMap.value.remove(
+                                                    item.detailBase.packageName
+                                                )
                                                 val items = adapterItems.toMutableList()
                                                 items.remove(item)
                                                 adapterItems = items.toList()

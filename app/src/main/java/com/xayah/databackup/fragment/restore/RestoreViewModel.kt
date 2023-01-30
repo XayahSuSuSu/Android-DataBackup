@@ -159,19 +159,20 @@ class RestoreViewModel : ViewModel() {
                     setLoading()
                     val that = this
                     viewModelScope.launch {
-                        Command.rm(Path.getBackupDataSavePath())
-                            .apply {
-                                if (this) {
-                                    refresh()
-                                    Toast.makeText(
-                                        context, GlobalString.success, Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        context, GlobalString.failed, Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
+                        val data = Command.rm(Path.getBackupDataSavePath())
+                        val config = Command.rm(Path.getAppInfoRestoreMapPath())
+                        if (data && config) {
+                            GlobalObject.getInstance().appInfoRestoreMap.value.clear()
+                            refresh()
+                            Toast.makeText(
+                                context, GlobalString.success, Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                context, GlobalString.failed, Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
                         that.dismiss()
                     }
                 }
