@@ -383,13 +383,6 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                 App.globalContext.readBackupUser()
                             )
                         )
-                        viewModel.totalTip.set(GlobalString.backupFinished)
-                        viewModel.totalProgress.set("${viewModel.successNum + viewModel.failedNum} ${GlobalString.total}")
-                        viewModel.isProcessing.set(false)
-                        viewModel.isFinished.postValue(true)
-                        viewModel.btnText.set(GlobalString.finish)
-                        viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
-
                         // 恢复默认输入法和无障碍
                         keyboard.apply {
                             if (this.first) Bashrc.setKeyboard(this.second)
@@ -402,6 +395,13 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                         GsonUtil.saveAppInfoBackupMapToFile(GlobalObject.getInstance().appInfoBackupMap.value)
                         GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
                         GlobalObject.getInstance().appInfoRestoreMap.value.clear()
+
+                        viewModel.totalTip.set(GlobalString.backupFinished)
+                        viewModel.totalProgress.set("${viewModel.successNum + viewModel.failedNum} ${GlobalString.total}")
+                        viewModel.isProcessing.set(false)
+                        viewModel.isFinished.postValue(true)
+                        viewModel.btnText.set(GlobalString.finish)
+                        viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
                     }
                 }
             }

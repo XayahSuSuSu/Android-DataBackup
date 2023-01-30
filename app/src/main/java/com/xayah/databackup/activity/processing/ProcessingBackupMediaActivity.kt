@@ -179,17 +179,18 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                                 App.globalContext.readBackupUser()
                             )
                         )
+
+                        // 保存列表数据
+                        GsonUtil.saveMediaInfoBackupMapToFile(globalObject.mediaInfoBackupMap.value)
+                        GsonUtil.saveMediaInfoRestoreMapToFile(globalObject.mediaInfoRestoreMap.value)
+                        GsonUtil.saveBackupInfoListToFile(backupInfoList.value)
+
                         viewModel.totalTip.set(GlobalString.backupFinished)
                         viewModel.totalProgress.set("${viewModel.successNum + viewModel.failedNum} ${GlobalString.total}")
                         viewModel.isProcessing.set(false)
                         viewModel.isFinished.postValue(true)
                         viewModel.btnText.set(GlobalString.finish)
                         viewModel.btnDesc.set(GlobalString.clickTheRightBtnToFinish)
-
-                        // 保存列表数据
-                        GsonUtil.saveMediaInfoBackupMapToFile(globalObject.mediaInfoBackupMap.value)
-                        GsonUtil.saveMediaInfoRestoreMapToFile(globalObject.mediaInfoRestoreMap.value)
-                        GsonUtil.saveBackupInfoListToFile(backupInfoList.value)
                     }
                 }
             }
