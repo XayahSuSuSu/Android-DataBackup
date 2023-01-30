@@ -353,54 +353,62 @@ class Command {
                         this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
                         var detailList = mutableListOf<MediaInfoDetailBase>()
                         for ((index, i) in this.out.withIndex()) {
-                            if (index < this.out.size - 1) {
-                                val info = i.replace(Path.getBackupMediaSavePath(), "").split("/")
-                                val infoNext =
-                                    this.out[index + 1].replace(Path.getBackupMediaSavePath(), "")
-                                        .split("/")
-                                val name = info[1]
-                                val nameNext = infoNext[1]
-                                val date = info[2]
-                                val dateNext = infoNext[2]
-                                val fileName = info[3]
-                                if (info.size == 4) {
-                                    if (fileName.contains("${name}.tar"))
-                                        hasData = true
+                            try {
+                                if (index < this.out.size - 1) {
+                                    val info =
+                                        i.replace(Path.getBackupMediaSavePath(), "").split("/")
+                                    val infoNext =
+                                        this.out[index + 1].replace(
+                                            Path.getBackupMediaSavePath(),
+                                            ""
+                                        )
+                                            .split("/")
+                                    val name = info[1]
+                                    val nameNext = infoNext[1]
+                                    val date = info[2]
+                                    val dateNext = infoNext[2]
+                                    val fileName = info[3]
+                                    if (info.size == 4) {
+                                        if (fileName.contains("${name}.tar"))
+                                            hasData = true
 
-                                    if (date != dateNext || name != nameNext) {
-                                        // 与下一路径不同日期
-                                        val detailListIndex =
-                                            detailList.indexOfFirst { date == it.date }
-                                        val detail =
-                                            if (detailListIndex == -1) MediaInfoDetailBase().apply {
-                                                this.date = date
-                                            } else detailList[detailListIndex]
+                                        if (date != dateNext || name != nameNext) {
+                                            // 与下一路径不同日期
+                                            val detailListIndex =
+                                                detailList.indexOfFirst { date == it.date }
+                                            val detail =
+                                                if (detailListIndex == -1) MediaInfoDetailBase().apply {
+                                                    this.date = date
+                                                } else detailList[detailListIndex]
 
-                                        detail.apply {
-                                            this.data = this.data && hasData
+                                            detail.apply {
+                                                this.data = this.data && hasData
+                                            }
+
+                                            if (detailListIndex == -1) detailList.add(detail)
+
+                                            hasData = false
                                         }
+                                        if (name != nameNext) {
+                                            // 与下一路径不同包名
+                                            // 寻找已保存的数据
+                                            if (mediaInfoRestoreMap.containsKey(name).not()) {
+                                                mediaInfoRestoreMap[name] = MediaInfoRestore()
+                                            }
+                                            val mediaInfoRestore = mediaInfoRestoreMap[name]!!
 
-                                        if (detailListIndex == -1) detailList.add(detail)
+                                            mediaInfoRestore.apply {
+                                                this.name = name
+                                                this.detailRestoreList = detailList
+                                            }
 
-                                        hasData = false
-                                    }
-                                    if (name != nameNext) {
-                                        // 与下一路径不同包名
-                                        // 寻找已保存的数据
-                                        if (mediaInfoRestoreMap.containsKey(name).not()) {
-                                            mediaInfoRestoreMap[name] = MediaInfoRestore()
+                                            hasData = false
+                                            detailList = mutableListOf()
                                         }
-                                        val mediaInfoRestore = mediaInfoRestoreMap[name]!!
-
-                                        mediaInfoRestore.apply {
-                                            this.name = name
-                                            this.detailRestoreList = detailList
-                                        }
-
-                                        hasData = false
-                                        detailList = mutableListOf()
                                     }
                                 }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
                         }
                     }
