@@ -380,10 +380,17 @@ class CloudViewModel : ViewModel() {
                                     // 创建/修改配置
                                     val args =
                                         "host=\"${host}\" port=\"${port}\" user=\"${user}\" pass=\"${pass}\""
-                                    ExtendCommand.rcloneConfigCreate(type, name, args)
-                                    // 刷新
-                                    refresh(false)
-                                    onConfirm()
+                                    if (ExtendCommand.rcloneConfigCreate(
+                                            context,
+                                            type,
+                                            name,
+                                            args
+                                        )
+                                    ) {
+                                        // 刷新
+                                        refresh(false)
+                                        onConfirm()
+                                    }
                                 }
                         }
                         content.addView(binding.root)
@@ -466,10 +473,17 @@ class CloudViewModel : ViewModel() {
                                     // 创建/修改配置
                                     val args =
                                         "url=\"${url}\" vendor=other user=\"${user}\" pass=\"${pass}\""
-                                    ExtendCommand.rcloneConfigCreate(type, name, args)
-                                    // 刷新
-                                    refresh(false)
-                                    onConfirm()
+                                    if (ExtendCommand.rcloneConfigCreate(
+                                            context,
+                                            type,
+                                            name,
+                                            args
+                                        )
+                                    ) {
+                                        // 刷新
+                                        refresh(false)
+                                        onConfirm()
+                                    }
                                 }
                         }
                         content.addView(binding.root)
@@ -552,10 +566,17 @@ class CloudViewModel : ViewModel() {
                                     // 创建/修改配置
                                     val args =
                                         "host=\"${host}\" user=\"${user}\" pass=\"${pass}\""
-                                    ExtendCommand.rcloneConfigCreate(type, name, args)
-                                    // 刷新
-                                    refresh(false)
-                                    onConfirm()
+                                    if (ExtendCommand.rcloneConfigCreate(
+                                            context,
+                                            type,
+                                            name,
+                                            args
+                                        )
+                                    ) {
+                                        // 刷新
+                                        refresh(false)
+                                        onConfirm()
+                                    }
                                 }
                         }
                         content.addView(binding.root)
