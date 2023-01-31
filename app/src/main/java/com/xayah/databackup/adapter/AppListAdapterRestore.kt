@@ -36,6 +36,23 @@ class AppListAdapterRestore(val onChipClick: () -> Unit = {}) :
         val binding = holder.binding
         val adapterItem = (adapterItems[holder.bindingAdapterPosition] as AppInfoRestore)
 
+        if (adapterItem.detailRestoreList.isNotEmpty()) {
+            binding.materialCardView.setOnClickListener {
+                if ((item.detailRestoreList[item.restoreIndex].selectApp && item.detailRestoreList[item.restoreIndex].selectData).not() &&
+                    (item.detailRestoreList[item.restoreIndex].selectApp || item.detailRestoreList[item.restoreIndex].selectData)
+                ) {
+                    if (item.detailRestoreList[item.restoreIndex].selectApp.not()) {
+                        binding.chipApplication.performClick()
+                    } else {
+                        binding.chipData.performClick()
+                    }
+                } else {
+                    binding.chipApplication.performClick()
+                    binding.chipData.performClick()
+                }
+            }
+        }
+
         // 应用图标
         binding.appIcon.setImageDrawable(
             if (adapterItem.detailBase.appIcon == null) AppCompatResources.getDrawable(
