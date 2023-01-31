@@ -751,7 +751,12 @@ class Command {
          * 检查ROOT
          */
         suspend fun checkRoot(): Boolean {
-            return withContext(Dispatchers.IO) { execute("ls /").isSuccess && Shell.getCachedShell()?.isRoot == true }
+            return withContext(Dispatchers.IO) {
+                execute(
+                    "ls /",
+                    false
+                ).isSuccess && Shell.getCachedShell()?.isRoot == true
+            }
         }
 
         /**

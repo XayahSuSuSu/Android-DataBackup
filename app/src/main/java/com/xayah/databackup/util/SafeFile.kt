@@ -7,11 +7,14 @@ import java.io.File
  */
 class SafeFile {
     companion object {
-        fun create(path: String, callback: (suFile: File) -> Unit) {
-            try {
-                callback(File(path))
+        fun create(path: String, onSafeCallback: (suFile: File) -> Unit = {}): File? {
+            return try {
+                val file = File(path)
+                onSafeCallback(file)
+                file
             } catch (e: Exception) {
                 e.printStackTrace()
+                null
             }
         }
 
