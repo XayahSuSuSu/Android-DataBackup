@@ -42,7 +42,7 @@ class BackupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[BackupViewModel::class.java]
         binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = requireActivity()
 
         binding.materialButtonAddMedia.setOnClickListener {
             materialYouFileExplorer.apply {

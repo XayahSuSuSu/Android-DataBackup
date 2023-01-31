@@ -39,7 +39,7 @@ class RestoreFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[RestoreViewModel::class.java]
         binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = requireActivity()
 
         viewModel._isInitialized.observe(viewLifecycleOwner) {
             viewModel.viewModelScope.launch {

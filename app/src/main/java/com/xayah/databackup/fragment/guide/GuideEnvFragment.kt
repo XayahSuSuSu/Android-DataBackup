@@ -44,7 +44,7 @@ class GuideEnvFragment : Fragment() {
         guideViewModel = ViewModelProvider(requireActivity())[GuideViewModel::class.java]
         viewModel = ViewModelProvider(this)[GuideEnvViewModel::class.java]
         binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = requireActivity()
 
         // 标题
         guideViewModel.title.set(GlobalString.environmentDetection)
