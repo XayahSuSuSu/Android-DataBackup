@@ -60,7 +60,7 @@ class AppListAdapterRestore(val onChipClick: () -> Unit = {}) :
                     adapterItem.detailRestoreList[adapterItem.restoreIndex].selectApp =
                         checked
                     CoroutineScope(Dispatchers.Main).launch {
-                        adapter.notifyItemChanged(0)
+                        adapter.notifyItemChanged(holder.bindingAdapterPosition)
                         onChipClick()
                     }
                 }
@@ -77,7 +77,7 @@ class AppListAdapterRestore(val onChipClick: () -> Unit = {}) :
                     adapterItem.detailRestoreList[adapterItem.restoreIndex].selectData =
                         checked
                     CoroutineScope(Dispatchers.Main).launch {
-                        adapter.notifyItemChanged(0)
+                        adapter.notifyItemChanged(holder.bindingAdapterPosition)
                         onChipClick()
                     }
                 }

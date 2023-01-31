@@ -25,13 +25,29 @@ class AppListAdapterBackup(val onChipClick: () -> Unit = {}) :
 
         val binding = holder.binding
         val adapterItem = (adapterItems[holder.bindingAdapterPosition] as AppInfoBackup)
+
+        binding.materialCardView.setOnClickListener {
+            if ((item.detailBackup.selectApp && item.detailBackup.selectData).not() &&
+                (item.detailBackup.selectApp || item.detailBackup.selectData)
+            ) {
+                if (item.detailBackup.selectApp.not()) {
+                    binding.chipApplication.performClick()
+                } else {
+                    binding.chipData.performClick()
+                }
+            } else {
+                binding.chipApplication.performClick()
+                binding.chipData.performClick()
+            }
+        }
+
         // 应用Chip
         binding.chipApplication.apply {
             setOnCheckedChangeListener { _, checked ->
                 adapterItem.detailBackup.selectApp =
                     checked
                 CoroutineScope(Dispatchers.Main).launch {
-                    adapter.notifyItemChanged(0)
+                    adapter.notifyItemChanged(holder.bindingAdapterPosition)
                     onChipClick()
                 }
             }
@@ -44,7 +60,7 @@ class AppListAdapterBackup(val onChipClick: () -> Unit = {}) :
                 adapterItem.detailBackup.selectData =
                     checked
                 CoroutineScope(Dispatchers.Main).launch {
-                    adapter.notifyItemChanged(0)
+                    adapter.notifyItemChanged(holder.bindingAdapterPosition)
                     onChipClick()
                 }
             }
