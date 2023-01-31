@@ -293,25 +293,8 @@ count_size() {
   fi
 }
 
-check_otg() {
-  public="$(ls /dev/block/vold/public*)"
-  if [ "$public" != "" ]; then
-    [ -f /proc/mounts ] && path="$(grep < /proc/mounts -w "$public" | awk '{print $2}')"
-    if [ -d "$path" ]; then
-      info="$(df -T "$path" | sed -n 's|% /.*|%|p' | awk '{print $(NF-4)}')"
-      echo "$path"
-      case $info in
-        sdfat | fuseblk | exfat | NTFS | ext4 | f2fs)
-          return 0
-          ;;
-        *)
-          return 1
-          ;;
-      esac
-    fi
-  else
-    return 2
-  fi
+list_external_storage() {
+  mount | awk '$3 ~ /\mnt\/media_rw/ {print $3, $5}'
 }
 
 get_keyboard() {

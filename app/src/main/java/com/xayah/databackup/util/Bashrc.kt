@@ -222,9 +222,9 @@ class Bashrc {
         /**
          * 检查OTG
          */
-        suspend fun checkOTG(): Pair<Int, String> {
-            val exec = runOnIO { Command.execute("check_otg") }
-            return Pair(exec.code, exec.out.joinToString(separator = "\n"))
+        suspend fun listExternalStorage(): Pair<Boolean, List<String>> {
+            val exec = runOnIO { Command.execute("list_external_storage") }
+            return Pair(exec.isSuccess, exec.out)
         }
 
         /**

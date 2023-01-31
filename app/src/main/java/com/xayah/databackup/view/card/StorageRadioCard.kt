@@ -132,7 +132,7 @@ class StorageRadioCard @JvmOverloads constructor(
             binding.linearLayoutRoot.removeAllViews()
             itemBindings.clear()
             setInternalStorage()
-            setOTG()
+            setExternalStorage()
             setMount()
             radioGroupCheckedIndex = App.globalContext.readBackupSaveIndex()
             if (radioGroupCheckedIndex >= itemBindings.size) radioGroupCheckedIndex = 0
@@ -244,55 +244,70 @@ class StorageRadioCard @JvmOverloads constructor(
         }
     }
 
-    private suspend fun setOTG() {
-        val otgBinding = ViewCardStorageRadioCardItemBinding.inflate(
-            LayoutInflater.from(context),
-            binding.linearLayoutRoot,
-            true
-        ).apply {
-            item = StorageItem().apply {
-                name.set(GlobalString.otg)
-                progress.set(0)
-                path.set("")
-                materialRadioButton.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        radioGroupCheckedIndex = 1
-                    }
-                }
-            }
-        }
-        itemBindings.add(otgBinding)
+    /**
+     * 设置外置存储设备
+     */
+    private suspend fun setExternalStorage() {
+        // 列出外置存储设备: /mnt/media_rw/E7F9-FA61 exfat
+        Bashrc.listExternalStorage().apply {
+            if (this.first) {
+                for (i in this.second) {
+                    try {
+                        val (path, type) = i.split(" ")
+                        val otgBinding = ViewCardStorageRadioCardItemBinding.inflate(
+                            LayoutInflater.from(context),
+                            binding.linearLayoutRoot,
+                            true
+                        ).apply {
+                            item = StorageItem().apply {
+                                this.name.set(path.split("/").last())
+                                this.progress.set(0)
+                                this.path.set(path)
+                                this.display.set(i)
 
-        otgBinding.item?.apply {
-            // 默认值
-            display.set(GlobalString.fetching)
-            progress.set(0)
-            enable.set(false)
-            // 检查OTG连接情况
-            Bashrc.checkOTG().apply {
-                val that = this
-                if (that.first == 0) {
-                    val actualPath = "${that.second}/DataBackup"
-                    Command.mkdir(actualPath)
-                    val space = Bashrc.getStorageSpace(actualPath)
-                    if (space.first) {
-                        try {
-                            val string = space.second
-                            progress.set(string.split(" ").last().replace("%", "").toInt())
-                            display.set(actualPath)
-                            path.set(actualPath)
-                            enable.set(true)
-                        } catch (e: NumberFormatException) {
-                            display.set(GlobalString.fetchFailed)
-                            e.printStackTrace()
+                                // 创建备份目录
+                                val outPath = "${path}/DataBackup"
+                                Command.mkdir(outPath)
+
+                                // 检测空间占用
+                                val space = Bashrc.getStorageSpace(outPath)
+                                if (space.first) {
+                                    try {
+                                        this.progress.set(
+                                            space.second.split(" ").last().replace("%", "").toInt()
+                                        )
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+
+                                // 检测格式是否支持
+                                val supportedFormat =
+                                    mutableListOf(
+                                        "sdfat",
+                                        "fuseblk",
+                                        "exfat",
+                                        "NTFS",
+                                        "ext4",
+                                        "f2fs"
+                                    )
+                                val support = type in supportedFormat
+                                this.enable.set(support)
+                                if (support.not()) {
+                                    this.name.set(GlobalString.unsupportedFormat)
+                                }
+
+                                materialRadioButton.setOnCheckedChangeListener { _, isChecked ->
+                                    if (isChecked) {
+                                        radioGroupCheckedIndex = 1
+                                    }
+                                }
+                            }
                         }
+                        itemBindings.add(otgBinding)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                } else if (that.first == 1) {
-                    if (radioGroupCheckedIndex == 1) radioGroupCheckedIndex = 0
-                    display.set(GlobalString.unsupportedFormat)
-                } else {
-                    if (radioGroupCheckedIndex == 1) radioGroupCheckedIndex = 0
-                    display.set(GlobalString.notPluggedIn)
                 }
             }
         }
