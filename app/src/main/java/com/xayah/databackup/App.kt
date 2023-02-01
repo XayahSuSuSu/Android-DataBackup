@@ -12,7 +12,7 @@ import java.io.InputStream
 class App : Application() {
     companion object {
         init {
-            Shell.enableVerboseLogging = false
+            Shell.enableVerboseLogging = BuildConfig.ENABLE_VERBOSE
             Shell.setDefaultBuilder(
                 Shell.Builder.create()
                     .setFlags(Shell.FLAG_MOUNT_MASTER or Shell.FLAG_REDIRECT_STDERR)

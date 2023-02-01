@@ -73,6 +73,7 @@ class StorageRadioCard @JvmOverloads constructor(
                         App.globalContext.saveBackupSavePath(this.path.get())
                         SafeFile.mkdirs(Path.getShellLogPath())
                         SafeFile.mkdirs(Path.getActionLogPath())
+                        Logcat.refreshInstance()
                         globalObject.appInfoBackupMap.value.clear()
                         globalObject.appInfoRestoreMap.value.clear()
                         globalObject.mediaInfoBackupMap.value.clear()
@@ -262,12 +263,11 @@ class StorageRadioCard @JvmOverloads constructor(
                             item = StorageItem().apply {
                                 this.name.set(path.split("/").last())
                                 this.progress.set(0)
-                                this.path.set(path)
                                 this.display.set(i)
 
                                 // 创建备份目录
                                 val outPath = "${path}/DataBackup"
-                                Command.mkdir(outPath)
+                                this.path.set(outPath)
 
                                 // 检测空间占用
                                 val space = Bashrc.getStorageSpace(outPath)

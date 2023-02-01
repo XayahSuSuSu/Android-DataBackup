@@ -1,23 +1,23 @@
 package com.xayah.databackup.util
 
 import android.annotation.SuppressLint
-import java.io.File
+import com.topjohnwu.superuser.io.SuFile
 
 class Logcat {
     object Instance {
-        val instance = Logcat()
+        var instance = Logcat()
     }
 
     companion object {
         fun getInstance() = Instance.instance
+        fun refreshInstance() {
+            Instance.instance = Logcat()
+        }
 
         @SuppressLint("SetWorldWritable")
-        fun appendToFile(file: File?, content: String) {
+        fun appendToFile(file: SuFile?, content: String) {
             file?.apply {
                 try {
-                    if (exists().not()) {
-                        createNewFile()
-                    }
                     appendText(content)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -31,9 +31,16 @@ class Logcat {
     private val actionLogPath =
         "${Path.getActionLogPath()}/log_${GlobalObject.getInstance().timeStampOnStart}"
 
-    val shellLogFile: File? = SafeFile.create(shellLogPath)
-    val actionLogFile: File? = SafeFile.create(actionLogPath)
-
+    private val shellLogFile: SuFile? = SafeFile.create(shellLogPath).apply {
+        this?.apply {
+            if (exists().not()) createNewFile()
+        }
+    }
+    private val actionLogFile: SuFile? = SafeFile.create(actionLogPath).apply {
+        this?.apply {
+            if (exists().not()) createNewFile()
+        }
+    }
 
     fun shellLogAddLine(line: String) {
         if (line.isNotEmpty()) {
