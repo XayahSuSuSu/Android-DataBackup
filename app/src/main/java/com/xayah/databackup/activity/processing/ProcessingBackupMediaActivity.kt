@@ -140,13 +140,13 @@ class ProcessingBackupMediaActivity : ProcessingBaseActivity() {
                                     ).not()
                                 ) {
                                     globalObject.mediaInfoRestoreMap.value[i.name] =
-                                        MediaInfoRestore().apply {
-                                            this.name = i.name
-                                            this.path = i.path
-                                        }
+                                        MediaInfoRestore()
                                 }
                                 val mediaInfoRestore =
-                                    globalObject.mediaInfoRestoreMap.value[i.name]!!
+                                    globalObject.mediaInfoRestoreMap.value[i.name]!!.apply {
+                                        this.name = i.name
+                                        this.path = i.path
+                                    }
 
                                 val detailIndex =
                                     mediaInfoRestore.detailRestoreList.indexOfFirst { date == it.date }

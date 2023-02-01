@@ -345,13 +345,13 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                                     ).not()
                                 ) {
                                     GlobalObject.getInstance().appInfoRestoreMap.value[packageName] =
-                                        AppInfoRestore().apply {
-                                            this.detailBase = i.detailBase
-                                            this.firstInstallTime = i.firstInstallTime
-                                        }
+                                        AppInfoRestore()
                                 }
                                 val appInfoRestore =
-                                    GlobalObject.getInstance().appInfoRestoreMap.value[packageName]!!
+                                    GlobalObject.getInstance().appInfoRestoreMap.value[packageName]!!.apply {
+                                        this.detailBase = i.detailBase
+                                        this.firstInstallTime = i.firstInstallTime
+                                    }
 
                                 val itemIndex =
                                     appInfoRestore.detailRestoreList.indexOfFirst { date == it.date }
