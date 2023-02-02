@@ -183,7 +183,7 @@ class ExtendCommand {
          * Rclone挂载
          */
         suspend fun rcloneMount(name: String, dest: String): Boolean {
-            Command.execute("rclone mount \"${name}:\" \"${dest}\" --allow-non-empty --allow-other --daemon --vfs-cache-mode full --log-file $logPath")
+            Command.execute("rclone mount \"${name}:\" \"${dest}\" --allow-non-empty --allow-other --daemon --vfs-cache-mode off --log-file $logPath")
                 .apply {
                     notifyForCommand(this.isSuccess)
                     return this.isSuccess
