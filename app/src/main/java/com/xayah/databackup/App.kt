@@ -34,6 +34,7 @@ class App : Application() {
         override fun onInit(context: Context, shell: Shell): Boolean {
             val bashrc: InputStream = context.resources.openRawResource(R.raw.bashrc)
             shell.newJob()
+                .add("nsenter -t 1 -m su")
                 .add(bashrc)
                 .add("export PATH=${Path.getAppInternalFilesPath()}/bin:\$PATH")
                 .add("export PATH=${Path.getAppInternalFilesPath()}/extend:\$PATH")
