@@ -287,11 +287,11 @@ class StorageRadioCard @JvmOverloads constructor(
                                         "sdfat",
                                         "fuseblk",
                                         "exfat",
-                                        "NTFS",
+                                        "ntfs",
                                         "ext4",
                                         "f2fs"
                                     )
-                                val support = type in supportedFormat
+                                val support = type.lowercase() in supportedFormat
                                 this.enable.set(support)
                                 if (support.not()) {
                                     this.name.set(GlobalString.unsupportedFormat)
