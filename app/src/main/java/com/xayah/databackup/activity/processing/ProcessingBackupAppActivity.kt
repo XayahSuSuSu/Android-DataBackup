@@ -141,14 +141,10 @@ class ProcessingBackupAppActivity : ProcessingBaseActivity() {
                             viewModel.apkNeedProcessing.set(i.detailBackup.selectApp)
                             if (i.detailBackup.selectData) {
                                 // 检查是否备份数据
-                                Command.ls(userPath).apply {
-                                    if (this) {
-                                        viewModel.userTitle.set(GlobalString.ready)
-                                        viewModel.userSubtitle.set(GlobalString.pleaseWait)
-                                        viewModel.userIsProcessing.set(false)
-                                    }
-                                    viewModel.userNeedProcessing.set(this)
-                                }
+                                viewModel.userTitle.set(GlobalString.ready)
+                                viewModel.userSubtitle.set(GlobalString.pleaseWait)
+                                viewModel.userIsProcessing.set(false)
+                                viewModel.userNeedProcessing.set(true)
                                 Command.ls(userDePath).apply {
                                     if (this) {
                                         viewModel.userDeTitle.set(GlobalString.ready)
