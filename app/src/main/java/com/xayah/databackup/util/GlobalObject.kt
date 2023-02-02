@@ -10,6 +10,8 @@ class GlobalObject {
 
     companion object {
         fun getInstance() = Instance.instance
+
+        const val defaultUserId = "0"
     }
 
     // 应用备份哈希表

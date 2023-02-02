@@ -111,7 +111,7 @@ fun Context.saveBackupUser(user: CharSequence?) {
 }
 
 fun Context.readBackupUser(): String {
-    return readPreferencesString("backup_user") ?: "0"
+    return readPreferencesString("backup_user") ?: GlobalObject.defaultUserId
 }
 
 fun Context.saveRestoreUser(user: CharSequence?) {
@@ -119,7 +119,7 @@ fun Context.saveRestoreUser(user: CharSequence?) {
 }
 
 fun Context.readRestoreUser(): String {
-    return readPreferencesString("restore_user") ?: "0"
+    return readPreferencesString("restore_user") ?: GlobalObject.defaultUserId
 }
 
 fun Context.saveInitializedVersionName(value: CharSequence?) {

@@ -91,7 +91,7 @@ class BackupViewModel : ViewModel() {
             val context = v.context
             var items =
                 if (Bashrc.listUsers().first) Bashrc.listUsers().second else mutableListOf(
-                    "0"
+                    GlobalObject.defaultUserId
                 )
             // 加入备份目录用户集
             items.addAll(Command.listBackupUsers())
@@ -119,7 +119,7 @@ class BackupViewModel : ViewModel() {
             val context = v.context
             val items =
                 if (Bashrc.listUsers().first) Bashrc.listUsers().second.toTypedArray() else arrayOf(
-                    "0"
+                    GlobalObject.defaultUserId
                 )
             val choice = items.indexOf(App.globalContext.readRestoreUser())
 

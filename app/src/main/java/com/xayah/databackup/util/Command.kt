@@ -149,21 +149,23 @@ class Command {
                             this.detailBase.isSystemApp = isSystemApp
                             this.isOnThisDevice = true
                         }
-                        try {
-                            storageStatsManager.queryStatsForPackage(
-                                i.applicationInfo.storageUuid,
-                                i.packageName,
-                                Process.myUserHandle()
-                            ).apply {
-                                val storageStats =
-                                    AppInfoStorageStats(appBytes, cacheBytes, dataBytes)
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    storageStats.externalCacheBytes = externalCacheBytes
+                        if (userId == GlobalObject.defaultUserId) {
+                            try {
+                                storageStatsManager.queryStatsForPackage(
+                                    i.applicationInfo.storageUuid,
+                                    i.packageName,
+                                    Process.myUserHandle()
+                                ).apply {
+                                    val storageStats =
+                                        AppInfoStorageStats(appBytes, cacheBytes, dataBytes)
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                        storageStats.externalCacheBytes = externalCacheBytes
+                                    }
+                                    appInfoBackup.storageStats = storageStats
                                 }
-                                appInfoBackup.storageStats = storageStats
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
