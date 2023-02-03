@@ -33,14 +33,12 @@
     <string name="finish">Готово</string>
     <string name="welcome_to_use">Ласкаво просимо</string>
     <string name="start_subtitle">Згідно з діючою політикою, вам необхідно уважно прочитати і погодитися з наступною Угодою користувача та Політикою конфіденційності, перш ніж ви почнете використовувати цю програму.</string>
-    <string name="next_step">Далі</string>
     <string name="refresh">Оновити</string>
     <string name="internal_storage">Внутрішня память</string>
     <string name="check_update">Перевірка оновленя</string>
     <string name="download">Завантаження</string>
     <string name="support">Підтримка</string>
     <string name="fetch_failed">Не вдалось отримати</string>
-    <string name="not_plugged_in">Не підключено</string>
     <string name="latest">Остання</string>
     <string name="unsupported_format">Непідтримуваний формат</string>
     <string name="fetching">Отримання</string>
@@ -78,21 +76,17 @@
     <string name="stored_in">Зберігається в </string>
     <string name="dynamic_colors">Динамічні кольори</string>
     <string name="dynamic_colors_title">Поліпшений Material You. Перезапустіть, щоб застосувати.</string>
-    <string name="current_update">Поточне оновлення</string>
     <string name="bin_permission_error">Неправильні права доступу до файлів, надайте їх вручну [777]</string>
     <string name="backup_itself">Бекап DataBackup</string>
     <string name="backup_itself_title">Під час створення бекапа DataBackup автоматично створює резервну копію власного інсталяційного пакета в теці бекапів.</string>
     <string name="auto_fix_multi_user_context">Виправлення контексту</string>
     <string name="auto_fix_multi_user_context_title">Автоматичне виправлення багатокористувацького контексту, перезавантаження відновлених багатокористувацьких програм не потрібне</string>
     <string name="feature_not_supported">Функція не підтримується вашою системою</string>
-    <string name="disagree">Не погоджуюсь</string>
-    <string name="agree">Погоджуюсь</string>
     <string name="backup_dir_not_exist">Тека не існує. Створити, використовуючи шлях за замовчуванням?</string>
     <string name="pick_dir">Вибір теки</string>
     <string name="create">Створити</string>
     <string name="repeat_to_add">Повторити, щоб додати!</string>
     <string name="installing">Установка</string>
-    <string name="current_version">Поточна версія</string>
     <string name="confirm_exit">Вихід. Ви впевнені?</string>
     <string name="none">Жодного</string>
     <string name="not_selected">Не вибрано</string>
@@ -146,7 +140,6 @@
     <string name="application_desc">Отримання інформації про пакет програми, яка використовується для створення списку бекап-файлів і отримання розміру даних програми</string>
     <string name="storage">Сховище</string>
     <string name="storage_desc">Використовується для резервного копіювання конфігурації, читання та запису архіву</string>
-    <string name="not_detected">Не виявлено</string>
     <string name="data_size">Розмір даних</string>
     <string name="setting_SELinux">Встановлення SELinux</string>
     <string name="compressing">Стиснення</string>
@@ -154,4 +147,8 @@
     <string name="finished">Готово</string>
     <string name="no_change_and_skip">Немає змін, пропуск</string>
     <string name="check_storage_management_permission">Перевірув дозволу керування сховищем</string>
+    <string name="loading">Loading</string>
+    <string name="loading_failed">Loading failed</string>
+    <string name="update_records">Update records</string>
+    <string name="path_permission_error">Permissions error, the following paths require the correct permissions</string>
 </resources>

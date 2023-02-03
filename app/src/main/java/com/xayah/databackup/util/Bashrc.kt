@@ -258,5 +258,13 @@ class Bashrc {
             val exec = runOnIO { Command.execute("set_accessibility_services \"${services}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
+
+        /**
+         * 检查Bashrc环境
+         */
+        suspend fun checkBashrc(): Boolean {
+            val exec = runOnIO { Command.execute("check_bashrc") }
+            return exec.isSuccess
+        }
     }
 }

@@ -33,14 +33,12 @@
     <string name="finish">完成</string>
     <string name="welcome_to_use">歡迎使用</string>
     <string name="start_subtitle">根據相關政策規定，你需要先仔細閱讀並同意以下《用戶協議》與《隱私政策》後才能開始使用本應用</string>
-    <string name="next_step">下一步</string>
     <string name="refresh">刷新</string>
     <string name="internal_storage">內部存儲</string>
     <string name="check_update">檢查更新</string>
     <string name="download">下載</string>
     <string name="support">支持</string>
     <string name="fetch_failed">獲取失敗</string>
-    <string name="not_plugged_in">未接入</string>
     <string name="latest">最新</string>
     <string name="unsupported_format">不支持的格式</string>
     <string name="fetching">獲取中</string>
@@ -78,21 +76,17 @@
     <string name="stored_in">存放於</string>
     <string name="dynamic_colors">動態取色</string>
     <string name="dynamic_colors_title">更加 Material You, 重啟應用生效</string>
-    <string name="current_update">當前更新</string>
     <string name="bin_permission_error">預編譯二進製文件權限不正確, 請手動賦權[777]</string>
     <string name="backup_itself">備份自身</string>
     <string name="backup_itself_title">備份應用時自動備份自身安裝包至備份目錄下</string>
     <string name="auto_fix_multi_user_context">Context修復</string>
     <string name="auto_fix_multi_user_context_title">自動修復多用戶Context, 免重啟使用恢復後的多用戶應用</string>
     <string name="feature_not_supported">您的系統不支持此功能</string>
-    <string name="disagree">不同意</string>
-    <string name="agree">同意</string>
     <string name="backup_dir_not_exist">備份目錄不存在, 是否創建默認路徑?</string>
     <string name="pick_dir">選擇目錄</string>
     <string name="create">創建</string>
     <string name="repeat_to_add">重複添加!</string>
     <string name="installing">安裝中</string>
-    <string name="current_version">當前版本</string>
     <string name="confirm_exit">確定要退出嗎？</string>
     <string name="none">無</string>
     <string name="not_selected">未選擇</string>
@@ -146,7 +140,6 @@
     <string name="application_desc">獲取應用包名信息，用於生成備份列表、獲取應用數據大小</string>
     <string name="storage">存儲</string>
     <string name="storage_desc">用於備份配置、存檔讀寫</string>
-    <string name="not_detected">未檢測</string>
     <string name="data_size">數據大小</string>
     <string name="setting_SELinux">設置SELinux中</string>
     <string name="compressing">壓縮中</string>
@@ -154,4 +147,8 @@
     <string name="finished">已完成</string>
     <string name="no_change_and_skip">目標未發生變化, 跳過</string>
     <string name="check_storage_management_permission">檢查存儲管理權限</string>
+    <string name="loading">加載中</string>
+    <string name="loading_failed">加載失敗</string>
+    <string name="update_records">更新記錄</string>
+    <string name="path_permission_error">權限錯誤, 以下路徑需要正確的權限</string>
 </resources>

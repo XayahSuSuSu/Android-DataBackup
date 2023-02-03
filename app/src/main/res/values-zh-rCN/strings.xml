@@ -33,14 +33,12 @@
     <string name="finish">完成</string>
     <string name="welcome_to_use">欢迎使用</string>
     <string name="start_subtitle">根据相关政策规定，你需要先仔细阅读并同意以下《用户协议》与《隐私政策》后才能开始使用本应用</string>
-    <string name="next_step">下一步</string>
     <string name="refresh">刷新</string>
     <string name="internal_storage">内部存储</string>
     <string name="check_update">检查更新</string>
     <string name="download">下载</string>
     <string name="support">支持</string>
     <string name="fetch_failed">获取失败</string>
-    <string name="not_plugged_in">未接入</string>
     <string name="latest">最新</string>
     <string name="unsupported_format">不支持的格式</string>
     <string name="fetching">获取中</string>
@@ -78,21 +76,17 @@
     <string name="stored_in">存放于</string>
     <string name="dynamic_colors">动态取色</string>
     <string name="dynamic_colors_title">更加 Material You, 重启应用生效</string>
-    <string name="current_update">当前更新</string>
     <string name="bin_permission_error">预编译二进制文件权限不正确, 请手动赋权[777]</string>
     <string name="backup_itself">备份自身</string>
     <string name="backup_itself_title">备份应用时自动备份自身安装包至备份目录下</string>
     <string name="auto_fix_multi_user_context">Context修复</string>
     <string name="auto_fix_multi_user_context_title">自动修复多用户Context, 免重启使用恢复后的多用户应用</string>
     <string name="feature_not_supported">您的系统不支持此功能</string>
-    <string name="disagree">不同意</string>
-    <string name="agree">同意</string>
     <string name="backup_dir_not_exist">备份目录不存在, 是否创建默认路径?</string>
     <string name="pick_dir">选择目录</string>
     <string name="create">创建</string>
     <string name="repeat_to_add">重复添加!</string>
     <string name="installing">安装中</string>
-    <string name="current_version">当前版本</string>
     <string name="confirm_exit">确定要退出吗？</string>
     <string name="none">无</string>
     <string name="not_selected">未选择</string>
@@ -146,7 +140,6 @@
     <string name="application_desc">获取应用包名信息，用于生成备份列表、获取应用数据大小</string>
     <string name="storage">存储</string>
     <string name="storage_desc">用于备份配置、存档读写</string>
-    <string name="not_detected">未检测</string>
     <string name="data_size">数据大小</string>
     <string name="setting_SELinux">设置SELinux中</string>
     <string name="compressing">压缩中</string>
@@ -154,4 +147,8 @@
     <string name="finished">已完成</string>
     <string name="no_change_and_skip">目标未发生变化, 跳过</string>
     <string name="check_storage_management_permission">检查存储管理权限</string>
+    <string name="loading">加载中</string>
+    <string name="loading_failed">加载失败</string>
+    <string name="update_records">更新记录</string>
+    <string name="path_permission_error">权限错误, 以下路径需要正确的权限</string>
 </resources>

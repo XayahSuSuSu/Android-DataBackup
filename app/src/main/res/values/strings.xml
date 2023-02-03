@@ -38,15 +38,12 @@
     <string name="welcome_to_use">Welcome to use</string>
     <string name="start_subtitle">According to relevant policies, you need to carefully read and agree to the following User Agreement and Privacy Policy before you start using this application</string>
     <string name="symbol_dot" translatable="false">●</string>
-    <string name="next_step">Next step</string>
     <string name="refresh">Refresh</string>
     <string name="internal_storage">Internal storage</string>
-    <string name="otg" translatable="false">OTG</string>
     <string name="check_update">Check update</string>
     <string name="download">Download</string>
     <string name="support">Support</string>
     <string name="fetch_failed">Fetch failed</string>
-    <string name="not_plugged_in">Not plugged in</string>
     <string name="latest">Latest</string>
     <string name="unsupported_format">Unsupported format</string>
     <string name="fetching">Fetching</string>
@@ -62,11 +59,6 @@
     <string name="symbol_anti_triangle" translatable="false">▼</string>
     <string name="speed">Speed</string>
     <string name="size">Size</string>
-    <string name="letter_obb" translatable="false">OBB</string>
-    <string name="letter_data" translatable="false">DATA</string>
-    <string name="letter_user" translatable="false">USER</string>
-    <string name="letter_user_de" translatable="false">USER_DE</string>
-    <string name="letter_apk" translatable="false">APK</string>
     <string name="progress">Progress</string>
     <string name="total">Total</string>
     <string name="ready">Ready</string>
@@ -91,21 +83,17 @@
     <string name="stored_in">Stored in</string>
     <string name="dynamic_colors">Dynamic colors</string>
     <string name="dynamic_colors_title">Better Material You. Restart to take effect</string>
-    <string name="current_update">Current update</string>
     <string name="bin_permission_error">Prebuilt file permissions are incorrect, please manually grant [777]</string>
     <string name="backup_itself">Backup itself</string>
     <string name="backup_itself_title">When backing up the application, it automatically backs up its own installation package to the backup directory</string>
     <string name="auto_fix_multi_user_context">Context fix</string>
     <string name="auto_fix_multi_user_context_title">Auto fix multi-user context, no restart needed for restored multi-user applications</string>
     <string name="feature_not_supported">Feature not supported for your system</string>
-    <string name="disagree">Disagree</string>
-    <string name="agree">Agree</string>
     <string name="backup_dir_not_exist">Backup directory does not exist, want to create a default path?</string>
     <string name="pick_dir">Pick directory</string>
     <string name="create">Create</string>
     <string name="repeat_to_add">Repeat to add!</string>
     <string name="installing">Installing</string>
-    <string name="current_version">Current version</string>
     <string name="confirm_exit">Sure to quit?</string>
     <string name="none">None</string>
     <string name="not_selected">Not selected</string>
@@ -170,7 +158,6 @@
     <string name="storage">Storage</string>
     <string name="storage_subtitle" translatable="false">android.permission.READ_EXTERNAL_STORAGE\nandroid.permission.WRITE_EXTERNAL_STORAGE\nandroid.permission.MANAGE_EXTERNAL_STORAGE</string>
     <string name="storage_desc">Used for backup configuration, archive read and write</string>
-    <string name="not_detected">Not detected</string>
     <string name="data_size">Data size</string>
     <string name="setting_SELinux">Setting SELinux</string>
     <string name="compressing">Compressing</string>
@@ -178,6 +165,10 @@
     <string name="finished">Finished</string>
     <string name="no_change_and_skip">No change, skip</string>
     <string name="check_storage_management_permission">Check storage management permission</string>
+    <string name="loading">Loading</string>
+    <string name="loading_failed">Loading failed</string>
+    <string name="update_records">Update records</string>
+    <string name="path_permission_error">Permissions error, the following paths require the correct permissions</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
         <item>FTP</item>
         <item>WebDAV</item>

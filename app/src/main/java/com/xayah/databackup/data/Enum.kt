@@ -91,3 +91,21 @@ const val ProcessingItemTypeUSER = "USER"
 const val ProcessingItemTypeUSERDE = "USER_DE"
 const val ProcessingItemTypeDATA = "DATA"
 const val ProcessingItemTypeOBB = "OBB"
+
+/**
+ * 应用列表选择类型
+ */
+enum class GuideType {
+    Introduction,   // 介绍页面
+    Update,         // 更新页面
+    Env,            // 环境检测页面
+}
+
+/**
+ * 应用列表选择类型
+ */
+enum class LoadingState {
+    Loading,   // 加载中
+    Success,   // 成功
+    Failed,    // 失败
+}
