@@ -122,7 +122,7 @@ dependencies {
     androidTestImplementation composeBom
     // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
-    implementation 'androidx.activity:activity-compose:1.5.1'
+    implementation 'androidx.activity:activity-compose:1.6.1'
     implementation "androidx.compose.ui:ui:$compose_version"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
@@ -131,4 +131,11 @@ dependencies {
     // Android Studio Preview support
     implementation 'androidx.compose.ui:ui-tooling-preview'
     debugImplementation 'androidx.compose.ui:ui-tooling'
+
+    // Accompanist
+    def accompanistVersion = '0.29.1-alpha'
+    implementation "com.google.accompanist:accompanist-insets:$accompanistVersion"
+    implementation "com.google.accompanist:accompanist-insets-ui:$accompanistVersion"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion"
+    implementation "com.google.accompanist:accompanist-permissions:$accompanistVersion"
 }
