@@ -1,4 +1,4 @@
-package com.xayah.databackup.compose.ui.guide.components
+package com.xayah.databackup.compose.ui.activity.guide.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

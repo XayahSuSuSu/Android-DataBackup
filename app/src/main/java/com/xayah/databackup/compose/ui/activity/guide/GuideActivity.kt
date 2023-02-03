@@ -1,4 +1,4 @@
-package com.xayah.databackup.compose.ui.guide
+package com.xayah.databackup.compose.ui.activity.guide
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,9 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.core.view.WindowCompat
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.main.MainActivity
-import com.xayah.databackup.compose.ui.guide.components.Env
-import com.xayah.databackup.compose.ui.guide.components.Introduction
-import com.xayah.databackup.compose.ui.guide.components.Update
+import com.xayah.databackup.compose.ui.activity.guide.components.Env
+import com.xayah.databackup.compose.ui.activity.guide.components.Introduction
+import com.xayah.databackup.compose.ui.activity.guide.components.Update
 import com.xayah.databackup.compose.ui.theme.DataBackupTheme
 import com.xayah.databackup.data.GuideType
 import com.xayah.databackup.util.*

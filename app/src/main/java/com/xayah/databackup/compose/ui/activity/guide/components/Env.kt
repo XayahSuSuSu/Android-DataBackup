@@ -1,4 +1,4 @@
-package com.xayah.databackup.compose.ui.guide.components
+package com.xayah.databackup.compose.ui.activity.guide.components
 
 import android.Manifest
 import android.content.Context

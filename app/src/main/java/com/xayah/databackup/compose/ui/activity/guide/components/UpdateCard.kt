@@ -1,4 +1,4 @@
-package com.xayah.databackup.compose.ui.guide.components
+package com.xayah.databackup.compose.ui.activity.guide.components
 
 import android.content.Intent
 import android.net.Uri

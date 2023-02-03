@@ -32,7 +32,7 @@
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
         <activity
-            android:name=".compose.ui.guide.GuideActivity"
+            android:name=".compose.ui.activity.guide.GuideActivity"
             android:exported="true"
             android:theme="@style/Theme.DataBackup" />
         <activity

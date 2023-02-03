@@ -1,4 +1,4 @@
-package com.xayah.databackup.compose.ui.guide.components
+package com.xayah.databackup.compose.ui.activity.guide.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
