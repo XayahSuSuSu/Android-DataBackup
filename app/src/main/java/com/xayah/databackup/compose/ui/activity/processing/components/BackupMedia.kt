@@ -40,7 +40,7 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     }
     // 任务列表
     val taskList = remember {
-        mutableStateListOf<ProcessingTask2>()
+        mutableStateListOf<ProcessingTask>()
     }
 
     LaunchedEffect(null) {
@@ -61,7 +61,7 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             globalObject.mediaInfoBackupMap.value.values.toList()
                 .filter { it.backupDetail.data }
                 .map {
-                    ProcessingTask2(
+                    ProcessingTask(
                         appName = it.name,
                         packageName = it.path,
                         appIcon = AppCompatResources.getDrawable(

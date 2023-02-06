@@ -190,14 +190,6 @@ data class AppInfoListSelectedNum(
     var installed: Int, var system: Int
 )
 
-data class ProcessingTask(
-    @Expose var appName: String,       // 应用名称
-    @Expose var packageName: String,   // 应用包名
-    @Expose var app: Boolean,          // 是否选中APK
-    @Expose var data: Boolean,         // 是否选中数据
-    var appIcon: Drawable? = null,
-)
-
 /**
  * 媒体详细信息基类
  */
@@ -293,7 +285,7 @@ data class RcloneMount(
 /**
  * 备份应用信息
  */
-data class ProcessingTask2(
+data class ProcessingTask(
     var appName: String,
     var packageName: String,
     var appIcon: Drawable? = null,

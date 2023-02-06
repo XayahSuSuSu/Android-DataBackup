@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.xayah.databackup.R
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.data.ProcessingObjectType
-import com.xayah.databackup.data.ProcessingTask2
+import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.util.*
 
@@ -42,7 +42,7 @@ fun RestoreMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     }
     // 任务列表
     val taskList = remember {
-        mutableStateListOf<ProcessingTask2>()
+        mutableStateListOf<ProcessingTask>()
     }
 
     LaunchedEffect(null) {
@@ -60,7 +60,7 @@ fun RestoreMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             globalObject.mediaInfoRestoreMap.value.values.toList()
                 .filter { if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].data else false }
                 .map {
-                    ProcessingTask2(
+                    ProcessingTask(
                         appName = it.name,
                         packageName = it.path,
                         appIcon = AppCompatResources.getDrawable(

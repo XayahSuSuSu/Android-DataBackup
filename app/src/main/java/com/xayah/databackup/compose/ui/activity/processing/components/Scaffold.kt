@@ -98,7 +98,7 @@ fun ProcessingScaffold(
     allDone: Boolean,
     onFabClick: () -> Unit,
     objectList: SnapshotStateList<ProcessObjectItem>,
-    taskList: SnapshotStateList<ProcessingTask2>,
+    taskList: SnapshotStateList<ProcessingTask>,
     listState: LazyListState
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()

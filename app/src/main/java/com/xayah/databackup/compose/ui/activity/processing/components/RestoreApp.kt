@@ -11,7 +11,7 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.data.ProcessingObjectType
-import com.xayah.databackup.data.ProcessingTask2
+import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.util.*
 
@@ -45,7 +45,7 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     }
     // 任务列表
     val taskList = remember {
-        mutableStateListOf<ProcessingTask2>()
+        mutableStateListOf<ProcessingTask>()
     }
 
     LaunchedEffect(null) {
@@ -63,7 +63,7 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             globalObject.appInfoRestoreMap.value.values.toList()
                 .filter { if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].selectApp || it.detailRestoreList[it.restoreIndex].selectData else false }
                 .map {
-                    ProcessingTask2(
+                    ProcessingTask(
                         appName = it.detailBase.appName,
                         packageName = it.detailBase.packageName,
                         appIcon = AppCompatResources.getDrawable(

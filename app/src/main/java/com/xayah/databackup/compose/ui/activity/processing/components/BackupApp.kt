@@ -42,7 +42,7 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     }
     // 任务列表
     val taskList = remember {
-        mutableStateListOf<ProcessingTask2>()
+        mutableStateListOf<ProcessingTask>()
     }
 
     LaunchedEffect(null) {
@@ -63,7 +63,7 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             globalObject.appInfoBackupMap.value.values.toList()
                 .filter { (it.detailBackup.selectApp || it.detailBackup.selectData) && it.isOnThisDevice }
                 .map {
-                    ProcessingTask2(
+                    ProcessingTask(
                         appName = it.detailBase.appName,
                         packageName = it.detailBase.packageName,
                         appIcon = it.detailBase.appIcon ?: AppCompatResources.getDrawable(
