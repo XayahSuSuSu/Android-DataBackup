@@ -151,4 +151,6 @@
     <string name="loading_failed">加载失败</string>
     <string name="update_records">更新记录</string>
     <string name="path_permission_error">权限错误, 以下路径需要正确的权限</string>
+    <string name="backuping">备份中</string>
+    <string name="restoring">恢复中</string>
 </resources>

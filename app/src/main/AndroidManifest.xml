@@ -33,20 +33,11 @@
         tools:targetApi="31">
         <activity
             android:name=".compose.ui.activity.guide.GuideActivity"
-            android:exported="true"
+            android:exported="false" />
+        <activity
+            android:name=".compose.ui.activity.processing.ProcessingActivity"
+            android:exported="false"
             android:theme="@style/Theme.DataBackup" />
-        <activity
-            android:name=".activity.processing.ProcessingBackupAppActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.processing.ProcessingBackupMediaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.processing.ProcessingRestoreAppActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.processing.ProcessingRestoreMediaActivity"
-            android:exported="false" />
         <activity
             android:name=".activity.list.AppListBackupActivity"
             android:exported="false" />

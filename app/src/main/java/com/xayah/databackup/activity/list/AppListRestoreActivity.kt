@@ -1,10 +1,11 @@
 package com.xayah.databackup.activity.list
 
 import android.content.Intent
+import androidx.compose.material3.ExperimentalMaterial3Api
 import com.drakeet.multitype.MultiTypeAdapter
 import com.google.android.material.tabs.TabLayout
-import com.xayah.databackup.activity.processing.ProcessingRestoreAppActivity
 import com.xayah.databackup.adapter.AppListAdapterRestore
+import com.xayah.databackup.compose.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.data.*
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalObject
@@ -205,8 +206,11 @@ class AppListRestoreActivity : AppListBaseActivity() {
         GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onFloatingActionButtonClick(l: () -> Unit) {
-        startActivity(Intent(this, ProcessingRestoreAppActivity::class.java))
+        startActivity(Intent(this, ProcessingActivity::class.java).apply {
+            putExtra(ProcessingActivityTag, TypeRestoreApp)
+        })
     }
 }
 

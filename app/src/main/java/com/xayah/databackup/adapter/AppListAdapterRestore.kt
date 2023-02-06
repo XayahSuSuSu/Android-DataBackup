@@ -42,13 +42,17 @@ class AppListAdapterRestore(val onChipClick: () -> Unit = {}) :
                     (item.detailRestoreList[item.restoreIndex].selectApp || item.detailRestoreList[item.restoreIndex].selectData)
                 ) {
                     if (item.detailRestoreList[item.restoreIndex].selectApp.not()) {
-                        binding.chipApplication.performClick()
+                        if (item.detailRestoreList[item.restoreIndex].hasApp)
+                            binding.chipApplication.performClick()
                     } else {
-                        binding.chipData.performClick()
+                        if (item.detailRestoreList[item.restoreIndex].hasData)
+                            binding.chipData.performClick()
                     }
                 } else {
-                    binding.chipApplication.performClick()
-                    binding.chipData.performClick()
+                    if (item.detailRestoreList[item.restoreIndex].hasApp)
+                        binding.chipApplication.performClick()
+                    if (item.detailRestoreList[item.restoreIndex].hasData)
+                        binding.chipData.performClick()
                 }
             }
         }

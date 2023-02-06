@@ -109,3 +109,33 @@ enum class LoadingState {
     Success,   // 成功
     Failed,    // 失败
 }
+
+/**
+ * ProcessingTask类型
+ */
+enum class TaskState {
+    Processing, // 加载中
+    Waiting,    // 等待中
+    Success,    // 成功
+    Failed,     // 失败
+}
+
+/**
+ * ProcessingObject类型
+ */
+enum class ProcessingObjectType {
+    APP,
+    USER,
+    USER_DE,
+    DATA,
+    OBB,
+}
+
+/**
+ * ProcessingActivity项目类型
+ */
+const val ProcessingActivityTag = "ProcessingActivityTag"
+const val TypeBackupApp = "TypeBackupApp"
+const val TypeBackupMedia = "TypeBackupMedia"
+const val TypeRestoreApp = "TypeRestoreApp"
+const val TypeRestoreMedia = "TypeRestoreMedia"

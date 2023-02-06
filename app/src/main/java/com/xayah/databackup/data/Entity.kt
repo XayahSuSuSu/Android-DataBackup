@@ -289,3 +289,15 @@ data class RcloneMount(
     @Expose var dest: String = "",
     @Expose var mounted: Boolean = false,
 )
+
+/**
+ * 备份应用信息
+ */
+data class ProcessingTask2(
+    var appName: String,
+    var packageName: String,
+    var appIcon: Drawable? = null,
+    var selectApp: Boolean,
+    var selectData: Boolean,
+    var taskState: TaskState,
+)

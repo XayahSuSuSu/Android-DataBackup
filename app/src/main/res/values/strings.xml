@@ -169,6 +169,8 @@
     <string name="loading_failed">Loading failed</string>
     <string name="update_records">Update records</string>
     <string name="path_permission_error">Permissions error, the following paths require the correct permissions</string>
+    <string name="backuping">Backuping</string>
+    <string name="restoring">Restoring</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
         <item>FTP</item>
         <item>WebDAV</item>

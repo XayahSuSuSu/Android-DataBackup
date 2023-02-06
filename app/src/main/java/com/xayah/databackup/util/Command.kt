@@ -176,6 +176,22 @@ class Command {
         }
 
         /**
+         * 仅读取应用备份哈希表
+         */
+        suspend fun readAppInfoBackupMap(): AppInfoBackupMap {
+            var appInfoBackupMap: AppInfoBackupMap = hashMapOf()
+
+            runOnIO {
+                // 读取配置文件
+                SafeFile.create(Path.getAppInfoBackupMapPath()) {
+                    appInfoBackupMap =
+                        GsonUtil.getInstance().fromAppInfoBackupMapJson(it.readText())
+                }
+            }
+            return appInfoBackupMap
+        }
+
+        /**
          * 构建应用恢复哈希表
          */
         suspend fun getAppInfoRestoreMap(): AppInfoRestoreMap {
@@ -189,22 +205,14 @@ class Command {
                 }
 
                 // 根据备份目录实际文件调整列表
-                var hasApp = false
-                var hasData = false
                 execute("find \"${Path.getBackupDataSavePath()}\" -name \"*.tar*\" -type f").apply {
-                    // 根据实际文件和配置调整RestoreList
-                    for (i in appInfoRestoreMap) {
-                        val tmpList = mutableListOf<AppInfoDetailRestore>()
-                        for (j in i.value.detailRestoreList) {
-                            if (this.out.toString().contains(j.date)) {
-                                tmpList.add(j)
-                            }
-                        }
-                        appInfoRestoreMap[i.key]!!.detailRestoreList = tmpList
-                    }
                     if (isSuccess) {
                         this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
-                        var detailList = mutableListOf<AppInfoDetailRestore>()
+
+                        var appInfoRestore = AppInfoRestore()
+                        var detailRestoreList = mutableListOf<AppInfoDetailRestore>()
+                        var hasApp = false
+                        var hasData = false
                         for ((index, i) in this.out.withIndex()) {
                             try {
                                 if (index < this.out.size - 1) {
@@ -221,6 +229,7 @@ class Command {
                                     val date = info[2]
                                     val dateNext = infoNext[2]
                                     val fileName = info[3]
+
                                     if (info.size == 4) {
                                         if (fileName.contains("apk.tar"))
                                             hasApp = true
@@ -233,15 +242,26 @@ class Command {
                                         else if (fileName.contains("user_de.tar"))
                                             hasData = true
 
+                                        if (packageName != appInfoRestore.detailBase.packageName) {
+                                            if (appInfoRestoreMap.containsKey(packageName).not()) {
+                                                appInfoRestoreMap[packageName] =
+                                                    AppInfoRestore().apply {
+                                                        this.detailBase.appName =
+                                                            GlobalString.appRetrieved
+                                                    }
+                                            }
+                                            appInfoRestore = appInfoRestoreMap[packageName]!!
+                                        }
+
                                         if (date != dateNext || packageName != packageNameNext) {
                                             // 与下一路径不同日期
+
                                             val detailListIndex =
-                                                detailList.indexOfFirst { date == it.date }
+                                                appInfoRestore.detailRestoreList.indexOfFirst { date == it.date }
                                             val detail =
                                                 if (detailListIndex == -1) AppInfoDetailRestore().apply {
                                                     this.date = date
-                                                } else detailList[detailListIndex]
-
+                                                } else appInfoRestore.detailRestoreList[detailListIndex]
                                             detail.apply {
                                                 this.hasApp = hasApp
                                                 this.hasData = hasData
@@ -249,31 +269,13 @@ class Command {
                                                 this.selectData = this.selectData && hasData
                                             }
 
-                                            if (detailListIndex == -1) detailList.add(detail)
-
-                                            hasApp = false
-                                            hasData = false
+                                            detailRestoreList.add(detail)
                                         }
                                         if (packageName != packageNameNext) {
-                                            // 与下一路径不同包名
-                                            // 寻找已保存的数据
-                                            var isRetrieved = false
-                                            if (appInfoRestoreMap.containsKey(packageName).not()) {
-                                                appInfoRestoreMap[packageName] = AppInfoRestore()
-                                                isRetrieved = true
-                                            }
-                                            val appInfoRestore = appInfoRestoreMap[packageName]!!
-
-                                            appInfoRestore.apply {
-                                                if (isRetrieved) this.detailBase.appName =
-                                                    GlobalString.appRetrieved
-                                                this.detailBase.packageName = packageName
-                                                this.detailRestoreList = detailList
-                                            }
-
+                                            appInfoRestore.detailRestoreList = detailRestoreList
+                                            detailRestoreList = mutableListOf()
                                             hasApp = false
                                             hasData = false
-                                            detailList = mutableListOf()
                                         }
                                     }
                                 }
@@ -284,6 +286,7 @@ class Command {
                     }
                 }
             }
+            appInfoRestoreMap.remove("")
             return appInfoRestoreMap
         }
 
@@ -666,22 +669,24 @@ class Command {
             userId: String,
             context: String,
             onAddLine: (line: String?) -> Unit = {}
-        ) {
+        ): Boolean {
+            var ret = true
             onAddLine(ProcessSettingSELinux)
-            Bashrc.setOwnerAndSELinux(
-                dataType,
-                packageName,
-                path,
-                userId,
-                App.globalContext.readAutoFixMultiUserContext(),
-                context
-            )
-                .apply {
-                    if (!this.first) {
-                        return
+            runOnIO {
+                Bashrc.setOwnerAndSELinux(
+                    dataType,
+                    packageName,
+                    path,
+                    userId,
+                    App.globalContext.readAutoFixMultiUserContext(),
+                    context
+                )
+                    .apply {
+                        ret = this.first
                     }
-                }
+            }
             onAddLine(ProcessFinished)
+            return ret
         }
 
         /**

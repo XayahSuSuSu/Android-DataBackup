@@ -3,6 +3,7 @@ package com.xayah.databackup.fragment.backup
 import android.content.Intent
 import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
@@ -10,11 +11,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListBackupActivity
-import com.xayah.databackup.activity.processing.ProcessingBackupAppActivity
-import com.xayah.databackup.activity.processing.ProcessingBackupMediaActivity
-import com.xayah.databackup.data.AppInfoBaseNum
-import com.xayah.databackup.data.BackupStrategy
-import com.xayah.databackup.data.ofBackupStrategy
+import com.xayah.databackup.compose.ui.activity.processing.ProcessingActivity
+import com.xayah.databackup.data.*
 import com.xayah.databackup.util.*
 import com.xayah.databackup.view.fastInitialize
 import kotlinx.coroutines.launch
@@ -158,12 +156,18 @@ class BackupViewModel : ViewModel() {
         v.context.startActivity(Intent(v.context, AppListBackupActivity::class.java))
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun onBackupAppBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, ProcessingBackupAppActivity::class.java))
+        v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
+            putExtra(ProcessingActivityTag, TypeBackupApp)
+        })
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     fun onBackupMediaBtnClick(v: View) {
-        v.context.startActivity(Intent(v.context, ProcessingBackupMediaActivity::class.java))
+        v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
+            putExtra(ProcessingActivityTag, TypeBackupMedia)
+        })
     }
 
     private fun setUser() {
