@@ -547,10 +547,12 @@ class Command {
                         // 校验
                         Logcat.getInstance().actionLogAddLine(tag, "Test ${filePath}.")
                         onAddLine(ProcessTesting, null)
-                        val (testArchiveSuccess, out) = testArchive(compressionType, filePath)
+                        val (testArchiveSuccess, _) = testArchive(compressionType, filePath)
                         if (testArchiveSuccess.not()) {
-                            onAddLine(ProcessError, out)
-                            Logcat.getInstance().actionLogAddLine(tag, out)
+                            "Test failed.".apply {
+                                onAddLine(ProcessError, this)
+                                Logcat.getInstance().actionLogAddLine(tag, this)
+                            }
                             return false
                         } else {
                             Logcat.getInstance().actionLogAddLine(tag, "Test passed.")
@@ -635,10 +637,12 @@ class Command {
                         // 校验
                         Logcat.getInstance().actionLogAddLine(tag, "Test ${filePath}.")
                         onAddLine(ProcessTesting, null)
-                        val (testArchiveSuccess, out) = testArchive(compressionType, filePath)
+                        val (testArchiveSuccess, _) = testArchive(compressionType, filePath)
                         if (testArchiveSuccess.not()) {
-                            onAddLine(ProcessError, out)
-                            Logcat.getInstance().actionLogAddLine(tag, out)
+                            "Test failed.".apply {
+                                onAddLine(ProcessError, this)
+                                Logcat.getInstance().actionLogAddLine(tag, this)
+                            }
                             return false
                         } else {
                             Logcat.getInstance().actionLogAddLine(tag, "Test passed.")
