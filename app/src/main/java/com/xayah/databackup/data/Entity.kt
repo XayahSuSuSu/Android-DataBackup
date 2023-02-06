@@ -112,21 +112,22 @@ data class AppInfoDetailRestore(
     val sizeDisplay: String
         get() = run {
             var unit = "Bytes"
-            var size = sizeBytes.toDouble()
+            val mSizeBytes = sizeBytes.toDouble() * 1000
+            var size = mSizeBytes
             val gb = (1000 * 1000 * 1000).toDouble()
             val mb = (1000 * 1000).toDouble()
             val kb = (1000).toDouble()
-            if (sizeBytes > gb) {
+            if (mSizeBytes > gb) {
                 // GB
-                size = sizeBytes / gb
+                size = mSizeBytes / gb
                 unit = "GB"
-            } else if (sizeBytes > mb) {
+            } else if (mSizeBytes > mb) {
                 // GB
-                size = sizeBytes / mb
+                size = mSizeBytes / mb
                 unit = "MB"
-            } else if (sizeBytes > kb) {
+            } else if (mSizeBytes > kb) {
                 // GB
-                size = sizeBytes / kb
+                size = mSizeBytes / kb
                 unit = "KB"
             }
             "${DecimalFormat("#.00").format(size)} $unit"
