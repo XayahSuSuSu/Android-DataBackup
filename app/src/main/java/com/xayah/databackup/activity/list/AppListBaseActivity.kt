@@ -300,6 +300,10 @@ abstract class AppListBaseActivity : AppCompatActivity() {
             // 开始加载
             binding.circularProgressIndicator.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
+            binding.searchBar.visibility = View.GONE
+            binding.tabLayout.visibility = View.GONE
+            binding.bottomAppBar.visibility = View.GONE
+            binding.floatingActionButton.visibility = View.GONE
             binding.recyclerView.scrollToPosition(0)
 
             // 数据填充
@@ -313,6 +317,10 @@ abstract class AppListBaseActivity : AppCompatActivity() {
             // 结束加载
             binding.circularProgressIndicator.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE
+            binding.searchBar.visibility = View.VISIBLE
+            binding.tabLayout.visibility = View.VISIBLE
+            binding.bottomAppBar.visibility = View.VISIBLE
+            binding.floatingActionButton.visibility = View.VISIBLE
         }
     }
 

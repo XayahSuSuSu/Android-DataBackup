@@ -137,16 +137,32 @@ class AppListRestoreActivity : AppListBaseActivity() {
                 when (pref.sort) {
                     AppListSort.AlphabetAscending -> {
                         sortWith { appInfo1, appInfo2 ->
-                            val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo1 as AppInfoRestore).detailBase.appName)
-                                .compareTo(collator.getCollationKey((appInfo2 as AppInfoRestore).detailBase.appName))
+                            if (appInfo1 == null && appInfo2 == null) {
+                                0
+                            } else if (appInfo1 == null) {
+                                -1
+                            } else if (appInfo2 == null) {
+                                1
+                            } else {
+                                val collator = Collator.getInstance(Locale.CHINA)
+                                collator.getCollationKey((appInfo1 as AppInfoRestore).detailBase.appName)
+                                    .compareTo(collator.getCollationKey((appInfo2 as AppInfoRestore).detailBase.appName))
+                            }
                         }
                     }
                     AppListSort.AlphabetDescending -> {
                         sortWith { appInfo1, appInfo2 ->
-                            val collator = Collator.getInstance(Locale.CHINA)
-                            collator.getCollationKey((appInfo2 as AppInfoRestore).detailBase.appName)
-                                .compareTo(collator.getCollationKey((appInfo1 as AppInfoRestore).detailBase.appName))
+                            if (appInfo1 == null && appInfo2 == null) {
+                                0
+                            } else if (appInfo1 == null) {
+                                -1
+                            } else if (appInfo2 == null) {
+                                1
+                            } else {
+                                val collator = Collator.getInstance(Locale.CHINA)
+                                collator.getCollationKey((appInfo2 as AppInfoRestore).detailBase.appName)
+                                    .compareTo(collator.getCollationKey((appInfo1 as AppInfoRestore).detailBase.appName))
+                            }
                         }
                     }
                     AppListSort.FirstInstallTimeAscending -> {
