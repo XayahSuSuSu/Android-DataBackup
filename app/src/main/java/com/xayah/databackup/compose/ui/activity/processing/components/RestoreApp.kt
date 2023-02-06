@@ -194,7 +194,7 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                 objectList[j] = objectList[j].copy(state = TaskState.Processing)
                 when (objectList[j].type) {
                     ProcessingObjectType.APP -> {
-                        Command.installAPK(
+                        isSuccess = Command.installAPK(
                             inPath,
                             packageName,
                             userId,
@@ -205,8 +205,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
 
                         // 判断是否安装该应用
                         Bashrc.findPackage(userId, packageName).apply {
-                            isSuccess = this.first
                             if (!isSuccess) {
+                                isSuccess = false
                                 objectList[j] = objectList[j].copy(state = TaskState.Failed)
                                 Logcat.getInstance()
                                     .shellLogAddLine("${packageName}: Not installed")
@@ -216,7 +216,7 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                         }
 
                         // 如果未安装该应用, 则无法完成后续恢复
-                        if (!isSuccess) continue
+                        if (!isSuccess) break
                     }
                     ProcessingObjectType.USER -> {
                         // 读取原有SELinux context

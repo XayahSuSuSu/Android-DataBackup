@@ -954,11 +954,25 @@ class Command {
                         }
                 }
             }
-            if (callback != null) {
-                result.out.clear()
-                result.out.addAll(out)
+            if (result.code == 127) {
+                // 当exit code为127时, 环境可能丢失
+                App.initShell(App.globalContext, Shell.getShell())
             }
-            return result
+
+            val resultImpl = ResultImpl().apply {
+                this._out = result.out
+                this._err = result.err
+                this._code = result.code
+            }
+
+            if (callback != null) {
+                resultImpl.apply {
+                    this._out.clear()
+                    this._out = out
+                }
+            }
+
+            return resultImpl
         }
 
         /**
@@ -984,5 +998,23 @@ class Command {
             }
             return users
         }
+    }
+}
+
+class ResultImpl : Shell.Result() {
+    var _out = mutableListOf<String>()
+    var _err = mutableListOf<String>()
+    var _code = -1
+
+    override fun getOut(): MutableList<String> {
+        return _out
+    }
+
+    override fun getErr(): MutableList<String> {
+        return _err
+    }
+
+    override fun getCode(): Int {
+        return _code
     }
 }

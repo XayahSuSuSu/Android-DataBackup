@@ -28,10 +28,8 @@ class App : Application() {
         fun getTimeStamp(): String {
             return System.currentTimeMillis().toString()
         }
-    }
 
-    class EnvInitializer : Shell.Initializer() {
-        override fun onInit(context: Context, shell: Shell): Boolean {
+        fun initShell(context: Context, shell: Shell) {
             val bashrc: InputStream = context.resources.openRawResource(R.raw.bashrc)
             shell.newJob()
                 .add("nsenter -t 1 -m su")
@@ -40,6 +38,12 @@ class App : Application() {
                 .add("export PATH=${Path.getAppInternalFilesPath()}/extend:\$PATH")
                 .add("export HOME=${Path.getAppInternalFilesPath()}")
                 .exec()
+        }
+    }
+
+    class EnvInitializer : Shell.Initializer() {
+        override fun onInit(context: Context, shell: Shell): Boolean {
+            initShell(context, shell)
             return true
         }
     }
