@@ -17,7 +17,7 @@ import com.xayah.databackup.util.Path
 
 @ExperimentalMaterial3Api
 @Composable
-fun RestoreMedia(onFinish: () -> Unit) {
+fun RestoreMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     /**
      * 全局单例对象
      */
@@ -27,25 +27,17 @@ fun RestoreMedia(onFinish: () -> Unit) {
 
     // 用于list带动画滑动
     val listState = rememberLazyListState()
-
     // Loading状态
     val (loadingState, setLoadingState) = remember {
         mutableStateOf(LoadingState.Loading)
     }
-
     // 标题栏标题
     var topBarTitle by remember {
         mutableStateOf(context.getString(R.string.loading))
     }
-
     // 进度
     var progress by remember {
         mutableStateOf(0)
-    }
-
-    // 是否完成
-    var allDone by remember {
-        mutableStateOf(false)
     }
     // 备份对象列表
     val objectList = remember {
@@ -144,13 +136,13 @@ fun RestoreMedia(onFinish: () -> Unit) {
         }
 
         topBarTitle = "${context.getString(R.string.restore_finished)}!"
-        allDone = true
+        allDone.value = true
     }
 
     ProcessingScaffold(
         topBarTitle = topBarTitle,
         loadingState = loadingState,
-        allDone = allDone,
+        allDone = allDone.value,
         onFabClick = onFinish,
         objectList = objectList,
         taskList = taskList,
