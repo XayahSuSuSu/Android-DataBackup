@@ -123,8 +123,12 @@ class StorageRadioCard @JvmOverloads constructor(
                     path.set(actualPath)
                     display.set(actualPath)
                 }
-                App.globalContext.saveBackupSavePath(actualPath)
-                App.globalContext.saveCustomBackupSavePath(actualPath)
+                val pathList = actualPath.split("/").toMutableList()
+                if (pathList.last() != "DataBackup")
+                    pathList.add("DataBackup")
+                val path = pathList.joinToString(separator = "/")
+                App.globalContext.saveBackupSavePath(path)
+                App.globalContext.saveCustomBackupSavePath(path)
                 update()
             }
         }
