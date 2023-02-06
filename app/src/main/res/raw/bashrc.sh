@@ -39,14 +39,17 @@ pv_redirect() {
 
 compress_apk() {
   # $1: compression_type
-  # $2: out_put
-  mkdir -p "$2"
+  # $2: apk_path
+  # $3: out_put
+  mkdir -p "$3"
+  cd_to_path "$2"
   case "$1" in
-    tar) tar --totals -cf "${2}/apk.tar" ./*.apk ;;
-    zstd) tar --totals -cf "${2}/apk.tar.zst" ./*.apk "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
-    lz4) tar --totals -cf "${2}/apk.tar.lz4" ./*.apk "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
+    tar) tar --totals -cf "${3}/apk.tar" ./*.apk ;;
+    zstd) tar --totals -cf "${3}/apk.tar.zst" ./*.apk "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
+    lz4) tar --totals -cf "${3}/apk.tar.lz4" ./*.apk "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
     *) return 1 ;;
   esac
+  cd_to_path "/"
 }
 
 compress() {

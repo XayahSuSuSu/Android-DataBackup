@@ -48,9 +48,9 @@ class Logcat {
         }
     }
 
-    fun actionLogAddLine(line: String) {
+    fun actionLogAddLine(funName: String, line: String) {
         if (line.isNotEmpty()) {
-            appendToFile(actionLogFile, "${line}\n")
+            appendToFile(actionLogFile, "${funName}: ${line}\n")
         }
     }
 }

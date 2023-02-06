@@ -46,6 +46,9 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     }
 
     LaunchedEffect(null) {
+        val tag = "BackupApp"
+        Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
+
         // 检查列表
         if (globalObject.appInfoBackupMap.value.isEmpty()) {
             globalObject.appInfoBackupMap.emit(Command.getAppInfoBackupMap())
@@ -53,6 +56,7 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
         if (globalObject.appInfoRestoreMap.value.isEmpty()) {
             globalObject.appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
         }
+        Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
         // 备份信息列表
         taskList.addAll(
@@ -72,22 +76,35 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                     )
                 })
 
+        Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
+
         // 获取默认输入法和无障碍
         val keyboard = Bashrc.getKeyboard()
         val services = Bashrc.getAccessibilityServices()
 
+        Logcat.getInstance().actionLogAddLine(tag, "keyboard: ${keyboard}, services: ${services}.")
+
         // 备份自身
-        if (App.globalContext.readIsBackupItself())
-            Command.backupItself(
+        if (App.globalContext.readIsBackupItself()) {
+            val isSuccess = Command.backupItself(
                 "com.xayah.databackup",
                 App.globalContext.readBackupSavePath(),
                 App.globalContext.readBackupUser()
             )
+            Logcat.getInstance()
+                .actionLogAddLine(tag, "Copy com.xayah.databackup to out: ${isSuccess}.")
+        }
+
 
         val date =
             if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
         val userId = App.globalContext.readBackupUser()
         val compressionType = App.globalContext.readCompressionType()
+
+        Logcat.getInstance().actionLogAddLine(tag, "Timestamp: ${date}.")
+        Logcat.getInstance().actionLogAddLine(tag, "Date: ${Command.getDate(date)}.")
+        Logcat.getInstance().actionLogAddLine(tag, "userId: ${userId}.")
+        Logcat.getInstance().actionLogAddLine(tag, "CompressionType: ${compressionType}.")
 
         // 前期准备完成
         setLoadingState(LoadingState.Success)
@@ -113,6 +130,9 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             val userDePath = "${Path.getUserDePath()}/${packageName}"
             val dataPath = "${Path.getDataPath()}/${packageName}"
             val obbPath = "${Path.getObbPath()}/${packageName}"
+
+            Logcat.getInstance().actionLogAddLine(tag, "AppName: ${task.appName}.")
+            Logcat.getInstance().actionLogAddLine(tag, "PackageName: ${task.packageName}.")
 
             if (task.selectApp) {
                 // 检查是否备份APK
@@ -189,10 +209,8 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             outPutPath,
                             userId,
                             appInfoBackup.detailBackup.appSize
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) {
                                 objectList[j] = objectList[j].copy(state = TaskState.Failed)
@@ -216,10 +234,8 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             outPutPath,
                             Path.getUserPath(),
                             appInfoBackup.detailBackup.userSize
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) {
                                 objectList[j] = objectList[j].copy(state = TaskState.Failed)
@@ -240,10 +256,8 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             outPutPath,
                             Path.getUserDePath(),
                             appInfoBackup.detailBackup.userDeSize
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) {
                                 objectList[j] = objectList[j].copy(state = TaskState.Failed)
@@ -265,10 +279,8 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             outPutPath,
                             Path.getDataPath(),
                             appInfoBackup.detailBackup.dataSize
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) {
                                 objectList[j] = objectList[j].copy(state = TaskState.Failed)
@@ -289,10 +301,8 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             outPutPath,
                             Path.getObbPath(),
                             appInfoBackup.detailBackup.obbSize
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) {
                                 objectList[j] = objectList[j].copy(state = TaskState.Failed)
@@ -320,6 +330,7 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                         outputStream.close()
                     }
                 }
+                Logcat.getInstance().actionLogAddLine(tag, "Trying to save icon.")
             }
 
             if (isSuccess) {
@@ -377,13 +388,16 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
         services.apply {
             if (this.first) Bashrc.setAccessibilityServices(this.second)
         }
+        Logcat.getInstance().actionLogAddLine(tag, "Restore keyboard and services.")
 
         // 保存列表数据
         GsonUtil.saveAppInfoBackupMapToFile(globalObject.appInfoBackupMap.value)
         GsonUtil.saveAppInfoRestoreMapToFile(globalObject.appInfoRestoreMap.value)
         globalObject.appInfoRestoreMap.value.clear()
+        Logcat.getInstance().actionLogAddLine(tag, "Save global map.")
         topBarTitle = "${context.getString(R.string.backup_finished)}!"
         allDone.value = true
+        Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
     }
 
     ProcessingScaffold(

@@ -10,10 +10,7 @@ import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.data.ProcessingObjectType
 import com.xayah.databackup.data.ProcessingTask2
 import com.xayah.databackup.data.TaskState
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.GlobalObject
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 
 @ExperimentalMaterial3Api
 @Composable
@@ -49,6 +46,15 @@ fun RestoreMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     }
 
     LaunchedEffect(null) {
+        val tag = "RestoreMedia"
+        Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
+
+        // 检查列表
+        if (globalObject.mediaInfoRestoreMap.value.isEmpty()) {
+            globalObject.mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap())
+        }
+        Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
+
         // 备份信息列表
         taskList.addAll(
             globalObject.mediaInfoRestoreMap.value.values.toList()
@@ -66,6 +72,8 @@ fun RestoreMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                         taskState = TaskState.Waiting,
                     )
                 })
+
+        Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
 
         // 前期准备完成
         setLoadingState(LoadingState.Success)
@@ -85,6 +93,9 @@ fun RestoreMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             var isSuccess = true
             val inPath =
                 "${Path.getBackupMediaSavePath()}/${task.appName}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}"
+
+            Logcat.getInstance().actionLogAddLine(tag, "Name: ${task.appName}.")
+            Logcat.getInstance().actionLogAddLine(tag, "Path: ${task.packageName}.")
 
             if (task.selectData) {
                 // 添加Data备份项
@@ -108,10 +119,8 @@ fun RestoreMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             inputPath,
                             task.appName,
                             task.packageName.replace("/${task.appName}", "")
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -137,6 +146,7 @@ fun RestoreMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
 
         topBarTitle = "${context.getString(R.string.restore_finished)}!"
         allDone.value = true
+        Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
     }
 
     ProcessingScaffold(

@@ -77,6 +77,8 @@ fun ofBackupStrategy(backupStrategy: BackupStrategy): String {
  */
 const val ProcessFinished = "Finished"
 const val ProcessSkip = "Skip"
+const val ProcessError = "Error"
+const val ProcessShowTotal = "ShowTotal"
 const val ProcessCompressing = "Compressing"
 const val ProcessDecompressing = "Decompressing"
 const val ProcessTesting = "Testing"

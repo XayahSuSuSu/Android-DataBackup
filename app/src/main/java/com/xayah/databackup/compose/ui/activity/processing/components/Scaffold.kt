@@ -28,11 +28,12 @@ import com.xayah.databackup.util.GlobalString
  * 解析src内容并返回ProcessObjectItem
  */
 fun parseObjectItemBySrc(
+    type: String,
     src: String,
     item: ProcessObjectItem
 ): ProcessObjectItem {
     try {
-        when (src) {
+        when (type) {
             ProcessFinished -> {
                 // 完成
                 return item.copy(title = GlobalString.finished)
@@ -61,7 +62,11 @@ fun parseObjectItemBySrc(
                 // 安装APK中
                 return item.copy(title = GlobalString.installing)
             }
-            else -> {
+            ProcessError -> {
+                // 错误消息
+                return item.copy(title = GlobalString.error, subtitle = src)
+            }
+            ProcessShowTotal -> {
                 // Total bytes written: 74311680 (71MiB, 238MiB/s)
                 try {
                     "\\((.*?)\\)".toRegex().find(src)?.apply {
@@ -77,13 +82,12 @@ fun parseObjectItemBySrc(
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                return item
             }
         }
     } catch (e: Exception) {
         e.printStackTrace()
-        return item
     }
+    return item
 }
 
 @ExperimentalMaterial3Api

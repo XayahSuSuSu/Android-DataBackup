@@ -49,10 +49,14 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     }
 
     LaunchedEffect(null) {
+        val tag = "RestoreApp"
+        Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
+
         // 检查列表
         if (globalObject.appInfoRestoreMap.value.isEmpty()) {
             globalObject.appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
         }
+        Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
         // 备份信息列表
         taskList.addAll(
@@ -84,8 +88,14 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                     }
                 })
 
+        Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
+
         val userId = App.globalContext.readRestoreUser()
         val compressionType = App.globalContext.readCompressionType()
+
+        Logcat.getInstance().actionLogAddLine(tag, "userId: ${userId}.")
+        Logcat.getInstance().actionLogAddLine(tag, "CompressionType: ${compressionType}.")
+
         // 前期准备完成
         setLoadingState(LoadingState.Success)
         for (i in 0 until taskList.size) {
@@ -110,6 +120,9 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             val userDePath = "${inPath}/user_de.$suffix"
             val dataPath = "${inPath}/data.$suffix"
             val obbPath = "${inPath}/obb.$suffix"
+
+            Logcat.getInstance().actionLogAddLine(tag, "AppName: ${task.appName}.")
+            Logcat.getInstance().actionLogAddLine(tag, "PackageName: ${task.packageName}.")
 
             if (task.selectApp) {
                 // 检查是否备份APK
@@ -185,10 +198,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             packageName,
                             userId,
                             appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].versionCode.toString()
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }
 
                         // 判断是否安装该应用
@@ -217,10 +228,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             userPath,
                             packageName,
                             Path.getUserPath(userId)
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -230,10 +239,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             "${Path.getUserPath(userId)}/${packageName}",
                             userId,
                             contextSELinux
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -254,10 +261,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             userDePath,
                             packageName,
                             Path.getUserDePath(userId)
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -267,10 +272,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             "${Path.getUserDePath(userId)}/${packageName}",
                             userId,
                             contextSELinux
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -291,10 +294,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             dataPath,
                             packageName,
                             Path.getDataPath(userId)
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -304,10 +305,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             "${Path.getDataPath(userId)}/${packageName}",
                             userId,
                             contextSELinux
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -328,10 +327,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             obbPath,
                             packageName,
                             Path.getObbPath(userId)
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -341,10 +338,8 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             "${Path.getObbPath(userId)}/${packageName}",
                             userId,
                             contextSELinux
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) isSuccess = false
                         }
@@ -367,6 +362,7 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
 
         topBarTitle = "${context.getString(R.string.restore_finished)}!"
         allDone.value = true
+        Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
     }
 
     ProcessingScaffold(

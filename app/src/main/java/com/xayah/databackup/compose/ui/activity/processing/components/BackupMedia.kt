@@ -44,6 +44,9 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
     }
 
     LaunchedEffect(null) {
+        val tag = "BackupMedia"
+        Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
+
         // 检查列表
         if (globalObject.mediaInfoBackupMap.value.isEmpty()) {
             globalObject.mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap())
@@ -51,6 +54,7 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
         if (globalObject.mediaInfoRestoreMap.value.isEmpty()) {
             globalObject.mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap())
         }
+        Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
         // 备份信息列表
         taskList.addAll(
@@ -70,8 +74,13 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                     )
                 })
 
+        Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
+
         val date =
             if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
+
+        Logcat.getInstance().actionLogAddLine(tag, "Timestamp: ${date}.")
+        Logcat.getInstance().actionLogAddLine(tag, "Date: ${Command.getDate(date)}.")
 
         // 前期准备完成
         setLoadingState(LoadingState.Success)
@@ -90,6 +99,9 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
 
             var isSuccess = true
             val outPutPath = "${Path.getBackupMediaSavePath()}/${task.appName}/${date}"
+
+            Logcat.getInstance().actionLogAddLine(tag, "Name: ${task.appName}.")
+            Logcat.getInstance().actionLogAddLine(tag, "Path: ${task.packageName}.")
 
             if (task.selectData) {
                 // 添加Data备份项
@@ -113,10 +125,8 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             outPutPath,
                             task.packageName,
                             mediaInfoBackup.backupDetail.size
-                        ) {
-                            it?.apply {
-                                objectList[j] = parseObjectItemBySrc(this, objectList[j])
-                            }
+                        ) { type, line ->
+                            objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }.apply {
                             if (!this) {
                                 objectList[j] = objectList[j].copy(state = TaskState.Failed)
@@ -181,8 +191,10 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
         // 保存列表数据
         GsonUtil.saveMediaInfoBackupMapToFile(globalObject.mediaInfoBackupMap.value)
         GsonUtil.saveMediaInfoRestoreMapToFile(globalObject.mediaInfoRestoreMap.value)
+        Logcat.getInstance().actionLogAddLine(tag, "Save global map.")
         topBarTitle = "${context.getString(R.string.backup_finished)}!"
         allDone.value = true
+        Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
     }
 
     ProcessingScaffold(

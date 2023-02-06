@@ -34,7 +34,10 @@ class Bashrc {
         /**
          * 获取APK路径
          */
-        suspend fun getAPKPath(packageName: String, userId: String): Pair<Boolean, String> {
+        suspend fun getAPKPath(
+            packageName: String,
+            userId: String,
+        ): Pair<Boolean, String> {
             val exec = runOnIO { Command.execute("get_apk_path \"${packageName}\" \"${userId}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
@@ -51,10 +54,13 @@ class Bashrc {
          * 压缩APK
          */
         suspend fun compressAPK(
-            compressionType: String, outPut: String, onAddLine: (line: String?) -> Unit
+            compressionType: String,
+            apkPath: String,
+            outPut: String,
+            onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
             val exec = runOnIO {
-                val cmd = "compress_apk \"${compressionType}\" \"${outPut}\""
+                val cmd = "compress_apk \"${compressionType}\" \"${apkPath}\" \"${outPut}\""
                 Command.execute(cmd) {
                     onAddLine(it)
                 }
@@ -143,14 +149,16 @@ class Bashrc {
             dataPath: String,
             onAddLine: (line: String?) -> Unit
         ): Pair<Boolean, String> {
+            var out = ""
             val exec = runOnIO {
                 val cmd =
                     "decompress \"${compressionType}\" \"${dataType}\" \"${inputPath}\" \"${packageName}\" \"${dataPath}\""
                 Command.execute(cmd) {
                     onAddLine(it)
+                    out += "${it}\n"
                 }
             }
-            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
+            return Pair(exec.isSuccess, out)
         }
 
         /**
