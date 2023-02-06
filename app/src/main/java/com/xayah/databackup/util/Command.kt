@@ -273,6 +273,7 @@ class Command {
                                         }
                                         if (packageName != packageNameNext) {
                                             appInfoRestore.detailRestoreList = detailRestoreList
+                                            appInfoRestore.detailBase.packageName = packageName
                                             detailRestoreList = mutableListOf()
                                             hasApp = false
                                             hasData = false
