@@ -1,6 +1,7 @@
 package com.xayah.databackup.compose.ui.activity.processing.components
 
 import android.graphics.BitmapFactory
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
@@ -69,17 +70,23 @@ fun RestoreApp(onFinish: () -> Unit) {
                     ProcessingTask2(
                         appName = it.detailBase.appName,
                         packageName = it.detailBase.packageName,
-                        appIcon = null,
+                        appIcon = AppCompatResources.getDrawable(
+                            context,
+                            R.drawable.ic_round_android
+                        ),
                         selectApp = it.detailRestoreList[it.restoreIndex].selectApp,
                         selectData = it.detailRestoreList[it.restoreIndex].selectData,
                         taskState = TaskState.Waiting,
                     ).apply {
-                        val task = this
-                        SafeFile.create("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png") { file ->
-                            file.apply {
-                                val bytes = readBytes()
-                                task.appIcon = (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                    .toDrawable(context.resources))
+                        if (App.globalContext.readIsReadIcon()) {
+                            val task = this
+                            SafeFile.create("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png") { file ->
+                                file.apply {
+                                    val bytes = readBytes()
+                                    task.appIcon =
+                                        (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                            .toDrawable(context.resources))
+                                }
                             }
                         }
                     }

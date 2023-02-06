@@ -10,6 +10,7 @@ import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.graphics.drawable.toDrawable
 import com.drakeet.multitype.ItemViewDelegate
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.util.*
@@ -64,13 +65,15 @@ class AppListAdapterRestore(val onChipClick: () -> Unit = {}) :
             ) else adapterItem.detailBase.appIcon
         )
 
-        SafeFile.create("${Path.getBackupDataSavePath()}/${item.detailBase.packageName}/icon.png") {
-            it.apply {
-                val bytes = readBytes()
-                binding.appIcon.setImageDrawable(
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                        .toDrawable(binding.root.context.resources)
-                )
+        if (App.globalContext.readIsReadIcon()) {
+            SafeFile.create("${Path.getBackupDataSavePath()}/${item.detailBase.packageName}/icon.png") {
+                it.apply {
+                    val bytes = readBytes()
+                    binding.appIcon.setImageDrawable(
+                        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                            .toDrawable(binding.root.context.resources)
+                    )
+                }
             }
         }
 

@@ -98,6 +98,14 @@ fun Context.readIsBackupIcon(): Boolean {
     return readPreferencesBoolean("is_backup_icon", true)
 }
 
+fun Context.saveIsReadIcon(value: Boolean) {
+    savePreferences("is_read_icon", value)
+}
+
+fun Context.readIsReadIcon(): Boolean {
+    return readPreferencesBoolean("is_read_icon", true)
+}
+
 fun Context.saveIsBackupTest(value: Boolean) {
     savePreferences("is_backup_test", value)
 }

@@ -74,6 +74,8 @@ class RestoreViewModel : ViewModel() {
     var restoreUser = ObservableField("${GlobalString.user}0")
 
     var autoFixMultiUserContextEnable = ObservableBoolean(false)
+    var readIconEnable = ObservableBoolean(true)
+
     var onResume = {}
 
     init {
@@ -192,6 +194,7 @@ class RestoreViewModel : ViewModel() {
     suspend fun refresh() {
         // 加载列表
         setUser()
+        setReadIconCard()
         appNum.set(appInfoRestoreListNum.appNum.toString())
         dataNum.set(appInfoRestoreListNum.dataNum.toString())
         isInitialized = true
@@ -200,5 +203,15 @@ class RestoreViewModel : ViewModel() {
     private fun setUser() {
         backupUser.set("${GlobalString.user}${App.globalContext.readBackupUser()}")
         restoreUser.set("${GlobalString.user}${App.globalContext.readRestoreUser()}")
+    }
+
+    fun onReadIconEnableCheckedChanged(v: View, checked: Boolean) {
+        readIconEnable.set(checked)
+        App.globalContext.saveIsReadIcon(readIconEnable.get())
+        globalObject.appInfoRestoreMap.value.clear()
+    }
+
+    private fun setReadIconCard() {
+        readIconEnable.set(App.globalContext.readIsReadIcon())
     }
 }
