@@ -99,6 +99,8 @@ fun ProcessingScaffold(
     onFabClick: () -> Unit,
     objectList: SnapshotStateList<ProcessObjectItem>,
     taskList: SnapshotStateList<ProcessingTask>,
+    taskClickable: Boolean,
+    taskOnClick: (List<ProcessObjectItem>) -> Unit,
     listState: LazyListState
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -153,7 +155,11 @@ fun ProcessingScaffold(
                                     Task(
                                         icon = rememberDrawablePainter(drawable = taskList[it].appIcon),
                                         appName = taskList[it].appName,
-                                        taskState = taskList[it].taskState
+                                        taskState = taskList[it].taskState,
+                                        clickable = taskClickable,
+                                        onClick = {
+                                            taskOnClick(taskList[it].objectList)
+                                        }
                                     )
                                 }
                             }

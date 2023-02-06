@@ -2,6 +2,7 @@ package com.xayah.databackup.data
 
 import android.graphics.drawable.Drawable
 import com.google.gson.annotations.Expose
+import com.xayah.databackup.compose.ui.activity.processing.components.ProcessObjectItem
 import okhttp3.internal.toLongOrDefault
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue
@@ -292,4 +293,5 @@ data class ProcessingTask(
     var selectApp: Boolean,
     var selectData: Boolean,
     var taskState: TaskState,
+    var objectList: List<ProcessObjectItem>
 )

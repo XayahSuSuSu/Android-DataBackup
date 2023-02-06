@@ -71,6 +71,7 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                         selectApp = false,
                         selectData = true,
                         taskState = TaskState.Waiting,
+                        objectList = listOf()
                     )
                 })
 
@@ -181,7 +182,10 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             }
 
             taskList[i] =
-                task.copy(taskState = if (isSuccess) TaskState.Success else TaskState.Failed)
+                task.copy(
+                    taskState = if (isSuccess) TaskState.Success else TaskState.Failed,
+                    objectList = objectList.toList()
+                )
 
             progress += 1
             topBarTitle = "${context.getString(R.string.backuping)}(${progress}/${taskList.size})"
@@ -204,6 +208,11 @@ fun BackupMedia(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
         onFabClick = onFinish,
         objectList = objectList,
         taskList = taskList,
+        taskClickable = allDone.value,
+        taskOnClick = {
+            objectList.clear()
+            objectList.addAll(it)
+        },
         listState = listState
     )
 }

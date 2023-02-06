@@ -1,7 +1,9 @@
 package com.xayah.databackup.compose.ui.activity.processing.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
@@ -12,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
@@ -24,7 +27,13 @@ import com.xayah.databackup.data.TaskState
 
 @ExperimentalMaterial3Api
 @Composable
-fun Task(icon: Painter, appName: String, taskState: TaskState) {
+fun Task(
+    icon: Painter,
+    appName: String,
+    taskState: TaskState,
+    clickable: Boolean,
+    onClick: () -> Unit
+) {
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
@@ -37,7 +46,11 @@ fun Task(icon: Painter, appName: String, taskState: TaskState) {
     Column(
         modifier = Modifier
             .padding(mediumPadding)
-            .width(processingTaskWidth),
+            .width(processingTaskWidth)
+            .clip(RoundedCornerShape(mediumPadding))
+            .clickable {
+                if (clickable) onClick()
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(

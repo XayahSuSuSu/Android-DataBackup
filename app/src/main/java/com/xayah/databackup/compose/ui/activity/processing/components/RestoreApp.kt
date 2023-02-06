@@ -73,6 +73,7 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                         selectApp = it.detailRestoreList[it.restoreIndex].selectApp,
                         selectData = it.detailRestoreList[it.restoreIndex].selectData,
                         taskState = TaskState.Waiting,
+                        objectList = listOf()
                     ).apply {
                         if (App.globalContext.readIsReadIcon()) {
                             val task = this
@@ -353,7 +354,10 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             }
 
             taskList[i] =
-                task.copy(taskState = if (isSuccess) TaskState.Success else TaskState.Failed)
+                task.copy(
+                    taskState = if (isSuccess) TaskState.Success else TaskState.Failed,
+                    objectList = objectList.toList()
+                )
 
             progress += 1
             topBarTitle = "${context.getString(R.string.restoring)}(${progress}/${taskList.size})"
@@ -372,6 +376,11 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
         onFabClick = onFinish,
         objectList = objectList,
         taskList = taskList,
+        taskClickable = allDone.value,
+        taskOnClick = {
+            objectList.clear()
+            objectList.addAll(it)
+        },
         listState = listState
     )
 }

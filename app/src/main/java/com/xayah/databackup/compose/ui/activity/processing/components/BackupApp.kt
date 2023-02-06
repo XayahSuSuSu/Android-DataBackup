@@ -73,6 +73,7 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                         selectApp = it.detailBackup.selectApp,
                         selectData = it.detailBackup.selectData,
                         taskState = TaskState.Waiting,
+                        objectList = listOf()
                     )
                 })
 
@@ -374,11 +375,13 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
             }
 
             taskList[i] =
-                task.copy(taskState = if (isSuccess) TaskState.Success else TaskState.Failed)
+                task.copy(
+                    taskState = if (isSuccess) TaskState.Success else TaskState.Failed,
+                    objectList = objectList.toList()
+                )
 
             progress += 1
             topBarTitle = "${context.getString(R.string.backuping)}(${progress}/${taskList.size})"
-
         }
 
         // 恢复默认输入法和无障碍
@@ -407,6 +410,11 @@ fun BackupApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
         onFabClick = onFinish,
         objectList = objectList,
         taskList = taskList,
+        taskClickable = allDone.value,
+        taskOnClick = {
+            objectList.clear()
+            objectList.addAll(it)
+        },
         listState = listState
     )
 }
