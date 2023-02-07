@@ -1,6 +1,5 @@
 package com.xayah.databackup.util
 
-import android.annotation.SuppressLint
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -16,7 +15,6 @@ class GsonUtil {
     companion object {
         fun getInstance() = Instance.instance
 
-        @SuppressLint("SetWorldWritable")
         suspend fun saveToFile(path: String, content: String) {
             withContext(Dispatchers.IO) {
                 val parent = path.split("/").toMutableList().apply {
@@ -30,10 +28,7 @@ class GsonUtil {
                 SafeFile.create(path) {
                     it.apply {
                         delete()
-                        createNewFile()
-                        setExecutable(true, false)
-                        setWritable(true, false)
-                        setExecutable(true, false)
+                        SafeFile.createNewFile(this)
                         writeText(content)
                     }
                 }

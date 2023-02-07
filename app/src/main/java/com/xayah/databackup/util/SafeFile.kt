@@ -1,5 +1,6 @@
 package com.xayah.databackup.util
 
+import android.annotation.SuppressLint
 import com.topjohnwu.superuser.io.SuFile
 
 /**
@@ -21,6 +22,20 @@ class SafeFile {
         fun mkdirs(path: String) {
             try {
                 SuFile(path).mkdirs()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        @SuppressLint("SetWorldWritable")
+        fun createNewFile(suFile: SuFile) {
+            try {
+                suFile.apply {
+                    createNewFile()
+                    setExecutable(true, false)
+                    setWritable(true, false)
+                    setExecutable(true, false)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

@@ -33,12 +33,12 @@ class Logcat {
 
     private val shellLogFile: SuFile? = SafeFile.create(shellLogPath).apply {
         this?.apply {
-            if (exists().not()) createNewFile()
+            if (exists().not()) SafeFile.createNewFile(this)
         }
     }
     private val actionLogFile: SuFile? = SafeFile.create(actionLogPath).apply {
         this?.apply {
-            if (exists().not()) createNewFile()
+            if (exists().not()) SafeFile.createNewFile(this)
         }
     }
 
