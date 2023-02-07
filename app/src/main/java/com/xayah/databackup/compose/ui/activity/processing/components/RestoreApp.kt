@@ -9,10 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toDrawable
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.LoadingState
-import com.xayah.databackup.data.ProcessingObjectType
-import com.xayah.databackup.data.ProcessingTask
-import com.xayah.databackup.data.TaskState
+import com.xayah.databackup.data.*
 import com.xayah.databackup.util.*
 
 @ExperimentalMaterial3Api
@@ -203,20 +200,21 @@ fun RestoreApp(allDone: MutableState<Boolean>, onFinish: () -> Unit) {
                             objectList[j] = parseObjectItemBySrc(type, line ?: "", objectList[j])
                         }
 
-                        // 判断是否安装该应用
-                        Bashrc.findPackage(userId, packageName).apply {
-                            if (!isSuccess) {
-                                isSuccess = false
-                                objectList[j] = objectList[j].copy(state = TaskState.Failed)
-                                Logcat.getInstance()
-                                    .shellLogAddLine("${packageName}: Not installed")
-                            } else {
-                                objectList[j] = objectList[j].copy(state = TaskState.Success)
-                            }
-                        }
-
                         // 如果未安装该应用, 则无法完成后续恢复
-                        if (!isSuccess) break
+                        if (!isSuccess) {
+                            objectList[j] = objectList[j].copy(state = TaskState.Failed)
+                            for (k in j + 1 until objectList.size) {
+                                objectList[k] =
+                                    parseObjectItemBySrc(
+                                        ProcessError,
+                                        "Apk not installed.",
+                                        objectList[k]
+                                    )
+                            }
+                            break
+                        } else {
+                            objectList[j] = objectList[j].copy(state = TaskState.Success)
+                        }
                     }
                     ProcessingObjectType.USER -> {
                         // 读取原有SELinux context

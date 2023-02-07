@@ -724,16 +724,30 @@ class Command {
 
             // 安装APK
             onAddLine(ProcessInstallingApk, null)
-            val (installAPKCode, installAPKOut) = Bashrc.installAPK(inPath, packageName, userId) {
+            val (installAPKSuccess, installAPKOut) = Bashrc.installAPK(
+                inPath,
+                packageName,
+                userId
+            ) {
                 onAddLine(ProcessShowTotal, it)
             }
-            if (installAPKCode != 0) {
+            if (installAPKSuccess.not()) {
                 onAddLine(ProcessError, installAPKOut)
                 Logcat.getInstance().actionLogAddLine(tag, installAPKOut)
                 return false
             } else {
                 Logcat.getInstance()
                     .actionLogAddLine(tag, "Apk installed.")
+            }
+
+            Bashrc.findPackage(userId, packageName).apply {
+                if (this.first.not()) {
+                    "Package: $packageName not found.".apply {
+                        onAddLine(ProcessError, this)
+                        Logcat.getInstance().actionLogAddLine(tag, this)
+                    }
+                    return false
+                }
             }
             onAddLine(ProcessFinished, null)
             return true

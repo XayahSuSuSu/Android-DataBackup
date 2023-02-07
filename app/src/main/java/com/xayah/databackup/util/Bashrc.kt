@@ -43,14 +43,6 @@ class Bashrc {
         }
 
         /**
-         * 路径跳转命令
-         */
-        suspend fun cd(path: String): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("cd_to_path \"${path}\"") }
-            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
-        }
-
-        /**
          * 压缩APK
          */
         suspend fun compressAPK(
@@ -102,14 +94,14 @@ class Bashrc {
          */
         suspend fun installAPK(
             inPath: String, packageName: String, userId: String, onAddLine: (line: String?) -> Unit
-        ): Pair<Int, String> {
+        ): Pair<Boolean, String> {
             val exec = runOnIO {
                 val cmd = "install_apk \"${inPath}\" \"${packageName}\" \"${userId}\""
                 Command.execute(cmd) {
                     onAddLine(it)
                 }
             }
-            return Pair(exec.code, exec.out.joinToString(separator = "\n"))
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
         /**
