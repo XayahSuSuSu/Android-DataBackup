@@ -22,7 +22,7 @@
     <string name="environment_detection">環境檢測</string>
     <string name="selected">已選擇</string>
     <string name="backup_user">備份使用者</string>
-    <string name="compression_type_help">選擇應用程式與資料的壓縮方式，這會同時影響到備份與恢復. 如果您不清楚此選項的用途，請不要隨意更改</string>
+    <string name="compression_type_help">選擇應用程式與資料的壓縮方式，這會同時影響到備份與恢復。如果您不清楚此選項的用途，請不要隨意更改</string>
     <string name="backup_user_help">設定備份使用者，用於雙開/多使用者備份，即備份/恢復頁面自動選擇的備份使用者資料夾。\n\n目前已通過測試：\nMIUI 雙開、UserManager、island。</string>
     <string name="restore_user_help">設定恢復使用者，用於雙開/多使用者恢復，即將資料恢復的目標使用者。\n\n恢復完成後可能無法打開雙開應用，需要重新啟動才能正常使用。</string>
     <string name="restore_user">恢復使用者</string>
