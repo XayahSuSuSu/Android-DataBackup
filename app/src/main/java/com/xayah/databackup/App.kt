@@ -5,7 +5,7 @@ import android.app.Application
 import android.content.Context
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
-import com.xayah.crash.CrashHandler
+import com.xayah.databackup.compose.ui.activity.crash.CrashHandler
 import com.xayah.databackup.util.*
 import java.io.InputStream
 

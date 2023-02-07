@@ -1,7 +1,0 @@
-<resources>
-    <string name="title_activity_crash">崩潰活動</string>
-    <string name="save_successful">保存成功！</string>
-    <string name="crashed">崩潰了！</string>
-    <string name="save">保存</string>
-    <string name="save_failed">保存失敗！</string>
-</resources>

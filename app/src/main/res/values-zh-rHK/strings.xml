@@ -155,4 +155,5 @@
     <string name="restoring">恢復中</string>
     <string name="read_icon">讀取圖標</string>
     <string name="read_icon_title">圖標讀取需要大量的內存，如果您在恢復過程中遇到崩潰問題，請嘗試關閉此選項</string>
+    <string name="app_crashed">應用發生崩潰</string>
 </resources>

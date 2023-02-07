@@ -1,8 +1,10 @@
-package com.xayah.crash
+package com.xayah.databackup.compose.ui.activity.crash
 
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.os.Build
+import androidx.compose.material3.ExperimentalMaterial3Api
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
@@ -21,7 +23,7 @@ class CrashHandler(private val mContext: Context) : Thread.UncaughtExceptionHand
         try {
             val that = this
             mContext.applicationInfo.apply {
-                if (flags and ApplicationInfo.FLAG_DEBUGGABLE == 0) {
+                if (flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
                     // 获取系统默认的UncaughtException处理
                     mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler()
                     // 设置该CrashHandler为程序的默认处理
@@ -36,6 +38,7 @@ class CrashHandler(private val mContext: Context) : Thread.UncaughtExceptionHand
     /**
      * 异常捕获
      */
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         if (!handleException(throwable) && mDefaultHandler != null) {
             // 使用系统默认的异常处理器处理
@@ -79,10 +82,18 @@ class CrashHandler(private val mContext: Context) : Thread.UncaughtExceptionHand
         val errorMessage = writer.toString()
         val stringBuilder = StringBuilder()
         try {
-            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-            val date: String = simpleDateFormat.format(Date())
+            val date =
+                "Date: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(Date())}\n"
+            val model = "Model: ${Build.MODEL}\n"
+            val abi = "ABIs: ${Build.SUPPORTED_ABIS.joinToString(separator = ", ")}\n"
+            val sdk = "SDK: ${Build.VERSION.SDK_INT}\n"
             stringBuilder.apply {
-                append(date).append("\n")
+                append("================================\n")
+                append(date)
+                append(model)
+                append(abi)
+                append(sdk)
+                append("================================\n")
                 append(errorMessage)
             }
             crashInfo = stringBuilder.toString()

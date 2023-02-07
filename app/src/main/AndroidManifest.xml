@@ -36,8 +36,10 @@
             android:exported="false" />
         <activity
             android:name=".compose.ui.activity.processing.ProcessingActivity"
-            android:exported="false"
-            android:theme="@style/Theme.DataBackup" />
+            android:exported="false" />
+        <activity
+            android:name=".compose.ui.activity.crash.CrashActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.list.AppListBackupActivity"
             android:exported="false" />

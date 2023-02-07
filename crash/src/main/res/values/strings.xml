@@ -1,7 +1,0 @@
-<resources>
-    <string name="title_activity_crash">CrashActivity</string>
-    <string name="save_successful">Save successfully!</string>
-    <string name="save">Save</string>
-    <string name="crashed">Crashed!</string>
-    <string name="save_failed">Save failed!</string>
-</resources>
