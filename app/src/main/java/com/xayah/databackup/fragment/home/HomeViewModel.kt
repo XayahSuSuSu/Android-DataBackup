@@ -110,13 +110,13 @@ class HomeViewModel : ViewModel() {
     }
 
     private suspend fun updateLogCard() {
-        val logPath = Path.getActionLogPath()
+        val logPath = Path.getLogPath()
         logText.set("${Command.countFile(logPath)} ${GlobalString.log}, ${Command.countSize(logPath)} ${GlobalString.size}\n${GlobalString.storedIn} $logPath")
     }
 
     fun onLogClearClick(v: View) {
         viewModelScope.launch {
-            Command.rm(Path.getActionLogPath())
+            Command.rm(Path.getLogPath())
             Toast.makeText(
                 v.context, GlobalString.success, Toast.LENGTH_SHORT
             ).show()

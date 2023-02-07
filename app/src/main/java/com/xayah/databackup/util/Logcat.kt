@@ -27,9 +27,9 @@ class Logcat {
     }
 
     private val shellLogPath =
-        "${Path.getShellLogPath()}/log_${GlobalObject.getInstance().timeStampOnStart}"
+        "${Path.getLogPath()}/shell_log_${GlobalObject.getInstance().timeStampOnStart}"
     private val actionLogPath =
-        "${Path.getActionLogPath()}/log_${GlobalObject.getInstance().timeStampOnStart}"
+        "${Path.getLogPath()}/action_log_${GlobalObject.getInstance().timeStampOnStart}"
 
     private val shellLogFile: SuFile? = SafeFile.create(shellLogPath).apply {
         this?.apply {

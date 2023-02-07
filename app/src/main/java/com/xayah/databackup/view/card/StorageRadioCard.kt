@@ -71,8 +71,7 @@ class StorageRadioCard @JvmOverloads constructor(
                 if (value == index) {
                     i.item?.apply {
                         App.globalContext.saveBackupSavePath(this.path.get())
-                        SafeFile.mkdirs(Path.getShellLogPath())
-                        SafeFile.mkdirs(Path.getActionLogPath())
+                        SafeFile.mkdirs(Path.getLogPath())
                         SafeFile.create("${App.globalContext.readBackupSavePath()}/.nomedia") {
                             SafeFile.createNewFile(it)
                         }
