@@ -5,17 +5,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.guide.components.LoadingState
+import com.xayah.databackup.compose.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.data.*
 import com.xayah.databackup.util.GlobalString
 
@@ -95,17 +95,15 @@ fun parseObjectItemBySrc(
 
 @ExperimentalMaterial3Api
 @Composable
-fun ProcessingScaffold(
-    topBarTitle: String,
-    loadingState: LoadingState,
-    allDone: Boolean,
-    onFabClick: () -> Unit,
-    objectList: SnapshotStateList<ProcessObjectItem>,
-    taskList: SnapshotStateList<ProcessingTask>,
-    taskClickable: Boolean,
-    taskOnClick: (List<ProcessObjectItem>) -> Unit,
-    listState: LazyListState
-) {
+fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
+    val loadingState by viewModel.loadingState.collectAsState()
+    val topBarTitle by viewModel.topBarTitle.collectAsState()
+    val objectList by viewModel.objectList.collectAsState()
+    val taskList by viewModel.taskList.collectAsState()
+    val allDone by viewModel.allDone.collectAsState()
+    viewModel.listState = rememberLazyListState()
+    viewModel.scope = rememberCoroutineScope()
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val bigPadding = dimensionResource(R.dimen.padding_big)
@@ -129,7 +127,7 @@ fun ProcessingScaffold(
         floatingActionButton = {
             if (allDone)
                 FloatingActionButton(
-                    onClick = onFabClick,
+                    onClick = onFinish,
                 ) {
                     Icon(Icons.Rounded.Done, null)
                 }
@@ -154,17 +152,17 @@ fun ProcessingScaffold(
                                 .fillMaxWidth(),
                         ) {
                             LazyRow(
-                                state = listState,
-                                modifier = Modifier.disabledHorizontalPointerInputScroll(allDone.not())
+                                state = viewModel.listState
                             ) {
                                 items(count = taskList.size) {
                                     Task(
                                         icon = rememberDrawablePainter(drawable = taskList[it].appIcon),
                                         appName = taskList[it].appName,
                                         taskState = taskList[it].taskState,
-                                        clickable = taskClickable,
+                                        clickable = allDone,
                                         onClick = {
-                                            taskOnClick(taskList[it].objectList)
+                                            objectList.clear()
+                                            objectList.addAll(taskList[it].objectList)
                                         }
                                     )
                                 }
@@ -184,20 +182,3 @@ fun ProcessingScaffold(
         }
     )
 }
-
-/**
- * https://stackoverflow.com/a/69328009
- */
-private val VerticalScrollConsumer = object : NestedScrollConnection {
-    override fun onPreScroll(available: Offset, source: NestedScrollSource) = available.copy(x = 0f)
-}
-
-private val HorizontalScrollConsumer = object : NestedScrollConnection {
-    override fun onPreScroll(available: Offset, source: NestedScrollSource) = available.copy(y = 0f)
-}
-
-fun Modifier.disabledVerticalPointerInputScroll(disabled: Boolean = true) =
-    if (disabled) this.nestedScroll(VerticalScrollConsumer) else this
-
-fun Modifier.disabledHorizontalPointerInputScroll(disabled: Boolean = true) =
-    if (disabled) this.nestedScroll(HorizontalScrollConsumer) else this

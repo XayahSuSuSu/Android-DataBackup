@@ -156,4 +156,5 @@
     <string name="read_icon">读取图标</string>
     <string name="read_icon_title">图标读取需要大量的内存，如果您在恢复过程中遇到崩溃问题，请尝试关闭此选项</string>
     <string name="app_crashed">应用发生崩溃</string>
+    <string name="cancelling">正在取消</string>
 </resources>

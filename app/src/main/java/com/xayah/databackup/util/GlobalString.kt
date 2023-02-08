@@ -89,5 +89,6 @@ class GlobalString {
         val finished = App.globalContext.getString(R.string.finished)
         val noChangeAndSkip = App.globalContext.getString(R.string.no_change_and_skip)
         val speed = App.globalContext.getString(R.string.speed)
+        val loading = App.globalContext.getString(R.string.loading)
     }
 }

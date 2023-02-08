@@ -13,31 +13,55 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.R
-import com.xayah.databackup.compose.ui.activity.processing.components.BackupApp
-import com.xayah.databackup.compose.ui.activity.processing.components.BackupMedia
-import com.xayah.databackup.compose.ui.activity.processing.components.RestoreApp
-import com.xayah.databackup.compose.ui.activity.processing.components.RestoreMedia
+import com.xayah.databackup.compose.ui.activity.processing.action.onBackupAppProcessing
+import com.xayah.databackup.compose.ui.activity.processing.action.onBackupMediaProcessing
+import com.xayah.databackup.compose.ui.activity.processing.action.onRestoreAppProcessing
+import com.xayah.databackup.compose.ui.activity.processing.action.onRestoreMediaProcessing
+import com.xayah.databackup.compose.ui.activity.processing.components.ProcessingScaffold
 import com.xayah.databackup.compose.ui.theme.DataBackupTheme
 import com.xayah.databackup.data.*
+import com.xayah.databackup.util.GlobalObject
 
 @ExperimentalMaterial3Api
 class ProcessingActivity : ComponentActivity() {
+    /**
+     * 全局单例对象
+     */
+    private val globalObject = GlobalObject.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        val viewModel = ViewModelProvider(this)[ProcessingViewModel::class.java]
         val type = intent.getStringExtra(ProcessingActivityTag)
         val that = this
+
+        when (type) {
+            TypeBackupApp -> {
+                onBackupAppProcessing(viewModel, context = this, globalObject = globalObject)
+            }
+            TypeBackupMedia -> {
+                onBackupMediaProcessing(viewModel, context = this, globalObject = globalObject)
+            }
+            TypeRestoreApp -> {
+                onRestoreAppProcessing(viewModel, context = this, globalObject = globalObject)
+            }
+            TypeRestoreMedia -> {
+                onRestoreMediaProcessing(viewModel, context = this, globalObject = globalObject)
+            }
+        }
+
         setContent {
             DataBackupTheme {
                 // 是否完成
-                val allDone = remember { mutableStateOf(false) }
                 val (exitConfirmDialog, setExitConfirmDialog) = remember { mutableStateOf(false) }
                 LaunchedEffect(null) {
                     onBackPressedDispatcher.addCallback(that, object : OnBackPressedCallback(true) {
                         override fun handleOnBackPressed() {
-                            if (allDone.value.not()) {
+                            if (viewModel.allDone.value.not()) {
                                 setExitConfirmDialog(true)
                             } else {
                                 finish()
@@ -46,22 +70,7 @@ class ProcessingActivity : ComponentActivity() {
                     })
                 }
 
-
-
-                when (type) {
-                    TypeBackupApp -> {
-                        BackupApp(allDone) { finish() }
-                    }
-                    TypeBackupMedia -> {
-                        BackupMedia(allDone) { finish() }
-                    }
-                    TypeRestoreApp -> {
-                        RestoreApp(allDone) { finish() }
-                    }
-                    TypeRestoreMedia -> {
-                        RestoreMedia(allDone) { finish() }
-                    }
-                }
+                ProcessingScaffold(viewModel) { finish() }
 
                 if (exitConfirmDialog) {
                     AlertDialog(
@@ -88,7 +97,8 @@ class ProcessingActivity : ComponentActivity() {
                             TextButton(
                                 onClick = {
                                     setExitConfirmDialog(false)
-                                    finish()
+                                    viewModel.topBarTitle.value = getString(R.string.cancelling)
+                                    viewModel.isCancel.value = true
                                 }
                             ) {
                                 Text(stringResource(id = R.string.confirm))

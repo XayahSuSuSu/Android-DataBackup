@@ -156,4 +156,5 @@
     <string name="read_icon">Read icon</string>
     <string name="read_icon_title">Icon reading requires a lot of memory, if you experience crashes during restoring, try turning this option off</string>
     <string name="app_crashed">App crashed</string>
+    <string name="cancelling">Cancelling</string>
 </resources>
