@@ -23,7 +23,7 @@ class CrashHandler(private val mContext: Context) : Thread.UncaughtExceptionHand
         try {
             val that = this
             mContext.applicationInfo.apply {
-                if (flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+                if (flags and ApplicationInfo.FLAG_DEBUGGABLE == 0) {
                     // 获取系统默认的UncaughtException处理
                     mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler()
                     // 设置该CrashHandler为程序的默认处理
