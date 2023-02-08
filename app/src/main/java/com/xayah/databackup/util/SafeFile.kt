@@ -27,18 +27,22 @@ class SafeFile {
             }
         }
 
-        @SuppressLint("SetWorldWritable")
         fun createNewFile(suFile: SuFile) {
             try {
                 suFile.apply {
                     createNewFile()
-                    setExecutable(true, false)
-                    setWritable(true, false)
-                    setExecutable(true, false)
+                    setPermissions()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+
+        @SuppressLint("SetWorldWritable", "SetWorldReadable")
+        fun SuFile.setPermissions() {
+            this.setExecutable(true, false)
+            this.setWritable(true, false)
+            this.setReadable(true, false)
         }
     }
 }

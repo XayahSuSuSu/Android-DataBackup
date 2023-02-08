@@ -860,15 +860,30 @@ class Command {
          * 检查二进制文件
          */
         suspend fun checkBin(): Boolean {
-            execute("ls -l \"${Path.getAppInternalFilesPath()}/bin\"").out.apply {
-                var count = 0
+            execute("ls -l \"${Path.getAppInternalFilesPath()}/bin\" | awk '{print \$1, \$8}'").out.apply {
                 try {
                     val fileList = this.subList(1, this.size)
-                    for (i in fileList) if (i.contains("-rwxrwxrwx")) count++
+                    for (i in fileList) {
+                        val (permission, name) = i.split(" ")
+                        when (name) {
+                            "df" -> {
+                                if (permission != "-rwxrwxrwx") return false
+                            }
+                            "pv" -> {
+                                if (permission != "-rwxrwxrwx") return false
+                            }
+                            "tar" -> {
+                                if (permission != "-rwxrwxrwx") return false
+                            }
+                            "zstd" -> {
+                                if (permission != "-rwxrwxrwx") return false
+                            }
+                        }
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                return count == 4
+                return true
             }
         }
 

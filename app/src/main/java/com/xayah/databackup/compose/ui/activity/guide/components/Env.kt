@@ -23,11 +23,15 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.util.*
+import com.xayah.databackup.util.SafeFile.Companion.setPermissions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 data class EnvItem(
@@ -50,21 +54,36 @@ private suspend fun binRelease(context: Context): LoadingState {
     val filesDirectory = Path.getAppInternalFilesPath()
     val binPath = "${filesDirectory}/bin"
     val binZipPath = "${filesDirectory}/bin.zip"
+    var checkBin = false
 
-    val bin = File(binPath)
-    // 环境检测与释放
-    if (App.versionName > context.readAppVersion()) {
-        bin.deleteRecursively()
+    withContext(Dispatchers.IO) {
+        val bin = File(binPath)
+        // 环境检测与释放
+        if (App.versionName > context.readAppVersion()) {
+            bin.deleteRecursively()
+        }
+        if (!bin.exists()) {
+            Command.releaseAssets(
+                context, "bin/${Command.getABI()}/bin.zip", "bin.zip"
+            )
+            Command.unzipByZip4j(binZipPath, binPath)
+            context.saveAppVersion(App.versionName)
+        }
+        SuFile(binPath).listFiles()?.apply {
+            for (i in this) {
+                i.setPermissions()
+            }
+        }
+        checkBin = Command.checkBin()
     }
-    if (!bin.exists()) {
-        Command.releaseAssets(
-            context, "bin/${Command.getABI()}/bin.zip", "bin.zip"
-        )
-        Command.unzipByZip4j(binZipPath, binPath)
-        context.saveAppVersion(App.versionName)
+
+    return if (checkBin) {
+        // 环境检测通过后删除压缩文件
+        Command.rm(binZipPath)
+        LoadingState.Success
+    } else {
+        LoadingState.Failed
     }
-    Command.execute("chmod 777 -R \"${filesDirectory}\"")
-    return if (Command.checkBin()) LoadingState.Success else LoadingState.Failed
 }
 
 /**
@@ -266,7 +285,7 @@ fun Env(onPass: () -> Unit) {
                         (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
                             ClipData.newPlainText(
                                 "PermissionCmd",
-                                "su; chmod 777 /data/data/com.xayah.databackup/files/bin/*; rm -rf /data/data/com.xayah.databackup/files/bin.zip"
+                                "su; chmod 777 ${Path.getAppInternalFilesPath()}/bin/*"
                             )
                         )
                         setPermissionDialog(false)
