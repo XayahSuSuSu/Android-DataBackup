@@ -54,7 +54,7 @@ private suspend fun binRelease(context: Context): LoadingState {
     val filesDirectory = Path.getAppInternalFilesPath()
     val binPath = "${filesDirectory}/bin"
     val binZipPath = "${filesDirectory}/bin.zip"
-    var checkBin = false
+    var checkBin: Boolean
 
     withContext(Dispatchers.IO) {
         val bin = File(binPath)
@@ -74,16 +74,14 @@ private suspend fun binRelease(context: Context): LoadingState {
                 i.setPermissions()
             }
         }
-        checkBin = Command.checkBin()
+        checkBin = Command.checkBin().apply {
+            // 环境检测通过后删除压缩文件
+            if (this)
+                Command.rm(binZipPath)
+        }
     }
 
-    return if (checkBin) {
-        // 环境检测通过后删除压缩文件
-        Command.rm(binZipPath)
-        LoadingState.Success
-    } else {
-        LoadingState.Failed
-    }
+    return if (checkBin) LoadingState.Success else LoadingState.Failed
 }
 
 /**

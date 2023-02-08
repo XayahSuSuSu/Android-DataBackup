@@ -82,7 +82,7 @@ fun CrashScaffold(crashInfo: String, onSaveClick: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(
-                            innerPadding.calculateBottomPadding() + hugePadding
+                            innerPadding.calculateBottomPadding()
                         )
                 )
             }

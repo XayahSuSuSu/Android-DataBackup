@@ -1,9 +1,7 @@
 package com.xayah.databackup.compose.ui.activity.processing.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -136,10 +134,18 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
         content = { innerPadding ->
             LazyColumn(
                 modifier = Modifier
-                    .padding(innerPadding)
                     .padding(bigPadding, nonePadding),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                item {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                innerPadding.calculateTopPadding()
+                            )
+                    )
+                }
                 if (loadingState != LoadingState.Success) {
                     item {
                         LoadingState(loadingState)
@@ -177,6 +183,15 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
                             type = objectList[it].type,
                         )
                     }
+                }
+                item {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                innerPadding.calculateBottomPadding()
+                            )
+                    )
                 }
             }
         }

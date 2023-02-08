@@ -79,7 +79,7 @@ fun GuideScaffold(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(
-                            innerPadding.calculateBottomPadding() + hugePadding
+                            innerPadding.calculateBottomPadding()
                         )
                 )
             }
