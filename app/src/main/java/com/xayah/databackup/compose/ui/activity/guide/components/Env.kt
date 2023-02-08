@@ -266,7 +266,7 @@ fun Env(onPass: () -> Unit) {
                         (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
                             ClipData.newPlainText(
                                 "PermissionCmd",
-                                "su; chmod 777 /data/data/com.xayah.databackup/files/bin/*"
+                                "su; chmod 777 /data/data/com.xayah.databackup/files/bin/*; rm -rf /data/data/com.xayah.databackup/files/bin.zip"
                             )
                         )
                         setPermissionDialog(false)
