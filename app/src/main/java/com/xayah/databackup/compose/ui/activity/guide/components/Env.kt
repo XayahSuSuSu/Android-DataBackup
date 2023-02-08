@@ -1,6 +1,8 @@
 package com.xayah.databackup.compose.ui.activity.guide.components
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -256,6 +258,21 @@ fun Env(onPass: () -> Unit) {
                     }
                 ) {
                     Text(stringResource(id = R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
+                            ClipData.newPlainText(
+                                "PermissionCmd",
+                                "su; chmod 777 /data/data/com.xayah.databackup/files/bin/*"
+                            )
+                        )
+                        setPermissionDialog(false)
+                    }
+                ) {
+                    Text(stringResource(R.string.copy_grant_command))
                 }
             },
             properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
