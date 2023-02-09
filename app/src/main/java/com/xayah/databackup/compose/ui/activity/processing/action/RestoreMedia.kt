@@ -117,11 +117,6 @@ fun onRestoreMediaProcessing(
                             }.apply {
                                 if (!this) isSuccess = false
                             }
-                            if (!isSuccess) {
-                                objectList[j] = objectList[j].copy(state = TaskState.Failed)
-                            } else {
-                                objectList[j] = objectList[j].copy(state = TaskState.Success)
-                            }
                         }
                         else -> {
                             isSuccess = false

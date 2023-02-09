@@ -122,12 +122,9 @@ fun onBackupMediaProcessing(
                                     parseObjectItemBySrc(type, line ?: "", objectList[j])
                             }.apply {
                                 if (!this) {
-                                    objectList[j] = objectList[j].copy(state = TaskState.Failed)
                                     isSuccess = false
-                                }
-                                // 保存大小
-                                else {
-                                    objectList[j] = objectList[j].copy(state = TaskState.Success)
+                                } else {
+                                    // 保存大小
                                     mediaInfoBackup.backupDetail.size = Command.countSize(
                                         task.packageName, 1
                                     )

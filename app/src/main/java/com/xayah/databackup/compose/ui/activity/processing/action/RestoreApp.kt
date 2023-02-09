@@ -194,7 +194,6 @@ fun onRestoreAppProcessing(
 
                             // 如果未安装该应用, 则无法完成后续恢复
                             if (!isSuccess) {
-                                objectList[j] = objectList[j].copy(state = TaskState.Failed)
                                 for (k in j + 1 until objectList.size) {
                                     objectList[k] =
                                         parseObjectItemBySrc(
@@ -204,8 +203,6 @@ fun onRestoreAppProcessing(
                                         )
                                 }
                                 break
-                            } else {
-                                objectList[j] = objectList[j].copy(state = TaskState.Success)
                             }
                         }
                         ProcessingObjectType.USER -> {
@@ -237,11 +234,6 @@ fun onRestoreAppProcessing(
                             }.apply {
                                 if (!this) isSuccess = false
                             }
-                            if (!isSuccess) {
-                                objectList[j] = objectList[j].copy(state = TaskState.Failed)
-                            } else {
-                                objectList[j] = objectList[j].copy(state = TaskState.Success)
-                            }
                         }
                         ProcessingObjectType.USER_DE -> {
                             // 读取原有SELinux context
@@ -271,11 +263,6 @@ fun onRestoreAppProcessing(
                                     parseObjectItemBySrc(type, line ?: "", objectList[j])
                             }.apply {
                                 if (!this) isSuccess = false
-                            }
-                            if (!isSuccess) {
-                                objectList[j] = objectList[j].copy(state = TaskState.Failed)
-                            } else {
-                                objectList[j] = objectList[j].copy(state = TaskState.Success)
                             }
                         }
                         ProcessingObjectType.DATA -> {
@@ -307,11 +294,6 @@ fun onRestoreAppProcessing(
                             }.apply {
                                 if (!this) isSuccess = false
                             }
-                            if (!isSuccess) {
-                                objectList[j] = objectList[j].copy(state = TaskState.Failed)
-                            } else {
-                                objectList[j] = objectList[j].copy(state = TaskState.Success)
-                            }
                         }
                         ProcessingObjectType.OBB -> {
                             // 读取原有SELinux context
@@ -341,11 +323,6 @@ fun onRestoreAppProcessing(
                                     parseObjectItemBySrc(type, line ?: "", objectList[j])
                             }.apply {
                                 if (!this) isSuccess = false
-                            }
-                            if (!isSuccess) {
-                                objectList[j] = objectList[j].copy(state = TaskState.Failed)
-                            } else {
-                                objectList[j] = objectList[j].copy(state = TaskState.Success)
                             }
                         }
                     }

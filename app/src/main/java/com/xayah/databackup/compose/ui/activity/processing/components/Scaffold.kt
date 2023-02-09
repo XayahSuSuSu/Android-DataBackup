@@ -33,11 +33,12 @@ fun parseObjectItemBySrc(
     src: String,
     item: ProcessObjectItem
 ): ProcessObjectItem {
+    if (item.state == TaskState.Failed) return item
     try {
         when (type) {
             ProcessFinished -> {
                 // 完成
-                return item.copy(title = GlobalString.finished)
+                return item.copy(state = TaskState.Success, title = GlobalString.finished)
             }
             ProcessSkip -> {
                 // 跳过
@@ -65,7 +66,11 @@ fun parseObjectItemBySrc(
             }
             ProcessError -> {
                 // 错误消息
-                return item.copy(title = GlobalString.error, subtitle = src)
+                return item.copy(
+                    state = TaskState.Failed,
+                    title = GlobalString.error,
+                    subtitle = src
+                )
             }
             ProcessShowTotal -> {
                 // Total bytes written: 74311680 (71MiB, 238MiB/s)

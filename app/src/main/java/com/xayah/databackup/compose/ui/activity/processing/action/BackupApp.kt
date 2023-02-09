@@ -207,13 +207,9 @@ fun onBackupAppProcessing(
                                     parseObjectItemBySrc(type, line ?: "", objectList[j])
                             }.apply {
                                 if (!this) {
-                                    objectList[j] = objectList[j].copy(state = TaskState.Failed)
                                     isSuccess = false
-                                }
-                                // 保存apk大小
-                                else {
-                                    objectList[j] =
-                                        objectList[j].copy(state = TaskState.Success)
+                                } else {
+                                    // 保存apk大小
                                     appInfoBackup.detailBackup.appSize = Command.countSize(
                                         Bashrc.getAPKPath(task.packageName, userId).second,
                                         1
@@ -234,13 +230,9 @@ fun onBackupAppProcessing(
                                     parseObjectItemBySrc(type, line ?: "", objectList[j])
                             }.apply {
                                 if (!this) {
-                                    objectList[j] = objectList[j].copy(state = TaskState.Failed)
                                     isSuccess = false
-                                }
-                                // 保存user大小
-                                else {
-                                    objectList[j] =
-                                        objectList[j].copy(state = TaskState.Success)
+                                } else {
+                                    // 保存user大小
                                     appInfoBackup.detailBackup.userSize =
                                         Command.countSize(userPath, 1)
                                 }
@@ -259,13 +251,9 @@ fun onBackupAppProcessing(
                                     parseObjectItemBySrc(type, line ?: "", objectList[j])
                             }.apply {
                                 if (!this) {
-                                    objectList[j] = objectList[j].copy(state = TaskState.Failed)
                                     isSuccess = false
-                                }
-                                // 保存user大小
-                                else {
-                                    objectList[j] =
-                                        objectList[j].copy(state = TaskState.Success)
+                                } else {
+                                    // 保存user_de大小
                                     appInfoBackup.detailBackup.userDeSize =
                                         Command.countSize(userDePath, 1)
                                 }
@@ -284,13 +272,9 @@ fun onBackupAppProcessing(
                                     parseObjectItemBySrc(type, line ?: "", objectList[j])
                             }.apply {
                                 if (!this) {
-                                    objectList[j] = objectList[j].copy(state = TaskState.Failed)
                                     isSuccess = false
-                                }
-                                // 保存user大小
-                                else {
-                                    objectList[j] =
-                                        objectList[j].copy(state = TaskState.Success)
+                                } else {
+                                    // 保存data大小
                                     appInfoBackup.detailBackup.dataSize =
                                         Command.countSize(dataPath, 1)
                                 }
@@ -309,13 +293,9 @@ fun onBackupAppProcessing(
                                     parseObjectItemBySrc(type, line ?: "", objectList[j])
                             }.apply {
                                 if (!this) {
-                                    objectList[j] = objectList[j].copy(state = TaskState.Failed)
                                     isSuccess = false
-                                }
-                                // 保存user大小
-                                else {
-                                    objectList[j] =
-                                        objectList[j].copy(state = TaskState.Success)
+                                } else {
+                                    // 保存obb大小
                                     appInfoBackup.detailBackup.obbSize =
                                         Command.countSize(obbPath, 1)
                                 }

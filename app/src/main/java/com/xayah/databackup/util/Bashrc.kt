@@ -48,15 +48,10 @@ class Bashrc {
         suspend fun compressAPK(
             compressionType: String,
             apkPath: String,
-            outPut: String,
-            onAddLine: (line: String?) -> Unit
+            outPut: String
         ): Pair<Boolean, String> {
-            val exec = runOnIO {
-                val cmd = "compress_apk \"${compressionType}\" \"${apkPath}\" \"${outPut}\""
-                Command.execute(cmd) {
-                    onAddLine(it)
-                }
-            }
+            val exec =
+                runOnIO { Command.execute("compress_apk \"${compressionType}\" \"${apkPath}\" \"${outPut}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -68,16 +63,10 @@ class Bashrc {
             dataType: String,
             packageName: String,
             outPut: String,
-            dataPath: String,
-            onAddLine: (line: String?) -> Unit
+            dataPath: String
         ): Pair<Boolean, String> {
-            val exec = runOnIO {
-                val cmd =
-                    "compress \"${compressionType}\" \"${dataType}\" \"${packageName}\" \"${outPut}\" \"${dataPath}\""
-                Command.execute(cmd) {
-                    onAddLine(it)
-                }
-            }
+            val exec =
+                runOnIO { Command.execute("compress \"${compressionType}\" \"${dataType}\" \"${packageName}\" \"${outPut}\" \"${dataPath}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -93,14 +82,12 @@ class Bashrc {
          * 安装APK
          */
         suspend fun installAPK(
-            inPath: String, packageName: String, userId: String, onAddLine: (line: String?) -> Unit
+            inPath: String,
+            packageName: String,
+            userId: String
         ): Pair<Boolean, String> {
-            val exec = runOnIO {
-                val cmd = "install_apk \"${inPath}\" \"${packageName}\" \"${userId}\""
-                Command.execute(cmd) {
-                    onAddLine(it)
-                }
-            }
+            val exec =
+                runOnIO { Command.execute("install_apk \"${inPath}\" \"${packageName}\" \"${userId}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -138,19 +125,11 @@ class Bashrc {
             dataType: String,
             inputPath: String,
             packageName: String,
-            dataPath: String,
-            onAddLine: (line: String?) -> Unit
+            dataPath: String
         ): Pair<Boolean, String> {
-            var out = ""
-            val exec = runOnIO {
-                val cmd =
-                    "decompress \"${compressionType}\" \"${dataType}\" \"${inputPath}\" \"${packageName}\" \"${dataPath}\""
-                Command.execute(cmd) {
-                    onAddLine(it)
-                    out += "${it}\n"
-                }
-            }
-            return Pair(exec.isSuccess, out)
+            val exec =
+                runOnIO { Command.execute("decompress \"${compressionType}\" \"${dataType}\" \"${inputPath}\" \"${packageName}\" \"${dataPath}\"") }
+            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
         /**
@@ -179,7 +158,7 @@ class Bashrc {
         ): Pair<Boolean, String> {
             val exec = runOnIO {
                 val cmd = "test_archive \"${compressionType}\" \"${inputPath}\""
-                Command.execute(cmd) {}
+                Command.execute(cmd)
             }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }

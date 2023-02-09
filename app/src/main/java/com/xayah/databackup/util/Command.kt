@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Process
-import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.data.*
@@ -482,7 +481,7 @@ class Command {
             outPut: String,
             dataPath: String,
             dataSize: String? = null,
-            onAddLine: (type: String, line: String?) -> Unit = { _, _ -> }
+            updateState: (type: String, line: String?) -> Unit = { _, _ -> }
         ): Boolean {
             val tag = "compress"
             var needUpdate = true
@@ -517,41 +516,44 @@ class Command {
                 }
             }
             if (needUpdate) {
-                onAddLine(ProcessCompressing, null)
+                updateState(ProcessCompressing, null)
                 val (compressSuccess, out) = Bashrc.compress(
                     compressionType,
                     dataType,
                     packageName,
                     outPut,
                     dataPath
-                ) { onAddLine(ProcessShowTotal, it) }
+                )
                 if (compressSuccess.not()) {
-                    onAddLine(ProcessError, out)
+                    updateState(ProcessError, out)
                     Logcat.getInstance().actionLogAddLine(tag, out)
                     return false
                 } else {
+                    updateState(ProcessShowTotal, out)
                     Logcat.getInstance()
                         .actionLogAddLine(tag, "$dataType compressed.")
                 }
             } else {
-                onAddLine(ProcessSkip, null)
+                updateState(ProcessSkip, null)
                 Logcat.getInstance().actionLogAddLine(tag, "No update, skip.")
             }
             // 检测是否生成压缩包
             ls(filePath).apply {
                 if (!this) {
-                    Logcat.getInstance()
-                        .actionLogAddLine(tag, "$filePath is missing, compressing may failed.")
+                    "$filePath is missing, compressing may failed.".apply {
+                        updateState(ProcessError, this)
+                        Logcat.getInstance().actionLogAddLine(tag, this)
+                    }
                     return false
                 } else {
                     if (App.globalContext.readIsBackupTest()) {
                         // 校验
                         Logcat.getInstance().actionLogAddLine(tag, "Test ${filePath}.")
-                        onAddLine(ProcessTesting, null)
+                        updateState(ProcessTesting, null)
                         val (testArchiveSuccess, _) = testArchive(compressionType, filePath)
                         if (testArchiveSuccess.not()) {
                             "Test failed.".apply {
-                                onAddLine(ProcessError, this)
+                                updateState(ProcessError, this)
                                 Logcat.getInstance().actionLogAddLine(tag, this)
                             }
                             return false
@@ -561,7 +563,7 @@ class Command {
                     }
                 }
             }
-            onAddLine(ProcessFinished, null)
+            updateState(ProcessFinished, null)
             return true
         }
 
@@ -574,7 +576,7 @@ class Command {
             outPut: String,
             userId: String,
             apkSize: String? = null,
-            onAddLine: (type: String, line: String?) -> Unit = { _, _ -> }
+            updateState: (type: String, line: String?) -> Unit = { _, _ -> }
         ): Boolean {
             val tag = "compressAPK"
             var needUpdate = true
@@ -583,7 +585,7 @@ class Command {
             val (getAPKPathSuccess, apkPath) = Bashrc.getAPKPath(packageName, userId)
             if (getAPKPathSuccess.not()) {
                 "Failed to get $packageName APK path.".apply {
-                    onAddLine(ProcessError, this)
+                    updateState(ProcessError, this)
                     Logcat.getInstance().actionLogAddLine(tag, this)
                 }
                 return false
@@ -608,40 +610,43 @@ class Command {
                 }
             }
             if (needUpdate) {
-                onAddLine(ProcessCompressing, null)
+                updateState(ProcessCompressing, null)
                 val (compressAPKSuccess, out) = Bashrc.compressAPK(
                     compressionType,
                     apkPath,
                     outPut
-                ) { onAddLine(ProcessShowTotal, it) }
+                )
                 if (compressAPKSuccess.not()) {
-                    onAddLine(ProcessError, out)
+                    updateState(ProcessError, out)
                     Logcat.getInstance().actionLogAddLine(tag, out)
                     return false
                 } else {
+                    updateState(ProcessShowTotal, out)
                     Logcat.getInstance()
                         .actionLogAddLine(tag, "Apk compressed.")
                 }
             } else {
-                onAddLine(ProcessSkip, null)
+                updateState(ProcessSkip, null)
                 Logcat.getInstance().actionLogAddLine(tag, "No update, skip.")
             }
             // 检测是否生成压缩包
             ls(filePath).apply {
                 // 后续若直接令state = this会导致state非正常更新
                 if (!this) {
-                    Logcat.getInstance()
-                        .actionLogAddLine(tag, "$filePath is missing, compressing may failed.")
+                    "$filePath is missing, compressing may failed.".apply {
+                        updateState(ProcessError, this)
+                        Logcat.getInstance().actionLogAddLine(tag, this)
+                    }
                     return false
                 } else {
                     if (App.globalContext.readIsBackupTest()) {
                         // 校验
                         Logcat.getInstance().actionLogAddLine(tag, "Test ${filePath}.")
-                        onAddLine(ProcessTesting, null)
+                        updateState(ProcessTesting, null)
                         val (testArchiveSuccess, _) = testArchive(compressionType, filePath)
                         if (testArchiveSuccess.not()) {
                             "Test failed.".apply {
-                                onAddLine(ProcessError, this)
+                                updateState(ProcessError, this)
                                 Logcat.getInstance().actionLogAddLine(tag, this)
                             }
                             return false
@@ -651,7 +656,7 @@ class Command {
                     }
                 }
             }
-            onAddLine(ProcessFinished, null)
+            updateState(ProcessFinished, null)
             return true
         }
 
@@ -664,26 +669,27 @@ class Command {
             inputPath: String,
             packageName: String,
             dataPath: String,
-            onAddLine: (type: String, line: String?) -> Unit = { _, _ -> }
+            updateState: (type: String, line: String?) -> Unit = { _, _ -> }
         ): Boolean {
             val tag = "decompress"
-            onAddLine(ProcessDecompressing, null)
+            updateState(ProcessDecompressing, null)
             val (decompressSuccess, out) = Bashrc.decompress(
                 compressionType,
                 dataType,
                 inputPath,
                 packageName,
                 dataPath
-            ) { onAddLine(ProcessShowTotal, it) }
+            )
             if (decompressSuccess.not()) {
-                onAddLine(ProcessError, out)
+                updateState(ProcessError, out)
                 Logcat.getInstance().actionLogAddLine(tag, out)
                 return false
             } else {
+                updateState(ProcessShowTotal, out)
                 Logcat.getInstance()
                     .actionLogAddLine(tag, "$dataType decompressed.")
             }
-            onAddLine(ProcessFinished, null)
+            updateState(ProcessFinished, null)
             return true
         }
 
@@ -695,15 +701,13 @@ class Command {
             packageName: String,
             userId: String,
             versionCode: String,
-            onAddLine: (type: String, line: String?) -> Unit = { _, _ -> }
+            updateState: (type: String, line: String?) -> Unit = { _, _ -> }
         ): Boolean {
             val tag = "installAPK"
             val (getAppVersionCodeSuccess, appVersionCode) = getAppVersionCode(userId, packageName)
             if (getAppVersionCodeSuccess.not()) {
-                "Failed to get $packageName version code.".apply {
-                    onAddLine(ProcessError, this)
-                    Logcat.getInstance().actionLogAddLine(tag, this)
-                }
+                Logcat.getInstance()
+                    .actionLogAddLine(tag, "Failed to get $packageName version code.")
             } else {
                 Logcat.getInstance()
                     .actionLogAddLine(tag, "$packageName version code: ${appVersionCode}.")
@@ -716,26 +720,24 @@ class Command {
             val (setInstallEnvSuccess, out) = Bashrc.setInstallEnv()
             if (setInstallEnvSuccess.not()) {
                 "Failed to set install env.".apply {
-                    onAddLine(ProcessError, this)
                     Logcat.getInstance().actionLogAddLine(tag, this)
                     Logcat.getInstance().actionLogAddLine(tag, out)
                 }
             }
 
             // 安装APK
-            onAddLine(ProcessInstallingApk, null)
+            updateState(ProcessInstallingApk, null)
             val (installAPKSuccess, installAPKOut) = Bashrc.installAPK(
                 inPath,
                 packageName,
                 userId
-            ) {
-                onAddLine(ProcessShowTotal, it)
-            }
+            )
             if (installAPKSuccess.not()) {
-                onAddLine(ProcessError, installAPKOut)
+                updateState(ProcessError, installAPKOut)
                 Logcat.getInstance().actionLogAddLine(tag, installAPKOut)
                 return false
             } else {
+                updateState(ProcessShowTotal, installAPKOut)
                 Logcat.getInstance()
                     .actionLogAddLine(tag, "Apk installed.")
             }
@@ -743,13 +745,13 @@ class Command {
             Bashrc.findPackage(userId, packageName).apply {
                 if (this.first.not()) {
                     "Package: $packageName not found.".apply {
-                        onAddLine(ProcessError, this)
+                        updateState(ProcessError, this)
                         Logcat.getInstance().actionLogAddLine(tag, this)
                     }
                     return false
                 }
             }
-            onAddLine(ProcessFinished, null)
+            updateState(ProcessFinished, null)
             return true
         }
 
@@ -762,10 +764,10 @@ class Command {
             path: String,
             userId: String,
             context: String,
-            onAddLine: (type: String, line: String?) -> Unit = { _, _ -> }
+            updateState: (type: String, line: String?) -> Unit = { _, _ -> }
         ): Boolean {
             val tag = "setOwnerAndSELinux"
-            onAddLine(ProcessSettingSELinux, null)
+            updateState(ProcessSettingSELinux, null)
             val (setOwnerAndSELinuxSuccess, out) = Bashrc.setOwnerAndSELinux(
                 dataType,
                 packageName,
@@ -775,14 +777,14 @@ class Command {
                 context
             )
             if (setOwnerAndSELinuxSuccess.not()) {
-                onAddLine(ProcessError, out)
+                updateState(ProcessError, out)
                 Logcat.getInstance().actionLogAddLine(tag, out)
                 return false
             } else {
                 Logcat.getInstance()
                     .actionLogAddLine(tag, "$dataType setOwnerAndSELinux finished.")
             }
-            onAddLine(ProcessFinished, null)
+            updateState(ProcessFinished, null)
             return true
         }
 
@@ -957,56 +959,23 @@ class Command {
         /**
          * 经由Log封装的执行函数
          */
-        suspend fun execute(
-            cmd: String,
-            isAddToLog: Boolean = true,
-            callback: ((line: String) -> Unit)? = null
-        ): Shell.Result {
-            val out = mutableListOf<String>()
+        suspend fun execute(cmd: String, isAddToLog: Boolean = true): Shell.Result {
             val result = runOnIO {
                 if (isAddToLog)
                     Logcat.getInstance().shellLogAddLine("SHELL_IN: $cmd")
-                val shell = Shell.cmd(cmd)
-                callback?.apply {
-                    val callbackList: CallbackList<String?> = object : CallbackList<String?>() {
-                        override fun onAddElement(line: String?) {
-                            line?.apply {
-                                if (isAddToLog)
-                                    Logcat.getInstance().shellLogAddLine("SHELL_OUT: $line")
-                                callback(line)
-                                out.add(line)
-                            }
-                        }
-                    }
-                    shell.to(callbackList)
-                }
-                shell.exec().apply {
+                Shell.cmd(cmd).exec().apply {
                     if (isAddToLog)
-                        this.apply {
-                            for (i in this.out) Logcat.getInstance()
-                                .shellLogAddLine("SHELL_OUT: $i")
-                        }
+                        for (i in this.out)
+                            Logcat.getInstance().shellLogAddLine("SHELL_OUT: $i")
                 }
             }
+
             if (result.code == 127) {
                 // 当exit code为127时, 环境可能丢失
                 App.initShell(App.globalContext, Shell.getShell())
             }
 
-            val resultImpl = ResultImpl().apply {
-                this._out = result.out
-                this._err = result.err
-                this._code = result.code
-            }
-
-            if (callback != null) {
-                resultImpl.apply {
-                    this._out.clear()
-                    this._out = out
-                }
-            }
-
-            return resultImpl
+            return result
         }
 
         /**
@@ -1032,23 +1001,5 @@ class Command {
             }
             return users
         }
-    }
-}
-
-class ResultImpl : Shell.Result() {
-    var _out = mutableListOf<String>()
-    var _err = mutableListOf<String>()
-    var _code = -1
-
-    override fun getOut(): MutableList<String> {
-        return _out
-    }
-
-    override fun getErr(): MutableList<String> {
-        return _err
-    }
-
-    override fun getCode(): Int {
-        return _code
     }
 }
