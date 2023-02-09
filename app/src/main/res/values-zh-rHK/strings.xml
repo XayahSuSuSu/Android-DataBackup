@@ -158,4 +158,6 @@
     <string name="app_crashed">應用發生崩潰</string>
     <string name="cancelling">正在取消</string>
     <string name="copy_grant_command">複製授權命令</string>
+    <string name="card_app_subtitle">備份(恢復)第三方應用或系統應用</string>
+    <string name="card_media_subtitle">備份(恢復)媒體資料或自定義目錄</string>
 </resources>

@@ -158,4 +158,6 @@
     <string name="app_crashed">App crashed</string>
     <string name="cancelling">Cancelling</string>
     <string name="copy_grant_command">Copy grant command</string>
+    <string name="card_app_subtitle">Backup(Restore) third-party apps or system apps</string>
+    <string name="card_media_subtitle">Backup(Restore) media files or custom directories</string>
 </resources>

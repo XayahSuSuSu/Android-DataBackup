@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.xayah.databackup.App
-import com.xayah.databackup.activity.main.MainActivity
 import com.xayah.databackup.compose.ui.activity.guide.GuideActivity
+import com.xayah.databackup.compose.ui.activity.main.MainActivity
 import com.xayah.databackup.util.ExtendCommand
 import com.xayah.databackup.util.checkPackageUsageStatsPermission
 import com.xayah.databackup.util.readInitializedVersionName

@@ -35,6 +35,9 @@
             android:name=".compose.ui.activity.guide.GuideActivity"
             android:exported="false" />
         <activity
+            android:name=".compose.ui.activity.main.MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".compose.ui.activity.processing.ProcessingActivity"
             android:exported="false" />
         <activity

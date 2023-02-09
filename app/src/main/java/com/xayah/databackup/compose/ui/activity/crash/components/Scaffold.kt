@@ -23,7 +23,6 @@ fun CrashScaffold(crashInfo: String, onSaveClick: () -> Unit) {
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
-    val hugePadding = dimensionResource(R.dimen.padding_huge)
     val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
     Scaffold(
         floatingActionButton = {
