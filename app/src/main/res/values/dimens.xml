@@ -10,4 +10,5 @@
     <dimen name="icon_small_size">36dp</dimen>
     <dimen name="icon_tiny_size">24dp</dimen>
     <dimen name="processing_task_width">80dp</dimen>
+    <dimen name="padding_settings_title">56dp</dimen>
 </resources>

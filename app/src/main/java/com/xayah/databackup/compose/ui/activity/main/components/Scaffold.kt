@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
 import com.xayah.databackup.activity.list.AppListBackupActivity
 import com.xayah.databackup.activity.list.AppListRestoreActivity
+import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.data.ProcessingActivityTag
 import com.xayah.databackup.data.TypeBackupApp
 
@@ -46,7 +47,11 @@ fun MainScaffold() {
                 },
                 scrollBehavior = scrollBehavior,
                 actions = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = {
+                        context.startActivity(
+                            Intent(context, SettingsActivity::class.java)
+                        )
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
                             contentDescription = stringResource(id = R.string.settings)

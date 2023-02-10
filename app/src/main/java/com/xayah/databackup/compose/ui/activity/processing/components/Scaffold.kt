@@ -17,7 +17,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.guide.components.LoadingState
@@ -109,6 +108,7 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val nonePadding = dimensionResource(R.dimen.padding_none)
+    val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val bigPadding = dimensionResource(R.dimen.padding_big)
 
     Scaffold(
@@ -140,7 +140,7 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
             LazyColumn(
                 modifier = Modifier
                     .padding(bigPadding, nonePadding),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(mediumPadding)
             ) {
                 item {
                     Spacer(
