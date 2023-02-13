@@ -13,7 +13,6 @@ LZ4_VERSION=1.9.4
 ZSTD_VERSION=1.5.2
 TAR_VERSION=1.34
 COREUTLS_VERSION=9.1
-PV_VERSION=1.6.20
 LIBFUSE_VERSION=3.12.0
 RCLONE_VERSION=1.61.1
 EXTEND_VERSION=1.1.1
@@ -176,24 +175,6 @@ rm -rf coreutils-$COREUTLS_VERSION
 
 ##################################################
 
-# pv
-if [ ! -f $LOCAL_PATH/pv-$PV_VERSION.tar.gz ]; then
-    wget https://github.com/a-j-wood/pv/releases/download/v$PV_VERSION/pv-$PV_VERSION.tar.gz
-fi
-if [ -d $LOCAL_PATH/pv-$PV_VERSION ]; then
-    rm -rf pv-$PV_VERSION
-fi
-tar zxvf pv-$PV_VERSION.tar.gz
-cd pv-$PV_VERSION
-./configure --host=$TARGET --prefix= CFLAGS="-O3 -flto"
-make -j8
-make install DESTDIR=$LOCAL_PATH/pv
-$STRIP $LOCAL_PATH/pv/bin/pv
-cd ..
-rm -rf pv-$PV_VERSION
-
-##################################################
-
 # fusermount - extend module
 if [ ! -f $LOCAL_PATH/fuse-$LIBFUSE_VERSION.tar.xz ]; then
     wget https://github.com/libfuse/libfuse/releases/download/fuse-$LIBFUSE_VERSION/fuse-$LIBFUSE_VERSION.tar.xz
@@ -284,7 +265,7 @@ rm -rf rclone-v$RCLONE_VERSION
 
 # Built-in modules
 mkdir -p built_in/$TARGET_ARCH
-zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df pv/bin/pv tar/bin/tar zstd/bin/zstd
+zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df tar/bin/tar zstd/bin/zstd
 
 # Extend modules
 mkdir -p extend
@@ -294,4 +275,4 @@ zip -pj extend/$TARGET_ARCH fuse/bin/fusermount rclone/rclone extend/version
 ##################################################
 
 # Clean build files
-rm -rf NDK coreutls pv tar zstd fuse rclone
+rm -rf NDK coreutls tar zstd fuse rclone
