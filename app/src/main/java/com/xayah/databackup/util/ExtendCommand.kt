@@ -17,7 +17,7 @@ class ExtendCommand {
         init {
             SafeFile.create(Path.getInternalLogPath()) {
                 it.apply {
-                    deleteRecursively()
+                    deleteRecursive()
                     mkdirs()
                 }
             }

@@ -862,28 +862,23 @@ class Command {
          * 检查二进制文件
          */
         suspend fun checkBin(): Boolean {
+            val binList = listOf("df", "chmod", "tar", "zstd")
             execute("ls -l \"${Path.getAppInternalFilesPath()}/bin\" | awk '{print \$1, \$8}'").out.apply {
-                try {
-                    val fileList = this.subList(1, this.size)
-                    for (i in fileList) {
-                        val (permission, name) = i.split(" ")
-                        when (name) {
-                            "df" -> {
-                                if (permission != "-rwxrwxrwx") return false
+                val fileList = this.subList(1, this.size)
+                for (i in binList) {
+                    var granted = false
+                    for (j in fileList) {
+                        try {
+                            val (permission, name) = j.split(" ")
+                            if (name == i && permission == "-rwxrwxrwx") {
+                                granted = true
+                                break
                             }
-                            "pv" -> {
-                                if (permission != "-rwxrwxrwx") return false
-                            }
-                            "tar" -> {
-                                if (permission != "-rwxrwxrwx") return false
-                            }
-                            "zstd" -> {
-                                if (permission != "-rwxrwxrwx") return false
-                            }
+                        } catch (e: Exception) {
+                            continue
                         }
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                    if (granted.not()) return false
                 }
                 return true
             }

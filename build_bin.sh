@@ -7,10 +7,12 @@
 
 TARGET_ARCH=arm64-v8a
 
-NDK_VERSION=r25b
-XZ_VERSION=5.4.0
+NDK_VERSION=r25c
+
+BIN_VERSION=1.2
+XZ_VERSION=5.4.1
 LZ4_VERSION=1.9.4
-ZSTD_VERSION=1.5.2
+ZSTD_VERSION=1.5.4
 TAR_VERSION=1.34
 COREUTLS_VERSION=9.1
 LIBFUSE_VERSION=3.12.0
@@ -157,7 +159,7 @@ rm -rf tar-$TAR_VERSION
 
 ##################################################
 
-# coreutls - df
+# coreutls - df, chmod
 if [ ! -f $LOCAL_PATH/coreutils-$COREUTLS_VERSION.tar.xz ]; then
     wget https://ftp.gnu.org/gnu/coreutils/coreutils-$COREUTLS_VERSION.tar.xz
 fi
@@ -170,6 +172,7 @@ cd coreutils-$COREUTLS_VERSION
 make -j8
 make install prefix= DESTDIR=$LOCAL_PATH/coreutls
 $STRIP $LOCAL_PATH/coreutls/bin/df
+$STRIP $LOCAL_PATH/coreutls/bin/chmod
 cd ..
 rm -rf coreutils-$COREUTLS_VERSION
 
@@ -265,7 +268,8 @@ rm -rf rclone-v$RCLONE_VERSION
 
 # Built-in modules
 mkdir -p built_in/$TARGET_ARCH
-zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df tar/bin/tar zstd/bin/zstd
+echo "$BIN_VERSION" > built_in/version
+zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df coreutls/bin/chmod tar/bin/tar zstd/bin/zstd built_in/version
 
 # Extend modules
 mkdir -p extend

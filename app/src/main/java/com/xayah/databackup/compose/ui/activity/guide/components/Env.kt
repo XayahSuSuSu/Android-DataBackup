@@ -53,14 +53,21 @@ private suspend fun binRelease(context: Context): LoadingState {
     // 环境目录
     val filesDirectory = Path.getAppInternalFilesPath()
     val binPath = "${filesDirectory}/bin"
+    val binVersionPath = "${filesDirectory}/bin/version"
     val binZipPath = "${filesDirectory}/bin.zip"
     var checkBin: Boolean
 
     withContext(Dispatchers.IO) {
-        val bin = File(binPath)
+        val bin = SuFile(binPath)
         // 环境检测与释放
-        if (App.versionName > context.readAppVersion()) {
-            bin.deleteRecursively()
+        val version = String(context.assets.open("bin/version").readBytes())
+        val localVersion = try {
+            SuFile(binVersionPath).readText()
+        } catch (e: Exception) {
+            ""
+        }
+        if (version > localVersion) {
+            bin.deleteRecursive()
         }
         if (!bin.exists()) {
             Command.releaseAssets(
