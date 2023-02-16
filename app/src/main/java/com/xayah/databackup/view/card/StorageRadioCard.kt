@@ -71,10 +71,9 @@ class StorageRadioCard @JvmOverloads constructor(
                 if (value == index) {
                     i.item?.apply {
                         App.globalContext.saveBackupSavePath(this.path.get())
-                        SafeFile.mkdirs(Path.getLogPath())
-                        SafeFile.create("${App.globalContext.readBackupSavePath()}/.nomedia") {
-                            SafeFile.createNewFile(it)
-                        }
+                        RemoteFile.getInstance().mkdirs(Path.getLogPath())
+                        RemoteFile.getInstance()
+                            .createNewFile("${App.globalContext.readBackupSavePath()}/.nomedia")
                         Logcat.refreshInstance()
                         globalObject.appInfoBackupMap.value.clear()
                         globalObject.appInfoRestoreMap.value.clear()

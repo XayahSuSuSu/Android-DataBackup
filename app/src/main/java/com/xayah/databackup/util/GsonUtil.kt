@@ -17,21 +17,10 @@ class GsonUtil {
 
         suspend fun saveToFile(path: String, content: String) {
             withContext(Dispatchers.IO) {
-                val parent = path.split("/").toMutableList().apply {
-                    removeLast()
-                }.joinToString(separator = "/")
-                SafeFile.create(parent) {
-                    it.apply {
-                        if (exists().not()) mkdirs()
-                    }
-                }
-                SafeFile.create(path) {
-                    it.apply {
-                        delete()
-                        SafeFile.createNewFile(this)
-                        writeText(content)
-                    }
-                }
+                val parent = path.split("/").toMutableList().apply { removeLast() }
+                    .joinToString(separator = "/")
+                RemoteFile.getInstance().mkdirs(parent)
+                RemoteFile.getInstance().writeText(path, content)
             }
         }
 
@@ -138,8 +127,12 @@ class GsonUtil {
      * Json转AppInfoBackupMap
      */
     fun fromAppInfoBackupMapJson(value: String): AppInfoBackupMap {
-        val mapType = object : TypeToken<AppInfoBackupMap>() {}
-        return gson.fromJson(value, mapType.type)
+        return try {
+            val mapType = object : TypeToken<AppInfoBackupMap>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            AppInfoBackupMap()
+        }
     }
 
     /**
@@ -153,8 +146,12 @@ class GsonUtil {
      * Json转AppInfoRestoreMap
      */
     fun fromAppInfoRestoreMapJson(value: String): AppInfoRestoreMap {
-        val mapType = object : TypeToken<AppInfoRestoreMap>() {}
-        return gson.fromJson(value, mapType.type)
+        return try {
+            val mapType = object : TypeToken<AppInfoRestoreMap>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            AppInfoRestoreMap()
+        }
     }
 
     /**
@@ -168,8 +165,12 @@ class GsonUtil {
      * Json转MediaInfoBackupMap
      */
     fun fromMediaInfoBackupMapJson(value: String): MediaInfoBackupMap {
-        val mapType = object : TypeToken<MediaInfoBackupMap>() {}
-        return gson.fromJson(value, mapType.type)
+        return try {
+            val mapType = object : TypeToken<MediaInfoBackupMap>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            MediaInfoBackupMap()
+        }
     }
 
     /**
@@ -183,8 +184,12 @@ class GsonUtil {
      * Json转MediaInfoRestoreMap
      */
     fun fromMediaInfoRestoreMapJson(value: String): MediaInfoRestoreMap {
-        val mapType = object : TypeToken<MediaInfoRestoreMap>() {}
-        return gson.fromJson(value, mapType.type)
+        return try {
+            val mapType = object : TypeToken<MediaInfoRestoreMap>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            MediaInfoRestoreMap()
+        }
     }
 
     /**
@@ -199,8 +204,12 @@ class GsonUtil {
      * Json转RcloneMountMap
      */
     fun fromRcloneMountMapJson(value: String): RcloneMountMap {
-        val mapType = object : TypeToken<RcloneMountMap>() {}
-        return gson.fromJson(value, mapType.type)
+        return try {
+            val mapType = object : TypeToken<RcloneMountMap>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            RcloneMountMap()
+        }
     }
 
     /**
@@ -214,8 +223,12 @@ class GsonUtil {
      * Json转BackupInfoList
      */
     fun fromBackupInfoListJson(value: String): BackupInfoList {
-        val mapType = object : TypeToken<BackupInfoList>() {}
-        return gson.fromJson(value, mapType.type)
+        return try {
+            val mapType = object : TypeToken<BackupInfoList>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            mutableListOf()
+        }
     }
 
     /**

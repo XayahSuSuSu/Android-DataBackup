@@ -16,10 +16,10 @@ import com.xayah.databackup.compose.ui.activity.guide.components.Introduction
 import com.xayah.databackup.compose.ui.activity.guide.components.Update
 import com.xayah.databackup.compose.ui.theme.DataBackupTheme
 import com.xayah.databackup.data.GuideType
-import com.xayah.databackup.util.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.xayah.databackup.util.checkPackageUsageStatsPermission
+import com.xayah.databackup.util.readInitializedVersionName
+import com.xayah.databackup.util.readIsSupportUsageAccess
+import com.xayah.databackup.util.saveInitializedVersionName
 
 @ExperimentalMaterial3Api
 class GuideActivity : ComponentActivity() {
@@ -51,9 +51,6 @@ class GuideActivity : ComponentActivity() {
                         GuideType.Env -> {
                             Env {
                                 App.globalContext.saveInitializedVersionName(App.versionName)
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    ExtendCommand.rcloneUnmountAll()
-                                }
                                 startActivity(Intent(this, MainActivity::class.java))
                                 finish()
                             }

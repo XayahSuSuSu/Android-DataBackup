@@ -14,6 +14,8 @@ import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 
 fun onBackupAppProcessing(
     viewModel: ProcessingViewModel,
@@ -308,14 +310,14 @@ fun onBackupAppProcessing(
                 appInfoBackup.detailBackup.date = date
                 // 保存应用图标
                 if (App.globalContext.readIsBackupIcon()) {
-                    SafeFile.create(outPutIconPath) {
-                        it.apply {
-                            val outputStream = outputStream()
-                            appInfoBackup.detailBase.appIcon?.toBitmap()
-                                ?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                            outputStream.flush()
-                            outputStream.close()
-                        }
+                    withContext(Dispatchers.IO){
+                        val byteArrayOutputStream = ByteArrayOutputStream()
+                        appInfoBackup.detailBase.appIcon?.toBitmap()
+                            ?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                        val byteArray = byteArrayOutputStream.toByteArray()
+                        byteArrayOutputStream.flush()
+                        byteArrayOutputStream.close()
+                        RemoteFile.getInstance().writeBytes(outPutIconPath,byteArray)
                     }
                     Logcat.getInstance().actionLogAddLine(tag, "Trying to save icon.")
                 }

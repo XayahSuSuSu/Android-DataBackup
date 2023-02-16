@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -26,7 +27,7 @@ import com.xayah.databackup.data.TypeBackupApp
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainScaffold() {
+fun MainScaffold(isInitialized: Boolean) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val nonePadding = dimensionResource(R.dimen.padding_none)
@@ -72,43 +73,54 @@ fun MainScaffold() {
                         .height(innerPadding.calculateTopPadding())
                 )
             }
-            item {
-                val colorYellow = colorResource(id = R.color.yellow)
-                ItemCard(
-                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_apps),
-                    iconTint = colorYellow,
-                    title = stringResource(id = R.string.application),
-                    subtitle = stringResource(R.string.card_app_subtitle),
-                    onBackupClick = {
-                        context.startActivity(
-                            Intent(context, AppListBackupActivity::class.java).apply {
-                                putExtra(
-                                    ProcessingActivityTag,
-                                    TypeBackupApp
-                                )
-                            })
-                    },
-                    onRestoreClick = {
-                        context.startActivity(
-                            Intent(context, AppListRestoreActivity::class.java).apply {
-                                putExtra(
-                                    ProcessingActivityTag,
-                                    TypeBackupApp
-                                )
-                            })
+            if (isInitialized) {
+                item {
+                    val colorYellow = colorResource(id = R.color.yellow)
+                    ItemCard(
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_round_apps),
+                        iconTint = colorYellow,
+                        title = stringResource(id = R.string.application),
+                        subtitle = stringResource(R.string.card_app_subtitle),
+                        onBackupClick = {
+                            context.startActivity(
+                                Intent(context, AppListBackupActivity::class.java).apply {
+                                    putExtra(
+                                        ProcessingActivityTag,
+                                        TypeBackupApp
+                                    )
+                                })
+                        },
+                        onRestoreClick = {
+                            context.startActivity(
+                                Intent(context, AppListRestoreActivity::class.java).apply {
+                                    putExtra(
+                                        ProcessingActivityTag,
+                                        TypeBackupApp
+                                    )
+                                })
+                        }
+                    )
+                }
+                item {
+                    val colorYellow = colorResource(id = R.color.blue)
+                    ItemCard(
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_round_image),
+                        iconTint = colorYellow,
+                        title = stringResource(id = R.string.media),
+                        subtitle = stringResource(R.string.card_media_subtitle),
+                        onBackupClick = {},
+                        onRestoreClick = {}
+                    )
+                }
+            } else {
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        CircularProgressIndicator()
                     }
-                )
-            }
-            item {
-                val colorYellow = colorResource(id = R.color.blue)
-                ItemCard(
-                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_image),
-                    iconTint = colorYellow,
-                    title = stringResource(id = R.string.media),
-                    subtitle = stringResource(R.string.card_media_subtitle),
-                    onBackupClick = {},
-                    onRestoreClick = {}
-                )
+                }
             }
             item {
                 Spacer(

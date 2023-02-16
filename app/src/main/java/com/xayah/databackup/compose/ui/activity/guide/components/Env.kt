@@ -1,6 +1,7 @@
 package com.xayah.databackup.compose.ui.activity.guide.components
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -23,12 +24,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.topjohnwu.superuser.io.SuFile
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.util.*
-import com.xayah.databackup.util.SafeFile.Companion.setPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,6 +45,13 @@ private suspend fun checkRootAccess(): LoadingState {
     return if (Command.checkRoot()) LoadingState.Success else LoadingState.Failed
 }
 
+@SuppressLint("SetWorldWritable", "SetWorldReadable")
+fun File.setPermissions() {
+    this.setExecutable(true, false)
+    this.setWritable(true, false)
+    this.setReadable(true, false)
+}
+
 /**
  * 释放二进制文件
  */
@@ -58,16 +64,16 @@ private suspend fun binRelease(context: Context): LoadingState {
     var checkBin: Boolean
 
     withContext(Dispatchers.IO) {
-        val bin = SuFile(binPath)
+        val bin = File(binPath)
         // 环境检测与释放
         val version = String(context.assets.open("bin/version").readBytes())
         val localVersion = try {
-            SuFile(binVersionPath).readText()
+            File(binVersionPath).readText()
         } catch (e: Exception) {
             ""
         }
         if (version > localVersion) {
-            bin.deleteRecursive()
+            bin.deleteRecursively()
         }
         if (!bin.exists()) {
             Command.releaseAssets(
@@ -76,7 +82,7 @@ private suspend fun binRelease(context: Context): LoadingState {
             Command.unzipByZip4j(binZipPath, binPath)
             context.saveAppVersion(App.versionName)
         }
-        SuFile(binPath).listFiles()?.apply {
+        File(binPath).listFiles()?.apply {
             for (i in this) {
                 i.setPermissions()
             }

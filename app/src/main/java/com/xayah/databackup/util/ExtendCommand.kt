@@ -15,12 +15,12 @@ class ExtendCommand {
 
     companion object {
         init {
-            SafeFile.create(Path.getInternalLogPath()) {
-                it.apply {
-                    deleteRecursive()
-                    mkdirs()
-                }
-            }
+//            SafeFile.create(Path.getInternalLogPath()) {
+//                it.apply {
+//                    deleteRecursive()
+//                    mkdirs()
+//                }
+//            }
         }
 
         private const val TAG = "ExtendCommand"
@@ -172,9 +172,9 @@ class ExtendCommand {
             var rcloneMountMap = hashMapOf<String, RcloneMount>()
             runOnIO {
                 // 读取配置文件
-                SafeFile.create(Path.getRcloneMountListPath()) {
-                    rcloneMountMap = GsonUtil.getInstance().fromRcloneMountMapJson(it.readText())
-                }
+                rcloneMountMap = GsonUtil.getInstance().fromRcloneMountMapJson(
+                    RemoteFile.getInstance().readText(Path.getRcloneMountListPath())
+                )
             }
             return rcloneMountMap
         }
@@ -251,9 +251,7 @@ class ExtendCommand {
             var version = ""
             withContext(Dispatchers.IO) {
                 val extendVersionPath = "${Path.getAppInternalFilesPath()}/extend/version"
-                SafeFile.create(extendVersionPath) {
-                    version = it.readText()
-                }
+                version = RemoteFile.getInstance().readText(extendVersionPath)
             }
             return version
         }

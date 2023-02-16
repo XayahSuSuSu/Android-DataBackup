@@ -58,14 +58,11 @@ fun onRestoreAppProcessing(
                         ).apply {
                             if (App.globalContext.readIsReadIcon()) {
                                 val task = this
-                                SafeFile.create("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png") { file ->
-                                    file.apply {
-                                        val bytes = readBytes()
-                                        task.appIcon =
-                                            (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                                .toDrawable(context.resources))
-                                    }
-                                }
+                                val bytes = RemoteFile.getInstance()
+                                    .readBytes("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png")
+                                task.appIcon =
+                                    (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                        .toDrawable(context.resources))
                             }
                         }
                     })

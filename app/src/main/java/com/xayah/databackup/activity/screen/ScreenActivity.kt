@@ -8,13 +8,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.xayah.databackup.App
 import com.xayah.databackup.compose.ui.activity.guide.GuideActivity
 import com.xayah.databackup.compose.ui.activity.main.MainActivity
-import com.xayah.databackup.util.ExtendCommand
 import com.xayah.databackup.util.checkPackageUsageStatsPermission
 import com.xayah.databackup.util.readInitializedVersionName
 import com.xayah.databackup.util.readIsSupportUsageAccess
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 class ScreenActivity : AppCompatActivity() {
@@ -25,9 +21,6 @@ class ScreenActivity : AppCompatActivity() {
         if ((readInitializedVersionName() == App.versionName) &&
             (checkPackageUsageStatsPermission() || readIsSupportUsageAccess().not())
         ) {
-            CoroutineScope(Dispatchers.IO).launch {
-                ExtendCommand.rcloneUnmountAll()
-            }
             startActivity(Intent(this, MainActivity::class.java))
         } else {
             startActivity(Intent(this, GuideActivity::class.java))

@@ -106,10 +106,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                SafeFile.create(Path.getAppInfoBackupMapPath()) {
-                    appInfoBackupMap =
-                        GsonUtil.getInstance().fromAppInfoBackupMapJson(it.readText())
-                }
+                appInfoBackupMap = GsonUtil.getInstance().fromAppInfoBackupMapJson(
+                    RemoteFile.getInstance().readText(Path.getAppInfoBackupMapPath())
+                )
 
                 // 根据本机应用调整列表
                 val packageManager = App.globalContext.packageManager
@@ -182,10 +181,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                SafeFile.create(Path.getAppInfoBackupMapPath()) {
-                    appInfoBackupMap =
-                        GsonUtil.getInstance().fromAppInfoBackupMapJson(it.readText())
-                }
+                appInfoBackupMap = GsonUtil.getInstance().fromAppInfoBackupMapJson(
+                    RemoteFile.getInstance().readText(Path.getAppInfoBackupMapPath())
+                )
             }
             return appInfoBackupMap
         }
@@ -198,10 +196,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                SafeFile.create(Path.getAppInfoRestoreMapPath()) {
-                    appInfoRestoreMap =
-                        GsonUtil.getInstance().fromAppInfoRestoreMapJson(it.readText())
-                }
+                appInfoRestoreMap = GsonUtil.getInstance().fromAppInfoRestoreMapJson(
+                    RemoteFile.getInstance().readText(Path.getAppInfoRestoreMapPath())
+                )
 
                 // 根据备份目录实际文件调整列表
                 execute("find \"${Path.getBackupDataSavePath()}\" -name \"*.tar*\" -type f").apply {
@@ -298,10 +295,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                SafeFile.create(Path.getMediaInfoBackupMapPath()) {
-                    mediaInfoBackupMap =
-                        GsonUtil.getInstance().fromMediaInfoBackupMapJson(it.readText())
-                }
+                mediaInfoBackupMap = GsonUtil.getInstance().fromMediaInfoBackupMapJson(
+                    RemoteFile.getInstance().readText(Path.getMediaInfoBackupMapPath())
+                )
 
                 // 如果为空, 添加默认路径
                 if (mediaInfoBackupMap.isEmpty()) {
@@ -336,10 +332,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                SafeFile.create(Path.getMediaInfoRestoreMapPath()) {
-                    mediaInfoRestoreMap =
-                        GsonUtil.getInstance().fromMediaInfoRestoreMapJson(it.readText())
-                }
+                mediaInfoRestoreMap = GsonUtil.getInstance().fromMediaInfoRestoreMapJson(
+                    RemoteFile.getInstance().readText(Path.getMediaInfoRestoreMapPath())
+                )
 
                 // 根据备份目录实际文件调整列表
                 var hasData = false
@@ -430,10 +425,9 @@ class Command {
 
             runOnIO {
                 // 读取配置文件
-                SafeFile.create(Path.getBackupInfoListPath()) {
-                    backupInfoList =
-                        GsonUtil.getInstance().fromBackupInfoListJson(it.readText())
-                }
+                backupInfoList = GsonUtil.getInstance().fromBackupInfoListJson(
+                    RemoteFile.getInstance().readText(Path.getBackupInfoListPath())
+                )
             }
             return backupInfoList
         }

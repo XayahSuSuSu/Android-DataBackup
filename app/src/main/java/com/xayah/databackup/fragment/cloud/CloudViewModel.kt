@@ -128,10 +128,7 @@ class CloudViewModel : ViewModel() {
                 }
                 rcloneVersion.set(ExtendCommand.checkRcloneVersion())
                 fusermountVersion.set(ExtendCommand.checkFusermountVersion())
-                var isFuseExists = false
-                SafeFile.create(GlobalString.devFuse) {
-                    isFuseExists = it.exists()
-                }
+                val isFuseExists = RemoteFile.getInstance().exists(GlobalString.devFuse)
                 fuseState.set(if (isFuseExists) GlobalString.symbolTick else GlobalString.symbolCross)
                 rcloneMountMap.emit(ExtendCommand.getRcloneMountMap())
                 if (rcloneConfigList.value.isNotEmpty()) {
