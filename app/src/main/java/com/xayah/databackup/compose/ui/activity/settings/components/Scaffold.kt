@@ -107,6 +107,35 @@ fun SettingsScaffold(onFinish: () -> Unit) {
                 )
             }
             item {
+                Title(title = stringResource(id = R.string.application))
+            }
+            item {
+                Switch(
+                    title = stringResource(id = R.string.dynamic_colors),
+                    subtitle = stringResource(id = R.string.dynamic_colors_title),
+                    isChecked = context.readIsDynamicColors(),
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_auto_awesome)
+                ) {
+                    context.saveIsDynamicColors(it)
+                }
+            }
+            item {
+                SingleChoiceClickable(
+                    title = stringResource(id = R.string.compression_type),
+                    subtitle = stringResource(id = R.string.compression_type_help),
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_bolt),
+                    content = context.readCompressionType(),
+                    onPrepare = {
+                        val items = listOf("tar", "zstd", "lz4")
+                        val value = context.readCompressionType()
+                        Pair(items, value)
+                    },
+                    onConfirm = { value ->
+                        context.saveCompressionType(value)
+                    }
+                )
+            }
+            item {
                 Title(title = stringResource(id = R.string.user))
             }
             items(count = singleChoiceClickableItems.size) {
