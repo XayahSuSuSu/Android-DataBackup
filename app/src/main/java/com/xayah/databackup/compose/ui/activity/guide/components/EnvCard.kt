@@ -7,8 +7,6 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
@@ -25,15 +23,17 @@ import com.xayah.databackup.data.LoadingState
 @Composable
 fun EnvCardPreview() {
     EnvCard(
-        item = stringResource(id = R.string.grant_root_access)
-    ) { LoadingState.Success }
+        item = stringResource(id = R.string.grant_root_access),
+        cardState = LoadingState.Success
+    ) { }
 }
 
 @ExperimentalMaterial3Api
 @Composable
 fun EnvCard(
     item: String,
-    onCardClick: ((LoadingState) -> Unit) -> Unit,
+    cardState: LoadingState,
+    onCardClick: () -> Unit,
 ) {
     val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val colorError = MaterialTheme.colorScheme.error
@@ -46,17 +46,13 @@ fun EnvCard(
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
-    val (cardState, setCardState) = remember {
-        mutableStateOf(LoadingState.Loading)
-    }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable {
                 if (cardState != LoadingState.Success) {
-                    onCardClick(setCardState)
+                    onCardClick()
                 }
             },
         colors = CardDefaults.cardColors(

@@ -35,7 +35,8 @@ import java.io.File
 
 data class EnvItem(
     @StringRes val itemId: Int,
-    val onClick: ((LoadingState) -> Unit) -> Unit,
+    var cardState: LoadingState,
+    val onCheck: suspend () -> LoadingState
 )
 
 /**
@@ -181,65 +182,49 @@ fun Env(onPass: () -> Unit) {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
-    val envList = mutableListOf(
-        EnvItem(
-            itemId = R.string.grant_root_access,
-            onClick = {
-                scope.launch {
-                    val state = checkRootAccess()
-                    it(state)
-                    if (state == LoadingState.Success)
-                        setFitPermissionNum(fitPermissionNum + 1)
+    val envList = remember {
+        mutableStateListOf(
+            EnvItem(
+                itemId = R.string.grant_root_access,
+                cardState = LoadingState.Loading,
+                onCheck = {
+                    checkRootAccess()
                 }
-            }
-        ),
-        EnvItem(
-            itemId = R.string.release_prebuilt_binaries,
-            onClick = {
-                scope.launch {
-                    val state = binRelease(context)
-                    it(state)
-                    if (state == LoadingState.Success)
-                        setFitPermissionNum(fitPermissionNum + 1)
-                    else if (state == LoadingState.Failed)
-                        setPermissionDialog(true)
+            ),
+            EnvItem(
+                itemId = R.string.release_prebuilt_binaries,
+                cardState = LoadingState.Loading,
+                onCheck = {
+                    binRelease(context)
                 }
-            }
-        ),
-        EnvItem(
-            itemId = R.string.activate_bashrc,
-            onClick = {
-                scope.launch {
-                    val state = checkBashrc()
-                    it(state)
-                    if (state == LoadingState.Success)
-                        setFitPermissionNum(fitPermissionNum + 1)
+            ),
+            EnvItem(
+                itemId = R.string.activate_bashrc,
+                cardState = LoadingState.Loading,
+                onCheck = {
+                    checkBashrc()
                 }
-            }
-        ),
-        EnvItem(
-            itemId = R.string.check_storage_management_permission,
-            onClick = {
-                val state = checkStorageManagementPermission(
-                    context,
-                    readPermissionState,
-                    writePermissionState
-                )
-                it(state)
-                if (state == LoadingState.Success)
-                    setFitPermissionNum(fitPermissionNum + 1)
-            }
-        ),
-        EnvItem(
-            itemId = R.string.check_package_usage_stats_permission,
-            onClick = {
-                val state = checkPackageUsageStatsPermission(context)
-                it(state)
-                if (state == LoadingState.Success)
-                    setFitPermissionNum(fitPermissionNum + 1)
-            }
-        ),
-    )
+            ),
+            EnvItem(
+                itemId = R.string.check_storage_management_permission,
+                cardState = LoadingState.Loading,
+                onCheck = {
+                    checkStorageManagementPermission(
+                        context,
+                        readPermissionState,
+                        writePermissionState
+                    )
+                }
+            ),
+            EnvItem(
+                itemId = R.string.check_package_usage_stats_permission,
+                cardState = LoadingState.Loading,
+                onCheck = {
+                    checkPackageUsageStatsPermission(context)
+                }
+            )
+        )
+    }
 
     GuideScaffold(
         title = stringResource(id = R.string.environment_detection),
@@ -253,7 +238,16 @@ fun Env(onPass: () -> Unit) {
             items(count = envList.size) {
                 EnvCard(
                     item = stringResource(id = envList[it].itemId),
-                    onCardClick = envList[it].onClick
+                    cardState = envList[it].cardState,
+                    onCardClick = {
+                        scope.launch {
+                            val state = envList[it].onCheck().apply {
+                                if (this == LoadingState.Success)
+                                    setFitPermissionNum(fitPermissionNum + 1)
+                            }
+                            envList[it] = envList[it].copy(cardState = state)
+                        }
+                    }
                 )
             }
         }
