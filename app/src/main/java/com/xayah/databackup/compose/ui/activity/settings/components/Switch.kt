@@ -4,7 +4,10 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,7 +22,8 @@ data class SwitchItem(
     val title: String,
     val subtitle: String,
     @DrawableRes val iconId: Int,
-    val isChecked: Boolean,
+    val isChecked: MutableState<Boolean>,
+    val isEnabled: Boolean = true,
     val onCheckedChange: (isChecked: Boolean) -> Unit,
 )
 
@@ -27,10 +31,13 @@ data class SwitchItem(
 @Preview(showBackground = true)
 @Composable
 fun SwitchPreview() {
+    val checked = remember {
+        mutableStateOf(true)
+    }
     Switch(
         title = stringResource(id = R.string.backup_user),
         subtitle = stringResource(id = R.string.settings_backup_user_subtitle),
-        isChecked = true,
+        isChecked = checked,
         icon = ImageVector.vectorResource(id = R.drawable.ic_round_person)
     ) {}
 }
@@ -41,18 +48,20 @@ fun Switch(
     title: String,
     subtitle: String,
     icon: ImageVector,
-    isChecked: Boolean,
+    isChecked: MutableState<Boolean>,
+    isEnabled: Boolean = true,
     onCheckedChange: (isChecked: Boolean) -> Unit,
 ) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
-    var checked by remember { mutableStateOf(isChecked) }
 
     ListItem(
         modifier = Modifier
             .clip(RoundedCornerShape(mediumPadding))
             .clickable {
-                checked = checked.not()
-                onCheckedChange(checked)
+                if (isEnabled) {
+                    isChecked.value = isChecked.value.not()
+                    onCheckedChange(isChecked.value)
+                }
             },
         headlineText = {
             Text(
@@ -70,10 +79,11 @@ fun Switch(
         },
         trailingContent = {
             Switch(
-                checked = checked,
+                checked = isChecked.value,
+                enabled = isEnabled,
                 onCheckedChange = {
-                    checked = it
-                    onCheckedChange(checked)
+                    isChecked.value = it
+                    onCheckedChange(isChecked.value)
                 })
         },
         leadingContent = {

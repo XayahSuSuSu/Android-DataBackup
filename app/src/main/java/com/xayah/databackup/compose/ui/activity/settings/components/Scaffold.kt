@@ -97,7 +97,7 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                 title = context.getString(R.string.backup_itself),
                 subtitle = context.getString(R.string.backup_itself_title),
                 iconId = R.drawable.ic_round_join_left,
-                isChecked = context.readIsBackupItself(),
+                isChecked = mutableStateOf(context.readIsBackupItself()),
                 onCheckedChange = {
                     context.saveIsBackupItself(it)
                 }
@@ -106,7 +106,7 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                 title = context.getString(R.string.backup_icon),
                 subtitle = context.getString(R.string.backup_icon_title),
                 iconId = R.drawable.ic_round_image,
-                isChecked = context.readIsBackupIcon(),
+                isChecked = mutableStateOf(context.readIsBackupIcon()),
                 onCheckedChange = {
                     context.saveIsBackupIcon(it)
                 }
@@ -115,11 +115,40 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                 title = context.getString(R.string.backup_test),
                 subtitle = context.getString(R.string.backup_test_title),
                 iconId = R.drawable.ic_round_layers,
-                isChecked = context.readIsBackupTest(),
+                isChecked = mutableStateOf(context.readIsBackupTest()),
                 onCheckedChange = {
                     context.saveIsBackupTest(it)
                 }
             )
+        )
+    }
+
+    val supportAutoFixMultiUserContext = remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(null) {
+        supportAutoFixMultiUserContext.value = Command.checkLsZd()
+        context.saveAutoFixMultiUserContext(supportAutoFixMultiUserContext.value)
+    }
+    val restoreSwitchItems = remember {
+        mutableListOf(
+            SwitchItem(
+                title = context.getString(R.string.auto_fix_multi_user_context),
+                subtitle = context.getString(R.string.auto_fix_multi_user_context_title),
+                iconId = R.drawable.ic_round_apps,
+                isChecked = supportAutoFixMultiUserContext,
+                isEnabled = false,
+                onCheckedChange = {}
+            ),
+            SwitchItem(
+                title = context.getString(R.string.read_icon),
+                subtitle = context.getString(R.string.read_icon_title),
+                iconId = R.drawable.ic_round_image,
+                isChecked = mutableStateOf(context.readIsReadIcon()),
+                onCheckedChange = {
+                    context.saveIsReadIcon(it)
+                }
+            ),
         )
     }
 
@@ -168,7 +197,9 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                 Switch(
                     title = stringResource(id = R.string.dynamic_colors),
                     subtitle = stringResource(id = R.string.dynamic_colors_title),
-                    isChecked = context.readIsDynamicColors(),
+                    isChecked = remember {
+                        mutableStateOf(context.readIsDynamicColors())
+                    },
                     icon = ImageVector.vectorResource(id = R.drawable.ic_round_auto_awesome)
                 ) {
                     context.saveIsDynamicColors(it)
@@ -373,6 +404,21 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                             context.saveBackupStrategy(BackupStrategy.Cover)
                         }
                     }
+                )
+            }
+
+            // 恢复
+            item {
+                Title(title = stringResource(id = R.string.restore))
+            }
+            items(count = restoreSwitchItems.size) {
+                Switch(
+                    title = restoreSwitchItems[it].title,
+                    subtitle = restoreSwitchItems[it].subtitle,
+                    icon = ImageVector.vectorResource(id = restoreSwitchItems[it].iconId),
+                    isChecked = restoreSwitchItems[it].isChecked,
+                    isEnabled = restoreSwitchItems[it].isEnabled,
+                    onCheckedChange = restoreSwitchItems[it].onCheckedChange
                 )
             }
 
