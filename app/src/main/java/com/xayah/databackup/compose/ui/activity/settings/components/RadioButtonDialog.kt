@@ -1,5 +1,6 @@
 package com.xayah.databackup.compose.ui.activity.settings.components
 
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -33,7 +34,11 @@ fun <T> RadioButtonDialog(
                 Text(text = title)
             },
             text = {
-                content()
+                LazyColumn() {
+                    item {
+                        content()
+                    }
+                }
             },
             confirmButton = {
                 TextButton(
