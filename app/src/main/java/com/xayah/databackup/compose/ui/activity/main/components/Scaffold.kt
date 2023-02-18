@@ -48,16 +48,17 @@ fun MainScaffold(isInitialized: Boolean) {
                 },
                 scrollBehavior = scrollBehavior,
                 actions = {
-                    IconButton(onClick = {
-                        context.startActivity(
-                            Intent(context, SettingsActivity::class.java)
-                        )
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = stringResource(id = R.string.settings)
-                        )
-                    }
+                    if (isInitialized)
+                        IconButton(onClick = {
+                            context.startActivity(
+                                Intent(context, SettingsActivity::class.java)
+                            )
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Settings,
+                                contentDescription = stringResource(id = R.string.settings)
+                            )
+                        }
                 },
             )
         },
