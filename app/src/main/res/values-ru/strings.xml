@@ -162,4 +162,5 @@
     <string name="card_media_subtitle">Backup(Restore) media files or custom directories</string>
     <string name="settings_backup_user_subtitle">The target user while backuping</string>
     <string name="settings_restore_user_subtitle">Data is restored from backup user to restore user</string>
+    <string name="backup_storage_method">Backup storage method</string>
 </resources>

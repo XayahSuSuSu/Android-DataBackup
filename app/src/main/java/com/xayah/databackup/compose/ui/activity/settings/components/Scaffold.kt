@@ -3,6 +3,8 @@ package com.xayah.databackup.compose.ui.activity.settings.components
 import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.data.BackupStrategy
+import com.xayah.databackup.data.ofBackupStrategy
 import com.xayah.databackup.util.*
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 
@@ -42,9 +46,9 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
-    val singleChoiceClickableItems = remember {
+    val singleChoiceTextClickableItems = remember {
         mutableListOf(
-            SingleChoiceClickableItem(
+            SingleChoiceTextClickableItem(
                 title = context.getString(R.string.backup_user),
                 subtitle = context.getString(R.string.settings_backup_user_subtitle),
                 iconId = R.drawable.ic_round_person,
@@ -67,7 +71,7 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                     context.saveBackupUser(it)
                 }
             ),
-            SingleChoiceClickableItem(
+            SingleChoiceTextClickableItem(
                 title = context.getString(R.string.restore_user),
                 subtitle = context.getString(R.string.settings_restore_user_subtitle),
                 iconId = R.drawable.ic_round_iphone,
@@ -82,6 +86,38 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                 },
                 onConfirm = {
                     context.saveRestoreUser(it)
+                }
+            )
+        )
+    }
+
+    val backupSwitchItems = remember {
+        mutableListOf(
+            SwitchItem(
+                title = context.getString(R.string.backup_itself),
+                subtitle = context.getString(R.string.backup_itself_title),
+                iconId = R.drawable.ic_round_join_left,
+                isChecked = context.readIsBackupItself(),
+                onCheckedChange = {
+                    context.saveIsBackupItself(it)
+                }
+            ),
+            SwitchItem(
+                title = context.getString(R.string.backup_icon),
+                subtitle = context.getString(R.string.backup_icon_title),
+                iconId = R.drawable.ic_round_image,
+                isChecked = context.readIsBackupIcon(),
+                onCheckedChange = {
+                    context.saveIsBackupIcon(it)
+                }
+            ),
+            SwitchItem(
+                title = context.getString(R.string.backup_test),
+                subtitle = context.getString(R.string.backup_test_title),
+                iconId = R.drawable.ic_round_layers,
+                isChecked = context.readIsBackupTest(),
+                onCheckedChange = {
+                    context.saveIsBackupTest(it)
                 }
             )
         )
@@ -123,6 +159,8 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                         .height(innerPadding.calculateTopPadding())
                 )
             }
+
+            // 应用
             item {
                 Title(title = stringResource(id = R.string.application))
             }
@@ -137,7 +175,7 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                 }
             }
             item {
-                SingleChoiceClickable(
+                SingleChoiceTextClickable(
                     title = stringResource(id = R.string.compression_type),
                     subtitle = stringResource(id = R.string.compression_type_help),
                     icon = ImageVector.vectorResource(id = R.drawable.ic_round_bolt),
@@ -270,23 +308,74 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
                     }
                 )
             }
+
+            // 用户
             item {
                 Title(title = stringResource(id = R.string.user))
             }
-            items(count = singleChoiceClickableItems.size) {
-                SingleChoiceClickable(
-                    title = singleChoiceClickableItems[it].title,
-                    subtitle = singleChoiceClickableItems[it].subtitle,
-                    icon = ImageVector.vectorResource(id = singleChoiceClickableItems[it].iconId),
-                    content = singleChoiceClickableItems[it].content,
+            items(count = singleChoiceTextClickableItems.size) {
+                SingleChoiceTextClickable(
+                    title = singleChoiceTextClickableItems[it].title,
+                    subtitle = singleChoiceTextClickableItems[it].subtitle,
+                    icon = ImageVector.vectorResource(id = singleChoiceTextClickableItems[it].iconId),
+                    content = singleChoiceTextClickableItems[it].content,
                     onPrepare = {
-                        singleChoiceClickableItems[it].onPrepare()
+                        singleChoiceTextClickableItems[it].onPrepare()
                     },
                     onConfirm = { value ->
-                        singleChoiceClickableItems[it].onConfirm(value)
+                        singleChoiceTextClickableItems[it].onConfirm(value)
                     }
                 )
             }
+
+            // 备份
+            item {
+                Title(title = stringResource(id = R.string.backup))
+            }
+            items(count = backupSwitchItems.size) {
+                Switch(
+                    title = backupSwitchItems[it].title,
+                    subtitle = backupSwitchItems[it].subtitle,
+                    icon = ImageVector.vectorResource(id = backupSwitchItems[it].iconId),
+                    isChecked = backupSwitchItems[it].isChecked,
+                    onCheckedChange = backupSwitchItems[it].onCheckedChange
+                )
+            }
+            item {
+                val items =
+                    listOf(
+                        DescItem(
+                            title = context.getString(R.string.cover),
+                            subtitle = context.getString(R.string.cover_desc),
+                        ),
+                        DescItem(
+                            title = context.getString(R.string.by_time),
+                            subtitle = context.getString(R.string.by_time_desc),
+                        )
+
+                    )
+                val enumItems = arrayOf(BackupStrategy.Cover, BackupStrategy.ByTime)
+                SingleChoiceDescClickable(
+                    title = stringResource(id = R.string.backup_strategy),
+                    subtitle = stringResource(R.string.backup_storage_method),
+                    icon = Icons.Rounded.Place,
+                    content = ofBackupStrategy(context.readBackupStrategy()),
+                    onPrepare = {
+                        var value =
+                            items.find { it.title == ofBackupStrategy(context.readBackupStrategy()) }
+                        if (value == null) value = items[0]
+                        Pair(items, value!!)
+                    },
+                    onConfirm = { value ->
+                        try {
+                            context.saveBackupStrategy(enumItems[items.indexOf(value)])
+                        } catch (e: Exception) {
+                            context.saveBackupStrategy(BackupStrategy.Cover)
+                        }
+                    }
+                )
+            }
+
             item {
                 Spacer(
                     modifier = Modifier

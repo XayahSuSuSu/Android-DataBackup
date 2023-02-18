@@ -9,7 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.launch
 
-data class SingleChoiceClickableItem(
+data class SingleChoiceTextClickableItem(
     val title: String,
     val subtitle: String,
     @DrawableRes val iconId: Int,
@@ -20,7 +20,7 @@ data class SingleChoiceClickableItem(
 
 @ExperimentalMaterial3Api
 @Composable
-fun SingleChoiceClickable(
+fun SingleChoiceTextClickable(
     title: String,
     subtitle: String,
     icon: ImageVector,
@@ -41,7 +41,7 @@ fun SingleChoiceClickable(
     val selected = remember {
         mutableStateOf("")
     }
-    RadioButtonDialog(
+    RadioButtonTextDialog(
         isOpen = isDialogOpen,
         icon = icon,
         title = title,

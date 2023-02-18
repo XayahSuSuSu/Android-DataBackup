@@ -162,4 +162,5 @@
     <string name="card_media_subtitle">备份(恢复)媒体资料或自定义目录</string>
     <string name="settings_backup_user_subtitle">备份时的目标用户</string>
     <string name="settings_restore_user_subtitle">将备份用户数据恢复到恢复用户下</string>
+    <string name="backup_storage_method">备份存储方式</string>
 </resources>

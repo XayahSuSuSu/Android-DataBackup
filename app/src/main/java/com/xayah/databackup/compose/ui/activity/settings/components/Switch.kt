@@ -1,5 +1,6 @@
 package com.xayah.databackup.compose.ui.activity.settings.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -13,6 +14,14 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.xayah.databackup.R
+
+data class SwitchItem(
+    val title: String,
+    val subtitle: String,
+    @DrawableRes val iconId: Int,
+    val isChecked: Boolean,
+    val onCheckedChange: (isChecked: Boolean) -> Unit,
+)
 
 @ExperimentalMaterial3Api
 @Preview(showBackground = true)
