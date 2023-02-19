@@ -66,12 +66,16 @@ class AppListAdapterRestore(val onChipClick: () -> Unit = {}) :
         )
 
         if (App.globalContext.readIsReadIcon()) {
-            val bytes = RemoteFile.getInstance()
-                .readBytes("${Path.getBackupDataSavePath()}/${item.detailBase.packageName}/icon.png")
-            binding.appIcon.setImageDrawable(
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    .toDrawable(binding.root.context.resources)
-            )
+            try {
+                val bytes = RemoteFile.getInstance()
+                    .readBytes("${Path.getBackupDataSavePath()}/${item.detailBase.packageName}/icon.png")
+                binding.appIcon.setImageDrawable(
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        .toDrawable(binding.root.context.resources)
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         // 应用Chip

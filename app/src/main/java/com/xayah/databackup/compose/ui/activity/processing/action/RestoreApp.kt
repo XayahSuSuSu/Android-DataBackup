@@ -76,12 +76,16 @@ fun onRestoreAppProcessing(
                             objectList = listOf()
                         ).apply {
                             if (App.globalContext.readIsReadIcon()) {
-                                val task = this
-                                val bytes = RemoteFile.getInstance()
-                                    .readBytes("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png")
-                                task.appIcon =
-                                    (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                        .toDrawable(context.resources))
+                                try {
+                                    val task = this
+                                    val bytes = RemoteFile.getInstance()
+                                        .readBytes("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png")
+                                    task.appIcon =
+                                        (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                            .toDrawable(context.resources))
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
                             }
                         }
                     })
@@ -174,150 +178,152 @@ fun onRestoreAppProcessing(
                 }
                 for (j in 0 until objectList.size) {
                     if (viewModel.isCancel.value) break
-                    objectList[j] = objectList[j].copy(state = TaskState.Processing)
-                    when (objectList[j].type) {
-                        ProcessingObjectType.APP -> {
-                            isSuccess = Command.installAPK(
-                                inPath,
-                                packageName,
-                                userId,
-                                appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].versionCode.toString()
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }
-
-                            // 如果未安装该应用, 则无法完成后续恢复
-                            if (!isSuccess) {
-                                for (k in j + 1 until objectList.size) {
-                                    objectList[k] =
-                                        parseObjectItemBySrc(
-                                            ProcessError,
-                                            "Apk not installed.",
-                                            objectList[k]
-                                        )
+                    if (objectList[j].visible) {
+                        objectList[j] = objectList[j].copy(state = TaskState.Processing)
+                        when (objectList[j].type) {
+                            ProcessingObjectType.APP -> {
+                                isSuccess = Command.installAPK(
+                                    inPath,
+                                    packageName,
+                                    userId,
+                                    appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].versionCode.toString()
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
                                 }
-                                break
+
+                                // 如果未安装该应用, 则无法完成后续恢复
+                                if (!isSuccess) {
+                                    for (k in j + 1 until objectList.size) {
+                                        objectList[k] =
+                                            parseObjectItemBySrc(
+                                                ProcessError,
+                                                "Apk not installed.",
+                                                objectList[k]
+                                            )
+                                    }
+                                    break
+                                }
                             }
-                        }
-                        ProcessingObjectType.USER -> {
-                            // 读取原有SELinux context
-                            val contextSELinux =
-                                Bashrc.getSELinuxContext("${Path.getUserPath(userId)}/${packageName}")
-                            // 恢复User
-                            Command.decompress(
-                                Command.getCompressionTypeByPath(userPath),
-                                "user",
-                                userPath,
-                                packageName,
-                                Path.getUserPath(userId)
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
+                            ProcessingObjectType.USER -> {
+                                // 读取原有SELinux context
+                                val contextSELinux =
+                                    Bashrc.getSELinuxContext("${Path.getUserPath(userId)}/${packageName}")
+                                // 恢复User
+                                Command.decompress(
+                                    Command.getCompressionTypeByPath(userPath),
+                                    "user",
+                                    userPath,
+                                    packageName,
+                                    Path.getUserPath(userId)
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
+                                Command.setOwnerAndSELinux(
+                                    "user",
+                                    packageName,
+                                    "${Path.getUserPath(userId)}/${packageName}",
+                                    userId,
+                                    contextSELinux
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
                             }
-                            Command.setOwnerAndSELinux(
-                                "user",
-                                packageName,
-                                "${Path.getUserPath(userId)}/${packageName}",
-                                userId,
-                                contextSELinux
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
+                            ProcessingObjectType.USER_DE -> {
+                                // 读取原有SELinux context
+                                val contextSELinux =
+                                    Bashrc.getSELinuxContext("${Path.getUserDePath(userId)}/${packageName}")
+                                // 恢复User_de
+                                Command.decompress(
+                                    Command.getCompressionTypeByPath(userDePath),
+                                    "user_de",
+                                    userDePath,
+                                    packageName,
+                                    Path.getUserDePath(userId)
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
+                                Command.setOwnerAndSELinux(
+                                    "user_de",
+                                    packageName,
+                                    "${Path.getUserDePath(userId)}/${packageName}",
+                                    userId,
+                                    contextSELinux
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
                             }
-                        }
-                        ProcessingObjectType.USER_DE -> {
-                            // 读取原有SELinux context
-                            val contextSELinux =
-                                Bashrc.getSELinuxContext("${Path.getUserDePath(userId)}/${packageName}")
-                            // 恢复User_de
-                            Command.decompress(
-                                Command.getCompressionTypeByPath(userDePath),
-                                "user_de",
-                                userDePath,
-                                packageName,
-                                Path.getUserDePath(userId)
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
+                            ProcessingObjectType.DATA -> {
+                                // 读取原有SELinux context
+                                val contextSELinux =
+                                    Bashrc.getSELinuxContext("${Path.getDataPath(userId)}/${packageName}")
+                                // 恢复Data
+                                Command.decompress(
+                                    Command.getCompressionTypeByPath(dataPath),
+                                    "data",
+                                    dataPath,
+                                    packageName,
+                                    Path.getDataPath(userId)
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
+                                Command.setOwnerAndSELinux(
+                                    "data",
+                                    packageName,
+                                    "${Path.getDataPath(userId)}/${packageName}",
+                                    userId,
+                                    contextSELinux
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
                             }
-                            Command.setOwnerAndSELinux(
-                                "user_de",
-                                packageName,
-                                "${Path.getUserDePath(userId)}/${packageName}",
-                                userId,
-                                contextSELinux
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
-                            }
-                        }
-                        ProcessingObjectType.DATA -> {
-                            // 读取原有SELinux context
-                            val contextSELinux =
-                                Bashrc.getSELinuxContext("${Path.getDataPath(userId)}/${packageName}")
-                            // 恢复Data
-                            Command.decompress(
-                                Command.getCompressionTypeByPath(dataPath),
-                                "data",
-                                dataPath,
-                                packageName,
-                                Path.getDataPath(userId)
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
-                            }
-                            Command.setOwnerAndSELinux(
-                                "data",
-                                packageName,
-                                "${Path.getDataPath(userId)}/${packageName}",
-                                userId,
-                                contextSELinux
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
-                            }
-                        }
-                        ProcessingObjectType.OBB -> {
-                            // 读取原有SELinux context
-                            val contextSELinux =
-                                Bashrc.getSELinuxContext("${Path.getObbPath(userId)}/${packageName}")
-                            // 恢复Obb
-                            Command.decompress(
-                                Command.getCompressionTypeByPath(obbPath),
-                                "obb",
-                                obbPath,
-                                packageName,
-                                Path.getObbPath(userId)
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
-                            }
-                            Command.setOwnerAndSELinux(
-                                "obb",
-                                packageName,
-                                "${Path.getObbPath(userId)}/${packageName}",
-                                userId,
-                                contextSELinux
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
+                            ProcessingObjectType.OBB -> {
+                                // 读取原有SELinux context
+                                val contextSELinux =
+                                    Bashrc.getSELinuxContext("${Path.getObbPath(userId)}/${packageName}")
+                                // 恢复Obb
+                                Command.decompress(
+                                    Command.getCompressionTypeByPath(obbPath),
+                                    "obb",
+                                    obbPath,
+                                    packageName,
+                                    Path.getObbPath(userId)
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
+                                Command.setOwnerAndSELinux(
+                                    "obb",
+                                    packageName,
+                                    "${Path.getObbPath(userId)}/${packageName}",
+                                    userId,
+                                    contextSELinux
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
                             }
                         }
                     }

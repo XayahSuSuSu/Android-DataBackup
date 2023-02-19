@@ -193,111 +193,113 @@ fun onBackupAppProcessing(
 
                 for (j in 0 until objectList.size) {
                     if (viewModel.isCancel.value) break
-                    objectList[j] = objectList[j].copy(state = TaskState.Processing)
-                    when (objectList[j].type) {
-                        ProcessingObjectType.APP -> {
-                            Command.compressAPK(
-                                compressionType,
-                                packageName,
-                                outPutPath,
-                                userId,
-                                appInfoBackup.detailBackup.appSize
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) {
-                                    isSuccess = false
-                                } else {
-                                    // 保存apk大小
-                                    appInfoBackup.detailBackup.appSize = Command.countSize(
-                                        Bashrc.getAPKPath(task.packageName, userId).second,
-                                        1
-                                    )
+                    if (objectList[j].visible) {
+                        objectList[j] = objectList[j].copy(state = TaskState.Processing)
+                        when (objectList[j].type) {
+                            ProcessingObjectType.APP -> {
+                                Command.compressAPK(
+                                    compressionType,
+                                    packageName,
+                                    outPutPath,
+                                    userId,
+                                    appInfoBackup.detailBackup.appSize
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) {
+                                        isSuccess = false
+                                    } else {
+                                        // 保存apk大小
+                                        appInfoBackup.detailBackup.appSize = Command.countSize(
+                                            Bashrc.getAPKPath(task.packageName, userId).second,
+                                            1
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        ProcessingObjectType.USER -> {
-                            Command.compress(
-                                compressionType,
-                                "user",
-                                packageName,
-                                outPutPath,
-                                Path.getUserPath(),
-                                appInfoBackup.detailBackup.userSize
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) {
-                                    isSuccess = false
-                                } else {
-                                    // 保存user大小
-                                    appInfoBackup.detailBackup.userSize =
-                                        Command.countSize(userPath, 1)
+                            ProcessingObjectType.USER -> {
+                                Command.compress(
+                                    compressionType,
+                                    "user",
+                                    packageName,
+                                    outPutPath,
+                                    Path.getUserPath(),
+                                    appInfoBackup.detailBackup.userSize
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) {
+                                        isSuccess = false
+                                    } else {
+                                        // 保存user大小
+                                        appInfoBackup.detailBackup.userSize =
+                                            Command.countSize(userPath, 1)
+                                    }
                                 }
                             }
-                        }
-                        ProcessingObjectType.USER_DE -> {
-                            Command.compress(
-                                compressionType,
-                                "user_de",
-                                packageName,
-                                outPutPath,
-                                Path.getUserDePath(),
-                                appInfoBackup.detailBackup.userDeSize
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) {
-                                    isSuccess = false
-                                } else {
-                                    // 保存user_de大小
-                                    appInfoBackup.detailBackup.userDeSize =
-                                        Command.countSize(userDePath, 1)
+                            ProcessingObjectType.USER_DE -> {
+                                Command.compress(
+                                    compressionType,
+                                    "user_de",
+                                    packageName,
+                                    outPutPath,
+                                    Path.getUserDePath(),
+                                    appInfoBackup.detailBackup.userDeSize
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) {
+                                        isSuccess = false
+                                    } else {
+                                        // 保存user_de大小
+                                        appInfoBackup.detailBackup.userDeSize =
+                                            Command.countSize(userDePath, 1)
+                                    }
                                 }
                             }
-                        }
-                        ProcessingObjectType.DATA -> {
-                            Command.compress(
-                                compressionType,
-                                "data",
-                                packageName,
-                                outPutPath,
-                                Path.getDataPath(),
-                                appInfoBackup.detailBackup.dataSize
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) {
-                                    isSuccess = false
-                                } else {
-                                    // 保存data大小
-                                    appInfoBackup.detailBackup.dataSize =
-                                        Command.countSize(dataPath, 1)
+                            ProcessingObjectType.DATA -> {
+                                Command.compress(
+                                    compressionType,
+                                    "data",
+                                    packageName,
+                                    outPutPath,
+                                    Path.getDataPath(),
+                                    appInfoBackup.detailBackup.dataSize
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) {
+                                        isSuccess = false
+                                    } else {
+                                        // 保存data大小
+                                        appInfoBackup.detailBackup.dataSize =
+                                            Command.countSize(dataPath, 1)
+                                    }
                                 }
                             }
-                        }
-                        ProcessingObjectType.OBB -> {
-                            Command.compress(
-                                compressionType,
-                                "obb",
-                                packageName,
-                                outPutPath,
-                                Path.getObbPath(),
-                                appInfoBackup.detailBackup.obbSize
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) {
-                                    isSuccess = false
-                                } else {
-                                    // 保存obb大小
-                                    appInfoBackup.detailBackup.obbSize =
-                                        Command.countSize(obbPath, 1)
+                            ProcessingObjectType.OBB -> {
+                                Command.compress(
+                                    compressionType,
+                                    "obb",
+                                    packageName,
+                                    outPutPath,
+                                    Path.getObbPath(),
+                                    appInfoBackup.detailBackup.obbSize
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) {
+                                        isSuccess = false
+                                    } else {
+                                        // 保存obb大小
+                                        appInfoBackup.detailBackup.obbSize =
+                                            Command.countSize(obbPath, 1)
+                                    }
                                 }
                             }
                         }

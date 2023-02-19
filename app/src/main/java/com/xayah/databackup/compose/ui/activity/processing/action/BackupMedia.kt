@@ -117,32 +117,34 @@ fun onBackupMediaProcessing(
                 }
                 for (j in 0 until objectList.size) {
                     if (viewModel.isCancel.value) break
-                    objectList[j] = objectList[j].copy(state = TaskState.Processing)
-                    when (objectList[j].type) {
-                        ProcessingObjectType.DATA -> {
-                            Command.compress(
-                                "tar",
-                                "media",
-                                task.appName,
-                                outPutPath,
-                                task.packageName,
-                                mediaInfoBackup.backupDetail.size
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) {
-                                    isSuccess = false
-                                } else {
-                                    // 保存大小
-                                    mediaInfoBackup.backupDetail.size = Command.countSize(
-                                        task.packageName, 1
-                                    )
+                    if (objectList[j].visible) {
+                        objectList[j] = objectList[j].copy(state = TaskState.Processing)
+                        when (objectList[j].type) {
+                            ProcessingObjectType.DATA -> {
+                                Command.compress(
+                                    "tar",
+                                    "media",
+                                    task.appName,
+                                    outPutPath,
+                                    task.packageName,
+                                    mediaInfoBackup.backupDetail.size
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) {
+                                        isSuccess = false
+                                    } else {
+                                        // 保存大小
+                                        mediaInfoBackup.backupDetail.size = Command.countSize(
+                                            task.packageName, 1
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        else -> {
-                            isSuccess = false
+                            else -> {
+                                isSuccess = false
+                            }
                         }
                     }
                 }

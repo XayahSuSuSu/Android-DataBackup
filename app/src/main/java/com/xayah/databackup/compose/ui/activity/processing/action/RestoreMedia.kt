@@ -111,25 +111,27 @@ fun onRestoreMediaProcessing(
                 }
                 for (j in 0 until objectList.size) {
                     if (viewModel.isCancel.value) break
-                    objectList[j] = objectList[j].copy(state = TaskState.Processing)
-                    when (objectList[j].type) {
-                        ProcessingObjectType.DATA -> {
-                            val inputPath = "${inPath}/${task.appName}.tar"
-                            Command.decompress(
-                                Command.getCompressionTypeByPath(inputPath),
-                                "media",
-                                inputPath,
-                                task.appName,
-                                task.packageName.replace("/${task.appName}", "")
-                            ) { type, line ->
-                                objectList[j] =
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
-                            }.apply {
-                                if (!this) isSuccess = false
+                    if (objectList[j].visible) {
+                        objectList[j] = objectList[j].copy(state = TaskState.Processing)
+                        when (objectList[j].type) {
+                            ProcessingObjectType.DATA -> {
+                                val inputPath = "${inPath}/${task.appName}.tar"
+                                Command.decompress(
+                                    Command.getCompressionTypeByPath(inputPath),
+                                    "media",
+                                    inputPath,
+                                    task.appName,
+                                    task.packageName.replace("/${task.appName}", "")
+                                ) { type, line ->
+                                    objectList[j] =
+                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
                             }
-                        }
-                        else -> {
-                            isSuccess = false
+                            else -> {
+                                isSuccess = false
+                            }
                         }
                     }
                 }
