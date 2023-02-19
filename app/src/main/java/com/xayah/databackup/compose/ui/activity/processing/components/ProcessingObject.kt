@@ -19,6 +19,7 @@ import com.xayah.databackup.data.*
 
 data class ProcessObjectItem(
     val state: TaskState,
+    val visible: Boolean,
     val title: String,
     val subtitle: String,
     val type: ProcessingObjectType,
@@ -30,6 +31,7 @@ data class ProcessObjectItem(
 fun ProcessObjectPreview() {
     ProcessObject(
         cardState = TaskState.Success,
+        visible = true,
         title = "校验中",
         subtitle = "大小: 138Mib, 速度: 312Mib/s",
         type = ProcessingObjectType.APP,
@@ -40,138 +42,66 @@ fun ProcessObjectPreview() {
 @Composable
 fun ProcessObject(
     cardState: TaskState,
+    visible: Boolean,
     title: String,
     subtitle: String,
     type: ProcessingObjectType,
 ) {
-    val nonePadding = dimensionResource(R.dimen.padding_none)
-    val smallPadding = dimensionResource(R.dimen.padding_small)
-    val bigPadding = dimensionResource(R.dimen.padding_big)
-    val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
-    val iconSmallSize = dimensionResource(R.dimen.icon_tiny_size)
-    val colorSurfaceVariant = MaterialTheme.colorScheme.surfaceVariant
-    val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-    val colorError = MaterialTheme.colorScheme.error
-    val colorErrorContainer = MaterialTheme.colorScheme.errorContainer
-    val colorGreen = colorResource(id = R.color.green)
-    val colorGreenContainer = colorResource(id = R.color.greenContainer)
+    if (visible) {
+        val nonePadding = dimensionResource(R.dimen.padding_none)
+        val smallPadding = dimensionResource(R.dimen.padding_small)
+        val bigPadding = dimensionResource(R.dimen.padding_big)
+        val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
+        val iconSmallSize = dimensionResource(R.dimen.icon_tiny_size)
+        val colorSurfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+        val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+        val colorError = MaterialTheme.colorScheme.error
+        val colorErrorContainer = MaterialTheme.colorScheme.errorContainer
+        val colorGreen = colorResource(id = R.color.green)
+        val colorGreenContainer = colorResource(id = R.color.greenContainer)
 
-    Card(
-        modifier = Modifier
-            .clickable {}
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = when (cardState) {
-                TaskState.Waiting, TaskState.Processing -> {
-                    colorSurfaceVariant
-                }
-                TaskState.Success -> {
-                    colorGreen
-                }
-                TaskState.Failed -> {
-                    colorError
-                }
-            }
-        )
-    ) {
-        Row(
-            modifier = Modifier.padding(bigPadding),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = when (type) {
-                    ProcessingObjectType.APP -> {
-                        ImageVector.vectorResource(id = R.drawable.ic_round_android)
-                    }
-                    ProcessingObjectType.USER -> {
-                        ImageVector.vectorResource(id = R.drawable.ic_round_person)
-                    }
-                    ProcessingObjectType.USER_DE -> {
-                        ImageVector.vectorResource(id = R.drawable.ic_round_person)
-                    }
-                    ProcessingObjectType.DATA -> {
-                        ImageVector.vectorResource(id = R.drawable.ic_round_database)
-                    }
-                    ProcessingObjectType.OBB -> {
-                        ImageVector.vectorResource(id = R.drawable.ic_round_esports)
-                    }
-                },
-                contentDescription = null,
-                tint = when (cardState) {
+        Card(
+            modifier = Modifier
+                .clickable {}
+                .fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = when (cardState) {
                     TaskState.Waiting, TaskState.Processing -> {
-                        colorOnSurfaceVariant
+                        colorSurfaceVariant
                     }
                     TaskState.Success -> {
-                        colorGreenContainer
+                        colorGreen
                     }
                     TaskState.Failed -> {
-                        colorErrorContainer
+                        colorError
                     }
-                },
-                modifier = Modifier
-                    .padding(nonePadding, nonePadding, smallPadding, nonePadding)
-                    .size(iconMediumSize)
-                    .clip(CircleShape)
-                    .padding(smallPadding)
+                }
             )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = when (cardState) {
-                        TaskState.Waiting, TaskState.Processing -> {
-                            colorOnSurfaceVariant
-                        }
-                        TaskState.Success -> {
-                            colorGreenContainer
-                        }
-                        TaskState.Failed -> {
-                            colorErrorContainer
-                        }
-                    }
-                )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = when (cardState) {
-                        TaskState.Waiting, TaskState.Processing -> {
-                            colorOnSurfaceVariant
-                        }
-                        TaskState.Success -> {
-                            colorGreenContainer
-                        }
-                        TaskState.Failed -> {
-                            colorErrorContainer
-                        }
-                    }
-                )
-            }
-
-            if (cardState == TaskState.Processing)
-                CircularProgressIndicator(modifier = Modifier.size(iconSmallSize))
-            else
-                Text(
-                    text = when (type) {
+        ) {
+            Row(
+                modifier = Modifier.padding(bigPadding),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = when (type) {
                         ProcessingObjectType.APP -> {
-                            ProcessingItemTypeAPK
+                            ImageVector.vectorResource(id = R.drawable.ic_round_android)
                         }
                         ProcessingObjectType.USER -> {
-                            ProcessingItemTypeUSER
+                            ImageVector.vectorResource(id = R.drawable.ic_round_person)
                         }
                         ProcessingObjectType.USER_DE -> {
-                            ProcessingItemTypeUSERDE
+                            ImageVector.vectorResource(id = R.drawable.ic_round_person)
                         }
                         ProcessingObjectType.DATA -> {
-                            ProcessingItemTypeDATA
+                            ImageVector.vectorResource(id = R.drawable.ic_round_database)
                         }
                         ProcessingObjectType.OBB -> {
-                            ProcessingItemTypeOBB
+                            ImageVector.vectorResource(id = R.drawable.ic_round_esports)
                         }
                     },
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = when (cardState) {
+                    contentDescription = null,
+                    tint = when (cardState) {
                         TaskState.Waiting, TaskState.Processing -> {
                             colorOnSurfaceVariant
                         }
@@ -181,8 +111,83 @@ fun ProcessObject(
                         TaskState.Failed -> {
                             colorErrorContainer
                         }
-                    }
+                    },
+                    modifier = Modifier
+                        .padding(nonePadding, nonePadding, smallPadding, nonePadding)
+                        .size(iconMediumSize)
+                        .clip(CircleShape)
+                        .padding(smallPadding)
                 )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = when (cardState) {
+                            TaskState.Waiting, TaskState.Processing -> {
+                                colorOnSurfaceVariant
+                            }
+                            TaskState.Success -> {
+                                colorGreenContainer
+                            }
+                            TaskState.Failed -> {
+                                colorErrorContainer
+                            }
+                        }
+                    )
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = when (cardState) {
+                            TaskState.Waiting, TaskState.Processing -> {
+                                colorOnSurfaceVariant
+                            }
+                            TaskState.Success -> {
+                                colorGreenContainer
+                            }
+                            TaskState.Failed -> {
+                                colorErrorContainer
+                            }
+                        }
+                    )
+                }
+
+                if (cardState == TaskState.Processing)
+                    CircularProgressIndicator(modifier = Modifier.size(iconSmallSize))
+                else
+                    Text(
+                        text = when (type) {
+                            ProcessingObjectType.APP -> {
+                                ProcessingItemTypeAPK
+                            }
+                            ProcessingObjectType.USER -> {
+                                ProcessingItemTypeUSER
+                            }
+                            ProcessingObjectType.USER_DE -> {
+                                ProcessingItemTypeUSERDE
+                            }
+                            ProcessingObjectType.DATA -> {
+                                ProcessingItemTypeDATA
+                            }
+                            ProcessingObjectType.OBB -> {
+                                ProcessingItemTypeOBB
+                            }
+                        },
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = when (cardState) {
+                            TaskState.Waiting, TaskState.Processing -> {
+                                colorOnSurfaceVariant
+                            }
+                            TaskState.Success -> {
+                                colorGreenContainer
+                            }
+                            TaskState.Failed -> {
+                                colorErrorContainer
+                            }
+                        }
+                    )
+            }
         }
     }
 }

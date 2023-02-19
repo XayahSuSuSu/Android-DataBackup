@@ -30,7 +30,17 @@ fun onRestoreMediaProcessing(
             val progress = viewModel.progress
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
-            val objectList = viewModel.objectList.value
+            val objectList = viewModel.objectList.value.apply {
+                add(
+                    ProcessObjectItem(
+                        state = TaskState.Waiting,
+                        title = GlobalString.ready,
+                        visible = false,
+                        subtitle = GlobalString.pleaseWait,
+                        type = ProcessingObjectType.DATA
+                    )
+                )
+            }
             val allDone = viewModel.allDone
 
             // 检查列表
@@ -63,8 +73,13 @@ fun onRestoreMediaProcessing(
             // 前期准备完成
             loadingState.value = LoadingState.Success
             for (i in 0 until taskList.size) {
-                // 清除恢复目标
-                objectList.clear()
+                // 重置恢复目标
+                objectList[0] = objectList[0].copy(
+                    state = TaskState.Waiting,
+                    title = GlobalString.ready,
+                    visible = false,
+                    subtitle = GlobalString.pleaseWait,
+                )
 
                 // 进入Processing状态
                 taskList[i] = taskList[i].copy(taskState = TaskState.Processing)
@@ -90,13 +105,8 @@ fun onRestoreMediaProcessing(
 
                 if (task.selectData) {
                     // 添加Data备份项
-                    objectList.add(
-                        ProcessObjectItem(
-                            state = TaskState.Waiting,
-                            title = GlobalString.ready,
-                            subtitle = GlobalString.pleaseWait,
-                            type = ProcessingObjectType.DATA
-                        )
+                    objectList[0] = objectList[0].copy(
+                        visible = true,
                     )
                 }
                 for (j in 0 until objectList.size) {

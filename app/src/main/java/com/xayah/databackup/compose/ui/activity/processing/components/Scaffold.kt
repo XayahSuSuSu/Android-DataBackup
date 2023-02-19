@@ -183,6 +183,7 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
                     items(count = objectList.size) {
                         ProcessObject(
                             cardState = objectList[it].state,
+                            visible = objectList[it].visible,
                             title = objectList[it].title,
                             subtitle = objectList[it].subtitle,
                             type = objectList[it].type,
