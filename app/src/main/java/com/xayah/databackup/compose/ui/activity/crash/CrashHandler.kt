@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.xayah.databackup.BuildConfig
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
@@ -84,12 +85,14 @@ class CrashHandler(private val mContext: Context) : Thread.UncaughtExceptionHand
         try {
             val date =
                 "Date: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(Date())}\n"
+            val version = "Version: ${BuildConfig.VERSION_NAME}\n"
             val model = "Model: ${Build.MODEL}\n"
             val abi = "ABIs: ${Build.SUPPORTED_ABIS.joinToString(separator = ", ")}\n"
             val sdk = "SDK: ${Build.VERSION.SDK_INT}\n"
             stringBuilder.apply {
                 append("================================\n")
                 append(date)
+                append(version)
                 append(model)
                 append(abi)
                 append(sdk)
