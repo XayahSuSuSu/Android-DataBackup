@@ -165,7 +165,11 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
                             LazyRow(
                                 state = viewModel.listState
                             ) {
-                                items(count = taskList.size) {
+                                items(
+                                    count = taskList.size,
+                                    key = {
+                                        taskList[it].packageName
+                                    }) {
                                     Task(
                                         icon = rememberDrawablePainter(drawable = taskList[it].appIcon),
                                         appName = taskList[it].appName,
@@ -180,7 +184,11 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
                             }
                         }
                     }
-                    items(count = objectList.size) {
+                    items(
+                        count = objectList.size,
+                        key = {
+                            objectList[it].type
+                        }) {
                         ProcessObject(
                             cardState = objectList[it].state,
                             visible = objectList[it].visible,

@@ -112,7 +112,7 @@ fun Update(setType: (GuideType) -> Unit) {
                     LoadingState(loadingState)
                 }
             } else {
-                items(count = updateList.size) {
+                items(count = updateList.size, key = { updateList[it].version }) {
                     UpdateCard(
                         version = updateList[it].version,
                         content = updateList[it].content,

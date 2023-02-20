@@ -50,7 +50,7 @@ fun Introduction(setType: (GuideType) -> Unit) {
                     R.string.storage_desc,
                 ),
             )
-            items(count = introductionList.size) {
+            items(count = introductionList.size, key = { introductionList[it].titleId }) {
                 PermissionCard(
                     serial = "${it + 1}",
                     title = stringResource(id = introductionList[it].titleId),

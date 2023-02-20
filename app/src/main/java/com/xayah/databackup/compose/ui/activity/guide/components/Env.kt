@@ -235,7 +235,7 @@ fun Env(onPass: () -> Unit) {
             onPass()
         },
         items = {
-            items(count = envList.size) {
+            items(count = envList.size, key = { envList[it].itemId }) {
                 EnvCard(
                     item = stringResource(id = envList[it].itemId),
                     cardState = envList[it].cardState,

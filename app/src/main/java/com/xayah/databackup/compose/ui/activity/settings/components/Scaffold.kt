@@ -344,7 +344,11 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
             item {
                 Title(title = stringResource(id = R.string.user))
             }
-            items(count = singleChoiceTextClickableItems.size) {
+            items(
+                count = singleChoiceTextClickableItems.size,
+                key = {
+                    singleChoiceTextClickableItems[it].title
+                }) {
                 SingleChoiceTextClickable(
                     title = singleChoiceTextClickableItems[it].title,
                     subtitle = singleChoiceTextClickableItems[it].subtitle,
@@ -363,7 +367,11 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
             item {
                 Title(title = stringResource(id = R.string.backup))
             }
-            items(count = backupSwitchItems.size) {
+            items(
+                count = backupSwitchItems.size,
+                key = {
+                    backupSwitchItems[it].title
+                }) {
                 Switch(
                     title = backupSwitchItems[it].title,
                     subtitle = backupSwitchItems[it].subtitle,
@@ -411,7 +419,11 @@ fun SettingsScaffold(explorer: MaterialYouFileExplorer, onFinish: () -> Unit) {
             item {
                 Title(title = stringResource(id = R.string.restore))
             }
-            items(count = restoreSwitchItems.size) {
+            items(
+                count = restoreSwitchItems.size,
+                key = {
+                    restoreSwitchItems[it].title
+                }) {
                 Switch(
                     title = restoreSwitchItems[it].title,
                     subtitle = restoreSwitchItems[it].subtitle,
