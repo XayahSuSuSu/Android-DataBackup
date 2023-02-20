@@ -1,8 +1,8 @@
 package com.xayah.databackup.compose.ui.activity.main.components
 
 import android.content.Intent
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -10,10 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +20,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.activity.list.AppListRestoreActivity
 import com.xayah.databackup.compose.ui.activity.list.ListActivity
 import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
+import com.xayah.databackup.compose.ui.components.Scaffold
 import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeBackupApp
 
@@ -29,12 +28,8 @@ import com.xayah.databackup.data.TypeBackupApp
 @Composable
 fun MainScaffold(isInitialized: Boolean) {
     val context = LocalContext.current
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val nonePadding = dimensionResource(R.dimen.padding_none)
-    val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -46,7 +41,7 @@ fun MainScaffold(isInitialized: Boolean) {
                         fontWeight = FontWeight.Bold
                     )
                 },
-                scrollBehavior = scrollBehavior,
+                scrollBehavior = this,
                 actions = {
                     if (isInitialized)
                         IconButton(onClick = {
@@ -62,18 +57,8 @@ fun MainScaffold(isInitialized: Boolean) {
                 },
             )
         },
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier.padding(mediumPadding, nonePadding),
-            verticalArrangement = Arrangement.spacedBy(mediumPadding),
-        ) {
-            item {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(innerPadding.calculateTopPadding())
-                )
-            }
+        topPaddingRate = 1,
+        content = {
             if (isInitialized) {
                 item {
                     val colorYellow = colorResource(id = R.color.yellow)
@@ -123,13 +108,6 @@ fun MainScaffold(isInitialized: Boolean) {
                     }
                 }
             }
-            item {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(innerPadding.calculateBottomPadding())
-                )
-            }
         }
-    }
+    )
 }

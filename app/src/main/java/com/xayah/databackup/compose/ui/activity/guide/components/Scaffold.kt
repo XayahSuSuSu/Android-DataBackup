@@ -1,7 +1,9 @@
 package com.xayah.databackup.compose.ui.activity.guide.components
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,6 +14,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
+import com.xayah.databackup.compose.ui.components.Scaffold
 
 @ExperimentalMaterial3Api
 @Composable
@@ -26,8 +29,8 @@ fun GuideScaffold(
     val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
-    val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
+
     Scaffold(
         floatingActionButton = {
             if (showBtnIcon)
@@ -37,26 +40,15 @@ fun GuideScaffold(
                     Icon(nextBtnIcon, null)
                 }
         },
-        floatingActionButtonPosition = FabPosition.Center
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier.padding(mediumPadding, nonePadding),
-            verticalArrangement = Arrangement.spacedBy(mediumPadding),
-        ) {
+        topPaddingRate = 2,
+        content = {
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                innerPadding.calculateTopPadding() * 2
-                            )
-                    )
                     Icon(
-                        icon,
+                        imageVector = icon,
                         contentDescription = null,
                         tint = colorOnSurfaceVariant,
                         modifier = Modifier
@@ -64,7 +56,7 @@ fun GuideScaffold(
                             .padding(nonePadding, nonePadding, nonePadding, smallPadding)
                     )
                     Text(
-                        title,
+                        text = title,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleLarge,
@@ -73,15 +65,6 @@ fun GuideScaffold(
                 }
             }
             items(this)
-            item {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(
-                            innerPadding.calculateBottomPadding()
-                        )
-                )
-            }
         }
-    }
+    )
 }

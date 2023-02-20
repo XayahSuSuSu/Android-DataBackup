@@ -1,8 +1,7 @@
 package com.xayah.databackup.compose.ui.activity.processing.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -13,14 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.guide.components.LoadingState
 import com.xayah.databackup.compose.ui.activity.processing.ProcessingViewModel
+import com.xayah.databackup.compose.ui.components.Scaffold
 import com.xayah.databackup.data.*
 import com.xayah.databackup.util.GlobalString
 
@@ -106,13 +103,15 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
     viewModel.listState = rememberLazyListState()
     viewModel.scope = rememberCoroutineScope()
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val nonePadding = dimensionResource(R.dimen.padding_none)
-    val mediumPadding = dimensionResource(R.dimen.padding_medium)
-    val bigPadding = dimensionResource(R.dimen.padding_big)
-
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        floatingActionButton = {
+            if (allDone)
+                FloatingActionButton(
+                    onClick = onFinish,
+                ) {
+                    Icon(Icons.Rounded.Done, null)
+                }
+        },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -124,87 +123,55 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
                         fontWeight = FontWeight.Bold
                     )
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = this
             )
         },
-        floatingActionButton = {
-            if (allDone)
-                FloatingActionButton(
-                    onClick = onFinish,
-                ) {
-                    Icon(Icons.Rounded.Done, null)
-                }
-        },
-        floatingActionButtonPosition = FabPosition.Center,
-        content = { innerPadding ->
-            LazyColumn(
-                modifier = Modifier
-                    .padding(bigPadding, nonePadding),
-                verticalArrangement = Arrangement.spacedBy(mediumPadding)
-            ) {
+        topPaddingRate = 1,
+        content = {
+            if (loadingState != LoadingState.Success) {
                 item {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                innerPadding.calculateTopPadding()
-                            )
-                    )
+                    LoadingState(loadingState)
                 }
-                if (loadingState != LoadingState.Success) {
-                    item {
-                        LoadingState(loadingState)
-                    }
-                } else {
-                    item {
-                        Card(
-                            modifier = Modifier
-                                .clickable {}
-                                .fillMaxWidth(),
+            } else {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .clickable {}
+                            .fillMaxWidth(),
+                    ) {
+                        LazyRow(
+                            state = viewModel.listState
                         ) {
-                            LazyRow(
-                                state = viewModel.listState
-                            ) {
-                                items(
-                                    count = taskList.size,
-                                    key = {
-                                        taskList[it].packageName
-                                    }) {
-                                    Task(
-                                        icon = rememberDrawablePainter(drawable = taskList[it].appIcon),
-                                        appName = taskList[it].appName,
-                                        taskState = taskList[it].taskState,
-                                        clickable = allDone,
-                                        onClick = {
-                                            objectList.clear()
-                                            objectList.addAll(taskList[it].objectList)
-                                        }
-                                    )
-                                }
+                            items(
+                                count = taskList.size,
+                                key = {
+                                    taskList[it].packageName
+                                }) {
+                                Task(
+                                    icon = rememberDrawablePainter(drawable = taskList[it].appIcon),
+                                    appName = taskList[it].appName,
+                                    taskState = taskList[it].taskState,
+                                    clickable = allDone,
+                                    onClick = {
+                                        objectList.clear()
+                                        objectList.addAll(taskList[it].objectList)
+                                    }
+                                )
                             }
                         }
                     }
-                    items(
-                        count = objectList.size,
-                        key = {
-                            objectList[it].type
-                        }) {
-                        ProcessObject(
-                            cardState = objectList[it].state,
-                            visible = objectList[it].visible,
-                            title = objectList[it].title,
-                            subtitle = objectList[it].subtitle,
-                            type = objectList[it].type,
-                        )
-                    }
                 }
-                item {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                innerPadding.calculateBottomPadding()
-                            )
+                items(
+                    count = objectList.size,
+                    key = {
+                        objectList[it].type
+                    }) {
+                    ProcessObject(
+                        cardState = objectList[it].state,
+                        visible = objectList[it].visible,
+                        title = objectList[it].title,
+                        subtitle = objectList[it].subtitle,
+                        type = objectList[it].type,
                     )
                 }
             }

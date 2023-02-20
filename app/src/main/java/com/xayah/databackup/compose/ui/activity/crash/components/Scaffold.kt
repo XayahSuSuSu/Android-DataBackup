@@ -1,7 +1,9 @@
 package com.xayah.databackup.compose.ui.activity.crash.components
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
@@ -15,6 +17,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
+import com.xayah.databackup.compose.ui.components.Scaffold
 
 @ExperimentalMaterial3Api
 @Composable
@@ -22,7 +25,6 @@ fun CrashScaffold(crashInfo: String, onSaveClick: () -> Unit) {
     val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
-    val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
     Scaffold(
         floatingActionButton = {
@@ -35,24 +37,13 @@ fun CrashScaffold(crashInfo: String, onSaveClick: () -> Unit) {
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.Center
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier.padding(mediumPadding, nonePadding),
-            verticalArrangement = Arrangement.spacedBy(mediumPadding),
-        ) {
+        topPaddingRate = 2,
+        content = {
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                innerPadding.calculateTopPadding() * 2
-                            )
-                    )
                     Icon(
                         imageVector = Icons.Rounded.Warning,
                         contentDescription = null,
@@ -76,15 +67,6 @@ fun CrashScaffold(crashInfo: String, onSaveClick: () -> Unit) {
                     style = MaterialTheme.typography.labelSmall
                 )
             }
-            item {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(
-                            innerPadding.calculateBottomPadding()
-                        )
-                )
-            }
         }
-    }
+    )
 }
