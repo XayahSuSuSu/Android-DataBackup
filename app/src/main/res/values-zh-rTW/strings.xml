@@ -163,4 +163,9 @@
     <string name="settings_backup_user_subtitle">備份時的目標用戶</string>
     <string name="settings_restore_user_subtitle">將備份用戶數據恢復到恢復用戶下</string>
     <string name="backup_storage_method">備份存儲方式</string>
+    <string name="select_backup_app">選擇備份應用</string>
+    <string name="blacklist">黑名單</string>
+    <string name="manifest">清單</string>
+    <string name="selected_app">已選應用</string>
+    <string name="selected_data">已選數據</string>
 </resources>

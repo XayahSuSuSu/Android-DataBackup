@@ -181,6 +181,11 @@
     <string name="settings_backup_user_subtitle">The target user while backuping</string>
     <string name="settings_restore_user_subtitle">Data is restored from backup user to restore user</string>
     <string name="backup_storage_method">Backup storage method</string>
+    <string name="select_backup_app">Select backup app</string>
+    <string name="blacklist">Blacklist</string>
+    <string name="manifest">Manifest</string>
+    <string name="selected_app">Selected app</string>
+    <string name="selected_data">Selected data</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
         <item>FTP</item>
         <item>WebDAV</item>

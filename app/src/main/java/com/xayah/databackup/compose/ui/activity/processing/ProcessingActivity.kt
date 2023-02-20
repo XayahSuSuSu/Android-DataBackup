@@ -36,7 +36,7 @@ class ProcessingActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val viewModel = ViewModelProvider(this)[ProcessingViewModel::class.java]
-        val type = intent.getStringExtra(ProcessingActivityTag)
+        val type = intent.getStringExtra(TypeActivityTag)
         val that = this
 
         when (type) {

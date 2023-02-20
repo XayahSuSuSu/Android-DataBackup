@@ -225,7 +225,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onFloatingActionButtonClick(l: () -> Unit) {
         startActivity(Intent(this, ProcessingActivity::class.java).apply {
-            putExtra(ProcessingActivityTag, TypeRestoreApp)
+            putExtra(TypeActivityTag, TypeRestoreApp)
         })
     }
 }

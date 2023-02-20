@@ -38,6 +38,9 @@
             android:name=".compose.ui.activity.main.MainActivity"
             android:exported="false" />
         <activity
+            android:name=".compose.ui.activity.list.ListActivity"
+            android:exported="false" />
+        <activity
             android:name=".compose.ui.activity.settings.SettingsActivity"
             android:exported="false" />
         <activity

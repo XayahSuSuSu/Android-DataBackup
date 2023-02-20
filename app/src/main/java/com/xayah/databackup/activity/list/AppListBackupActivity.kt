@@ -202,7 +202,7 @@ class AppListBackupActivity : AppListBaseActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onFloatingActionButtonClick(l: () -> Unit) {
         startActivity(Intent(this, ProcessingActivity::class.java).apply {
-            putExtra(ProcessingActivityTag, TypeBackupApp)
+            putExtra(TypeActivityTag, TypeBackupApp)
         })
     }
 }

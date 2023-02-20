@@ -10,7 +10,6 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.compose.ui.activity.main.components.MainScaffold
-import com.xayah.databackup.compose.ui.activity.main.components.MainViewModel
 import com.xayah.databackup.compose.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.RemoteFile
 import kotlinx.coroutines.launch

@@ -1,6 +1,9 @@
 package com.xayah.databackup.data
 
 import android.graphics.drawable.Drawable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.google.gson.annotations.Expose
 import com.xayah.databackup.compose.ui.activity.processing.components.ProcessObjectItem
 import okhttp3.internal.toLongOrDefault
@@ -149,7 +152,31 @@ data class AppInfoBackup(
     @Expose var detailBackup: AppInfoDetailBackup = AppInfoDetailBackup(),  // 备份详情
     @Expose var storageStats: AppInfoStorageStats = AppInfoStorageStats(),  // 存储相关
     var isOnThisDevice: Boolean = false,
-) : AppInfoBase()
+) : AppInfoBase() {
+    private var _selectApp by mutableStateOf(detailBackup.selectApp)
+    private var _selectData by mutableStateOf(detailBackup.selectData)
+    var selectApp: Boolean = false
+        get() = run {
+            _selectApp = detailBackup.selectApp
+            _selectApp
+        }
+        set(value) = run {
+            field = value
+            _selectApp = value
+            detailBackup.selectApp = value
+        }
+
+    var selectData: Boolean = false
+        get() = run {
+            _selectData = detailBackup.selectData
+            _selectData
+        }
+        set(value) = run {
+            field = value
+            _selectData = value
+            detailBackup.selectData = value
+        }
+}
 
 /**
  * 恢复应用信息

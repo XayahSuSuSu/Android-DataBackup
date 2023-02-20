@@ -134,9 +134,9 @@ enum class ProcessingObjectType {
 }
 
 /**
- * ProcessingActivity项目类型
+ * 项目类型
  */
-const val ProcessingActivityTag = "ProcessingActivityTag"
+const val TypeActivityTag = "TypeActivityTag"
 const val TypeBackupApp = "TypeBackupApp"
 const val TypeBackupMedia = "TypeBackupMedia"
 const val TypeRestoreApp = "TypeRestoreApp"

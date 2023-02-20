@@ -16,7 +16,7 @@ import com.xayah.databackup.App
 import com.xayah.databackup.activity.list.AppListRestoreActivity
 import com.xayah.databackup.compose.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.data.AppInfoBaseNum
-import com.xayah.databackup.data.ProcessingActivityTag
+import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeRestoreApp
 import com.xayah.databackup.data.TypeRestoreMedia
 import com.xayah.databackup.util.*
@@ -151,14 +151,14 @@ class RestoreViewModel : ViewModel() {
     @OptIn(ExperimentalMaterial3Api::class)
     fun onRestoreAppBtnClick(v: View) {
         v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
-            putExtra(ProcessingActivityTag, TypeRestoreApp)
+            putExtra(TypeActivityTag, TypeRestoreApp)
         })
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
     fun onRestoreMediaBtnClick(v: View) {
         v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
-            putExtra(ProcessingActivityTag, TypeRestoreMedia)
+            putExtra(TypeActivityTag, TypeRestoreMedia)
         })
     }
 

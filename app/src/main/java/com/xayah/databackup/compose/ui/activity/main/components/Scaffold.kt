@@ -19,10 +19,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
-import com.xayah.databackup.activity.list.AppListBackupActivity
 import com.xayah.databackup.activity.list.AppListRestoreActivity
+import com.xayah.databackup.compose.ui.activity.list.ListActivity
 import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
-import com.xayah.databackup.data.ProcessingActivityTag
+import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeBackupApp
 
 @ExperimentalMaterial3Api
@@ -84,9 +84,9 @@ fun MainScaffold(isInitialized: Boolean) {
                         subtitle = stringResource(R.string.card_app_subtitle),
                         onBackupClick = {
                             context.startActivity(
-                                Intent(context, AppListBackupActivity::class.java).apply {
+                                Intent(context, ListActivity::class.java).apply {
                                     putExtra(
-                                        ProcessingActivityTag,
+                                        TypeActivityTag,
                                         TypeBackupApp
                                     )
                                 })
@@ -95,7 +95,7 @@ fun MainScaffold(isInitialized: Boolean) {
                             context.startActivity(
                                 Intent(context, AppListRestoreActivity::class.java).apply {
                                     putExtra(
-                                        ProcessingActivityTag,
+                                        TypeActivityTag,
                                         TypeBackupApp
                                     )
                                 })
