@@ -156,14 +156,14 @@ class BackupViewModel : ViewModel() {
         v.context.startActivity(Intent(v.context, AppListBackupActivity::class.java))
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @ExperimentalMaterial3Api
     fun onBackupAppBtnClick(v: View) {
         v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
             putExtra(TypeActivityTag, TypeBackupApp)
         })
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @ExperimentalMaterial3Api
     fun onBackupMediaBtnClick(v: View) {
         v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
             putExtra(TypeActivityTag, TypeBackupMedia)

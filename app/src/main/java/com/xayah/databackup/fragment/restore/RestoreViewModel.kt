@@ -148,14 +148,14 @@ class RestoreViewModel : ViewModel() {
         v.context.startActivity(Intent(v.context, AppListRestoreActivity::class.java))
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @ExperimentalMaterial3Api
     fun onRestoreAppBtnClick(v: View) {
         v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
             putExtra(TypeActivityTag, TypeRestoreApp)
         })
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @ExperimentalMaterial3Api
     fun onRestoreMediaBtnClick(v: View) {
         v.context.startActivity(Intent(v.context, ProcessingActivity::class.java).apply {
             putExtra(TypeActivityTag, TypeRestoreMedia)

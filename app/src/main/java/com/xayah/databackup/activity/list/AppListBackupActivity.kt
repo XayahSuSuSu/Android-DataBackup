@@ -199,7 +199,7 @@ class AppListBackupActivity : AppListBaseActivity() {
         GsonUtil.saveAppInfoBackupMapToFile(GlobalObject.getInstance().appInfoBackupMap.value)
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @ExperimentalMaterial3Api
     override fun onFloatingActionButtonClick(l: () -> Unit) {
         startActivity(Intent(this, ProcessingActivity::class.java).apply {
             putExtra(TypeActivityTag, TypeBackupApp)

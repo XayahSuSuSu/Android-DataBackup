@@ -222,7 +222,7 @@ class AppListRestoreActivity : AppListBaseActivity() {
         GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @ExperimentalMaterial3Api
     override fun onFloatingActionButtonClick(l: () -> Unit) {
         startActivity(Intent(this, ProcessingActivity::class.java).apply {
             putExtra(TypeActivityTag, TypeRestoreApp)

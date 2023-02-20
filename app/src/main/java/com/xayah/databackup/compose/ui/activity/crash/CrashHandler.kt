@@ -39,7 +39,7 @@ class CrashHandler(private val mContext: Context) : Thread.UncaughtExceptionHand
     /**
      * 异常捕获
      */
-    @OptIn(ExperimentalMaterial3Api::class)
+    @ExperimentalMaterial3Api
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         if (!handleException(throwable) && mDefaultHandler != null) {
             // 使用系统默认的异常处理器处理
