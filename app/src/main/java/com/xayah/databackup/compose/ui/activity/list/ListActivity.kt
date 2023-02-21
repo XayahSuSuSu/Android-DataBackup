@@ -116,15 +116,19 @@ class ListActivity : ComponentActivity() {
                             when (type) {
                                 TypeBackupApp -> {
                                     toAppBackupProcessing(this)
+                                    finish()
                                 }
                                 TypeBackupMedia -> {
                                     toMediaBackupProcessing(this)
+                                    finish()
                                 }
                                 TypeRestoreApp -> {
                                     toAppRestoreProcessing(this)
+                                    finish()
                                 }
                                 TypeRestoreMedia -> {
                                     toMediaRestoreProcessing(this)
+                                    finish()
                                 }
                             }
                         } else {
