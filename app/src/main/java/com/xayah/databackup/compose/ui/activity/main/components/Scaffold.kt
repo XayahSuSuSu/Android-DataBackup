@@ -22,6 +22,7 @@ import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.compose.ui.components.Scaffold
 import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeBackupApp
+import com.xayah.databackup.data.TypeBackupMedia
 import com.xayah.databackup.data.TypeRestoreApp
 
 @ExperimentalMaterial3Api
@@ -94,7 +95,15 @@ fun MainScaffold(isInitialized: Boolean) {
                         iconTint = colorYellow,
                         title = stringResource(id = R.string.media),
                         subtitle = stringResource(R.string.card_media_subtitle),
-                        onBackupClick = {},
+                        onBackupClick = {
+                            context.startActivity(
+                                Intent(context, ListActivity::class.java).apply {
+                                    putExtra(
+                                        TypeActivityTag,
+                                        TypeBackupMedia
+                                    )
+                                })
+                        },
                         onRestoreClick = {}
                     )
                 }

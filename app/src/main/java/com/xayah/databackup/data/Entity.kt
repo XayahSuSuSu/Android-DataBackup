@@ -265,7 +265,20 @@ abstract class MediaInfoBase(
  */
 data class MediaInfoBackup(
     @Expose var backupDetail: MediaInfoDetailBase = MediaInfoDetailBase(),
-) : MediaInfoBase()
+) : MediaInfoBase() {
+    private var _selectData by mutableStateOf(backupDetail.data)
+
+    var selectData: Boolean = false
+        get() = run {
+            _selectData = backupDetail.data
+            _selectData
+        }
+        set(value) = run {
+            field = value
+            _selectData = value
+            backupDetail.data = value
+        }
+}
 
 /**
  * 媒体恢复信息

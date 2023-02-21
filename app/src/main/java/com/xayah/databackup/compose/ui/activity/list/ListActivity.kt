@@ -42,7 +42,9 @@ class ListActivity : ComponentActivity() {
                         TypeBackupApp -> {
                             onAppBackupInitialize(viewModel)
                         }
-                        TypeBackupMedia -> {}
+                        TypeBackupMedia -> {
+                            onMediaBackupInitialize(viewModel)
+                        }
                         TypeRestoreApp -> {
                             onAppRestoreInitialize(viewModel)
                         }
@@ -61,7 +63,9 @@ class ListActivity : ComponentActivity() {
                                 TypeBackupApp -> {
                                     onAppBackupManifest(viewModel, this@ListActivity)
                                 }
-                                TypeBackupMedia -> {}
+                                TypeBackupMedia -> {
+                                    onMediaBackupManifest(viewModel, this@ListActivity)
+                                }
                                 TypeRestoreApp -> {
                                     onAppRestoreManifest(viewModel, this@ListActivity)
                                 }
@@ -72,7 +76,9 @@ class ListActivity : ComponentActivity() {
                                 TypeBackupApp -> {
                                     onAppBackupContent(viewModel)
                                 }
-                                TypeBackupMedia -> {}
+                                TypeBackupMedia -> {
+                                    onMediaBackupContent(viewModel)
+                                }
                                 TypeRestoreApp -> {
                                     onAppRestoreContent(viewModel)
                                 }
@@ -86,7 +92,9 @@ class ListActivity : ComponentActivity() {
                                 TypeBackupApp -> {
                                     toAppBackupProcessing(this)
                                 }
-                                TypeBackupMedia -> {}
+                                TypeBackupMedia -> {
+                                    toMediaBackupProcessing(this)
+                                }
                                 TypeRestoreApp -> {
                                     toAppRestoreProcessing(this)
                                 }
@@ -119,7 +127,9 @@ class ListActivity : ComponentActivity() {
                 TypeBackupApp -> {
                     onAppBackupMapSave()
                 }
-                TypeBackupMedia -> {}
+                TypeBackupMedia -> {
+                    onMediaBackupMapSave()
+                }
                 TypeRestoreApp -> {
                     onAppRestoreMapSave()
                 }
