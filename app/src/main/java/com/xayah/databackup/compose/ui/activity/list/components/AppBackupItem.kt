@@ -21,7 +21,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.R
-import com.xayah.databackup.compose.ui.activity.list.components.animation.ExpandAnimation
+import com.xayah.databackup.compose.ui.components.animation.ItemExpandAnimation
 import com.xayah.databackup.data.AppInfoBackup
 
 @ExperimentalAnimationApi
@@ -142,7 +142,7 @@ fun AppBackupItem(appInfoBackup: AppInfoBackup, modifier: Modifier = Modifier) {
                 }
             }
         }
-        ExpandAnimation(expand) {
+        ItemExpandAnimation(expand) {
             if (it) {
                 Row {
                     TextButton(onClick = { }) { Text(stringResource(R.string.blacklist)) }

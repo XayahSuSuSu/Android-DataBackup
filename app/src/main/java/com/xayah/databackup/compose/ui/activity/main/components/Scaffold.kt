@@ -1,6 +1,8 @@
 package com.xayah.databackup.compose.ui.activity.main.components
 
 import android.content.Intent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,12 +23,17 @@ import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.list.ListActivity
 import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.compose.ui.components.Scaffold
+import com.xayah.databackup.compose.ui.components.animation.ContentFade
+import com.xayah.databackup.compose.ui.components.animation.ContentFadeSlideHorizontallyAnimation
 import com.xayah.databackup.data.*
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
-fun MainScaffold(isInitialized: Boolean) {
+fun MainScaffold(
+    isInitialized: MutableTransitionState<Boolean>
+) {
     val context = LocalContext.current
 
     Scaffold(
@@ -43,7 +50,7 @@ fun MainScaffold(isInitialized: Boolean) {
                 },
                 scrollBehavior = this,
                 actions = {
-                    if (isInitialized)
+                    ContentFade(isInitialized) {
                         IconButton(onClick = {
                             context.startActivity(
                                 Intent(context, SettingsActivity::class.java)
@@ -54,13 +61,24 @@ fun MainScaffold(isInitialized: Boolean) {
                                 contentDescription = stringResource(id = R.string.settings)
                             )
                         }
+                    }
                 },
             )
         },
         topPaddingRate = 1,
         content = {
-            if (isInitialized) {
+            if (isInitialized.targetState.not()) {
                 item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+            item {
+                ContentFadeSlideHorizontallyAnimation(isInitialized) {
                     val colorYellow = colorResource(id = R.color.yellow)
                     ItemCard(
                         icon = ImageVector.vectorResource(id = R.drawable.ic_round_apps),
@@ -87,11 +105,13 @@ fun MainScaffold(isInitialized: Boolean) {
                         }
                     )
                 }
-                item {
-                    val colorYellow = colorResource(id = R.color.blue)
+            }
+            item {
+                ContentFadeSlideHorizontallyAnimation(isInitialized) {
+                    val colorBlue = colorResource(id = R.color.blue)
                     ItemCard(
                         icon = ImageVector.vectorResource(id = R.drawable.ic_round_image),
-                        iconTint = colorYellow,
+                        iconTint = colorBlue,
                         title = stringResource(id = R.string.media),
                         subtitle = stringResource(R.string.card_media_subtitle),
                         onBackupClick = {
@@ -113,15 +133,6 @@ fun MainScaffold(isInitialized: Boolean) {
                                 })
                         }
                     )
-                }
-            } else {
-                item {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        CircularProgressIndicator()
-                    }
                 }
             }
         }

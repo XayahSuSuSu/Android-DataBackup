@@ -1,6 +1,7 @@
-package com.xayah.databackup.compose.ui.activity.list.components.animation
+package com.xayah.databackup.compose.ui.components.animation
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,7 +11,7 @@ import androidx.compose.ui.unit.IntSize
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun ExpandAnimation(
+fun ItemExpandAnimation(
     expanded: Boolean,
     content: @Composable (AnimatedVisibilityScope.(Boolean) -> Unit)
 ) {
@@ -35,6 +36,34 @@ fun ExpandAnimation(
                         }
                     }
         },
+        content = content
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun ContentFade(
+    visibleState: MutableTransitionState<Boolean>,
+    content: @Composable() (AnimatedVisibilityScope.() -> Unit)
+) {
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        content = content
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun ContentFadeSlideHorizontallyAnimation(
+    visibleState: MutableTransitionState<Boolean>,
+    content: @Composable() AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visibleState = visibleState,
+        enter = fadeIn() + slideInHorizontally(),
+        exit = fadeOut() + slideOutHorizontally(),
         content = content
     )
 }

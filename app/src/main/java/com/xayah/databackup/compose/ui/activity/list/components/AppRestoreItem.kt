@@ -26,7 +26,7 @@ import androidx.core.graphics.drawable.toDrawable
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.compose.ui.activity.list.components.animation.ExpandAnimation
+import com.xayah.databackup.compose.ui.components.animation.ItemExpandAnimation
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Path
@@ -190,7 +190,7 @@ fun AppRestoreItem(appInfoRestore: AppInfoRestore, modifier: Modifier = Modifier
                 }
             }
         }
-        ExpandAnimation(expand) {
+        ItemExpandAnimation(expand) {
             if (it) {
                 Row {
                     TextButton(onClick = { }) { Text(stringResource(R.string.delete)) }

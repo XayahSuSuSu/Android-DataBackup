@@ -1,8 +1,8 @@
 package com.xayah.databackup.compose.ui.activity.main
 
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainViewModel : ViewModel() {
-    val isRemoteFileInitialized = MutableStateFlow(false)
+    val isRemoteFileInitialized = MutableTransitionState(false)
 }

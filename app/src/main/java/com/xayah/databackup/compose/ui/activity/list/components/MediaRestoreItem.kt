@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.databackup.R
-import com.xayah.databackup.compose.ui.activity.list.components.animation.ExpandAnimation
+import com.xayah.databackup.compose.ui.components.animation.ItemExpandAnimation
 import com.xayah.databackup.data.MediaInfoRestore
 import com.xayah.databackup.util.Command
 
@@ -134,7 +134,7 @@ fun MediaRestoreItem(mediaInfoRestore: MediaInfoRestore, modifier: Modifier = Mo
                 }
             }
         }
-        ExpandAnimation(expand) {
+        ItemExpandAnimation(expand) {
             if (it) {
                 Row {
                     TextButton(onClick = { }) { Text(stringResource(R.string.delete)) }

@@ -2,6 +2,7 @@ package com.xayah.databackup.compose.ui.activity.list.components.content
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,7 @@ import com.xayah.databackup.util.*
 import java.text.Collator
 import java.util.*
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.contentAppRestore(list: List<AppInfoRestore>, onSearch: (String) -> Unit) {
@@ -118,6 +120,7 @@ fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Contex
     contentManifest(list)
 }
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.onAppRestoreContent(viewModel: ListViewModel) {
