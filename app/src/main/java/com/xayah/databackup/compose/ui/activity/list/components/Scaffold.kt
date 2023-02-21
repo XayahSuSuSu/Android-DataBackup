@@ -1,35 +1,38 @@
 package com.xayah.databackup.compose.ui.activity.list.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.components.Scaffold
+import com.xayah.databackup.compose.ui.components.animation.ContentFade
 
 @ExperimentalMaterial3Api
 @Composable
 fun ListScaffold(
-    isInitialized: Boolean,
+    isInitialized: MutableTransitionState<Boolean>,
     topBarTitle: String,
     onManifest: Boolean,
     content: LazyListScope.() -> Unit,
     onNext: () -> Unit,
     onFinish: () -> Unit
 ) {
+    val mediumPadding = dimensionResource(R.dimen.padding_medium)
     Scaffold(
         floatingActionButton = {
-            if (isInitialized) {
+            ContentFade(isInitialized) {
                 FloatingActionButton(
+                    modifier = Modifier.padding(mediumPadding),
                     onClick = onNext,
                 ) {
                     Icon(Icons.Rounded.ArrowForward, null)
@@ -60,19 +63,9 @@ fun ListScaffold(
             )
         },
         topPaddingRate = 1,
+        isInitialized = isInitialized,
         content = {
-            if (isInitialized) {
-                content(this)
-            } else {
-                item {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
+            content(this)
         }
     )
 }

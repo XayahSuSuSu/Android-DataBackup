@@ -62,7 +62,7 @@ suspend fun onAppRestoreInitialize(viewModel: ListViewModel) {
                 .compareTo(collator.getCollationKey(appInfo2.detailBase.appName))
         }
     }
-    viewModel.isInitialized.value = true
+    viewModel.isInitialized.targetState = true
 }
 
 @ExperimentalMaterial3Api
@@ -126,7 +126,7 @@ fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Contex
 fun LazyListScope.onAppRestoreContent(viewModel: ListViewModel) {
     contentAppRestore(list = viewModel.appRestoreList.value) { value ->
         viewModel.appRestoreList.value.apply {
-            viewModel.isInitialized.value = false
+            viewModel.isInitialized.targetState = false
             clear()
             addAll(
                 GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
@@ -137,7 +137,7 @@ fun LazyListScope.onAppRestoreContent(viewModel: ListViewModel) {
                                     .contains(value.lowercase())
                     }
             )
-            viewModel.isInitialized.value = true
+            viewModel.isInitialized.targetState = true
         }
     }
 }

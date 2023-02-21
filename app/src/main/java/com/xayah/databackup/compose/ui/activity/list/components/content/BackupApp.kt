@@ -63,7 +63,7 @@ suspend fun onAppBackupInitialize(viewModel: ListViewModel) {
                 .compareTo(collator.getCollationKey(appInfo2.detailBase.appName))
         }
     }
-    viewModel.isInitialized.value = true
+    viewModel.isInitialized.targetState = true
 }
 
 @ExperimentalMaterial3Api
@@ -127,7 +127,7 @@ fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context
 fun LazyListScope.onAppBackupContent(viewModel: ListViewModel) {
     contentAppBackup(list = viewModel.appBackupList.value) { value ->
         viewModel.appBackupList.value.apply {
-            viewModel.isInitialized.value = false
+            viewModel.isInitialized.targetState = false
             clear()
             addAll(
                 GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
@@ -139,7 +139,7 @@ fun LazyListScope.onAppBackupContent(viewModel: ListViewModel) {
                                     .contains(value.lowercase())
                     }
             )
-            viewModel.isInitialized.value = true
+            viewModel.isInitialized.targetState = true
         }
     }
 }

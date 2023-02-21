@@ -1,5 +1,6 @@
 package com.xayah.databackup.compose.ui.activity.list
 
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.data.AppInfoBackup
@@ -9,7 +10,7 @@ import com.xayah.databackup.data.MediaInfoRestore
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class ListViewModel : ViewModel() {
-    val isInitialized = MutableStateFlow(false)
+    val isInitialized = MutableTransitionState(false)
     val onManifest = MutableStateFlow(false)
 
     // 备份应用列表

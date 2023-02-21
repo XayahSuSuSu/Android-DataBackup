@@ -20,8 +20,6 @@ import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeRestoreMedia
 import com.xayah.databackup.data.ofBackupStrategy
 import com.xayah.databackup.util.*
-import java.text.Collator
-import java.util.*
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -47,21 +45,8 @@ suspend fun onMediaRestoreInitialize(viewModel: ListViewModel) {
     viewModel.mediaRestoreList.value.addAll(
         GlobalObject.getInstance().mediaInfoRestoreMap.value.values.toList()
     )
-    viewModel.mediaRestoreList.value.sortWith { mediaInfo1, mediaInfo2 ->
-        if (mediaInfo1 == null && mediaInfo2 == null) {
-            0
-        } else if (mediaInfo1 == null) {
-            -1
-        } else if (mediaInfo2 == null) {
-            1
-        } else {
-            val collator = Collator.getInstance(Locale.CHINA)
-            collator.getCollationKey(mediaInfo1.name)
-                .compareTo(collator.getCollationKey(mediaInfo2.name))
-        }
-    }
-
-    viewModel.isInitialized.value = true
+    // 当基于基类成员变量排序时, 会导致LazyColumn key重复使用的bug
+    viewModel.isInitialized.targetState = true
 }
 
 @ExperimentalMaterial3Api
@@ -114,7 +99,7 @@ fun LazyListScope.onMediaRestoreManifest(viewModel: ListViewModel, context: Cont
 fun LazyListScope.onMediaRestoreContent(viewModel: ListViewModel) {
     contentMediaRestore(list = viewModel.mediaRestoreList.value) { value ->
         viewModel.mediaRestoreList.value.apply {
-            viewModel.isInitialized.value = false
+            viewModel.isInitialized.targetState = false
             clear()
             addAll(
                 GlobalObject.getInstance().mediaInfoRestoreMap.value.values.toList()
@@ -125,7 +110,7 @@ fun LazyListScope.onMediaRestoreContent(viewModel: ListViewModel) {
                                     .contains(value.lowercase())
                     }
             )
-            viewModel.isInitialized.value = true
+            viewModel.isInitialized.targetState = true
         }
     }
 }

@@ -4,14 +4,10 @@ import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -24,7 +20,6 @@ import com.xayah.databackup.compose.ui.activity.list.ListActivity
 import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.compose.ui.components.Scaffold
 import com.xayah.databackup.compose.ui.components.animation.ContentFade
-import com.xayah.databackup.compose.ui.components.animation.ContentFadeSlideHorizontallyAnimation
 import com.xayah.databackup.data.*
 
 @ExperimentalAnimationApi
@@ -66,74 +61,61 @@ fun MainScaffold(
             )
         },
         topPaddingRate = 1,
+        isInitialized = isInitialized,
         content = {
-            if (isInitialized.targetState.not()) {
-                item {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        CircularProgressIndicator()
+            item {
+                val colorYellow = colorResource(id = R.color.yellow)
+                ItemCard(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_apps),
+                    iconTint = colorYellow,
+                    title = stringResource(id = R.string.application),
+                    subtitle = stringResource(R.string.card_app_subtitle),
+                    onBackupClick = {
+                        context.startActivity(
+                            Intent(context, ListActivity::class.java).apply {
+                                putExtra(
+                                    TypeActivityTag,
+                                    TypeBackupApp
+                                )
+                            })
+                    },
+                    onRestoreClick = {
+                        context.startActivity(
+                            Intent(context, ListActivity::class.java).apply {
+                                putExtra(
+                                    TypeActivityTag,
+                                    TypeRestoreApp
+                                )
+                            })
                     }
-                }
+                )
             }
             item {
-                ContentFadeSlideHorizontallyAnimation(isInitialized) {
-                    val colorYellow = colorResource(id = R.color.yellow)
-                    ItemCard(
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_round_apps),
-                        iconTint = colorYellow,
-                        title = stringResource(id = R.string.application),
-                        subtitle = stringResource(R.string.card_app_subtitle),
-                        onBackupClick = {
-                            context.startActivity(
-                                Intent(context, ListActivity::class.java).apply {
-                                    putExtra(
-                                        TypeActivityTag,
-                                        TypeBackupApp
-                                    )
-                                })
-                        },
-                        onRestoreClick = {
-                            context.startActivity(
-                                Intent(context, ListActivity::class.java).apply {
-                                    putExtra(
-                                        TypeActivityTag,
-                                        TypeRestoreApp
-                                    )
-                                })
-                        }
-                    )
-                }
-            }
-            item {
-                ContentFadeSlideHorizontallyAnimation(isInitialized) {
-                    val colorBlue = colorResource(id = R.color.blue)
-                    ItemCard(
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_round_image),
-                        iconTint = colorBlue,
-                        title = stringResource(id = R.string.media),
-                        subtitle = stringResource(R.string.card_media_subtitle),
-                        onBackupClick = {
-                            context.startActivity(
-                                Intent(context, ListActivity::class.java).apply {
-                                    putExtra(
-                                        TypeActivityTag,
-                                        TypeBackupMedia
-                                    )
-                                })
-                        },
-                        onRestoreClick = {
-                            context.startActivity(
-                                Intent(context, ListActivity::class.java).apply {
-                                    putExtra(
-                                        TypeActivityTag,
-                                        TypeRestoreMedia
-                                    )
-                                })
-                        }
-                    )
-                }
+                val colorBlue = colorResource(id = R.color.blue)
+                ItemCard(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_image),
+                    iconTint = colorBlue,
+                    title = stringResource(id = R.string.media),
+                    subtitle = stringResource(R.string.card_media_subtitle),
+                    onBackupClick = {
+                        context.startActivity(
+                            Intent(context, ListActivity::class.java).apply {
+                                putExtra(
+                                    TypeActivityTag,
+                                    TypeBackupMedia
+                                )
+                            })
+                    },
+                    onRestoreClick = {
+                        context.startActivity(
+                            Intent(context, ListActivity::class.java).apply {
+                                putExtra(
+                                    TypeActivityTag,
+                                    TypeRestoreMedia
+                                )
+                            })
+                    }
+                )
             }
         }
     )
