@@ -9,41 +9,39 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.list.ListViewModel
 import com.xayah.databackup.compose.ui.activity.list.components.ManifestDescItem
-import com.xayah.databackup.compose.ui.activity.list.components.MediaBackupItem
+import com.xayah.databackup.compose.ui.activity.list.components.MediaRestoreItem
 import com.xayah.databackup.compose.ui.activity.list.components.SearchBar
 import com.xayah.databackup.compose.ui.activity.processing.ProcessingActivity
-import com.xayah.databackup.data.MediaInfoBackup
+import com.xayah.databackup.data.MediaInfoRestore
 import com.xayah.databackup.data.TypeActivityTag
-import com.xayah.databackup.data.TypeBackupMedia
+import com.xayah.databackup.data.TypeRestoreMedia
 import com.xayah.databackup.data.ofBackupStrategy
 import com.xayah.databackup.util.*
 import java.text.Collator
 import java.util.*
 
 @ExperimentalMaterial3Api
-fun LazyListScope.contentRestoreBackup(list: List<MediaInfoBackup>, onSearch: (String) -> Unit) {
+fun LazyListScope.contentMediaRestore(list: List<MediaInfoRestore>, onSearch: (String) -> Unit) {
     item {
         SearchBar(onSearch)
     }
     items(
         count = list.size,
-        key = {
-            list[it].name
-        }) { index ->
-        MediaBackupItem(
-            mediaInfoBackup = list[index]
+    ) { index ->
+        MediaRestoreItem(
+            mediaInfoRestore = list[index]
         )
     }
 }
 
-suspend fun onMediaBackupInitialize(viewModel: ListViewModel) {
-    if (GlobalObject.getInstance().mediaInfoBackupMap.value.isEmpty()) {
-        GlobalObject.getInstance().mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap())
+suspend fun onMediaRestoreInitialize(viewModel: ListViewModel) {
+    if (GlobalObject.getInstance().mediaInfoRestoreMap.value.isEmpty()) {
+        GlobalObject.getInstance().mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap())
     }
-    viewModel.mediaBackupList.value.addAll(
-        GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
+    viewModel.mediaRestoreList.value.addAll(
+        GlobalObject.getInstance().mediaInfoRestoreMap.value.values.toList()
     )
-    viewModel.mediaBackupList.value.sortWith { mediaInfo1, mediaInfo2 ->
+    viewModel.mediaRestoreList.value.sortWith { mediaInfo1, mediaInfo2 ->
         if (mediaInfo1 == null && mediaInfo2 == null) {
             0
         } else if (mediaInfo1 == null) {
@@ -56,17 +54,18 @@ suspend fun onMediaBackupInitialize(viewModel: ListViewModel) {
                 .compareTo(collator.getCollationKey(mediaInfo2.name))
         }
     }
+
     viewModel.isInitialized.value = true
 }
 
 @ExperimentalMaterial3Api
-fun LazyListScope.onMediaBackupManifest(viewModel: ListViewModel, context: Context) {
+fun LazyListScope.onMediaRestoreManifest(viewModel: ListViewModel, context: Context) {
     val list = listOf(
         ManifestDescItem(
             title = context.getString(R.string.selected_data),
             subtitle = run {
                 var size = 0
-                for (i in viewModel.mediaBackupList.value) {
+                for (i in viewModel.mediaRestoreList.value) {
                     if (i.selectData) size++
                 }
                 size.toString()
@@ -104,13 +103,13 @@ fun LazyListScope.onMediaBackupManifest(viewModel: ListViewModel, context: Conte
 }
 
 @ExperimentalMaterial3Api
-fun LazyListScope.onMediaBackupContent(viewModel: ListViewModel) {
-    contentRestoreBackup(list = viewModel.mediaBackupList.value) { value ->
-        viewModel.mediaBackupList.value.apply {
+fun LazyListScope.onMediaRestoreContent(viewModel: ListViewModel) {
+    contentMediaRestore(list = viewModel.mediaRestoreList.value) { value ->
+        viewModel.mediaRestoreList.value.apply {
             viewModel.isInitialized.value = false
             clear()
             addAll(
-                GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
+                GlobalObject.getInstance().mediaInfoRestoreMap.value.values.toList()
                     .filter {
                         it.name.lowercase()
                             .contains(value.lowercase()) ||
@@ -124,12 +123,12 @@ fun LazyListScope.onMediaBackupContent(viewModel: ListViewModel) {
 }
 
 @ExperimentalMaterial3Api
-fun toMediaBackupProcessing(context: Context) {
+fun toMediaRestoreProcessing(context: Context) {
     context.startActivity(Intent(context, ProcessingActivity::class.java).apply {
-        putExtra(TypeActivityTag, TypeBackupMedia)
+        putExtra(TypeActivityTag, TypeRestoreMedia)
     })
 }
 
-suspend fun onMediaBackupMapSave() {
-    GsonUtil.saveMediaInfoBackupMapToFile(GlobalObject.getInstance().mediaInfoBackupMap.value)
+suspend fun onMediaRestoreMapSave() {
+    GsonUtil.saveMediaInfoRestoreMapToFile(GlobalObject.getInstance().mediaInfoRestoreMap.value)
 }

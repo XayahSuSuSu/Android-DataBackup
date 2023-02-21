@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.data.MediaInfoBackup
+import com.xayah.databackup.data.MediaInfoRestore
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class ListViewModel : ViewModel() {
@@ -16,13 +17,18 @@ class ListViewModel : ViewModel() {
         MutableStateFlow(SnapshotStateList<AppInfoBackup>())
     }
 
-    // 备份应用列表
-    val mediaBackupMap by lazy {
+    // 备份媒体列表
+    val mediaBackupList by lazy {
         MutableStateFlow(SnapshotStateList<MediaInfoBackup>())
     }
 
     // 恢复应用列表
     val appRestoreList by lazy {
         MutableStateFlow(SnapshotStateList<AppInfoRestore>())
+    }
+
+    // 恢复媒体列表
+    val mediaRestoreList by lazy {
+        MutableStateFlow(SnapshotStateList<MediaInfoRestore>())
     }
 }

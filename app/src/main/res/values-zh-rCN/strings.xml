@@ -169,4 +169,7 @@
     <string name="selected_app">已选应用</string>
     <string name="selected_data">已选数据</string>
     <string name="delete">删除</string>
+    <string name="select_backup_media">选择备份媒体</string>
+    <string name="select_restore_app">选择恢复应用</string>
+    <string name="select_restore_media">选择恢复媒体</string>
 </resources>

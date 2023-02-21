@@ -20,6 +20,7 @@ import com.xayah.databackup.compose.ui.components.Scaffold
 @Composable
 fun ListScaffold(
     isInitialized: Boolean,
+    topBarTitle: String,
     onManifest: Boolean,
     content: LazyListScope.() -> Unit,
     onNext: () -> Unit,
@@ -40,7 +41,7 @@ fun ListScaffold(
                 title = {
                     Text(
                         text = if (onManifest) stringResource(R.string.manifest)
-                        else stringResource(R.string.select_backup_app),
+                        else topBarTitle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleLarge,

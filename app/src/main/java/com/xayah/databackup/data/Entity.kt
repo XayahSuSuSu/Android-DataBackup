@@ -305,6 +305,19 @@ data class MediaInfoRestore(
                 value
             }
         }
+
+    private var _selectData by mutableStateOf(if (detailRestoreList.isEmpty()) false else detailRestoreList[restoreIndex].data)
+
+    var selectData: Boolean = false
+        get() = run {
+            _selectData = detailRestoreList[restoreIndex].data
+            _selectData
+        }
+        set(value) = run {
+            field = value
+            _selectData = value
+            detailRestoreList[restoreIndex].data = value
+        }
 }
 
 /**

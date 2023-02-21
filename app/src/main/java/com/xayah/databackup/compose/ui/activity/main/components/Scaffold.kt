@@ -20,10 +20,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.list.ListActivity
 import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.compose.ui.components.Scaffold
-import com.xayah.databackup.data.TypeActivityTag
-import com.xayah.databackup.data.TypeBackupApp
-import com.xayah.databackup.data.TypeBackupMedia
-import com.xayah.databackup.data.TypeRestoreApp
+import com.xayah.databackup.data.*
 
 @ExperimentalMaterial3Api
 @Composable
@@ -104,7 +101,15 @@ fun MainScaffold(isInitialized: Boolean) {
                                     )
                                 })
                         },
-                        onRestoreClick = {}
+                        onRestoreClick = {
+                            context.startActivity(
+                                Intent(context, ListActivity::class.java).apply {
+                                    putExtra(
+                                        TypeActivityTag,
+                                        TypeRestoreMedia
+                                    )
+                                })
+                        }
                     )
                 }
             } else {

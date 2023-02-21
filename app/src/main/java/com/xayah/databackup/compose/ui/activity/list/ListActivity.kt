@@ -8,8 +8,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.list.components.ListScaffold
 import com.xayah.databackup.compose.ui.activity.list.components.content.*
 import com.xayah.databackup.compose.ui.theme.DataBackupTheme
@@ -48,7 +50,9 @@ class ListActivity : ComponentActivity() {
                         TypeRestoreApp -> {
                             onAppRestoreInitialize(viewModel)
                         }
-                        TypeRestoreMedia -> {}
+                        TypeRestoreMedia -> {
+                            onMediaRestoreInitialize(viewModel)
+                        }
                     }
                 }
 
@@ -56,6 +60,23 @@ class ListActivity : ComponentActivity() {
                 val onManifest by viewModel.onManifest.collectAsState()
                 ListScaffold(
                     isInitialized = isInitialized,
+                    topBarTitle = when (type) {
+                        TypeBackupApp -> {
+                            stringResource(R.string.select_backup_app)
+                        }
+                        TypeBackupMedia -> {
+                            stringResource(R.string.select_backup_media)
+                        }
+                        TypeRestoreApp -> {
+                            stringResource(R.string.select_restore_app)
+                        }
+                        TypeRestoreMedia -> {
+                            stringResource(R.string.select_restore_media)
+                        }
+                        else -> {
+                            ""
+                        }
+                    },
                     onManifest = onManifest,
                     content = {
                         if (onManifest) {
@@ -69,7 +90,9 @@ class ListActivity : ComponentActivity() {
                                 TypeRestoreApp -> {
                                     onAppRestoreManifest(viewModel, this@ListActivity)
                                 }
-                                TypeRestoreMedia -> {}
+                                TypeRestoreMedia -> {
+                                    onMediaRestoreManifest(viewModel, this@ListActivity)
+                                }
                             }
                         } else {
                             when (type) {
@@ -82,7 +105,9 @@ class ListActivity : ComponentActivity() {
                                 TypeRestoreApp -> {
                                     onAppRestoreContent(viewModel)
                                 }
-                                TypeRestoreMedia -> {}
+                                TypeRestoreMedia -> {
+                                    onMediaRestoreContent(viewModel)
+                                }
                             }
                         }
                     },
@@ -98,7 +123,9 @@ class ListActivity : ComponentActivity() {
                                 TypeRestoreApp -> {
                                     toAppRestoreProcessing(this)
                                 }
-                                TypeRestoreMedia -> {}
+                                TypeRestoreMedia -> {
+                                    toMediaRestoreProcessing(this)
+                                }
                             }
                         } else {
                             viewModel.onManifest.value = true
@@ -133,7 +160,9 @@ class ListActivity : ComponentActivity() {
                 TypeRestoreApp -> {
                     onAppRestoreMapSave()
                 }
-                TypeRestoreMedia -> {}
+                TypeRestoreMedia -> {
+                    onMediaRestoreMapSave()
+                }
             }
         }
     }

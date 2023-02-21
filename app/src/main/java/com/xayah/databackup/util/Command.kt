@@ -337,21 +337,13 @@ class Command {
                 )
 
                 // 根据备份目录实际文件调整列表
-                var hasData = false
                 execute("find \"${Path.getBackupMediaSavePath()}\" -name \"*.tar*\" -type f").apply {
-                    // 根据实际文件和配置调整RestoreList
-                    for (i in mediaInfoRestoreMap) {
-                        val tmpList = mutableListOf<MediaInfoDetailBase>()
-                        for (j in i.value.detailRestoreList) {
-                            if (this.out.toString().contains(j.date)) {
-                                tmpList.add(j)
-                            }
-                        }
-                        mediaInfoRestoreMap[i.key]!!.detailRestoreList = tmpList
-                    }
                     if (isSuccess) {
                         this.out.add("///") // 添加尾部元素, 保证原尾部元素参与
-                        var detailList = mutableListOf<MediaInfoDetailBase>()
+
+                        var mediaInfoRestore = MediaInfoRestore()
+                        var detailRestoreList = mutableListOf<MediaInfoDetailBase>()
+                        var hasData = false
                         for ((index, i) in this.out.withIndex()) {
                             try {
                                 if (index < this.out.size - 1) {
@@ -368,42 +360,41 @@ class Command {
                                     val date = info[2]
                                     val dateNext = infoNext[2]
                                     val fileName = info[3]
+
                                     if (info.size == 4) {
                                         if (fileName.contains("${name}.tar"))
                                             hasData = true
 
+                                        if (name != mediaInfoRestore.name) {
+                                            if (mediaInfoRestoreMap.containsKey(name).not()) {
+                                                mediaInfoRestoreMap[name] =
+                                                    MediaInfoRestore().apply {
+                                                        this.name = name
+                                                    }
+                                            }
+                                            mediaInfoRestore = mediaInfoRestoreMap[name]!!
+                                        }
+
                                         if (date != dateNext || name != nameNext) {
                                             // 与下一路径不同日期
+
                                             val detailListIndex =
-                                                detailList.indexOfFirst { date == it.date }
+                                                mediaInfoRestore.detailRestoreList.indexOfFirst { date == it.date }
                                             val detail =
                                                 if (detailListIndex == -1) MediaInfoDetailBase().apply {
                                                     this.date = date
-                                                } else detailList[detailListIndex]
-
+                                                } else mediaInfoRestore.detailRestoreList[detailListIndex]
                                             detail.apply {
                                                 this.data = this.data && hasData
                                             }
 
-                                            if (detailListIndex == -1) detailList.add(detail)
-
-                                            hasData = false
+                                            detailRestoreList.add(detail)
                                         }
                                         if (name != nameNext) {
-                                            // 与下一路径不同包名
-                                            // 寻找已保存的数据
-                                            if (mediaInfoRestoreMap.containsKey(name).not()) {
-                                                mediaInfoRestoreMap[name] = MediaInfoRestore()
-                                            }
-                                            val mediaInfoRestore = mediaInfoRestoreMap[name]!!
-
-                                            mediaInfoRestore.apply {
-                                                this.name = name
-                                                this.detailRestoreList = detailList
-                                            }
-
+                                            mediaInfoRestore.detailRestoreList = detailRestoreList
+                                            mediaInfoRestore.name = name
+                                            detailRestoreList = mutableListOf()
                                             hasData = false
-                                            detailList = mutableListOf()
                                         }
                                     }
                                 }
@@ -414,6 +405,7 @@ class Command {
                     }
                 }
             }
+            mediaInfoRestoreMap.remove("")
             return mediaInfoRestoreMap
         }
 

@@ -187,6 +187,9 @@
     <string name="selected_app">Selected app</string>
     <string name="selected_data">Selected data</string>
     <string name="delete">Delete</string>
+    <string name="select_backup_media">Select backup media</string>
+    <string name="select_restore_app">Select restore app</string>
+    <string name="select_restore_media">Select restore media</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
         <item>FTP</item>
         <item>WebDAV</item>
