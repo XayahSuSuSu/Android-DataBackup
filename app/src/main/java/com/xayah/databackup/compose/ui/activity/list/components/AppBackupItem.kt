@@ -25,7 +25,7 @@ import com.xayah.databackup.data.AppInfoBackup
 @ExperimentalMaterial3Api
 @Composable
 fun AppBackupItem(appInfoBackup: AppInfoBackup) {
-    val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
+    val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
@@ -53,7 +53,7 @@ fun AppBackupItem(appInfoBackup: AppInfoBackup) {
             }) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                modifier = Modifier.size(iconMediumSize),
+                modifier = Modifier.size(iconSmallSize),
                 painter = rememberDrawablePainter(drawable = appInfoBackup.detailBase.appIcon),
                 contentDescription = null
             )

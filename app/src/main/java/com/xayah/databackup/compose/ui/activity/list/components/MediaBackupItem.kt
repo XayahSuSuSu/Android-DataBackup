@@ -25,7 +25,7 @@ import com.xayah.databackup.data.MediaInfoBackup
 @ExperimentalMaterial3Api
 @Composable
 fun MediaBackupItem(mediaInfoBackup: MediaInfoBackup) {
-    val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
+    val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
@@ -42,7 +42,7 @@ fun MediaBackupItem(mediaInfoBackup: MediaInfoBackup) {
             }) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                modifier = Modifier.size(iconMediumSize),
+                modifier = Modifier.size(iconSmallSize),
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_round_android),
                 contentDescription = null
             )

@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -26,8 +25,7 @@ import com.xayah.databackup.util.Command
 @ExperimentalMaterial3Api
 @Composable
 fun MediaRestoreItem(mediaInfoRestore: MediaInfoRestore) {
-    val context = LocalContext.current
-    val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
+    val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
@@ -44,7 +42,7 @@ fun MediaRestoreItem(mediaInfoRestore: MediaInfoRestore) {
             }) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                modifier = Modifier.size(iconMediumSize),
+                modifier = Modifier.size(iconSmallSize),
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_round_android),
                 contentDescription = null
             )

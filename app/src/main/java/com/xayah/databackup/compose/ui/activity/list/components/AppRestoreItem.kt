@@ -35,7 +35,7 @@ import com.xayah.databackup.util.readIsReadIcon
 @Composable
 fun AppRestoreItem(appInfoRestore: AppInfoRestore) {
     val context = LocalContext.current
-    val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
+    val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
@@ -82,7 +82,7 @@ fun AppRestoreItem(appInfoRestore: AppInfoRestore) {
             }
 
             Image(
-                modifier = Modifier.size(iconMediumSize),
+                modifier = Modifier.size(iconSmallSize),
                 painter = rememberDrawablePainter(drawable = appInfoRestore.detailBase.appIcon),
                 contentDescription = null
             )
