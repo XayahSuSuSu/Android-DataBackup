@@ -2,10 +2,12 @@ package com.xayah.databackup.compose.ui.activity.list.components.content
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.Modifier
 import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.list.ListViewModel
 import com.xayah.databackup.compose.ui.activity.list.components.AppBackupItem
@@ -20,6 +22,7 @@ import com.xayah.databackup.util.*
 import java.text.Collator
 import java.util.*
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.contentAppBackup(list: List<AppInfoBackup>, onSearch: (String) -> Unit) {
     item {
@@ -31,6 +34,7 @@ fun LazyListScope.contentAppBackup(list: List<AppInfoBackup>, onSearch: (String)
             list[it].detailBase.packageName
         }) { index ->
         AppBackupItem(
+            modifier = Modifier.animateItemPlacement(),
             appInfoBackup = list[index]
         )
     }
@@ -115,6 +119,7 @@ fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context
     contentManifest(list)
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.onAppBackupContent(viewModel: ListViewModel) {
     contentAppBackup(list = viewModel.appBackupList.value) { value ->

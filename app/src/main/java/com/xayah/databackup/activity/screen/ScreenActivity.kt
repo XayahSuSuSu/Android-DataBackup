@@ -3,6 +3,7 @@ package com.xayah.databackup.activity.screen
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.xayah.databackup.App
@@ -12,6 +13,7 @@ import com.xayah.databackup.util.checkPackageUsageStatsPermission
 import com.xayah.databackup.util.readInitializedVersionName
 import com.xayah.databackup.util.readIsSupportUsageAccess
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 class ScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

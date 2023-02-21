@@ -2,10 +2,12 @@ package com.xayah.databackup.compose.ui.activity.list.components.content
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.Modifier
 import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.list.ListViewModel
 import com.xayah.databackup.compose.ui.activity.list.components.ManifestDescItem
@@ -20,6 +22,7 @@ import com.xayah.databackup.util.*
 import java.text.Collator
 import java.util.*
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.contentMediaRestore(list: List<MediaInfoRestore>, onSearch: (String) -> Unit) {
     item {
@@ -29,6 +32,7 @@ fun LazyListScope.contentMediaRestore(list: List<MediaInfoRestore>, onSearch: (S
         count = list.size,
     ) { index ->
         MediaRestoreItem(
+            modifier = Modifier.animateItemPlacement(),
             mediaInfoRestore = list[index]
         )
     }
@@ -102,6 +106,7 @@ fun LazyListScope.onMediaRestoreManifest(viewModel: ListViewModel, context: Cont
     contentManifest(list)
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.onMediaRestoreContent(viewModel: ListViewModel) {
     contentMediaRestore(list = viewModel.mediaRestoreList.value) { value ->

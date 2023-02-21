@@ -33,7 +33,7 @@ import com.xayah.databackup.util.readIsReadIcon
 
 @ExperimentalMaterial3Api
 @Composable
-fun AppRestoreItem(appInfoRestore: AppInfoRestore) {
+fun AppRestoreItem(appInfoRestore: AppInfoRestore, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
@@ -42,7 +42,7 @@ fun AppRestoreItem(appInfoRestore: AppInfoRestore) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(mediumPadding))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

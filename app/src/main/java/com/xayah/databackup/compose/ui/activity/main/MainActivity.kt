@@ -3,6 +3,7 @@ package com.xayah.databackup.compose.ui.activity.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,6 +15,7 @@ import com.xayah.databackup.compose.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.RemoteFile
 import kotlinx.coroutines.launch
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

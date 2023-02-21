@@ -24,7 +24,7 @@ import com.xayah.databackup.data.MediaInfoBackup
 
 @ExperimentalMaterial3Api
 @Composable
-fun MediaBackupItem(mediaInfoBackup: MediaInfoBackup) {
+fun MediaBackupItem(mediaInfoBackup: MediaInfoBackup, modifier: Modifier = Modifier) {
     val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
@@ -32,7 +32,7 @@ fun MediaBackupItem(mediaInfoBackup: MediaInfoBackup) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(mediumPadding))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

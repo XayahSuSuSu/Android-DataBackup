@@ -1,6 +1,7 @@
 package com.xayah.databackup.compose.ui.activity.main.components
 
 import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,7 @@ import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.compose.ui.components.Scaffold
 import com.xayah.databackup.data.*
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
 fun MainScaffold(isInitialized: Boolean) {
