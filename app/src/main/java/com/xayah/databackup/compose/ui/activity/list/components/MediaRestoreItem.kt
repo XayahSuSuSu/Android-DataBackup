@@ -1,5 +1,6 @@
 package com.xayah.databackup.compose.ui.activity.list.components
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,9 +20,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.databackup.R
+import com.xayah.databackup.compose.ui.activity.list.components.animation.ExpandAnimation
 import com.xayah.databackup.data.MediaInfoRestore
 import com.xayah.databackup.util.Command
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun MediaRestoreItem(mediaInfoRestore: MediaInfoRestore, modifier: Modifier = Modifier) {
@@ -131,9 +134,11 @@ fun MediaRestoreItem(mediaInfoRestore: MediaInfoRestore, modifier: Modifier = Mo
                 }
             }
         }
-        if (expand) {
-            Row {
-                TextButton(onClick = { }) { Text(stringResource(R.string.delete)) }
+        ExpandAnimation(expand) {
+            if (it) {
+                Row {
+                    TextButton(onClick = { }) { Text(stringResource(R.string.delete)) }
+                }
             }
         }
         Divider(modifier = Modifier.padding(nonePadding, tinyPadding))

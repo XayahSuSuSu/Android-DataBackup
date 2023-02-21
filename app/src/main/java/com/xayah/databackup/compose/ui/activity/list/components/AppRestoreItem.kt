@@ -2,6 +2,7 @@ package com.xayah.databackup.compose.ui.activity.list.components
 
 import android.graphics.BitmapFactory
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,12 +26,14 @@ import androidx.core.graphics.drawable.toDrawable
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.compose.ui.activity.list.components.animation.ExpandAnimation
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.RemoteFile
 import com.xayah.databackup.util.readIsReadIcon
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun AppRestoreItem(appInfoRestore: AppInfoRestore, modifier: Modifier = Modifier) {
@@ -187,9 +190,11 @@ fun AppRestoreItem(appInfoRestore: AppInfoRestore, modifier: Modifier = Modifier
                 }
             }
         }
-        if (expand) {
-            Row {
-                TextButton(onClick = { }) { Text(stringResource(R.string.delete)) }
+        ExpandAnimation(expand) {
+            if (it) {
+                Row {
+                    TextButton(onClick = { }) { Text(stringResource(R.string.delete)) }
+                }
             }
         }
         Divider(modifier = Modifier.padding(nonePadding, tinyPadding))
