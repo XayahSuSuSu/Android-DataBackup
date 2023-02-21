@@ -20,25 +20,26 @@ import com.xayah.databackup.util.saveIsReadIcon
 suspend fun onRestoreInitialize(viewModel: SettingsViewModel, context: Context) {
     viewModel.supportAutoFixMultiUserContext.value = Command.checkLsZd()
     context.saveAutoFixMultiUserContext(viewModel.supportAutoFixMultiUserContext.value)
-    viewModel.restoreSwitchItems.value.apply {
-        add(SwitchItem(
-            title = context.getString(R.string.auto_fix_multi_user_context),
-            subtitle = context.getString(R.string.auto_fix_multi_user_context_title),
-            iconId = R.drawable.ic_round_apps,
-            isChecked = viewModel.supportAutoFixMultiUserContext,
-            isEnabled = false,
-            onCheckedChange = {}
-        ))
-        add(SwitchItem(
-            title = context.getString(R.string.read_icon),
-            subtitle = context.getString(R.string.read_icon_title),
-            iconId = R.drawable.ic_round_image,
-            isChecked = mutableStateOf(context.readIsReadIcon()),
-            onCheckedChange = {
-                context.saveIsReadIcon(it)
-            }
-        ))
-    }
+    if (viewModel.restoreSwitchItems.value.isEmpty())
+        viewModel.restoreSwitchItems.value.apply {
+            add(SwitchItem(
+                title = context.getString(R.string.auto_fix_multi_user_context),
+                subtitle = context.getString(R.string.auto_fix_multi_user_context_title),
+                iconId = R.drawable.ic_round_apps,
+                isChecked = viewModel.supportAutoFixMultiUserContext,
+                isEnabled = false,
+                onCheckedChange = {}
+            ))
+            add(SwitchItem(
+                title = context.getString(R.string.read_icon),
+                subtitle = context.getString(R.string.read_icon_title),
+                iconId = R.drawable.ic_round_image,
+                isChecked = mutableStateOf(context.readIsReadIcon()),
+                onCheckedChange = {
+                    context.saveIsReadIcon(it)
+                }
+            ))
+        }
 }
 
 /**

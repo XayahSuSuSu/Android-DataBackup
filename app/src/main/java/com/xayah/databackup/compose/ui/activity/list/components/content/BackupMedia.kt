@@ -42,10 +42,12 @@ suspend fun onMediaBackupInitialize(viewModel: ListViewModel) {
     if (GlobalObject.getInstance().mediaInfoBackupMap.value.isEmpty()) {
         GlobalObject.getInstance().mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap())
     }
-    viewModel.mediaBackupList.value.addAll(
-        GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
-    )
-    // 当基于基类成员变量排序时, 会导致LazyColumn key重复使用的bug
+    if (viewModel.mediaBackupList.value.isEmpty()) {
+        viewModel.mediaBackupList.value.addAll(
+            GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
+        )
+        // 当基于基类成员变量排序时, 会导致LazyColumn key重复使用的bug
+    }
     viewModel.isInitialized.targetState = true
 }
 

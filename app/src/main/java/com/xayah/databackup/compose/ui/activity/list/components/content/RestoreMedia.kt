@@ -42,9 +42,11 @@ suspend fun onMediaRestoreInitialize(viewModel: ListViewModel) {
     if (GlobalObject.getInstance().mediaInfoRestoreMap.value.isEmpty()) {
         GlobalObject.getInstance().mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap())
     }
-    viewModel.mediaRestoreList.value.addAll(
-        GlobalObject.getInstance().mediaInfoRestoreMap.value.values.toList()
-    )
+    if (viewModel.mediaRestoreList.value.isEmpty()) {
+        viewModel.mediaRestoreList.value.addAll(
+            GlobalObject.getInstance().mediaInfoRestoreMap.value.values.toList()
+        )
+    }
     // 当基于基类成员变量排序时, 会导致LazyColumn key重复使用的bug
     viewModel.isInitialized.targetState = true
 }

@@ -17,35 +17,36 @@ import com.xayah.databackup.data.ofBackupStrategy
 import com.xayah.databackup.util.*
 
 fun onBackupInitialize(viewModel: SettingsViewModel, context: Context) {
-    viewModel.backupSwitchItems.value.apply {
-        add(SwitchItem(
-            title = context.getString(R.string.backup_itself),
-            subtitle = context.getString(R.string.backup_itself_title),
-            iconId = R.drawable.ic_round_join_left,
-            isChecked = mutableStateOf(context.readIsBackupItself()),
-            onCheckedChange = {
-                context.saveIsBackupItself(it)
-            }
-        ))
-        add(SwitchItem(
-            title = context.getString(R.string.backup_icon),
-            subtitle = context.getString(R.string.backup_icon_title),
-            iconId = R.drawable.ic_round_image,
-            isChecked = mutableStateOf(context.readIsBackupIcon()),
-            onCheckedChange = {
-                context.saveIsBackupIcon(it)
-            }
-        ))
-        add(SwitchItem(
-            title = context.getString(R.string.backup_test),
-            subtitle = context.getString(R.string.backup_test_title),
-            iconId = R.drawable.ic_round_layers,
-            isChecked = mutableStateOf(context.readIsBackupTest()),
-            onCheckedChange = {
-                context.saveIsBackupTest(it)
-            }
-        ))
-    }
+    if (viewModel.backupSwitchItems.value.isEmpty())
+        viewModel.backupSwitchItems.value.apply {
+            add(SwitchItem(
+                title = context.getString(R.string.backup_itself),
+                subtitle = context.getString(R.string.backup_itself_title),
+                iconId = R.drawable.ic_round_join_left,
+                isChecked = mutableStateOf(context.readIsBackupItself()),
+                onCheckedChange = {
+                    context.saveIsBackupItself(it)
+                }
+            ))
+            add(SwitchItem(
+                title = context.getString(R.string.backup_icon),
+                subtitle = context.getString(R.string.backup_icon_title),
+                iconId = R.drawable.ic_round_image,
+                isChecked = mutableStateOf(context.readIsBackupIcon()),
+                onCheckedChange = {
+                    context.saveIsBackupIcon(it)
+                }
+            ))
+            add(SwitchItem(
+                title = context.getString(R.string.backup_test),
+                subtitle = context.getString(R.string.backup_test_title),
+                iconId = R.drawable.ic_round_layers,
+                isChecked = mutableStateOf(context.readIsBackupTest()),
+                onCheckedChange = {
+                    context.saveIsBackupTest(it)
+                }
+            ))
+        }
 }
 
 /**

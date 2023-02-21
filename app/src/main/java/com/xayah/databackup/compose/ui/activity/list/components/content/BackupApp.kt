@@ -46,21 +46,23 @@ suspend fun onAppBackupInitialize(viewModel: ListViewModel) {
     if (GlobalObject.getInstance().appInfoBackupMap.value.isEmpty()) {
         GlobalObject.getInstance().appInfoBackupMap.emit(Command.getAppInfoBackupMap())
     }
-    viewModel.appBackupList.value.addAll(
-        GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-            .filter { it.detailBase.isSystemApp.not() }
-    )
-    viewModel.appBackupList.value.sortWith { appInfo1, appInfo2 ->
-        if (appInfo1 == null && appInfo2 == null) {
-            0
-        } else if (appInfo1 == null) {
-            -1
-        } else if (appInfo2 == null) {
-            1
-        } else {
-            val collator = Collator.getInstance(Locale.CHINA)
-            collator.getCollationKey(appInfo1.detailBase.appName)
-                .compareTo(collator.getCollationKey(appInfo2.detailBase.appName))
+    if (viewModel.appBackupList.value.isEmpty()) {
+        viewModel.appBackupList.value.addAll(
+            GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
+                .filter { it.detailBase.isSystemApp.not() }
+        )
+        viewModel.appBackupList.value.sortWith { appInfo1, appInfo2 ->
+            if (appInfo1 == null && appInfo2 == null) {
+                0
+            } else if (appInfo1 == null) {
+                -1
+            } else if (appInfo2 == null) {
+                1
+            } else {
+                val collator = Collator.getInstance(Locale.CHINA)
+                collator.getCollationKey(appInfo1.detailBase.appName)
+                    .compareTo(collator.getCollationKey(appInfo2.detailBase.appName))
+            }
         }
     }
     viewModel.isInitialized.targetState = true

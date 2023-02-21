@@ -46,20 +46,22 @@ suspend fun onAppRestoreInitialize(viewModel: ListViewModel) {
     if (GlobalObject.getInstance().appInfoRestoreMap.value.isEmpty()) {
         GlobalObject.getInstance().appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
     }
-    viewModel.appRestoreList.value.addAll(
-        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
-    )
-    viewModel.appRestoreList.value.sortWith { appInfo1, appInfo2 ->
-        if (appInfo1 == null && appInfo2 == null) {
-            0
-        } else if (appInfo1 == null) {
-            -1
-        } else if (appInfo2 == null) {
-            1
-        } else {
-            val collator = Collator.getInstance(Locale.CHINA)
-            collator.getCollationKey(appInfo1.detailBase.appName)
-                .compareTo(collator.getCollationKey(appInfo2.detailBase.appName))
+    if (viewModel.appRestoreList.value.isEmpty()) {
+        viewModel.appRestoreList.value.addAll(
+            GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
+        )
+        viewModel.appRestoreList.value.sortWith { appInfo1, appInfo2 ->
+            if (appInfo1 == null && appInfo2 == null) {
+                0
+            } else if (appInfo1 == null) {
+                -1
+            } else if (appInfo2 == null) {
+                1
+            } else {
+                val collator = Collator.getInstance(Locale.CHINA)
+                collator.getCollationKey(appInfo1.detailBase.appName)
+                    .compareTo(collator.getCollationKey(appInfo2.detailBase.appName))
+            }
         }
     }
     viewModel.isInitialized.targetState = true
