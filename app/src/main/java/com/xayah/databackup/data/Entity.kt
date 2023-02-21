@@ -203,6 +203,30 @@ data class AppInfoRestore(
                 value
             }
         }
+
+    private var _selectApp by mutableStateOf(if (detailRestoreList.isEmpty()) false else detailRestoreList[restoreIndex].selectApp)
+    private var _selectData by mutableStateOf(if (detailRestoreList.isEmpty()) false else detailRestoreList[restoreIndex].selectData)
+    var selectApp: Boolean = false
+        get() = run {
+            _selectApp = detailRestoreList[restoreIndex].selectApp
+            _selectApp
+        }
+        set(value) = run {
+            field = value
+            _selectApp = value
+            detailRestoreList[restoreIndex].selectApp = value
+        }
+
+    var selectData: Boolean = false
+        get() = run {
+            _selectData = detailRestoreList[restoreIndex].selectData
+            _selectData
+        }
+        set(value) = run {
+            field = value
+            _selectData = value
+            detailRestoreList[restoreIndex].selectData = value
+        }
 }
 
 /**

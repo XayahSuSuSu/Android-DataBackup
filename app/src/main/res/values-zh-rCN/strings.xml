@@ -168,4 +168,5 @@
     <string name="manifest">清单</string>
     <string name="selected_app">已选应用</string>
     <string name="selected_data">已选数据</string>
+    <string name="delete">删除</string>
 </resources>

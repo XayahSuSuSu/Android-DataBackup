@@ -186,6 +186,7 @@
     <string name="manifest">Manifest</string>
     <string name="selected_app">Selected app</string>
     <string name="selected_data">Selected data</string>
+    <string name="delete">Delete</string>
     <string-array name="rclone_config_type_array_key" translatable="false">
         <item>FTP</item>
         <item>WebDAV</item>

@@ -72,6 +72,8 @@ fun onRestoreMediaProcessing(
 
             // 前期准备完成
             loadingState.value = LoadingState.Success
+            topBarTitle.value =
+                "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
             for (i in 0 until taskList.size) {
                 // 重置恢复目标
                 objectList[0] = objectList[0].copy(

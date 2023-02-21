@@ -17,12 +17,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
-import com.xayah.databackup.activity.list.AppListRestoreActivity
 import com.xayah.databackup.compose.ui.activity.list.ListActivity
 import com.xayah.databackup.compose.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.compose.ui.components.Scaffold
 import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeBackupApp
+import com.xayah.databackup.data.TypeRestoreApp
 
 @ExperimentalMaterial3Api
 @Composable
@@ -78,10 +78,10 @@ fun MainScaffold(isInitialized: Boolean) {
                         },
                         onRestoreClick = {
                             context.startActivity(
-                                Intent(context, AppListRestoreActivity::class.java).apply {
+                                Intent(context, ListActivity::class.java).apply {
                                     putExtra(
                                         TypeActivityTag,
-                                        TypeBackupApp
+                                        TypeRestoreApp
                                     )
                                 })
                         }

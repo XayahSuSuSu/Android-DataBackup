@@ -114,6 +114,8 @@ fun onBackupAppProcessing(
 
             // 前期准备完成
             loadingState.value = LoadingState.Success
+            topBarTitle.value =
+                "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
             for (i in 0 until taskList.size) {
                 // 重置备份目标
                 for (j in 0 until objectList.size) {

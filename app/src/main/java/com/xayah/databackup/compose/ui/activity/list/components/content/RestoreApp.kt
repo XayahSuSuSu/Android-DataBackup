@@ -8,20 +8,20 @@ import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.databackup.R
 import com.xayah.databackup.compose.ui.activity.list.ListViewModel
-import com.xayah.databackup.compose.ui.activity.list.components.AppBackupItem
+import com.xayah.databackup.compose.ui.activity.list.components.AppRestoreItem
 import com.xayah.databackup.compose.ui.activity.list.components.ManifestDescItem
 import com.xayah.databackup.compose.ui.activity.list.components.SearchBar
 import com.xayah.databackup.compose.ui.activity.processing.ProcessingActivity
-import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.data.TypeActivityTag
-import com.xayah.databackup.data.TypeBackupApp
+import com.xayah.databackup.data.TypeRestoreApp
 import com.xayah.databackup.data.ofBackupStrategy
 import com.xayah.databackup.util.*
 import java.text.Collator
 import java.util.*
 
 @ExperimentalMaterial3Api
-fun LazyListScope.contentAppBackup(list: List<AppInfoBackup>, onSearch: (String) -> Unit) {
+fun LazyListScope.contentAppRestore(list: List<AppInfoRestore>, onSearch: (String) -> Unit) {
     item {
         SearchBar(onSearch)
     }
@@ -30,21 +30,20 @@ fun LazyListScope.contentAppBackup(list: List<AppInfoBackup>, onSearch: (String)
         key = {
             list[it].detailBase.packageName
         }) { index ->
-        AppBackupItem(
-            appInfoBackup = list[index]
+        AppRestoreItem(
+            appInfoRestore = list[index]
         )
     }
 }
 
-suspend fun onAppBackupInitialize(viewModel: ListViewModel) {
-    if (GlobalObject.getInstance().appInfoBackupMap.value.isEmpty()) {
-        GlobalObject.getInstance().appInfoBackupMap.emit(Command.getAppInfoBackupMap())
+suspend fun onAppRestoreInitialize(viewModel: ListViewModel) {
+    if (GlobalObject.getInstance().appInfoRestoreMap.value.isEmpty()) {
+        GlobalObject.getInstance().appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
     }
-    viewModel.appBackupList.value.addAll(
-        GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-            .filter { it.detailBase.isSystemApp.not() }
+    viewModel.appRestoreList.value.addAll(
+        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
     )
-    viewModel.appBackupList.value.sortWith { appInfo1, appInfo2 ->
+    viewModel.appRestoreList.value.sortWith { appInfo1, appInfo2 ->
         if (appInfo1 == null && appInfo2 == null) {
             0
         } else if (appInfo1 == null) {
@@ -61,13 +60,13 @@ suspend fun onAppBackupInitialize(viewModel: ListViewModel) {
 }
 
 @ExperimentalMaterial3Api
-fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context) {
+fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Context) {
     val list = listOf(
         ManifestDescItem(
             title = context.getString(R.string.selected_app),
             subtitle = run {
                 var size = 0
-                for (i in viewModel.appBackupList.value) {
+                for (i in viewModel.appRestoreList.value) {
                     if (i.selectApp) size++
                 }
                 size.toString()
@@ -78,7 +77,7 @@ fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context
             title = context.getString(R.string.selected_data),
             subtitle = run {
                 var size = 0
-                for (i in viewModel.appBackupList.value) {
+                for (i in viewModel.appRestoreList.value) {
                     if (i.selectData) size++
                 }
                 size.toString()
@@ -116,14 +115,13 @@ fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context
 }
 
 @ExperimentalMaterial3Api
-fun LazyListScope.onAppBackupContent(viewModel: ListViewModel) {
-    contentAppBackup(list = viewModel.appBackupList.value) { value ->
-        viewModel.appBackupList.value.apply {
+fun LazyListScope.onAppRestoreContent(viewModel: ListViewModel) {
+    contentAppRestore(list = viewModel.appRestoreList.value) { value ->
+        viewModel.appRestoreList.value.apply {
             viewModel.isInitialized.value = false
             clear()
             addAll(
-                GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-                    .filter { it.detailBase.isSystemApp.not() }
+                GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
                     .filter {
                         it.detailBase.appName.lowercase()
                             .contains(value.lowercase()) ||
@@ -137,12 +135,12 @@ fun LazyListScope.onAppBackupContent(viewModel: ListViewModel) {
 }
 
 @ExperimentalMaterial3Api
-fun toAppBackupProcessing(context: Context) {
+fun toAppRestoreProcessing(context: Context) {
     context.startActivity(Intent(context, ProcessingActivity::class.java).apply {
-        putExtra(TypeActivityTag, TypeBackupApp)
+        putExtra(TypeActivityTag, TypeRestoreApp)
     })
 }
 
-suspend fun onAppBackupMapSave() {
-    GsonUtil.saveAppInfoBackupMapToFile(GlobalObject.getInstance().appInfoBackupMap.value)
+suspend fun onAppRestoreMapSave() {
+    GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
 }

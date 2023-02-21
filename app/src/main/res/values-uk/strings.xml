@@ -168,4 +168,5 @@
     <string name="manifest">Manifest</string>
     <string name="selected_app">Selected app</string>
     <string name="selected_data">Selected data</string>
+    <string name="delete">Delete</string>
 </resources>
