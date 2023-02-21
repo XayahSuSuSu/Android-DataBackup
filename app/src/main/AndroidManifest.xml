@@ -32,31 +32,25 @@
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
         <activity
-            android:name=".compose.ui.activity.guide.GuideActivity"
+            android:name=".ui.activity.guide.GuideActivity"
             android:exported="false" />
         <activity
-            android:name=".compose.ui.activity.main.MainActivity"
+            android:name=".ui.activity.main.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".compose.ui.activity.list.ListActivity"
+            android:name=".ui.activity.list.ListActivity"
             android:exported="false" />
         <activity
-            android:name=".compose.ui.activity.settings.SettingsActivity"
+            android:name=".ui.activity.settings.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".compose.ui.activity.processing.ProcessingActivity"
+            android:name=".ui.activity.processing.ProcessingActivity"
             android:exported="false" />
         <activity
-            android:name=".compose.ui.activity.crash.CrashActivity"
+            android:name=".ui.activity.crash.CrashActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.list.AppListBackupActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.list.AppListRestoreActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.screen.ScreenActivity"
+            android:name=".ui.activity.screen.ScreenActivity"
             android:exported="true"
             android:theme="@style/Theme.DataBackup.SplashScreen">
             <intent-filter>
@@ -65,9 +59,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.main.MainActivity"
-            android:exported="false" />
     </application>
-
 </manifest>

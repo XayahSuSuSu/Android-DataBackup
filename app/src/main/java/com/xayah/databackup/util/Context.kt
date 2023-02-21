@@ -1,10 +1,8 @@
 package com.xayah.databackup.util
 
-import android.app.Activity
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import android.content.ContextWrapper
 import android.os.Build
 import android.os.Process
 import com.xayah.databackup.App
@@ -184,17 +182,6 @@ fun Context.saveAppVersion(value: String) {
 
 fun Context.readAppVersion(): String {
     return readPreferencesString("app_version") ?: ""
-}
-
-fun Context.getActivity(): Activity? {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is Activity) {
-            return context
-        }
-        context = context.baseContext
-    }
-    return null
 }
 
 val List<String>.joinToLineString: String

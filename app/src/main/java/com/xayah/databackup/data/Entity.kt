@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.gson.annotations.Expose
-import com.xayah.databackup.compose.ui.activity.processing.components.ProcessObjectItem
+import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import okhttp3.internal.toLongOrDefault
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue

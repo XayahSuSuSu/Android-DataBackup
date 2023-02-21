@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="red">#FFB1BD</color>
-    <color name="redContainer">#8F0032</color>
 
     <color name="yellow">#FEB96B</color>
-    <color name="yellowContainer">#673E01</color>
 
     <color name="green">#5DDDA2</color>
     <color name="greenContainer">#015232</color>
 
     <color name="blue">#B0C6FF</color>
-    <color name="blueContainer">#0140A1</color>
 
-    <color name="bottom_sheet_dialog_topbar">#CCBBBBBB</color>
-    <color name="bottom_sheet_dialog_topbar_activated">#FFFFFFFF</color>
 </resources>

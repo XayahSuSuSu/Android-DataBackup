@@ -2,7 +2,6 @@
     <string name="app_name">DataBackup</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
-    <string name="home">Home</string>
     <string name="root" translatable="false">Root</string>
     <string name="error">Error</string>
     <string name="application">Application</string>
@@ -13,7 +12,6 @@
     <string name="default_backup_save_path" translatable="false">/storage/emulated/0/DataBackup</string>
     <string name="backup_dir">Backup directory</string>
     <string name="compression_type">Compression type</string>
-    <string name="architecture">Architecture</string>
     <string name="cancel">Cancel</string>
     <string name="tips">Tips</string>
     <string name="success">Success</string>
@@ -25,8 +23,6 @@
     <string name="selected">Selected</string>
     <string name="backup_user">Backup user</string>
     <string name="compression_type_help">Choose compression type of applications and data, which affects both backup and restore. If you don\'t know what this option is for, don\'t change it</string>
-    <string name="backup_user_help">Set backup user for dual/multi-user backup, the backup user folder automatically selected by the backup/restore page. \n\nCurrently passed the test:\nMIUI dual-apps, UserManager, Island.</string>
-    <string name="restore_user_help">Set the recovery user for dual/multi-user recovery, the target user for data recovery. \n\nDual-apps may break after the restoration, and a restart is required to make them work.</string>
     <string name="restore_user">Restore user</string>
     <string name="failed">Failed</string>
     <string name="symbol_tick" translatable="false">✔</string>
@@ -38,23 +34,14 @@
     <string name="welcome_to_use">Welcome to use</string>
     <string name="start_subtitle">According to relevant policies, you need to carefully read and agree to the following User Agreement and Privacy Policy before you start using this application</string>
     <string name="symbol_dot" translatable="false">●</string>
-    <string name="refresh">Refresh</string>
     <string name="internal_storage">Internal storage</string>
-    <string name="check_update">Check update</string>
-    <string name="download">Download</string>
     <string name="support">Support</string>
     <string name="fetch_failed">Fetch failed</string>
     <string name="latest">Latest</string>
     <string name="unsupported_format">Unsupported format</string>
     <string name="fetching">Fetching</string>
     <string name="user">User</string>
-    <string name="backup_app_title">Back up apps and data, here we go</string>
-    <string name="select_app">Select app</string>
-    <string name="start_backup">Start backup</string>
     <string name="media">Media</string>
-    <string name="backup_media_title">Backup your media, or custom directory</string>
-    <string name="edit">Edit</string>
-    <string name="system_app">System app</string>
     <string name="symbol_triangle" translatable="false">▲</string>
     <string name="symbol_anti_triangle" translatable="false">▼</string>
     <string name="speed">Speed</string>
@@ -62,10 +49,6 @@
     <string name="progress">Progress</string>
     <string name="total">Total</string>
     <string name="ready">Ready</string>
-    <string name="add">Add</string>
-    <string name="restore_app_title">Restore your apps and data here</string>
-    <string name="start_restore">Start restore</string>
-    <string name="restore_media_title">Restore your media, or custom directory</string>
     <string name="confirm_remove">Sure to remove it</string>
     <string name="symbol_question">\?</string>
     <string name="remove_files_too">This will remove related files, too</string>
@@ -73,13 +56,10 @@
     <string name="remove_failed">Remove failed</string>
     <string name="start">Start</string>
     <string name="app_retrieved">The retrieved app</string>
-    <string name="backup_whole_dir_for_safe">For archiving, please select the entire DataBackup directory to prevent loss of configuration</string>
     <string name="confirm_remove_all_app_and_data_that_backed_up">Sure to remove all apps and data that backed up</string>
     <string name="please_wait">Please wait</string>
     <string name="log">Log</string>
     <string name="settings">Settings</string>
-    <string name="log_title">Help the developer locate the problem.</string>
-    <string name="clear">Clear</string>
     <string name="stored_in">Stored in</string>
     <string name="dynamic_colors">Dynamic colors</string>
     <string name="dynamic_colors_title">Better Material You. Restart to take effect</string>
@@ -88,27 +68,18 @@
     <string name="backup_itself_title">When backing up the application, it automatically backs up its own installation package to the backup directory</string>
     <string name="auto_fix_multi_user_context">Context fix</string>
     <string name="auto_fix_multi_user_context_title">Auto fix multi-user context, no restart needed for restored multi-user applications</string>
-    <string name="feature_not_supported">Feature not supported for your system</string>
     <string name="backup_dir_not_exist">Backup directory does not exist, want to create a default path?</string>
     <string name="pick_dir">Pick directory</string>
     <string name="create">Create</string>
     <string name="repeat_to_add">Repeat to add!</string>
     <string name="installing">Installing</string>
     <string name="confirm_exit">Sure to quit?</string>
-    <string name="none">None</string>
     <string name="not_selected">Not selected</string>
-    <string name="package_only">Package only</string>
-    <string name="comprehensively_better">Better</string>
-    <string name="faster">Faster</string>
-    <string name="tar" translatable="false">tar</string>
-    <string name="zstd" translatable="false">zstd</string>
-    <string name="lz4" translatable="false">lz4</string>
     <string name="all">All</string>
     <string name="backup_icon">Backup icon</string>
     <string name="backup_icon_title">Backup icon when backing up apps, used to show when restoring</string>
     <string name="clickTheRightBtnToStart">Click the right button to start</string>
     <string name="clickTheRightBtnToFinish">Click the right button to finish</string>
-    <string name="installed_app">Installed app</string>
     <string name="alphabet">Alphabet</string>
     <string name="install_time">Install time</string>
     <string name="sort">Sort</string>
@@ -118,36 +89,19 @@
     <string name="cover_desc">Overwrite existing backup files with each backup, or skip backups if there are no changes, so no matter what, only one copy of your data exists</string>
     <string name="by_time">By time</string>
     <string name="by_time_desc">Each backup is considered a new full backup and is separated according to the backup time, so your data may exist in multiple copies</string>
-    <string name="path">Path</string>
     <string name="remove_selected_backup_files">Remove selected backup files</string>
-    <string name="cloud">Cloud</string>
-    <string name="import_locally">Import locally</string>
-    <string name="update_online">Update online</string>
-    <string name="rclone" translatable="false">Rclone</string>
-    <string name="fusermount" translatable="false">Fusermount</string>
     <string name="prepare_for_downloading">Prepare for downloading</string>
     <string name="dev_fuse" translatable="false">/dev/fuse</string>
     <string name="configuration">Configuration</string>
-    <string name="server_address">Server address</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
-    <string name="remove">Remove</string>
     <string name="name">Name</string>
-    <string name="rclone_config_title">Add, manage or remove Rclone configurations here</string>
-    <string name="usage">Usage</string>
-    <string name="mount">Mount</string>
     <string name="mount_directory_not_selected">Mount directory not selected</string>
-    <string name="type">Type</string>
     <string name="mounted">Mounted</string>
     <string name="not_mounted">Not mounted</string>
-    <string name="port">Port</string>
-    <string name="port_default" translatable="false">21</string>
     <string name="empty_error">This filed couldn\'t be empty</string>
     <string name="rclone_type_other" translatable="false">Other</string>
     <string name="backup_test">Backup test</string>
     <string name="backup_test_title">Automatically test backup files during backup</string>
     <string name="testing">Testing</string>
-    <string name="opensource_link">Open source link</string>
     <string name="check_package_usage_stats_permission">Check package usage stats permission</string>
     <string name="start_desc">All data generated by this application is only used for backup/restore, and is only stored locally. Illegal reselling is strictly prohibited</string>
     <string name="network">Network</string>
@@ -190,14 +144,4 @@
     <string name="select_backup_media">Select backup media</string>
     <string name="select_restore_app">Select restore app</string>
     <string name="select_restore_media">Select restore media</string>
-    <string-array name="rclone_config_type_array_key" translatable="false">
-        <item>FTP</item>
-        <item>WebDAV</item>
-        <item>SMB</item>
-    </string-array>
-    <string-array name="rclone_config_type_array_value" translatable="false">
-        <item>ftp</item>
-        <item>webdav</item>
-        <item>smb</item>
-    </string-array>
 </resources>

@@ -3,9 +3,8 @@ package com.xayah.databackup
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
-import com.xayah.databackup.compose.ui.activity.crash.CrashHandler
+import com.xayah.databackup.ui.activity.crash.CrashHandler
 import com.xayah.databackup.util.*
 import java.io.InputStream
 
@@ -53,6 +52,5 @@ class App : Application() {
         CrashHandler(this).initialize()
         globalContext = this
         versionName = Command.getVersion()
-        if (globalContext.readIsDynamicColors()) DynamicColors.applyToActivitiesIfAvailable(this)
     }
 }

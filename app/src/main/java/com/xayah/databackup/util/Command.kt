@@ -890,7 +890,7 @@ class Command {
          * 获取日期, `timeStamp`为空时获取当前日期, 否则为时间戳转日期
          */
         fun getDate(timeStamp: String = ""): String {
-            var date = ""
+            var date: String
             try {
                 SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).apply {
                     date = if (timeStamp == "") {
