@@ -132,4 +132,5 @@
     <string name="select_backup_media">選擇備份媒體</string>
     <string name="select_restore_app">選擇恢復應用</string>
     <string name="select_restore_media">選擇恢復媒體</string>
+    <string name="backup_dir_as_media_error">無法添加備份目錄作為媒體資料</string>
 </resources>
