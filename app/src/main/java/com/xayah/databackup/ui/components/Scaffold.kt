@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.components.animation.ContentFadeSlideHorizontallyAnimation
+import com.xayah.databackup.ui.components.animation.ContentFade
 
 @ExperimentalMaterial3Api
 @Composable
@@ -50,7 +50,7 @@ fun Scaffold(
                     )
                 }
             }
-            ContentFadeSlideHorizontallyAnimation(isInitialized) {
+            ContentFade(isInitialized) {
                 StandardContent(
                     innerPadding = innerPadding,
                     topPaddingRate = topPaddingRate,

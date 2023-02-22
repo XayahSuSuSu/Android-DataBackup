@@ -16,12 +16,12 @@ import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.list.components.ManifestDesc
 import com.xayah.databackup.ui.activity.list.components.ManifestDescItem
-import com.xayah.databackup.ui.components.animation.ContentFadeSlideHorizontallyAnimation
+import com.xayah.databackup.ui.components.animation.ContentFade
 
 @ExperimentalMaterial3Api
 fun LazyListScope.contentManifest(list: List<ManifestDescItem>) {
     item {
-        ContentFadeSlideHorizontallyAnimation(remember {
+        ContentFade(remember {
             MutableTransitionState(false).apply {
                 targetState = true
             }
