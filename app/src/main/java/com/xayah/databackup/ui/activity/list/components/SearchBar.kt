@@ -24,6 +24,7 @@ import com.xayah.databackup.R
 fun SearchBar(onTextChange: (String) -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
     val nonePadding = dimensionResource(R.dimen.padding_none)
+    val smallPadding = dimensionResource(R.dimen.padding_small)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val iconTinySize = dimensionResource(R.dimen.icon_tiny_size)
 
@@ -46,21 +47,28 @@ fun SearchBar(onTextChange: (String) -> Unit) {
                 contentDescription = null,
             )
         },
-        trailingIcon = {
-            IconButton(
-                modifier = Modifier
-                    .padding(nonePadding, nonePadding, mediumPadding, nonePadding)
-                    .size(iconTinySize),
-                onClick = {
-                    text = ""
-                    onTextChange("")
+        trailingIcon = if (text.isNotEmpty()) {
+            {
+                IconButton(
+                    modifier = Modifier.padding(
+                        nonePadding,
+                        nonePadding,
+                        smallPadding,
+                        nonePadding
+                    ),
+                    onClick = {
+                        text = ""
+                        onTextChange("")
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = null
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = null
-                )
             }
+        } else {
+            null
         },
         colors = TextFieldDefaults.textFieldColors(
             focusedIndicatorColor = Color.Transparent,
