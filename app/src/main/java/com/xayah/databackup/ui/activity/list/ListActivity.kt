@@ -6,14 +6,13 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
@@ -94,26 +93,44 @@ class ListActivity : ComponentActivity() {
                     onManifest = onManifest,
                     actions = {
                         if (onManifest.not()) {
-                            when (type) {
-                                TypeBackupApp -> {
-                                }
-                                TypeBackupMedia -> {
-                                    IconButton(onClick = {
-                                        onMediaBackupAdd(
+                            Row {
+                                val openBottomSheet = remember { mutableStateOf(false) }
+
+                                when (type) {
+                                    TypeBackupApp -> {
+                                        AppBackupBottomSheet(
+                                            isOpen = openBottomSheet,
+                                            viewModel = viewModel
+                                        )
+                                    }
+                                    TypeBackupMedia -> {
+                                        MediaBackupBottomSheet(
+                                            isOpen = openBottomSheet,
                                             viewModel = viewModel,
                                             context = this@ListActivity,
                                             explorer = explorer
                                         )
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.Add,
-                                            contentDescription = null
+                                    }
+                                    TypeRestoreApp -> {
+                                        AppRestoreBottomSheet(
+                                            isOpen = openBottomSheet,
+                                            viewModel = viewModel
+                                        )
+                                    }
+                                    TypeRestoreMedia -> {
+                                        MediaRestoreBottomSheet(
+                                            isOpen = openBottomSheet,
+                                            viewModel = viewModel,
                                         )
                                     }
                                 }
-                                TypeRestoreApp -> {
-                                }
-                                TypeRestoreMedia -> {
+                                IconButton(onClick = {
+                                    openBottomSheet.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Menu,
+                                        contentDescription = null
+                                    )
                                 }
                             }
                         }

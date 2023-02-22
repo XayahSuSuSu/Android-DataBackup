@@ -133,4 +133,7 @@
     <string name="select_restore_app">选择恢复应用</string>
     <string name="select_restore_media">选择恢复媒体</string>
     <string name="backup_dir_as_media_error">无法添加备份目录作为媒体资料</string>
+    <string name="add">添加</string>
+    <string name="select_all">全选</string>
+    <string name="none">无</string>
 </resources>

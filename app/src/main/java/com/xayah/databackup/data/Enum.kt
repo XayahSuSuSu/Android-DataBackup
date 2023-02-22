@@ -14,12 +14,9 @@ enum class AppListType {
  * 应用列表排序类型
  */
 enum class AppListSort {
-    AlphabetAscending,          // 字母表顺序升序
-    AlphabetDescending,         // 字母表顺序降序
-    FirstInstallTimeAscending,  // 首次安装时间升序
-    FirstInstallTimeDescending, // 首次安装时间降序
-    DataSizeAscending,          // 数据大小升序
-    DataSizeDescending,         // 数据大小降序
+    Alphabet,          // 字母表顺序
+    FirstInstallTime,  // 首次安装时间
+    DataSize,          // 数据大小
 }
 
 /**
