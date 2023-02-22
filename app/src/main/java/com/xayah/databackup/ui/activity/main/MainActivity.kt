@@ -13,12 +13,15 @@ import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.ui.activity.main.components.MainScaffold
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.RemoteFile
+import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
+    private lateinit var explorer: MaterialYouFileExplorer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)

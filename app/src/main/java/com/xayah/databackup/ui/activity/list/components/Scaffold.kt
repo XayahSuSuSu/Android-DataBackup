@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.list.components
 
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
@@ -23,6 +24,7 @@ fun ListScaffold(
     isInitialized: MutableTransitionState<Boolean>,
     topBarTitle: String,
     onManifest: Boolean,
+    actions: @Composable() (RowScope.() -> Unit) = {},
     content: LazyListScope.() -> Unit,
     onNext: () -> Unit,
     onFinish: () -> Unit
@@ -60,6 +62,11 @@ fun ListScaffold(
                         )
                     }
                 },
+                actions = {
+                    ContentFade(isInitialized) {
+                        actions()
+                    }
+                }
             )
         },
         topPaddingRate = 1,
