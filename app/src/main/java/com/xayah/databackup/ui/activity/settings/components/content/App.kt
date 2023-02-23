@@ -28,7 +28,7 @@ suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
                 if (mReleaseList.isEmpty()) {
                     viewModel.newestVersion.value = context.getString(R.string.fetch_failed)
                 } else {
-                    viewModel.newestVersion.value = mReleaseList[0].name
+                    viewModel.newestVersion.value = mReleaseList[0].name.replace("App ", "")
                     if (viewModel.newestVersion.value.contains(BuildConfig.VERSION_NAME).not()) {
                         viewModel.newestVersionLink.value = mReleaseList[0].html_url
                     }
@@ -245,6 +245,7 @@ fun LazyListScope.appItems(
             subtitle = "${stringResource(id = R.string.current)}: ${BuildConfig.VERSION_NAME}\n" +
                     "${stringResource(id = R.string.latest)}: ${viewModel.newestVersion.value}",
             icon = ImageVector.vectorResource(id = R.drawable.ic_outline_light),
+            showIconButton = viewModel.newestVersionLink.value.isNotEmpty(),
             iconButton = ImageVector.vectorResource(id = R.drawable.ic_round_download),
             onClick = {
                 toLink()

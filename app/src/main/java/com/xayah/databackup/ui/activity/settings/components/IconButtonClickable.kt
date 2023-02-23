@@ -17,6 +17,7 @@ fun IconButtonClickable(
     title: String,
     subtitle: String,
     icon: ImageVector,
+    showIconButton: Boolean = true,
     iconButton: ImageVector,
     onClick: () -> Unit,
     onIconButtonClick: () -> Unit,
@@ -42,9 +43,10 @@ fun IconButtonClickable(
             )
         },
         trailingContent = {
-            IconButton(onClick = onIconButtonClick) {
-                Icon(iconButton, contentDescription = null)
-            }
+            if (showIconButton)
+                IconButton(onClick = onIconButtonClick) {
+                    Icon(iconButton, contentDescription = null)
+                }
         },
         leadingContent = {
             Icon(
