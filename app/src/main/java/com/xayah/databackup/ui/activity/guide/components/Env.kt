@@ -75,6 +75,7 @@ private suspend fun binRelease(context: Context): LoadingState {
         }
         if (version > localVersion) {
             bin.deleteRecursively()
+            File(binZipPath).deleteRecursively()
         }
         if (!bin.exists()) {
             Command.releaseAssets(
@@ -195,7 +196,10 @@ fun Env(onPass: () -> Unit) {
                 itemId = R.string.release_prebuilt_binaries,
                 cardState = LoadingState.Loading,
                 onCheck = {
-                    binRelease(context)
+                    val state = binRelease(context)
+                    if (state == LoadingState.Failed)
+                        setPermissionDialog(true)
+                    state
                 }
             ),
             EnvItem(
