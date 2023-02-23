@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.activity.list.components
 
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -28,6 +30,7 @@ import com.xayah.databackup.ui.components.animation.ItemExpandAnimation
 @ExperimentalMaterial3Api
 @Composable
 fun AppBackupItem(appInfoBackup: AppInfoBackup, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
@@ -145,7 +148,13 @@ fun AppBackupItem(appInfoBackup: AppInfoBackup, modifier: Modifier = Modifier) {
         ItemExpandAnimation(expand) {
             if (it) {
                 Row {
-                    TextButton(onClick = { }) { Text(stringResource(R.string.blacklist)) }
+                    TextButton(onClick = {
+                        Toast.makeText(
+                            context,
+                            context.getText(R.string.unavailable),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }) { Text(stringResource(R.string.blacklist)) }
                 }
             }
         }

@@ -145,4 +145,5 @@
     <string name="test_subtitle">時刻保持最新</string>
     <string name="update">更新</string>
     <string name="current">當前</string>
+    <string name="unavailable">暫不可用</string>
 </resources>

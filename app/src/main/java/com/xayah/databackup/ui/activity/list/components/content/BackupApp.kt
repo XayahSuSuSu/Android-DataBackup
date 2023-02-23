@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.list.components.content
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -150,6 +152,7 @@ fun AppBackupBottomSheet(
     isOpen: MutableState<Boolean>,
     viewModel: ListViewModel,
 ) {
+    val context = LocalContext.current
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val smallPadding = dimensionResource(R.dimen.padding_small)
@@ -165,7 +168,15 @@ fun AppBackupBottomSheet(
             item {
                 Column(modifier = Modifier
                     .clip(RoundedCornerShape(smallPadding))
-                    .clickable {}
+                    .clickable {
+                        Toast
+                            .makeText(
+                                context,
+                                context.getText(R.string.unavailable),
+                                Toast.LENGTH_SHORT
+                            )
+                            .show()
+                    }
                     .padding(smallPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(tinyPadding)
