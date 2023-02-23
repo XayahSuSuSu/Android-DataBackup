@@ -138,3 +138,33 @@ const val TypeBackupApp = "TypeBackupApp"
 const val TypeBackupMedia = "TypeBackupMedia"
 const val TypeRestoreApp = "TypeRestoreApp"
 const val TypeRestoreMedia = "TypeRestoreMedia"
+
+/**
+ * 更新通道
+ */
+enum class UpdateChannel {
+    Stable,
+    Test,
+}
+
+/**
+ * String转UpdateChannel枚举
+ */
+fun toUpdateChannel(s: String?): UpdateChannel {
+    return try {
+        UpdateChannel.valueOf(s!!)
+    } catch (e: Exception) {
+        UpdateChannel.Test
+    }
+}
+
+fun ofUpdateChannel(updateChannel: UpdateChannel): String {
+    return when (updateChannel) {
+        UpdateChannel.Stable -> {
+            GlobalString.stable
+        }
+        UpdateChannel.Test -> {
+            GlobalString.test
+        }
+    }
+}

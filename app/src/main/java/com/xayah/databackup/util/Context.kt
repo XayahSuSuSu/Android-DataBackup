@@ -7,7 +7,9 @@ import android.os.Build
 import android.os.Process
 import com.xayah.databackup.App
 import com.xayah.databackup.data.BackupStrategy
+import com.xayah.databackup.data.UpdateChannel
 import com.xayah.databackup.data.toBackupStrategy
+import com.xayah.databackup.data.toUpdateChannel
 
 fun Context.savePreferences(key: String, value: String) {
     getSharedPreferences("settings", MODE_PRIVATE).edit().apply {
@@ -182,6 +184,14 @@ fun Context.saveAppVersion(value: String) {
 
 fun Context.readAppVersion(): String {
     return readPreferencesString("app_version") ?: ""
+}
+
+fun Context.saveUpdateChannel(updateChannel: UpdateChannel) {
+    savePreferences("update_channel", updateChannel.toString().trim())
+}
+
+fun Context.readUpdateChannel(): UpdateChannel {
+    return toUpdateChannel(readPreferencesString("update_channel"))
 }
 
 val List<String>.joinToLineString: String

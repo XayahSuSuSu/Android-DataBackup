@@ -2,7 +2,9 @@ package com.xayah.databackup.util
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.xayah.databackup.App
 import com.xayah.databackup.data.Release
+import com.xayah.databackup.data.UpdateChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -15,7 +17,17 @@ import java.io.IOException
  * 过滤Release列表, 仅读取应用版本
  */
 fun MutableList<Release>.appReleaseList(): MutableList<Release> {
-    return this.filter { !it.name.contains("Check") && !it.name.contains("Extend") }.toMutableList()
+    return this.filter {
+        it.name.contains("App ") &&
+                when (App.globalContext.readUpdateChannel()) {
+                    UpdateChannel.Stable -> {
+                        it.name.contains("-").not()
+                    }
+                    UpdateChannel.Test -> {
+                        true
+                    }
+                }
+    }.toMutableList()
 }
 
 class Server {

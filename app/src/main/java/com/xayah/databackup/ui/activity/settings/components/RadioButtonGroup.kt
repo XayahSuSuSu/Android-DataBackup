@@ -39,7 +39,10 @@ fun <T> RadioButtonGroup(
                     .fillMaxWidth()
                     .selectable(
                         selected = (item == selected.value),
-                        onClick = { onItemClick(item, selected) },
+                        onClick = {
+                            if (onItemEnabled(item))
+                                onItemClick(item, selected)
+                        },
                         role = Role.RadioButton
                     )
                     .padding(horizontal = mediumPadding),

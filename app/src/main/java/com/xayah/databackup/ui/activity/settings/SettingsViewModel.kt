@@ -8,6 +8,10 @@ import com.xayah.databackup.ui.activity.settings.components.SwitchItem
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class SettingsViewModel : ViewModel() {
+    // 应用相关设置项
+    val newestVersion by lazy { mutableStateOf("") }
+    val newestVersionLink by lazy { mutableStateOf("") }
+
     // 备份相关设置项
     val backupSwitchItems by lazy {
         MutableStateFlow(SnapshotStateList<SwitchItem>())

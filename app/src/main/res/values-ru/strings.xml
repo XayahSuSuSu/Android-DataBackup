@@ -136,4 +136,13 @@
     <string name="add">Добавить</string>
     <string name="select_all">Select all</string>
     <string name="none">Ни одного</string>
+    <string name="opensource_link">Ссылка на открытый исходный код</string>
+    <string name="stable">Stable</string>
+    <string name="test">Test</string>
+    <string name="update_channel">Update Channel</string>
+    <string name="update_channel_subtitle">Type of updates</string>
+    <string name="stable_subtitle">Stable and reliable</string>
+    <string name="test_subtitle">Catch up with the newest</string>
+    <string name="update">Update</string>
+    <string name="current">Current</string>
 </resources>

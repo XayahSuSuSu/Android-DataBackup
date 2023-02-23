@@ -1,6 +1,8 @@
 package com.xayah.databackup.ui.activity.settings.components.content
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
@@ -9,16 +11,44 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
+import com.xayah.databackup.data.UpdateChannel
+import com.xayah.databackup.data.ofUpdateChannel
+import com.xayah.databackup.ui.activity.settings.SettingsViewModel
 import com.xayah.databackup.ui.activity.settings.components.*
 import com.xayah.databackup.util.*
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
+
+suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
+    if (viewModel.newestVersion.value.isEmpty() || viewModel.newestVersionLink.value.isEmpty()) {
+        Server.getInstance().releases(
+            successCallback = { releaseList ->
+                val mReleaseList = releaseList.appReleaseList()
+                if (mReleaseList.isEmpty()) {
+                    viewModel.newestVersion.value = context.getString(R.string.fetch_failed)
+                } else {
+                    viewModel.newestVersion.value = mReleaseList[0].name
+                    if (viewModel.newestVersion.value.contains(BuildConfig.VERSION_NAME).not()) {
+                        viewModel.newestVersionLink.value = mReleaseList[0].html_url
+                    }
+                }
+            },
+            failedCallback = {
+                viewModel.newestVersion.value = context.getString(R.string.fetch_failed)
+            })
+    }
+}
 
 /**
  * 应用相关设置项
  */
 @ExperimentalMaterial3Api
-fun LazyListScope.appItems(context: Context, explorer: MaterialYouFileExplorer) {
+fun LazyListScope.appItems(
+    viewModel: SettingsViewModel,
+    context: Context,
+    explorer: MaterialYouFileExplorer
+) {
     item {
         Title(title = stringResource(id = R.string.application))
     }
@@ -165,6 +195,81 @@ fun LazyListScope.appItems(context: Context, explorer: MaterialYouFileExplorer) 
                         onSetBackupSavePath(context, path)
                     }
                 }
+            }
+        )
+    }
+    item {
+        val items =
+            listOf(
+                DescItem(
+                    title = stringResource(id = R.string.stable),
+                    subtitle = stringResource(id = R.string.stable_subtitle),
+                    enabled = false
+                ),
+                DescItem(
+                    title = stringResource(id = R.string.test),
+                    subtitle = stringResource(id = R.string.test_subtitle),
+                )
+            )
+        val enumItems = arrayOf(UpdateChannel.Stable, UpdateChannel.Test)
+        SingleChoiceDescClickable(
+            title = stringResource(id = R.string.update_channel),
+            subtitle = stringResource(id = R.string.update_channel_subtitle),
+            icon = ImageVector.vectorResource(id = R.drawable.ic_round_key),
+            content = ofUpdateChannel(context.readUpdateChannel()),
+            onPrepare = {
+                var value =
+                    items.find { it.title == ofUpdateChannel(context.readUpdateChannel()) }
+                if (value == null) value = items[0]
+                Pair(items, value!!)
+            },
+            onConfirm = { value ->
+                try {
+                    context.saveUpdateChannel(enumItems[items.indexOf(value)])
+                } catch (e: Exception) {
+                    context.saveUpdateChannel(UpdateChannel.Stable)
+                }
+            }
+        )
+    }
+    item {
+        val toLink = {
+            if (viewModel.newestVersionLink.value.isNotEmpty()) {
+                val uri = Uri.parse(viewModel.newestVersionLink.value)
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                context.startActivity(intent)
+            }
+        }
+        IconButtonClickable(
+            title = stringResource(id = R.string.update),
+            subtitle = "${stringResource(id = R.string.current)}: ${BuildConfig.VERSION_NAME}\n" +
+                    "${stringResource(id = R.string.latest)}: ${viewModel.newestVersion.value}",
+            icon = ImageVector.vectorResource(id = R.drawable.ic_outline_light),
+            iconButton = ImageVector.vectorResource(id = R.drawable.ic_round_download),
+            onClick = {
+                toLink()
+            },
+            onIconButtonClick = {
+                toLink()
+            }
+        )
+    }
+    item {
+        val toGitHub = {
+            val uri = Uri.parse(context.getString(R.string.project_github_link))
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            context.startActivity(intent)
+        }
+        IconButtonClickable(
+            title = stringResource(id = R.string.opensource_link),
+            subtitle = stringResource(id = R.string.project_github_link),
+            icon = ImageVector.vectorResource(id = R.drawable.logo_github),
+            iconButton = ImageVector.vectorResource(id = R.drawable.ic_round_link),
+            onClick = {
+                toGitHub()
+            },
+            onIconButtonClick = {
+                toGitHub()
             }
         )
     }

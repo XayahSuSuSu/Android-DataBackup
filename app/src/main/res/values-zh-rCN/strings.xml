@@ -136,4 +136,13 @@
     <string name="add">添加</string>
     <string name="select_all">全选</string>
     <string name="none">无</string>
+    <string name="opensource_link">开源地址</string>
+    <string name="stable">稳定</string>
+    <string name="test">测试</string>
+    <string name="update_channel">更新通道</string>
+    <string name="update_channel_subtitle">检查更新的类型</string>
+    <string name="stable_subtitle">稳定可靠</string>
+    <string name="test_subtitle">时刻保持最新</string>
+    <string name="update">更新</string>
+    <string name="current">当前</string>
 </resources>

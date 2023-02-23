@@ -67,7 +67,7 @@ fun SettingsScaffold(
         topPaddingRate = 1,
         content = {
             // 应用
-            appItems(context = context, explorer = explorer)
+            appItems(viewModel = viewModel, context = context, explorer = explorer)
 
             // 用户
             userItems(list = viewModel.userSingleChoiceTextClickableItemsItems.value)

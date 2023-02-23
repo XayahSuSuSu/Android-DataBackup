@@ -8,6 +8,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.ui.activity.settings.components.SettingsScaffold
+import com.xayah.databackup.ui.activity.settings.components.content.onAppInitialize
 import com.xayah.databackup.ui.activity.settings.components.content.onBackupInitialize
 import com.xayah.databackup.ui.activity.settings.components.content.onRestoreInitialize
 import com.xayah.databackup.ui.activity.settings.components.content.onUserInitialize
@@ -25,6 +26,7 @@ class SettingsActivity : ComponentActivity() {
 
         val viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
         viewModel.viewModelScope.launch {
+            onAppInitialize(viewModel, this@SettingsActivity)
             onUserInitialize(viewModel, this@SettingsActivity)
             onBackupInitialize(viewModel, this@SettingsActivity)
             onRestoreInitialize(viewModel, this@SettingsActivity)

@@ -14,7 +14,8 @@ import com.xayah.databackup.R
 
 data class DescItem(
     val title: String,
-    val subtitle: String
+    val subtitle: String,
+    val enabled: Boolean = true,
 )
 
 @ExperimentalMaterial3Api
@@ -38,7 +39,8 @@ fun RadioButtonDescDialog(
             RadioButtonGroup(
                 items = items,
                 selected = selected,
-                itemVerticalArrangement = Arrangement.spacedBy(smallPadding)
+                itemVerticalArrangement = Arrangement.spacedBy(smallPadding),
+                onItemEnabled = { it.enabled }
             ) {
                 Column {
                     Text(
