@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.list.components
 
 import android.graphics.BitmapFactory
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -9,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.*
@@ -28,16 +30,19 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.ui.components.animation.ItemExpandAnimation
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.Path
-import com.xayah.databackup.util.RemoteFile
-import com.xayah.databackup.util.readIsReadIcon
+import com.xayah.databackup.util.*
+import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun AppRestoreItem(appInfoRestore: AppInfoRestore, modifier: Modifier = Modifier) {
+fun AppRestoreItem(
+    appInfoRestore: AppInfoRestore,
+    modifier: Modifier = Modifier,
+    onItemUpdate: () -> Unit
+) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
@@ -156,9 +161,15 @@ fun AppRestoreItem(appInfoRestore: AppInfoRestore, modifier: Modifier = Modifier
                             expanded = dateMenu,
                             onDismissRequest = { dateMenu = false }
                         ) {
-                            val items = mutableListOf<String>()
-                            appInfoRestore.detailRestoreList.forEach { items.add(Command.getDate(it.date)) }
-                            for ((index, i) in items.withIndex()) {
+                            val appInfoRestores = mutableListOf<String>()
+                            appInfoRestore.detailRestoreList.forEach {
+                                appInfoRestores.add(
+                                    Command.getDate(
+                                        it.date
+                                    )
+                                )
+                            }
+                            for ((index, i) in appInfoRestores.withIndex()) {
                                 DropdownMenuItem(
                                     text = { Text(i) },
                                     onClick = {
@@ -192,8 +203,51 @@ fun AppRestoreItem(appInfoRestore: AppInfoRestore, modifier: Modifier = Modifier
         }
         ItemExpandAnimation(expand) {
             if (it) {
+                val isDialogOpen = remember {
+                    mutableStateOf(false)
+                }
+                ConfirmDialog(
+                    isOpen = isDialogOpen,
+                    icon = Icons.Rounded.Info,
+                    title = stringResource(id = R.string.delete),
+                    content = {
+                        Text(
+                            text = stringResource(R.string.delete_confirm)
+                        )
+                    }) {
+                    scope.launch {
+                        Command.rm("${Path.getBackupDataSavePath()}/${appInfoRestore.detailBase.packageName}/${appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].date}")
+                            .apply {
+                                if (this) {
+                                    appInfoRestore.detailRestoreList.remove(
+                                        appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex]
+                                    )
+                                    appInfoRestore.restoreIndex--
+                                    if (appInfoRestore.detailRestoreList.isEmpty()) {
+                                        GlobalObject.getInstance().appInfoRestoreMap.value.remove(
+                                            appInfoRestore.detailBase.packageName
+                                        )
+                                    }
+                                    onItemUpdate()
+                                    Toast.makeText(
+                                        context,
+                                        GlobalString.success,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        GlobalString.failed,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                    }
+                }
                 Row {
-                    TextButton(onClick = { }) { Text(stringResource(R.string.delete)) }
+                    TextButton(onClick = {
+                        isDialogOpen.value = true
+                    }) { Text(stringResource(R.string.delete)) }
                 }
             }
         }

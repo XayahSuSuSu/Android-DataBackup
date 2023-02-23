@@ -38,16 +38,24 @@ import com.xayah.databackup.util.*
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
-fun LazyListScope.contentMediaRestore(list: List<MediaInfoRestore>, onSearch: (String) -> Unit) {
+fun LazyListScope.contentMediaRestore(
+    list: List<MediaInfoRestore>,
+    onSearch: (String) -> Unit,
+    onItemUpdate: () -> Unit
+) {
     item {
         SearchBar(onSearch)
     }
     items(
         count = list.size,
+        key = {
+            list[it].name
+        }
     ) { index ->
         MediaRestoreItem(
             modifier = Modifier.animateItemPlacement(),
-            mediaInfoRestore = list[index]
+            mediaInfoRestore = list[index],
+            onItemUpdate = onItemUpdate
         )
     }
 }
@@ -111,10 +119,14 @@ fun LazyListScope.onMediaRestoreManifest(viewModel: ListViewModel, context: Cont
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.onMediaRestoreContent(viewModel: ListViewModel) {
-    contentMediaRestore(list = viewModel.mediaRestoreList.value) { value ->
-        viewModel.searchText.value = value
-        refreshMediaRestoreList(viewModel)
-    }
+    contentMediaRestore(list = viewModel.mediaRestoreList.value,
+        onSearch = { value ->
+            viewModel.searchText.value = value
+            refreshMediaRestoreList(viewModel)
+        },
+        onItemUpdate = {
+            refreshMediaRestoreList(viewModel)
+        })
 }
 
 @ExperimentalMaterial3Api

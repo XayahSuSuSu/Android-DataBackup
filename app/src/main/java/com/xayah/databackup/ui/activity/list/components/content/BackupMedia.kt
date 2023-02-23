@@ -3,6 +3,7 @@ package com.xayah.databackup.ui.activity.list.components.content
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -39,9 +40,14 @@ import com.xayah.databackup.util.*
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
-fun LazyListScope.contentRestoreBackup(list: List<MediaInfoBackup>, onSearch: (String) -> Unit) {
+fun LazyListScope.contentRestoreBackup(
+    list: List<MediaInfoBackup>,
+    onSearch: (String) -> Unit,
+    onItemUpdate: () -> Unit
+) {
     item {
         SearchBar(onSearch)
     }
@@ -52,7 +58,8 @@ fun LazyListScope.contentRestoreBackup(list: List<MediaInfoBackup>, onSearch: (S
         }) { index ->
         MediaBackupItem(
             modifier = Modifier.animateItemPlacement(),
-            mediaInfoBackup = list[index]
+            mediaInfoBackup = list[index],
+            onItemUpdate = onItemUpdate
         )
     }
 }
@@ -112,13 +119,19 @@ fun LazyListScope.onMediaBackupManifest(viewModel: ListViewModel, context: Conte
     contentManifest(list)
 }
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.onMediaBackupContent(viewModel: ListViewModel) {
-    contentRestoreBackup(list = viewModel.mediaBackupList.value) { value ->
-        viewModel.searchText.value = value
-        refreshMediaBackupList(viewModel)
-    }
+    contentRestoreBackup(
+        list = viewModel.mediaBackupList.value,
+        onSearch = { value ->
+            viewModel.searchText.value = value
+            refreshMediaBackupList(viewModel)
+        },
+        onItemUpdate = {
+            refreshMediaBackupList(viewModel)
+        })
 }
 
 @ExperimentalMaterial3Api

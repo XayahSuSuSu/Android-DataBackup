@@ -159,4 +159,5 @@
     <string name="update">Update</string>
     <string name="current">Current</string>
     <string name="unavailable">Unavailable</string>
+    <string name="delete_confirm">Sure to delete the selection</string>
 </resources>

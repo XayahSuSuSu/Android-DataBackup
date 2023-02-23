@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.activity.list.components
 
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -7,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.*
@@ -15,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -23,11 +26,21 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.MediaInfoRestore
 import com.xayah.databackup.ui.components.animation.ItemExpandAnimation
 import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.Path
+import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun MediaRestoreItem(mediaInfoRestore: MediaInfoRestore, modifier: Modifier = Modifier) {
+fun MediaRestoreItem(
+    mediaInfoRestore: MediaInfoRestore,
+    modifier: Modifier = Modifier,
+    onItemUpdate: () -> Unit
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
@@ -137,7 +150,50 @@ fun MediaRestoreItem(mediaInfoRestore: MediaInfoRestore, modifier: Modifier = Mo
         ItemExpandAnimation(expand) {
             if (it) {
                 Row {
-                    TextButton(onClick = { }) { Text(stringResource(R.string.delete)) }
+                    val isDialogOpen = remember {
+                        mutableStateOf(false)
+                    }
+                    ConfirmDialog(
+                        isOpen = isDialogOpen,
+                        icon = Icons.Rounded.Info,
+                        title = stringResource(id = R.string.delete),
+                        content = {
+                            Text(
+                                text = stringResource(R.string.delete_confirm)
+                            )
+                        }) {
+                        scope.launch {
+                            Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfoRestore.name}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}")
+                                .apply {
+                                    if (this) {
+                                        mediaInfoRestore.detailRestoreList.remove(
+                                            mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex]
+                                        )
+                                        mediaInfoRestore.restoreIndex--
+                                        if (mediaInfoRestore.detailRestoreList.isEmpty()) {
+                                            GlobalObject.getInstance().mediaInfoRestoreMap.value.remove(
+                                                mediaInfoRestore.name
+                                            )
+                                        }
+                                        onItemUpdate()
+                                        Toast.makeText(
+                                            context,
+                                            GlobalString.success,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            GlobalString.failed,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                        }
+                    }
+                    TextButton(onClick = {
+                        isDialogOpen.value = true
+                    }) { Text(stringResource(R.string.delete)) }
                 }
             }
         }

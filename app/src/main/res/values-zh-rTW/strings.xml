@@ -146,4 +146,5 @@
     <string name="update">更新</string>
     <string name="current">當前</string>
     <string name="unavailable">暫不可用</string>
+    <string name="delete_confirm">確定刪除所選嗎</string>
 </resources>

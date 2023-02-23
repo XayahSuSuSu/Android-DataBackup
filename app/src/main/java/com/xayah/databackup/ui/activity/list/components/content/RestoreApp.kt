@@ -42,7 +42,11 @@ import java.util.*
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
-fun LazyListScope.contentAppRestore(list: List<AppInfoRestore>, onSearch: (String) -> Unit) {
+fun LazyListScope.contentAppRestore(
+    list: List<AppInfoRestore>,
+    onSearch: (String) -> Unit,
+    onItemUpdate: () -> Unit
+) {
     item {
         SearchBar(onSearch)
     }
@@ -53,7 +57,8 @@ fun LazyListScope.contentAppRestore(list: List<AppInfoRestore>, onSearch: (Strin
         }) { index ->
         AppRestoreItem(
             modifier = Modifier.animateItemPlacement(),
-            appInfoRestore = list[index]
+            appInfoRestore = list[index],
+            onItemUpdate = onItemUpdate
         )
     }
 }
@@ -127,10 +132,16 @@ fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Contex
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.onAppRestoreContent(viewModel: ListViewModel) {
-    contentAppRestore(list = viewModel.appRestoreList.value) { value ->
-        viewModel.searchText.value = value
-        refreshAppRestoreList(viewModel)
-    }
+    contentAppRestore(
+        list = viewModel.appRestoreList.value,
+        onSearch = { value ->
+            viewModel.searchText.value = value
+            refreshAppRestoreList(viewModel)
+        },
+        onItemUpdate = {
+            refreshAppRestoreList(viewModel)
+        }
+    )
 }
 
 @ExperimentalMaterial3Api
