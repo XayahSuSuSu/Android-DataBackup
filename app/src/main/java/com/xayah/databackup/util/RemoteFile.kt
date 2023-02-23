@@ -71,4 +71,12 @@ class RemoteFile {
     fun writeBytes(path: String, bytes: ByteArray): Boolean {
         return ipc.writeBytes(path, bytes)
     }
+
+    fun initActionLogFile(path: String): Boolean {
+        return ipc.initActionLogFile(path)
+    }
+
+    fun appendActionLog(text: String): Boolean {
+        return ipc.appendActionLog(text)
+    }
 }

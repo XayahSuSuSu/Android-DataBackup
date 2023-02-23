@@ -5,6 +5,8 @@ import java.io.File
 import java.io.FileOutputStream
 
 class RemoteFileIPC : IRemoteFileService.Stub() {
+    private lateinit var actionLogFile: File
+
     override fun exists(path: String?): Boolean {
         return if (path != null) {
             try {
@@ -89,6 +91,32 @@ class RemoteFileIPC : IRemoteFileService.Stub() {
                 val fileOutputStream = FileOutputStream(path)
                 fileOutputStream.write(bytes)
                 fileOutputStream.close()
+                true
+            } catch (e: Exception) {
+                false
+            }
+        } else {
+            false
+        }
+    }
+
+    override fun initActionLogFile(path: String?): Boolean {
+        return if (path != null) {
+            try {
+                actionLogFile = File(path)
+                true
+            } catch (e: Exception) {
+                false
+            }
+        } else {
+            false
+        }
+    }
+
+    override fun appendActionLog(text: String?): Boolean {
+        return if (text != null) {
+            try {
+                actionLogFile.appendText(text)
                 true
             } catch (e: Exception) {
                 false

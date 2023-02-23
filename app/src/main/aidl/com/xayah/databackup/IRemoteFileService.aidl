@@ -8,4 +8,6 @@ interface IRemoteFileService {
     byte[] readBytes(String path);
     boolean writeText(String path, String text);
     boolean writeBytes(String path, in byte[] bytes);
+    boolean initActionLogFile(String path);
+    boolean appendActionLog(String text);
 }
