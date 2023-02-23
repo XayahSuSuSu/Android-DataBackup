@@ -62,7 +62,7 @@ suspend fun onMediaBackupInitialize(viewModel: ListViewModel) {
         GlobalObject.getInstance().mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap())
     }
     if (viewModel.mediaBackupList.value.isEmpty()) {
-        filterMediaBackupNone(viewModel)
+        refreshMediaBackupList(viewModel)
         // 当基于基类成员变量排序时, 会导致LazyColumn key重复使用的bug
     }
     viewModel.isInitialized.targetState = true
@@ -116,20 +116,8 @@ fun LazyListScope.onMediaBackupManifest(viewModel: ListViewModel, context: Conte
 @ExperimentalMaterial3Api
 fun LazyListScope.onMediaBackupContent(viewModel: ListViewModel) {
     contentRestoreBackup(list = viewModel.mediaBackupList.value) { value ->
-        viewModel.mediaBackupList.value.apply {
-            viewModel.isInitialized.targetState = false
-            clear()
-            addAll(
-                GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
-                    .filter {
-                        it.name.lowercase()
-                            .contains(value.lowercase()) ||
-                                it.path.lowercase()
-                                    .contains(value.lowercase())
-                    }
-            )
-            viewModel.isInitialized.targetState = true
-        }
+        viewModel.searchText.value = value
+        refreshMediaBackupList(viewModel)
     }
 }
 
@@ -289,7 +277,7 @@ fun MediaBackupBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.None) {
                             viewModel.filter.value = AppListFilter.None
-                            filterMediaBackupNone(viewModel)
+                            refreshMediaBackupList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.none)) },
@@ -310,7 +298,7 @@ fun MediaBackupBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.Selected) {
                             viewModel.filter.value = AppListFilter.Selected
-                            filterMediaBackupSelected(viewModel)
+                            refreshMediaBackupList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.selected)) },
@@ -331,7 +319,7 @@ fun MediaBackupBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.NotSelected) {
                             viewModel.filter.value = AppListFilter.NotSelected
-                            filterMediaBackupNotSelected(viewModel)
+                            refreshMediaBackupList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.not_selected)) },
@@ -354,29 +342,62 @@ fun MediaBackupBottomSheet(
 
 fun filterMediaBackupNone(
     viewModel: ListViewModel,
+    predicate: (MediaInfoBackup) -> Boolean
 ) {
     viewModel.mediaBackupList.value.clear()
     viewModel.mediaBackupList.value.addAll(
         GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
+            .filter(predicate)
     )
 }
 
 fun filterMediaBackupSelected(
     viewModel: ListViewModel,
+    predicate: (MediaInfoBackup) -> Boolean
 ) {
     viewModel.mediaBackupList.value.clear()
     viewModel.mediaBackupList.value.addAll(
         GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
             .filter { it.selectData }
+            .filter(predicate)
     )
 }
 
 fun filterMediaBackupNotSelected(
     viewModel: ListViewModel,
+    predicate: (MediaInfoBackup) -> Boolean
 ) {
     viewModel.mediaBackupList.value.clear()
     viewModel.mediaBackupList.value.addAll(
         GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
             .filter { it.selectData.not() }
+            .filter(predicate)
     )
+}
+
+fun filterMediaBackup(
+    viewModel: ListViewModel,
+    predicate: (MediaInfoBackup) -> Boolean = {
+        val value = viewModel.searchText.value
+        it.name.lowercase()
+            .contains(value.lowercase()) ||
+                it.path.lowercase()
+                    .contains(value.lowercase())
+    }
+) {
+    when (viewModel.filter.value) {
+        AppListFilter.None -> {
+            filterMediaBackupNone(viewModel, predicate)
+        }
+        AppListFilter.Selected -> {
+            filterMediaBackupSelected(viewModel, predicate)
+        }
+        AppListFilter.NotSelected -> {
+            filterMediaBackupNotSelected(viewModel, predicate)
+        }
+    }
+}
+
+fun refreshMediaBackupList(viewModel: ListViewModel) {
+    filterMediaBackup(viewModel)
 }

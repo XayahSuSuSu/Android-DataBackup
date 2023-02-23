@@ -63,8 +63,7 @@ suspend fun onAppBackupInitialize(viewModel: ListViewModel) {
         GlobalObject.getInstance().appInfoBackupMap.emit(Command.getAppInfoBackupMap())
     }
     if (viewModel.appBackupList.value.isEmpty()) {
-        filterAppBackupNone(viewModel)
-        sortAppBackupByAlphabet(viewModel, viewModel.ascending.value)
+        refreshAppBackupList(viewModel)
     }
     viewModel.isInitialized.targetState = true
 }
@@ -129,21 +128,8 @@ fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context
 @ExperimentalMaterial3Api
 fun LazyListScope.onAppBackupContent(viewModel: ListViewModel) {
     contentAppBackup(list = viewModel.appBackupList.value) { value ->
-        viewModel.appBackupList.value.apply {
-            viewModel.isInitialized.targetState = false
-            clear()
-            addAll(
-                GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-                    .filter { it.detailBase.isSystemApp.not() }
-                    .filter {
-                        it.detailBase.appName.lowercase()
-                            .contains(value.lowercase()) ||
-                                it.detailBase.packageName.lowercase()
-                                    .contains(value.lowercase())
-                    }
-            )
-            viewModel.isInitialized.targetState = true
-        }
+        viewModel.searchText.value = value
+        refreshAppBackupList(viewModel)
     }
 }
 
@@ -268,7 +254,7 @@ fun AppBackupBottomSheet(
                     onClick = {
                         viewModel.activeSort.value = AppListSort.Alphabet
                         viewModel.ascending.value = viewModel.ascending.value.not()
-                        sortAppBackupByAlphabet(viewModel, viewModel.ascending.value)
+                        refreshAppBackupList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.alphabet)) },
                     leadingIcon = if (active.value == AppListSort.Alphabet) {
@@ -287,7 +273,7 @@ fun AppBackupBottomSheet(
                     onClick = {
                         viewModel.activeSort.value = AppListSort.FirstInstallTime
                         viewModel.ascending.value = viewModel.ascending.value.not()
-                        sortAppBackupByInstallTime(viewModel, viewModel.ascending.value)
+                        refreshAppBackupList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.install_time)) },
                     leadingIcon = if (active.value == AppListSort.FirstInstallTime) {
@@ -306,7 +292,7 @@ fun AppBackupBottomSheet(
                     onClick = {
                         viewModel.activeSort.value = AppListSort.DataSize
                         viewModel.ascending.value = viewModel.ascending.value.not()
-                        sortAppBackupByDataSize(viewModel, viewModel.ascending.value)
+                        refreshAppBackupList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.data_size)) },
                     leadingIcon = if (active.value == AppListSort.DataSize) {
@@ -338,7 +324,7 @@ fun AppBackupBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.None) {
                             viewModel.filter.value = AppListFilter.None
-                            filterAppBackupNone(viewModel)
+                            refreshAppBackupList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.none)) },
@@ -359,7 +345,7 @@ fun AppBackupBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.Selected) {
                             viewModel.filter.value = AppListFilter.Selected
-                            filterAppBackupSelected(viewModel)
+                            refreshAppBackupList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.selected)) },
@@ -380,7 +366,7 @@ fun AppBackupBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.NotSelected) {
                             viewModel.filter.value = AppListFilter.NotSelected
-                            filterAppBackupNotSelected(viewModel)
+                            refreshAppBackupList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.not_selected)) },
@@ -455,32 +441,80 @@ fun sortAppBackupByDataSize(
         viewModel.appBackupList.value.sortByDescending { it.storageStats.sizeBytes }
 }
 
+fun sortAppBackup(viewModel: ListViewModel) {
+    when (viewModel.activeSort.value) {
+        AppListSort.Alphabet -> {
+            sortAppBackupByAlphabet(viewModel, viewModel.ascending.value)
+        }
+        AppListSort.FirstInstallTime -> {
+            sortAppBackupByInstallTime(viewModel, viewModel.ascending.value)
+        }
+        AppListSort.DataSize -> {
+            sortAppBackupByDataSize(viewModel, viewModel.ascending.value)
+        }
+    }
+}
+
 fun filterAppBackupNone(
     viewModel: ListViewModel,
+    predicate: (AppInfoBackup) -> Boolean
 ) {
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
             .filter { it.detailBase.isSystemApp.not() }
+            .filter(predicate)
     )
 }
 
 fun filterAppBackupSelected(
     viewModel: ListViewModel,
+    predicate: (AppInfoBackup) -> Boolean
 ) {
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
             .filter { it.detailBase.isSystemApp.not() && (it.detailBackup.selectApp || it.detailBackup.selectData) }
+            .filter(predicate)
     )
 }
 
 fun filterAppBackupNotSelected(
     viewModel: ListViewModel,
+    predicate: (AppInfoBackup) -> Boolean
 ) {
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
             .filter { it.detailBase.isSystemApp.not() && (it.detailBackup.selectApp.not() && it.detailBackup.selectData.not()) }
+            .filter(predicate)
     )
+}
+
+fun filterAppBackup(
+    viewModel: ListViewModel,
+    predicate: (AppInfoBackup) -> Boolean = {
+        val value = viewModel.searchText.value
+        it.detailBase.appName.lowercase()
+            .contains(value.lowercase()) ||
+                it.detailBase.packageName.lowercase()
+                    .contains(value.lowercase())
+    }
+) {
+    when (viewModel.filter.value) {
+        AppListFilter.None -> {
+            filterAppBackupNone(viewModel, predicate)
+        }
+        AppListFilter.Selected -> {
+            filterAppBackupSelected(viewModel, predicate)
+        }
+        AppListFilter.NotSelected -> {
+            filterAppBackupNotSelected(viewModel, predicate)
+        }
+    }
+}
+
+fun refreshAppBackupList(viewModel: ListViewModel) {
+    filterAppBackup(viewModel)
+    sortAppBackup(viewModel)
 }

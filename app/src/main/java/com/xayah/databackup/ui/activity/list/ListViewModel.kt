@@ -10,6 +10,9 @@ class ListViewModel : ViewModel() {
     val isInitialized = MutableTransitionState(false)
     val onManifest = MutableStateFlow(false)
 
+    // 搜索
+    val searchText = MutableStateFlow("")
+
     // 排序
     val activeSort = MutableStateFlow(AppListSort.Alphabet)
     val ascending = MutableStateFlow(true)

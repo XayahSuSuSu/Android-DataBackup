@@ -63,8 +63,7 @@ suspend fun onAppRestoreInitialize(viewModel: ListViewModel) {
         GlobalObject.getInstance().appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
     }
     if (viewModel.appRestoreList.value.isEmpty()) {
-        filterAppRestoreNone(viewModel)
-        sortAppRestoreByAlphabet(viewModel, viewModel.ascending.value)
+        refreshAppRestoreList(viewModel)
     }
     viewModel.isInitialized.targetState = true
 }
@@ -129,20 +128,8 @@ fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Contex
 @ExperimentalMaterial3Api
 fun LazyListScope.onAppRestoreContent(viewModel: ListViewModel) {
     contentAppRestore(list = viewModel.appRestoreList.value) { value ->
-        viewModel.appRestoreList.value.apply {
-            viewModel.isInitialized.targetState = false
-            clear()
-            addAll(
-                GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
-                    .filter {
-                        it.detailBase.appName.lowercase()
-                            .contains(value.lowercase()) ||
-                                it.detailBase.packageName.lowercase()
-                                    .contains(value.lowercase())
-                    }
-            )
-            viewModel.isInitialized.targetState = true
-        }
+        viewModel.searchText.value = value
+        refreshAppRestoreList(viewModel)
     }
 }
 
@@ -267,7 +254,7 @@ fun AppRestoreBottomSheet(
                     onClick = {
                         viewModel.activeSort.value = AppListSort.Alphabet
                         viewModel.ascending.value = viewModel.ascending.value.not()
-                        sortAppRestoreByAlphabet(viewModel, viewModel.ascending.value)
+                        refreshAppRestoreList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.alphabet)) },
                     leadingIcon = if (active.value == AppListSort.Alphabet) {
@@ -286,7 +273,7 @@ fun AppRestoreBottomSheet(
                     onClick = {
                         viewModel.activeSort.value = AppListSort.FirstInstallTime
                         viewModel.ascending.value = viewModel.ascending.value.not()
-                        sortAppRestoreByInstallTime(viewModel, viewModel.ascending.value)
+                        refreshAppRestoreList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.install_time)) },
                     leadingIcon = if (active.value == AppListSort.FirstInstallTime) {
@@ -305,7 +292,7 @@ fun AppRestoreBottomSheet(
                     onClick = {
                         viewModel.activeSort.value = AppListSort.DataSize
                         viewModel.ascending.value = viewModel.ascending.value.not()
-                        sortAppRestoreByDataSize(viewModel, viewModel.ascending.value)
+                        refreshAppRestoreList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.data_size)) },
                     leadingIcon = if (active.value == AppListSort.DataSize) {
@@ -337,7 +324,7 @@ fun AppRestoreBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.None) {
                             viewModel.filter.value = AppListFilter.None
-                            filterAppRestoreNone(viewModel)
+                            refreshAppRestoreList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.none)) },
@@ -358,7 +345,7 @@ fun AppRestoreBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.Selected) {
                             viewModel.filter.value = AppListFilter.Selected
-                            filterAppRestoreSelected(viewModel)
+                            refreshAppRestoreList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.selected)) },
@@ -379,7 +366,7 @@ fun AppRestoreBottomSheet(
                     onClick = {
                         if (viewModel.filter.value != AppListFilter.NotSelected) {
                             viewModel.filter.value = AppListFilter.NotSelected
-                            filterAppRestoreNotSelected(viewModel)
+                            refreshAppRestoreList(viewModel)
                         }
                     },
                     label = { Text(stringResource(R.string.not_selected)) },
@@ -454,31 +441,78 @@ fun sortAppRestoreByDataSize(
         viewModel.appRestoreList.value.sortByDescending { it.detailRestoreList[it.restoreIndex].sizeBytes }
 }
 
+fun sortAppRestore(viewModel: ListViewModel) {
+    when (viewModel.activeSort.value) {
+        AppListSort.Alphabet -> {
+            sortAppRestoreByAlphabet(viewModel, viewModel.ascending.value)
+        }
+        AppListSort.FirstInstallTime -> {
+            sortAppRestoreByInstallTime(viewModel, viewModel.ascending.value)
+        }
+        AppListSort.DataSize -> {
+            sortAppRestoreByDataSize(viewModel, viewModel.ascending.value)
+        }
+    }
+}
+
 fun filterAppRestoreNone(
     viewModel: ListViewModel,
+    predicate: (AppInfoRestore) -> Boolean
 ) {
     viewModel.appRestoreList.value.clear()
     viewModel.appRestoreList.value.addAll(
-        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
+        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList().filter(predicate)
     )
 }
 
 fun filterAppRestoreSelected(
     viewModel: ListViewModel,
+    predicate: (AppInfoRestore) -> Boolean
 ) {
     viewModel.appRestoreList.value.clear()
     viewModel.appRestoreList.value.addAll(
         GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
             .filter { it.selectApp || it.selectData }
+            .filter(predicate)
     )
 }
 
 fun filterAppRestoreNotSelected(
     viewModel: ListViewModel,
+    predicate: (AppInfoRestore) -> Boolean
 ) {
     viewModel.appRestoreList.value.clear()
     viewModel.appRestoreList.value.addAll(
         GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
             .filter { it.selectApp.not() && it.selectData.not() }
+            .filter(predicate)
     )
+}
+
+fun filterAppRestore(
+    viewModel: ListViewModel,
+    predicate: (AppInfoRestore) -> Boolean = {
+        val value = viewModel.searchText.value
+        it.detailBase.appName.lowercase()
+            .contains(value.lowercase()) ||
+                it.detailBase.packageName.lowercase()
+                    .contains(value.lowercase())
+    }
+) {
+    when (viewModel.filter.value) {
+        AppListFilter.None -> {
+            filterAppRestoreNone(viewModel, predicate)
+        }
+        AppListFilter.Selected -> {
+            filterAppRestoreSelected(viewModel, predicate)
+        }
+        AppListFilter.NotSelected -> {
+            filterAppRestoreNotSelected(viewModel, predicate)
+        }
+    }
+}
+
+fun refreshAppRestoreList(viewModel: ListViewModel) {
+    filterAppRestore(viewModel)
+    sortAppRestore(viewModel)
 }
