@@ -13,6 +13,8 @@ import com.xayah.librootservice.IRemoteRootService
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Paths
+import kotlin.io.path.pathString
 
 @SuppressLint("NewApi", "PrivateApi")
 class RemoteRootServiceIPC : IRemoteRootService.Stub() {
@@ -128,6 +130,7 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
 
     override fun initActionLogFile(path: String): Boolean {
         return try {
+            mkdirs(Paths.get(path).parent.pathString)
             actionLogFile = File(path)
             true
         } catch (e: Exception) {

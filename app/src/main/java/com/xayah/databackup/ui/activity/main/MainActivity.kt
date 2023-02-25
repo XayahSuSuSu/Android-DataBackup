@@ -11,6 +11,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.ui.activity.main.components.MainScaffold
+import com.xayah.databackup.ui.activity.settings.components.initializeBackupDirectory
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.Logcat
 import com.xayah.librootservice.RootService
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.viewModelScope.launch {
             RootService.getInstance().initialize(this@MainActivity) {
+                initializeBackupDirectory()
                 Logcat.getInstance().init()
                 viewModel.isRemoteFileInitialized.targetState = true
             }

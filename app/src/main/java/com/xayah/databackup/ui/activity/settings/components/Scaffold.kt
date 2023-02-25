@@ -23,14 +23,18 @@ import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 
 fun onSetBackupSavePath(context: Context, path: String) {
     context.saveBackupSavePath(path)
-    RootService.getInstance().mkdirs(Path.getLogPath())
-    RootService.getInstance()
-        .createNewFile("${App.globalContext.readBackupSavePath()}/.nomedia")
-    Logcat.refreshInstance()
+    initializeBackupDirectory()
     GlobalObject.getInstance().appInfoBackupMap.value.clear()
     GlobalObject.getInstance().appInfoRestoreMap.value.clear()
     GlobalObject.getInstance().mediaInfoBackupMap.value.clear()
     GlobalObject.getInstance().mediaInfoRestoreMap.value.clear()
+}
+
+fun initializeBackupDirectory() {
+    RootService.getInstance().mkdirs(Path.getLogPath())
+    RootService.getInstance()
+        .createNewFile("${App.globalContext.readBackupSavePath()}/.nomedia")
+    Logcat.refreshInstance()
 }
 
 @ExperimentalMaterial3Api

@@ -7,6 +7,8 @@ import com.xayah.databackup.data.*
 import com.xayah.librootservice.RootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.nio.file.Paths
+import kotlin.io.path.pathString
 
 class GsonUtil {
     object Instance {
@@ -18,9 +20,7 @@ class GsonUtil {
 
         suspend fun saveToFile(path: String, content: String) {
             withContext(Dispatchers.IO) {
-                val parent = path.split("/").toMutableList().apply { removeLast() }
-                    .joinToString(separator = "/")
-                RootService.getInstance().mkdirs(parent)
+                RootService.getInstance().mkdirs(Paths.get(path).parent.pathString)
                 RootService.getInstance().writeText(path, content)
             }
         }
