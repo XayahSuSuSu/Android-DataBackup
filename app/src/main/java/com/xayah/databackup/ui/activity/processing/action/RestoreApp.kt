@@ -11,6 +11,7 @@ import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
 import com.xayah.databackup.util.*
+import com.xayah.librootservice.RootService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,7 +79,7 @@ fun onRestoreAppProcessing(
                             if (App.globalContext.readIsReadIcon()) {
                                 try {
                                     val task = this
-                                    val bytes = RemoteFile.getInstance()
+                                    val bytes = RootService.getInstance()
                                         .readBytes("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png")
                                     task.appIcon =
                                         (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)

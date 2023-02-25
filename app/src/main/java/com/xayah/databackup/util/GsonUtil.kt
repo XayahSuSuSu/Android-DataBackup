@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.xayah.databackup.data.*
+import com.xayah.librootservice.RootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -19,8 +20,8 @@ class GsonUtil {
             withContext(Dispatchers.IO) {
                 val parent = path.split("/").toMutableList().apply { removeLast() }
                     .joinToString(separator = "/")
-                RemoteFile.getInstance().mkdirs(parent)
-                RemoteFile.getInstance().writeText(path, content)
+                RootService.getInstance().mkdirs(parent)
+                RootService.getInstance().writeText(path, content)
             }
         }
 

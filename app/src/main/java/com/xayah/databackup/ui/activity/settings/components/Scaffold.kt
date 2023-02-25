@@ -18,12 +18,13 @@ import com.xayah.databackup.ui.activity.settings.components.content.restoreItems
 import com.xayah.databackup.ui.activity.settings.components.content.userItems
 import com.xayah.databackup.ui.components.Scaffold
 import com.xayah.databackup.util.*
+import com.xayah.librootservice.RootService
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 
 fun onSetBackupSavePath(context: Context, path: String) {
     context.saveBackupSavePath(path)
-    RemoteFile.getInstance().mkdirs(Path.getLogPath())
-    RemoteFile.getInstance()
+    RootService.getInstance().mkdirs(Path.getLogPath())
+    RootService.getInstance()
         .createNewFile("${App.globalContext.readBackupSavePath()}/.nomedia")
     Logcat.refreshInstance()
     GlobalObject.getInstance().appInfoBackupMap.value.clear()

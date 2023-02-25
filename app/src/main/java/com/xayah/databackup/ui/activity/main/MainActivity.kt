@@ -13,15 +13,13 @@ import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.ui.activity.main.components.MainScaffold
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.Logcat
-import com.xayah.databackup.util.RemoteFile
-import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
+import com.xayah.librootservice.RootService
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
-    private lateinit var explorer: MaterialYouFileExplorer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.viewModelScope.launch {
-            RemoteFile.getInstance().initialize(this@MainActivity) {
+            RootService.getInstance().initialize(this@MainActivity) {
                 Logcat.getInstance().init()
                 viewModel.isRemoteFileInitialized.targetState = true
             }
@@ -47,6 +45,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        RemoteFile.getInstance().destroy()
+        RootService.getInstance().destroy()
     }
 }

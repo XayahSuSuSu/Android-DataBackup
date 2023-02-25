@@ -33,6 +33,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.ui.components.animation.ItemExpandAnimation
 import com.xayah.databackup.util.*
+import com.xayah.librootservice.RootService
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
@@ -81,7 +82,7 @@ fun AppRestoreItem(
                     AppCompatResources.getDrawable(context, R.drawable.ic_round_android)
                 if (App.globalContext.readIsReadIcon()) {
                     try {
-                        val bytes = RemoteFile.getInstance()
+                        val bytes = RootService.getInstance()
                             .readBytes("${Path.getBackupDataSavePath()}/${appInfoRestore.detailBase.packageName}/icon.png")
                         appInfoRestore.detailBase.appIcon =
                             BitmapFactory.decodeByteArray(bytes, 0, bytes.size)

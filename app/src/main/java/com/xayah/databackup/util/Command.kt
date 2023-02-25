@@ -4,10 +4,10 @@ import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
-import android.os.Process
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.data.*
+import com.xayah.librootservice.RootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -107,7 +107,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 appInfoBackupMap = GsonUtil.getInstance().fromAppInfoBackupMapJson(
-                    RemoteFile.getInstance().readText(Path.getAppInfoBackupMapPath())
+                    RootService.getInstance().readText(Path.getAppInfoBackupMapPath())
                 )
 
                 // 根据本机应用调整列表
@@ -182,7 +182,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 appInfoBackupMap = GsonUtil.getInstance().fromAppInfoBackupMapJson(
-                    RemoteFile.getInstance().readText(Path.getAppInfoBackupMapPath())
+                    RootService.getInstance().readText(Path.getAppInfoBackupMapPath())
                 )
             }
             return appInfoBackupMap
@@ -197,7 +197,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 appInfoRestoreMap = GsonUtil.getInstance().fromAppInfoRestoreMapJson(
-                    RemoteFile.getInstance().readText(Path.getAppInfoRestoreMapPath())
+                    RootService.getInstance().readText(Path.getAppInfoRestoreMapPath())
                 )
 
                 // 根据备份目录实际文件调整列表
@@ -296,7 +296,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 mediaInfoBackupMap = GsonUtil.getInstance().fromMediaInfoBackupMapJson(
-                    RemoteFile.getInstance().readText(Path.getMediaInfoBackupMapPath())
+                    RootService.getInstance().readText(Path.getMediaInfoBackupMapPath())
                 )
 
                 // 如果为空, 添加默认路径
@@ -333,7 +333,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 mediaInfoRestoreMap = GsonUtil.getInstance().fromMediaInfoRestoreMapJson(
-                    RemoteFile.getInstance().readText(Path.getMediaInfoRestoreMapPath())
+                    RootService.getInstance().readText(Path.getMediaInfoRestoreMapPath())
                 )
 
                 // 根据备份目录实际文件调整列表
@@ -418,7 +418,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 backupInfoList = GsonUtil.getInstance().fromBackupInfoListJson(
-                    RemoteFile.getInstance().readText(Path.getBackupInfoListPath())
+                    RootService.getInstance().readText(Path.getBackupInfoListPath())
                 )
             }
             return backupInfoList

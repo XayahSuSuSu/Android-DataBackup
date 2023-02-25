@@ -11,6 +11,7 @@ import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
 import com.xayah.databackup.util.*
+import com.xayah.librootservice.RootService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -319,7 +320,7 @@ fun onBackupAppProcessing(
                         val byteArray = byteArrayOutputStream.toByteArray()
                         byteArrayOutputStream.flush()
                         byteArrayOutputStream.close()
-                        RemoteFile.getInstance().writeBytes(outPutIconPath,byteArray)
+                        RootService.getInstance().writeBytes(outPutIconPath, byteArray)
                     }
                     Logcat.getInstance().actionLogAddLine(tag, "Trying to save icon.")
                 }

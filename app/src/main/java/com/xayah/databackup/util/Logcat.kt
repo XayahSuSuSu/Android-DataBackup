@@ -1,5 +1,7 @@
 package com.xayah.databackup.util
 
+import com.xayah.librootservice.RootService
+
 class Logcat {
     object Instance {
         var instance = Logcat()
@@ -16,14 +18,14 @@ class Logcat {
     fun init(): Boolean {
         val actionLogPath =
             "${Path.getLogPath()}/action_log_${GlobalObject.getInstance().timeStampOnStart}"
-        return RemoteFile.getInstance().initActionLogFile(actionLogPath)
+        return RootService.getInstance().initActionLogFile(actionLogPath)
     }
 
     fun shellLogAddLine(line: String) {}
 
     fun actionLogAddLine(funName: String, line: String) {
         if (line.isNotEmpty()) {
-            RemoteFile.getInstance().appendActionLog("${funName}: ${line}\n")
+            RootService.getInstance().appendActionLog("${funName}: ${line}\n")
         }
     }
 }
