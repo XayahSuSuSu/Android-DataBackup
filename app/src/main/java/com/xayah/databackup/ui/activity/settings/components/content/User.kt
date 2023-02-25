@@ -12,6 +12,7 @@ import com.xayah.databackup.ui.activity.settings.components.SingleChoiceTextClic
 import com.xayah.databackup.ui.activity.settings.components.SingleChoiceTextClickableItem
 import com.xayah.databackup.ui.activity.settings.components.Title
 import com.xayah.databackup.util.*
+import com.xayah.librootservice.RootService
 
 fun onUserInitialize(viewModel: SettingsViewModel, context: Context) {
     if (viewModel.userSingleChoiceTextClickableItemsItems.value.isEmpty())
@@ -22,21 +23,40 @@ fun onUserInitialize(viewModel: SettingsViewModel, context: Context) {
                 iconId = R.drawable.ic_round_person,
                 content = context.readBackupUser(),
                 onPrepare = {
-                    var items =
-                        if (Bashrc.listUsers().first) Bashrc.listUsers().second else mutableListOf(
-                            GlobalObject.defaultUserId
-                        )
+                    val users = RootService.getInstance().getUsers(
+                        excludePartial = true,
+                        excludeDying = false,
+                        excludePreCreated = true
+                    )
+                    var items = users.map { "${it.id}: ${it.name}" }.toMutableList()
+                    val idItems = users.map { "${it.id}" }.toMutableList()
+
                     // 加入备份目录用户集
-                    items.addAll(Command.listBackupUsers())
+                    val backupUsers = Command.listBackupUsers()
+                    for (i in backupUsers) {
+                        if (i !in idItems) {
+                            items.add("${i}: ${context.getString(R.string.backup_dir)}")
+                            idItems.add(i)
+                        }
+                    }
+
+                    val defValue = try {
+                        items[idItems.indexOf(context.readBackupUser())]
+                    } catch (_: Exception) {
+                        ""
+                    }
+
                     // 去重排序
                     items = items.toSortedSet().toMutableList()
-                    val value = context.readBackupUser()
-                    Pair(items, value)
+                    Pair(items, defValue)
                 },
                 onConfirm = {
                     GlobalObject.getInstance().appInfoBackupMap.value.clear()
                     GlobalObject.getInstance().appInfoRestoreMap.value.clear()
-                    context.saveBackupUser(it)
+                    try {
+                        context.saveBackupUser(it.split(":")[0])
+                    } catch (_: Exception) {
+                    }
                 }
             ))
             add(SingleChoiceTextClickableItem(
@@ -45,15 +65,27 @@ fun onUserInitialize(viewModel: SettingsViewModel, context: Context) {
                 iconId = R.drawable.ic_round_iphone,
                 content = context.readRestoreUser(),
                 onPrepare = {
-                    val items =
-                        if (Bashrc.listUsers().first) Bashrc.listUsers().second else mutableListOf(
-                            GlobalObject.defaultUserId
-                        )
-                    val value = context.readRestoreUser()
-                    Pair(items, value)
+                    val users = RootService.getInstance().getUsers(
+                        excludePartial = true,
+                        excludeDying = false,
+                        excludePreCreated = true
+                    )
+                    val items = users.map { "${it.id}: ${it.name}" }.toMutableList()
+                    val idItems = users.map { "${it.id}" }.toMutableList()
+
+                    val defValue = try {
+                        items[idItems.indexOf(context.readRestoreUser())]
+                    } catch (_: Exception) {
+                        ""
+                    }
+
+                    Pair(items, defValue)
                 },
                 onConfirm = {
-                    context.saveRestoreUser(it)
+                    try {
+                        context.saveRestoreUser(it.split(":")[0])
+                    } catch (_: Exception) {
+                    }
                 }
             ))
         }

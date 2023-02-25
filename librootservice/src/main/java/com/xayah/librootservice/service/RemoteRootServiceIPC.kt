@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.UserInfo
 import android.os.IBinder
-import android.os.Looper
 import android.os.UserHandle
+import android.os.UserManager
 import com.xayah.librootservice.IRemoteRootService
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
@@ -18,6 +18,7 @@ import java.io.FileOutputStream
 class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     private lateinit var systemContext: Context
     private lateinit var serviceManager: IBinder
+    private lateinit var userManager: UserManager
     private lateinit var storageStatsManager: StorageStatsManager
     private lateinit var actionLogFile: File
 
@@ -41,6 +42,19 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
             "getService",
             "package"
         ) as IBinder
+    }
+
+    private fun getUserManager(): UserManager {
+        return HiddenApiBypass.invoke(
+            Class.forName("android.os.UserManager"),
+            null,
+            "get",
+            systemContext
+        ) as UserManager
+    }
+
+    private fun getStorageStatsManager(): StorageStatsManager {
+        return systemContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
     }
 
     init {
@@ -134,8 +148,8 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         HiddenApiBypass.addHiddenApiExemptions("")
         systemContext = getSystemContext()
         serviceManager = getServiceManager()
-        storageStatsManager =
-            systemContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
+        userManager = getUserManager()
+        storageStatsManager = getStorageStatsManager()
     }
 
     override fun getUserHandle(userId: Int): UserHandle {
@@ -154,15 +168,9 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         excludeDying: Boolean,
         excludePreCreated: Boolean
     ): MutableList<UserInfo> {
-        Looper.prepare()
+        var users = mutableListOf<UserInfo>()
         try {
-            val userManager = HiddenApiBypass.invoke(
-                Class.forName("android.os.UserManager"),
-                null,
-                "get",
-                systemContext
-            )
-            return (HiddenApiBypass.invoke(
+            users = (HiddenApiBypass.invoke(
                 Class.forName("android.os.UserManager"),
                 userManager,
                 "getUsers",
@@ -172,8 +180,7 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
             ) as List<UserInfo>).toMutableList()
         } catch (_: Exception) {
         }
-        Looper.loop()
-        return mutableListOf()
+        return users
     }
 
     @Suppress("UNCHECKED_CAST")
