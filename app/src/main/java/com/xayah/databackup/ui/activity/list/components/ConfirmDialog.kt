@@ -14,12 +14,14 @@ fun ConfirmDialog(
     icon: ImageVector,
     title: String,
     content: @Composable () -> Unit,
+    cancelable: Boolean = true,
     onConfirm: () -> Unit,
 ) {
     if (isOpen.value) {
         AlertDialog(
             onDismissRequest = {
-                isOpen.value = false
+                if (cancelable)
+                    isOpen.value = false
             },
             icon = {
                 Icon(
@@ -43,15 +45,17 @@ fun ConfirmDialog(
                     Text(stringResource(id = R.string.confirm))
                 }
             },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        isOpen.value = false
+            dismissButton = if (cancelable) {
+                {
+                    TextButton(
+                        onClick = {
+                            isOpen.value = false
+                        }
+                    ) {
+                        Text(stringResource(id = R.string.cancel))
                     }
-                ) {
-                    Text(stringResource(id = R.string.cancel))
                 }
-            }
+            } else null
         )
     }
 }

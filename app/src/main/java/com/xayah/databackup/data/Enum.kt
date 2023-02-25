@@ -6,6 +6,7 @@ import com.xayah.databackup.util.GlobalString
  * 应用列表类型
  */
 enum class AppListType {
+    None,         // 不区分
     InstalledApp, // 已安装的第三方应用
     SystemApp,    // 系统应用
 }

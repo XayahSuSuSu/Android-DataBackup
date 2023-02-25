@@ -70,6 +70,12 @@ suspend fun onAppRestoreInitialize(viewModel: ListViewModel) {
 
 @ExperimentalMaterial3Api
 fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Context) {
+    // 重置列表, 否则Manifest可能和Processing有所出入
+    viewModel.searchText.value = ""
+    viewModel.filter.value = AppListFilter.Selected
+    viewModel.type.value = AppListType.None
+    refreshAppRestoreList(viewModel)
+
     val list = listOf(
         ManifestDescItem(
             title = context.getString(R.string.selected_app),
@@ -165,6 +171,7 @@ fun AppRestoreBottomSheet(
     val active = viewModel.activeSort.collectAsState()
     val ascending = viewModel.ascending.collectAsState()
     val filter = viewModel.filter.collectAsState()
+    val type = viewModel.type.collectAsState()
 
     ListBottomSheet(
         isOpen = isOpen,
@@ -412,6 +419,60 @@ fun AppRestoreBottomSheet(
                     }
                 )
             }
+
+            // 类型
+            Text(
+                modifier = Modifier.padding(nonePadding, mediumPadding, nonePadding, nonePadding),
+                text = stringResource(R.string.type),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(smallPadding)
+            ) {
+                FilterChip(
+                    selected = type.value == AppListType.InstalledApp,
+                    onClick = {
+                        if (viewModel.type.value != AppListType.InstalledApp) {
+                            viewModel.type.value = AppListType.InstalledApp
+                            refreshAppRestoreList(viewModel)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.installed_app)) },
+                    leadingIcon = if (type.value == AppListType.InstalledApp) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else {
+                        null
+                    }
+                )
+                FilterChip(
+                    selected = type.value == AppListType.SystemApp,
+                    onClick = {
+                        if (viewModel.type.value != AppListType.SystemApp) {
+                            viewModel.type.value = AppListType.SystemApp
+                            refreshAppRestoreList(viewModel)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.system_app)) },
+                    leadingIcon = if (type.value == AppListType.SystemApp) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else {
+                        null
+                    }
+                )
+            }
         }
     )
 }
@@ -490,7 +551,9 @@ fun filterAppRestoreNone(
 ) {
     viewModel.appRestoreList.value.clear()
     viewModel.appRestoreList.value.addAll(
-        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList().filter(predicate)
+        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
+            .filter { filterTypePredicateAppRestore(viewModel.type.value, it) }
+            .filter(predicate)
     )
 }
 
@@ -501,7 +564,10 @@ fun filterAppRestoreSelected(
     viewModel.appRestoreList.value.clear()
     viewModel.appRestoreList.value.addAll(
         GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
-            .filter { it.selectApp || it.selectData }
+            .filter {
+                filterTypePredicateAppRestore(viewModel.type.value, it)
+                        && (it.selectApp || it.selectData)
+            }
             .filter(predicate)
     )
 }
@@ -513,7 +579,10 @@ fun filterAppRestoreNotSelected(
     viewModel.appRestoreList.value.clear()
     viewModel.appRestoreList.value.addAll(
         GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
-            .filter { it.selectApp.not() && it.selectData.not() }
+            .filter {
+                filterTypePredicateAppRestore(viewModel.type.value, it)
+                        && it.selectApp.not() && it.selectData.not()
+            }
             .filter(predicate)
     )
 }
@@ -537,6 +606,20 @@ fun filterAppRestore(
         }
         AppListFilter.NotSelected -> {
             filterAppRestoreNotSelected(viewModel, predicate)
+        }
+    }
+}
+
+fun filterTypePredicateAppRestore(type: AppListType, appInfoRestore: AppInfoRestore): Boolean {
+    return when (type) {
+        AppListType.InstalledApp -> {
+            appInfoRestore.detailBase.isSystemApp.not()
+        }
+        AppListType.SystemApp -> {
+            appInfoRestore.detailBase.isSystemApp
+        }
+        AppListType.None -> {
+            true
         }
     }
 }

@@ -7,18 +7,21 @@ import com.xayah.databackup.data.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class ListViewModel : ViewModel() {
-    val isInitialized = MutableTransitionState(false)
-    val onManifest = MutableStateFlow(false)
+    val isInitialized by lazy { MutableTransitionState(false) }
+    val onManifest by lazy { MutableStateFlow(false) }
 
     // 搜索
-    val searchText = MutableStateFlow("")
+    val searchText by lazy { MutableStateFlow("") }
 
     // 排序
-    val activeSort = MutableStateFlow(AppListSort.Alphabet)
-    val ascending = MutableStateFlow(true)
+    val activeSort by lazy { MutableStateFlow(AppListSort.Alphabet) }
+    val ascending by lazy { MutableStateFlow(true) }
 
     // 过滤
-    val filter = MutableStateFlow(AppListFilter.None)
+    val filter by lazy { MutableStateFlow(AppListFilter.None) }
+
+    // 类型
+    val type by lazy { MutableStateFlow(AppListType.InstalledApp) }
 
     // 备份应用列表
     val appBackupList by lazy {

@@ -162,4 +162,9 @@
     <string name="delete_confirm">Sure to delete the selection</string>
     <string name="delete_selected">Delete selected</string>
     <string name="selection_is_empty">Selection is empty</string>
+    <string name="system_app">System app</string>
+    <string name="installed_app">Installed app</string>
+    <string name="switch_to_system_app_warning">Most of system apps are not recommended for backing up, restoring them may make your phone bootloop, you have been warned</string>
+    <string name="warning">Warning</string>
+    <string name="type">Type</string>
 </resources>

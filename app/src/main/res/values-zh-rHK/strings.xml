@@ -149,4 +149,9 @@
     <string name="delete_confirm">確定刪除所選嗎</string>
     <string name="delete_selected">刪除所選</string>
     <string name="selection_is_empty">選擇為空</string>
+    <string name="system_app">系統應用</string>
+    <string name="installed_app">安裝應用</string>
+    <string name="switch_to_system_app_warning">絕大多數係統應用均不推薦備份，恢復它們可能會讓您的手機無法啟動，您已被警告</string>
+    <string name="warning">警告</string>
+    <string name="type">類型</string>
 </resources>

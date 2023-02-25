@@ -16,11 +16,9 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,10 +30,7 @@ import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.list.ListViewModel
-import com.xayah.databackup.ui.activity.list.components.AppBackupItem
-import com.xayah.databackup.ui.activity.list.components.ListBottomSheet
-import com.xayah.databackup.ui.activity.list.components.ManifestDescItem
-import com.xayah.databackup.ui.activity.list.components.SearchBar
+import com.xayah.databackup.ui.activity.list.components.*
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.util.*
 import java.text.Collator
@@ -72,6 +67,12 @@ suspend fun onAppBackupInitialize(viewModel: ListViewModel) {
 
 @ExperimentalMaterial3Api
 fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context) {
+    // 重置列表, 否则Manifest可能和Processing有所出入
+    viewModel.searchText.value = ""
+    viewModel.filter.value = AppListFilter.Selected
+    viewModel.type.value = AppListType.None
+    refreshAppBackupList(viewModel)
+
     val list = listOf(
         ManifestDescItem(
             title = context.getString(R.string.selected_app),
@@ -161,6 +162,7 @@ fun AppBackupBottomSheet(
     val active = viewModel.activeSort.collectAsState()
     val ascending = viewModel.ascending.collectAsState()
     val filter = viewModel.filter.collectAsState()
+    val type = viewModel.type.collectAsState()
 
     ListBottomSheet(
         isOpen = isOpen,
@@ -394,6 +396,78 @@ fun AppBackupBottomSheet(
                     }
                 )
             }
+
+            // 类型
+            Text(
+                modifier = Modifier.padding(nonePadding, mediumPadding, nonePadding, nonePadding),
+                text = stringResource(R.string.type),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(smallPadding)
+            ) {
+                FilterChip(
+                    selected = type.value == AppListType.InstalledApp,
+                    onClick = {
+                        if (viewModel.type.value != AppListType.InstalledApp) {
+                            viewModel.type.value = AppListType.InstalledApp
+                            refreshAppBackupList(viewModel)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.installed_app)) },
+                    leadingIcon = if (type.value == AppListType.InstalledApp) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else {
+                        null
+                    }
+                )
+
+                val isDialogOpen = remember {
+                    mutableStateOf(false)
+                }
+                ConfirmDialog(
+                    isOpen = isDialogOpen,
+                    icon = Icons.Rounded.Warning,
+                    title = stringResource(R.string.warning),
+                    content = {
+                        Text(
+                            text = stringResource(R.string.switch_to_system_app_warning)
+                                    + stringResource(id = R.string.symbol_exclamation)
+                        )
+                    },
+                    cancelable = false
+                ) {
+                    viewModel.type.value = AppListType.SystemApp
+                    refreshAppBackupList(viewModel)
+                }
+                FilterChip(
+                    selected = type.value == AppListType.SystemApp,
+                    onClick = {
+                        if (viewModel.type.value != AppListType.SystemApp) {
+                            isDialogOpen.value = true
+                        }
+                    },
+                    label = { Text(stringResource(R.string.system_app)) },
+                    leadingIcon = if (type.value == AppListType.SystemApp) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else {
+                        null
+                    }
+                )
+            }
         }
     )
 }
@@ -473,7 +547,7 @@ fun filterAppBackupNone(
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-            .filter { it.isOnThisDevice && it.detailBase.isSystemApp.not() }
+            .filter { it.isOnThisDevice && filterTypePredicateAppBackup(viewModel.type.value, it) }
             .filter(predicate)
     )
 }
@@ -485,7 +559,11 @@ fun filterAppBackupSelected(
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-            .filter { it.isOnThisDevice && it.detailBase.isSystemApp.not() && (it.detailBackup.selectApp || it.detailBackup.selectData) }
+            .filter {
+                it.isOnThisDevice
+                        && filterTypePredicateAppBackup(viewModel.type.value, it)
+                        && (it.detailBackup.selectApp || it.detailBackup.selectData)
+            }
             .filter(predicate)
     )
 }
@@ -497,7 +575,11 @@ fun filterAppBackupNotSelected(
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-            .filter { it.isOnThisDevice && it.detailBase.isSystemApp.not() && (it.detailBackup.selectApp.not() && it.detailBackup.selectData.not()) }
+            .filter {
+                it.isOnThisDevice
+                        && filterTypePredicateAppBackup(viewModel.type.value, it)
+                        && (it.detailBackup.selectApp.not() && it.detailBackup.selectData.not())
+            }
             .filter(predicate)
     )
 }
@@ -521,6 +603,20 @@ fun filterAppBackup(
         }
         AppListFilter.NotSelected -> {
             filterAppBackupNotSelected(viewModel, predicate)
+        }
+    }
+}
+
+fun filterTypePredicateAppBackup(type: AppListType, appInfoBackup: AppInfoBackup): Boolean {
+    return when (type) {
+        AppListType.InstalledApp -> {
+            appInfoBackup.detailBase.isSystemApp.not()
+        }
+        AppListType.SystemApp -> {
+            appInfoBackup.detailBase.isSystemApp
+        }
+        AppListType.None -> {
+            true
         }
     }
 }
