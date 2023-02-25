@@ -121,7 +121,8 @@ fun MediaBackupItem(
                         title = stringResource(id = R.string.delete),
                         content = {
                             Text(
-                                text = stringResource(R.string.delete_confirm)
+                                text = stringResource(id = R.string.delete_confirm) +
+                                        stringResource(id = R.string.symbol_question),
                             )
                         }) {
                         GlobalObject.getInstance().mediaInfoBackupMap.value.remove(

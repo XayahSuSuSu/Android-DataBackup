@@ -217,36 +217,17 @@ fun AppRestoreItem(
                     title = stringResource(id = R.string.delete),
                     content = {
                         Text(
-                            text = stringResource(R.string.delete_confirm)
+                            text = stringResource(id = R.string.delete_confirm) +
+                                    stringResource(id = R.string.symbol_question),
                         )
                     }) {
                     scope.launch {
-                        Command.rm("${Path.getBackupDataSavePath()}/${appInfoRestore.detailBase.packageName}/${appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].date}")
-                            .apply {
-                                if (this) {
-                                    appInfoRestore.detailRestoreList.remove(
-                                        appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex]
-                                    )
-                                    appInfoRestore.restoreIndex--
-                                    if (appInfoRestore.detailRestoreList.isEmpty()) {
-                                        GlobalObject.getInstance().appInfoRestoreMap.value.remove(
-                                            appInfoRestore.detailBase.packageName
-                                        )
-                                    }
-                                    onItemUpdate()
-                                    Toast.makeText(
-                                        context,
-                                        GlobalString.success,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        GlobalString.failed,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
+                        val success = deleteAppInfoRestoreItem(appInfoRestore, onItemUpdate)
+                        Toast.makeText(
+                            context,
+                            if (success) GlobalString.success else GlobalString.failed,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 Row {
@@ -258,4 +239,28 @@ fun AppRestoreItem(
         }
         Divider(modifier = Modifier.padding(nonePadding, tinyPadding))
     }
+}
+
+suspend fun deleteAppInfoRestoreItem(
+    appInfoRestore: AppInfoRestore,
+    onSuccess: () -> Unit
+): Boolean {
+    Command.rm("${Path.getBackupDataSavePath()}/${appInfoRestore.detailBase.packageName}/${appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].date}")
+        .apply {
+            return if (this) {
+                appInfoRestore.detailRestoreList.remove(
+                    appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex]
+                )
+                appInfoRestore.restoreIndex--
+                if (appInfoRestore.detailRestoreList.isEmpty()) {
+                    GlobalObject.getInstance().appInfoRestoreMap.value.remove(
+                        appInfoRestore.detailBase.packageName
+                    )
+                }
+                onSuccess()
+                true
+            } else {
+                false
+            }
+        }
 }

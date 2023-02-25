@@ -147,4 +147,6 @@
     <string name="current">当前</string>
     <string name="unavailable">暂不可用</string>
     <string name="delete_confirm">确定删除所选吗</string>
+    <string name="delete_selected">删除所选</string>
+    <string name="selection_is_empty">选择为空</string>
 </resources>

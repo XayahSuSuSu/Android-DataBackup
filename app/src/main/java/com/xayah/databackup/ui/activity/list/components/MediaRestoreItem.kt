@@ -163,36 +163,17 @@ fun MediaRestoreItem(
                         title = stringResource(id = R.string.delete),
                         content = {
                             Text(
-                                text = stringResource(R.string.delete_confirm)
+                                text = stringResource(id = R.string.delete_confirm) +
+                                        stringResource(id = R.string.symbol_question),
                             )
                         }) {
                         scope.launch {
-                            Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfoRestore.name}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}")
-                                .apply {
-                                    if (this) {
-                                        mediaInfoRestore.detailRestoreList.remove(
-                                            mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex]
-                                        )
-                                        mediaInfoRestore.restoreIndex--
-                                        if (mediaInfoRestore.detailRestoreList.isEmpty()) {
-                                            GlobalObject.getInstance().mediaInfoRestoreMap.value.remove(
-                                                mediaInfoRestore.name
-                                            )
-                                        }
-                                        onItemUpdate()
-                                        Toast.makeText(
-                                            context,
-                                            GlobalString.success,
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            GlobalString.failed,
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
+                            val success = deleteMediaInfoRestoreItem(mediaInfoRestore, onItemUpdate)
+                            Toast.makeText(
+                                context,
+                                if (success) GlobalString.success else GlobalString.failed,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                     TextButton(onClick = {
@@ -203,4 +184,28 @@ fun MediaRestoreItem(
         }
         Divider(modifier = Modifier.padding(nonePadding, tinyPadding))
     }
+}
+
+suspend fun deleteMediaInfoRestoreItem(
+    mediaInfoRestore: MediaInfoRestore,
+    onSuccess: () -> Unit
+): Boolean {
+    Command.rm("${Path.getBackupMediaSavePath()}/${mediaInfoRestore.name}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}")
+        .apply {
+            return if (this) {
+                mediaInfoRestore.detailRestoreList.remove(
+                    mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex]
+                )
+                mediaInfoRestore.restoreIndex--
+                if (mediaInfoRestore.detailRestoreList.isEmpty()) {
+                    GlobalObject.getInstance().mediaInfoRestoreMap.value.remove(
+                        mediaInfoRestore.name
+                    )
+                }
+                onSuccess()
+                true
+            } else {
+                false
+            }
+        }
 }

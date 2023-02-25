@@ -10,4 +10,5 @@
     <dimen name="icon_tiny_size">24dp</dimen>
     <dimen name="processing_task_width">80dp</dimen>
     <dimen name="padding_settings_title">56dp</dimen>
+    <dimen name="dialog_delete_content_max_height">300dp</dimen>
 </resources>

@@ -14,10 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,12 +25,10 @@ import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.list.ListViewModel
-import com.xayah.databackup.ui.activity.list.components.ListBottomSheet
-import com.xayah.databackup.ui.activity.list.components.ManifestDescItem
-import com.xayah.databackup.ui.activity.list.components.MediaRestoreItem
-import com.xayah.databackup.ui.activity.list.components.SearchBar
+import com.xayah.databackup.ui.activity.list.components.*
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.util.*
+import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -146,6 +141,7 @@ fun MediaRestoreBottomSheet(
     isOpen: MutableState<Boolean>,
     viewModel: ListViewModel
 ) {
+    val scope = rememberCoroutineScope()
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val smallPadding = dimensionResource(R.dimen.padding_small)
@@ -156,6 +152,27 @@ fun MediaRestoreBottomSheet(
     ListBottomSheet(
         isOpen = isOpen,
         actions = {
+            item {
+                val isDialogOpen = remember {
+                    mutableStateOf(false)
+                }
+                val selectedItems =
+                    viewModel.mediaRestoreList.collectAsState().value.filter { it.selectData }
+                MenuTopBatchDeleteButton(
+                    isOpen = isDialogOpen,
+                    selectedItems = selectedItems,
+                    itemText = {
+                        selectedItems[it].name
+                    }) {
+                    scope.launch {
+                        for (i in selectedItems) {
+                            deleteMediaInfoRestoreItem(i) {}
+                        }
+                        refreshMediaRestoreList(viewModel)
+                        isOpen.value = false
+                    }
+                }
+            }
             item {
                 var selectAll = remember { true }
                 Column(modifier = Modifier

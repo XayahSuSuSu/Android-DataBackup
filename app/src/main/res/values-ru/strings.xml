@@ -147,4 +147,6 @@
     <string name="current">Current</string>
     <string name="unavailable">Unavailable</string>
     <string name="delete_confirm">Sure to delete the selection</string>
+    <string name="delete_selected">Delete selected</string>
+    <string name="selection_is_empty">Selection is empty</string>
 </resources>
