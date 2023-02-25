@@ -114,15 +114,12 @@ class Command {
                 val packageManager = App.globalContext.packageManager
                 val userId = App.globalContext.readBackupUser()
                 // 通过PackageManager获取所有应用信息
-                val packages = packageManager.getInstalledPackages(0)
-                // 获取指定用户的所有应用信息
-                val listPackages = Bashrc.listPackages(userId).second
-                for ((index, j) in listPackages.withIndex()) listPackages[index] =
-                    j.replace("package:", "")
+                val packages =
+                    RootService.getInstance().getInstalledPackagesAsUser(0, userId.toInt())
                 for (i in packages) {
                     try {
                         // 自身或非指定用户应用
-                        if (i.packageName == App.globalContext.packageName || listPackages.indexOf(i.packageName) == -1) continue
+                        if (i.packageName == App.globalContext.packageName) continue
                         val isSystemApp =
                             (i.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
@@ -147,23 +144,20 @@ class Command {
                             this.detailBase.isSystemApp = isSystemApp
                             this.isOnThisDevice = true
                         }
-                        if (userId == GlobalObject.defaultUserId) {
-                            try {
-                                storageStatsManager.queryStatsForPackage(
-                                    i.applicationInfo.storageUuid,
-                                    i.packageName,
-                                    Process.myUserHandle()
-                                ).apply {
-                                    val storageStats =
-                                        AppInfoStorageStats(appBytes, cacheBytes, dataBytes)
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                        storageStats.externalCacheBytes = externalCacheBytes
-                                    }
-                                    appInfoBackup.storageStats = storageStats
+                        try {
+                            RootService.getInstance().queryStatsForPackage(
+                                i,
+                                RootService.getInstance().getUserHandle(userId.toInt())
+                            ).apply {
+                                val storageStats =
+                                    AppInfoStorageStats(appBytes, cacheBytes, dataBytes)
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                    storageStats.externalCacheBytes = externalCacheBytes
                                 }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
+                                appInfoBackup.storageStats = storageStats
                             }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
