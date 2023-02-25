@@ -473,7 +473,7 @@ fun filterAppBackupNone(
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-            .filter { it.detailBase.isSystemApp.not() }
+            .filter { it.isOnThisDevice && it.detailBase.isSystemApp.not() }
             .filter(predicate)
     )
 }
@@ -485,7 +485,7 @@ fun filterAppBackupSelected(
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-            .filter { it.detailBase.isSystemApp.not() && (it.detailBackup.selectApp || it.detailBackup.selectData) }
+            .filter { it.isOnThisDevice && it.detailBase.isSystemApp.not() && (it.detailBackup.selectApp || it.detailBackup.selectData) }
             .filter(predicate)
     )
 }
@@ -497,7 +497,7 @@ fun filterAppBackupNotSelected(
     viewModel.appBackupList.value.clear()
     viewModel.appBackupList.value.addAll(
         GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
-            .filter { it.detailBase.isSystemApp.not() && (it.detailBackup.selectApp.not() && it.detailBackup.selectData.not()) }
+            .filter { it.isOnThisDevice && it.detailBase.isSystemApp.not() && (it.detailBackup.selectApp.not() && it.detailBackup.selectData.not()) }
             .filter(predicate)
     )
 }

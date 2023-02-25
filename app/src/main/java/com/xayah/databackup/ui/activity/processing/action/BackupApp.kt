@@ -66,7 +66,7 @@ fun onBackupAppProcessing(
 
             // 备份信息列表
             taskList.addAll(globalObject.appInfoBackupMap.value.values.toList()
-                .filter { (it.detailBackup.selectApp || it.detailBackup.selectData) && it.isOnThisDevice }
+                .filter { it.isOnThisDevice && (it.detailBackup.selectApp || it.detailBackup.selectData) }
                 .map {
                     ProcessingTask(
                         appName = it.detailBase.appName,
