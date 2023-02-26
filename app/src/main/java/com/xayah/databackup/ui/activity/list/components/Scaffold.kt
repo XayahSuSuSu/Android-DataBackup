@@ -24,7 +24,7 @@ fun ListScaffold(
     isInitialized: MutableTransitionState<Boolean>,
     topBarTitle: String,
     onManifest: Boolean,
-    actions: @Composable() (RowScope.() -> Unit) = {},
+    actions: @Composable (RowScope.() -> Unit) = {},
     content: LazyListScope.() -> Unit,
     onNext: () -> Unit,
     onFinish: () -> Unit

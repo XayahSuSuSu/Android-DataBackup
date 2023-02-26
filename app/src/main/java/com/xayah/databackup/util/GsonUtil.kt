@@ -238,4 +238,39 @@ class GsonUtil {
     fun toBackupInfoListJson(value: BackupInfoList): String {
         return gson.toJson(value)
     }
+
+    /**
+     * Json转BlackListMap
+     */
+    fun fromBlackListMapJson(value: String): BlackListMap {
+        return try {
+            val mapType = object : TypeToken<BlackListMap>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            BlackListMap()
+        }
+    }
+
+    /**
+     * BlackListMap转Json
+     */
+    fun toBlackListMapJson(value: BlackListMap): String {
+        return gson.toJson(value)
+    }
+
+    /**
+     * 保存黑名单哈希表
+     */
+    suspend fun saveBlackListMapToFile(path: String, map: BlackListMap) {
+        withContext(Dispatchers.IO) {
+            try {
+                saveToFile(
+                    path,
+                    getInstance().toBlackListMapJson(map)
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 }

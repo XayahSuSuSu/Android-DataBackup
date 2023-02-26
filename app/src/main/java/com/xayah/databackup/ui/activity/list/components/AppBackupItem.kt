@@ -1,6 +1,5 @@
 package com.xayah.databackup.ui.activity.list.components
 
-import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -26,13 +25,23 @@ import androidx.compose.ui.text.font.FontWeight
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.BlackListItem
 import com.xayah.databackup.ui.components.animation.ItemExpandAnimation
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.readBlackListMapPath
+import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun AppBackupItem(appInfoBackup: AppInfoBackup, modifier: Modifier = Modifier) {
+fun AppBackupItem(
+    appInfoBackup: AppInfoBackup,
+    modifier: Modifier = Modifier,
+    onItemUpdate: () -> Unit
+) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val nonePadding = dimensionResource(R.dimen.padding_none)
@@ -153,11 +162,19 @@ fun AppBackupItem(appInfoBackup: AppInfoBackup, modifier: Modifier = Modifier) {
             if (it) {
                 Row {
                     TextButton(onClick = {
-                        Toast.makeText(
-                            context,
-                            context.getText(R.string.unavailable),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        scope.launch {
+                            Command.addBlackList(
+                                context.readBlackListMapPath(), BlackListItem(
+                                    appName = appInfoBackup.detailBase.appName,
+                                    packageName = appInfoBackup.detailBase.packageName
+                                )
+                            )
+                            GlobalObject.getInstance().appInfoBackupMap.value.remove(
+                                appInfoBackup.detailBase.packageName
+                            )
+                            onItemUpdate()
+                        }
+
                     }) { Text(stringResource(R.string.blacklist)) }
                 }
             }

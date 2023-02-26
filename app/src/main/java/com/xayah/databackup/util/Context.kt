@@ -202,6 +202,14 @@ fun Context.readCompatibleMode(): Boolean {
     return readPreferencesBoolean("compatible_mode", false)
 }
 
+fun Context.saveBlackListMapPath(path: CharSequence?) {
+    savePreferences("black_list_map_path", path.toString().trim())
+}
+
+fun Context.readBlackListMapPath(): String {
+    return readPreferencesString("black_list_map_path") ?: Path.getDefaultBlackMapPath()
+}
+
 val List<String>.joinToLineString: String
     get() = this.joinToString(separator = "\n")
 

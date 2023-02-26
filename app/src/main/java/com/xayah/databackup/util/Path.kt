@@ -87,5 +87,9 @@ class Path {
         fun getRcloneMountListPath(): String {
             return "${getAppInternalFilesPath()}/.config/rclone/mountList"
         }
+
+        fun getDefaultBlackMapPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/app/config/blackListMap"
+        }
     }
 }

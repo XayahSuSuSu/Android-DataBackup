@@ -109,6 +109,7 @@ class Command {
                 appInfoBackupMap = GsonUtil.getInstance().fromAppInfoBackupMapJson(
                     RootService.getInstance().readText(Path.getAppInfoBackupMapPath())
                 )
+                val blackListMap = readBlackListMap(App.globalContext.readBlackListMapPath())
 
                 // 根据本机应用调整列表
                 val packageManager = App.globalContext.packageManager
@@ -162,6 +163,11 @@ class Command {
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
+                }
+
+                // 黑名单应用
+                for (i in blackListMap.keys) {
+                    appInfoBackupMap.remove(i)
                 }
             }
             return appInfoBackupMap
@@ -416,6 +422,53 @@ class Command {
                 )
             }
             return backupInfoList
+        }
+
+        /**
+         * 读取黑名单
+         */
+        suspend fun readBlackListMap(path: String): BlackListMap {
+            var blackListMap: BlackListMap = hashMapOf()
+
+            runOnIO {
+                // 读取配置文件
+                blackListMap = GsonUtil.getInstance().fromBlackListMapJson(
+                    RootService.getInstance().readText(path)
+                )
+            }
+            return blackListMap
+        }
+
+        /**
+         * 添加黑名单
+         */
+        suspend fun addBlackList(path: String, blackListItem: BlackListItem) {
+            var blackListMap: BlackListMap
+
+            runOnIO {
+                // 读取配置文件
+                blackListMap = GsonUtil.getInstance().fromBlackListMapJson(
+                    RootService.getInstance().readText(path)
+                )
+                blackListMap[blackListItem.packageName] = blackListItem
+                GsonUtil.getInstance().saveBlackListMapToFile(path, blackListMap)
+            }
+        }
+
+        /**
+         * 移除黑名单
+         */
+        suspend fun removeBlackList(path: String, packageName: String) {
+            var blackListMap: BlackListMap
+
+            runOnIO {
+                // 读取配置文件
+                blackListMap = GsonUtil.getInstance().fromBlackListMapJson(
+                    RootService.getInstance().readText(path)
+                )
+                blackListMap.remove(packageName)
+                GsonUtil.getInstance().saveBlackListMapToFile(path, blackListMap)
+            }
         }
 
         /**

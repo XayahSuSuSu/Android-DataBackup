@@ -6,3 +6,4 @@ typealias MediaInfoBackupMap = HashMap<String, MediaInfoBackup>
 typealias MediaInfoRestoreMap = HashMap<String, MediaInfoRestore>
 typealias RcloneMountMap = HashMap<String, RcloneMount>
 typealias BackupInfoList = MutableList<BackupInfo>
+typealias BlackListMap = HashMap<String, BlackListItem>

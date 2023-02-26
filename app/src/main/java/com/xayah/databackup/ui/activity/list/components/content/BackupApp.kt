@@ -2,7 +2,6 @@ package com.xayah.databackup.ui.activity.list.components.content
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -29,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
+import com.xayah.databackup.ui.activity.blacklist.BlackListActivity
 import com.xayah.databackup.ui.activity.list.ListViewModel
 import com.xayah.databackup.ui.activity.list.components.*
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
@@ -39,7 +39,11 @@ import java.util.*
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
-fun LazyListScope.contentAppBackup(list: List<AppInfoBackup>, onSearch: (String) -> Unit) {
+fun LazyListScope.contentAppBackup(
+    list: List<AppInfoBackup>,
+    onSearch: (String) -> Unit,
+    onItemUpdate: () -> Unit
+) {
     item {
         SearchBar(onSearch)
     }
@@ -50,7 +54,8 @@ fun LazyListScope.contentAppBackup(list: List<AppInfoBackup>, onSearch: (String)
         }) { index ->
         AppBackupItem(
             modifier = Modifier.animateItemPlacement(),
-            appInfoBackup = list[index]
+            appInfoBackup = list[index],
+            onItemUpdate = onItemUpdate
         )
     }
 }
@@ -130,10 +135,15 @@ fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 fun LazyListScope.onAppBackupContent(viewModel: ListViewModel) {
-    contentAppBackup(list = viewModel.appBackupList.value) { value ->
-        viewModel.searchText.value = value
-        refreshAppBackupList(viewModel)
-    }
+    contentAppBackup(
+        list = viewModel.appBackupList.value,
+        onSearch = { value ->
+            viewModel.searchText.value = value
+            refreshAppBackupList(viewModel)
+        },
+        onItemUpdate = {
+            refreshAppBackupList(viewModel)
+        })
 }
 
 @ExperimentalMaterial3Api
@@ -152,6 +162,7 @@ suspend fun onAppBackupMapSave() {
 fun AppBackupBottomSheet(
     isOpen: MutableState<Boolean>,
     viewModel: ListViewModel,
+    onFinish: () -> Unit
 ) {
     val context = LocalContext.current
     val nonePadding = dimensionResource(R.dimen.padding_none)
@@ -171,13 +182,8 @@ fun AppBackupBottomSheet(
                 Column(modifier = Modifier
                     .clip(RoundedCornerShape(smallPadding))
                     .clickable {
-                        Toast
-                            .makeText(
-                                context,
-                                context.getText(R.string.unavailable),
-                                Toast.LENGTH_SHORT
-                            )
-                            .show()
+                        context.startActivity(Intent(context, BlackListActivity::class.java))
+                        onFinish()
                     }
                     .padding(smallPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,

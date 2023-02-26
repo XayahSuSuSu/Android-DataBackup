@@ -365,3 +365,11 @@ data class ProcessingTask(
     var taskState: TaskState,
     var objectList: List<ProcessObjectItem>
 )
+
+/**
+ * 黑名单
+ */
+data class BlackListItem(
+    @Expose var appName: String = "",
+    @Expose var packageName: String,
+)

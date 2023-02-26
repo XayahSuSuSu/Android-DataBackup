@@ -101,7 +101,7 @@ class ListActivity : ComponentActivity() {
                                         AppBackupBottomSheet(
                                             isOpen = openBottomSheet,
                                             viewModel = viewModel
-                                        )
+                                        ) { finish() }
                                     }
                                     TypeBackupMedia -> {
                                         MediaBackupBottomSheet(
