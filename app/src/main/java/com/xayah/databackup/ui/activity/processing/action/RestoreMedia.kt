@@ -56,7 +56,7 @@ fun onRestoreMediaProcessing(
                     .map {
                         ProcessingTask(
                             appName = it.name,
-                            packageName = it.path,
+                            packageName = if (it.path.isEmpty()) it.name else it.path,
                             appIcon = AppCompatResources.getDrawable(
                                 context,
                                 R.drawable.ic_round_android
