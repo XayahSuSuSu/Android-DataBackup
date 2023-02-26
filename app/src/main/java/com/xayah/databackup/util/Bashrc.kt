@@ -48,10 +48,11 @@ class Bashrc {
         suspend fun compressAPK(
             compressionType: String,
             apkPath: String,
-            outPut: String
+            outPut: String,
+            compatibleMode: Boolean,
         ): Pair<Boolean, String> {
             val exec =
-                runOnIO { Command.execute("compress_apk \"${compressionType}\" \"${apkPath}\" \"${outPut}\"") }
+                runOnIO { Command.execute("compress_apk \"${compressionType}\" \"${apkPath}\" \"${outPut}\" \"${compatibleMode}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 
@@ -63,10 +64,11 @@ class Bashrc {
             dataType: String,
             packageName: String,
             outPut: String,
-            dataPath: String
+            dataPath: String,
+            compatibleMode: Boolean,
         ): Pair<Boolean, String> {
             val exec =
-                runOnIO { Command.execute("compress \"${compressionType}\" \"${dataType}\" \"${packageName}\" \"${outPut}\" \"${dataPath}\"") }
+                runOnIO { Command.execute("compress \"${compressionType}\" \"${dataType}\" \"${packageName}\" \"${outPut}\" \"${dataPath}\" \"${compatibleMode}\"") }
             return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
         }
 

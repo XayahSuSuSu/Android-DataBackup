@@ -461,6 +461,7 @@ class Command {
             outPut: String,
             dataPath: String,
             dataSize: String? = null,
+            compatibleMode: Boolean,
             updateState: (type: String, line: String?) -> Unit = { _, _ -> }
         ): Boolean {
             val tag = "compress"
@@ -502,7 +503,8 @@ class Command {
                     dataType,
                     packageName,
                     outPut,
-                    dataPath
+                    dataPath,
+                    compatibleMode
                 )
                 if (compressSuccess.not()) {
                     updateState(ProcessError, out)
@@ -556,6 +558,7 @@ class Command {
             outPut: String,
             userId: String,
             apkSize: String? = null,
+            compatibleMode: Boolean,
             updateState: (type: String, line: String?) -> Unit = { _, _ -> }
         ): Boolean {
             val tag = "compressAPK"
@@ -594,7 +597,8 @@ class Command {
                 val (compressAPKSuccess, out) = Bashrc.compressAPK(
                     compressionType,
                     apkPath,
-                    outPut
+                    outPut,
+                    compatibleMode
                 )
                 if (compressAPKSuccess.not()) {
                     updateState(ProcessError, out)

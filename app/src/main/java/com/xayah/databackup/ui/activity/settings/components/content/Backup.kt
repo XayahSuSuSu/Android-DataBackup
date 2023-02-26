@@ -46,6 +46,15 @@ fun onBackupInitialize(viewModel: SettingsViewModel, context: Context) {
                     context.saveIsBackupTest(it)
                 }
             ))
+            add(SwitchItem(
+                title = context.getString(R.string.compatible_mode),
+                subtitle = context.getString(R.string.compatible_mode_subtitle),
+                iconId = R.drawable.ic_round_build,
+                isChecked = mutableStateOf(context.readCompatibleMode()),
+                onCheckedChange = {
+                    context.saveCompatibleMode(it)
+                }
+            ))
         }
 }
 

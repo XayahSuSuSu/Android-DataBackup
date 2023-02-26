@@ -194,6 +194,14 @@ fun Context.readUpdateChannel(): UpdateChannel {
     return toUpdateChannel(readPreferencesString("update_channel"))
 }
 
+fun Context.saveCompatibleMode(value: Boolean) {
+    savePreferences("compatible_mode", value)
+}
+
+fun Context.readCompatibleMode(): Boolean {
+    return readPreferencesBoolean("compatible_mode", false)
+}
+
 val List<String>.joinToLineString: String
     get() = this.joinToString(separator = "\n")
 

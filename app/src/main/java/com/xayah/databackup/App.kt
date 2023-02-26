@@ -36,6 +36,8 @@ class App : Application() {
                 .add("export PATH=${Path.getAppInternalFilesPath()}/bin:\$PATH")
                 .add("export PATH=${Path.getAppInternalFilesPath()}/extend:\$PATH")
                 .add("export HOME=${Path.getAppInternalFilesPath()}")
+                .add("export ZSTD_PARA=\"zstd -r -T0 --ultra -1 -q --priority=rt\"")
+                .add("export LZ4_PARA=\"zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4\"")
                 .exec()
         }
     }

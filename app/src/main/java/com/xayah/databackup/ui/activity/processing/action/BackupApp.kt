@@ -107,6 +107,7 @@ fun onBackupAppProcessing(
                 if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
             val userId = App.globalContext.readBackupUser()
             val compressionType = App.globalContext.readCompressionType()
+            val compatibleMode = App.globalContext.readCompatibleMode()
 
             Logcat.getInstance().actionLogAddLine(tag, "Timestamp: ${date}.")
             Logcat.getInstance().actionLogAddLine(tag, "Date: ${Command.getDate(date)}.")
@@ -205,7 +206,8 @@ fun onBackupAppProcessing(
                                     packageName,
                                     outPutPath,
                                     userId,
-                                    appInfoBackup.detailBackup.appSize
+                                    appInfoBackup.detailBackup.appSize,
+                                    compatibleMode
                                 ) { type, line ->
                                     objectList[j] =
                                         parseObjectItemBySrc(type, line ?: "", objectList[j])
@@ -228,7 +230,8 @@ fun onBackupAppProcessing(
                                     packageName,
                                     outPutPath,
                                     Path.getUserPath(),
-                                    appInfoBackup.detailBackup.userSize
+                                    appInfoBackup.detailBackup.userSize,
+                                    compatibleMode
                                 ) { type, line ->
                                     objectList[j] =
                                         parseObjectItemBySrc(type, line ?: "", objectList[j])
@@ -249,7 +252,8 @@ fun onBackupAppProcessing(
                                     packageName,
                                     outPutPath,
                                     Path.getUserDePath(),
-                                    appInfoBackup.detailBackup.userDeSize
+                                    appInfoBackup.detailBackup.userDeSize,
+                                    compatibleMode
                                 ) { type, line ->
                                     objectList[j] =
                                         parseObjectItemBySrc(type, line ?: "", objectList[j])
@@ -270,7 +274,8 @@ fun onBackupAppProcessing(
                                     packageName,
                                     outPutPath,
                                     Path.getDataPath(),
-                                    appInfoBackup.detailBackup.dataSize
+                                    appInfoBackup.detailBackup.dataSize,
+                                    compatibleMode
                                 ) { type, line ->
                                     objectList[j] =
                                         parseObjectItemBySrc(type, line ?: "", objectList[j])
@@ -291,7 +296,8 @@ fun onBackupAppProcessing(
                                     packageName,
                                     outPutPath,
                                     Path.getObbPath(),
-                                    appInfoBackup.detailBackup.obbSize
+                                    appInfoBackup.detailBackup.obbSize,
+                                    compatibleMode
                                 ) { type, line ->
                                     objectList[j] =
                                         parseObjectItemBySrc(type, line ?: "", objectList[j])

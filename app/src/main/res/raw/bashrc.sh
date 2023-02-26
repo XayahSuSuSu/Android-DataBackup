@@ -28,14 +28,24 @@ compress_apk() {
   # $1: compression_type
   # $2: apk_path
   # $3: out_put
+  # $4: compatible_mode
   mkdir -p "$3"
   cd_to_path "$2"
-  case "$1" in
-    tar) tar --totals -cf "${3}/apk.tar" ./*.apk ;;
-    zstd) tar --totals -cf "${3}/apk.tar.zst" ./*.apk "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
-    lz4) tar --totals -cf "${3}/apk.tar.lz4" ./*.apk "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
-    *) return 1 ;;
-  esac
+  if [ "$4" = "true" ]; then
+    case "$1" in
+      tar) tar --totals -cf - ./*.apk > "${3}/apk.tar" ;;
+      zstd) tar --totals -cf - ./*.apk | $ZSTD_PARA > "${3}/apk.tar.zst" ;;
+      lz4) tar --totals -cf - ./*.apk | $LZ4_PARA > "${3}/apk.tar.lz4" ;;
+      *) return 1 ;;
+    esac
+  else
+    case "$1" in
+      tar) tar --totals -cf "${3}/apk.tar" ./*.apk ;;
+      zstd) tar --totals -cf "${3}/apk.tar.zst" ./*.apk -I "$ZSTD_PARA" ;;
+      lz4) tar --totals -cf "${3}/apk.tar.lz4" ./*.apk -I "$LZ4_PARA" ;;
+      *) return 1 ;;
+    esac
+  fi
   code=$?
   cd_to_path "/"
   return $code
@@ -47,16 +57,25 @@ compress() {
   # $3: package_name
   # $4: out_put
   # $5: data_path
+  # $6: compatible_mode
   mkdir -p "$4"
   am force-stop "$3"
   case "$2" in
     user | user_de)
       if [ -d "$5/$3" ]; then
-        case "$1" in
-          tar) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar" -C "$5" "$3" ;;
-          zstd) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar.zst" -C "$5" "$3" "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
-          lz4) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar.lz4" -C "$5" "$3" "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
-        esac
+        if [ "$6" = "true" ]; then
+          case "$1" in
+            tar) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" > "$4/$2.tar" ;;
+            zstd) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | $ZSTD_PARA > "$4/$2.tar.zst" ;;
+            lz4) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf - -C "$5" "$3" | $LZ4_PARA > "$4/$2.tar.lz4" ;;
+          esac
+        else
+          case "$1" in
+            tar) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar" -C "$5" "$3" ;;
+            zstd) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar.zst" -C "$5" "$3" -I "$ZSTD_PARA" ;;
+            lz4) tar --totals --exclude="$3/.ota" --exclude="$3/cache" --exclude="$3/lib" --exclude="$3/code_cache" --exclude="$3/no_backup" -cpf "$4/$2.tar.lz4" -C "$5" "$3" -I "$LZ4_PARA" ;;
+          esac
+        fi
       else
         echo "No such path: $5"
         return 1
@@ -64,11 +83,19 @@ compress() {
       ;;
     data | obb)
       if [ -d "$5/$3" ]; then
-        case "$1" in
-          tar) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar" -C "$5" "$3" ;;
-          zstd) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar.zst" -C "$5" "$3" "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
-          lz4) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar.lz4" -C "$5" "$3" "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
-        esac
+        if [ "$6" = "true" ]; then
+          case "$1" in
+            tar) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" > "$4/$2.tar" ;;
+            zstd) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | $ZSTD_PARA > "$4/$2.tar.zst" ;;
+            lz4) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf - -C "$5" "$3" | $LZ4_PARA > "$4/$2.tar.lz4" ;;
+          esac
+        else
+          case "$1" in
+            tar) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar" -C "$5" "$3" ;;
+            zstd) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar.zst" -C "$5" "$3" -I "$ZSTD_PARA" ;;
+            lz4) tar --totals --exclude="Backup_"* --exclude="$3/cache" -cpf "$4/$2.tar.lz4" -C "$5" "$3" -I "$LZ4_PARA" ;;
+          esac
+        fi
       else
         echo "No such path: $5/$3"
         return 1
@@ -77,11 +104,19 @@ compress() {
     media)
       if [ -d "$5" ]; then
         write_to_file "$5" "$5/com.xayah.databackup.PATH"
-        case "$1" in
-          tar) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar" -C "${5%/*}" "${5##*/}" ;;
-          zstd) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar.zst" -C "${5%/*}" "${5##*/}" "-I zstd -r -T0 --ultra -1 -q --priority=rt" ;;
-          lz4) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar.lz4" -C "${5%/*}" "${5##*/}" "-I zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4" ;;
-        esac
+        if [ "$6" = "true" ]; then
+          case "$1" in
+            tar) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" > "$4/${5##*/}.tar" ;;
+            zstd) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | $ZSTD_PARA > "$4/${5##*/}.tar.zst" ;;
+            lz4) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf - -C "${5%/*}" "${5##*/}" | $LZ4_PARA > "$4/${5##*/}.tar.lz4" ;;
+          esac
+        else
+          case "$1" in
+            tar) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar" -C "${5%/*}" "${5##*/}" ;;
+            zstd) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar.zst" -C "${5%/*}" "${5##*/}" -I "$ZSTD_PARA" ;;
+            lz4) tar --totals --exclude="Backup_"* --exclude="${5##*/}/cache" -cpf "$4/${5##*/}.tar.lz4" -C "${5%/*}" "${5##*/}" -I "$LZ4_PARA" ;;
+          esac
+        fi
         code=$?
         rm -rf "$5/com.xayah.databackup.PATH"
         return $code
@@ -112,7 +147,7 @@ install_apk() {
   find "$1" -maxdepth 1 -name "apk.*" -type f | while read -r i; do
     case "${i##*.}" in
       tar) tar --totals -xmpf "$i" -C "$tmp_dir" ;;
-      zst | lz4) tar --totals "-I zstd" -xmpf "$i" -C "$tmp_dir" ;;
+      zst | lz4) tar --totals -I "zstd" -xmpf "$i" -C "$tmp_dir" ;;
     esac
   done
   apk_num=$(find "$tmp_dir" -maxdepth 1 -name "*.apk" -type f | wc -l)
@@ -209,10 +244,10 @@ decompress() {
           fi
           ;;
         lz4 | zstd)
-          tar "-I zstd" -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
+          tar -I "zstd" -xpf "$3" -C "$tmp_dir" --wildcards --no-anchored "$path_file_name"
           data_path=$(cat "$tmp_dir/$4/$path_file_name")
           if [ "$data_path" != "" ]; then
-            tar --totals --recursive-unlink "-I zstd" -xpf "$3" -C "${data_path%/*}"
+            tar --totals --recursive-unlink -I "zstd" -xpf "$3" -C "${data_path%/*}"
             rm -rf "${data_path:?}/$path_file_name"
           else
             return 1
@@ -226,7 +261,7 @@ decompress() {
     *)
       case "$1" in
         tar) tar --totals --recursive-unlink -xmpf "$3" -C "$5" ;;
-        lz4 | zstd) tar --totals --recursive-unlink "-I zstd" -xmpf "$3" -C "$5" ;;
+        lz4 | zstd) tar --totals --recursive-unlink -I "zstd" -xmpf "$3" -C "$5" ;;
       esac
       ;;
   esac
@@ -259,7 +294,7 @@ test_archive() {
   if [ -e "$2" ]; then
     case "$1" in
       tar) tar -t -f "$2" > /dev/null 2>&1 ;;
-      zstd | lz4) tar -t -f "$2" "-I zstd" > /dev/null 2>&1 ;;
+      zstd | lz4) tar -t -f "$2" -I "zstd" > /dev/null 2>&1 ;;
     esac
   else
     echo "No such path: $2"

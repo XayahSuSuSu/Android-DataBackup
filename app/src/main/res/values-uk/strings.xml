@@ -154,4 +154,6 @@
     <string name="switch_to_system_app_warning">Most of system apps are not recommended for backing up, restoring them may make your phone bootloop, you have been warned</string>
     <string name="warning">Warning</string>
     <string name="type">Type</string>
+    <string name="compatible_mode">Compatible mode</string>
+    <string name="compatible_mode_subtitle">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
 </resources>

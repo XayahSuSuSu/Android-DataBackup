@@ -73,6 +73,7 @@ fun onBackupMediaProcessing(
 
             val date =
                 if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
+            val compatibleMode = App.globalContext.readCompatibleMode()
 
             Logcat.getInstance().actionLogAddLine(tag, "Timestamp: ${date}.")
             Logcat.getInstance().actionLogAddLine(tag, "Date: ${Command.getDate(date)}.")
@@ -129,7 +130,8 @@ fun onBackupMediaProcessing(
                                     task.appName,
                                     outPutPath,
                                     task.packageName,
-                                    mediaInfoBackup.backupDetail.size
+                                    mediaInfoBackup.backupDetail.size,
+                                    compatibleMode
                                 ) { type, line ->
                                     objectList[j] =
                                         parseObjectItemBySrc(type, line ?: "", objectList[j])

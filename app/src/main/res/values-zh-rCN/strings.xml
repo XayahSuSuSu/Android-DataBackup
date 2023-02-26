@@ -154,4 +154,6 @@
     <string name="switch_to_system_app_warning">绝大多数系统应用均不推荐备份，恢复它们可能会让您的手机无法启动，您已被警告</string>
     <string name="warning">警告</string>
     <string name="type">类型</string>
+    <string name="compatible_mode">兼容模式</string>
+    <string name="compatible_mode_subtitle">使用管道而非参作为tar的输入。当遇到\"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"时开启它</string>
 </resources>
