@@ -138,21 +138,15 @@ data class AppInfoDetailRestore(
 }
 
 /**
- * 应用信息基类
- */
-abstract class AppInfoBase(
-    @Expose open var detailBase: AppInfoDetailBase = AppInfoDetailBase(),        // 详情
-    @Expose open var firstInstallTime: Long = 0,                                 // 首次安装时间
-)
-
-/**
  * 备份应用信息
  */
 data class AppInfoBackup(
+    @Expose var detailBase: AppInfoDetailBase = AppInfoDetailBase(),        // 详情
+    @Expose var firstInstallTime: Long = 0,                                 // 首次安装时间
     @Expose var detailBackup: AppInfoDetailBackup = AppInfoDetailBackup(),  // 备份详情
     @Expose var storageStats: AppInfoStorageStats = AppInfoStorageStats(),  // 存储相关
     var isOnThisDevice: Boolean = false,
-) : AppInfoBase() {
+) {
     private var _selectApp by mutableStateOf(detailBackup.selectApp)
     private var _selectData by mutableStateOf(detailBackup.selectData)
     var selectApp: Boolean = false
@@ -182,8 +176,10 @@ data class AppInfoBackup(
  * 恢复应用信息
  */
 data class AppInfoRestore(
+    @Expose var detailBase: AppInfoDetailBase = AppInfoDetailBase(),        // 详情
+    @Expose var firstInstallTime: Long = 0,                                 // 首次安装时间
     @Expose var detailRestoreList: MutableList<AppInfoDetailRestore> = mutableListOf(),  // 备份详情
-) : AppInfoBase() {
+) {
     @Expose
     var restoreIndex: Int = -1
         get() = run {
@@ -253,19 +249,13 @@ data class MediaInfoDetailBase(
 )
 
 /**
- * 媒体信息基类
- */
-abstract class MediaInfoBase(
-    @Expose open var name: String = "",     // 媒体名称
-    @Expose open var path: String = "",     // 媒体路径
-)
-
-/**
  * 媒体备份信息
  */
 data class MediaInfoBackup(
+    @Expose var name: String = "",     // 媒体名称
+    @Expose var path: String = "",     // 媒体路径
     @Expose var backupDetail: MediaInfoDetailBase = MediaInfoDetailBase(),
-) : MediaInfoBase() {
+) {
     private var _selectData by mutableStateOf(backupDetail.data)
 
     var selectData: Boolean = false
@@ -284,8 +274,10 @@ data class MediaInfoBackup(
  * 媒体恢复信息
  */
 data class MediaInfoRestore(
+    @Expose var name: String = "",     // 媒体名称
+    @Expose var path: String = "",     // 媒体路径
     @Expose var detailRestoreList: MutableList<MediaInfoDetailBase> = mutableListOf(),
-) : MediaInfoBase() {
+) {
     @Expose
     var restoreIndex: Int = -1
         get() = run {
