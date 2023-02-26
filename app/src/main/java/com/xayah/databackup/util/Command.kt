@@ -587,7 +587,8 @@ class Command {
                         updateState(ProcessTesting, null)
                         val (testArchiveSuccess, _) = testArchive(compressionType, filePath)
                         if (testArchiveSuccess.not()) {
-                            "Test failed.".apply {
+                            "Test failed. The broken file has been deleted.".apply {
+                                RootService.getInstance().deleteRecursively(filePath)
                                 updateState(ProcessError, this)
                                 Logcat.getInstance().actionLogAddLine(tag, this)
                             }
@@ -682,7 +683,8 @@ class Command {
                         updateState(ProcessTesting, null)
                         val (testArchiveSuccess, _) = testArchive(compressionType, filePath)
                         if (testArchiveSuccess.not()) {
-                            "Test failed.".apply {
+                            "Test failed. The broken file has been deleted.".apply {
+                                RootService.getInstance().deleteRecursively(filePath)
                                 updateState(ProcessError, this)
                                 Logcat.getInstance().actionLogAddLine(tag, this)
                             }

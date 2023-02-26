@@ -7,6 +7,7 @@ import android.app.usage.StorageStats;
 interface IRemoteRootService {
     boolean exists(String path);
     boolean createNewFile(String path);
+    boolean deleteRecursively(String path);
     boolean mkdirs(String path);
     String readText(String path);
     byte[] readBytes(String path);

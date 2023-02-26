@@ -80,6 +80,15 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         }
     }
 
+    override fun deleteRecursively(path: String): Boolean {
+        return try {
+            File(path).deleteRecursively()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     override fun mkdirs(path: String): Boolean {
         return try {
             val file = File(path)

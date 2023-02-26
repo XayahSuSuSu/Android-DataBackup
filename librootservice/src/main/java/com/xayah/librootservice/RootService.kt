@@ -52,6 +52,10 @@ class RootService {
         return ipc.createNewFile(path)
     }
 
+    fun deleteRecursively(path: String): Boolean {
+        return ipc.deleteRecursively(path)
+    }
+
     fun mkdirs(path: String): Boolean {
         return ipc.mkdirs(path)
     }
