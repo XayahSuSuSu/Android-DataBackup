@@ -256,27 +256,6 @@ fun AppRestoreBottomSheet(
                     )
                 }
             }
-            item {
-                Column(modifier = Modifier
-                    .clip(RoundedCornerShape(smallPadding))
-                    .clickable {}
-                    .padding(smallPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(tinyPadding)
-                ) {
-                    Icon(
-                        modifier = Modifier.size(iconSmallSize),
-                        imageVector = ImageVector.vectorResource(
-                            id = R.drawable.ic_round_blacklist
-                        ),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(R.string.blacklist),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
         },
         content = {
             // 排序
