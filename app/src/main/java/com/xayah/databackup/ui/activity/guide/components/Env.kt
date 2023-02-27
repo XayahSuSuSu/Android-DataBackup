@@ -79,7 +79,7 @@ private suspend fun binRelease(context: Context): LoadingState {
         }
         if (!bin.exists()) {
             Command.releaseAssets(
-                context, "bin/${Command.getABI()}/bin.zip", "bin.zip"
+                context, "bin/bin.zip", "bin.zip"
             )
             Command.unzipByZip4j(binZipPath, binPath)
             context.saveAppVersion(App.versionName)

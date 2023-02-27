@@ -21,6 +21,22 @@ android {
         }
     }
 
+    flavorDimensions "common"
+    productFlavors {
+        "arm64-v8a" {
+            dimension "common"
+        }
+        "armeabi-v7a" {
+            dimension "common"
+        }
+        "x86" {
+            dimension "common"
+        }
+        "x86_64" {
+            dimension "common"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -56,7 +72,7 @@ android {
     android.applicationVariants.all {
         variant ->
             variant.outputs.all {
-                outputFileName = "DataBackup-${variant.versionName}.apk".replaceAll("\\*", "")
+                outputFileName = "DataBackup-${variant.versionName}-${variant.productFlavors[0].name}-${variant.buildType.name}.apk".replaceAll("\\*", "")
             }
     }
 }
