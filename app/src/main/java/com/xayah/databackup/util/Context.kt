@@ -6,10 +6,7 @@ import android.content.Context.MODE_PRIVATE
 import android.os.Build
 import android.os.Process
 import com.xayah.databackup.App
-import com.xayah.databackup.data.BackupStrategy
-import com.xayah.databackup.data.UpdateChannel
-import com.xayah.databackup.data.toBackupStrategy
-import com.xayah.databackup.data.toUpdateChannel
+import com.xayah.databackup.data.*
 
 fun Context.savePreferences(key: String, value: String) {
     getSharedPreferences("settings", MODE_PRIVATE).edit().apply {
@@ -208,6 +205,22 @@ fun Context.saveBlackListMapPath(path: CharSequence?) {
 
 fun Context.readBlackListMapPath(): String {
     return readPreferencesString("black_list_map_path") ?: Path.getDefaultBlackMapPath()
+}
+
+fun Context.saveListActiveSort(appListSort: AppListSort) {
+    savePreferences("list_active_sort", appListSort.toString().trim())
+}
+
+fun Context.readListActiveSort(): AppListSort {
+    return toAppListSort(readPreferencesString("list_active_sort"))
+}
+
+fun Context.saveListSortAscending(value: Boolean) {
+    savePreferences("list_sort_ascending", value)
+}
+
+fun Context.readListSortAscending(): Boolean {
+    return readPreferencesBoolean("list_sort_ascending", true)
 }
 
 val List<String>.joinToLineString: String

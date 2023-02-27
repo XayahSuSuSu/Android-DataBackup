@@ -21,6 +21,17 @@ enum class AppListSort {
 }
 
 /**
+ * String转BackupStrategy枚举
+ */
+fun toAppListSort(s: String?): AppListSort {
+    return try {
+        AppListSort.valueOf(s!!)
+    } catch (e: Exception) {
+        AppListSort.Alphabet
+    }
+}
+
+/**
  * 应用列表过滤类型
  */
 enum class AppListFilter {

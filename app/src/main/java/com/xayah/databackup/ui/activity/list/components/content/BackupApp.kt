@@ -271,8 +271,8 @@ fun AppBackupBottomSheet(
             ) {
                 AssistChip(
                     onClick = {
-                        viewModel.activeSort.value = AppListSort.Alphabet
-                        viewModel.ascending.value = viewModel.ascending.value.not()
+                        viewModel.setActiveSort(context, AppListSort.Alphabet)
+                        viewModel.setAscending(context)
                         refreshAppBackupList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.alphabet)) },
@@ -290,8 +290,8 @@ fun AppBackupBottomSheet(
                 )
                 AssistChip(
                     onClick = {
-                        viewModel.activeSort.value = AppListSort.FirstInstallTime
-                        viewModel.ascending.value = viewModel.ascending.value.not()
+                        viewModel.setActiveSort(context, AppListSort.FirstInstallTime)
+                        viewModel.setAscending(context)
                         refreshAppBackupList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.install_time)) },
@@ -309,8 +309,8 @@ fun AppBackupBottomSheet(
                 )
                 AssistChip(
                     onClick = {
-                        viewModel.activeSort.value = AppListSort.DataSize
-                        viewModel.ascending.value = viewModel.ascending.value.not()
+                        viewModel.setActiveSort(context, AppListSort.DataSize)
+                        viewModel.setAscending(context)
                         refreshAppBackupList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.data_size)) },

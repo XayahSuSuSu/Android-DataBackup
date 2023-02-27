@@ -1,9 +1,15 @@
 package com.xayah.databackup.ui.activity.list
 
+import android.content.Context
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import com.xayah.databackup.App
 import com.xayah.databackup.data.*
+import com.xayah.databackup.util.readListActiveSort
+import com.xayah.databackup.util.readListSortAscending
+import com.xayah.databackup.util.saveListActiveSort
+import com.xayah.databackup.util.saveListSortAscending
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class ListViewModel : ViewModel() {
@@ -14,8 +20,18 @@ class ListViewModel : ViewModel() {
     val searchText by lazy { MutableStateFlow("") }
 
     // 排序
-    val activeSort by lazy { MutableStateFlow(AppListSort.Alphabet) }
-    val ascending by lazy { MutableStateFlow(true) }
+    val activeSort by lazy { MutableStateFlow(App.globalContext.readListActiveSort()) }
+    val ascending by lazy { MutableStateFlow(App.globalContext.readListSortAscending()) }
+
+    fun setActiveSort(context: Context, value: AppListSort) {
+        activeSort.value = value
+        context.saveListActiveSort(value)
+    }
+
+    fun setAscending(context: Context) {
+        ascending.value = ascending.value.not()
+        context.saveListSortAscending(ascending.value)
+    }
 
     // 过滤
     val filter by lazy { MutableStateFlow(AppListFilter.None) }

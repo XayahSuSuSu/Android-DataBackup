@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -162,6 +163,7 @@ fun AppRestoreBottomSheet(
     isOpen: MutableState<Boolean>,
     viewModel: ListViewModel,
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
@@ -288,8 +290,8 @@ fun AppRestoreBottomSheet(
             ) {
                 AssistChip(
                     onClick = {
-                        viewModel.activeSort.value = AppListSort.Alphabet
-                        viewModel.ascending.value = viewModel.ascending.value.not()
+                        viewModel.setActiveSort(context, AppListSort.Alphabet)
+                        viewModel.setAscending(context)
                         refreshAppRestoreList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.alphabet)) },
@@ -307,8 +309,8 @@ fun AppRestoreBottomSheet(
                 )
                 AssistChip(
                     onClick = {
-                        viewModel.activeSort.value = AppListSort.FirstInstallTime
-                        viewModel.ascending.value = viewModel.ascending.value.not()
+                        viewModel.setActiveSort(context, AppListSort.FirstInstallTime)
+                        viewModel.setAscending(context)
                         refreshAppRestoreList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.install_time)) },
@@ -326,8 +328,8 @@ fun AppRestoreBottomSheet(
                 )
                 AssistChip(
                     onClick = {
-                        viewModel.activeSort.value = AppListSort.DataSize
-                        viewModel.ascending.value = viewModel.ascending.value.not()
+                        viewModel.setActiveSort(context, AppListSort.DataSize)
+                        viewModel.setAscending(context)
                         refreshAppRestoreList(viewModel)
                     },
                     label = { Text(stringResource(id = R.string.data_size)) },
