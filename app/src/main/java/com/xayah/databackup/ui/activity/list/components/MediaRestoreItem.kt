@@ -136,6 +136,12 @@ fun MediaRestoreItem(
                         }
                     }
                 }
+                if (mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].sizeBytes != 0L) {
+                    SuggestionChip(
+                        onClick = { },
+                        label = { Text(mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].sizeDisplay) }
+                    )
+                }
             }
             IconToggleButton(checked = expand, onCheckedChange = { expand = it }) {
                 if (expand) {

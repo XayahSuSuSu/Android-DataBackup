@@ -331,6 +331,10 @@ class Command {
                         }
                     }
                 }
+
+                for (i in mediaInfoBackupMap.values) {
+                    i.storageStats.dataBytes = RootService.getInstance().countSize(i.path)
+                }
             }
             return mediaInfoBackupMap
         }

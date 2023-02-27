@@ -60,6 +60,10 @@ class RootService {
         return ipc.mkdirs(path)
     }
 
+    fun countSize(path: String): Long {
+        return ipc.countSize(path)
+    }
+
     fun readText(path: String): String {
         return ipc.readText(path)
     }

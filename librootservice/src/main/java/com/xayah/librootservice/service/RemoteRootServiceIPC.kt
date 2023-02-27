@@ -11,10 +11,11 @@ import android.os.UserHandle
 import android.os.UserManager
 import com.xayah.librootservice.IRemoteRootService
 import org.lsposed.hiddenapibypass.HiddenApiBypass
-import java.io.File
-import java.io.FileOutputStream
-import java.nio.file.Paths
+import java.io.*
+import java.nio.file.*
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.io.path.pathString
 
 @SuppressLint("NewApi", "PrivateApi")
@@ -99,6 +100,33 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         } catch (e: Exception) {
             false
         }
+    }
+
+    /**
+     * 计算文件/文件夹大小
+     */
+    override fun countSize(path: String): Long {
+        val size = AtomicLong(0)
+        try {
+            Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
+                override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                    if (attrs != null) {
+                        size.addAndGet(attrs.size())
+                    }
+                    return FileVisitResult.CONTINUE
+                }
+
+                override fun visitFileFailed(file: Path?, exc: IOException?): FileVisitResult {
+                    return FileVisitResult.CONTINUE
+                }
+
+                override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
+                    return FileVisitResult.CONTINUE
+                }
+            })
+        } catch (_: Exception) {
+        }
+        return size.get()
     }
 
     override fun readText(path: String): String {

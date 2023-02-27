@@ -246,7 +246,34 @@ data class MediaInfoDetailBase(
     @Expose var data: Boolean = false, // 是否选中
     @Expose var size: String = "",     // 数据大小
     @Expose var date: String = "",     // 备份日期(10位时间戳)
-)
+) {
+    val sizeBytes: Long
+        get() = size.toLongOrDefault(0)
+
+    val sizeDisplay: String
+        get() = run {
+            var unit = "Bytes"
+            val mSizeBytes = sizeBytes.toDouble() * 1000
+            var size = mSizeBytes
+            val gb = (1000 * 1000 * 1000).toDouble()
+            val mb = (1000 * 1000).toDouble()
+            val kb = (1000).toDouble()
+            if (mSizeBytes > gb) {
+                // GB
+                size = mSizeBytes / gb
+                unit = "GB"
+            } else if (mSizeBytes > mb) {
+                // GB
+                size = mSizeBytes / mb
+                unit = "MB"
+            } else if (mSizeBytes > kb) {
+                // GB
+                size = mSizeBytes / kb
+                unit = "KB"
+            }
+            "${DecimalFormat("#.00").format(size)} $unit"
+        }
+}
 
 /**
  * 媒体备份信息
@@ -255,6 +282,7 @@ data class MediaInfoBackup(
     @Expose var name: String = "",     // 媒体名称
     @Expose var path: String = "",     // 媒体路径
     @Expose var backupDetail: MediaInfoDetailBase = MediaInfoDetailBase(),
+    @Expose var storageStats: AppInfoStorageStats = AppInfoStorageStats(),
 ) {
     private var _selectData by mutableStateOf(backupDetail.data)
 

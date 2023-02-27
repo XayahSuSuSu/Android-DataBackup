@@ -37,6 +37,7 @@ import com.xayah.databackup.ui.activity.list.components.MediaBackupItem
 import com.xayah.databackup.ui.activity.list.components.SearchBar
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.util.*
+import com.xayah.librootservice.RootService
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.launch
 
@@ -193,6 +194,7 @@ fun onMediaBackupAdd(
                         this.size = ""
                         this.date = ""
                     }
+                    this.storageStats.dataBytes = RootService.getInstance().countSize(this.path)
                 }
                 viewModel.mediaBackupList.value.add(mediaInfo)
                 GlobalObject.getInstance().mediaInfoBackupMap.value[mediaInfo.name] = mediaInfo

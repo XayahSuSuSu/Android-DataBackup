@@ -9,6 +9,7 @@ interface IRemoteRootService {
     boolean createNewFile(String path);
     boolean deleteRecursively(String path);
     boolean mkdirs(String path);
+    long countSize(String path);
     String readText(String path);
     byte[] readBytes(String path);
     boolean writeText(String path, String text);
