@@ -96,8 +96,12 @@ class RootService {
         return ipc.getUsers(excludePartial, excludeDying, excludePreCreated)
     }
 
-    fun getInstalledPackagesAsUser(flags: Int, userId: Int): MutableList<PackageInfo> {
-        return ipc.getInstalledPackagesAsUser(flags, userId)
+    fun offerInstalledPackagesAsUser(flags: Int, userId: Int): Boolean {
+        return ipc.offerInstalledPackagesAsUser(flags, userId)
+    }
+
+    fun pollInstalledPackages(): MutableList<PackageInfo> {
+        return ipc.pollInstalledPackages()
     }
 
     fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats {

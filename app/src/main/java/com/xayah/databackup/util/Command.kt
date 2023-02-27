@@ -3,6 +3,7 @@ package com.xayah.databackup.util
 import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.os.Build
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
@@ -115,8 +116,18 @@ class Command {
                 val packageManager = App.globalContext.packageManager
                 val userId = App.globalContext.readBackupUser()
                 // 通过PackageManager获取所有应用信息
-                val packages =
-                    RootService.getInstance().getInstalledPackagesAsUser(0, userId.toInt())
+                RootService.getInstance().offerInstalledPackagesAsUser(0, userId.toInt())
+                val packages = mutableListOf<PackageInfo>()
+                var tmp: MutableList<PackageInfo>
+                while (
+                    run {
+                        tmp =
+                            RootService.getInstance().pollInstalledPackages()
+                        tmp.isNotEmpty()
+                    }
+                ) {
+                    packages.addAll(tmp)
+                }
                 for (i in packages) {
                     try {
                         // 自身或非指定用户应用

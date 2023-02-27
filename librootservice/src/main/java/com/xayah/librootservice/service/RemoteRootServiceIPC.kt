@@ -14,6 +14,7 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
+import java.util.*
 import kotlin.io.path.pathString
 
 @SuppressLint("NewApi", "PrivateApi")
@@ -23,6 +24,8 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     private lateinit var userManager: UserManager
     private lateinit var storageStatsManager: StorageStatsManager
     private lateinit var actionLogFile: File
+    private val packageInfoQueue: Queue<PackageInfo> = LinkedList()
+    private val queuePollMaxSize = 50
 
     /**
      * 获取systemContext
@@ -196,18 +199,35 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun getInstalledPackagesAsUser(flags: Int, userId: Int): MutableList<PackageInfo> {
-        try {
-            return (HiddenApiBypass.invoke(
+    override fun offerInstalledPackagesAsUser(flags: Int, userId: Int): Boolean {
+        return try {
+            packageInfoQueue.clear()
+            (HiddenApiBypass.invoke(
                 Class.forName("android.content.pm.PackageManager"),
                 systemContext.packageManager,
                 "getInstalledPackagesAsUser",
                 flags,
                 userId
-            ) as List<PackageInfo>).toMutableList()
+            ) as List<PackageInfo>).forEach {
+                packageInfoQueue.offer(it)
+            }
+            true
         } catch (_: Exception) {
+            false
         }
-        return mutableListOf()
+    }
+
+    override fun pollInstalledPackages(): MutableList<PackageInfo> {
+        val packages = mutableListOf<PackageInfo>()
+        for (i in 0 until queuePollMaxSize) {
+            val packageInfo = packageInfoQueue.poll()
+            if (packageInfo != null) {
+                packages.add(packageInfo)
+            } else {
+                break
+            }
+        }
+        return packages
     }
 
     override fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats {
