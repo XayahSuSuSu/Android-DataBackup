@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.gson.annotations.Expose
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
+import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.internal.toLongOrDefault
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue
@@ -179,6 +180,7 @@ data class AppInfoRestore(
     @Expose var detailBase: AppInfoDetailBase = AppInfoDetailBase(),        // 详情
     @Expose var firstInstallTime: Long = 0,                                 // 首次安装时间
     @Expose var detailRestoreList: MutableList<AppInfoDetailRestore> = mutableListOf(),  // 备份详情
+    var isOnThisDevice: MutableStateFlow<Boolean> = MutableStateFlow(false)
 ) {
     @Expose
     var restoreIndex: Int = -1

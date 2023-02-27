@@ -35,9 +35,11 @@ fun toAppListSort(s: String?): AppListSort {
  * 应用列表过滤类型
  */
 enum class AppListFilter {
-    None,        // 无
-    Selected,    // 已选择
-    NotSelected, // 未选择
+    None,          // 无
+    Selected,      // 已选择
+    NotSelected,   // 未选择
+    Installed,     // 已安装
+    NotInstalled,  // 未安装
 }
 
 /**

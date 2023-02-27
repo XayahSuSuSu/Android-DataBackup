@@ -258,6 +258,22 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         return packages
     }
 
+    override fun queryInstalled(packageName: String, userId: Int): Boolean {
+        return try {
+            (HiddenApiBypass.invoke(
+                Class.forName("android.content.pm.PackageManager"),
+                systemContext.packageManager,
+                "getPackageInfoAsUser",
+                packageName,
+                0,
+                userId
+            ) as PackageInfo)
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     override fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats {
         return storageStatsManager.queryStatsForPackage(
             packageInfo.applicationInfo.storageUuid,

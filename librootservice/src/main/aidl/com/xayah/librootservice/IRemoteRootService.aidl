@@ -22,5 +22,6 @@ interface IRemoteRootService {
     List<UserInfo> getUsers(boolean excludePartial, boolean excludeDying, boolean excludePreCreated);
     boolean offerInstalledPackagesAsUser(int flags, int userId);
     List<PackageInfo> pollInstalledPackages();
+    boolean queryInstalled(String packageName, int userId);
     StorageStats queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
 }

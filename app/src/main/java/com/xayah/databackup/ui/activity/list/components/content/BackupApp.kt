@@ -610,6 +610,10 @@ fun filterAppBackup(
         AppListFilter.NotSelected -> {
             filterAppBackupNotSelected(viewModel, predicate)
         }
+        else -> {
+            viewModel.filter.value = AppListFilter.None
+            filterAppBackupNone(viewModel, predicate)
+        }
     }
 }
 

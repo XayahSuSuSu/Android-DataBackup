@@ -51,6 +51,16 @@ fun AppRestoreItem(
     val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
+    val isOnThisDevice = appInfoRestore.isOnThisDevice.collectAsState()
+
+    LaunchedEffect(null) {
+        appInfoRestore.isOnThisDevice.value =
+            RootService.getInstance()
+                .queryInstalled(
+                    appInfoRestore.detailBase.packageName,
+                    context.readRestoreUser().toInt()
+                )
+    }
 
     Column(
         modifier = modifier
@@ -189,6 +199,12 @@ fun AppRestoreItem(
                     SuggestionChip(
                         onClick = { },
                         label = { Text(appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].sizeDisplay) }
+                    )
+                }
+                if (isOnThisDevice.value) {
+                    SuggestionChip(
+                        onClick = { },
+                        label = { Text(stringResource(R.string.installed)) }
                     )
                 }
             }

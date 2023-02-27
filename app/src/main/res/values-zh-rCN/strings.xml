@@ -156,4 +156,6 @@
     <string name="type">类型</string>
     <string name="compatible_mode">兼容模式</string>
     <string name="compatible_mode_subtitle">使用管道而非参作为tar的输入。当遇到\"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"时开启它</string>
+    <string name="installed">已安装</string>
+    <string name="not_installed">未安装</string>
 </resources>

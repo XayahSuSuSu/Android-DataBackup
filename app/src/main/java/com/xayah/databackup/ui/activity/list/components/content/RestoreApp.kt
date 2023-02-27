@@ -420,6 +420,48 @@ fun AppRestoreBottomSheet(
                         null
                     }
                 )
+                FilterChip(
+                    selected = filter.value == AppListFilter.Installed,
+                    onClick = {
+                        if (viewModel.filter.value != AppListFilter.Installed) {
+                            viewModel.filter.value = AppListFilter.Installed
+                            refreshAppRestoreList(viewModel)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.installed)) },
+                    leadingIcon = if (filter.value == AppListFilter.Installed) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else {
+                        null
+                    }
+                )
+                FilterChip(
+                    selected = filter.value == AppListFilter.NotInstalled,
+                    onClick = {
+                        if (viewModel.filter.value != AppListFilter.NotInstalled) {
+                            viewModel.filter.value = AppListFilter.NotInstalled
+                            refreshAppRestoreList(viewModel)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.not_installed)) },
+                    leadingIcon = if (filter.value == AppListFilter.NotInstalled) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else {
+                        null
+                    }
+                )
             }
 
             // 类型
@@ -589,6 +631,36 @@ fun filterAppRestoreNotSelected(
     )
 }
 
+fun filterAppRestoreInstalled(
+    viewModel: ListViewModel,
+    predicate: (AppInfoRestore) -> Boolean
+) {
+    viewModel.appRestoreList.value.clear()
+    viewModel.appRestoreList.value.addAll(
+        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
+            .filter {
+                filterTypePredicateAppRestore(viewModel.type.value, it)
+                        && it.isOnThisDevice.value
+            }
+            .filter(predicate)
+    )
+}
+
+fun filterAppRestoreNotInstalled(
+    viewModel: ListViewModel,
+    predicate: (AppInfoRestore) -> Boolean
+) {
+    viewModel.appRestoreList.value.clear()
+    viewModel.appRestoreList.value.addAll(
+        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
+            .filter {
+                filterTypePredicateAppRestore(viewModel.type.value, it)
+                        && it.isOnThisDevice.value.not()
+            }
+            .filter(predicate)
+    )
+}
+
 fun filterAppRestore(
     viewModel: ListViewModel,
     predicate: (AppInfoRestore) -> Boolean = {
@@ -608,6 +680,12 @@ fun filterAppRestore(
         }
         AppListFilter.NotSelected -> {
             filterAppRestoreNotSelected(viewModel, predicate)
+        }
+        AppListFilter.Installed -> {
+            filterAppRestoreInstalled(viewModel, predicate)
+        }
+        AppListFilter.NotInstalled -> {
+            filterAppRestoreNotInstalled(viewModel, predicate)
         }
     }
 }

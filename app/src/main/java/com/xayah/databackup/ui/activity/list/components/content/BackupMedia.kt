@@ -410,6 +410,10 @@ fun filterMediaBackup(
         AppListFilter.NotSelected -> {
             filterMediaBackupNotSelected(viewModel, predicate)
         }
+        else -> {
+            viewModel.filter.value = AppListFilter.None
+            filterMediaBackupNone(viewModel, predicate)
+        }
     }
 }
 

@@ -111,4 +111,8 @@ class RootService {
     fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats {
         return ipc.queryStatsForPackage(packageInfo, user)
     }
+
+    fun queryInstalled(packageName: String, userId: Int): Boolean {
+        return ipc.queryInstalled(packageName, userId)
+    }
 }

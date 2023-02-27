@@ -156,4 +156,6 @@
     <string name="type">Тип</string>
     <string name="compatible_mode">Режим сумісності</string>
     <string name="compatible_mode_subtitle">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
+    <string name="installed">Installed</string>
+    <string name="not_installed">Not installed</string>
 </resources>

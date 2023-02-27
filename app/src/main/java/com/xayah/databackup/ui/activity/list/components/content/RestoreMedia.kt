@@ -335,6 +335,10 @@ fun filterMediaRestore(
         AppListFilter.NotSelected -> {
             filterMediaRestoreNotSelected(viewModel, predicate)
         }
+        else -> {
+            viewModel.filter.value = AppListFilter.None
+            filterMediaRestoreNone(viewModel, predicate)
+        }
     }
 }
 
