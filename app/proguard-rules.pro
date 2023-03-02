@@ -21,4 +21,9 @@
 #-renamesourcefileattribute SourceFile
 
 -dontwarn com.xayah.databackup.**
+-dontwarn android.content.pm.**
+-dontwarn com.xayah.librootservice.**
+
 -keep class com.xayah.databackup.** { *; }
+-keep class android.content.pm.** { *; }
+-keep class com.xayah.librootservice.** { *; }
