@@ -22,7 +22,10 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.TextButton
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.readIsReadIcon
 import com.xayah.librootservice.RootService
 import kotlinx.coroutines.launch
 
@@ -37,15 +40,6 @@ fun AppRestoreItem(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val isOnThisDevice = appInfoRestore.isOnThisDevice.collectAsState()
-
-    LaunchedEffect(null) {
-        appInfoRestore.isOnThisDevice.value =
-            RootService.getInstance()
-                .queryInstalled(
-                    appInfoRestore.detailBase.packageName,
-                    context.readRestoreUser().toInt()
-                )
-    }
 
     if (appInfoRestore.detailBase.appIcon == null) {
         appInfoRestore.detailBase.appIcon =

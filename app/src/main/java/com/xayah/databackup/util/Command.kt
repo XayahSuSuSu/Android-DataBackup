@@ -211,17 +211,6 @@ class Command {
                     RootService.getInstance().readText(Path.getAppInfoRestoreMapPath())
                 )
 
-                // Empty restore list check
-                val keys = mutableSetOf<String>()
-                keys.addAll(appInfoRestoreMap.keys)
-                for (i in keys) {
-                    appInfoRestoreMap[i]?.apply {
-                        if (this.detailRestoreList.isEmpty()) {
-                            appInfoRestoreMap.remove(i)
-                        }
-                    }
-                }
-
                 // 根据备份目录实际文件调整列表
                 execute("find \"${Path.getBackupDataSavePath()}\" -name \"*.tar*\" -type f").apply {
                     if (isSuccess) {
@@ -306,6 +295,20 @@ class Command {
                         }
                     }
                 }
+
+                // Empty restore list check
+                val keys = mutableSetOf<String>()
+                keys.addAll(appInfoRestoreMap.keys)
+                for (i in keys) {
+                    appInfoRestoreMap[i]?.apply {
+                        if (this.detailRestoreList.isEmpty()) {
+                            appInfoRestoreMap.remove(i)
+                        } else {
+                            this.isOnThisDevice.value = RootService.getInstance()
+                                .queryInstalled(i, App.globalContext.readRestoreUser().toInt())
+                        }
+                    }
+                }
             }
             appInfoRestoreMap.remove("")
             return appInfoRestoreMap
@@ -363,17 +366,6 @@ class Command {
                 mediaInfoRestoreMap = GsonUtil.getInstance().fromMediaInfoRestoreMapJson(
                     RootService.getInstance().readText(Path.getMediaInfoRestoreMapPath())
                 )
-
-                // Empty restore list check
-                val keys = mutableSetOf<String>()
-                keys.addAll(mediaInfoRestoreMap.keys)
-                for (i in keys) {
-                    mediaInfoRestoreMap[i]?.apply {
-                        if (this.detailRestoreList.isEmpty()) {
-                            mediaInfoRestoreMap.remove(i)
-                        }
-                    }
-                }
 
                 // 根据备份目录实际文件调整列表
                 execute("find \"${Path.getBackupMediaSavePath()}\" -name \"*.tar*\" -type f").apply {
@@ -440,6 +432,17 @@ class Command {
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
+                        }
+                    }
+                }
+
+                // Empty restore list check
+                val keys = mutableSetOf<String>()
+                keys.addAll(mediaInfoRestoreMap.keys)
+                for (i in keys) {
+                    mediaInfoRestoreMap[i]?.apply {
+                        if (this.detailRestoreList.isEmpty()) {
+                            mediaInfoRestoreMap.remove(i)
                         }
                     }
                 }
