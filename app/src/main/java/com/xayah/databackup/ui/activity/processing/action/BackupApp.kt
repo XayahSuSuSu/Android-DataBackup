@@ -301,15 +301,26 @@ fun onBackupAppProcessing(
                 // 保存应用图标
                 if (App.globalContext.readIsBackupIcon()) {
                     withContext(Dispatchers.IO){
-                        val byteArrayOutputStream = ByteArrayOutputStream()
-                        appInfoBackup.detailBase.appIcon?.toBitmap()
-                            ?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-                        val byteArray = byteArrayOutputStream.toByteArray()
-                        byteArrayOutputStream.flush()
-                        byteArrayOutputStream.close()
-                        RootService.getInstance().writeBytes(outPutIconPath, byteArray)
+                        Logcat.getInstance().actionLogAddLine(tag, "Trying to save icon.")
+                        var byteArray = ByteArray(0)
+                        try {
+                            val byteArrayOutputStream = ByteArrayOutputStream()
+                            appInfoBackup.detailBase.appIcon?.toBitmap()
+                                ?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                            byteArray = byteArrayOutputStream.toByteArray()
+                            byteArrayOutputStream.flush()
+                            byteArrayOutputStream.close()
+                            RootService.getInstance().writeBytes(outPutIconPath, byteArray)
+                            Logcat.getInstance()
+                                .actionLogAddLine(tag, "Icon saved successfully: ${byteArray.size}")
+                        } catch (_: Exception) {
+                            Logcat.getInstance()
+                                .actionLogAddLine(
+                                    tag,
+                                    "Icon is too large to save: ${byteArray.size}"
+                                )
+                        }
                     }
-                    Logcat.getInstance().actionLogAddLine(tag, "Trying to save icon.")
                 }
 
                 if (isSuccess) {
