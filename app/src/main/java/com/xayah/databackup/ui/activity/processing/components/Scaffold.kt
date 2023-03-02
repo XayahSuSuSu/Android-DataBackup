@@ -46,30 +46,35 @@ fun parseObjectItemBySrc(
         ProcessCompressing -> {
             // 压缩中
             item.apply {
+                state.value = TaskState.Processing
                 title.value = GlobalString.compressing
             }
         }
         ProcessDecompressing -> {
             // 解压中
             item.apply {
+                state.value = TaskState.Processing
                 title.value = GlobalString.decompressing
             }
         }
         ProcessTesting -> {
             // 测试中
             item.apply {
+                state.value = TaskState.Processing
                 title.value = GlobalString.testing
             }
         }
         ProcessSettingSELinux -> {
             // 设置SELinux中
             item.apply {
+                state.value = TaskState.Processing
                 title.value = GlobalString.settingSELinux
             }
         }
             ProcessInstallingApk -> {
                 // 安装APK中
                 item.apply {
+                    state.value = TaskState.Processing
                     title.value = GlobalString.installing
                 }
             }
