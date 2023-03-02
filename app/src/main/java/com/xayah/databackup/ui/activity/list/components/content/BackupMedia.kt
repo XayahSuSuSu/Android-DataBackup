@@ -5,37 +5,32 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Place
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.list.ListViewModel
-import com.xayah.databackup.ui.activity.list.components.ListBottomSheet
+import com.xayah.databackup.ui.activity.list.components.FilterItem
 import com.xayah.databackup.ui.activity.list.components.ManifestDescItem
-import com.xayah.databackup.ui.activity.list.components.MediaBackupItem
-import com.xayah.databackup.ui.activity.list.components.SearchBar
+import com.xayah.databackup.ui.activity.list.components.item.MediaBackupItem
+import com.xayah.databackup.ui.activity.list.components.manifest.contentManifest
+import com.xayah.databackup.ui.activity.list.components.menu.ListBottomSheet
+import com.xayah.databackup.ui.activity.list.components.menu.item.FilterItem
+import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopActionButton
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
+import com.xayah.databackup.ui.components.SearchBar
 import com.xayah.databackup.util.*
 import com.xayah.librootservice.RootService
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
@@ -52,14 +47,10 @@ fun LazyListScope.contentRestoreBackup(
     item {
         SearchBar(onSearch)
     }
-    items(
-        count = list.size,
-        key = {
-            list[it].name
-        }) { index ->
+    items(items = list, key = { it.name }) {
         MediaBackupItem(
             modifier = Modifier.animateItemPlacement(),
-            mediaInfoBackup = list[index],
+            mediaInfoBackup = it,
             onItemUpdate = onItemUpdate
         )
     }
@@ -78,13 +69,18 @@ suspend fun onMediaBackupInitialize(viewModel: ListViewModel) {
 
 @ExperimentalMaterial3Api
 fun LazyListScope.onMediaBackupManifest(viewModel: ListViewModel, context: Context) {
+    // 重置列表, 否则Manifest可能和Processing有所出入
+    viewModel.searchText.value = ""
+    viewModel.filter.value = AppListFilter.Selected
+    refreshMediaBackupList(viewModel)
+
     val list = listOf(
         ManifestDescItem(
             title = context.getString(R.string.selected_data),
             subtitle = run {
                 var size = 0
                 for (i in viewModel.mediaBackupList.value) {
-                    if (i.selectData) size++
+                    if (i.selectData.value) size++
                 }
                 size.toString()
             },
@@ -190,7 +186,7 @@ fun onMediaBackupAdd(
                     this.name = name
                     this.path = path
                     this.backupDetail.apply {
-                        this.data = true
+                        this.data.value = true
                         this.size = ""
                         this.date = ""
                     }
@@ -212,145 +208,59 @@ fun MediaBackupBottomSheet(
     context: Context,
     explorer: MaterialYouFileExplorer
 ) {
-    val nonePadding = dimensionResource(R.dimen.padding_none)
-    val tinyPadding = dimensionResource(R.dimen.padding_tiny)
-    val smallPadding = dimensionResource(R.dimen.padding_small)
-    val mediumPadding = dimensionResource(R.dimen.padding_medium)
-    val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
-    val filter = viewModel.filter.collectAsState()
-
     ListBottomSheet(
         isOpen = isOpen,
         actions = {
             item {
-                Column(modifier = Modifier
-                    .clip(RoundedCornerShape(smallPadding))
-                    .clickable {
-                        onMediaBackupAdd(
-                            viewModel = viewModel,
-                            context = context,
-                            explorer = explorer
-                        )
-                        isOpen.value = false
-                    }
-                    .padding(smallPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(tinyPadding)
+                MenuTopActionButton(
+                    icon = Icons.Rounded.Add,
+                    title = stringResource(R.string.add)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(iconSmallSize),
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = null
+                    onMediaBackupAdd(
+                        viewModel = viewModel,
+                        context = context,
+                        explorer = explorer
                     )
-                    Text(
-                        text = stringResource(R.string.add),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    isOpen.value = false
                 }
             }
             item {
                 var selectAll = remember { true }
-                Column(modifier = Modifier
-                    .clip(RoundedCornerShape(smallPadding))
-                    .clickable {
-                        viewModel.mediaBackupList.value.forEach {
-                            it.selectData = selectAll
-                        }
-                        selectAll = selectAll.not()
-                    }
-                    .padding(smallPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(tinyPadding)
+                MenuTopActionButton(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_done_all),
+                    title = stringResource(R.string.select_all)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(iconSmallSize),
-                        imageVector = ImageVector.vectorResource(
-                            id = R.drawable.ic_round_done_all
-                        ),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(R.string.select_all),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    viewModel.mediaBackupList.value.forEach {
+                        it.selectData.value = selectAll
+                    }
+                    selectAll = selectAll.not()
                 }
             }
         },
         content = {
             // 过滤
-            Text(
-                modifier = Modifier.padding(nonePadding, mediumPadding, nonePadding, nonePadding),
-                text = stringResource(id = R.string.filter),
-                style = MaterialTheme.typography.titleMedium,
+            val filterList = listOf(
+                FilterItem(
+                    text = stringResource(R.string.none),
+                    AppListFilter.None
+                ),
+                FilterItem(
+                    text = stringResource(R.string.selected),
+                    AppListFilter.Selected
+                ),
+                FilterItem(
+                    text = stringResource(R.string.not_selected),
+                    AppListFilter.NotSelected
+                )
             )
-            Row(
-                modifier = Modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(smallPadding)
-            ) {
-                FilterChip(
-                    selected = filter.value == AppListFilter.None,
-                    onClick = {
-                        if (viewModel.filter.value != AppListFilter.None) {
-                            viewModel.filter.value = AppListFilter.None
-                            refreshMediaBackupList(viewModel)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.none)) },
-                    leadingIcon = if (filter.value == AppListFilter.None) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = null,
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-                FilterChip(
-                    selected = filter.value == AppListFilter.Selected,
-                    onClick = {
-                        if (viewModel.filter.value != AppListFilter.Selected) {
-                            viewModel.filter.value = AppListFilter.Selected
-                            refreshMediaBackupList(viewModel)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.selected)) },
-                    leadingIcon = if (filter.value == AppListFilter.Selected) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = null,
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-                FilterChip(
-                    selected = filter.value == AppListFilter.NotSelected,
-                    onClick = {
-                        if (viewModel.filter.value != AppListFilter.NotSelected) {
-                            viewModel.filter.value = AppListFilter.NotSelected
-                            refreshMediaBackupList(viewModel)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.not_selected)) },
-                    leadingIcon = if (filter.value == AppListFilter.NotSelected) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = null,
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-            }
+            FilterItem(
+                title = stringResource(id = R.string.filter),
+                list = filterList,
+                filter = viewModel.filter,
+                onClick = {
+                    refreshMediaBackupList(viewModel)
+                }
+            )
         }
     )
 }
@@ -373,7 +283,7 @@ fun filterMediaBackupSelected(
     viewModel.mediaBackupList.value.clear()
     viewModel.mediaBackupList.value.addAll(
         GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
-            .filter { it.selectData }
+            .filter { it.selectData.value }
             .filter(predicate)
     )
 }
@@ -385,7 +295,7 @@ fun filterMediaBackupNotSelected(
     viewModel.mediaBackupList.value.clear()
     viewModel.mediaBackupList.value.addAll(
         GlobalObject.getInstance().mediaInfoBackupMap.value.values.toList()
-            .filter { it.selectData.not() }
+            .filter { it.selectData.value.not() }
             .filter(predicate)
     )
 }

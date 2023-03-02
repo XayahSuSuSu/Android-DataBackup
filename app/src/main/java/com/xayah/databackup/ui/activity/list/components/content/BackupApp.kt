@@ -4,34 +4,35 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.Warning
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.blacklist.BlackListActivity
 import com.xayah.databackup.ui.activity.list.ListViewModel
-import com.xayah.databackup.ui.activity.list.components.*
+import com.xayah.databackup.ui.activity.list.components.FilterItem
+import com.xayah.databackup.ui.activity.list.components.ManifestDescItem
+import com.xayah.databackup.ui.activity.list.components.SortItem
+import com.xayah.databackup.ui.activity.list.components.item.AppBackupItem
+import com.xayah.databackup.ui.activity.list.components.manifest.contentManifest
+import com.xayah.databackup.ui.activity.list.components.menu.ListBottomSheet
+import com.xayah.databackup.ui.activity.list.components.menu.item.FilterItem
+import com.xayah.databackup.ui.activity.list.components.menu.item.SortItem
+import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopActionButton
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
+import com.xayah.databackup.ui.components.ConfirmDialog
+import com.xayah.databackup.ui.components.SearchBar
 import com.xayah.databackup.util.*
 import java.text.Collator
 import java.util.*
@@ -47,14 +48,10 @@ fun LazyListScope.contentAppBackup(
     item {
         SearchBar(onSearch)
     }
-    items(
-        count = list.size,
-        key = {
-            list[it].detailBase.packageName
-        }) { index ->
+    items(items = list, key = { it.detailBase.packageName }) {
         AppBackupItem(
             modifier = Modifier.animateItemPlacement(),
-            appInfoBackup = list[index],
+            appInfoBackup = it,
             onItemUpdate = onItemUpdate
         )
     }
@@ -84,7 +81,7 @@ fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context
             subtitle = run {
                 var size = 0
                 for (i in viewModel.appBackupList.value) {
-                    if (i.selectApp) size++
+                    if (i.selectApp.value) size++
                 }
                 size.toString()
             },
@@ -95,7 +92,7 @@ fun LazyListScope.onAppBackupManifest(viewModel: ListViewModel, context: Context
             subtitle = run {
                 var size = 0
                 for (i in viewModel.appBackupList.value) {
-                    if (i.selectData) size++
+                    if (i.selectData.value) size++
                 }
                 size.toString()
             },
@@ -165,315 +162,140 @@ fun AppBackupBottomSheet(
     onFinish: () -> Unit
 ) {
     val context = LocalContext.current
-    val nonePadding = dimensionResource(R.dimen.padding_none)
-    val tinyPadding = dimensionResource(R.dimen.padding_tiny)
-    val smallPadding = dimensionResource(R.dimen.padding_small)
-    val mediumPadding = dimensionResource(R.dimen.padding_medium)
-    val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
     val active = viewModel.activeSort.collectAsState()
     val ascending = viewModel.ascending.collectAsState()
-    val filter = viewModel.filter.collectAsState()
-    val type = viewModel.type.collectAsState()
 
     ListBottomSheet(
         isOpen = isOpen,
         actions = {
             item {
-                Column(modifier = Modifier
-                    .clip(RoundedCornerShape(smallPadding))
-                    .clickable {
-                        context.startActivity(Intent(context, BlackListActivity::class.java))
-                        onFinish()
-                    }
-                    .padding(smallPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(tinyPadding)
+                MenuTopActionButton(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_blacklist),
+                    title = stringResource(R.string.blacklist)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(iconSmallSize),
-                        imageVector = ImageVector.vectorResource(
-                            id = R.drawable.ic_round_blacklist
-                        ),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(R.string.blacklist),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    context.startActivity(Intent(context, BlackListActivity::class.java))
+                    onFinish()
                 }
             }
             item {
                 var selectApp = remember { true }
-                Column(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(smallPadding))
-                        .clickable {
-                            viewModel.appBackupList.value.forEach {
-                                it.selectApp = selectApp
-                            }
-                            selectApp = selectApp.not()
-                        }
-                        .padding(smallPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(tinyPadding)
+                MenuTopActionButton(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_check),
+                    title = stringResource(R.string.select_all)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(iconSmallSize),
-                        imageVector = ImageVector.vectorResource(
-                            id = R.drawable.ic_round_check
-                        ),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(R.string.select_all),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    viewModel.appBackupList.value.forEach {
+                        it.selectApp.value = selectApp
+                    }
+                    selectApp = selectApp.not()
                 }
             }
             item {
                 var selectAll = remember { true }
-                Column(modifier = Modifier
-                    .clip(RoundedCornerShape(smallPadding))
-                    .clickable {
-                        viewModel.appBackupList.value.forEach {
-                            it.selectApp = selectAll
-                            it.selectData = selectAll
-                        }
-                        selectAll = selectAll.not()
-                    }
-                    .padding(smallPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(tinyPadding)
+                MenuTopActionButton(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_done_all),
+                    title = stringResource(R.string.select_all)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(iconSmallSize),
-                        imageVector = ImageVector.vectorResource(
-                            id = R.drawable.ic_round_done_all
-                        ),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(R.string.select_all),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    viewModel.appBackupList.value.forEach {
+                        it.selectApp.value = selectAll
+                        it.selectData.value = selectAll
+                    }
+                    selectAll = selectAll.not()
                 }
             }
         },
         content = {
             // 排序
-            Text(
-                text = stringResource(id = R.string.sort),
-                style = MaterialTheme.typography.titleMedium,
+            val sortList = listOf(
+                SortItem(
+                    text = stringResource(id = R.string.alphabet),
+                    type = AppListSort.Alphabet,
+                ),
+                SortItem(
+                    text = stringResource(id = R.string.install_time),
+                    type = AppListSort.FirstInstallTime,
+                ),
+                SortItem(
+                    text = stringResource(id = R.string.data_size),
+                    type = AppListSort.DataSize,
+                ),
             )
-            Row(
-                modifier = Modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(smallPadding)
-            ) {
-                AssistChip(
-                    onClick = {
-                        viewModel.setActiveSort(context, AppListSort.Alphabet)
-                        viewModel.setAscending(context)
-                        refreshAppBackupList(viewModel)
-                    },
-                    label = { Text(stringResource(id = R.string.alphabet)) },
-                    leadingIcon = if (active.value == AppListSort.Alphabet) {
-                        {
-                            Icon(
-                                imageVector = if (ascending.value) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                                contentDescription = null,
-                                modifier = Modifier.size(AssistChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-                AssistChip(
-                    onClick = {
-                        viewModel.setActiveSort(context, AppListSort.FirstInstallTime)
-                        viewModel.setAscending(context)
-                        refreshAppBackupList(viewModel)
-                    },
-                    label = { Text(stringResource(id = R.string.install_time)) },
-                    leadingIcon = if (active.value == AppListSort.FirstInstallTime) {
-                        {
-                            Icon(
-                                imageVector = if (ascending.value) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                                contentDescription = null,
-                                modifier = Modifier.size(AssistChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-                AssistChip(
-                    onClick = {
-                        viewModel.setActiveSort(context, AppListSort.DataSize)
-                        viewModel.setAscending(context)
-                        refreshAppBackupList(viewModel)
-                    },
-                    label = { Text(stringResource(id = R.string.data_size)) },
-                    leadingIcon = if (active.value == AppListSort.DataSize) {
-                        {
-                            Icon(
-                                imageVector = if (ascending.value) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                                contentDescription = null,
-                                modifier = Modifier.size(AssistChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-            }
+            SortItem(list = sortList, active = active, ascending = ascending, onClick = {
+                viewModel.setActiveSort(context, it)
+                viewModel.setAscending(context)
+                refreshAppBackupList(viewModel)
+            })
 
             // 过滤
-            Text(
-                modifier = Modifier.padding(nonePadding, mediumPadding, nonePadding, nonePadding),
-                text = stringResource(id = R.string.filter),
-                style = MaterialTheme.typography.titleMedium,
+            val filterList = listOf(
+                FilterItem(
+                    text = stringResource(R.string.none),
+                    AppListFilter.None
+                ),
+                FilterItem(
+                    text = stringResource(R.string.selected),
+                    AppListFilter.Selected
+                ),
+                FilterItem(
+                    text = stringResource(R.string.not_selected),
+                    AppListFilter.NotSelected
+                )
             )
-            Row(
-                modifier = Modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(smallPadding)
-            ) {
-                FilterChip(
-                    selected = filter.value == AppListFilter.None,
-                    onClick = {
-                        if (viewModel.filter.value != AppListFilter.None) {
-                            viewModel.filter.value = AppListFilter.None
-                            refreshAppBackupList(viewModel)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.none)) },
-                    leadingIcon = if (filter.value == AppListFilter.None) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = null,
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-                FilterChip(
-                    selected = filter.value == AppListFilter.Selected,
-                    onClick = {
-                        if (viewModel.filter.value != AppListFilter.Selected) {
-                            viewModel.filter.value = AppListFilter.Selected
-                            refreshAppBackupList(viewModel)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.selected)) },
-                    leadingIcon = if (filter.value == AppListFilter.Selected) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = null,
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-                FilterChip(
-                    selected = filter.value == AppListFilter.NotSelected,
-                    onClick = {
-                        if (viewModel.filter.value != AppListFilter.NotSelected) {
-                            viewModel.filter.value = AppListFilter.NotSelected
-                            refreshAppBackupList(viewModel)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.not_selected)) },
-                    leadingIcon = if (filter.value == AppListFilter.NotSelected) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = null,
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-            }
-
-            // 类型
-            Text(
-                modifier = Modifier.padding(nonePadding, mediumPadding, nonePadding, nonePadding),
-                text = stringResource(R.string.type),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Row(
-                modifier = Modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(smallPadding)
-            ) {
-                FilterChip(
-                    selected = type.value == AppListType.InstalledApp,
-                    onClick = {
-                        if (viewModel.type.value != AppListType.InstalledApp) {
-                            viewModel.type.value = AppListType.InstalledApp
-                            refreshAppBackupList(viewModel)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.installed_app)) },
-                    leadingIcon = if (type.value == AppListType.InstalledApp) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = null,
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
-
-                val isDialogOpen = remember {
-                    mutableStateOf(false)
-                }
-                ConfirmDialog(
-                    isOpen = isDialogOpen,
-                    icon = Icons.Rounded.Warning,
-                    title = stringResource(R.string.warning),
-                    content = {
-                        Text(
-                            text = stringResource(R.string.switch_to_system_app_warning)
-                                    + stringResource(id = R.string.symbol_exclamation)
-                        )
-                    },
-                    cancelable = false
-                ) {
-                    viewModel.type.value = AppListType.SystemApp
+            FilterItem(
+                title = stringResource(id = R.string.filter),
+                list = filterList,
+                filter = viewModel.filter,
+                onClick = {
                     refreshAppBackupList(viewModel)
                 }
-                FilterChip(
-                    selected = type.value == AppListType.SystemApp,
-                    onClick = {
-                        if (viewModel.type.value != AppListType.SystemApp) {
+            )
+
+            // 类型
+            val typeList = listOf(
+                FilterItem(
+                    text = stringResource(R.string.none),
+                    AppListType.None
+                ),
+                FilterItem(
+                    text = stringResource(R.string.installed_app),
+                    AppListType.InstalledApp
+                ),
+                FilterItem(
+                    text = stringResource(R.string.system_app),
+                    AppListType.SystemApp
+                ),
+            )
+            val isDialogOpen = remember {
+                mutableStateOf(false)
+            }
+            ConfirmDialog(
+                isOpen = isDialogOpen,
+                icon = Icons.Rounded.Warning,
+                title = stringResource(R.string.warning),
+                content = {
+                    Text(
+                        text = stringResource(R.string.switch_to_system_app_warning)
+                                + stringResource(id = R.string.symbol_exclamation)
+                    )
+                },
+                cancelable = false
+            ) {
+                refreshAppBackupList(viewModel)
+            }
+            FilterItem(
+                title = stringResource(id = R.string.type),
+                list = typeList,
+                filter = viewModel.type,
+                onClick = {
+                    when (it) {
+                        AppListType.None, AppListType.SystemApp -> {
                             isDialogOpen.value = true
                         }
-                    },
-                    label = { Text(stringResource(R.string.system_app)) },
-                    leadingIcon = if (type.value == AppListType.SystemApp) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = null,
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
+                        else -> {
+                            refreshAppBackupList(viewModel)
                         }
-                    } else {
-                        null
                     }
-                )
-            }
+                }
+            )
         }
     )
 }
@@ -527,9 +349,9 @@ fun sortAppBackupByDataSize(
     ascending: Boolean
 ) {
     if (ascending)
-        viewModel.appBackupList.value.sortBy { it.storageStats.sizeBytes }
+        viewModel.appBackupList.value.sortBy { it.sizeBytes }
     else
-        viewModel.appBackupList.value.sortByDescending { it.storageStats.sizeBytes }
+        viewModel.appBackupList.value.sortByDescending { it.sizeBytes }
 }
 
 fun sortAppBackup(viewModel: ListViewModel) {
@@ -568,7 +390,7 @@ fun filterAppBackupSelected(
             .filter {
                 it.isOnThisDevice
                         && filterTypePredicateAppBackup(viewModel.type.value, it)
-                        && (it.detailBackup.selectApp || it.detailBackup.selectData)
+                        && (it.selectApp.value || it.selectData.value)
             }
             .filter(predicate)
     )
@@ -584,7 +406,7 @@ fun filterAppBackupNotSelected(
             .filter {
                 it.isOnThisDevice
                         && filterTypePredicateAppBackup(viewModel.type.value, it)
-                        && (it.detailBackup.selectApp.not() && it.detailBackup.selectData.not())
+                        && (it.selectApp.value .not() && it.selectData.value.not())
             }
             .filter(predicate)
     )

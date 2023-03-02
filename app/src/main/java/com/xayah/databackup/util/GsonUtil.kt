@@ -1,14 +1,29 @@
 package com.xayah.databackup.util
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import com.xayah.databackup.data.*
 import com.xayah.librootservice.RootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Paths
 import kotlin.io.path.pathString
+
+private class MutableStateBooleanAdapter : TypeAdapter<MutableState<Boolean>>() {
+    override fun write(writer: JsonWriter, value: MutableState<Boolean>) {
+        writer.value(value.value)
+    }
+
+    override fun read(reader: JsonReader): MutableState<Boolean> {
+        return mutableStateOf(reader.nextBoolean())
+    }
+}
 
 class GsonUtil {
     object Instance {
@@ -122,7 +137,13 @@ class GsonUtil {
         }
     }
 
-    private val gson: Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
+    private val gson: Gson =
+        GsonBuilder()
+            .registerTypeAdapter(
+                object : TypeToken<MutableState<Boolean>>() {}.type,
+                MutableStateBooleanAdapter()
+            )
+            .excludeFieldsWithoutExposeAnnotation().create()
 
     /**
      * Json转AppInfoBackupMap

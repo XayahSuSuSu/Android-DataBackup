@@ -18,7 +18,6 @@ import com.xayah.databackup.R
 fun BottomSheet(isOpen: MutableState<Boolean>, content: @Composable (ColumnScope.() -> Unit)) {
     if (isOpen.value) {
         Dialog(onDismissRequest = { isOpen.value = false }) {
-            val nonePadding = dimensionResource(R.dimen.padding_none)
             val mediumPadding = dimensionResource(R.dimen.padding_medium)
             Surface(
                 shape = AlertDialogDefaults.shape,
@@ -26,12 +25,7 @@ fun BottomSheet(isOpen: MutableState<Boolean>, content: @Composable (ColumnScope
                 tonalElevation = AlertDialogDefaults.TonalElevation,
             ) {
                 Column(
-                    modifier = Modifier.padding(
-                        nonePadding,
-                        mediumPadding,
-                        nonePadding,
-                        nonePadding
-                    )
+                    modifier = Modifier.paddingTop(mediumPadding)
                 ) {
                     content()
                 }

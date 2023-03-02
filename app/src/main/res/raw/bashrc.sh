@@ -321,17 +321,6 @@ find_package() {
   fi
 }
 
-count_size() {
-  # $1: path
-  # $2: type
-  if [ -e "$1" ]; then
-    case "$2" in
-      0) du -ksh "$1" | awk '{print $1}' ;;
-      *) du -ks "$1" | awk '{print $1}' ;;
-    esac
-  fi
-}
-
 list_external_storage() {
   mount | awk '$3 ~ /\mnt\/media_rw/ {print $3, $5}'
 }

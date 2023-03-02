@@ -4,13 +4,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.font.FontWeight
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.components.BodySmallText
+import com.xayah.databackup.ui.components.TitleMediumText
 
 @ExperimentalMaterial3Api
 @Composable
@@ -27,22 +31,14 @@ fun BlackListItemClickable(
             .clip(RoundedCornerShape(mediumPadding))
             .clickable { onClick() },
         headlineText = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
+            TitleMediumText(text = title)
         },
         supportingText = {
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
-            )
+            BodySmallText(text = subtitle)
         },
         trailingContent = {
             IconButton(onClick = onIconButtonClick) {
-                Icon(Icons.Outlined.Delete, contentDescription = null)
+                Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
             }
         },
     )

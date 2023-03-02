@@ -270,10 +270,12 @@ class Command {
                                                     this.date = date
                                                 } else appInfoRestore.detailRestoreList[detailListIndex]
                                             detail.apply {
-                                                this.hasApp = hasApp
-                                                this.hasData = hasData
-                                                this.selectApp = this.selectApp && hasApp
-                                                this.selectData = this.selectData && hasData
+                                                this.hasApp.value = hasApp
+                                                this.hasData.value = hasData
+                                                this.selectApp.value =
+                                                    this.selectApp.value && hasApp
+                                                this.selectData.value =
+                                                    this.selectData.value && hasData
                                             }
 
                                             detailRestoreList.add(detail)
@@ -324,7 +326,7 @@ class Command {
                             this.name = nameList[index]
                             this.path = pathList[index]
                             this.backupDetail.apply {
-                                this.data = false
+                                this.data.value = false
                                 this.size = ""
                                 this.date = ""
                             }
@@ -400,7 +402,7 @@ class Command {
                                                     this.date = date
                                                 } else mediaInfoRestore.detailRestoreList[detailListIndex]
                                             detail.apply {
-                                                this.data = this.data && hasData
+                                                this.data.value = this.data.value && hasData
                                             }
 
                                             detailRestoreList.add(detail)
@@ -543,13 +545,15 @@ class Command {
             if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
                 // 当备份策略为覆盖时, 计算目录大小并判断是否更新
                 if (dataType == "media") {
-                    if (countSize(dataPath, 1) == dataSize) {
+                    if (RootService.getInstance().countSize(dataPath).toString() == dataSize) {
                         needUpdate = false
                         Logcat.getInstance()
                             .actionLogAddLine(tag, "$dataPath may have no update.")
                     }
                 } else {
-                    if (countSize("${dataPath}/${packageName}", 1) == dataSize) {
+                    if (RootService.getInstance().countSize("${dataPath}/${packageName}")
+                            .toString() == dataSize
+                    ) {
                         needUpdate = false
                         Logcat.getInstance()
                             .actionLogAddLine(tag, "${dataPath}/${packageName} may have no update.")
@@ -646,7 +650,7 @@ class Command {
             }
             if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
                 // 当备份策略为覆盖时, 计算目录大小并判断是否更新
-                if (countSize(apkPath, 1) == apkSize) {
+                if (RootService.getInstance().countSize(apkPath).toString() == apkSize) {
                     needUpdate = false
                     Logcat.getInstance()
                         .actionLogAddLine(tag, "$apkPath may have no update.")
@@ -875,29 +879,17 @@ class Command {
                     return false
                 }
             }
-            val apkSize = countSize("${outPut}/DataBackup.apk", 1)
-            countSize(apkPathPair.second, 1).apply {
-                if (this == apkSize) {
-                    return true
-                }
-            }
+
+            val apkSize = RootService.getInstance().countSize("${outPut}/DataBackup.apk").toString()
+            if (RootService.getInstance().countSize(apkPathPair.second)
+                    .toString() == apkSize
+            ) return true
             cp("${apkPathPair.second}/base.apk", "${outPut}/DataBackup.apk").apply {
                 if (!this) {
                     return false
                 }
             }
             return true
-        }
-
-        /**
-         * 计算大小(占用)
-         */
-        suspend fun countSize(path: String, type: Int = 0): String {
-            Bashrc.countSize(path, type).apply {
-                return if (!this.first) "0"
-                else if (this.second.isEmpty()) "0"
-                else this.second
-            }
         }
 
         /**

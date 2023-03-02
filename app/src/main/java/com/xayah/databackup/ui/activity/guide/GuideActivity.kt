@@ -8,14 +8,13 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.App
 import com.xayah.databackup.data.GuideType
-import com.xayah.databackup.ui.activity.guide.components.Env
-import com.xayah.databackup.ui.activity.guide.components.Introduction
-import com.xayah.databackup.ui.activity.guide.components.Update
+import com.xayah.databackup.ui.activity.guide.components.PageEnvironment
+import com.xayah.databackup.ui.activity.guide.components.PageIntroduction
+import com.xayah.databackup.ui.activity.guide.components.PageUpdate
 import com.xayah.databackup.ui.activity.main.MainActivity
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.checkPackageUsageStatsPermission
@@ -31,29 +30,29 @@ class GuideActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        var initType = GuideType.Introduction
+        val viewModel = ViewModelProvider(this)[GuideViewModel::class.java]
+
         if (readInitializedVersionName().isNotEmpty()) {
             if (readInitializedVersionName() != App.versionName) {
                 // 版本更新
-                initType = GuideType.Update
+                viewModel.initType.value = GuideType.Update
             } else if (checkPackageUsageStatsPermission().not() && readIsSupportUsageAccess()) {
                 // 权限不够
-                initType = GuideType.Env
+                viewModel.initType.value = GuideType.Env
             }
         }
         setContent {
             DataBackupTheme {
-                val (type, setType) = remember { mutableStateOf(initType) }
-                Crossfade(targetState = type) { screen ->
+                Crossfade(targetState = viewModel.initType.value) { screen ->
                     when (screen) {
                         GuideType.Introduction -> {
-                            Introduction(setType)
+                            PageIntroduction(viewModel)
                         }
                         GuideType.Update -> {
-                            Update(setType)
+                            PageUpdate(viewModel)
                         }
                         GuideType.Env -> {
-                            Env {
+                            PageEnvironment(viewModel) {
                                 App.globalContext.saveInitializedVersionName(App.versionName)
                                 startActivity(Intent(this, MainActivity::class.java))
                                 finish()

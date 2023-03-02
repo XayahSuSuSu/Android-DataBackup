@@ -13,7 +13,11 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.BackupStrategy
 import com.xayah.databackup.data.ofBackupStrategy
 import com.xayah.databackup.ui.activity.settings.SettingsViewModel
-import com.xayah.databackup.ui.activity.settings.components.*
+import com.xayah.databackup.ui.activity.settings.components.DescItem
+import com.xayah.databackup.ui.activity.settings.components.SwitchItem
+import com.xayah.databackup.ui.activity.settings.components.clickable.SingleChoiceDescClickable
+import com.xayah.databackup.ui.activity.settings.components.clickable.Switch
+import com.xayah.databackup.ui.activity.settings.components.clickable.Title
 import com.xayah.databackup.util.*
 
 fun onBackupInitialize(viewModel: SettingsViewModel, context: Context) {

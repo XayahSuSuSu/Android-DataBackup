@@ -12,10 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.components.Scaffold
+import com.xayah.databackup.ui.components.TopBarTitle
 import com.xayah.databackup.ui.components.animation.ContentFade
 
 @ExperimentalMaterial3Api
@@ -44,13 +43,12 @@ fun ListScaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(
-                        text = if (onManifest) stringResource(R.string.manifest)
-                        else topBarTitle,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                    TopBarTitle(
+                        text =
+                        if (onManifest)
+                            stringResource(R.string.manifest)
+                        else
+                            topBarTitle
                     )
                 },
                 scrollBehavior = this,

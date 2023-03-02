@@ -193,14 +193,6 @@ class Bashrc {
         }
 
         /**
-         * 计算`path`占用大小
-         */
-        suspend fun countSize(path: String, type: Int): Pair<Boolean, String> {
-            val exec = runOnIO { Command.execute("count_size \"${path}\" \"${type}\"") }
-            return Pair(exec.isSuccess, exec.out.joinToString(separator = "\n"))
-        }
-
-        /**
          * 检查OTG
          */
         suspend fun listExternalStorage(): Pair<Boolean, List<String>> {

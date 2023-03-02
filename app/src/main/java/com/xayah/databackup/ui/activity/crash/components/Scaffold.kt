@@ -2,7 +2,6 @@ package com.xayah.databackup.ui.activity.crash.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
@@ -14,16 +13,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.crash.CrashViewModel
 import com.xayah.databackup.ui.components.Scaffold
+import com.xayah.databackup.ui.components.TopBarTitle
+import com.xayah.databackup.ui.components.paddingBottom
 
 @ExperimentalMaterial3Api
 @Composable
-fun CrashScaffold(crashInfo: String, onSaveClick: () -> Unit) {
+fun CrashScaffold(
+    viewModel: CrashViewModel,
+    onSaveClick: () -> Unit
+) {
     val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-    val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
     Scaffold(
@@ -50,20 +52,14 @@ fun CrashScaffold(crashInfo: String, onSaveClick: () -> Unit) {
                         tint = colorOnSurfaceVariant,
                         modifier = Modifier
                             .size(iconMediumSize)
-                            .padding(nonePadding, nonePadding, nonePadding, smallPadding)
+                            .paddingBottom(smallPadding)
                     )
-                    Text(
-                        text = stringResource(R.string.app_crashed),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                    TopBarTitle(text = stringResource(id = R.string.app_crashed))
                 }
             }
             item {
                 Text(
-                    text = crashInfo,
+                    text = viewModel.crashInfo,
                     style = MaterialTheme.typography.labelSmall
                 )
             }

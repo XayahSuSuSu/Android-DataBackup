@@ -5,10 +5,10 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.xayah.databackup.R
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.data.ProcessingObjectType
-import com.xayah.databackup.data.ProcessingTask
 import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
+import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.CoroutineScope
@@ -31,15 +31,7 @@ fun onRestoreMediaProcessing(
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
-                add(
-                    ProcessObjectItem(
-                        state = TaskState.Waiting,
-                        title = GlobalString.ready,
-                        visible = false,
-                        subtitle = GlobalString.pleaseWait,
-                        type = ProcessingObjectType.DATA
-                    )
-                )
+                add(ProcessObjectItem(type = ProcessingObjectType.DATA))
             }
             val allDone = viewModel.allDone
 
@@ -52,18 +44,17 @@ fun onRestoreMediaProcessing(
             // 备份信息列表
             taskList.addAll(
                 globalObject.mediaInfoRestoreMap.value.values.toList()
-                    .filter { if (it.detailRestoreList.isNotEmpty()) it.detailRestoreList[it.restoreIndex].data else false }
+                    .filter { if (it.detailRestoreList.isNotEmpty()) it.selectData.value else false }
                     .map {
                         ProcessingTask(
                             appName = it.name,
-                            packageName = if (it.path.isEmpty()) it.name else it.path,
+                            packageName = it.path.ifEmpty { it.name },
                             appIcon = AppCompatResources.getDrawable(
                                 context,
                                 R.drawable.ic_round_android
                             ),
                             selectApp = false,
                             selectData = true,
-                            taskState = TaskState.Waiting,
                             objectList = listOf()
                         )
                     })
@@ -76,15 +67,15 @@ fun onRestoreMediaProcessing(
                 "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
             for (i in 0 until taskList.size) {
                 // 重置恢复目标
-                objectList[0] = objectList[0].copy(
-                    state = TaskState.Waiting,
-                    title = GlobalString.ready,
-                    visible = false,
-                    subtitle = GlobalString.pleaseWait,
-                )
+                objectList[0].apply {
+                    state.value = TaskState.Waiting
+                    title.value = GlobalString.ready
+                    visible.value = false
+                    subtitle.value = GlobalString.pleaseWait
+                }
 
                 // 进入Processing状态
-                taskList[i] = taskList[i].copy(taskState = TaskState.Processing)
+                taskList[i].taskState.value = TaskState.Processing
                 val task = taskList[i]
                 val mediaInfoRestore =
                     globalObject.mediaInfoRestoreMap.value[task.appName]!!
@@ -107,14 +98,12 @@ fun onRestoreMediaProcessing(
 
                 if (task.selectData) {
                     // 添加Data备份项
-                    objectList[0] = objectList[0].copy(
-                        visible = true,
-                    )
+                    objectList[0].visible.value = true
                 }
                 for (j in 0 until objectList.size) {
                     if (viewModel.isCancel.value) break
-                    if (objectList[j].visible) {
-                        objectList[j] = objectList[j].copy(state = TaskState.Processing)
+                    if (objectList[j].visible.value) {
+                        objectList[j].state.value = TaskState.Processing
                         when (objectList[j].type) {
                             ProcessingObjectType.DATA -> {
                                 val inputPath = "${inPath}/${task.appName}.tar"
@@ -125,8 +114,7 @@ fun onRestoreMediaProcessing(
                                     task.appName,
                                     task.packageName.replace("/${task.appName}", "")
                                 ) { type, line ->
-                                    objectList[j] =
-                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -139,11 +127,10 @@ fun onRestoreMediaProcessing(
                 }
                 if (viewModel.isCancel.value) break
 
-                taskList[i] =
-                    task.copy(
-                        taskState = if (isSuccess) TaskState.Success else TaskState.Failed,
-                        objectList = objectList.toList()
-                    )
+                taskList[i].apply {
+                    this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
+                    this.objectList = objectList.toList()
+                }
 
                 progress.value += 1
                 topBarTitle.value =

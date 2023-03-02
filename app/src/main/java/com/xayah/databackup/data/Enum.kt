@@ -43,17 +43,6 @@ enum class AppListFilter {
 }
 
 /**
- * 应用列表选择类型
- */
-enum class AppListSelection {
-    None,        // 无
-    App,         // 仅全选应用
-    AppReverse,  // 仅全选应用(反选)
-    All,         // 全选应用+数据
-    AllReverse,  // 全选应用+数据(反选)
-}
-
-/**
  * 备份策略
  */
 enum class BackupStrategy {

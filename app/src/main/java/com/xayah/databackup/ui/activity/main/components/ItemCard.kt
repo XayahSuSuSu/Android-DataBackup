@@ -7,28 +7,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import com.xayah.databackup.R
-
-@ExperimentalMaterial3Api
-@Preview(showBackground = true)
-@Composable
-fun ItemCardPreview() {
-    val colorYellow = colorResource(id = R.color.yellow)
-    ItemCard(
-        icon = ImageVector.vectorResource(id = R.drawable.ic_round_apps),
-        iconTint = colorYellow,
-        title = stringResource(id = R.string.application),
-        subtitle = stringResource(R.string.card_app_subtitle),
-        onBackupClick = {},
-        onRestoreClick = {}
-    )
-}
+import com.xayah.databackup.ui.components.BodySmallText
+import com.xayah.databackup.ui.components.TitleLargeText
+import com.xayah.databackup.ui.components.paddingVertical
 
 @ExperimentalMaterial3Api
 @Composable
@@ -41,7 +26,6 @@ fun ItemCard(
     onRestoreClick: () -> Unit,
 ) {
     val colorTertiary = MaterialTheme.colorScheme.tertiary
-    val nonePadding = dimensionResource(R.dimen.padding_none)
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
@@ -61,18 +45,9 @@ fun ItemCard(
                     tint = iconTint,
                     modifier = Modifier.size(iconSmallSize)
                 )
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
+                TitleLargeText(text = title)
             }
-            Text(
-                modifier = Modifier.padding(nonePadding, smallPadding),
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
-            )
+            BodySmallText(text = subtitle, modifier = Modifier.paddingVertical(smallPadding))
             Row {
                 Button(
                     modifier = Modifier

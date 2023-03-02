@@ -9,6 +9,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
+import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
 import com.xayah.databackup.util.*
 import com.xayah.librootservice.RootService
@@ -42,15 +43,7 @@ fun onBackupAppProcessing(
                     ProcessingObjectType.OBB,
                 )
                 for (i in typeList) {
-                    add(
-                        ProcessObjectItem(
-                            state = TaskState.Waiting,
-                            title = GlobalString.ready,
-                            visible = false,
-                            subtitle = GlobalString.pleaseWait,
-                            type = i
-                        )
-                    )
+                    add(ProcessObjectItem(type = i))
                 }
             }
             val allDone = viewModel.allDone
@@ -66,7 +59,7 @@ fun onBackupAppProcessing(
 
             // 备份信息列表
             taskList.addAll(globalObject.appInfoBackupMap.value.values.toList()
-                .filter { it.isOnThisDevice && (it.detailBackup.selectApp || it.detailBackup.selectData) }
+                .filter { it.isOnThisDevice && (it.selectApp.value || it.selectData.value) }
                 .map {
                     ProcessingTask(
                         appName = it.detailBase.appName,
@@ -75,9 +68,8 @@ fun onBackupAppProcessing(
                             context,
                             R.drawable.ic_round_android
                         ),
-                        selectApp = it.detailBackup.selectApp,
-                        selectData = it.detailBackup.selectData,
-                        taskState = TaskState.Waiting,
+                        selectApp = it.selectApp.value,
+                        selectData = it.selectData.value,
                         objectList = listOf()
                     )
                 })
@@ -121,16 +113,16 @@ fun onBackupAppProcessing(
             for (i in 0 until taskList.size) {
                 // 重置备份目标
                 for (j in 0 until objectList.size) {
-                    objectList[j] = objectList[j].copy(
-                        state = TaskState.Waiting,
-                        title = GlobalString.ready,
-                        visible = false,
-                        subtitle = GlobalString.pleaseWait,
-                    )
+                    objectList[j].apply {
+                        state.value = TaskState.Waiting
+                        title.value = GlobalString.ready
+                        visible.value = false
+                        subtitle.value = GlobalString.pleaseWait
+                    }
                 }
 
                 // 进入Processing状态
-                taskList[i] = taskList[i].copy(taskState = TaskState.Processing)
+                taskList[i].taskState.value = TaskState.Processing
                 val task = taskList[i]
                 val appInfoBackup =
                     globalObject.appInfoBackupMap.value[task.packageName]!!
@@ -159,46 +151,36 @@ fun onBackupAppProcessing(
 
                 if (task.selectApp) {
                     // 检查是否备份APK
-                    objectList[0] = objectList[0].copy(
-                        visible = true,
-                    )
+                    objectList[0].visible.value = true
                 }
                 if (task.selectData) {
                     // 检查是否备份数据
                     // USER为必备份项
-                    objectList[1] = objectList[1].copy(
-                        visible = true,
-                    )
+                    objectList[1].visible.value = true
                     // 检测是否存在USER_DE
                     Command.ls(userDePath).apply {
                         if (this) {
-                            objectList[2] = objectList[2].copy(
-                                visible = true,
-                            )
+                            objectList[2].visible.value = true
                         }
                     }
                     // 检测是否存在DATA
                     Command.ls(dataPath).apply {
                         if (this) {
-                            objectList[3] = objectList[3].copy(
-                                visible = true,
-                            )
+                            objectList[3].visible.value = true
                         }
                     }
                     // 检测是否存在OBB
                     Command.ls(obbPath).apply {
                         if (this) {
-                            objectList[4] = objectList[4].copy(
-                                visible = true,
-                            )
+                            objectList[4].visible.value = true
                         }
                     }
                 }
 
                 for (j in 0 until objectList.size) {
                     if (viewModel.isCancel.value) break
-                    if (objectList[j].visible) {
-                        objectList[j] = objectList[j].copy(state = TaskState.Processing)
+                    if (objectList[j].visible.value) {
+                        objectList[j].state.value = TaskState.Processing
                         when (objectList[j].type) {
                             ProcessingObjectType.APP -> {
                                 Command.compressAPK(
@@ -209,17 +191,19 @@ fun onBackupAppProcessing(
                                     appInfoBackup.detailBackup.appSize,
                                     compatibleMode
                                 ) { type, line ->
-                                    objectList[j] =
-                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
                                         // 保存apk大小
-                                        appInfoBackup.detailBackup.appSize = Command.countSize(
-                                            Bashrc.getAPKPath(task.packageName, userId).second,
-                                            1
-                                        )
+                                        appInfoBackup.detailBackup.appSize =
+                                            RootService.getInstance().countSize(
+                                                Bashrc.getAPKPath(
+                                                    task.packageName,
+                                                    userId
+                                                ).second
+                                            ).toString()
                                     }
                                 }
                             }
@@ -233,15 +217,14 @@ fun onBackupAppProcessing(
                                     appInfoBackup.detailBackup.userSize,
                                     compatibleMode
                                 ) { type, line ->
-                                    objectList[j] =
-                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
                                         // 保存user大小
                                         appInfoBackup.detailBackup.userSize =
-                                            Command.countSize(userPath, 1)
+                                            RootService.getInstance().countSize(userPath).toString()
                                     }
                                 }
                             }
@@ -255,15 +238,15 @@ fun onBackupAppProcessing(
                                     appInfoBackup.detailBackup.userDeSize,
                                     compatibleMode
                                 ) { type, line ->
-                                    objectList[j] =
-                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
                                         // 保存user_de大小
                                         appInfoBackup.detailBackup.userDeSize =
-                                            Command.countSize(userDePath, 1)
+                                            RootService.getInstance().countSize(userDePath)
+                                                .toString()
                                     }
                                 }
                             }
@@ -277,15 +260,14 @@ fun onBackupAppProcessing(
                                     appInfoBackup.detailBackup.dataSize,
                                     compatibleMode
                                 ) { type, line ->
-                                    objectList[j] =
-                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
                                         // 保存data大小
                                         appInfoBackup.detailBackup.dataSize =
-                                            Command.countSize(dataPath, 1)
+                                            RootService.getInstance().countSize(dataPath).toString()
                                     }
                                 }
                             }
@@ -299,15 +281,14 @@ fun onBackupAppProcessing(
                                     appInfoBackup.detailBackup.obbSize,
                                     compatibleMode
                                 ) { type, line ->
-                                    objectList[j] =
-                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
                                         // 保存obb大小
                                         appInfoBackup.detailBackup.obbSize =
-                                            Command.countSize(obbPath, 1)
+                                            RootService.getInstance().countSize(obbPath).toString()
                                     }
                                 }
                             }
@@ -333,10 +314,10 @@ fun onBackupAppProcessing(
 
                 if (isSuccess) {
                     val detail = AppInfoDetailRestore().apply {
-                        this.selectApp = false
-                        this.selectData = false
-                        this.hasApp = appInfoBackup.detailBackup.selectApp
-                        this.hasData = appInfoBackup.detailBackup.selectData
+                        this.selectApp.value = false
+                        this.selectData.value = false
+                        this.hasApp.value = appInfoBackup.selectApp.value
+                        this.hasData.value = appInfoBackup.selectData.value
                         this.versionName = appInfoBackup.detailBackup.versionName
                         this.versionCode = appInfoBackup.detailBackup.versionCode
                         this.appSize = appInfoBackup.detailBackup.appSize
@@ -371,11 +352,10 @@ fun onBackupAppProcessing(
                     }
                 }
 
-                taskList[i] =
-                    task.copy(
-                        taskState = if (isSuccess) TaskState.Success else TaskState.Failed,
-                        objectList = objectList.toList()
-                    )
+                taskList[i].apply {
+                    this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
+                    this.objectList = objectList.toList()
+                }
 
                 progress.value += 1
                 topBarTitle.value =

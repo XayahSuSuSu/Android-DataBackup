@@ -1,8 +1,13 @@
 package com.xayah.databackup.ui.activity.blacklist.components
 
-import android.content.Context
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -13,28 +18,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.blacklist.BlackListViewModel
+import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.components.Scaffold
-import com.xayah.databackup.util.Command
-import com.xayah.databackup.util.GlobalObject
-import com.xayah.databackup.util.readBlackListMapPath
-import com.xayah.databackup.util.saveBlackListMapPath
-import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
+import com.xayah.databackup.ui.components.TopBarTitle
 import kotlinx.coroutines.launch
-
-suspend fun initializeList(viewModel: BlackListViewModel, context: Context) {
-    viewModel.blackList.value.clear()
-    viewModel.blackList.value.addAll(Command.readBlackListMap(context.readBlackListMapPath()).values)
-}
 
 @ExperimentalMaterial3Api
 @Composable
 fun BlackListScaffold(
     viewModel: BlackListViewModel,
-    explorer: MaterialYouFileExplorer,
     onFinish: () -> Unit
 ) {
     val context = LocalContext.current
@@ -43,7 +37,7 @@ fun BlackListScaffold(
     val list = viewModel.blackList.collectAsState()
 
     LaunchedEffect(null) {
-        initializeList(viewModel, context)
+        viewModel.initializeList(context)
     }
 
     Scaffold(
@@ -51,57 +45,38 @@ fun BlackListScaffold(
             FloatingActionButton(
                 modifier = Modifier.padding(mediumPadding),
                 onClick = {
-                    explorer.apply {
-                        isFile = true
-                        toExplorer(context) { path, _ ->
-                            context.saveBlackListMapPath(path)
-                            scope.launch {
-                                initializeList(viewModel, context)
-                            }
-                        }
+                    scope.launch {
+                        viewModel.importConfig(context)
                     }
                 },
             ) {
-                Icon(ImageVector.vectorResource(id = R.drawable.ic_round_download), null)
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_round_download),
+                    contentDescription = null
+                )
             }
         },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(id = R.string.blacklist),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                    TopBarTitle(text = stringResource(id = R.string.blacklist))
                 },
                 scrollBehavior = this,
                 navigationIcon = {
-                    IconButton(onClick = onFinish) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = com.xayah.materialyoufileexplorer.R.drawable.ic_round_arrow_back),
-                            contentDescription = null
-                        )
-                    }
+                    IconButton(icon = Icons.Rounded.ArrowBack, onClick = onFinish)
                 },
             )
         },
         topPaddingRate = 1,
         content = {
-            items(count = list.value.size) {
+            items(list.value) {
                 BlackListItemClickable(
-                    title = list.value[it].appName,
-                    subtitle = list.value[it].packageName,
+                    title = it.appName,
+                    subtitle = it.packageName,
                     onClick = {},
                     onIconButtonClick = {
                         scope.launch {
-                            Command.removeBlackList(
-                                context.readBlackListMapPath(),
-                                list.value[it].packageName
-                            )
-                            viewModel.blackList.value.removeAt(it)
-                            GlobalObject.getInstance().appInfoBackupMap.value.clear()
+                            viewModel.removeItem(context, it)
                         }
                     })
             }

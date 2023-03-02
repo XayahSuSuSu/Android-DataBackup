@@ -6,7 +6,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +24,7 @@ import com.xayah.databackup.ui.activity.processing.action.onBackupMediaProcessin
 import com.xayah.databackup.ui.activity.processing.action.onRestoreAppProcessing
 import com.xayah.databackup.ui.activity.processing.action.onRestoreMediaProcessing
 import com.xayah.databackup.ui.activity.processing.components.ProcessingScaffold
+import com.xayah.databackup.ui.components.TextButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.GlobalObject
 
@@ -94,23 +98,15 @@ class ProcessingActivity : ComponentActivity() {
                             )
                         },
                         confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    setExitConfirmDialog(false)
-                                    viewModel.topBarTitle.value = getString(R.string.cancelling)
-                                    viewModel.isCancel.value = true
-                                }
-                            ) {
-                                Text(stringResource(id = R.string.confirm))
+                            TextButton(text = stringResource(R.string.confirm)) {
+                                setExitConfirmDialog(false)
+                                viewModel.topBarTitle.value = getString(R.string.cancelling)
+                                viewModel.isCancel.value = true
                             }
                         },
                         dismissButton = {
-                            TextButton(
-                                onClick = {
-                                    setExitConfirmDialog(false)
-                                }
-                            ) {
-                                Text(stringResource(id = R.string.cancel))
+                            TextButton(text = stringResource(R.string.cancel)) {
+                                setExitConfirmDialog(false)
                             }
                         },
                         properties = DialogProperties(

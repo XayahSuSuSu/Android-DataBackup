@@ -76,10 +76,9 @@ fun StandardContent(
     bottomPaddingRate: Int,
     content: LazyListScope.() -> Unit
 ) {
-    val nonePadding = dimensionResource(R.dimen.padding_none)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
     LazyColumn(
-        modifier = Modifier.padding(mediumPadding, nonePadding),
+        modifier = Modifier.paddingHorizontal(mediumPadding),
         verticalArrangement = Arrangement.spacedBy(mediumPadding),
     ) {
         item {

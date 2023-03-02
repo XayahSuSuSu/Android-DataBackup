@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.databackup.R
 import com.xayah.databackup.data.TaskState
+import com.xayah.databackup.ui.components.paddingTop
 
 @ExperimentalMaterial3Api
 @Composable
@@ -34,7 +35,6 @@ fun Task(
     clickable: Boolean,
     onClick: () -> Unit
 ) {
-    val nonePadding = dimensionResource(R.dimen.padding_none)
     val tinyPadding = dimensionResource(R.dimen.padding_tiny)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val iconTinySize = dimensionResource(R.dimen.icon_tiny_size)
@@ -59,12 +59,7 @@ fun Task(
             contentDescription = null
         )
         Text(
-            modifier = Modifier.padding(
-                nonePadding,
-                tinyPadding,
-                nonePadding,
-                nonePadding
-            ),
+            modifier = Modifier.paddingTop(tinyPadding),
             text = appName,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -79,12 +74,7 @@ fun Task(
                     tint = colorYellow,
                     modifier = Modifier
                         .size(iconTinySize)
-                        .padding(
-                            nonePadding,
-                            tinyPadding,
-                            nonePadding,
-                            nonePadding
-                        )
+                        .paddingTop(tinyPadding)
                 )
             }
             TaskState.Success -> {
@@ -94,12 +84,7 @@ fun Task(
                     tint = colorGreen,
                     modifier = Modifier
                         .size(iconTinySize)
-                        .padding(
-                            nonePadding,
-                            tinyPadding,
-                            nonePadding,
-                            nonePadding
-                        )
+                        .paddingTop(tinyPadding)
                 )
             }
             TaskState.Failed -> {
@@ -109,24 +94,14 @@ fun Task(
                     tint = colorError,
                     modifier = Modifier
                         .size(iconTinySize)
-                        .padding(
-                            nonePadding,
-                            tinyPadding,
-                            nonePadding,
-                            nonePadding
-                        )
+                        .paddingTop(tinyPadding)
                 )
             }
             else -> {
                 Spacer(
                     modifier = Modifier
                         .size(iconTinySize)
-                        .padding(
-                            nonePadding,
-                            tinyPadding,
-                            nonePadding,
-                            nonePadding
-                        )
+                        .paddingTop(tinyPadding)
                 )
             }
         }

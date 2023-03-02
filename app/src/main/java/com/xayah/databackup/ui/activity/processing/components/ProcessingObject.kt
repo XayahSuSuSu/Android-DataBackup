@@ -13,30 +13,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
-
-data class ProcessObjectItem(
-    val state: TaskState,
-    val visible: Boolean,
-    val title: String,
-    val subtitle: String,
-    val type: ProcessingObjectType,
-)
-
-@ExperimentalMaterial3Api
-@Preview(showBackground = true)
-@Composable
-fun ProcessObjectPreview() {
-    ProcessObject(
-        cardState = TaskState.Success,
-        visible = true,
-        title = "校验中",
-        subtitle = "大小: 138Mib, 速度: 312Mib/s",
-        type = ProcessingObjectType.APP,
-    )
-}
+import com.xayah.databackup.ui.components.TitleMediumText
+import com.xayah.databackup.ui.components.paddingEnd
 
 @ExperimentalMaterial3Api
 @Composable
@@ -48,7 +28,6 @@ fun ProcessObject(
     type: ProcessingObjectType,
 ) {
     if (visible) {
-        val nonePadding = dimensionResource(R.dimen.padding_none)
         val smallPadding = dimensionResource(R.dimen.padding_small)
         val bigPadding = dimensionResource(R.dimen.padding_big)
         val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
@@ -113,7 +92,7 @@ fun ProcessObject(
                         }
                     },
                     modifier = Modifier
-                        .padding(nonePadding, nonePadding, smallPadding, nonePadding)
+                        .paddingEnd(smallPadding)
                         .size(iconMediumSize)
                         .clip(CircleShape)
                         .padding(smallPadding)
@@ -155,7 +134,7 @@ fun ProcessObject(
                 if (cardState == TaskState.Processing)
                     CircularProgressIndicator(modifier = Modifier.size(iconSmallSize))
                 else
-                    Text(
+                    TitleMediumText(
                         text = when (type) {
                             ProcessingObjectType.APP -> {
                                 ProcessingItemTypeAPK
@@ -173,8 +152,6 @@ fun ProcessObject(
                                 ProcessingItemTypeOBB
                             }
                         },
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
                         color = when (cardState) {
                             TaskState.Waiting, TaskState.Processing -> {
                                 colorOnSurfaceVariant

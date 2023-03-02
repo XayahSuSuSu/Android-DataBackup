@@ -12,13 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.data.*
-import com.xayah.databackup.ui.activity.guide.components.LoadingState
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
+import com.xayah.databackup.ui.components.LoadingView
 import com.xayah.databackup.ui.components.Scaffold
+import com.xayah.databackup.ui.components.TopBarTitle
 import com.xayah.databackup.util.GlobalString
 
 /**
@@ -28,45 +27,59 @@ fun parseObjectItemBySrc(
     type: String,
     src: String,
     item: ProcessObjectItem
-): ProcessObjectItem {
-    if (item.state == TaskState.Failed) return item
-    try {
-        when (type) {
-            ProcessFinished -> {
-                // 完成
-                return item.copy(state = TaskState.Success, title = GlobalString.finished)
+) {
+    if (item.state.value == TaskState.Failed) return
+    when (type) {
+        ProcessFinished -> {
+            // 完成
+            item.apply {
+                state.value = TaskState.Success
+                title.value = GlobalString.finished
             }
-            ProcessSkip -> {
-                // 跳过
-                return item.copy(subtitle = GlobalString.noChangeAndSkip)
+        }
+        ProcessSkip -> {
+            // 跳过
+            item.apply {
+                subtitle.value = GlobalString.noChangeAndSkip
             }
-            ProcessCompressing -> {
-                // 压缩中
-                return item.copy(title = GlobalString.compressing)
+        }
+        ProcessCompressing -> {
+            // 压缩中
+            item.apply {
+                title.value = GlobalString.compressing
             }
-            ProcessDecompressing -> {
-                // 解压中
-                return item.copy(title = GlobalString.decompressing)
+        }
+        ProcessDecompressing -> {
+            // 解压中
+            item.apply {
+                title.value = GlobalString.decompressing
             }
-            ProcessTesting -> {
-                // 测试中
-                return item.copy(title = GlobalString.testing)
+        }
+        ProcessTesting -> {
+            // 测试中
+            item.apply {
+                title.value = GlobalString.testing
             }
-            ProcessSettingSELinux -> {
-                // 设置SELinux中
-                return item.copy(title = GlobalString.settingSELinux)
+        }
+        ProcessSettingSELinux -> {
+            // 设置SELinux中
+            item.apply {
+                title.value = GlobalString.settingSELinux
             }
+        }
             ProcessInstallingApk -> {
                 // 安装APK中
-                return item.copy(title = GlobalString.installing)
+                item.apply {
+                    title.value = GlobalString.installing
+                }
             }
             ProcessError -> {
                 // 错误消息
-                return item.copy(
-                    state = TaskState.Failed,
-                    title = GlobalString.error,
-                    subtitle = src
-                )
+                item.apply {
+                    state.value = TaskState.Failed
+                    title.value = GlobalString.error
+                    subtitle.value = src
+                }
             }
             ProcessShowTotal -> {
                 // Total bytes written: 74311680 (71MiB, 238MiB/s)
@@ -79,17 +92,16 @@ fun parseObjectItemBySrc(
                             .replace(",", "")
                             .trim()
                         val info = newSrc.split(" ")
-                        return item.copy(subtitle = "${GlobalString.size}: ${info[0]}, ${GlobalString.speed}: ${info[1]}")
+                        item.apply {
+                            subtitle.value =
+                                "${GlobalString.size}: ${info[0]}, ${GlobalString.speed}: ${info[1]}"
+                        }
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                } catch (_: Exception) {
                 }
             }
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
     }
-    return item
+
 }
 
 @ExperimentalMaterial3Api
@@ -115,13 +127,7 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(
-                        text = topBarTitle,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                    TopBarTitle(text = topBarTitle)
                 },
                 scrollBehavior = this
             )
@@ -130,7 +136,7 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
         content = {
             if (loadingState != LoadingState.Success) {
                 item {
-                    LoadingState(loadingState)
+                    LoadingView(loadingState)
                 }
             } else {
                 item {
@@ -150,7 +156,7 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
                                 Task(
                                     icon = rememberDrawablePainter(drawable = taskList[it].appIcon),
                                     appName = taskList[it].appName,
-                                    taskState = taskList[it].taskState,
+                                    taskState = taskList[it].taskState.value,
                                     clickable = allDone,
                                     onClick = {
                                         objectList.clear()
@@ -167,10 +173,10 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
                         objectList[it].type
                     }) {
                     ProcessObject(
-                        cardState = objectList[it].state,
-                        visible = objectList[it].visible,
-                        title = objectList[it].title,
-                        subtitle = objectList[it].subtitle,
+                        cardState = objectList[it].state.value,
+                        visible = objectList[it].visible.value,
+                        title = objectList[it].title.value,
+                        subtitle = objectList[it].subtitle.value,
                         type = objectList[it].type,
                     )
                 }

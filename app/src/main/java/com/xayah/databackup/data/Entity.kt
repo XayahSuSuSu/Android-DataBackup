@@ -1,27 +1,49 @@
 package com.xayah.databackup.data
 
 import android.graphics.drawable.Drawable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.google.gson.annotations.Expose
-import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.internal.toLongOrDefault
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue
 
+/**
+ * GitHub Api Release
+ */
 data class Release(
     val html_url: String, val name: String, val assets: List<Asset>, val body: String
 )
 
+/**
+ * GitHub Api Asset
+ */
 data class Asset(
     val browser_download_url: String
 )
 
-data class Issue(
-    val html_url: String, val title: String, val body: String
-)
+fun formatSize(sizeBytes: Double): String {
+    var unit = "Bytes"
+    var size = sizeBytes
+    val gb = (1000 * 1000 * 1000).toDouble()
+    val mb = (1000 * 1000).toDouble()
+    val kb = (1000).toDouble()
+    if (sizeBytes > gb) {
+        // GB
+        size = sizeBytes / gb
+        unit = "GB"
+    } else if (sizeBytes > mb) {
+        // GB
+        size = sizeBytes / mb
+        unit = "MB"
+    } else if (sizeBytes > kb) {
+        // GB
+        size = sizeBytes / kb
+        unit = "KB"
+    }
+    return "${DecimalFormat("#.00").format(size)} $unit"
+}
 
 /**
  * 应用存储信息
@@ -31,35 +53,7 @@ data class AppInfoStorageStats(
     @Expose var cacheBytes: Long = 0,         // 缓存大小
     @Expose var dataBytes: Long = 0,          // 数据大小
     @Expose var externalCacheBytes: Long = 0, // 外部共享存储缓存数据大小
-) {
-    val sizeBytes: Long
-        get() = run {
-            appBytes + dataBytes
-        }
-
-    val sizeDisplay: String
-        get() = run {
-            var unit = "Bytes"
-            var size = sizeBytes.toDouble()
-            val gb = (1000 * 1000 * 1000).toDouble()
-            val mb = (1000 * 1000).toDouble()
-            val kb = (1000).toDouble()
-            if (sizeBytes > gb) {
-                // GB
-                size = sizeBytes / gb
-                unit = "GB"
-            } else if (sizeBytes > mb) {
-                // GB
-                size = sizeBytes / mb
-                unit = "MB"
-            } else if (sizeBytes > kb) {
-                // GB
-                size = sizeBytes / kb
-                unit = "KB"
-            }
-            "${DecimalFormat("#.00").format(size)} $unit"
-        }
-}
+)
 
 /**
  * 应用详情基类
@@ -83,8 +77,8 @@ data class AppInfoDetailBackup(
     @Expose var dataSize: String = "",           // 已备份Data数据大小
     @Expose var obbSize: String = "",            // 已备份Obb数据大小
     @Expose var date: String = "",               // 日期(10位时间戳)
-    @Expose var selectApp: Boolean = false,      // 是否选中APK
-    @Expose var selectData: Boolean = false,      // 是否选中数据
+    @Expose var selectApp: MutableState<Boolean> = mutableStateOf(false),      // 是否选中APK
+    @Expose var selectData: MutableState<Boolean> = mutableStateOf(false),      // 是否选中数据
 )
 
 /**
@@ -99,44 +93,11 @@ data class AppInfoDetailRestore(
     @Expose var dataSize: String = "",            // 已备份Data数据大小
     @Expose var obbSize: String = "",             // 已备份Obb数据大小
     @Expose var date: String = "",                // 日期(10位时间戳)
-    @Expose var selectApp: Boolean = false,       // 是否选中APK
-    @Expose var selectData: Boolean = false,      // 是否选中数据
-    @Expose var hasApp: Boolean = true,           // 是否含有APK文件
-    @Expose var hasData: Boolean = true,          // 是否含有数据文件
-) {
-    val sizeBytes: Long
-        get() = run {
-            appSize.toLongOrDefault(0) +
-                    userSize.toLongOrDefault(0) +
-                    userDeSize.toLongOrDefault(0) +
-                    dataSize.toLongOrDefault(0) +
-                    obbSize.toLongOrDefault(0)
-        }
-
-    val sizeDisplay: String
-        get() = run {
-            var unit = "Bytes"
-            val mSizeBytes = sizeBytes.toDouble() * 1000
-            var size = mSizeBytes
-            val gb = (1000 * 1000 * 1000).toDouble()
-            val mb = (1000 * 1000).toDouble()
-            val kb = (1000).toDouble()
-            if (mSizeBytes > gb) {
-                // GB
-                size = mSizeBytes / gb
-                unit = "GB"
-            } else if (mSizeBytes > mb) {
-                // GB
-                size = mSizeBytes / mb
-                unit = "MB"
-            } else if (mSizeBytes > kb) {
-                // GB
-                size = mSizeBytes / kb
-                unit = "KB"
-            }
-            "${DecimalFormat("#.00").format(size)} $unit"
-        }
-}
+    @Expose var selectApp: MutableState<Boolean> = mutableStateOf(false),       // 是否选中APK
+    @Expose var selectData: MutableState<Boolean> = mutableStateOf(false),      // 是否选中数据
+    @Expose var hasApp: MutableState<Boolean> = mutableStateOf(true),           // 是否含有APK文件
+    @Expose var hasData: MutableState<Boolean> = mutableStateOf(true),          // 是否含有数据文件
+)
 
 /**
  * 备份应用信息
@@ -148,29 +109,17 @@ data class AppInfoBackup(
     @Expose var storageStats: AppInfoStorageStats = AppInfoStorageStats(),  // 存储相关
     var isOnThisDevice: Boolean = false,
 ) {
-    private var _selectApp by mutableStateOf(detailBackup.selectApp)
-    private var _selectData by mutableStateOf(detailBackup.selectData)
-    var selectApp: Boolean = false
-        get() = run {
-            _selectApp = detailBackup.selectApp
-            _selectApp
-        }
-        set(value) = run {
-            field = value
-            _selectApp = value
-            detailBackup.selectApp = value
-        }
+    val selectApp: MutableState<Boolean>
+        get() = detailBackup.selectApp
 
-    var selectData: Boolean = false
-        get() = run {
-            _selectData = detailBackup.selectData
-            _selectData
-        }
-        set(value) = run {
-            field = value
-            _selectData = value
-            detailBackup.selectData = value
-        }
+    val selectData: MutableState<Boolean>
+        get() = detailBackup.selectData
+
+    val sizeBytes: Double
+        get() = (storageStats.appBytes + storageStats.dataBytes).toDouble()
+
+    val sizeDisplay: String
+        get() = formatSize(sizeBytes)
 }
 
 /**
@@ -182,6 +131,28 @@ data class AppInfoRestore(
     @Expose var detailRestoreList: MutableList<AppInfoDetailRestore> = mutableListOf(),  // 备份详情
     var isOnThisDevice: MutableStateFlow<Boolean> = MutableStateFlow(false)
 ) {
+    val selectApp: MutableState<Boolean>
+        get() = detailRestoreList[restoreIndex].selectApp
+
+    val selectData: MutableState<Boolean>
+        get() = detailRestoreList[restoreIndex].selectData
+
+    val hasApp: MutableState<Boolean>
+        get() = detailRestoreList[restoreIndex].hasApp
+
+    val hasData: MutableState<Boolean>
+        get() = detailRestoreList[restoreIndex].hasData
+
+    val sizeBytes: Double
+        get() = (detailRestoreList[restoreIndex].appSize.toLongOrDefault(0) +
+                detailRestoreList[restoreIndex].userSize.toLongOrDefault(0) +
+                detailRestoreList[restoreIndex].userDeSize.toLongOrDefault(0) +
+                detailRestoreList[restoreIndex].dataSize.toLongOrDefault(0) +
+                detailRestoreList[restoreIndex].obbSize.toLongOrDefault(0)).toDouble()
+
+    val sizeDisplay: String
+        get() = formatSize(sizeBytes)
+
     @Expose
     var restoreIndex: Int = -1
         get() = run {
@@ -201,51 +172,13 @@ data class AppInfoRestore(
                 value
             }
         }
-
-    private var _selectApp by mutableStateOf(if (detailRestoreList.isEmpty()) false else detailRestoreList[restoreIndex].selectApp)
-    private var _selectData by mutableStateOf(if (detailRestoreList.isEmpty()) false else detailRestoreList[restoreIndex].selectData)
-    var selectApp: Boolean = false
-        get() = run {
-            _selectApp = detailRestoreList[restoreIndex].selectApp
-            _selectApp
-        }
-        set(value) = run {
-            field = value
-            _selectApp = value
-            detailRestoreList[restoreIndex].selectApp = value
-        }
-
-    var selectData: Boolean = false
-        get() = run {
-            _selectData = detailRestoreList[restoreIndex].selectData
-            _selectData
-        }
-        set(value) = run {
-            field = value
-            _selectData = value
-            detailRestoreList[restoreIndex].selectData = value
-        }
 }
-
-/**
- * 应用信息列表计数
- */
-data class AppInfoBaseNum(
-    var appNum: Int, var dataNum: Int
-)
-
-/**
- * 应用信息列表计数
- */
-data class AppInfoListSelectedNum(
-    var installed: Int, var system: Int
-)
 
 /**
  * 媒体详细信息基类
  */
 data class MediaInfoDetailBase(
-    @Expose var data: Boolean = false, // 是否选中
+    @Expose var data: MutableState<Boolean> = mutableStateOf(false), // 是否选中
     @Expose var size: String = "",     // 数据大小
     @Expose var date: String = "",     // 备份日期(10位时间戳)
 ) {
@@ -286,18 +219,14 @@ data class MediaInfoBackup(
     @Expose var backupDetail: MediaInfoDetailBase = MediaInfoDetailBase(),
     @Expose var storageStats: AppInfoStorageStats = AppInfoStorageStats(),
 ) {
-    private var _selectData by mutableStateOf(backupDetail.data)
+    val selectData: MutableState<Boolean>
+        get() = backupDetail.data
 
-    var selectData: Boolean = false
-        get() = run {
-            _selectData = backupDetail.data
-            _selectData
-        }
-        set(value) = run {
-            field = value
-            _selectData = value
-            backupDetail.data = value
-        }
+    val sizeBytes: Double
+        get() = storageStats.dataBytes.toDouble()
+
+    val sizeDisplay: String
+        get() = formatSize(sizeBytes)
 }
 
 /**
@@ -308,6 +237,9 @@ data class MediaInfoRestore(
     @Expose var path: String = "",     // 媒体路径
     @Expose var detailRestoreList: MutableList<MediaInfoDetailBase> = mutableListOf(),
 ) {
+    val selectData: MutableState<Boolean>
+        get() = detailRestoreList[restoreIndex].data
+
     @Expose
     var restoreIndex: Int = -1
         get() = run {
@@ -326,19 +258,6 @@ data class MediaInfoRestore(
             } else {
                 value
             }
-        }
-
-    private var _selectData by mutableStateOf(if (detailRestoreList.isEmpty()) false else detailRestoreList[restoreIndex].data)
-
-    var selectData: Boolean = false
-        get() = run {
-            _selectData = detailRestoreList[restoreIndex].data
-            _selectData
-        }
-        set(value) = run {
-            field = value
-            _selectData = value
-            detailRestoreList[restoreIndex].data = value
         }
 }
 
@@ -381,19 +300,6 @@ data class RcloneMount(
     @Expose var src: String = "",
     @Expose var dest: String = "",
     @Expose var mounted: Boolean = false,
-)
-
-/**
- * 备份应用信息
- */
-data class ProcessingTask(
-    var appName: String,
-    var packageName: String,
-    var appIcon: Drawable? = null,
-    var selectApp: Boolean,
-    var selectData: Boolean,
-    var taskState: TaskState,
-    var objectList: List<ProcessObjectItem>
 )
 
 /**

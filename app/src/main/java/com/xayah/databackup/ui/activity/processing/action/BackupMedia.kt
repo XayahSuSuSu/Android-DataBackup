@@ -2,13 +2,16 @@ package com.xayah.databackup.ui.activity.processing.action
 
 import android.content.Context
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
+import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
 import com.xayah.databackup.util.*
+import com.xayah.librootservice.RootService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,15 +32,7 @@ fun onBackupMediaProcessing(
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
-                add(
-                    ProcessObjectItem(
-                        state = TaskState.Waiting,
-                        title = GlobalString.ready,
-                        visible = false,
-                        subtitle = GlobalString.pleaseWait,
-                        type = ProcessingObjectType.DATA
-                    )
-                )
+                add(ProcessObjectItem(type = ProcessingObjectType.DATA))
             }
             val allDone = viewModel.allDone
 
@@ -53,7 +48,7 @@ fun onBackupMediaProcessing(
             // 备份信息列表
             taskList.addAll(
                 globalObject.mediaInfoBackupMap.value.values.toList()
-                    .filter { it.backupDetail.data }
+                    .filter { it.selectData.value }
                     .map {
                         ProcessingTask(
                             appName = it.name,
@@ -64,7 +59,6 @@ fun onBackupMediaProcessing(
                             ),
                             selectApp = false,
                             selectData = true,
-                            taskState = TaskState.Waiting,
                             objectList = listOf()
                         )
                     })
@@ -84,15 +78,15 @@ fun onBackupMediaProcessing(
                 "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
             for (i in 0 until taskList.size) {
                 // 重置备份目标
-                objectList[0] = objectList[0].copy(
-                    state = TaskState.Waiting,
-                    title = GlobalString.ready,
-                    visible = false,
-                    subtitle = GlobalString.pleaseWait,
-                )
+                objectList[0].apply {
+                    state.value = TaskState.Waiting
+                    title.value = GlobalString.ready
+                    visible.value = false
+                    subtitle.value = GlobalString.pleaseWait
+                }
 
                 // 进入Processing状态
-                taskList[i] = taskList[i].copy(taskState = TaskState.Processing)
+                taskList[i].taskState.value = TaskState.Processing
                 val task = taskList[i]
                 val mediaInfoBackup =
                     globalObject.mediaInfoBackupMap.value[task.appName]!!
@@ -114,14 +108,12 @@ fun onBackupMediaProcessing(
 
                 if (task.selectData) {
                     // 添加Data备份项
-                    objectList[0] = objectList[0].copy(
-                        visible = true,
-                    )
+                    objectList[0].visible.value = true
                 }
                 for (j in 0 until objectList.size) {
                     if (viewModel.isCancel.value) break
-                    if (objectList[j].visible) {
-                        objectList[j] = objectList[j].copy(state = TaskState.Processing)
+                    if (objectList[j].visible.value) {
+                        objectList[j].state.value = TaskState.Processing
                         when (objectList[j].type) {
                             ProcessingObjectType.DATA -> {
                                 Command.compress(
@@ -133,16 +125,15 @@ fun onBackupMediaProcessing(
                                     mediaInfoBackup.backupDetail.size,
                                     compatibleMode
                                 ) { type, line ->
-                                    objectList[j] =
-                                        parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
                                         // 保存大小
-                                        mediaInfoBackup.backupDetail.size = Command.countSize(
-                                            task.packageName, 1
-                                        )
+                                        mediaInfoBackup.backupDetail.size =
+                                            RootService.getInstance().countSize(task.packageName)
+                                                .toString()
                                     }
                                 }
                             }
@@ -157,7 +148,7 @@ fun onBackupMediaProcessing(
                 mediaInfoBackup.backupDetail.date = date
                 if (isSuccess) {
                     val detail = MediaInfoDetailBase(
-                        data = false,
+                        data = mutableStateOf(false),
                         size = mediaInfoBackup.backupDetail.size,
                         date = mediaInfoBackup.backupDetail.date
                     )
@@ -187,11 +178,10 @@ fun onBackupMediaProcessing(
                     }
                 }
 
-                taskList[i] =
-                    task.copy(
-                        taskState = if (isSuccess) TaskState.Success else TaskState.Failed,
-                        objectList = objectList.toList()
-                    )
+                taskList[i].apply {
+                    this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
+                    this.objectList = objectList.toList()
+                }
 
                 progress.value += 1
                 topBarTitle.value =
