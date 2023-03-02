@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -146,4 +148,9 @@ dependencies {
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion"
     implementation "com.google.accompanist:accompanist-permissions:$accompanistVersion"
     implementation "com.google.accompanist:accompanist-drawablepainter:$accompanistVersion"
+
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:31.2.2')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
 }

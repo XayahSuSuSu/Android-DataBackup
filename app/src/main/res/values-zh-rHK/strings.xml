@@ -96,7 +96,7 @@
     <string name="check_package_usage_stats_permission">檢查應用使用情況權限</string>
     <string name="start_desc">本應用產生的所有數據均用於備份/恢復功能本身，僅存於本地，嚴禁非法倒賣</string>
     <string name="network">網絡</string>
-    <string name="network_desc">僅用於獲取應用更新信息</string>
+    <string name="network_desc">用於獲取應用更新信息, 應用分析</string>
     <string name="application_desc">獲取應用包名信息，用於生成備份列表、獲取應用數據大小</string>
     <string name="storage">存儲</string>
     <string name="storage_desc">用於備份配置、存檔讀寫</string>
