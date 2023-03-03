@@ -1,11 +1,14 @@
 package com.xayah.databackup.ui.components
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
@@ -97,6 +100,40 @@ fun ConfirmDialog(
             properties = DialogProperties(
                 dismissOnBackPress = cancelable,
                 dismissOnClickOutside = cancelable
+            )
+        )
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun LoadingDialog(
+    isOpen: MutableState<Boolean>,
+) {
+    if (isOpen.value) {
+        AlertDialog(
+            onDismissRequest = {},
+            icon = {
+                Icon(
+                    imageVector = Icons.Rounded.Info,
+                    contentDescription = null
+                )
+            },
+            title = {
+                Text(text = stringResource(id = R.string.please_wait))
+            },
+            text = {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = {},
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false
             )
         )
     }

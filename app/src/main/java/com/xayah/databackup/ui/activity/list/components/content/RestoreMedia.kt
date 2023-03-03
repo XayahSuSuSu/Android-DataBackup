@@ -27,6 +27,7 @@ import com.xayah.databackup.ui.activity.list.components.menu.item.FilterItem
 import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopActionButton
 import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBatchDeleteButton
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
+import com.xayah.databackup.ui.components.LoadingDialog
 import com.xayah.databackup.ui.components.SearchBar
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.launch
@@ -148,22 +149,29 @@ fun MediaRestoreBottomSheet(
         isOpen = isOpen,
         actions = {
             item {
-                val isDialogOpen = remember {
+                val isLoadingDialogOpen = remember {
+                    mutableStateOf(false)
+                }
+                LoadingDialog(isOpen = isLoadingDialogOpen)
+
+                val isConfirmDialogOpen = remember {
                     mutableStateOf(false)
                 }
                 val selectedItems =
                     viewModel.mediaRestoreList.collectAsState().value.filter { it.selectData.value }
                 MenuTopBatchDeleteButton(
-                    isOpen = isDialogOpen,
+                    isOpen = isConfirmDialogOpen,
                     selectedItems = selectedItems,
                     itemText = {
                         selectedItems[it].name
                     }) {
                     scope.launch {
+                        isLoadingDialogOpen.value = true
                         for (i in selectedItems) {
                             deleteMediaInfoRestoreItem(i) {}
                         }
                         refreshMediaRestoreList(viewModel)
+                        isLoadingDialogOpen.value = false
                         isOpen.value = false
                     }
                 }
