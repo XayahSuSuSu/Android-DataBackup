@@ -34,5 +34,9 @@
 
 або отримайте файл .apk із [Розділу релізів](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest).
 
+## Translation
+[<img src="https://hosted.weblate.org/widgets/databackup/-/open-graph.png"
+     alt="Translation">](https://hosted.weblate.org/engage/databackup/)
+
 ## ЛІЦЕНЗІЯ
 [GNU General Public License v3.0](./LICENSE)

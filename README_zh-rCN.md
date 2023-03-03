@@ -1,38 +1,42 @@
-# DataBackup
+# 数据备份
 [![GitHub release](https://img.shields.io/github/v/release/XayahSuSuSu/Android-DataBackup?color=orange)](https://github.com/XayahSuSuSu/Android-DataBackup/releases) [![License](https://img.shields.io/github/license/XayahSuSuSu/Android-DataBackup?color=ff69b4)](./LICENSE)
 
-> Based on [backup_script](https://github.com/YAWAsau/backup_script) by [CoolApk@落叶凄凉TEL](http://www.coolapk.com/u/2277637)
+> 基于 [酷安@落叶凄凉TEL](http://www.coolapk.com/u/2277637) 制作的[脚本](https://github.com/YAWAsau/backup_script)
 >
 
-## Overview
-The script has been **widely acclaimed** since the author made it. This app was made **with the consent of the author**.
+## 概述
+**数据备份脚本**由原作者创作至今**广受好评**，**备份/恢复**数据**高效**且**齐全**。因此经由作者**同意**后**基于此脚本**制作了本**APP**。
 
-## Advantage
-* **Support multi-user/dual backup**: Even backup/restore across partitions!
+## 优势
+* **支持多用户/双开备份**：甚至能够跨分区备份/恢复！
 
-* **Cloud**: Fully supports Rclone, which can realize local mounting of network disks of various service providers.
+* **云端备份**：完整支持Rclone，可实现各类服务提供商网盘本地挂载。
 
-* **100% Data Integrity**: All the data will be retained, and there is no need to log in again or download additional packages.
+* **数据完整**：在更换系统之后，原有的数据全部保留，无需重新登陆或者下载额外数据包。
 
-* **Full**: Split Apk, Arm32, Arm64, x86, x86_64, Android9+.
+* **功能强**：支持Split Apk，支持Arm32, Arm64, x86, x86_64，支持Android9+
 
-* **Fast**: Support: tar lz4 **zstd(default)**.
+* **速度快**：目前支持的压缩算法有 tar lz4 zstd(默认)
 
-* **Easy**: Just a few simple steps!
+* **易操作**：仅需简单几步即可备份App完整数据！
 
-## Screenshot
+## 截图
 <div align="center">
 	<img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/01.jpg" width="275px"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/02.jpg" width="275px"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/03.jpg" width="275px">
 	<img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/04.jpg" width="275px"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/05.jpg" width="275px"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/06.jpg" width="275px">
 	<img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/07.jpg" width="275px"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/08.jpg" width="275px"><img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/09.jpg" width="275px">
 </div>
 
-## Download
+## 获取
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
      alt="Get it on IzzyOnDroid"
      height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.xayah.databackup)
 
-or get the APK from the [Releases](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest).
+或者从 [Releases](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest) 下载
 
-## LICENSE
+## 翻译
+[<img src="https://hosted.weblate.org/widgets/databackup/-/open-graph.png"
+     alt="Translation">](https://hosted.weblate.org/engage/databackup/)
+
+## 开源协议
 [GNU General Public License v3.0](./LICENSE)
