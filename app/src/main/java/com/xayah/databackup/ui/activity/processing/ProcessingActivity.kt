@@ -7,15 +7,12 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.R
@@ -26,8 +23,8 @@ import com.xayah.databackup.ui.activity.processing.action.onRestoreAppProcessing
 import com.xayah.databackup.ui.activity.processing.action.onRestoreMediaProcessing
 import com.xayah.databackup.ui.activity.processing.components.EndPageBottomSheet
 import com.xayah.databackup.ui.activity.processing.components.ProcessingScaffold
+import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.IconButton
-import com.xayah.databackup.ui.components.TextButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.GlobalObject
 
@@ -81,12 +78,12 @@ class ProcessingActivity : ComponentActivity() {
         setContent {
             DataBackupTheme {
                 // 是否完成
-                val (exitConfirmDialog, setExitConfirmDialog) = remember { mutableStateOf(false) }
+                val exitConfirmDialog = remember { mutableStateOf(false) }
                 LaunchedEffect(null) {
                     onBackPressedDispatcher.addCallback(that, object : OnBackPressedCallback(true) {
                         override fun handleOnBackPressed() {
                             if (viewModel.allDone.currentState.not()) {
-                                setExitConfirmDialog(true)
+                                exitConfirmDialog.value = true
                             } else {
                                 finish()
                             }
@@ -104,44 +101,17 @@ class ProcessingActivity : ComponentActivity() {
                         }
                     }) { finish() }
 
-                if (exitConfirmDialog) {
-                    AlertDialog(
-                        onDismissRequest = {
-                            setExitConfirmDialog(false)
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Info,
-                                contentDescription = null
-                            )
-                        },
-                        title = {
-                            Text(
-                                text = stringResource(id = R.string.tips)
-                            )
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(R.string.confirm_exit)
-                            )
-                        },
-                        confirmButton = {
-                            TextButton(text = stringResource(R.string.confirm)) {
-                                setExitConfirmDialog(false)
-                                viewModel.topBarTitle.value = getString(R.string.cancelling)
-                                viewModel.isCancel.value = true
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(text = stringResource(R.string.cancel)) {
-                                setExitConfirmDialog(false)
-                            }
-                        },
-                        properties = DialogProperties(
-                            dismissOnBackPress = true,
-                            dismissOnClickOutside = true
+                ConfirmDialog(
+                    isOpen = exitConfirmDialog,
+                    icon = Icons.Rounded.Info,
+                    title = stringResource(id = R.string.tips),
+                    content = {
+                        Text(
+                            text = stringResource(R.string.confirm_exit)
                         )
-                    )
+                    }) {
+                    viewModel.topBarTitle.value = getString(R.string.cancelling)
+                    viewModel.isCancel.value = true
                 }
             }
         }
