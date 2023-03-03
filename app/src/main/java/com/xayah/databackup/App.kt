@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import com.topjohnwu.superuser.Shell
-import com.xayah.databackup.ui.activity.crash.CrashHandler
 import com.xayah.databackup.util.*
 import java.io.InputStream
 
@@ -51,7 +50,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        CrashHandler(this).initialize()
         globalContext = this
         versionName = Command.getVersion()
     }

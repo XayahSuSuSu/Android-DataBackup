@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.xayah.databackup.BuildConfig
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -46,11 +45,10 @@ class CrashHandler(private val mContext: Context) : Thread.UncaughtExceptionHand
             // 使用系统默认的异常处理器处理
             mDefaultHandler!!.uncaughtException(thread, throwable)
         } else {
-            FirebaseCrashlytics.getInstance().recordException(throwable)
             // 跳转到崩溃处理Activity
             val intent = Intent(
                 mContext,
-                com.xayah.databackup.ui.activity.crash.CrashActivity::class.java
+                CrashActivity::class.java
             ).apply {
                 putExtra("crashInfo", crashInfo)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK

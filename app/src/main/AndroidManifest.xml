@@ -31,6 +31,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
+
+        <!-- Workaround for CrashHandler -->
+        <provider
+            android:name=".ui.activity.crash.CrashProvider"
+            android:authorities="com.xayah.databackup.CrashProvider"
+            android:exported="false"
+            android:initOrder="101" />
+
         <activity
             android:name=".ui.activity.guide.GuideActivity"
             android:exported="false" />
