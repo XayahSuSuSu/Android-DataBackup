@@ -31,78 +31,81 @@ import com.xayah.databackup.ui.components.paddingTop
 fun Task(
     icon: Painter,
     appName: String,
+    visible: Boolean,
     taskState: TaskState,
     clickable: Boolean,
     onClick: () -> Unit
 ) {
-    val tinyPadding = dimensionResource(R.dimen.padding_tiny)
-    val mediumPadding = dimensionResource(R.dimen.padding_medium)
-    val iconTinySize = dimensionResource(R.dimen.icon_tiny_size)
-    val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
-    val processingTaskWidth = dimensionResource(R.dimen.processing_task_width)
-    val colorYellow = colorResource(id = R.color.yellow)
-    val colorGreen = colorResource(id = R.color.green)
-    val colorError = MaterialTheme.colorScheme.error
-    Column(
-        modifier = Modifier
-            .padding(mediumPadding)
-            .width(processingTaskWidth)
-            .clip(RoundedCornerShape(mediumPadding))
-            .clickable {
-                if (clickable) onClick()
-            },
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            modifier = Modifier.size(iconMediumSize),
-            painter = icon,
-            contentDescription = null
-        )
-        Text(
-            modifier = Modifier.paddingTop(tinyPadding),
-            text = appName,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Bold
-        )
-        when (taskState) {
-            TaskState.Processing -> {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_round_bolt),
-                    contentDescription = null,
-                    tint = colorYellow,
-                    modifier = Modifier
-                        .size(iconTinySize)
-                        .paddingTop(tinyPadding)
-                )
-            }
-            TaskState.Success -> {
-                Icon(
-                    imageVector = Icons.Rounded.Done,
-                    contentDescription = null,
-                    tint = colorGreen,
-                    modifier = Modifier
-                        .size(iconTinySize)
-                        .paddingTop(tinyPadding)
-                )
-            }
-            TaskState.Failed -> {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = null,
-                    tint = colorError,
-                    modifier = Modifier
-                        .size(iconTinySize)
-                        .paddingTop(tinyPadding)
-                )
-            }
-            else -> {
-                Spacer(
-                    modifier = Modifier
-                        .size(iconTinySize)
-                        .paddingTop(tinyPadding)
-                )
+    if (visible) {
+        val tinyPadding = dimensionResource(R.dimen.padding_tiny)
+        val mediumPadding = dimensionResource(R.dimen.padding_medium)
+        val iconTinySize = dimensionResource(R.dimen.icon_tiny_size)
+        val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
+        val processingTaskWidth = dimensionResource(R.dimen.processing_task_width)
+        val colorYellow = colorResource(id = R.color.yellow)
+        val colorGreen = colorResource(id = R.color.green)
+        val colorError = MaterialTheme.colorScheme.error
+        Column(
+            modifier = Modifier
+                .padding(mediumPadding)
+                .width(processingTaskWidth)
+                .clip(RoundedCornerShape(mediumPadding))
+                .clickable {
+                    if (clickable) onClick()
+                },
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.size(iconMediumSize),
+                painter = icon,
+                contentDescription = null
+            )
+            Text(
+                modifier = Modifier.paddingTop(tinyPadding),
+                text = appName,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold
+            )
+            when (taskState) {
+                TaskState.Processing -> {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_round_bolt),
+                        contentDescription = null,
+                        tint = colorYellow,
+                        modifier = Modifier
+                            .size(iconTinySize)
+                            .paddingTop(tinyPadding)
+                    )
+                }
+                TaskState.Success -> {
+                    Icon(
+                        imageVector = Icons.Rounded.Done,
+                        contentDescription = null,
+                        tint = colorGreen,
+                        modifier = Modifier
+                            .size(iconTinySize)
+                            .paddingTop(tinyPadding)
+                    )
+                }
+                TaskState.Failed -> {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = null,
+                        tint = colorError,
+                        modifier = Modifier
+                            .size(iconTinySize)
+                            .paddingTop(tinyPadding)
+                    )
+                }
+                else -> {
+                    Spacer(
+                        modifier = Modifier
+                            .size(iconTinySize)
+                            .paddingTop(tinyPadding)
+                    )
+                }
             }
         }
     }

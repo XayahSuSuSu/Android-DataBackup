@@ -95,6 +95,15 @@ const val ProcessingItemTypeDATA = "DATA"
 const val ProcessingItemTypeOBB = "OBB"
 
 /**
+ * ProcessingTaskFilter
+ */
+enum class ProcessingTaskFilter {
+    None,          // 无
+    Succeed,      // 已选择
+    Failed,   // 未选择
+}
+
+/**
  * 应用列表选择类型
  */
 enum class GuideType {

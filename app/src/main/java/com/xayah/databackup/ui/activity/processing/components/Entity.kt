@@ -24,6 +24,7 @@ data class ProcessingTask(
     var appIcon: Drawable? = null,
     var selectApp: Boolean,
     var selectData: Boolean,
+    val visible: MutableState<Boolean> = mutableStateOf(true),
     var taskState: MutableState<TaskState> = mutableStateOf(TaskState.Waiting),
     var objectList: List<ProcessObjectItem>
 )

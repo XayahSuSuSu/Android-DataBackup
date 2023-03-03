@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 fun onBackupMediaProcessing(
     viewModel: ProcessingViewModel,
     context: Context,
-    globalObject: GlobalObject
+    globalObject: GlobalObject,
+    retry: Boolean = false,
 ) {
     if (viewModel.isFirst.value) {
         viewModel.isFirst.value = false
@@ -32,6 +33,7 @@ fun onBackupMediaProcessing(
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
+                clear()
                 add(ProcessObjectItem(type = ProcessingObjectType.DATA))
             }
             val allDone = viewModel.allDone
@@ -45,23 +47,28 @@ fun onBackupMediaProcessing(
             }
             Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
-            // 备份信息列表
-            taskList.addAll(
-                globalObject.mediaInfoBackupMap.value.values.toList()
-                    .filter { it.selectData.value }
-                    .map {
-                        ProcessingTask(
-                            appName = it.name,
-                            packageName = it.path,
-                            appIcon = AppCompatResources.getDrawable(
-                                context,
-                                R.drawable.ic_round_android
-                            ),
-                            selectApp = false,
-                            selectData = true,
-                            objectList = listOf()
-                        )
-                    })
+            if (retry.not()) {
+                // 备份信息列表
+                taskList.addAll(
+                    globalObject.mediaInfoBackupMap.value.values.toList()
+                        .filter { it.selectData.value }
+                        .map {
+                            ProcessingTask(
+                                appName = it.name,
+                                packageName = it.path,
+                                appIcon = AppCompatResources.getDrawable(
+                                    context,
+                                    R.drawable.ic_round_android
+                                ),
+                                selectApp = false,
+                                selectData = true,
+                                objectList = listOf()
+                            )
+                        })
+            } else {
+                Logcat.getInstance().actionLogAddLine(tag, "Retrying.")
+            }
+
 
             Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
 
@@ -76,7 +83,10 @@ fun onBackupMediaProcessing(
             loadingState.value = LoadingState.Success
             topBarTitle.value =
                 "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
-            for (i in 0 until taskList.size) {
+            for ((index, i) in taskList.withIndex()) {
+                // Skip while retrying not-failed task
+                if (retry && i.taskState.value != TaskState.Failed) continue
+
                 // 重置备份目标
                 objectList[0].apply {
                     state.value = TaskState.Waiting
@@ -86,53 +96,52 @@ fun onBackupMediaProcessing(
                 }
 
                 // 进入Processing状态
-                taskList[i].taskState.value = TaskState.Processing
-                val task = taskList[i]
+                i.taskState.value = TaskState.Processing
                 val mediaInfoBackup =
-                    globalObject.mediaInfoBackupMap.value[task.appName]!!
+                    globalObject.mediaInfoBackupMap.value[i.appName]!!
 
                 // 滑动至目标媒体
                 if (viewModel.listStateIsInitialized) {
                     if (viewModel.scopeIsInitialized) {
                         viewModel.scope.launch {
-                            viewModel.listState.animateScrollToItem(i)
+                            viewModel.listState.animateScrollToItem(index)
                         }
                     }
                 }
 
                 var isSuccess = true
-                val outPutPath = "${Path.getBackupMediaSavePath()}/${task.appName}/${date}"
+                val outPutPath = "${Path.getBackupMediaSavePath()}/${i.appName}/${date}"
 
-                Logcat.getInstance().actionLogAddLine(tag, "Name: ${task.appName}.")
-                Logcat.getInstance().actionLogAddLine(tag, "Path: ${task.packageName}.")
+                Logcat.getInstance().actionLogAddLine(tag, "Name: ${i.appName}.")
+                Logcat.getInstance().actionLogAddLine(tag, "Path: ${i.packageName}.")
 
-                if (task.selectData) {
+                if (i.selectData) {
                     // 添加Data备份项
                     objectList[0].visible.value = true
                 }
-                for (j in 0 until objectList.size) {
+                for (j in objectList) {
                     if (viewModel.isCancel.value) break
-                    if (objectList[j].visible.value) {
-                        objectList[j].state.value = TaskState.Processing
-                        when (objectList[j].type) {
+                    if (j.visible.value) {
+                        j.state.value = TaskState.Processing
+                        when (j.type) {
                             ProcessingObjectType.DATA -> {
                                 Command.compress(
                                     "tar",
                                     "media",
-                                    task.appName,
+                                    i.appName,
                                     outPutPath,
-                                    task.packageName,
+                                    i.packageName,
                                     mediaInfoBackup.backupDetail.size,
                                     compatibleMode
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
                                         // 保存大小
                                         mediaInfoBackup.backupDetail.size =
-                                            RootService.getInstance().countSize(task.packageName)
+                                            RootService.getInstance().countSize(i.packageName)
                                                 .toString()
                                     }
                                 }
@@ -154,14 +163,14 @@ fun onBackupMediaProcessing(
                     )
 
                     if (globalObject.mediaInfoRestoreMap.value.containsKey(
-                            task.appName
+                            i.appName
                         ).not()
                     ) {
-                        globalObject.mediaInfoRestoreMap.value[task.appName] =
+                        globalObject.mediaInfoRestoreMap.value[i.appName] =
                             MediaInfoRestore()
                     }
                     val mediaInfoRestore =
-                        globalObject.mediaInfoRestoreMap.value[task.appName]!!.apply {
+                        globalObject.mediaInfoRestoreMap.value[i.appName]!!.apply {
                             this.name = mediaInfoBackup.name
                             this.path = mediaInfoBackup.path
                         }
@@ -178,9 +187,21 @@ fun onBackupMediaProcessing(
                     }
                 }
 
-                taskList[i].apply {
+                i.apply {
                     this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
-                    this.objectList = objectList.toList()
+                    val list = mutableListOf<ProcessObjectItem>()
+                    for (j in objectList) {
+                        list.add(
+                            ProcessObjectItem(
+                                state = mutableStateOf(j.state.value),
+                                visible = mutableStateOf(j.visible.value),
+                                title = mutableStateOf(j.title.value),
+                                subtitle = mutableStateOf(j.subtitle.value),
+                                type = j.type,
+                            )
+                        )
+                    }
+                    this.objectList = list.toList()
                 }
 
                 progress.value += 1
@@ -194,7 +215,7 @@ fun onBackupMediaProcessing(
             GsonUtil.saveMediaInfoRestoreMapToFile(globalObject.mediaInfoRestoreMap.value)
             Logcat.getInstance().actionLogAddLine(tag, "Save global map.")
             topBarTitle.value = "${context.getString(R.string.backup_finished)}!"
-            allDone.value = true
+            allDone.targetState = true
             Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
         }
     }

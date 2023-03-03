@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
@@ -20,6 +18,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.list.components.ListScaffold
 import com.xayah.databackup.ui.activity.list.components.content.*
+import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
@@ -95,7 +94,6 @@ class ListActivity : ComponentActivity() {
                         if (onManifest.not()) {
                             Row {
                                 val openBottomSheet = remember { mutableStateOf(false) }
-
                                 when (type) {
                                     TypeBackupApp -> {
                                         AppBackupBottomSheet(
@@ -124,13 +122,8 @@ class ListActivity : ComponentActivity() {
                                         )
                                     }
                                 }
-                                IconButton(onClick = {
+                                IconButton(icon = Icons.Rounded.Menu) {
                                     openBottomSheet.value = true
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Menu,
-                                        contentDescription = null
-                                    )
                                 }
                             }
                         }

@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.processing.action
 
 import android.content.Context
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.R
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.data.ProcessingObjectType
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 fun onRestoreMediaProcessing(
     viewModel: ProcessingViewModel,
     context: Context,
-    globalObject: GlobalObject
+    globalObject: GlobalObject,
+    retry: Boolean = false,
 ) {
     if (viewModel.isFirst.value) {
         viewModel.isFirst.value = false
@@ -31,6 +33,7 @@ fun onRestoreMediaProcessing(
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
+                clear()
                 add(ProcessObjectItem(type = ProcessingObjectType.DATA))
             }
             val allDone = viewModel.allDone
@@ -41,23 +44,27 @@ fun onRestoreMediaProcessing(
             }
             Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
-            // 备份信息列表
-            taskList.addAll(
-                globalObject.mediaInfoRestoreMap.value.values.toList()
-                    .filter { if (it.detailRestoreList.isNotEmpty()) it.selectData.value else false }
-                    .map {
-                        ProcessingTask(
-                            appName = it.name,
-                            packageName = it.path.ifEmpty { it.name },
-                            appIcon = AppCompatResources.getDrawable(
-                                context,
-                                R.drawable.ic_round_android
-                            ),
-                            selectApp = false,
-                            selectData = true,
-                            objectList = listOf()
-                        )
-                    })
+            if (retry.not()) {
+                // 备份信息列表
+                taskList.addAll(
+                    globalObject.mediaInfoRestoreMap.value.values.toList()
+                        .filter { if (it.detailRestoreList.isNotEmpty()) it.selectData.value else false }
+                        .map {
+                            ProcessingTask(
+                                appName = it.name,
+                                packageName = it.path.ifEmpty { it.name },
+                                appIcon = AppCompatResources.getDrawable(
+                                    context,
+                                    R.drawable.ic_round_android
+                                ),
+                                selectApp = false,
+                                selectData = true,
+                                objectList = listOf()
+                            )
+                        })
+            } else {
+                Logcat.getInstance().actionLogAddLine(tag, "Retrying.")
+            }
 
             Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
 
@@ -65,7 +72,10 @@ fun onRestoreMediaProcessing(
             loadingState.value = LoadingState.Success
             topBarTitle.value =
                 "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
-            for (i in 0 until taskList.size) {
+            for ((index, i) in taskList.withIndex()) {
+                // Skip while retrying not-failed task
+                if (retry && i.taskState.value != TaskState.Failed) continue
+
                 // 重置恢复目标
                 objectList[0].apply {
                     state.value = TaskState.Waiting
@@ -75,46 +85,45 @@ fun onRestoreMediaProcessing(
                 }
 
                 // 进入Processing状态
-                taskList[i].taskState.value = TaskState.Processing
-                val task = taskList[i]
+                i.taskState.value = TaskState.Processing
                 val mediaInfoRestore =
-                    globalObject.mediaInfoRestoreMap.value[task.appName]!!
+                    globalObject.mediaInfoRestoreMap.value[i.appName]!!
 
                 // 滑动至目标应用
                 if (viewModel.listStateIsInitialized) {
                     if (viewModel.scopeIsInitialized) {
                         viewModel.scope.launch {
-                            viewModel.listState.animateScrollToItem(i)
+                            viewModel.listState.animateScrollToItem(index)
                         }
                     }
                 }
 
                 var isSuccess = true
                 val inPath =
-                    "${Path.getBackupMediaSavePath()}/${task.appName}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}"
+                    "${Path.getBackupMediaSavePath()}/${i.appName}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}"
 
-                Logcat.getInstance().actionLogAddLine(tag, "Name: ${task.appName}.")
-                Logcat.getInstance().actionLogAddLine(tag, "Path: ${task.packageName}.")
+                Logcat.getInstance().actionLogAddLine(tag, "Name: ${i.appName}.")
+                Logcat.getInstance().actionLogAddLine(tag, "Path: ${i.packageName}.")
 
-                if (task.selectData) {
+                if (i.selectData) {
                     // 添加Data备份项
                     objectList[0].visible.value = true
                 }
-                for (j in 0 until objectList.size) {
+                for (j in objectList) {
                     if (viewModel.isCancel.value) break
-                    if (objectList[j].visible.value) {
-                        objectList[j].state.value = TaskState.Processing
-                        when (objectList[j].type) {
+                    if (j.visible.value) {
+                        j.state.value = TaskState.Processing
+                        when (j.type) {
                             ProcessingObjectType.DATA -> {
-                                val inputPath = "${inPath}/${task.appName}.tar"
+                                val inputPath = "${inPath}/${i.appName}.tar"
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(inputPath),
                                     "media",
                                     inputPath,
-                                    task.appName,
-                                    task.packageName.replace("/${task.appName}", "")
+                                    i.appName,
+                                    i.packageName.replace("/${i.appName}", "")
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -127,9 +136,21 @@ fun onRestoreMediaProcessing(
                 }
                 if (viewModel.isCancel.value) break
 
-                taskList[i].apply {
+                i.apply {
                     this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
-                    this.objectList = objectList.toList()
+                    val list = mutableListOf<ProcessObjectItem>()
+                    for (j in objectList) {
+                        list.add(
+                            ProcessObjectItem(
+                                state = mutableStateOf(j.state.value),
+                                visible = mutableStateOf(j.visible.value),
+                                title = mutableStateOf(j.title.value),
+                                subtitle = mutableStateOf(j.subtitle.value),
+                                type = j.type,
+                            )
+                        )
+                    }
+                    this.objectList = list.toList()
                 }
 
                 progress.value += 1
@@ -139,7 +160,7 @@ fun onRestoreMediaProcessing(
             }
 
             topBarTitle.value = "${context.getString(R.string.restore_finished)}!"
-            allDone.value = true
+            allDone.targetState = true
             Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
         }
     }

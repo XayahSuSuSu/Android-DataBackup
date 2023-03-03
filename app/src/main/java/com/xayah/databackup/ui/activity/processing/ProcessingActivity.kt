@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,7 +24,9 @@ import com.xayah.databackup.ui.activity.processing.action.onBackupAppProcessing
 import com.xayah.databackup.ui.activity.processing.action.onBackupMediaProcessing
 import com.xayah.databackup.ui.activity.processing.action.onRestoreAppProcessing
 import com.xayah.databackup.ui.activity.processing.action.onRestoreMediaProcessing
+import com.xayah.databackup.ui.activity.processing.components.EndPageBottomSheet
 import com.xayah.databackup.ui.activity.processing.components.ProcessingScaffold
+import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.components.TextButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.GlobalObject
@@ -40,21 +43,38 @@ class ProcessingActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val viewModel = ViewModelProvider(this)[ProcessingViewModel::class.java]
-        val type = intent.getStringExtra(TypeActivityTag)
+        viewModel.listType = intent.getStringExtra(TypeActivityTag) ?: TypeBackupApp
+        val type = viewModel.listType
         val that = this
 
         when (type) {
             TypeBackupApp -> {
-                onBackupAppProcessing(viewModel, context = this, globalObject = globalObject)
+                onBackupAppProcessing(
+                    viewModel = viewModel,
+                    context = this,
+                    globalObject = globalObject
+                )
             }
             TypeBackupMedia -> {
-                onBackupMediaProcessing(viewModel, context = this, globalObject = globalObject)
+                onBackupMediaProcessing(
+                    viewModel = viewModel,
+                    context = this,
+                    globalObject = globalObject
+                )
             }
             TypeRestoreApp -> {
-                onRestoreAppProcessing(viewModel, context = this, globalObject = globalObject)
+                onRestoreAppProcessing(
+                    viewModel = viewModel,
+                    context = this,
+                    globalObject = globalObject
+                )
             }
             TypeRestoreMedia -> {
-                onRestoreMediaProcessing(viewModel, context = this, globalObject = globalObject)
+                onRestoreMediaProcessing(
+                    viewModel = viewModel,
+                    context = this,
+                    globalObject = globalObject
+                )
             }
         }
 
@@ -65,7 +85,7 @@ class ProcessingActivity : ComponentActivity() {
                 LaunchedEffect(null) {
                     onBackPressedDispatcher.addCallback(that, object : OnBackPressedCallback(true) {
                         override fun handleOnBackPressed() {
-                            if (viewModel.allDone.value.not()) {
+                            if (viewModel.allDone.currentState.not()) {
                                 setExitConfirmDialog(true)
                             } else {
                                 finish()
@@ -74,7 +94,15 @@ class ProcessingActivity : ComponentActivity() {
                     })
                 }
 
-                ProcessingScaffold(viewModel) { finish() }
+                ProcessingScaffold(
+                    viewModel = viewModel,
+                    actions = {
+                        val openBottomSheet = remember { mutableStateOf(false) }
+                        EndPageBottomSheet(isOpen = openBottomSheet, viewModel = viewModel)
+                        IconButton(icon = Icons.Rounded.Menu) {
+                            openBottomSheet.value = true
+                        }
+                    }) { finish() }
 
                 if (exitConfirmDialog) {
                     AlertDialog(

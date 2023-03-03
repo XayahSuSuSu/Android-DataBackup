@@ -1,7 +1,9 @@
 package com.xayah.databackup.ui.activity.processing.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -12,12 +14,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.components.LoadingView
 import com.xayah.databackup.ui.components.Scaffold
 import com.xayah.databackup.ui.components.TopBarTitle
+import com.xayah.databackup.ui.components.animation.ContentFade
 import com.xayah.databackup.util.GlobalString
 
 /**
@@ -111,30 +116,42 @@ fun parseObjectItemBySrc(
 
 @ExperimentalMaterial3Api
 @Composable
-fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
+fun ProcessingScaffold(
+    viewModel: ProcessingViewModel,
+    actions: @Composable (RowScope.() -> Unit) = {},
+    onFinish: () -> Unit
+) {
+    val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val loadingState by viewModel.loadingState.collectAsState()
     val topBarTitle by viewModel.topBarTitle.collectAsState()
     val objectList by viewModel.objectList.collectAsState()
     val taskList by viewModel.taskList.collectAsState()
-    val allDone by viewModel.allDone.collectAsState()
+    val allDone = viewModel.allDone
     viewModel.listState = rememberLazyListState()
     viewModel.scope = rememberCoroutineScope()
 
     Scaffold(
         floatingActionButton = {
-            if (allDone)
+            ContentFade(allDone) {
                 FloatingActionButton(
+                    modifier = Modifier.padding(mediumPadding),
                     onClick = onFinish,
                 ) {
                     Icon(Icons.Rounded.Done, null)
                 }
+            }
         },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     TopBarTitle(text = topBarTitle)
                 },
-                scrollBehavior = this
+                scrollBehavior = this,
+                actions = {
+                    ContentFade(allDone) {
+                        actions()
+                    }
+                }
             )
         },
         topPaddingRate = 1,
@@ -161,8 +178,9 @@ fun ProcessingScaffold(viewModel: ProcessingViewModel, onFinish: () -> Unit) {
                                 Task(
                                     icon = rememberDrawablePainter(drawable = taskList[it].appIcon),
                                     appName = taskList[it].appName,
+                                    visible = taskList[it].visible.value,
                                     taskState = taskList[it].taskState.value,
-                                    clickable = allDone,
+                                    clickable = allDone.currentState,
                                     onClick = {
                                         objectList.clear()
                                         objectList.addAll(taskList[it].objectList)

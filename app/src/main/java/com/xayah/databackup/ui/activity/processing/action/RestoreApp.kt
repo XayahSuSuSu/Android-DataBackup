@@ -3,6 +3,7 @@ package com.xayah.databackup.ui.activity.processing.action
 import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.graphics.drawable.toDrawable
 import com.xayah.databackup.App
 import com.xayah.databackup.R
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 fun onRestoreAppProcessing(
     viewModel: ProcessingViewModel,
     context: Context,
-    globalObject: GlobalObject
+    globalObject: GlobalObject,
+    retry: Boolean = false,
 ) {
     if (viewModel.isFirst.value) {
         viewModel.isFirst.value = false
@@ -36,6 +38,7 @@ fun onRestoreAppProcessing(
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
+                clear()
                 val typeList = listOf(
                     ProcessingObjectType.APP,
                     ProcessingObjectType.USER,
@@ -55,36 +58,40 @@ fun onRestoreAppProcessing(
             }
             Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
-            // 备份信息列表
-            taskList.addAll(
-                globalObject.appInfoRestoreMap.value.values.toList()
-                    .filter { if (it.detailRestoreList.isNotEmpty()) it.selectApp.value || it.selectData.value else false }
-                    .map {
-                        ProcessingTask(
-                            appName = it.detailBase.appName,
-                            packageName = it.detailBase.packageName,
-                            appIcon = AppCompatResources.getDrawable(
-                                context,
-                                R.drawable.ic_round_android
-                            ),
-                            selectApp = it.selectApp.value,
-                            selectData = it.selectData.value,
-                            objectList = listOf()
-                        ).apply {
-                            if (App.globalContext.readIsReadIcon()) {
-                                try {
-                                    val task = this
-                                    val bytes = RootService.getInstance()
-                                        .readBytes("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png")
-                                    task.appIcon =
-                                        (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                            .toDrawable(context.resources))
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
+            if (retry.not()) {
+                // 备份信息列表
+                taskList.addAll(
+                    globalObject.appInfoRestoreMap.value.values.toList()
+                        .filter { if (it.detailRestoreList.isNotEmpty()) it.selectApp.value || it.selectData.value else false }
+                        .map {
+                            ProcessingTask(
+                                appName = it.detailBase.appName,
+                                packageName = it.detailBase.packageName,
+                                appIcon = AppCompatResources.getDrawable(
+                                    context,
+                                    R.drawable.ic_round_android
+                                ),
+                                selectApp = it.selectApp.value,
+                                selectData = it.selectData.value,
+                                objectList = listOf()
+                            ).apply {
+                                if (App.globalContext.readIsReadIcon()) {
+                                    try {
+                                        val task = this
+                                        val bytes = RootService.getInstance()
+                                            .readBytes("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png")
+                                        task.appIcon =
+                                            (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                                                .toDrawable(context.resources))
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
                                 }
                             }
-                        }
-                    })
+                        })
+            } else {
+                Logcat.getInstance().actionLogAddLine(tag, "Retrying.")
+            }
 
             Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
 
@@ -98,10 +105,13 @@ fun onRestoreAppProcessing(
             loadingState.value = LoadingState.Success
             topBarTitle.value =
                 "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
-            for (i in 0 until taskList.size) {
+            for ((index, i) in taskList.withIndex()) {
+                // Skip while retrying not-failed task
+                if (retry && i.taskState.value != TaskState.Failed) continue
+
                 // 重置恢复目标
-                for (j in 0 until objectList.size) {
-                    objectList[j].apply {
+                for (j in objectList) {
+                    j.apply {
                         state.value = TaskState.Waiting
                         title.value = GlobalString.ready
                         visible.value = false
@@ -110,22 +120,21 @@ fun onRestoreAppProcessing(
                 }
 
                 // 进入Processing状态
-                taskList[i].taskState.value = TaskState.Processing
-                val task = taskList[i]
+                i.taskState.value = TaskState.Processing
                 val appInfoRestore =
-                    globalObject.appInfoRestoreMap.value[task.packageName]!!
+                    globalObject.appInfoRestoreMap.value[i.packageName]!!
 
                 // 滑动至目标应用
                 if (viewModel.listStateIsInitialized) {
                     if (viewModel.scopeIsInitialized) {
                         viewModel.scope.launch {
-                            viewModel.listState.animateScrollToItem(i)
+                            viewModel.listState.animateScrollToItem(index)
                         }
                     }
                 }
 
                 var isSuccess = true
-                val packageName = task.packageName
+                val packageName = i.packageName
                 val date = appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].date
                 val inPath = "${Path.getBackupDataSavePath()}/${packageName}/${date}"
                 val suffix = Command.getSuffixByCompressionType(compressionType)
@@ -134,14 +143,14 @@ fun onRestoreAppProcessing(
                 val dataPath = "${inPath}/data.$suffix"
                 val obbPath = "${inPath}/obb.$suffix"
 
-                Logcat.getInstance().actionLogAddLine(tag, "AppName: ${task.appName}.")
-                Logcat.getInstance().actionLogAddLine(tag, "PackageName: ${task.packageName}.")
+                Logcat.getInstance().actionLogAddLine(tag, "AppName: ${i.appName}.")
+                Logcat.getInstance().actionLogAddLine(tag, "PackageName: ${i.packageName}.")
 
-                if (task.selectApp) {
+                if (i.selectApp) {
                     // 检查是否备份APK
                     objectList[0].visible.value = true
                 }
-                if (task.selectData) {
+                if (i.selectData) {
                     // 检查是否备份数据
                     // USER为必备份项
                     objectList[1].visible.value = true
@@ -164,11 +173,11 @@ fun onRestoreAppProcessing(
                         }
                     }
                 }
-                for (j in 0 until objectList.size) {
+                for ((jIndex, j) in objectList.withIndex()) {
                     if (viewModel.isCancel.value) break
-                    if (objectList[j].visible.value) {
-                        objectList[j].state.value = TaskState.Processing
-                        when (objectList[j].type) {
+                    if (j.visible.value) {
+                        j.state.value = TaskState.Processing
+                        when (j.type) {
                             ProcessingObjectType.APP -> {
                                 isSuccess = Command.installAPK(
                                     inPath,
@@ -176,12 +185,12 @@ fun onRestoreAppProcessing(
                                     userId,
                                     appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].versionCode.toString()
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }
 
                                 // 如果未安装该应用, 则无法完成后续恢复
                                 if (!isSuccess) {
-                                    for (k in j + 1 until objectList.size) {
+                                    for (k in jIndex + 1 until objectList.size) {
                                         parseObjectItemBySrc(
                                             ProcessError,
                                             "Apk not installed.",
@@ -203,7 +212,7 @@ fun onRestoreAppProcessing(
                                     packageName,
                                     Path.getUserPath(userId)
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -214,7 +223,7 @@ fun onRestoreAppProcessing(
                                     userId,
                                     contextSELinux
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -231,7 +240,7 @@ fun onRestoreAppProcessing(
                                     packageName,
                                     Path.getUserDePath(userId)
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -242,7 +251,7 @@ fun onRestoreAppProcessing(
                                     userId,
                                     contextSELinux
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -259,7 +268,7 @@ fun onRestoreAppProcessing(
                                     packageName,
                                     Path.getDataPath(userId)
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -270,7 +279,7 @@ fun onRestoreAppProcessing(
                                     userId,
                                     contextSELinux
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -287,7 +296,7 @@ fun onRestoreAppProcessing(
                                     packageName,
                                     Path.getObbPath(userId)
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -298,7 +307,7 @@ fun onRestoreAppProcessing(
                                     userId,
                                     contextSELinux
                                 ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", objectList[j])
+                                    parseObjectItemBySrc(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -308,9 +317,21 @@ fun onRestoreAppProcessing(
                 }
                 if (viewModel.isCancel.value) break
 
-                taskList[i].apply {
+                i.apply {
                     this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
-                    this.objectList = objectList.toList()
+                    val list = mutableListOf<ProcessObjectItem>()
+                    for (j in objectList) {
+                        list.add(
+                            ProcessObjectItem(
+                                state = mutableStateOf(j.state.value),
+                                visible = mutableStateOf(j.visible.value),
+                                title = mutableStateOf(j.title.value),
+                                subtitle = mutableStateOf(j.subtitle.value),
+                                type = j.type,
+                            )
+                        )
+                    }
+                    this.objectList = list.toList()
                 }
 
                 progress.value += 1
@@ -320,7 +341,7 @@ fun onRestoreAppProcessing(
             }
 
             topBarTitle.value = "${context.getString(R.string.restore_finished)}!"
-            allDone.value = true
+            allDone.targetState = true
             Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
         }
     }
