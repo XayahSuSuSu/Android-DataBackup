@@ -181,34 +181,7 @@ data class MediaInfoDetailBase(
     @Expose var data: MutableState<Boolean> = mutableStateOf(false), // 是否选中
     @Expose var size: String = "",     // 数据大小
     @Expose var date: String = "",     // 备份日期(10位时间戳)
-) {
-    val sizeBytes: Long
-        get() = size.toLongOrDefault(0)
-
-    val sizeDisplay: String
-        get() = run {
-            var unit = "Bytes"
-            val mSizeBytes = sizeBytes.toDouble() * 1000
-            var size = mSizeBytes
-            val gb = (1000 * 1000 * 1000).toDouble()
-            val mb = (1000 * 1000).toDouble()
-            val kb = (1000).toDouble()
-            if (mSizeBytes > gb) {
-                // GB
-                size = mSizeBytes / gb
-                unit = "GB"
-            } else if (mSizeBytes > mb) {
-                // GB
-                size = mSizeBytes / mb
-                unit = "MB"
-            } else if (mSizeBytes > kb) {
-                // GB
-                size = mSizeBytes / kb
-                unit = "KB"
-            }
-            "${DecimalFormat("#.00").format(size)} $unit"
-        }
-}
+)
 
 /**
  * 媒体备份信息
@@ -239,6 +212,12 @@ data class MediaInfoRestore(
 ) {
     val selectData: MutableState<Boolean>
         get() = detailRestoreList[restoreIndex].data
+
+    val sizeBytes: Double
+        get() = detailRestoreList[restoreIndex].size.toLongOrDefault(0).toDouble()
+
+    val sizeDisplay: String
+        get() = formatSize(sizeBytes)
 
     @Expose
     var restoreIndex: Int = -1

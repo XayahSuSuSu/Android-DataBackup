@@ -77,10 +77,10 @@ fun MediaRestoreItem(
                     }
                 }
             }
-            if (mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].sizeBytes != 0L) {
+            if (mediaInfoRestore.sizeBytes != 0.0) {
                 SuggestionChip(
                     onClick = { },
-                    label = { Text(mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].sizeDisplay) }
+                    label = { Text(mediaInfoRestore.sizeDisplay) }
                 )
             }
         },
