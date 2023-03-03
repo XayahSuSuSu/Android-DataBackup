@@ -22,6 +22,8 @@ import com.xayah.databackup.ui.activity.guide.components.ItemUpdate
 import com.xayah.databackup.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -49,23 +51,28 @@ class GuideViewModel : ViewModel() {
         showFinishBtn.value = allGranted
     }
 
+    private val mutex = Mutex()
+
     suspend fun getUpdateList(onSuccess: () -> Unit, onFailed: () -> Unit) {
-        Server.getInstance().releases(
-            successCallback = { releaseList ->
-                val mReleaseList = releaseList.appReleaseList()
-                for (i in mReleaseList) {
-                    updateList.value.add(
-                        ItemUpdate(
-                            i.name,
-                            i.body.replace("* ", "").replace("*", ""),
-                            i.html_url
+        mutex.withLock {
+            updateList.value.clear()
+            Server.getInstance().releases(
+                successCallback = { releaseList ->
+                    val mReleaseList = releaseList.appReleaseList()
+                    for (i in mReleaseList) {
+                        updateList.value.add(
+                            ItemUpdate(
+                                i.name,
+                                i.body.replace("* ", "").replace("*", ""),
+                                i.html_url
+                            )
                         )
-                    )
-                }
-                onSuccess()
-            },
-            failedCallback = onFailed
-        )
+                    }
+                    onSuccess()
+                },
+                failedCallback = onFailed
+            )
+        }
     }
 
     /**

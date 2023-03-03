@@ -22,7 +22,7 @@ fun PageUpdate(viewModel: GuideViewModel) {
     val loadingState = viewModel.loadingState
     val updateList = viewModel.updateList.collectAsState()
     LaunchedEffect(null) {
-        if (updateList.value.isEmpty())
+        if (updateList.value.isEmpty()) {
             viewModel.getUpdateList(
                 onSuccess = {
                     loadingState.value = LoadingState.Success
@@ -30,6 +30,7 @@ fun PageUpdate(viewModel: GuideViewModel) {
                 onFailed = {
                     loadingState.value = LoadingState.Failed
                 })
+        }
     }
 
     GuideScaffold(
