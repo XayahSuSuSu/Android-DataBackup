@@ -1,5 +1,9 @@
 /build
-/arm64-v8a
-/armeabi-v7a
-/x86
-/x86_64
+/arm64-v8aFoss
+/arm64-v8aPremium
+/armeabi-v7aFoss
+/armeabi-v7aPremium
+/x86_64Foss
+/x86_64Premium
+/x86Foss
+/x86Premium
