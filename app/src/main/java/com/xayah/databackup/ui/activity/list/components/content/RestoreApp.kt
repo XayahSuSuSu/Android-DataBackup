@@ -258,6 +258,14 @@ fun AppRestoreBottomSheet(
                 FilterItem(
                     text = stringResource(R.string.not_selected),
                     AppListFilter.NotSelected
+                ),
+                FilterItem(
+                    text = stringResource(R.string.installed),
+                    AppListFilter.Installed
+                ),
+                FilterItem(
+                    text = stringResource(R.string.not_installed),
+                    AppListFilter.NotInstalled
                 )
             )
             FilterItem(
