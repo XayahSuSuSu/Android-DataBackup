@@ -30,6 +30,8 @@ import com.xayah.databackup.ui.activity.list.components.menu.ListBottomSheet
 import com.xayah.databackup.ui.activity.list.components.menu.item.FilterItem
 import com.xayah.databackup.ui.activity.list.components.menu.item.SortItem
 import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopActionButton
+import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBackupUserButton
+import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopRestoreUserButton
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.SearchBar
@@ -162,6 +164,7 @@ fun AppBackupBottomSheet(
     onFinish: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val active = viewModel.activeSort.collectAsState()
     val ascending = viewModel.ascending.collectAsState()
 
@@ -201,6 +204,14 @@ fun AppBackupBottomSheet(
                     }
                     selectAll = selectAll.not()
                 }
+            }
+            item {
+                MenuTopBackupUserButton(viewModel = viewModel) {
+                    onAppBackupInitialize(viewModel)
+                }
+            }
+            item {
+                MenuTopRestoreUserButton(viewModel = viewModel)
             }
         },
         content = {

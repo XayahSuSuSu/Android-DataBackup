@@ -28,7 +28,9 @@ import com.xayah.databackup.ui.activity.list.components.menu.ListBottomSheet
 import com.xayah.databackup.ui.activity.list.components.menu.item.FilterItem
 import com.xayah.databackup.ui.activity.list.components.menu.item.SortItem
 import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopActionButton
+import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBackupUserButton
 import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBatchDeleteButton
+import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopRestoreUserButton
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.ui.components.LoadingDialog
 import com.xayah.databackup.ui.components.SearchBar
@@ -221,6 +223,14 @@ fun AppRestoreBottomSheet(
                     }
                     selectAll = selectAll.not()
                 }
+            }
+            item {
+                MenuTopBackupUserButton(viewModel = viewModel) {
+                    onAppRestoreInitialize(viewModel)
+                }
+            }
+            item {
+                MenuTopRestoreUserButton(viewModel = viewModel)
             }
         },
         content = {

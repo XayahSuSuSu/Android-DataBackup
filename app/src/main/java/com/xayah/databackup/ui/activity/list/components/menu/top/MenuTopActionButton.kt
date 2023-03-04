@@ -34,6 +34,6 @@ fun MenuTopActionButton(icon: ImageVector, title: String, onClick: () -> Unit) {
             imageVector = icon,
             contentDescription = null
         )
-        BodyMediumText(text = title)
+        BodyMediumText(text = title, bold = true)
     }
 }

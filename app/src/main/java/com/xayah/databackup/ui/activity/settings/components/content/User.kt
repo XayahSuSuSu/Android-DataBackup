@@ -14,80 +14,86 @@ import com.xayah.databackup.ui.activity.settings.components.clickable.Title
 import com.xayah.databackup.util.*
 import com.xayah.librootservice.RootService
 
+suspend fun onBackupUserPrepare(context: Context): Pair<List<String>, String> {
+    val users = RootService.getInstance().getUsers(
+        excludePartial = true,
+        excludeDying = false,
+        excludePreCreated = true
+    )
+    var items = users.map { "${it.id}: ${it.name}" }.toMutableList()
+    val idItems = users.map { "${it.id}" }.toMutableList()
+
+    // 加入备份目录用户集
+    val backupUsers = Command.listBackupUsers()
+    for (i in backupUsers) {
+        if (i !in idItems) {
+            items.add("${i}: ${context.getString(R.string.backup_dir)}")
+            idItems.add(i)
+        }
+    }
+
+    val defValue = try {
+        items[idItems.indexOf(context.readBackupUser())]
+    } catch (_: Exception) {
+        ""
+    }
+
+    // 去重排序
+    items = items.toSortedSet().toMutableList()
+    return Pair(items, defValue)
+}
+
+fun onRestoreUserPrepare(context: Context): Pair<List<String>, String> {
+    val users = RootService.getInstance().getUsers(
+        excludePartial = true,
+        excludeDying = false,
+        excludePreCreated = true
+    )
+    val items = users.map { "${it.id}: ${it.name}" }.toMutableList()
+    val idItems = users.map { "${it.id}" }.toMutableList()
+
+    val defValue = try {
+        items[idItems.indexOf(context.readRestoreUser())]
+    } catch (_: Exception) {
+        ""
+    }
+
+    return Pair(items, defValue)
+}
+
 fun onUserInitialize(viewModel: SettingsViewModel, context: Context) {
     if (viewModel.userSingleChoiceTextClickableItemsItems.value.isEmpty())
         viewModel.userSingleChoiceTextClickableItemsItems.value.apply {
-            add(SingleChoiceTextClickableItem(
-                title = context.getString(R.string.backup_user),
-                subtitle = context.getString(R.string.settings_backup_user_subtitle),
-                iconId = R.drawable.ic_round_person,
-                content = context.readBackupUser(),
-                onPrepare = {
-                    val users = RootService.getInstance().getUsers(
-                        excludePartial = true,
-                        excludeDying = false,
-                        excludePreCreated = true
-                    )
-                    var items = users.map { "${it.id}: ${it.name}" }.toMutableList()
-                    val idItems = users.map { "${it.id}" }.toMutableList()
-
-                    // 加入备份目录用户集
-                    val backupUsers = Command.listBackupUsers()
-                    for (i in backupUsers) {
-                        if (i !in idItems) {
-                            items.add("${i}: ${context.getString(R.string.backup_dir)}")
-                            idItems.add(i)
+            add(
+                SingleChoiceTextClickableItem(
+                    title = context.getString(R.string.backup_user),
+                    subtitle = context.getString(R.string.settings_backup_user_subtitle),
+                    iconId = R.drawable.ic_round_person,
+                    content = context.readBackupUser(),
+                    onPrepare = { onBackupUserPrepare(context) },
+                    onConfirm = {
+                        GlobalObject.getInstance().appInfoBackupMap.value.clear()
+                        GlobalObject.getInstance().appInfoRestoreMap.value.clear()
+                        try {
+                            context.saveBackupUser(it.split(":")[0])
+                        } catch (_: Exception) {
                         }
                     }
-
-                    val defValue = try {
-                        items[idItems.indexOf(context.readBackupUser())]
-                    } catch (_: Exception) {
-                        ""
+                ))
+            add(
+                SingleChoiceTextClickableItem(
+                    title = context.getString(R.string.restore_user),
+                    subtitle = context.getString(R.string.settings_restore_user_subtitle),
+                    iconId = R.drawable.ic_round_iphone,
+                    content = context.readRestoreUser(),
+                    onPrepare = { onRestoreUserPrepare(context) },
+                    onConfirm = {
+                        try {
+                            context.saveRestoreUser(it.split(":")[0])
+                        } catch (_: Exception) {
+                        }
                     }
-
-                    // 去重排序
-                    items = items.toSortedSet().toMutableList()
-                    Pair(items, defValue)
-                },
-                onConfirm = {
-                    GlobalObject.getInstance().appInfoBackupMap.value.clear()
-                    GlobalObject.getInstance().appInfoRestoreMap.value.clear()
-                    try {
-                        context.saveBackupUser(it.split(":")[0])
-                    } catch (_: Exception) {
-                    }
-                }
-            ))
-            add(SingleChoiceTextClickableItem(
-                title = context.getString(R.string.restore_user),
-                subtitle = context.getString(R.string.settings_restore_user_subtitle),
-                iconId = R.drawable.ic_round_iphone,
-                content = context.readRestoreUser(),
-                onPrepare = {
-                    val users = RootService.getInstance().getUsers(
-                        excludePartial = true,
-                        excludeDying = false,
-                        excludePreCreated = true
-                    )
-                    val items = users.map { "${it.id}: ${it.name}" }.toMutableList()
-                    val idItems = users.map { "${it.id}" }.toMutableList()
-
-                    val defValue = try {
-                        items[idItems.indexOf(context.readRestoreUser())]
-                    } catch (_: Exception) {
-                        ""
-                    }
-
-                    Pair(items, defValue)
-                },
-                onConfirm = {
-                    try {
-                        context.saveRestoreUser(it.split(":")[0])
-                    } catch (_: Exception) {
-                    }
-                }
-            ))
+                ))
         }
 }
 

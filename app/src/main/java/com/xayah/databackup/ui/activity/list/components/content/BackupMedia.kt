@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -29,6 +30,8 @@ import com.xayah.databackup.ui.activity.list.components.manifest.contentManifest
 import com.xayah.databackup.ui.activity.list.components.menu.ListBottomSheet
 import com.xayah.databackup.ui.activity.list.components.menu.item.FilterItem
 import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopActionButton
+import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBackupUserButton
+import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopRestoreUserButton
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.ui.components.SearchBar
 import com.xayah.databackup.util.*
@@ -208,6 +211,7 @@ fun MediaBackupBottomSheet(
     context: Context,
     explorer: MaterialYouFileExplorer
 ) {
+    val scope = rememberCoroutineScope()
     ListBottomSheet(
         isOpen = isOpen,
         actions = {
@@ -235,6 +239,14 @@ fun MediaBackupBottomSheet(
                     }
                     selectAll = selectAll.not()
                 }
+            }
+            item {
+                MenuTopBackupUserButton(viewModel = viewModel) {
+                    onMediaBackupInitialize(viewModel)
+                }
+            }
+            item {
+                MenuTopRestoreUserButton(viewModel = viewModel)
             }
         },
         content = {

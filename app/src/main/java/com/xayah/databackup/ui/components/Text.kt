@@ -76,12 +76,14 @@ fun BodySmallText(
 
 @Composable
 fun BodyMediumText(
-    text: String,
     modifier: Modifier = Modifier,
+    text: String,
+    bold: Boolean = false,
 ) {
     Text(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodyMedium,
+        fontWeight = if (bold) FontWeight.Bold else null,
     )
 }
