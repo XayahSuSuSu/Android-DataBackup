@@ -23,7 +23,7 @@ android {
         }
     }
 
-    flavorDimensions "common"
+    flavorDimensions "common", "feature"
     productFlavors {
         "arm64-v8a" {
             dimension "common"
@@ -36,6 +36,12 @@ android {
         }
         "x86_64" {
             dimension "common"
+        }
+        "foss" {
+            dimension "feature"
+        }
+        "premium" {
+            dimension "feature"
         }
     }
 
@@ -74,7 +80,7 @@ android {
     android.applicationVariants.all {
         variant ->
             variant.outputs.all {
-                outputFileName = "DataBackup-${variant.versionName}-${variant.productFlavors[0].name}-${variant.buildType.name}.apk".replaceAll("\\*", "")
+                outputFileName = "DataBackup-${variant.versionName}-${variant.productFlavors[0].name}-${variant.productFlavors[1].name}-${variant.buildType.name}.apk".replaceAll("\\*", "")
             }
     }
 }
@@ -150,7 +156,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-drawablepainter:$accompanistVersion"
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:31.2.2')
-    implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    "premiumImplementation" platform('com.google.firebase:firebase-bom:31.2.2')
+    "premiumImplementation" 'com.google.firebase:firebase-analytics-ktx'
+    "premiumImplementation" 'com.google.firebase:firebase-crashlytics-ktx'
 }
