@@ -32,7 +32,9 @@ The script has been **widely acclaimed** since the author made it. This app was 
 </div>
 
 ## Download
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
+[<img src="https://static.coolapk.com/static/web/v8/images/header-logo.png"
+     alt="Get it on coolapk"
+     height="80">](https://www.coolapk.com/apk/com.xayah.databackup)[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
      alt="Get it on IzzyOnDroid"
      height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.xayah.databackup)
 
