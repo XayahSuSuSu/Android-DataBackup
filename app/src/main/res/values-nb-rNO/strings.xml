@@ -1,2 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="application">Program</string>
+    <string name="data">Data</string>
+    <string name="restore_finished">Gjenoppretting fullført</string>
+    <string name="backup_dir">Sikkerhetskopieringsmappe</string>
+    <string name="compression_type">Sammenpakkingstype</string>
+    <string name="cancel">Avbryt</string>
+    <string name="success">Vellykket</string>
+    <string name="backup_processing">Sikkerhetskopibehandling</string>
+    <string name="restore_processing">Gjenopprettingsbehandling</string>
+    <string name="compress">Pakk sammen</string>
+    <string name="decompress">Pakk ut</string>
+    <string name="environment_detection">Miljøoppdagelse</string>
+    <string name="selected">Valgt</string>
+    <string name="backup_user">Sikkerhetskopier bruker</string>
+    <string name="restore_user">Gjenopprett bruker</string>
+    <string name="failed">Mislykket</string>
+    <string name="grant_root_access">Innvilg rot-tilgang</string>
+    <string name="finish">Fullfør</string>
+    <string name="internal_storage">Internlagring</string>
+    <string name="support">Støtte</string>
+    <string name="unsupported_format">Ustøttet format</string>
+    <string name="user">Bruker</string>
+    <string name="size">Størrelse</string>
+    <string name="progress">Framdrift</string>
+    <string name="backup">Sikkerhetskopier</string>
+    <string name="confirm">Bekreft</string>
+    <string name="backup_finished">Sikkerhetskopi utført</string>
+    <string name="tips">Tips</string>
+    <string name="app_name">DataBackup</string>
+    <string name="restore">Gjenopprett</string>
+    <string name="media">Media</string>
+    <string name="error">Feil</string>
+    <string name="speed">Hastighet</string>
+</resources>
