@@ -318,7 +318,13 @@ fun onRestoreAppProcessing(
                 if (viewModel.isCancel.value) break
 
                 i.apply {
-                    this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
+                    if (isSuccess) {
+                        if (appInfoRestore.selectApp.value) appInfoRestore.selectApp.value = false
+                        if (appInfoRestore.selectData.value) appInfoRestore.selectData.value = false
+                        this.taskState.value = TaskState.Success
+                    } else {
+                        this.taskState.value = TaskState.Failed
+                    }
                     val list = mutableListOf<ProcessObjectItem>()
                     for (j in objectList) {
                         list.add(
@@ -340,6 +346,8 @@ fun onRestoreAppProcessing(
 
             }
 
+            GsonUtil.saveAppInfoRestoreMapToFile(globalObject.appInfoRestoreMap.value)
+            Logcat.getInstance().actionLogAddLine(tag, "Save global map.")
             topBarTitle.value = "${context.getString(R.string.restore_finished)}!"
             allDone.targetState = true
             Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
