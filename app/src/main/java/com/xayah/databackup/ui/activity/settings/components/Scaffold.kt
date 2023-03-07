@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.xayah.databackup.App
@@ -46,6 +47,7 @@ fun SettingsScaffold(
     onFinish: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -65,7 +67,7 @@ fun SettingsScaffold(
         topPaddingRate = 1,
         content = {
             // 应用
-            appItems(viewModel = viewModel, context = context, explorer = explorer)
+            appItems(viewModel = viewModel, context = context, scope = scope, explorer = explorer)
 
             // 用户
             userItems(list = viewModel.userSingleChoiceTextClickableItemsItems.value)

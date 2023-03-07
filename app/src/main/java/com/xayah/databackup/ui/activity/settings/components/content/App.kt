@@ -22,6 +22,8 @@ import com.xayah.databackup.ui.activity.settings.components.clickable.*
 import com.xayah.databackup.ui.activity.settings.components.onSetBackupSavePath
 import com.xayah.databackup.util.*
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
     if (viewModel.newestVersion.value.isEmpty() || viewModel.newestVersionLink.value.isEmpty()) {
@@ -50,6 +52,7 @@ suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
 fun LazyListScope.appItems(
     viewModel: SettingsViewModel,
     context: Context,
+    scope: CoroutineScope,
     explorer: MaterialYouFileExplorer
 ) {
     item {
@@ -207,7 +210,6 @@ fun LazyListScope.appItems(
                 DescItem(
                     title = stringResource(id = R.string.stable),
                     subtitle = stringResource(id = R.string.stable_subtitle),
-                    enabled = false
                 ),
                 DescItem(
                     title = stringResource(id = R.string.test),
@@ -229,6 +231,9 @@ fun LazyListScope.appItems(
             onConfirm = { value ->
                 try {
                     context.saveUpdateChannel(enumItems[items.indexOf(value)])
+                    scope.launch {
+                        onAppInitialize(viewModel, context)
+                    }
                 } catch (e: Exception) {
                     context.saveUpdateChannel(UpdateChannel.Stable)
                 }
