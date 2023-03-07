@@ -32,7 +32,7 @@ class GuideViewModel : ViewModel() {
 
     val loadingState: MutableState<LoadingState> = mutableStateOf(LoadingState.Loading)
     val updateList by lazy {
-        MutableStateFlow(SnapshotStateList<ItemUpdate>())
+        mutableStateOf(listOf<ItemUpdate>())
     }
 
     val isPermissionDialogOpen: MutableState<Boolean> = mutableStateOf(false)
@@ -55,12 +55,12 @@ class GuideViewModel : ViewModel() {
 
     suspend fun getUpdateList(onSuccess: () -> Unit, onFailed: () -> Unit) {
         mutex.withLock {
-            updateList.value.clear()
             Server.getInstance().releases(
                 successCallback = { releaseList ->
-                    val mReleaseList = releaseList.appReleaseList()
-                    for (i in mReleaseList) {
-                        updateList.value.add(
+                    val appReleaseList = releaseList.appReleaseList()
+                    val itemUpdateList = mutableListOf<ItemUpdate>()
+                    for (i in appReleaseList) {
+                        itemUpdateList.add(
                             ItemUpdate(
                                 i.name,
                                 i.body.replace("* ", "").replace("*", ""),
@@ -68,6 +68,7 @@ class GuideViewModel : ViewModel() {
                             )
                         )
                     }
+                    updateList.value = itemUpdateList
                     onSuccess()
                 },
                 failedCallback = onFailed

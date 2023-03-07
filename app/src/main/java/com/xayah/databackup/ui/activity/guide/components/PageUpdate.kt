@@ -7,7 +7,6 @@ import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.GuideType
@@ -20,7 +19,7 @@ import com.xayah.databackup.ui.components.LoadingView
 @Composable
 fun PageUpdate(viewModel: GuideViewModel) {
     val loadingState = viewModel.loadingState
-    val updateList = viewModel.updateList.collectAsState()
+    val updateList = viewModel.updateList
     LaunchedEffect(null) {
         if (updateList.value.isEmpty()) {
             viewModel.getUpdateList(

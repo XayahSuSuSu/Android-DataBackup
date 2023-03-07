@@ -54,26 +54,19 @@ class Server {
                     .url(releasesApi)
                     .build()
                 client.newCall(request).execute().use { response ->
-                    response.body?.apply {
-                        // 解析response.body
-                        try {
-                            val jsonArray = JsonParser.parseString(this.string()).asJsonArray
-                            val mReleaseList = mutableListOf<Release>()
-                            for (i in jsonArray) {
-                                try {
-                                    val item = Gson().fromJson(i, Release::class.java)
-                                    mReleaseList.add(item)
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                    failedCallback()
-                                }
-                            }
-                            successCallback(mReleaseList)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            failedCallback()
-                        }
+                    val content = response.body!!.string()
+                    response.apply {
+                        body?.close()
+                        close()
                     }
+                    // 解析response.body
+                    val jsonArray = JsonParser.parseString(content).asJsonArray
+                    val mReleaseList = mutableListOf<Release>()
+                    for (i in jsonArray) {
+                        val item = Gson().fromJson(i, Release::class.java)
+                        mReleaseList.add(item)
+                    }
+                    successCallback(mReleaseList)
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
