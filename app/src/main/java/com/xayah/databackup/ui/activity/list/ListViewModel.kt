@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.list
 
 import android.content.Context
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.App
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class ListViewModel : ViewModel() {
     val isInitialized by lazy { MutableTransitionState(false) }
+    val progress by lazy { mutableStateOf(0f) }
     val onManifest by lazy { MutableStateFlow(false) }
 
     // 搜索

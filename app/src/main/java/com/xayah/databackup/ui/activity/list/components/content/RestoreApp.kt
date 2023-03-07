@@ -61,7 +61,9 @@ fun LazyListScope.contentAppRestore(
 
 suspend fun onAppRestoreInitialize(viewModel: ListViewModel) {
     if (GlobalObject.getInstance().appInfoRestoreMap.value.isEmpty()) {
-        GlobalObject.getInstance().appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
+        GlobalObject.getInstance().appInfoRestoreMap.emit(Command.getAppInfoRestoreMap {
+            viewModel.progress.value = it
+        })
     }
     if (viewModel.appRestoreList.value.isEmpty()) {
         refreshAppRestoreList(viewModel)

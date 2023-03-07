@@ -61,7 +61,9 @@ fun LazyListScope.contentRestoreBackup(
 
 suspend fun onMediaBackupInitialize(viewModel: ListViewModel) {
     if (GlobalObject.getInstance().mediaInfoBackupMap.value.isEmpty()) {
-        GlobalObject.getInstance().mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap())
+        GlobalObject.getInstance().mediaInfoBackupMap.emit(Command.getMediaInfoBackupMap {
+            viewModel.progress.value = it
+        })
     }
     if (viewModel.mediaBackupList.value.isEmpty()) {
         refreshMediaBackupList(viewModel)

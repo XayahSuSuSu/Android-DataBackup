@@ -21,6 +21,7 @@ import com.xayah.databackup.ui.components.animation.ContentFade
 @Composable
 fun ListScaffold(
     isInitialized: MutableTransitionState<Boolean>,
+    progress: Float,
     topBarTitle: String,
     onManifest: Boolean,
     actions: @Composable (RowScope.() -> Unit) = {},
@@ -69,6 +70,7 @@ fun ListScaffold(
         },
         topPaddingRate = 1,
         isInitialized = isInitialized,
+        progress = progress,
         content = {
             content(this)
         }

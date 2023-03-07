@@ -61,7 +61,9 @@ fun LazyListScope.contentAppBackup(
 
 suspend fun onAppBackupInitialize(viewModel: ListViewModel) {
     if (GlobalObject.getInstance().appInfoBackupMap.value.isEmpty()) {
-        GlobalObject.getInstance().appInfoBackupMap.emit(Command.getAppInfoBackupMap())
+        GlobalObject.getInstance().appInfoBackupMap.emit(Command.getAppInfoBackupMap {
+            viewModel.progress.value = it
+        })
     }
     if (viewModel.appBackupList.value.isEmpty()) {
         refreshAppBackupList(viewModel)

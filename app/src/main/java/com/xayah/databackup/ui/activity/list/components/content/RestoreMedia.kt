@@ -56,7 +56,9 @@ fun LazyListScope.contentMediaRestore(
 
 suspend fun onMediaRestoreInitialize(viewModel: ListViewModel) {
     if (GlobalObject.getInstance().mediaInfoRestoreMap.value.isEmpty()) {
-        GlobalObject.getInstance().mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap())
+        GlobalObject.getInstance().mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap {
+            viewModel.progress.value = it
+        })
     }
     if (viewModel.mediaRestoreList.value.isEmpty()) {
         refreshMediaRestoreList(viewModel)

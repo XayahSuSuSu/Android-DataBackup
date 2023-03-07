@@ -79,9 +79,11 @@ class ListActivity : ComponentActivity() {
                 }
 
                 val isInitialized = viewModel.isInitialized
+                val progress = viewModel.progress
                 val onManifest by viewModel.onManifest.collectAsState()
                 ListScaffold(
                     isInitialized = isInitialized,
+                    progress = progress.value,
                     topBarTitle = when (type) {
                         TypeBackupApp -> {
                             stringResource(R.string.select_backup_app)

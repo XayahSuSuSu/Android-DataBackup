@@ -102,7 +102,7 @@ class Command {
         /**
          * 构建应用备份哈希表
          */
-        suspend fun getAppInfoBackupMap(): AppInfoBackupMap {
+        suspend fun getAppInfoBackupMap(onProgress: (Float) -> Unit = {}): AppInfoBackupMap {
             var appInfoBackupMap: AppInfoBackupMap = hashMapOf()
 
             runOnIO {
@@ -128,7 +128,8 @@ class Command {
                 ) {
                     packages.addAll(tmp)
                 }
-                for (i in packages) {
+                val packagesSize = packages.size
+                for ((index, i) in packages.withIndex()) {
                     try {
                         // 自身或非指定用户应用
                         if (i.packageName == App.globalContext.packageName) continue
@@ -174,6 +175,7 @@ class Command {
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
+                    onProgress((index + 1).toFloat() / packagesSize)
                 }
 
                 // 黑名单应用
@@ -202,7 +204,7 @@ class Command {
         /**
          * 构建应用恢复哈希表
          */
-        suspend fun getAppInfoRestoreMap(): AppInfoRestoreMap {
+        suspend fun getAppInfoRestoreMap(onProgress: (Float) -> Unit = {}): AppInfoRestoreMap {
             var appInfoRestoreMap: AppInfoRestoreMap = hashMapOf()
 
             runOnIO {
@@ -220,6 +222,7 @@ class Command {
                         var detailRestoreList = mutableListOf<AppInfoDetailRestore>()
                         var hasApp = false
                         var hasData = false
+                        val outSize = this.out.size
                         for ((index, i) in this.out.withIndex()) {
                             try {
                                 if (index < this.out.size - 1) {
@@ -292,6 +295,7 @@ class Command {
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
+                            onProgress((index + 1).toFloat() / outSize)
                         }
                     }
                 }
@@ -317,7 +321,7 @@ class Command {
         /**
          * 构建媒体备份哈希表
          */
-        suspend fun getMediaInfoBackupMap(): MediaInfoBackupMap {
+        suspend fun getMediaInfoBackupMap(onProgress: (Float) -> Unit = {}): MediaInfoBackupMap {
             var mediaInfoBackupMap: MediaInfoBackupMap = hashMapOf()
 
             runOnIO {
@@ -348,8 +352,10 @@ class Command {
                     }
                 }
 
-                for (i in mediaInfoBackupMap.values) {
+                val mediaInfoBackupSize = mediaInfoBackupMap.values.size
+                for ((index, i) in mediaInfoBackupMap.values.withIndex()) {
                     i.storageStats.dataBytes = RootService.getInstance().countSize(i.path)
+                    onProgress((index + 1).toFloat() / mediaInfoBackupSize)
                 }
             }
             return mediaInfoBackupMap
@@ -358,7 +364,7 @@ class Command {
         /**
          * 构建媒体恢复哈希表
          */
-        suspend fun getMediaInfoRestoreMap(): MediaInfoRestoreMap {
+        suspend fun getMediaInfoRestoreMap(onProgress: (Float) -> Unit = {}): MediaInfoRestoreMap {
             var mediaInfoRestoreMap: MediaInfoRestoreMap = hashMapOf()
 
             runOnIO {
@@ -375,6 +381,8 @@ class Command {
                         var mediaInfoRestore = MediaInfoRestore()
                         var detailRestoreList = mutableListOf<MediaInfoDetailBase>()
                         var hasData = false
+
+                        val outSize = this.out.size
                         for ((index, i) in this.out.withIndex()) {
                             try {
                                 if (index < this.out.size - 1) {
@@ -432,6 +440,7 @@ class Command {
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
+                            onProgress((index + 1).toFloat() / outSize)
                         }
                     }
                 }
