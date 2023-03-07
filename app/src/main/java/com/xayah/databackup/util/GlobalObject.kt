@@ -1,9 +1,12 @@
 package com.xayah.databackup.util
 
+import com.xayah.databackup.App
 import com.xayah.databackup.data.AppInfoBackupMap
 import com.xayah.databackup.data.AppInfoRestoreMap
 import com.xayah.databackup.data.MediaInfoBackupMap
 import com.xayah.databackup.data.MediaInfoRestoreMap
+import com.xayah.databackup.ui.activity.settings.components.initializeBackupDirectory
+import com.xayah.librootservice.RootService
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class GlobalObject {
@@ -15,6 +18,19 @@ class GlobalObject {
         fun getInstance() = Instance.instance
 
         const val defaultUserId = "0"
+
+        fun initializeRootService(onInitialize: () -> Unit) {
+            // Check initialization of ipc
+            if (RootService.getInstance().isInitialize()) {
+                onInitialize()
+            } else {
+                RootService.getInstance().initialize(App.globalContext) {
+                    initializeBackupDirectory()
+                    Logcat.getInstance().init()
+                    onInitialize()
+                }
+            }
+        }
     }
 
     // 应用备份哈希表

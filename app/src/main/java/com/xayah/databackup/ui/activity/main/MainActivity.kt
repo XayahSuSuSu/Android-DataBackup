@@ -8,13 +8,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.ui.activity.main.components.MainScaffold
-import com.xayah.databackup.ui.activity.settings.components.initializeBackupDirectory
 import com.xayah.databackup.ui.theme.DataBackupTheme
-import com.xayah.databackup.util.Logcat
+import com.xayah.databackup.util.GlobalObject
 import com.xayah.librootservice.RootService
-import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -26,12 +23,9 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.viewModelScope.launch {
-            RootService.getInstance().initialize(this@MainActivity) {
-                initializeBackupDirectory()
-                Logcat.getInstance().init()
-                viewModel.isRemoteFileInitialized.targetState = true
-            }
+
+        GlobalObject.initializeRootService {
+            viewModel.isRemoteFileInitialized.targetState = true
         }
 
         setContent {

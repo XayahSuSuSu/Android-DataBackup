@@ -35,15 +35,7 @@ class ProcessingActivity : ComponentActivity() {
      */
     private val globalObject = GlobalObject.getInstance()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        val viewModel = ViewModelProvider(this)[ProcessingViewModel::class.java]
-        viewModel.listType = intent.getStringExtra(TypeActivityTag) ?: TypeBackupApp
-        val type = viewModel.listType
-        val that = this
-
+    private fun onProcessing(viewModel: ProcessingViewModel, type: String) {
         when (type) {
             TypeBackupApp -> {
                 onBackupAppProcessing(
@@ -73,6 +65,20 @@ class ProcessingActivity : ComponentActivity() {
                     globalObject = globalObject
                 )
             }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        val viewModel = ViewModelProvider(this)[ProcessingViewModel::class.java]
+        viewModel.listType = intent.getStringExtra(TypeActivityTag) ?: TypeBackupApp
+        val type = viewModel.listType
+        val that = this
+
+        GlobalObject.initializeRootService {
+            onProcessing(viewModel, type)
         }
 
         setContent {

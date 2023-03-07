@@ -22,6 +22,10 @@ class RootService {
     private lateinit var ipc: IRemoteRootService
     private lateinit var connection: RemoteRootServiceConnection
 
+    fun isInitialize(): Boolean {
+        return this::connection.isInitialized
+    }
+
     /**
      * 初始化Service
      */
@@ -40,7 +44,7 @@ class RootService {
      * 取消绑定Service
      */
     fun destroy() {
-        if (this::connection.isInitialized)
+        if (isInitialize())
             RootService.unbind(connection)
     }
 

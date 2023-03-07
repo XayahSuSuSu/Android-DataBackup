@@ -20,6 +20,7 @@ import com.xayah.databackup.ui.activity.list.components.ListScaffold
 import com.xayah.databackup.ui.activity.list.components.content.*
 import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
+import com.xayah.databackup.util.GlobalObject
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +33,23 @@ class ListActivity : ComponentActivity() {
     private lateinit var viewModel: ListViewModel
     private lateinit var type: String
     private lateinit var explorer: MaterialYouFileExplorer
+
+    private suspend fun onInitialize() {
+        when (type) {
+            TypeBackupApp -> {
+                onAppBackupInitialize(viewModel)
+            }
+            TypeBackupMedia -> {
+                onMediaBackupInitialize(viewModel)
+            }
+            TypeRestoreApp -> {
+                onAppRestoreInitialize(viewModel)
+            }
+            TypeRestoreMedia -> {
+                onMediaRestoreInitialize(viewModel)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,19 +69,11 @@ class ListActivity : ComponentActivity() {
         type = intent.getStringExtra(TypeActivityTag) ?: TypeBackupApp
         setContent {
             DataBackupTheme {
+                val scope = rememberCoroutineScope()
                 LaunchedEffect(null) {
-                    when (type) {
-                        TypeBackupApp -> {
-                            onAppBackupInitialize(viewModel)
-                        }
-                        TypeBackupMedia -> {
-                            onMediaBackupInitialize(viewModel)
-                        }
-                        TypeRestoreApp -> {
-                            onAppRestoreInitialize(viewModel)
-                        }
-                        TypeRestoreMedia -> {
-                            onMediaRestoreInitialize(viewModel)
+                    GlobalObject.initializeRootService {
+                        scope.launch {
+                            onInitialize()
                         }
                     }
                 }
