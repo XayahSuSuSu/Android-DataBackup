@@ -55,7 +55,7 @@
     <string name="symbol_exclamation">!</string>
     <string name="remove_failed">Remove failed</string>
     <string name="start">Start</string>
-    <string name="app_retrieved">The retrieved app</string>
+    <string name="app_name_is_missing">App name is missing</string>
     <string name="confirm_remove_all_app_and_data_that_backed_up">Sure to remove all apps and data that backed up</string>
     <string name="please_wait">Please wait</string>
     <string name="log">Log</string>

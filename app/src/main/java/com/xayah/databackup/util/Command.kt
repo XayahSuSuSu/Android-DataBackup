@@ -257,7 +257,7 @@ class Command {
                                                 appInfoRestoreMap[packageName] =
                                                     AppInfoRestore().apply {
                                                         this.detailBase.appName =
-                                                            GlobalString.appRetrieved
+                                                            GlobalString.appNameIsMissing
                                                     }
                                             }
                                             appInfoRestore = appInfoRestoreMap[packageName]!!

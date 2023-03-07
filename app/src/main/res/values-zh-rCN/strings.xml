@@ -48,7 +48,7 @@
     <string name="symbol_exclamation">！</string>
     <string name="remove_failed">移除失败</string>
     <string name="start">开始</string>
-    <string name="app_retrieved">被寻回的应用</string>
+    <string name="app_name_is_missing">应用名称丢失</string>
     <string name="confirm_remove_all_app_and_data_that_backed_up">确定要移除所有已备份的应用和数据吗</string>
     <string name="please_wait">请稍等</string>
     <string name="log">日志</string>

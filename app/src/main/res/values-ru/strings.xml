@@ -48,7 +48,7 @@
     <string name="symbol_exclamation">!</string>
     <string name="remove_failed">Сбой удаления</string>
     <string name="start">Начать</string>
-    <string name="app_retrieved">The retrieved app</string>
+    <string name="app_name_is_missing">App name is missing</string>
     <string name="confirm_remove_all_app_and_data_that_backed_up">Удаление всех приложений и данных бекапа. Вы уверены?</string>
     <string name="please_wait">Ожидайте</string>
     <string name="log">Log</string>

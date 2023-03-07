@@ -22,7 +22,7 @@ class GlobalString {
         val ready = App.globalContext.getString(R.string.ready)
         val restore = App.globalContext.getString(R.string.restore)
         val user = App.globalContext.getString(R.string.user)
-        val appRetrieved = App.globalContext.getString(R.string.app_retrieved)
+        val appNameIsMissing = App.globalContext.getString(R.string.app_name_is_missing)
         val pleaseWait = App.globalContext.getString(R.string.please_wait)
         val size = App.globalContext.getString(R.string.size)
         val create = App.globalContext.getString(R.string.create)
