@@ -270,7 +270,7 @@ fun LazyListScope.appItems(
             context.startActivity(intent)
         }
         IconButtonClickable(
-            title = stringResource(id = R.string.opensource_link),
+            title = stringResource(id = R.string.link),
             subtitle = stringResource(id = R.string.project_github_link),
             icon = ImageVector.vectorResource(id = R.drawable.logo_github),
             iconButton = ImageVector.vectorResource(id = R.drawable.ic_round_link),

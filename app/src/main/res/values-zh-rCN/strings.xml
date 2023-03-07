@@ -136,7 +136,7 @@
     <string name="add">添加</string>
     <string name="select_all">全选</string>
     <string name="none">无</string>
-    <string name="opensource_link">开源地址</string>
+    <string name="link">地址</string>
     <string name="stable">稳定</string>
     <string name="test">测试</string>
     <string name="update_channel">更新通道</string>

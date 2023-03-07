@@ -148,7 +148,7 @@
     <string name="add">Add</string>
     <string name="select_all">Select all</string>
     <string name="none">None</string>
-    <string name="opensource_link">Open source link</string>
+    <string name="link">Link</string>
     <string name="project_github_link" translatable="false">https://github.com/XayahSuSuSu/Android-DataBackup</string>
     <string name="stable">Stable</string>
     <string name="test">Test</string>

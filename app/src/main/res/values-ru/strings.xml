@@ -136,7 +136,7 @@
     <string name="add">Добавить</string>
     <string name="select_all">Выбрать все</string>
     <string name="none">Ни одного</string>
-    <string name="opensource_link">Ссылка на открытый исходный код</string>
+    <string name="link">Связь</string>
     <string name="stable">Стабильный</string>
     <string name="test">Тестовый</string>
     <string name="update_channel">Канал обновлений</string>

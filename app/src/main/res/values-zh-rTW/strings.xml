@@ -136,7 +136,7 @@
     <string name="add">增加</string>
     <string name="select_all">全選</string>
     <string name="none">無</string>
-    <string name="opensource_link">開源網址</string>
+    <string name="link">網址</string>
     <string name="stable">穩定</string>
     <string name="test">測試</string>
     <string name="update_channel">更新頻道</string>

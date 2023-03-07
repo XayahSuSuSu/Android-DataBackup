@@ -136,7 +136,7 @@
     <string name="add">Додати</string>
     <string name="select_all">Вибрати всі</string>
     <string name="none">Жодного</string>
-    <string name="opensource_link">Посилання на відкритий вихідний код</string>
+    <string name="link">Посилання</string>
     <string name="stable">Стабільний</string>
     <string name="test">Тестовий</string>
     <string name="update_channel">Канал оновлень</string>
