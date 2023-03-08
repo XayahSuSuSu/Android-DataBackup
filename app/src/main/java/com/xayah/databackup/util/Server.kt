@@ -68,7 +68,7 @@ class Server {
                     }
                     successCallback(mReleaseList)
                 }
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 e.printStackTrace()
                 failedCallback()
             }
