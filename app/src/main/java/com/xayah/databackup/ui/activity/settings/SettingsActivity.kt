@@ -27,6 +27,7 @@ class SettingsActivity : ComponentActivity() {
             onUserInitialize(viewModel, this@SettingsActivity)
             onBackupInitialize(viewModel, this@SettingsActivity)
             onRestoreInitialize(viewModel, this@SettingsActivity)
+            viewModel.isInitialized.targetState = true
         }
     }
 
@@ -45,7 +46,12 @@ class SettingsActivity : ComponentActivity() {
         }
         setContent {
             DataBackupTheme {
-                SettingsScaffold(viewModel, explorer) { finish() }
+                val isInitialized = viewModel.isInitialized
+                SettingsScaffold(
+                    isInitialized = isInitialized,
+                    viewModel = viewModel,
+                    explorer = explorer
+                ) { finish() }
             }
         }
     }

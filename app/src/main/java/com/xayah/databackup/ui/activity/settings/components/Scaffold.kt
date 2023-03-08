@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.settings.components
 
 import android.content.Context
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -42,6 +43,7 @@ fun initializeBackupDirectory() {
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScaffold(
+    isInitialized: MutableTransitionState<Boolean>,
     viewModel: SettingsViewModel,
     explorer: MaterialYouFileExplorer,
     onFinish: () -> Unit
@@ -65,6 +67,7 @@ fun SettingsScaffold(
             )
         },
         topPaddingRate = 1,
+        isInitialized = isInitialized,
         content = {
             // 应用
             appItems(viewModel = viewModel, context = context, scope = scope, explorer = explorer)
