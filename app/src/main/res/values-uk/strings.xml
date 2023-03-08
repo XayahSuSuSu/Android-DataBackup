@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DataBackup</string>
     <string name="backup">Бекап</string>
@@ -20,7 +21,7 @@
     <string name="environment_detection">Виявлення середовища</string>
     <string name="selected">Вибрано</string>
     <string name="backup_user">Користувач бекапу</string>
-    <string name="compression_type_help">Виберіть тип стиснення додатків та даних, який впливає як на створення бекапу, так і на відновлення. Якщо ви не знаєте, навіщо потрібен цей параметр, не змінюйте його.</string>
+    <string name="compression_type_help">Виберіть тип стиснення застосунків та даних, який впливає як на створення бекапу, так і на відновлення. Якщо ви не знаєте, навіщо потрібен цей параметр, не змінюйте його</string>
     <string name="restore_user">Відновлення користувача</string>
     <string name="failed">Збої</string>
     <string name="grant_root_access">Надання root</string>
@@ -28,7 +29,7 @@
     <string name="activate_bashrc">Активація bashrc</string>
     <string name="finish">Готово</string>
     <string name="welcome_to_use">Ласкаво просимо</string>
-    <string name="start_subtitle">Згідно з діючою політикою, вам необхідно уважно прочитати і погодитися з наступною Угодою користувача та Політикою конфіденційності, перш ніж ви почнете використовувати цю програму.</string>
+    <string name="start_subtitle">Згідно з діючою політикою, вам необхідно уважно прочитати і погодитися з наступною Угодою користувача та Політикою конфіденційності, перш ніж ви почнете використовувати цей застосунок</string>
     <string name="internal_storage">Внутрішня память</string>
     <string name="support">Підтримка</string>
     <string name="fetch_failed">Не вдалось отримати</string>
@@ -48,17 +49,17 @@
     <string name="symbol_exclamation">!</string>
     <string name="remove_failed">Збій видалення</string>
     <string name="start">Почати</string>
-    <string name="app_name_is_missing">App name is missing</string>
-    <string name="confirm_remove_all_app_and_data_that_backed_up">Видалення всіх додатків та даних бекапа. Ви впевнені?</string>
+    <string name="app_name_is_missing">Ім\'я застосунку відсутнє</string>
+    <string name="confirm_remove_all_app_and_data_that_backed_up">Видалення всіх застосунків та даних бекапа. Ви впевнені\?</string>
     <string name="please_wait">Очікуйте</string>
     <string name="log">Log</string>
     <string name="settings">Налаштування</string>
     <string name="stored_in">Зберігається в </string>
     <string name="dynamic_colors">Динамічні кольори</string>
-    <string name="dynamic_colors_title">Поліпшений Material You. Перезапустіть, щоб застосувати.</string>
+    <string name="dynamic_colors_title">Поліпшений Material You. Перезапустіть, щоб застосувати</string>
     <string name="bin_permission_error">Неправильні права доступу до файлів, надайте їх вручну [777]</string>
     <string name="backup_itself">Бекап DataBackup</string>
-    <string name="backup_itself_title">Під час створення бекапа DataBackup автоматично створює резервну копію власного інсталяційного пакета в теці бекапів.</string>
+    <string name="backup_itself_title">Під час створення бекапа DataBackup автоматично створює резервну копію власного інсталяційного пакета до каталогу бекапів</string>
     <string name="auto_fix_multi_user_context">Виправлення контексту</string>
     <string name="auto_fix_multi_user_context_title">Автоматичне виправлення багатокористувацького контексту, перезавантаження відновлених багатокористувацьких програм не потрібне</string>
     <string name="backup_dir_not_exist">Тека не існує. Створити, використовуючи шлях за замовчуванням?</string>
@@ -70,7 +71,7 @@
     <string name="not_selected">Не вибрано</string>
     <string name="all">Усі</string>
     <string name="backup_icon">Бекап  іконок</string>
-    <string name="backup_icon_title">Бекап іконок при створенні бекапа додатків. Використовується для відображення під час відновлення.</string>
+    <string name="backup_icon_title">Бекап іконок при створенні бекапа застосунків. Використовується для відображення під час відновлення</string>
     <string name="clickTheRightBtnToStart">Натисніть кнопку справа, щоб почати</string>
     <string name="clickTheRightBtnToFinish">Натисніть кнопку справа, щоб завершити</string>
     <string name="alphabet">За абеткою</string>
@@ -78,7 +79,7 @@
     <string name="sort">Сортування</string>
     <string name="filter">Фільтр</string>
     <string name="backup_strategy">Стратегія створення бекапа</string>
-    <string name="cover">Cover</string>
+    <string name="cover">Покриття</string>
     <string name="cover_desc">Перезапис наявних файли бекапа під час кожного створення бекапа, або пропускайте створення бекапа, якщо немає змін, щоб, незважаючи ні на що, існувала лише одна копія ваших даних</string>
     <string name="by_time">За часом</string>
     <string name="by_time_desc">Кожен бекап вважається новою повною резервною копією та розділений відповідно до часу створення бекапу, тому ваші дані можуть існувати в кількох копіях</string>
@@ -155,9 +156,9 @@
     <string name="warning">Попередження</string>
     <string name="type">Тип</string>
     <string name="compatible_mode">Режим сумісності</string>
-    <string name="compatible_mode_subtitle">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
-    <string name="installed">Installed</string>
-    <string name="not_installed">Not installed</string>
-    <string name="retry">Retry</string>
-    <string name="succeed">Succeed</string>
+    <string name="compatible_mode_subtitle">Використовуйте трубу замість параметра для введення tar. Перемикайте його, коли він говорить \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Неможливо виконати: Такого файла або каталогу немає\"</string>
+    <string name="installed">Встановлено</string>
+    <string name="not_installed">Не встановлено</string>
+    <string name="retry">Повторити</string>
+    <string name="succeed">Успішно</string>
 </resources>
