@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.ui.activity.main.components.MainScaffold
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.GlobalObject
-import com.xayah.librootservice.RootService
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -33,10 +32,5 @@ class MainActivity : ComponentActivity() {
                 MainScaffold(viewModel.isRemoteFileInitialized)
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        RootService.getInstance().destroy()
     }
 }

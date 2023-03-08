@@ -25,10 +25,10 @@ class RootService {
     fun isInitialize(): Boolean {
         var needInitialize = this::ipc.isInitialized
         if (needInitialize) {
-            try {
-                needInitialize = ipc.checkConnection()
+            needInitialize = try {
+                checkConnection()
             } catch (e: Exception) {
-                needInitialize = false
+                false
             }
         }
         return needInitialize
@@ -48,15 +48,7 @@ class RootService {
         RootService.bind(intent, connection)
     }
 
-    /**
-     * 取消绑定Service
-     */
-    fun destroy() {
-        if (isInitialize())
-            RootService.unbind(connection)
-    }
-
-    fun checkConnection(): Boolean {
+    private fun checkConnection(): Boolean {
         return ipc.checkConnection()
     }
 
