@@ -5,6 +5,8 @@ import android.os.UserHandle;
 import android.app.usage.StorageStats;
 
 interface IRemoteRootService {
+    boolean checkConnection();
+
     boolean exists(String path);
     boolean createNewFile(String path);
     boolean deleteRecursively(String path);

@@ -23,7 +23,15 @@ class RootService {
     private lateinit var connection: RemoteRootServiceConnection
 
     fun isInitialize(): Boolean {
-        return this::connection.isInitialized
+        var needInitialize = this::ipc.isInitialized
+        if (needInitialize) {
+            try {
+                needInitialize = ipc.checkConnection()
+            } catch (e: Exception) {
+                needInitialize = false
+            }
+        }
+        return needInitialize
     }
 
     /**
@@ -46,6 +54,10 @@ class RootService {
     fun destroy() {
         if (isInitialize())
             RootService.unbind(connection)
+    }
+
+    fun checkConnection(): Boolean {
+        return ipc.checkConnection()
     }
 
     fun exists(path: String): Boolean {

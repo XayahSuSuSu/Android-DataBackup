@@ -67,6 +67,10 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         initializeService()
     }
 
+    override fun checkConnection(): Boolean {
+        return true
+    }
+
     override fun exists(path: String): Boolean {
         return try {
             File(path).exists()
