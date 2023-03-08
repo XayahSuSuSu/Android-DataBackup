@@ -152,7 +152,7 @@
     <string name="selection_is_empty">Вибір порожній</string>
     <string name="system_app">Система</string>
     <string name="installed_app">Користувач</string>
-    <string name="switch_to_system_app_warning">Не рекомендується створення бекапу більшості системних додатків, тому що їх відновлення може призвести до бутлупу телефону. Вас попередили</string>
+    <string name="switch_to_system_app_warning">Попередження - не рекомендується створення бекапу більшості системних додатків, тому що їх відновлення може призвести до циклічного перезавантаження (бутлупу)</string>
     <string name="warning">Попередження</string>
     <string name="type">Тип</string>
     <string name="compatible_mode">Режим сумісності</string>
