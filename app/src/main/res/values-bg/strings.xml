@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="backup">Архивно копие</string>
+    <string name="restore">Възстановяване</string>
+    <string name="application">Приложения</string>
+    <string name="data">Данни</string>
+    <string name="confirm">Потвърждаване</string>
+    <string name="error">Грешка</string>
+</resources>
