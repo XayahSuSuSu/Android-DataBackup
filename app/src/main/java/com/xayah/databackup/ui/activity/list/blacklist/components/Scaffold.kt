@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.blacklist.components
+package com.xayah.databackup.ui.activity.list.blacklist.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
@@ -19,7 +19,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.blacklist.BlackListViewModel
+import com.xayah.databackup.ui.activity.list.blacklist.BlackListViewModel
 import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.components.Scaffold
 import com.xayah.databackup.ui.components.TopBarTitle

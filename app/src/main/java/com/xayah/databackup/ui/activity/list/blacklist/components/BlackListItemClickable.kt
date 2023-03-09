@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.blacklist.components
+package com.xayah.databackup.ui.activity.list.blacklist.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape

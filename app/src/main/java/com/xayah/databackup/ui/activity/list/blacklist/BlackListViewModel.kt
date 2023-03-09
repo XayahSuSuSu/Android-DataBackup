@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.blacklist
+package com.xayah.databackup.ui.activity.list.blacklist
 
 import android.content.Context
 import androidx.activity.ComponentActivity

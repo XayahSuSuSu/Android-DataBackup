@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
-import com.xayah.databackup.ui.activity.blacklist.BlackListActivity
+import com.xayah.databackup.ui.activity.list.blacklist.BlackListActivity
 import com.xayah.databackup.ui.activity.list.common.CommonListViewModel
 import com.xayah.databackup.ui.activity.list.common.components.FilterItem
 import com.xayah.databackup.ui.activity.list.common.components.ManifestDescItem

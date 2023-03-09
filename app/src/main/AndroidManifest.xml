@@ -58,7 +58,7 @@
             android:name=".ui.activity.crash.CrashActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.blacklist.BlackListActivity"
+            android:name=".ui.activity.list.blacklist.BlackListActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activity.screen.ScreenActivity"
