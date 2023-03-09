@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components.content
+package com.xayah.databackup.ui.activity.list.common.components.content
 
 import android.content.Context
 import android.content.Intent
@@ -16,18 +16,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
-import com.xayah.databackup.ui.activity.list.ListViewModel
-import com.xayah.databackup.ui.activity.list.components.FilterItem
-import com.xayah.databackup.ui.activity.list.components.ManifestDescItem
-import com.xayah.databackup.ui.activity.list.components.item.MediaRestoreItem
-import com.xayah.databackup.ui.activity.list.components.item.deleteMediaInfoRestoreItem
-import com.xayah.databackup.ui.activity.list.components.manifest.contentManifest
-import com.xayah.databackup.ui.activity.list.components.menu.ListBottomSheet
-import com.xayah.databackup.ui.activity.list.components.menu.item.FilterItem
-import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopActionButton
-import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBackupUserButton
-import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBatchDeleteButton
-import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopRestoreUserButton
+import com.xayah.databackup.ui.activity.list.common.CommonListViewModel
+import com.xayah.databackup.ui.activity.list.common.components.FilterItem
+import com.xayah.databackup.ui.activity.list.common.components.ManifestDescItem
+import com.xayah.databackup.ui.activity.list.common.components.item.MediaRestoreItem
+import com.xayah.databackup.ui.activity.list.common.components.item.deleteMediaInfoRestoreItem
+import com.xayah.databackup.ui.activity.list.common.components.manifest.contentManifest
+import com.xayah.databackup.ui.activity.list.common.components.menu.ListBottomSheet
+import com.xayah.databackup.ui.activity.list.common.components.menu.item.FilterItem
+import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopActionButton
+import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopBackupUserButton
+import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopBatchDeleteButton
+import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopRestoreUserButton
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.ui.components.LoadingDialog
 import com.xayah.databackup.ui.components.SearchBar
@@ -54,7 +54,7 @@ fun LazyListScope.contentMediaRestore(
     }
 }
 
-suspend fun onMediaRestoreInitialize(viewModel: ListViewModel) {
+suspend fun onMediaRestoreInitialize(viewModel: CommonListViewModel) {
     if (GlobalObject.getInstance().mediaInfoRestoreMap.value.isEmpty()) {
         GlobalObject.getInstance().mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap {
             viewModel.progress.value = it
@@ -68,7 +68,7 @@ suspend fun onMediaRestoreInitialize(viewModel: ListViewModel) {
 }
 
 @ExperimentalMaterial3Api
-fun LazyListScope.onMediaRestoreManifest(viewModel: ListViewModel, context: Context) {
+fun LazyListScope.onMediaRestoreManifest(viewModel: CommonListViewModel, context: Context) {
     // 重置列表, 否则Manifest可能和Processing有所出入
     viewModel.searchText.value = ""
     viewModel.filter.value = AppListFilter.Selected
@@ -119,7 +119,7 @@ fun LazyListScope.onMediaRestoreManifest(viewModel: ListViewModel, context: Cont
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
-fun LazyListScope.onMediaRestoreContent(viewModel: ListViewModel) {
+fun LazyListScope.onMediaRestoreContent(viewModel: CommonListViewModel) {
     contentMediaRestore(list = viewModel.mediaRestoreList.value,
         onSearch = { value ->
             viewModel.searchText.value = value
@@ -145,7 +145,7 @@ suspend fun onMediaRestoreMapSave() {
 @Composable
 fun MediaRestoreBottomSheet(
     isOpen: MutableState<Boolean>,
-    viewModel: ListViewModel
+    viewModel: CommonListViewModel
 ) {
     val scope = rememberCoroutineScope()
 
@@ -230,7 +230,7 @@ fun MediaRestoreBottomSheet(
 }
 
 fun filterMediaRestoreNone(
-    viewModel: ListViewModel,
+    viewModel: CommonListViewModel,
     predicate: (MediaInfoRestore) -> Boolean
 ) {
     viewModel.mediaRestoreList.value.clear()
@@ -241,7 +241,7 @@ fun filterMediaRestoreNone(
 }
 
 fun filterMediaRestoreSelected(
-    viewModel: ListViewModel,
+    viewModel: CommonListViewModel,
     predicate: (MediaInfoRestore) -> Boolean
 ) {
     viewModel.mediaRestoreList.value.clear()
@@ -253,7 +253,7 @@ fun filterMediaRestoreSelected(
 }
 
 fun filterMediaRestoreNotSelected(
-    viewModel: ListViewModel,
+    viewModel: CommonListViewModel,
     predicate: (MediaInfoRestore) -> Boolean
 ) {
     viewModel.mediaRestoreList.value.clear()
@@ -265,7 +265,7 @@ fun filterMediaRestoreNotSelected(
 }
 
 fun filterMediaRestore(
-    viewModel: ListViewModel,
+    viewModel: CommonListViewModel,
     predicate: (MediaInfoRestore) -> Boolean = {
         val value = viewModel.searchText.value
         it.name.lowercase()
@@ -291,6 +291,6 @@ fun filterMediaRestore(
     }
 }
 
-fun refreshMediaRestoreList(viewModel: ListViewModel) {
+fun refreshMediaRestoreList(viewModel: CommonListViewModel) {
     filterMediaRestore(viewModel)
 }

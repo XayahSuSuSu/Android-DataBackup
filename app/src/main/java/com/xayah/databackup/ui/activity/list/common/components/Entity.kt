@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components
+package com.xayah.databackup.ui.activity.list.common.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.vector.ImageVector

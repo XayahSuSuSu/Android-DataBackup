@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list
+package com.xayah.databackup.ui.activity.list.common
 
 import android.content.Context
 import androidx.compose.animation.core.MutableTransitionState
@@ -13,7 +13,7 @@ import com.xayah.databackup.util.saveListActiveSort
 import com.xayah.databackup.util.saveListSortAscending
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class ListViewModel : ViewModel() {
+class CommonListViewModel : ViewModel() {
     val isInitialized by lazy { MutableTransitionState(false) }
     val progress by lazy { mutableStateOf(0f) }
     val onManifest by lazy { MutableStateFlow(false) }

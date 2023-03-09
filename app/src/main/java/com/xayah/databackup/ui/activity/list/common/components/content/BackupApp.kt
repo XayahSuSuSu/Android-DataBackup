@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components.content
+package com.xayah.databackup.ui.activity.list.common.components.content
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,9 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -17,33 +19,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
-import com.xayah.databackup.ui.activity.list.ListViewModel
-import com.xayah.databackup.ui.activity.list.components.FilterItem
-import com.xayah.databackup.ui.activity.list.components.ManifestDescItem
-import com.xayah.databackup.ui.activity.list.components.SortItem
-import com.xayah.databackup.ui.activity.list.components.item.AppRestoreItem
-import com.xayah.databackup.ui.activity.list.components.item.deleteAppInfoRestoreItem
-import com.xayah.databackup.ui.activity.list.components.manifest.contentManifest
-import com.xayah.databackup.ui.activity.list.components.menu.ListBottomSheet
-import com.xayah.databackup.ui.activity.list.components.menu.item.FilterItem
-import com.xayah.databackup.ui.activity.list.components.menu.item.SortItem
-import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopActionButton
-import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBackupUserButton
-import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopBatchDeleteButton
-import com.xayah.databackup.ui.activity.list.components.menu.top.MenuTopRestoreUserButton
+import com.xayah.databackup.ui.activity.blacklist.BlackListActivity
+import com.xayah.databackup.ui.activity.list.common.CommonListViewModel
+import com.xayah.databackup.ui.activity.list.common.components.FilterItem
+import com.xayah.databackup.ui.activity.list.common.components.ManifestDescItem
+import com.xayah.databackup.ui.activity.list.common.components.SortItem
+import com.xayah.databackup.ui.activity.list.common.components.item.AppBackupItem
+import com.xayah.databackup.ui.activity.list.common.components.manifest.contentManifest
+import com.xayah.databackup.ui.activity.list.common.components.menu.ListBottomSheet
+import com.xayah.databackup.ui.activity.list.common.components.menu.item.FilterItem
+import com.xayah.databackup.ui.activity.list.common.components.menu.item.SortItem
+import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopActionButton
+import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopBackupUserButton
+import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopRestoreUserButton
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
-import com.xayah.databackup.ui.components.LoadingDialog
+import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.SearchBar
 import com.xayah.databackup.util.*
-import kotlinx.coroutines.launch
 import java.text.Collator
 import java.util.*
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
-fun LazyListScope.contentAppRestore(
-    list: List<AppInfoRestore>,
+fun LazyListScope.contentAppBackup(
+    list: List<AppInfoBackup>,
     onSearch: (String) -> Unit,
     onItemUpdate: () -> Unit
 ) {
@@ -51,40 +51,40 @@ fun LazyListScope.contentAppRestore(
         SearchBar(onSearch)
     }
     items(items = list, key = { it.detailBase.packageName }) {
-        AppRestoreItem(
+        AppBackupItem(
             modifier = Modifier.animateItemPlacement(),
-            appInfoRestore = it,
+            appInfoBackup = it,
             onItemUpdate = onItemUpdate
         )
     }
 }
 
-suspend fun onAppRestoreInitialize(viewModel: ListViewModel) {
-    if (GlobalObject.getInstance().appInfoRestoreMap.value.isEmpty()) {
-        GlobalObject.getInstance().appInfoRestoreMap.emit(Command.getAppInfoRestoreMap {
+suspend fun onAppBackupInitialize(viewModel: CommonListViewModel) {
+    if (GlobalObject.getInstance().appInfoBackupMap.value.isEmpty()) {
+        GlobalObject.getInstance().appInfoBackupMap.emit(Command.getAppInfoBackupMap {
             viewModel.progress.value = it
         })
     }
-    if (viewModel.appRestoreList.value.isEmpty()) {
-        refreshAppRestoreList(viewModel)
+    if (viewModel.appBackupList.value.isEmpty()) {
+        refreshAppBackupList(viewModel)
     }
     viewModel.isInitialized.targetState = true
 }
 
 @ExperimentalMaterial3Api
-fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Context) {
+fun LazyListScope.onAppBackupManifest(viewModel: CommonListViewModel, context: Context) {
     // 重置列表, 否则Manifest可能和Processing有所出入
     viewModel.searchText.value = ""
     viewModel.filter.value = AppListFilter.Selected
     viewModel.type.value = AppListType.None
-    refreshAppRestoreList(viewModel)
+    refreshAppBackupList(viewModel)
 
     val list = listOf(
         ManifestDescItem(
             title = context.getString(R.string.selected_app),
             subtitle = run {
                 var size = 0
-                for (i in viewModel.appRestoreList.value) {
+                for (i in viewModel.appBackupList.value) {
                     if (i.selectApp.value) size++
                 }
                 size.toString()
@@ -95,7 +95,7 @@ fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Contex
             title = context.getString(R.string.selected_data),
             subtitle = run {
                 var size = 0
-                for (i in viewModel.appRestoreList.value) {
+                for (i in viewModel.appBackupList.value) {
                     if (i.selectData.value) size++
                 }
                 size.toString()
@@ -135,35 +135,35 @@ fun LazyListScope.onAppRestoreManifest(viewModel: ListViewModel, context: Contex
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
-fun LazyListScope.onAppRestoreContent(viewModel: ListViewModel) {
-    contentAppRestore(
-        list = viewModel.appRestoreList.value,
+fun LazyListScope.onAppBackupContent(viewModel: CommonListViewModel) {
+    contentAppBackup(
+        list = viewModel.appBackupList.value,
         onSearch = { value ->
             viewModel.searchText.value = value
-            refreshAppRestoreList(viewModel)
+            refreshAppBackupList(viewModel)
         },
         onItemUpdate = {
-            refreshAppRestoreList(viewModel)
-        }
-    )
+            refreshAppBackupList(viewModel)
+        })
 }
 
 @ExperimentalMaterial3Api
-fun toAppRestoreProcessing(context: Context) {
+fun toAppBackupProcessing(context: Context) {
     context.startActivity(Intent(context, ProcessingActivity::class.java).apply {
-        putExtra(TypeActivityTag, TypeRestoreApp)
+        putExtra(TypeActivityTag, TypeBackupApp)
     })
 }
 
-suspend fun onAppRestoreMapSave() {
-    GsonUtil.saveAppInfoRestoreMapToFile(GlobalObject.getInstance().appInfoRestoreMap.value)
+suspend fun onAppBackupMapSave() {
+    GsonUtil.saveAppInfoBackupMapToFile(GlobalObject.getInstance().appInfoBackupMap.value)
 }
 
 @ExperimentalMaterial3Api
 @Composable
-fun AppRestoreBottomSheet(
+fun AppBackupBottomSheet(
     isOpen: MutableState<Boolean>,
-    viewModel: ListViewModel,
+    viewModel: CommonListViewModel,
+    onFinish: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -174,31 +174,12 @@ fun AppRestoreBottomSheet(
         isOpen = isOpen,
         actions = {
             item {
-                val isLoadingDialogOpen = remember {
-                    mutableStateOf(false)
-                }
-                LoadingDialog(isOpen = isLoadingDialogOpen)
-
-                val isConfirmDialogOpen = remember {
-                    mutableStateOf(false)
-                }
-                val selectedItems =
-                    viewModel.appRestoreList.collectAsState().value.filter { it.selectApp.value || it.selectData.value }
-                MenuTopBatchDeleteButton(
-                    isOpen = isConfirmDialogOpen,
-                    selectedItems = selectedItems,
-                    itemText = {
-                        "${selectedItems[it].detailBase.appName} ${selectedItems[it].detailBase.packageName}"
-                    }) {
-                    scope.launch {
-                        isLoadingDialogOpen.value = true
-                        for (i in selectedItems) {
-                            deleteAppInfoRestoreItem(i) {}
-                        }
-                        refreshAppRestoreList(viewModel)
-                        isLoadingDialogOpen.value = false
-                        isOpen.value = false
-                    }
+                MenuTopActionButton(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_blacklist),
+                    title = stringResource(R.string.blacklist)
+                ) {
+                    context.startActivity(Intent(context, BlackListActivity::class.java))
+                    onFinish()
                 }
             }
             item {
@@ -207,7 +188,7 @@ fun AppRestoreBottomSheet(
                     icon = ImageVector.vectorResource(id = R.drawable.ic_round_check),
                     title = stringResource(R.string.select_all)
                 ) {
-                    viewModel.appRestoreList.value.forEach {
+                    viewModel.appBackupList.value.forEach {
                         it.selectApp.value = selectApp
                     }
                     selectApp = selectApp.not()
@@ -219,7 +200,7 @@ fun AppRestoreBottomSheet(
                     icon = ImageVector.vectorResource(id = R.drawable.ic_round_done_all),
                     title = stringResource(R.string.select_all)
                 ) {
-                    viewModel.appRestoreList.value.forEach {
+                    viewModel.appBackupList.value.forEach {
                         it.selectApp.value = selectAll
                         it.selectData.value = selectAll
                     }
@@ -228,7 +209,7 @@ fun AppRestoreBottomSheet(
             }
             item {
                 MenuTopBackupUserButton(viewModel = viewModel) {
-                    onAppRestoreInitialize(viewModel)
+                    onAppBackupInitialize(viewModel)
                 }
             }
             item {
@@ -254,7 +235,7 @@ fun AppRestoreBottomSheet(
             SortItem(list = sortList, active = active, ascending = ascending, onClick = {
                 viewModel.setActiveSort(context, it)
                 viewModel.setAscending(context)
-                refreshAppRestoreList(viewModel)
+                refreshAppBackupList(viewModel)
             })
 
             // 过滤
@@ -270,14 +251,6 @@ fun AppRestoreBottomSheet(
                 FilterItem(
                     text = stringResource(R.string.not_selected),
                     AppListFilter.NotSelected
-                ),
-                FilterItem(
-                    text = stringResource(R.string.installed),
-                    AppListFilter.Installed
-                ),
-                FilterItem(
-                    text = stringResource(R.string.not_installed),
-                    AppListFilter.NotInstalled
                 )
             )
             FilterItem(
@@ -285,7 +258,7 @@ fun AppRestoreBottomSheet(
                 list = filterList,
                 filter = viewModel.filter,
                 onClick = {
-                    refreshAppRestoreList(viewModel)
+                    refreshAppBackupList(viewModel)
                 }
             )
 
@@ -304,24 +277,48 @@ fun AppRestoreBottomSheet(
                     AppListType.SystemApp
                 ),
             )
+            val isDialogOpen = remember {
+                mutableStateOf(false)
+            }
+            ConfirmDialog(
+                isOpen = isDialogOpen,
+                icon = Icons.Rounded.Warning,
+                title = stringResource(R.string.warning),
+                content = {
+                    Text(
+                        text = stringResource(R.string.switch_to_system_app_warning)
+                                + stringResource(id = R.string.symbol_exclamation)
+                    )
+                },
+                cancelable = false
+            ) {
+                refreshAppBackupList(viewModel)
+            }
             FilterItem(
                 title = stringResource(id = R.string.type),
                 list = typeList,
                 filter = viewModel.type,
                 onClick = {
-                    refreshAppRestoreList(viewModel)
+                    when (it) {
+                        AppListType.None, AppListType.SystemApp -> {
+                            isDialogOpen.value = true
+                        }
+                        else -> {
+                            refreshAppBackupList(viewModel)
+                        }
+                    }
                 }
             )
         }
     )
 }
 
-fun sortAppRestoreByAlphabet(
-    viewModel: ListViewModel,
+fun sortAppBackupByAlphabet(
+    viewModel: CommonListViewModel,
     ascending: Boolean
 ) {
     if (ascending)
-        viewModel.appRestoreList.value.sortWith { appInfo1, appInfo2 ->
+        viewModel.appBackupList.value.sortWith { appInfo1, appInfo2 ->
             if (appInfo1 == null && appInfo2 == null) {
                 0
             } else if (appInfo1 == null) {
@@ -335,7 +332,7 @@ fun sortAppRestoreByAlphabet(
             }
         }
     else
-        viewModel.appRestoreList.value.sortWith { appInfo1, appInfo2 ->
+        viewModel.appBackupList.value.sortWith { appInfo1, appInfo2 ->
             if (appInfo1 == null && appInfo2 == null) {
                 0
             } else if (appInfo1 == null) {
@@ -350,115 +347,87 @@ fun sortAppRestoreByAlphabet(
         }
 }
 
-fun sortAppRestoreByInstallTime(
-    viewModel: ListViewModel,
+fun sortAppBackupByInstallTime(
+    viewModel: CommonListViewModel,
     ascending: Boolean
 ) {
     if (ascending)
-        viewModel.appRestoreList.value.sortBy { it.firstInstallTime }
+        viewModel.appBackupList.value.sortBy { it.firstInstallTime }
     else
-        viewModel.appRestoreList.value.sortByDescending { it.firstInstallTime }
+        viewModel.appBackupList.value.sortByDescending { it.firstInstallTime }
 }
 
-fun sortAppRestoreByDataSize(
-    viewModel: ListViewModel,
+fun sortAppBackupByDataSize(
+    viewModel: CommonListViewModel,
     ascending: Boolean
 ) {
     if (ascending)
-        viewModel.appRestoreList.value.sortBy { it.sizeBytes }
+        viewModel.appBackupList.value.sortBy { it.sizeBytes }
     else
-        viewModel.appRestoreList.value.sortByDescending { it.sizeBytes }
+        viewModel.appBackupList.value.sortByDescending { it.sizeBytes }
 }
 
-fun sortAppRestore(viewModel: ListViewModel) {
+fun sortAppBackup(viewModel: CommonListViewModel) {
     when (viewModel.activeSort.value) {
         AppListSort.Alphabet -> {
-            sortAppRestoreByAlphabet(viewModel, viewModel.ascending.value)
+            sortAppBackupByAlphabet(viewModel, viewModel.ascending.value)
         }
         AppListSort.FirstInstallTime -> {
-            sortAppRestoreByInstallTime(viewModel, viewModel.ascending.value)
+            sortAppBackupByInstallTime(viewModel, viewModel.ascending.value)
         }
         AppListSort.DataSize -> {
-            sortAppRestoreByDataSize(viewModel, viewModel.ascending.value)
+            sortAppBackupByDataSize(viewModel, viewModel.ascending.value)
         }
     }
 }
 
-fun filterAppRestoreNone(
-    viewModel: ListViewModel,
-    predicate: (AppInfoRestore) -> Boolean
+fun filterAppBackupNone(
+    viewModel: CommonListViewModel,
+    predicate: (AppInfoBackup) -> Boolean
 ) {
-    viewModel.appRestoreList.value.clear()
-    viewModel.appRestoreList.value.addAll(
-        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
-            .filter { filterTypePredicateAppRestore(viewModel.type.value, it) }
+    viewModel.appBackupList.value.clear()
+    viewModel.appBackupList.value.addAll(
+        GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
+            .filter { it.isOnThisDevice && filterTypePredicateAppBackup(viewModel.type.value, it) }
             .filter(predicate)
     )
 }
 
-fun filterAppRestoreSelected(
-    viewModel: ListViewModel,
-    predicate: (AppInfoRestore) -> Boolean
+fun filterAppBackupSelected(
+    viewModel: CommonListViewModel,
+    predicate: (AppInfoBackup) -> Boolean
 ) {
-    viewModel.appRestoreList.value.clear()
-    viewModel.appRestoreList.value.addAll(
-        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
+    viewModel.appBackupList.value.clear()
+    viewModel.appBackupList.value.addAll(
+        GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
             .filter {
-                filterTypePredicateAppRestore(viewModel.type.value, it)
+                it.isOnThisDevice
+                        && filterTypePredicateAppBackup(viewModel.type.value, it)
                         && (it.selectApp.value || it.selectData.value)
             }
             .filter(predicate)
     )
 }
 
-fun filterAppRestoreNotSelected(
-    viewModel: ListViewModel,
-    predicate: (AppInfoRestore) -> Boolean
+fun filterAppBackupNotSelected(
+    viewModel: CommonListViewModel,
+    predicate: (AppInfoBackup) -> Boolean
 ) {
-    viewModel.appRestoreList.value.clear()
-    viewModel.appRestoreList.value.addAll(
-        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
+    viewModel.appBackupList.value.clear()
+    viewModel.appBackupList.value.addAll(
+        GlobalObject.getInstance().appInfoBackupMap.value.values.toList()
             .filter {
-                filterTypePredicateAppRestore(viewModel.type.value, it)
-                        && it.selectApp.value.not() && it.selectData.value.not()
+                it.isOnThisDevice
+                        && filterTypePredicateAppBackup(viewModel.type.value, it)
+                        && (it.selectApp.value .not() && it.selectData.value.not())
             }
             .filter(predicate)
     )
 }
 
-fun filterAppRestoreInstalled(
-    viewModel: ListViewModel,
-    predicate: (AppInfoRestore) -> Boolean
-) {
-    viewModel.appRestoreList.value.clear()
-    viewModel.appRestoreList.value.addAll(
-        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
-            .filter {
-                filterTypePredicateAppRestore(viewModel.type.value, it)
-                        && it.isOnThisDevice.value
-            }
-            .filter(predicate)
-    )
-}
-
-fun filterAppRestoreNotInstalled(
-    viewModel: ListViewModel,
-    predicate: (AppInfoRestore) -> Boolean
-) {
-    viewModel.appRestoreList.value.clear()
-    viewModel.appRestoreList.value.addAll(
-        GlobalObject.getInstance().appInfoRestoreMap.value.values.toList()
-            .filter {
-                filterTypePredicateAppRestore(viewModel.type.value, it)
-                        && it.isOnThisDevice.value.not()
-            }
-            .filter(predicate)
-    )
-}
-
-fun filterAppRestore(
-    viewModel: ListViewModel,
-    predicate: (AppInfoRestore) -> Boolean = {
+fun filterAppBackup(
+    viewModel: CommonListViewModel,
+    predicate: (AppInfoBackup) -> Boolean = {
         val value = viewModel.searchText.value
         it.detailBase.appName.lowercase()
             .contains(value.lowercase()) ||
@@ -468,30 +437,28 @@ fun filterAppRestore(
 ) {
     when (viewModel.filter.value) {
         AppListFilter.None -> {
-            filterAppRestoreNone(viewModel, predicate)
+            filterAppBackupNone(viewModel, predicate)
         }
         AppListFilter.Selected -> {
-            filterAppRestoreSelected(viewModel, predicate)
+            filterAppBackupSelected(viewModel, predicate)
         }
         AppListFilter.NotSelected -> {
-            filterAppRestoreNotSelected(viewModel, predicate)
+            filterAppBackupNotSelected(viewModel, predicate)
         }
-        AppListFilter.Installed -> {
-            filterAppRestoreInstalled(viewModel, predicate)
-        }
-        AppListFilter.NotInstalled -> {
-            filterAppRestoreNotInstalled(viewModel, predicate)
+        else -> {
+            viewModel.filter.value = AppListFilter.None
+            filterAppBackupNone(viewModel, predicate)
         }
     }
 }
 
-fun filterTypePredicateAppRestore(type: AppListType, appInfoRestore: AppInfoRestore): Boolean {
+fun filterTypePredicateAppBackup(type: AppListType, appInfoBackup: AppInfoBackup): Boolean {
     return when (type) {
         AppListType.InstalledApp -> {
-            appInfoRestore.detailBase.isSystemApp.not()
+            appInfoBackup.detailBase.isSystemApp.not()
         }
         AppListType.SystemApp -> {
-            appInfoRestore.detailBase.isSystemApp
+            appInfoBackup.detailBase.isSystemApp
         }
         AppListType.None -> {
             true
@@ -499,7 +466,7 @@ fun filterTypePredicateAppRestore(type: AppListType, appInfoRestore: AppInfoRest
     }
 }
 
-fun refreshAppRestoreList(viewModel: ListViewModel) {
-    filterAppRestore(viewModel)
-    sortAppRestore(viewModel)
+fun refreshAppBackupList(viewModel: CommonListViewModel) {
+    filterAppBackup(viewModel)
+    sortAppBackup(viewModel)
 }

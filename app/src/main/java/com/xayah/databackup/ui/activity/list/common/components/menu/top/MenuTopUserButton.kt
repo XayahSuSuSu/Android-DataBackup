@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components.menu.top
+package com.xayah.databackup.ui.activity.list.common.components.menu.top
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.list.ListViewModel
+import com.xayah.databackup.ui.activity.list.common.CommonListViewModel
 import com.xayah.databackup.ui.activity.settings.components.content.onBackupUserPrepare
 import com.xayah.databackup.ui.activity.settings.components.content.onRestoreUserPrepare
 import com.xayah.databackup.ui.activity.settings.components.dialog.RadioButtonTextDialog
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
-fun MenuTopBackupUserButton(viewModel: ListViewModel, onInitialize: suspend () -> Unit) {
+fun MenuTopBackupUserButton(viewModel: CommonListViewModel, onInitialize: suspend () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val icon = ImageVector.vectorResource(id = R.drawable.ic_round_person)
@@ -88,7 +88,7 @@ fun MenuTopBackupUserButton(viewModel: ListViewModel, onInitialize: suspend () -
 
 @ExperimentalMaterial3Api
 @Composable
-fun MenuTopRestoreUserButton(viewModel: ListViewModel) {
+fun MenuTopRestoreUserButton(viewModel: CommonListViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val icon = ImageVector.vectorResource(id = R.drawable.ic_round_iphone)

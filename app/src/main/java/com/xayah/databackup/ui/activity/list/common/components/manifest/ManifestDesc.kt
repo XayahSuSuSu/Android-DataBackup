@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components.manifest
+package com.xayah.databackup.ui.activity.list.common.components.manifest
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

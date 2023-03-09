@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components.manifest
+package com.xayah.databackup.ui.activity.list.common.components.manifest
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.list.components.ManifestDescItem
+import com.xayah.databackup.ui.activity.list.common.components.ManifestDescItem
 
 @ExperimentalMaterial3Api
 @Composable

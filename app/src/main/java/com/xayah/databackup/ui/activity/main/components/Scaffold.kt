@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
-import com.xayah.databackup.ui.activity.list.ListActivity
+import com.xayah.databackup.ui.activity.list.common.CommonListActivity
 import com.xayah.databackup.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.ui.components.Scaffold
 import com.xayah.databackup.ui.components.TopBarTitle
@@ -68,7 +68,7 @@ fun MainScaffold(
                     subtitle = stringResource(R.string.card_app_subtitle),
                     onBackupClick = {
                         context.startActivity(
-                            Intent(context, ListActivity::class.java).apply {
+                            Intent(context, CommonListActivity::class.java).apply {
                                 putExtra(
                                     TypeActivityTag,
                                     TypeBackupApp
@@ -77,7 +77,7 @@ fun MainScaffold(
                     },
                     onRestoreClick = {
                         context.startActivity(
-                            Intent(context, ListActivity::class.java).apply {
+                            Intent(context, CommonListActivity::class.java).apply {
                                 putExtra(
                                     TypeActivityTag,
                                     TypeRestoreApp
@@ -95,7 +95,7 @@ fun MainScaffold(
                     subtitle = stringResource(R.string.card_media_subtitle),
                     onBackupClick = {
                         context.startActivity(
-                            Intent(context, ListActivity::class.java).apply {
+                            Intent(context, CommonListActivity::class.java).apply {
                                 putExtra(
                                     TypeActivityTag,
                                     TypeBackupMedia
@@ -104,7 +104,7 @@ fun MainScaffold(
                     },
                     onRestoreClick = {
                         context.startActivity(
-                            Intent(context, ListActivity::class.java).apply {
+                            Intent(context, CommonListActivity::class.java).apply {
                                 putExtra(
                                     TypeActivityTag,
                                     TypeRestoreMedia

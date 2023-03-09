@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components.item
+package com.xayah.databackup.ui.activity.list.common.components.item
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image

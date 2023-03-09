@@ -46,7 +46,7 @@
             android:name=".ui.activity.main.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.list.ListActivity"
+            android:name=".ui.activity.list.common.CommonListActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activity.settings.SettingsActivity"

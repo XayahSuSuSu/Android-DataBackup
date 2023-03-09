@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list
+package com.xayah.databackup.ui.activity.list.common
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,8 +16,8 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
-import com.xayah.databackup.ui.activity.list.components.ListScaffold
-import com.xayah.databackup.ui.activity.list.components.content.*
+import com.xayah.databackup.ui.activity.list.common.components.content.*
+import com.xayah.databackup.ui.activity.list.common.components.ListScaffold
 import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.GlobalObject
@@ -29,8 +29,8 @@ import kotlinx.coroutines.launch
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
-class ListActivity : ComponentActivity() {
-    private lateinit var viewModel: ListViewModel
+class CommonListActivity : ComponentActivity() {
+    private lateinit var viewModel: CommonListViewModel
     private lateinit var type: String
     private lateinit var explorer: MaterialYouFileExplorer
 
@@ -54,7 +54,7 @@ class ListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        viewModel = ViewModelProvider(this)[ListViewModel::class.java]
+        viewModel = ViewModelProvider(this)[CommonListViewModel::class.java]
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -63,7 +63,7 @@ class ListActivity : ComponentActivity() {
         })
 
         explorer = MaterialYouFileExplorer().apply {
-            initialize(this@ListActivity)
+            initialize(this@CommonListActivity)
         }
 
         type = intent.getStringExtra(TypeActivityTag) ?: TypeBackupApp
@@ -117,7 +117,7 @@ class ListActivity : ComponentActivity() {
                                         MediaBackupBottomSheet(
                                             isOpen = openBottomSheet,
                                             viewModel = viewModel,
-                                            context = this@ListActivity,
+                                            context = this@CommonListActivity,
                                             explorer = explorer
                                         )
                                     }
@@ -144,16 +144,16 @@ class ListActivity : ComponentActivity() {
                         if (onManifest) {
                             when (type) {
                                 TypeBackupApp -> {
-                                    onAppBackupManifest(viewModel, this@ListActivity)
+                                    onAppBackupManifest(viewModel, this@CommonListActivity)
                                 }
                                 TypeBackupMedia -> {
-                                    onMediaBackupManifest(viewModel, this@ListActivity)
+                                    onMediaBackupManifest(viewModel, this@CommonListActivity)
                                 }
                                 TypeRestoreApp -> {
-                                    onAppRestoreManifest(viewModel, this@ListActivity)
+                                    onAppRestoreManifest(viewModel, this@CommonListActivity)
                                 }
                                 TypeRestoreMedia -> {
-                                    onMediaRestoreManifest(viewModel, this@ListActivity)
+                                    onMediaRestoreManifest(viewModel, this@CommonListActivity)
                                 }
                             }
                         } else {

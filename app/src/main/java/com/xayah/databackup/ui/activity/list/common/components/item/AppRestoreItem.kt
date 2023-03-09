@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components.item
+package com.xayah.databackup.ui.activity.list.common.components.item
 
 import android.graphics.BitmapFactory
 import android.widget.Toast

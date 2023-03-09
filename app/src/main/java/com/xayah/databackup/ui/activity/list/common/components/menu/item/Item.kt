@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components.menu.item
+package com.xayah.databackup.ui.activity.list.common.components.menu.item
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement

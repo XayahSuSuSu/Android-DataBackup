@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.list.components
+package com.xayah.databackup.ui.activity.list.common.components
 
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.layout.RowScope
