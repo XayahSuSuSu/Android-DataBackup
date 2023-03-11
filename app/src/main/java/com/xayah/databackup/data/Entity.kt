@@ -288,3 +288,34 @@ data class BlackListItem(
     @Expose var appName: String = "",
     @Expose var packageName: String,
 )
+
+/**
+ * SMS/MMS database item
+ */
+data class SmsItem(
+    @Expose var address: String,
+    @Expose var body: String,
+    @Expose var creator: String,
+    @Expose var date: Long,
+    @Expose var dateSent: Long,
+    @Expose var errorCode: Long,
+    @Expose var locked: Long,
+    @Expose var person: Long,
+    @Expose var protocol: Long,
+    @Expose var read: Long,
+    @Expose var replyPathPresent: Long,
+    @Expose var seen: Long,
+    @Expose var serviceCenter: String,
+    @Expose var status: Long,
+    @Expose var subject: String,
+    @Expose var subscriptionId: Long,
+    /**
+     * 1: Received
+     *
+     * 2: Sent
+     */
+    @Expose var type: Long,
+    var isSelected: MutableState<Boolean>,
+    var isInLocal: MutableState<Boolean>,
+    var isOnThisDevice: MutableState<Boolean>,
+)

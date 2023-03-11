@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.UserInfo
 import android.os.IBinder
+import android.os.ParcelFileDescriptor
 import android.os.UserHandle
 import android.os.UserManager
 import com.xayah.librootservice.IRemoteRootService
@@ -172,6 +173,19 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         }
     }
 
+    override fun writeByDescriptor(path: String, descriptor: ParcelFileDescriptor): Boolean {
+        return try {
+            val fileInputStream = FileInputStream(descriptor.fileDescriptor)
+            val fileOutputStream = FileOutputStream(path)
+            fileOutputStream.write(fileInputStream.readBytes())
+            fileInputStream.close()
+            fileOutputStream.close()
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     override fun initActionLogFile(path: String): Boolean {
         return try {
             mkdirs(Paths.get(path).parent.pathString)
@@ -284,5 +298,25 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
             packageInfo.packageName,
             user
         )
+    }
+
+    override fun grantRuntimePermission(
+        packageName: String,
+        permName: String,
+        userId: Int
+    ): Boolean {
+        return try {
+            HiddenApiBypass.invoke(
+                Class.forName("android.content.pm.PackageManager"),
+                systemContext.packageManager,
+                "grantRuntimePermission",
+                packageName,
+                permName,
+                getUserHandle(userId)
+            )
+            true
+        } catch (_: Exception) {
+            false
+        }
     }
 }

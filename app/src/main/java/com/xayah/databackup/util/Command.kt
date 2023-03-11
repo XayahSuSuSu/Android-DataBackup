@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.os.Build
+import android.provider.Telephony
+import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.data.*
@@ -1075,6 +1077,102 @@ class Command {
                 }
             }
             return users
+        }
+
+        suspend fun getSmsList(context: Context, readOnly: Boolean): SmsList {
+            var smsList: SmsList = mutableListOf()
+
+            runOnIO {
+                // Read from storage
+                smsList = GsonUtil.getInstance().fromSmsListJson(
+                    RootService.getInstance().readText(Path.getSmsListPath())
+                )
+                smsList.forEach {
+                    it.isSelected = mutableStateOf(readOnly)
+                    it.isInLocal = mutableStateOf(true)
+                    it.isOnThisDevice = mutableStateOf(false)
+                }
+
+                context.contentResolver.query(
+                    Telephony.Sms.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    Telephony.Sms.DEFAULT_SORT_ORDER
+                )?.apply {
+                    val tmpList: SmsList = mutableListOf()
+                    while (moveToNext()) {
+                        try {
+                            val address =
+                                getString(getColumnIndexOrThrow(Telephony.Sms.ADDRESS)) ?: ""
+                            val body = getString(getColumnIndexOrThrow(Telephony.Sms.BODY)) ?: ""
+                            val creator =
+                                getString(getColumnIndexOrThrow(Telephony.Sms.CREATOR)) ?: ""
+                            val date = getLong(getColumnIndexOrThrow(Telephony.Sms.DATE))
+                            val dateSent = getLong(getColumnIndexOrThrow(Telephony.Sms.DATE_SENT))
+                            val errorCode = getLong(getColumnIndexOrThrow(Telephony.Sms.ERROR_CODE))
+                            val locked = getLong(getColumnIndexOrThrow(Telephony.Sms.LOCKED))
+                            val person = getLong(getColumnIndexOrThrow(Telephony.Sms.PERSON))
+                            val protocol = getLong(getColumnIndexOrThrow(Telephony.Sms.PROTOCOL))
+                            val read = getLong(getColumnIndexOrThrow(Telephony.Sms.READ))
+                            val replyPathPresent =
+                                getLong(getColumnIndexOrThrow(Telephony.Sms.REPLY_PATH_PRESENT))
+                            val seen = getLong(getColumnIndexOrThrow(Telephony.Sms.SEEN))
+                            val serviceCenter =
+                                getString(getColumnIndexOrThrow(Telephony.Sms.SERVICE_CENTER)) ?: ""
+                            val status = getLong(getColumnIndexOrThrow(Telephony.Sms.STATUS))
+                            val subject =
+                                getString(getColumnIndexOrThrow(Telephony.Sms.SUBJECT)) ?: ""
+                            val subscriptionId =
+                                getLong(getColumnIndexOrThrow(Telephony.Sms.SUBSCRIPTION_ID))
+                            val type = getLong(getColumnIndexOrThrow(Telephony.Sms.TYPE))
+
+                            var exist = false
+                            for (i in smsList) {
+                                // Check if it already exists
+                                if (i.address == address && i.body == body && i.date == date && i.dateSent == dateSent && i.type == type) {
+                                    i.isSelected.value = false
+                                    i.isOnThisDevice.value = true
+                                    exist = true
+                                    break
+                                }
+                            }
+                            if (exist) continue
+
+                            if (readOnly.not())
+                                tmpList.add(
+                                    SmsItem(
+                                        address = address,
+                                        body = body,
+                                        creator = creator,
+                                        date = date,
+                                        dateSent = dateSent,
+                                        errorCode = errorCode,
+                                        locked = locked,
+                                        person = person,
+                                        protocol = protocol,
+                                        read = read,
+                                        replyPathPresent = replyPathPresent,
+                                        seen = seen,
+                                        serviceCenter = serviceCenter,
+                                        status = status,
+                                        subject = subject,
+                                        subscriptionId = subscriptionId,
+                                        type = type,
+                                        isSelected = mutableStateOf(true),
+                                        isInLocal = mutableStateOf(false),
+                                        isOnThisDevice = mutableStateOf(true),
+                                    )
+                                )
+                        } catch (_: Exception) {
+                        }
+                    }
+                    close()
+                    smsList.addAll(tmpList)
+                    smsList.sortByDescending { it.date }
+                }
+            }
+            return smsList
         }
     }
 }

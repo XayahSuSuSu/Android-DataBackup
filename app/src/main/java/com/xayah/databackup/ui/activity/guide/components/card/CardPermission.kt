@@ -30,7 +30,7 @@ fun CardPermission(
             .wrapContentHeight()
     ) {
         Column(Modifier.padding(mediumPadding)) {
-            SerialView(serial = serial)
+            SerialWord(serial = serial)
             TitleLargeText(
                 text = title,
                 modifier = Modifier.paddingVertical(smallPadding),

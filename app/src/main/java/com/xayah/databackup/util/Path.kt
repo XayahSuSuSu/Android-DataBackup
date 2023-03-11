@@ -91,5 +91,9 @@ class Path {
         fun getDefaultBlackMapPath(): String {
             return "${App.globalContext.readBackupSavePath()}/app/config/blackListMap"
         }
+
+        fun getSmsListPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/telephony/smsList"
+        }
     }
 }

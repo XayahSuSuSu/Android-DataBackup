@@ -4,7 +4,8 @@
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
     <dimen name="padding_big">24dp</dimen>
-    <dimen name="card_serial_circle_size">24dp</dimen>
+    <dimen name="serial_circle_size">24dp</dimen>
+    <dimen name="serial_padding_horizontal">12dp</dimen>
     <dimen name="icon_medium_size">48dp</dimen>
     <dimen name="icon_small_size">36dp</dimen>
     <dimen name="icon_tiny_size">24dp</dimen>

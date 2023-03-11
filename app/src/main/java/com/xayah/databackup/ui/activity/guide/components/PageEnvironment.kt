@@ -121,24 +121,22 @@ fun PageEnvironment(
         }
     )
 
-    if (isPermissionDialogOpen.value) {
-        TextDialog(
-            isOpen = isPermissionDialogOpen,
-            icon = Icons.Rounded.Warning,
-            title = stringResource(id = R.string.error),
-            content = "${stringResource(R.string.path_permission_error)}:" + "\n" +
-                    "rwxrwxrwx(777): ${Path.getAppInternalFilesPath()}/bin",
-            confirmText = stringResource(R.string.copy_grant_command),
-            onConfirmClick = {
-                (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
-                    ClipData.newPlainText(
-                        "PermissionCmd",
-                        "su; chmod 777 ${Path.getAppInternalFilesPath()}/bin/*"
-                    )
+    TextDialog(
+        isOpen = isPermissionDialogOpen,
+        icon = Icons.Rounded.Warning,
+        title = stringResource(id = R.string.error),
+        content = "${stringResource(R.string.path_permission_error)}:" + "\n" +
+                "rwxrwxrwx(777): ${Path.getAppInternalFilesPath()}/bin",
+        confirmText = stringResource(R.string.copy_grant_command),
+        onConfirmClick = {
+            (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
+                ClipData.newPlainText(
+                    "PermissionCmd",
+                    "su; chmod 777 ${Path.getAppInternalFilesPath()}/bin/*"
                 )
-                isPermissionDialogOpen.value = false
-            },
-            showDismissBtn = false
-        )
-    }
+            )
+            isPermissionDialogOpen.value = false
+        },
+        showDismissBtn = false
+    )
 }

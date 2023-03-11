@@ -11,6 +11,9 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- SMS/MMS Permission -->
+    <uses-permission android:name="android.permission.READ_SMS" />
+
     <!-- 存储相关 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -32,12 +35,46 @@
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
 
+        <!-- Workaround for SMS/MMS handling -->
+        <receiver
+            android:name=".receiver.MmsWapPushDeliverReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_WAP_PUSH">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
+                <data android:mimeType="application/vnd.wap.mms-message" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receiver.SmsDeliverReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".services.SmsSendService"
+            android:exported="true"
+            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </service>
+        <!-- End -->
+
         <!-- Workaround for CrashHandler -->
         <provider
             android:name=".ui.activity.crash.CrashProvider"
             android:authorities="com.xayah.databackup.CrashProvider"
             android:exported="false"
             android:initOrder="101" />
+        <!-- End -->
 
         <activity
             android:name=".ui.activity.guide.GuideActivity"
@@ -60,6 +97,21 @@
         <activity
             android:name=".ui.activity.list.blacklist.BlackListActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.activity.list.telephony.TelephonyActivity"
+            android:exported="false">
+            <!-- Workaround for SMS/MMS handling -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.activity.screen.ScreenActivity"
             android:exported="true"

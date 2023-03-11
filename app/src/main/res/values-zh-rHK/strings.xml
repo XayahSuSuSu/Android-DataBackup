@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">數據備份</string>
     <string name="backup">備份</string>
     <string name="restore">恢復</string>
@@ -160,4 +160,21 @@
     <string name="not_installed">未安裝</string>
     <string name="retry">重試</string>
     <string name="succeed">成功</string>
+    <string name="telephony">通訊</string>
+    <string name="card_telephony_subtitle">備份(恢復)通訊錄、通話記錄、短/彩信</string>
+    <string name="backed_up">已備份</string>
+    <string name="restored">已恢復</string>
+    <string name="not_the_default_sms_app_info">恢復短/彩信需要將數據備份設置為默認短信應用</string>
+
+    <string name="posted_just_now">"剛剛"</string>
+    <string name="posted_now">"剛剛"</string>
+    <plurals name="num_minutes_ago" formatted="false">
+        <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 分鐘</item>
+    </plurals>
+    <plurals name="num_hours_ago" formatted="false">
+        <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 小時</item>
+    </plurals>
+    <plurals name="num_days_ago" formatted="false">
+        <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 天</item>
+    </plurals>
 </resources>

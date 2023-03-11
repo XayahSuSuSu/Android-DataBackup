@@ -223,6 +223,14 @@ fun Context.readListSortAscending(): Boolean {
     return readPreferencesBoolean("list_sort_ascending", true)
 }
 
+fun Context.saveSMSRoleHolder(value: String) {
+    savePreferences("sms_role_holder", value)
+}
+
+fun Context.readSMSRoleHolder(): String {
+    return readPreferencesString("sms_role_holder") ?: "com.android.mms"
+}
+
 val List<String>.joinToLineString: String
     get() = this.joinToString(separator = "\n")
 

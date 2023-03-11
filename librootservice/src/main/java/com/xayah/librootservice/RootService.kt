@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.UserInfo
+import android.os.ParcelFileDescriptor
 import android.os.UserHandle
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.librootservice.service.RemoteRootService
@@ -88,6 +89,10 @@ class RootService {
         return ipc.writeBytes(path, bytes)
     }
 
+    fun writeByDescriptor(path: String, descriptor: ParcelFileDescriptor): Boolean {
+        return ipc.writeByDescriptor(path, descriptor)
+    }
+
     fun initActionLogFile(path: String): Boolean {
         return ipc.initActionLogFile(path)
     }
@@ -122,5 +127,13 @@ class RootService {
 
     fun queryInstalled(packageName: String, userId: Int): Boolean {
         return ipc.queryInstalled(packageName, userId)
+    }
+
+    fun grantRuntimePermission(
+        packageName: String,
+        permName: String,
+        userId: Int
+    ): Boolean {
+        return ipc.grantRuntimePermission(packageName, permName, userId)
     }
 }

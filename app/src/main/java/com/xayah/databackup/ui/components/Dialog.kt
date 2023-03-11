@@ -28,31 +28,33 @@ fun TextDialog(
     dismissText: String = "",
     onDismissClick: () -> Unit = {},
 ) {
-    val confirm = confirmText.ifEmpty { stringResource(id = R.string.confirm) }
-    val dismiss = dismissText.ifEmpty { stringResource(id = R.string.cancel) }
-    AlertDialog(
-        onDismissRequest = {
-            isOpen.value = false
-        },
-        icon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null
+    if (isOpen.value) {
+        val confirm = confirmText.ifEmpty { stringResource(id = R.string.confirm) }
+        val dismiss = dismissText.ifEmpty { stringResource(id = R.string.cancel) }
+        AlertDialog(
+            onDismissRequest = {
+                isOpen.value = false
+            },
+            icon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null
+                )
+            },
+            title = { Text(text = title) },
+            text = { Text(text = content) },
+            confirmButton = {
+                TextButton(text = confirm, onClick = onConfirmClick)
+            },
+            dismissButton = if (showDismissBtn.not()) null else {
+                { TextButton(text = dismiss, onClick = onDismissClick) }
+            },
+            properties = DialogProperties(
+                dismissOnBackPress = dismissOnBackPress,
+                dismissOnClickOutside = dismissOnClickOutside
             )
-        },
-        title = { Text(text = title) },
-        text = { Text(text = content) },
-        confirmButton = {
-            TextButton(text = confirm, onClick = onConfirmClick)
-        },
-        dismissButton = if (showDismissBtn) null else {
-            { TextButton(text = dismiss, onClick = onDismissClick) }
-        },
-        properties = DialogProperties(
-            dismissOnBackPress = dismissOnBackPress,
-            dismissOnClickOutside = dismissOnClickOutside
         )
-    )
+    }
 }
 
 @ExperimentalMaterial3Api

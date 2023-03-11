@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">DataBackup</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
@@ -173,4 +173,27 @@
     <string name="not_installed">Not installed</string>
     <string name="retry">Retry</string>
     <string name="succeed">Succeed</string>
+    <string name="telephony">Telephony</string>
+    <string name="card_telephony_subtitle">Backup(Restore) contacts, call history or SMS/MMS</string>
+    <string name="backed_up">Backed up</string>
+    <string name="restored">Restored</string>
+
+    <string name="posted_just_now">"Just now"</string>
+    <string name="posted_now">"Now"</string>
+    <string name="not_the_default_sms_app_info">Restoring SMS/MMS requires DataBackup to be set as default SMS app</string>
+    <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> mins</item>
+    </plurals>
+    <!-- Abbreviated message to express that something occurred some number of hours in the past (e.g., 5 hours ago). -->
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> hour</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> hours</item>
+    </plurals>
+    <!-- Abbreviated message to express that something occurred some number of days in the past (e.g., 5 days ago). -->
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> day</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> days</item>
+    </plurals>
 </resources>

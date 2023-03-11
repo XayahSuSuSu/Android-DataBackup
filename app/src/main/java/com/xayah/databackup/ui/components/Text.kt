@@ -65,12 +65,13 @@ fun TitleSmallText(
 fun BodySmallText(
     text: String,
     modifier: Modifier = Modifier,
+    bold: Boolean = true,
 ) {
     Text(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodySmall,
-        fontWeight = FontWeight.Bold,
+        fontWeight = if (bold) FontWeight.Bold else null,
     )
 }
 
@@ -84,6 +85,20 @@ fun BodyMediumText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodyMedium,
+        fontWeight = if (bold) FontWeight.Bold else null,
+    )
+}
+
+@Composable
+fun LabelSmallText(
+    text: String,
+    modifier: Modifier = Modifier,
+    bold: Boolean = false,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
         fontWeight = if (bold) FontWeight.Bold else null,
     )
 }

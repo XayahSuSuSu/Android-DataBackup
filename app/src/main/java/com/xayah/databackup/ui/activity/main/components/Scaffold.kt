@@ -19,6 +19,7 @@ import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.ui.activity.list.common.CommonListActivity
+import com.xayah.databackup.ui.activity.list.telephony.TelephonyActivity
 import com.xayah.databackup.ui.activity.settings.SettingsActivity
 import com.xayah.databackup.ui.components.Scaffold
 import com.xayah.databackup.ui.components.TopBarTitle
@@ -108,6 +109,33 @@ fun MainScaffold(
                                 putExtra(
                                     TypeActivityTag,
                                     TypeRestoreMedia
+                                )
+                            })
+                    }
+                )
+            }
+            item {
+                val colorBlue = colorResource(id = R.color.green)
+                ItemCard(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_round_sim_card),
+                    iconTint = colorBlue,
+                    title = stringResource(R.string.telephony),
+                    subtitle = stringResource(R.string.card_telephony_subtitle),
+                    onBackupClick = {
+                        context.startActivity(
+                            Intent(context, TelephonyActivity::class.java).apply {
+                                putExtra(
+                                    TypeActivityTag,
+                                    TypeBackupTelephony
+                                )
+                            })
+                    },
+                    onRestoreClick = {
+                        context.startActivity(
+                            Intent(context, TelephonyActivity::class.java).apply {
+                                putExtra(
+                                    TypeActivityTag,
+                                    TypeRestoreTelephony
                                 )
                             })
                     }

@@ -16,6 +16,7 @@ interface IRemoteRootService {
     byte[] readBytes(String path);
     boolean writeText(String path, String text);
     boolean writeBytes(String path, in byte[] bytes);
+    boolean writeByDescriptor(String path, in ParcelFileDescriptor descriptor);
     boolean initActionLogFile(String path);
     boolean appendActionLog(String text);
 
@@ -26,4 +27,5 @@ interface IRemoteRootService {
     List<PackageInfo> pollInstalledPackages();
     boolean queryInstalled(String packageName, int userId);
     StorageStats queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
+    boolean grantRuntimePermission(String packageName, String permName, int userId);
 }

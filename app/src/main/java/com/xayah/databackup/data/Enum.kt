@@ -150,6 +150,8 @@ const val TypeBackupApp = "TypeBackupApp"
 const val TypeBackupMedia = "TypeBackupMedia"
 const val TypeRestoreApp = "TypeRestoreApp"
 const val TypeRestoreMedia = "TypeRestoreMedia"
+const val TypeBackupTelephony = "TypeBackupTelephony"
+const val TypeRestoreTelephony = "TypeRestoreTelephony"
 
 /**
  * 更新通道
