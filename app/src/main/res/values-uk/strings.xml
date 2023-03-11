@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">DataBackup</string>
     <string name="backup">Бекап</string>
     <string name="restore">Відновлення</string>
@@ -161,4 +161,29 @@
     <string name="not_installed">Не встановлено</string>
     <string name="retry">Повторити</string>
     <string name="succeed">Успішно</string>
+    <string name="telephony">Телефонія</string>
+    <string name="backed_up">Бекап</string>
+    <string name="restored">Відновлено</string>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> год.</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> год.</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> год.</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> год.</item>
+    </plurals>
+    <string name="card_telephony_subtitle">Бекап (відновлення) контактів, списку дзвінків або СМС/ММС</string>
+    <string name="posted_just_now">Щойно</string>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> хв.</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> хв.</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> хв.</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> хв.</item>
+    </plurals>
+    <string name="posted_now">Зараз</string>
+    <string name="not_the_default_sms_app_info">Для відновлення СМС/MMC потрібно, щоб DataBackup було встановлено CМС-додаток за замовчуванням</string>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> д.</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> д.</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> д.</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> д.</item>
+    </plurals>
 </resources>
