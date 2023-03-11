@@ -1,4 +1,5 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">DataBackup</string>
     <string name="backup">Бекап</string>
     <string name="restore">Восстановление</string>
@@ -160,4 +161,29 @@
     <string name="not_installed">Not installed</string>
     <string name="retry">Retry</string>
     <string name="succeed">Succeed</string>
+    <string name="telephony">Телефония</string>
+    <string name="backed_up">Бекап</string>
+    <string name="restored">Восстановлено</string>
+    <string name="posted_just_now">Прямо сейчас</string>
+    <string name="posted_now">Сейчас</string>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> ч.</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> ч.</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> ч.</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> ч.</item>
+    </plurals>
+    <string name="card_telephony_subtitle">Бекап (восстановление) контактов, журнала звонков или СМС/ММС</string>
+    <string name="not_the_default_sms_app_info">Для восстановления СМС/ММС требуется, чтобы DataBackup был установлен как СМС-приложение по умолчанию</string>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> мин.</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> мин.</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> мин.</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> мин.</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> д.</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> д.</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> д.</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> д.</item>
+    </plurals>
 </resources>
