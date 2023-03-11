@@ -166,6 +166,13 @@
     <string name="restored">已恢復</string>
     <string name="not_the_default_sms_app_info">恢復短/彩信需要將數據備份設置為默認短信應用</string>
 
+    <string-array name="telephony_type">
+        <item>聯繫人</item>
+        <item>通話記錄</item>
+        <item>短信</item>
+        <item>彩信</item>
+    </string-array>
+
     <string name="posted_just_now">"剛剛"</string>
     <string name="posted_now">"剛剛"</string>
     <plurals name="num_minutes_ago" formatted="false">

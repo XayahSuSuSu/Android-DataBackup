@@ -8,6 +8,7 @@ import com.xayah.databackup.data.SmsItem
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class TelephonyViewModel : ViewModel() {
+    val tabRowState: MutableState<Int> = mutableStateOf(0)
     val isRoleHolderDialogOpen: MutableState<Boolean> = mutableStateOf(false)
 
     val smsList by lazy {

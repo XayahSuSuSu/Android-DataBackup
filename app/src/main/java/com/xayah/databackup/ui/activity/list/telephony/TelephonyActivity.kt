@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.activity.list.telephony
 
+import android.Manifest
 import android.app.role.RoleManager
 import android.content.Intent
 import android.os.Build
@@ -9,9 +10,11 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -19,11 +22,13 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.xayah.databackup.R
 import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeBackupTelephony
 import com.xayah.databackup.data.TypeRestoreTelephony
-import com.xayah.databackup.ui.activity.list.telephony.components.SmsListScaffold
+import com.xayah.databackup.ui.activity.list.telephony.components.TelephonyScaffold
 import com.xayah.databackup.ui.activity.list.telephony.components.item.SmsBackupItem
 import com.xayah.databackup.ui.activity.list.telephony.components.item.SmsRestoreItem
 import com.xayah.databackup.ui.activity.list.telephony.util.Loader
@@ -119,19 +124,24 @@ class TelephonyActivity : ComponentActivity() {
                     showDismissBtn = true
                 )
 
-                SmsListScaffold(
+                val smsPermissionState = rememberPermissionState(
+                    Manifest.permission.READ_SMS
+                )
+                LaunchedEffect(null) {
+                    // Check permission
+                    if (smsPermissionState.status.isGranted.not()) {
+                        smsPermissionState.launchPermissionRequest()
+                    }
+                }
+
+                TelephonyScaffold(
                     viewModel = viewModel,
-                    itemContent = {
-                        when (type) {
-                            TypeBackupTelephony -> {
-                                SmsBackupItem(item = it)
-                            }
-                            TypeRestoreTelephony -> {
-                                SmsRestoreItem(item = it)
-                            }
-                            else -> {
-                            }
-                        }
+                    isFabVisible = when (viewModel.tabRowState.value) {
+                        0 -> false
+                        1 -> false
+                        2 -> true
+                        3 -> false
+                        else -> false
                     },
                     onConfirm = {
                         scope.launch {
@@ -161,7 +171,29 @@ class TelephonyActivity : ComponentActivity() {
                             }
                         }
                     },
-                    onFinish = { finish() })
+                    onFinish = { finish() },
+                    content = {
+                        when (viewModel.tabRowState.value) {
+                            0 -> {}
+                            1 -> {}
+                            2 -> {
+                                items(items = viewModel.smsList.value, itemContent = {
+                                    when (type) {
+                                        TypeBackupTelephony -> {
+                                            SmsBackupItem(item = it)
+                                        }
+                                        TypeRestoreTelephony -> {
+                                            SmsRestoreItem(item = it)
+                                        }
+                                        else -> {
+                                        }
+                                    }
+                                })
+                            }
+                            3 -> {}
+                        }
+                    }
+                )
             }
         }
     }

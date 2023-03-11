@@ -28,6 +28,7 @@ fun Scaffold(
     topBar: @Composable TopAppBarScrollBehavior.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     topPaddingRate: Int = 1,
+    topSpace: Boolean = true,
     bottomPaddingRate: Int = 1,
     isInitialized: MutableTransitionState<Boolean>? = null,
     content: LazyListScope.() -> Unit
@@ -66,6 +67,7 @@ fun Scaffold(
                     innerPadding = innerPadding,
                     topPaddingRate = topPaddingRate,
                     bottomPaddingRate = bottomPaddingRate,
+                    topSpace = topSpace,
                     content = content
                 )
             }
@@ -74,6 +76,7 @@ fun Scaffold(
                 innerPadding = innerPadding,
                 topPaddingRate = topPaddingRate,
                 bottomPaddingRate = bottomPaddingRate,
+                topSpace = topSpace,
                 content = content
             )
         }
@@ -91,6 +94,7 @@ fun Scaffold(
     topBar: @Composable TopAppBarScrollBehavior.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     topPaddingRate: Int = 1,
+    topSpace: Boolean = true,
     bottomPaddingRate: Int = 1,
     isInitialized: MutableTransitionState<Boolean>,
     progress: Float,
@@ -136,6 +140,7 @@ fun Scaffold(
                 innerPadding = innerPadding,
                 topPaddingRate = topPaddingRate,
                 bottomPaddingRate = bottomPaddingRate,
+                topSpace = topSpace,
                 content = content
             )
         }
@@ -148,6 +153,7 @@ fun StandardContent(
     innerPadding: PaddingValues,
     topPaddingRate: Int,
     bottomPaddingRate: Int,
+    topSpace: Boolean,
     content: LazyListScope.() -> Unit
 ) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
@@ -159,7 +165,12 @@ fun StandardContent(
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(innerPadding.calculateTopPadding() * topPaddingRate)
+                    .height(
+                        if (topSpace)
+                            innerPadding.calculateTopPadding() * topPaddingRate
+                        else
+                            (innerPadding.calculateTopPadding() * topPaddingRate) - mediumPadding
+                    )
             )
         }
         content()
