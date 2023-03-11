@@ -145,28 +145,28 @@ class TelephonyActivity : ComponentActivity() {
                     },
                     onConfirm = {
                         scope.launch {
-                            if (isRoleHeld.not()) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.not_the_default_sms_app_info),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                when (type) {
-                                    TypeBackupTelephony -> {
-                                        Processor.smsBackup(
-                                            viewModel = viewModel,
-                                            context = context
-                                        )
-                                    }
-                                    TypeRestoreTelephony -> {
+                            when (type) {
+                                TypeBackupTelephony -> {
+                                    Processor.smsBackup(
+                                        viewModel = viewModel,
+                                        context = context
+                                    )
+                                }
+                                TypeRestoreTelephony -> {
+                                    if (isRoleHeld.not()) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.not_the_default_sms_app_info),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
                                         Processor.smsRestore(
                                             viewModel = viewModel,
                                             context = context
                                         )
                                     }
-                                    else -> {
-                                    }
+                                }
+                                else -> {
                                 }
                             }
                         }
