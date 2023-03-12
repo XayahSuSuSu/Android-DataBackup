@@ -8,3 +8,4 @@ typealias RcloneMountMap = HashMap<String, RcloneMount>
 typealias BackupInfoList = MutableList<BackupInfo>
 typealias BlackListMap = HashMap<String, BlackListItem>
 typealias SmsList = MutableList<SmsItem>
+typealias MmsList = MutableList<MmsItem>

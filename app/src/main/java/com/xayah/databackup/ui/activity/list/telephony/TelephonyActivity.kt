@@ -29,6 +29,8 @@ import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeBackupTelephony
 import com.xayah.databackup.data.TypeRestoreTelephony
 import com.xayah.databackup.ui.activity.list.telephony.components.TelephonyScaffold
+import com.xayah.databackup.ui.activity.list.telephony.components.item.MmsBackupItem
+import com.xayah.databackup.ui.activity.list.telephony.components.item.MmsRestoreItem
 import com.xayah.databackup.ui.activity.list.telephony.components.item.SmsBackupItem
 import com.xayah.databackup.ui.activity.list.telephony.components.item.SmsRestoreItem
 import com.xayah.databackup.ui.activity.list.telephony.util.Loader
@@ -91,9 +93,17 @@ class TelephonyActivity : ComponentActivity() {
                             viewModel = viewModel,
                             context = this@TelephonyActivity
                         )
+                        Loader.mmsBackupList(
+                            viewModel = viewModel,
+                            context = this@TelephonyActivity
+                        )
                     }
                     TypeRestoreTelephony -> {
                         Loader.smsRestoreList(
+                            viewModel = viewModel,
+                            context = this@TelephonyActivity
+                        )
+                        Loader.mmsRestoreList(
                             viewModel = viewModel,
                             context = this@TelephonyActivity
                         )
@@ -140,17 +150,29 @@ class TelephonyActivity : ComponentActivity() {
                         0 -> false
                         1 -> false
                         2 -> true
-                        3 -> false
+                        3 -> true
                         else -> false
                     },
                     onConfirm = {
                         scope.launch {
                             when (type) {
                                 TypeBackupTelephony -> {
-                                    Processor.smsBackup(
-                                        viewModel = viewModel,
-                                        context = context
-                                    )
+                                    when (viewModel.tabRowState.value) {
+                                        0 -> {}
+                                        1 -> {}
+                                        2 -> {
+                                            Processor.smsBackup(
+                                                viewModel = viewModel,
+                                                context = context
+                                            )
+                                        }
+                                        3 -> {
+                                            Processor.mmsBackup(
+                                                viewModel = viewModel,
+                                                context = context
+                                            )
+                                        }
+                                    }
                                 }
                                 TypeRestoreTelephony -> {
                                     if (isRoleHeld.not()) {
@@ -160,10 +182,23 @@ class TelephonyActivity : ComponentActivity() {
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
-                                        Processor.smsRestore(
-                                            viewModel = viewModel,
-                                            context = context
-                                        )
+                                        when (viewModel.tabRowState.value) {
+                                            0 -> {}
+                                            1 -> {}
+                                            2 -> {
+                                                Processor.smsRestore(
+                                                    viewModel = viewModel,
+                                                    context = context
+                                                )
+                                            }
+                                            3 -> {
+                                                Processor.mmsRestore(
+                                                    viewModel = viewModel,
+                                                    context = context
+                                                )
+                                            }
+                                        }
+
                                     }
                                 }
                                 else -> {
@@ -190,7 +225,20 @@ class TelephonyActivity : ComponentActivity() {
                                     }
                                 })
                             }
-                            3 -> {}
+                            3 -> {
+                                items(items = viewModel.mmsList.value, itemContent = {
+                                    when (type) {
+                                        TypeBackupTelephony -> {
+                                            MmsBackupItem(item = it)
+                                        }
+                                        TypeRestoreTelephony -> {
+                                            MmsRestoreItem(item = it)
+                                        }
+                                        else -> {
+                                        }
+                                    }
+                                })
+                            }
                         }
                     }
                 )

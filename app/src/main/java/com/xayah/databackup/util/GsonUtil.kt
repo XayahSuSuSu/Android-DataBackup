@@ -343,4 +343,38 @@ class GsonUtil {
             false
         }
     }
+
+    /**
+     * Json to MmsList
+     */
+    fun fromMmsListJson(value: String): MmsList {
+        return try {
+            val mapType = object : TypeToken<MmsList>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            mutableListOf()
+        }
+    }
+
+    /**
+     * MmsList to json
+     */
+    private fun toMmsListJson(value: MmsList): String {
+        return gson.toJson(value)
+    }
+
+    /**
+     * Save mms list to file
+     */
+    suspend fun saveMmsListToFile(path: String, list: MmsList): Boolean {
+        return try {
+            saveToFileByMemory(
+                path,
+                getInstance().toMmsListJson(list).toByteArray()
+            )
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
 }

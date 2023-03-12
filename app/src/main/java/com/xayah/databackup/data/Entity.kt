@@ -290,7 +290,7 @@ data class BlackListItem(
 )
 
 /**
- * SMS/MMS database item
+ * SMS database item
  */
 data class SmsItem(
     @Expose var address: String,
@@ -319,3 +319,134 @@ data class SmsItem(
     var isInLocal: MutableState<Boolean>,
     var isOnThisDevice: MutableState<Boolean>,
 )
+
+/**
+ * MMS pdu table item
+ */
+data class MmsPduItem(
+    @Expose var contentClass: Long,
+    @Expose var contentLocation: String,
+    @Expose var contentType: String,
+    @Expose var date: Long,
+    @Expose var dateSent: Long,
+    @Expose var deliveryReport: Long,
+    @Expose var deliveryTime: Long,
+    @Expose var expiry: Long,
+    @Expose var locked: Long,
+    @Expose var messageBox: Long,
+    @Expose var messageClass: String,
+    @Expose var messageId: String,
+    @Expose var messageSize: Long,
+    @Expose var messageType: Long,
+    @Expose var mmsVersion: Long,
+    @Expose var priority: Long,
+    @Expose var read: Long,
+    @Expose var readReport: Long,
+    @Expose var readStatus: Long,
+    @Expose var reportAllowed: Long,
+    @Expose var responseStatus: Long,
+    @Expose var responseText: String,
+    @Expose var retrieveStatus: Long,
+    @Expose var retrieveText: String,
+    @Expose var retrieveTextCharset: Long,
+    @Expose var seen: Long,
+    @Expose var status: Long,
+    @Expose var subject: String,
+    @Expose var subjectCharset: Long,
+    @Expose var subscriptionId: Long,
+    @Expose var textOnly: Long,
+    @Expose var transactionId: String,
+)
+
+/**
+ * MMS addr table item
+ */
+data class MmsAddrItem(
+    @Expose var address: String,
+    @Expose var charset: Long,
+    @Expose var contactId: Long,
+    @Expose var type: Long,
+)
+
+/**
+ * MMS part table item
+ */
+data class MmsPartItem(
+    @Expose var charset: String,
+    @Expose var contentDisposition: String,
+    @Expose var contentId: String,
+    @Expose var contentLocation: String,
+    @Expose var contentType: String,
+    @Expose var ctStart: Long,
+    @Expose var ctType: String,
+    @Expose var filename: String,
+    @Expose var name: String,
+    @Expose var seq: Long,
+    @Expose var text: String,
+    @Expose var _data: String,
+)
+
+/**
+ * MMS database item
+ */
+data class MmsItem(
+    @Expose var pdu: MmsPduItem,
+    @Expose var addr: MutableList<MmsAddrItem>,
+    @Expose var part: MutableList<MmsPartItem>,
+    var isSelected: MutableState<Boolean>,
+    var isInLocal: MutableState<Boolean>,
+    var isOnThisDevice: MutableState<Boolean>,
+) {
+    val address: String
+        get() = run {
+            for (i in addr) {
+                if (i.address != "insert-address-token") {
+                    return@run i.address
+                }
+            }
+            ""
+        }
+
+    val type: Long
+        get() = run {
+            for (i in addr) {
+                if (i.address != "insert-address-token") {
+                    return@run i.type
+                }
+            }
+            0L
+        }
+
+    val content: String
+        get() = run {
+            var tmp = ""
+            for (i in part) {
+                if (i.contentType == "text/plain") {
+                    tmp += i.text + "\n"
+                } else if (i.contentType != "application/smil") {
+                    tmp += "[${i.contentType}]" + "\n"
+                }
+            }
+            tmp.trim()
+        }
+
+    val smilText: String
+        get() = run {
+            for (i in part) {
+                if (i.contentType == "application/smil") {
+                    return@run i.text
+                }
+            }
+            ""
+        }
+
+    val plainText: String
+        get() = run {
+            for (i in part) {
+                if (i.contentType == "text/plain") {
+                    return@run i.text
+                }
+            }
+            ""
+        }
+}

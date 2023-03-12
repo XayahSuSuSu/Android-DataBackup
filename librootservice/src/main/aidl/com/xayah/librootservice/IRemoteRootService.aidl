@@ -11,6 +11,7 @@ interface IRemoteRootService {
     boolean createNewFile(String path);
     boolean deleteRecursively(String path);
     boolean mkdirs(String path);
+    boolean copyTo(String path, String targetPath, boolean overwrite);
     long countSize(String path);
     String readText(String path);
     byte[] readBytes(String path);

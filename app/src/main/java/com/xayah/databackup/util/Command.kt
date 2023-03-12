@@ -4,6 +4,7 @@ import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.net.Uri
 import android.os.Build
 import android.provider.Telephony
 import androidx.compose.runtime.mutableStateOf
@@ -1173,6 +1174,270 @@ class Command {
                 }
             }
             return smsList
+        }
+
+        suspend fun getMmsList(context: Context, readOnly: Boolean): MmsList {
+            var mmsList: MmsList = mutableListOf()
+
+            runOnIO {
+                // Read from storage
+                mmsList = GsonUtil.getInstance().fromMmsListJson(
+                    RootService.getInstance().readText(Path.getMmsListPath())
+                )
+                mmsList.forEach {
+                    it.isSelected = mutableStateOf(readOnly)
+                    it.isInLocal = mutableStateOf(true)
+                    it.isOnThisDevice = mutableStateOf(false)
+                }
+
+                context.contentResolver.query(
+                    Telephony.Mms.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    Telephony.Mms.DEFAULT_SORT_ORDER
+                )?.apply {
+                    val tmpList: MmsList = mutableListOf()
+                    while (moveToNext()) {
+                        try {
+                            /**
+                             * (pdu)_id -> (addr)msg_id
+                             * (pdu)_id -> (part)mid
+                             */
+
+                            /**
+                             * Get data from pdu table
+                             */
+                            val id = getLong(getColumnIndexOrThrow(Telephony.Mms._ID))
+                            val contentClass =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.CONTENT_CLASS))
+                            val contentLocation =
+                                getString(getColumnIndexOrThrow(Telephony.Mms.CONTENT_LOCATION))
+                                    ?: ""
+                            val contentType =
+                                getString(getColumnIndexOrThrow(Telephony.Mms.CONTENT_TYPE)) ?: ""
+                            val date = getLong(getColumnIndexOrThrow(Telephony.Mms.DATE))
+                            val dateSent = getLong(getColumnIndexOrThrow(Telephony.Mms.DATE_SENT))
+                            val deliveryReport =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.DELIVERY_REPORT))
+                            val deliveryTime =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.DELIVERY_TIME))
+                            val expiry = getLong(getColumnIndexOrThrow(Telephony.Mms.EXPIRY))
+                            val locked = getLong(getColumnIndexOrThrow(Telephony.Mms.LOCKED))
+                            val messageBox =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.MESSAGE_BOX))
+                            val messageClass =
+                                getString(getColumnIndexOrThrow(Telephony.Mms.MESSAGE_CLASS)) ?: ""
+                            val messageId =
+                                getString(getColumnIndexOrThrow(Telephony.Mms.MESSAGE_ID)) ?: ""
+                            val messageSize =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.MESSAGE_SIZE))
+                            val messageType =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.MESSAGE_TYPE))
+                            val mmsVersion =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.MMS_VERSION))
+                            val priority = getLong(getColumnIndexOrThrow(Telephony.Mms.PRIORITY))
+                            val read = getLong(getColumnIndexOrThrow(Telephony.Mms.READ))
+                            val readReport =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.READ_REPORT))
+                            val readStatus =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.READ_STATUS))
+                            val reportAllowed =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.REPORT_ALLOWED))
+                            val responseStatus =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.RESPONSE_STATUS))
+                            val responseText =
+                                getString(getColumnIndexOrThrow(Telephony.Mms.RESPONSE_TEXT)) ?: ""
+                            val retrieveStatus =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.RETRIEVE_STATUS))
+                            val retrieveText =
+                                getString(getColumnIndexOrThrow(Telephony.Mms.RETRIEVE_TEXT)) ?: ""
+                            val retrieveTextCharset =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.RETRIEVE_TEXT_CHARSET))
+                            val seen = getLong(getColumnIndexOrThrow(Telephony.Mms.SEEN))
+                            val status = getLong(getColumnIndexOrThrow(Telephony.Mms.STATUS))
+                            val subject =
+                                getString(getColumnIndexOrThrow(Telephony.Mms.SUBJECT)) ?: ""
+                            val subjectCharset =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.SUBJECT_CHARSET))
+                            val subscriptionId =
+                                getLong(getColumnIndexOrThrow(Telephony.Mms.SUBSCRIPTION_ID))
+                            val textOnly = getLong(getColumnIndexOrThrow(Telephony.Mms.TEXT_ONLY))
+                            val transactionId =
+                                getString(getColumnIndexOrThrow(Telephony.Mms.TRANSACTION_ID)) ?: ""
+                            val pdu = MmsPduItem(
+                                contentClass = contentClass,
+                                contentLocation = contentLocation,
+                                contentType = contentType,
+                                date = date,
+                                dateSent = dateSent,
+                                deliveryReport = deliveryReport,
+                                deliveryTime = deliveryTime,
+                                expiry = expiry,
+                                locked = locked,
+                                messageBox = messageBox,
+                                messageClass = messageClass,
+                                messageId = messageId,
+                                messageSize = messageSize,
+                                messageType = messageType,
+                                mmsVersion = mmsVersion,
+                                priority = priority,
+                                read = read,
+                                readReport = readReport,
+                                readStatus = readStatus,
+                                reportAllowed = reportAllowed,
+                                responseStatus = responseStatus,
+                                responseText = responseText,
+                                retrieveStatus = retrieveStatus,
+                                retrieveText = retrieveText,
+                                retrieveTextCharset = retrieveTextCharset,
+                                seen = seen,
+                                status = status,
+                                subject = subject,
+                                subjectCharset = subjectCharset,
+                                subscriptionId = subscriptionId,
+                                textOnly = textOnly,
+                                transactionId = transactionId,
+                            )
+
+                            /**
+                             * Get data from addr table
+                             */
+                            val addr = mutableListOf<MmsAddrItem>()
+                            context.contentResolver.query(
+                                Uri.parse("content://mms/$id/addr"),
+                                null,
+                                null,
+                                null,
+                                null
+                            )?.apply {
+                                while (moveToNext()) {
+                                    try {
+                                        val address =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Addr.ADDRESS))
+                                                ?: ""
+                                        val charset =
+                                            getLong(getColumnIndexOrThrow(Telephony.Mms.Addr.CHARSET))
+                                        val contactId =
+                                            getLong(getColumnIndexOrThrow(Telephony.Mms.Addr.CONTACT_ID))
+                                        val type =
+                                            getLong(getColumnIndexOrThrow(Telephony.Mms.Addr.TYPE))
+                                        addr.add(
+                                            MmsAddrItem(
+                                                address = address,
+                                                charset = charset,
+                                                contactId = contactId,
+                                                type = type
+                                            )
+                                        )
+                                    } catch (_: Exception) {
+                                    }
+                                }
+                                close()
+                            }
+
+                            /**
+                             * Get data from part table
+                             */
+                            val part = mutableListOf<MmsPartItem>()
+                            context.contentResolver.query(
+                                Uri.parse("content://mms/$id/part"),
+                                null,
+                                null,
+                                null,
+                                null
+                            )?.apply {
+                                while (moveToNext()) {
+                                    try {
+                                        val charset =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.CHARSET))
+                                                ?: ""
+                                        val contentDisposition =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.CONTENT_DISPOSITION))
+                                                ?: ""
+                                        val contentId =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.CONTENT_ID))
+                                                ?: ""
+                                        val partContentLocation =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.CONTENT_LOCATION))
+                                                ?: ""
+                                        val partContentType =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.CONTENT_TYPE))
+                                                ?: ""
+                                        val ctStart =
+                                            getLong(getColumnIndexOrThrow(Telephony.Mms.Part.CT_START))
+                                        val ctType =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.CT_TYPE))
+                                                ?: ""
+                                        val filename =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.FILENAME))
+                                                ?: ""
+                                        val name =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.NAME))
+                                                ?: ""
+                                        val seq =
+                                            getLong(getColumnIndexOrThrow(Telephony.Mms.Part.SEQ))
+                                        val text =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part.TEXT))
+                                                ?: ""
+                                        val _data =
+                                            getString(getColumnIndexOrThrow(Telephony.Mms.Part._DATA))
+                                                ?: ""
+                                        part.add(
+                                            MmsPartItem(
+                                                charset,
+                                                contentDisposition,
+                                                contentId,
+                                                partContentLocation,
+                                                partContentType,
+                                                ctStart,
+                                                ctType,
+                                                filename,
+                                                name,
+                                                seq,
+                                                text,
+                                                _data,
+                                            )
+                                        )
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                                close()
+                            }
+
+                            val mmsItem = MmsItem(
+                                pdu = pdu,
+                                addr = addr,
+                                part = part,
+                                isSelected = mutableStateOf(true),
+                                isInLocal = mutableStateOf(false),
+                                isOnThisDevice = mutableStateOf(true),
+                            )
+
+                            var exist = false
+                            for (i in mmsList) {
+                                // Check if it already exists
+                                if (i.address == mmsItem.address && i.smilText == mmsItem.smilText && i.plainText == mmsItem.plainText && i.pdu.date == mmsItem.pdu.date && i.pdu.dateSent == mmsItem.pdu.dateSent && i.pdu.messageType == mmsItem.pdu.messageType && i.pdu.messageSize == mmsItem.pdu.messageSize) {
+                                    i.isSelected.value = false
+                                    i.isOnThisDevice.value = true
+                                    exist = true
+                                    break
+                                }
+                            }
+                            if (exist) continue
+
+                            if (readOnly.not())
+                                tmpList.add(mmsItem)
+                        } catch (_: Exception) {
+                        }
+                    }
+                    close()
+                    mmsList.addAll(tmpList)
+                    mmsList.sortByDescending { it.pdu.date }
+                }
+            }
+            return mmsList
         }
     }
 }

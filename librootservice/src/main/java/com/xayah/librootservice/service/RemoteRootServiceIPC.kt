@@ -107,6 +107,17 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         }
     }
 
+    override fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean {
+        return try {
+            mkdirs(Paths.get(path).parent.pathString)
+            val file = File(path)
+            file.copyTo(File(targetPath), overwrite)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     /**
      * 计算文件/文件夹大小
      */

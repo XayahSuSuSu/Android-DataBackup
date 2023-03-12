@@ -69,6 +69,10 @@ class RootService {
         return ipc.mkdirs(path)
     }
 
+    fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean {
+        return ipc.copyTo(path, targetPath, overwrite)
+    }
+
     fun countSize(path: String): Long {
         return ipc.countSize(path)
     }

@@ -95,5 +95,13 @@ class Path {
         fun getSmsListPath(): String {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/telephony/smsList"
         }
+
+        fun getMmsListPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/telephony/mmsList"
+        }
+
+        fun getMmsDataPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/telephony/mmsData"
+        }
     }
 }
