@@ -450,3 +450,75 @@ data class MmsItem(
             ""
         }
 }
+
+/**
+ * Contact data table item
+ */
+data class ContactDataItem(
+    @Expose var data1: String,
+    @Expose var data2: String,
+    @Expose var data3: String,
+    @Expose var data4: String,
+    @Expose var data5: String,
+    @Expose var data6: String,
+    @Expose var data7: String,
+    @Expose var data8: String,
+    @Expose var data9: String,
+    @Expose var data10: String,
+    @Expose var data11: String,
+    @Expose var data12: String,
+    @Expose var data13: String,
+    @Expose var data14: String,
+    @Expose var data15: String,
+    @Expose var dataVersion: Long,
+    @Expose var isPrimary: Long,
+    @Expose var isSuperPrimary: Long,
+    @Expose var mimetype: String,
+    @Expose var preferredPhoneAccountComponentName: String,
+    @Expose var preferredPhoneAccountId: String,
+    @Expose var sync1: String,
+    @Expose var sync2: String,
+    @Expose var sync3: String,
+    @Expose var sync4: String,
+)
+
+/**
+ * Contact raw_contacts table item
+ */
+data class ContactRawContactItem(
+    @Expose var aggregationMode: Long,
+    @Expose var backupId: String,
+    @Expose var deleted: Long,
+    @Expose var customRingtone: String,
+    @Expose var displayNameAlternative: String,
+    @Expose var displayNamePrimary: String,
+    @Expose var displayNameSource: Long,
+    @Expose var phoneticName: String,
+    @Expose var phoneticNameStyle: String,
+    @Expose var sortKeyAlternative: String,
+    @Expose var sortKeyPrimary: String,
+    @Expose var dirty: Long,
+    @Expose var sourceId: String,
+    @Expose var version: Long,
+)
+
+
+/**
+ * Contact database item
+ */
+data class ContactItem(
+    @Expose var rawContact: ContactRawContactItem,
+    @Expose var data: MutableList<ContactDataItem>,
+    var isSelected: MutableState<Boolean>,
+    var isInLocal: MutableState<Boolean>,
+    var isOnThisDevice: MutableState<Boolean>,
+) {
+    val bodyText: String
+        get() = run {
+            var body = ""
+            for (i in data) {
+                body += i.data1 + "\n"
+            }
+            body.trim()
+        }
+}

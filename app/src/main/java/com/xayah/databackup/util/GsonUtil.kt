@@ -377,4 +377,38 @@ class GsonUtil {
             false
         }
     }
+
+    /**
+     * Json to ContactList
+     */
+    fun fromContactListJson(value: String): ContactList {
+        return try {
+            val mapType = object : TypeToken<ContactList>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            mutableListOf()
+        }
+    }
+
+    /**
+     * ContactList to json
+     */
+    private fun toContactListJson(value: ContactList): String {
+        return gson.toJson(value)
+    }
+
+    /**
+     * Save sms list to file
+     */
+    suspend fun saveContactListToFile(path: String, list: ContactList): Boolean {
+        return try {
+            saveToFileByMemory(
+                path,
+                getInstance().toContactListJson(list).toByteArray()
+            )
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
 }

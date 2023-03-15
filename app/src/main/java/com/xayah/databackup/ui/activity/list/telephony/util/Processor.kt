@@ -3,6 +3,7 @@ package com.xayah.databackup.ui.activity.list.telephony.util
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.provider.ContactsContract
 import android.provider.Telephony
 import android.widget.Toast
 import com.xayah.databackup.R
@@ -306,6 +307,111 @@ class Processor {
                             null,
                             null
                         )
+                    }
+                }
+            }
+        }
+
+        suspend fun contactsBackup(viewModel: TelephonyViewModel, context: Context) {
+            val selectedList =
+                viewModel.contactsList.value.filter { it.isSelected.value || it.isInLocal.value }
+                    .toMutableList()
+            selectedList.forEach {
+                it.isInLocal.value = true
+                it.isSelected.value = false
+            }
+            GsonUtil.getInstance()
+                .saveContactListToFile(Path.getContactListPath(), selectedList)
+                .apply {
+                    Toast.makeText(
+                        context,
+                        context.getString(if (this) R.string.succeed else R.string.failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        }
+
+        fun contactsRestore(viewModel: TelephonyViewModel, context: Context) {
+            for (i in viewModel.contactsList.value) {
+                if (i.isSelected.value) {
+                    // Create raw_contacts first
+                    val rawContactData = ContentValues().apply {
+                        put(ContactsContract.RawContacts.AGGREGATION_MODE, i.rawContact.aggregationMode)
+                        put(ContactsContract.RawContacts.BACKUP_ID, i.rawContact.backupId)
+                        put(ContactsContract.RawContacts.DELETED, i.rawContact.deleted)
+                        put(ContactsContract.RawContacts.CUSTOM_RINGTONE, i.rawContact.customRingtone)
+                        put(ContactsContract.RawContacts.DISPLAY_NAME_ALTERNATIVE, i.rawContact.displayNameAlternative)
+                        put(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY, i.rawContact.displayNamePrimary)
+                        put(ContactsContract.RawContacts.DISPLAY_NAME_SOURCE, i.rawContact.displayNameSource)
+                        put(ContactsContract.RawContacts.PHONETIC_NAME, i.rawContact.phoneticName)
+                        put(ContactsContract.RawContacts.PHONETIC_NAME_STYLE, i.rawContact.phoneticNameStyle)
+                        put(ContactsContract.RawContacts.SORT_KEY_ALTERNATIVE, i.rawContact.sortKeyAlternative)
+                        put(ContactsContract.RawContacts.SORT_KEY_PRIMARY, i.rawContact.sortKeyPrimary)
+                        put(ContactsContract.RawContacts.DIRTY, i.rawContact.dirty)
+                        put(ContactsContract.RawContacts.SOURCE_ID, i.rawContact.sourceId)
+                        put(ContactsContract.RawContacts.VERSION, i.rawContact.version)
+                    }
+                    val rawContactSmsUri = context.contentResolver.insert(
+                        ContactsContract.RawContacts.CONTENT_URI,
+                        rawContactData
+                    )
+
+                    if (rawContactSmsUri != null) {
+                        // Get the contact_id
+                        context.contentResolver.query(
+                            rawContactSmsUri,
+                            null,
+                            null,
+                            null,
+                            null
+                        )?.apply {
+                            while (moveToNext()) {
+                                try {
+                                    val _id = getLong(getColumnIndexOrThrow(ContactsContract.RawContacts._ID))
+
+                                    // Restore data table
+                                    for (j in i.data) {
+                                        val data = ContentValues().apply {
+                                            put(ContactsContract.Contacts.Data.DATA1, j.data1)
+                                            put(ContactsContract.Contacts.Data.DATA2, j.data2)
+                                            put(ContactsContract.Contacts.Data.DATA3, j.data3)
+                                            put(ContactsContract.Contacts.Data.DATA4, j.data4)
+                                            put(ContactsContract.Contacts.Data.DATA5, j.data5)
+                                            put(ContactsContract.Contacts.Data.DATA6, j.data6)
+                                            put(ContactsContract.Contacts.Data.DATA7, j.data7)
+                                            put(ContactsContract.Contacts.Data.DATA8, j.data8)
+                                            put(ContactsContract.Contacts.Data.DATA9, j.data9)
+                                            put(ContactsContract.Contacts.Data.DATA10, j.data10)
+                                            put(ContactsContract.Contacts.Data.DATA11, j.data11)
+                                            put(ContactsContract.Contacts.Data.DATA12, j.data12)
+                                            put(ContactsContract.Contacts.Data.DATA13, j.data13)
+                                            put(ContactsContract.Contacts.Data.DATA14, j.data14)
+                                            put(ContactsContract.Contacts.Data.DATA15, j.data15)
+                                            put(ContactsContract.Contacts.Data.DATA_VERSION, j.dataVersion)
+                                            put(ContactsContract.Contacts.Data.IS_PRIMARY, j.isPrimary)
+                                            put(ContactsContract.Contacts.Data.IS_SUPER_PRIMARY, j.isSuperPrimary)
+                                            put(ContactsContract.Contacts.Data.MIMETYPE, j.mimetype)
+                                            put(ContactsContract.Contacts.Data.PREFERRED_PHONE_ACCOUNT_COMPONENT_NAME, j.preferredPhoneAccountComponentName)
+                                            put(ContactsContract.Contacts.Data.PREFERRED_PHONE_ACCOUNT_ID, j.preferredPhoneAccountId)
+                                            put(ContactsContract.Contacts.Data.RAW_CONTACT_ID, _id)
+                                            put(ContactsContract.Contacts.Data.SYNC1, j.sync1)
+                                            put(ContactsContract.Contacts.Data.SYNC2, j.sync2)
+                                            put(ContactsContract.Contacts.Data.SYNC3, j.sync3)
+                                            put(ContactsContract.Contacts.Data.SYNC4, j.sync4)
+                                        }
+                                        context.contentResolver.insert(
+                                            ContactsContract.Data.CONTENT_URI,
+                                            data
+                                        )
+                                    }
+                                    i.isSelected.value = false
+                                    i.isOnThisDevice.value = true
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                            close()
+                        }
                     }
                 }
             }

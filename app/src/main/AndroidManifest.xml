@@ -2,19 +2,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 应用相关 -->
+    <!-- App info -->
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
+
+    <!-- Update/Firebase -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- SMS/MMS Permission -->
+    <!-- SMS/MMS permissions -->
     <uses-permission android:name="android.permission.READ_SMS" />
 
-    <!-- 存储相关 -->
+    <!-- Contacts permissions -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
+    <!-- Storage permissions -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission

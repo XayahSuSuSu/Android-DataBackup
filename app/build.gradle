@@ -148,7 +148,7 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
 
     // Accompanist
-    def accompanistVersion = '0.29.1-alpha'
+    def accompanistVersion = '0.29.2-rc'
     implementation "com.google.accompanist:accompanist-insets:$accompanistVersion"
     implementation "com.google.accompanist:accompanist-insets-ui:$accompanistVersion"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion"

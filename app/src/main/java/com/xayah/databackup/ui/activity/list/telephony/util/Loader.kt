@@ -21,5 +21,13 @@ class Loader {
         suspend fun mmsRestoreList(viewModel: TelephonyViewModel, context: Context) {
             viewModel.mmsList.value.addAll(Command.getMmsList(context = context, readOnly = true))
         }
+
+        suspend fun contactsBackupList(viewModel: TelephonyViewModel, context: Context) {
+            viewModel.contactsList.value.addAll(Command.getContactList(context = context, readOnly = false))
+        }
+
+        suspend fun contactsRestoreList(viewModel: TelephonyViewModel, context: Context) {
+            viewModel.contactsList.value.addAll(Command.getContactList(context = context, readOnly = true))
+        }
     }
 }

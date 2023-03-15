@@ -23,16 +23,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.xayah.databackup.R
 import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeBackupTelephony
 import com.xayah.databackup.data.TypeRestoreTelephony
 import com.xayah.databackup.ui.activity.list.telephony.components.TelephonyScaffold
-import com.xayah.databackup.ui.activity.list.telephony.components.item.MmsBackupItem
-import com.xayah.databackup.ui.activity.list.telephony.components.item.MmsRestoreItem
-import com.xayah.databackup.ui.activity.list.telephony.components.item.SmsBackupItem
-import com.xayah.databackup.ui.activity.list.telephony.components.item.SmsRestoreItem
+import com.xayah.databackup.ui.activity.list.telephony.components.item.*
 import com.xayah.databackup.ui.activity.list.telephony.util.Loader
 import com.xayah.databackup.ui.activity.list.telephony.util.Processor
 import com.xayah.databackup.ui.components.TextDialog
@@ -97,6 +95,10 @@ class TelephonyActivity : ComponentActivity() {
                             viewModel = viewModel,
                             context = this@TelephonyActivity
                         )
+                        Loader.contactsBackupList(
+                            viewModel = viewModel,
+                            context = this@TelephonyActivity
+                        )
                     }
                     TypeRestoreTelephony -> {
                         Loader.smsRestoreList(
@@ -107,8 +109,10 @@ class TelephonyActivity : ComponentActivity() {
                             viewModel = viewModel,
                             context = this@TelephonyActivity
                         )
-                    }
-                    else -> {
+                        Loader.contactsRestoreList(
+                            viewModel = viewModel,
+                            context = this@TelephonyActivity
+                        )
                     }
                 }
             }
@@ -137,17 +141,35 @@ class TelephonyActivity : ComponentActivity() {
                 val smsPermissionState = rememberPermissionState(
                     Manifest.permission.READ_SMS
                 )
+                val contactsPermissionsState = rememberMultiplePermissionsState(
+                    listOf(
+                        Manifest.permission.READ_CONTACTS,
+                        Manifest.permission.WRITE_CONTACTS,
+                    )
+                )
                 LaunchedEffect(null) {
-                    // Check permission
-                    if (smsPermissionState.status.isGranted.not()) {
-                        smsPermissionState.launchPermissionRequest()
+                    when (viewModel.tabRowState.value) {
+                        0 -> {
+                            // Check contacts permission
+                            if (contactsPermissionsState.allPermissionsGranted.not()) {
+                                contactsPermissionsState.launchMultiplePermissionRequest()
+                            }
+                        }
+                        1 -> {
+                        }
+                        2, 3 -> {
+                            // Check sms permission
+                            if (smsPermissionState.status.isGranted.not()) {
+                                smsPermissionState.launchPermissionRequest()
+                            }
+                        }
                     }
                 }
 
                 TelephonyScaffold(
                     viewModel = viewModel,
                     isFabVisible = when (viewModel.tabRowState.value) {
-                        0 -> false
+                        0 -> true
                         1 -> false
                         2 -> true
                         3 -> true
@@ -158,7 +180,12 @@ class TelephonyActivity : ComponentActivity() {
                             when (type) {
                                 TypeBackupTelephony -> {
                                     when (viewModel.tabRowState.value) {
-                                        0 -> {}
+                                        0 -> {
+                                            Processor.contactsBackup(
+                                                viewModel = viewModel,
+                                                context = context
+                                            )
+                                        }
                                         1 -> {}
                                         2 -> {
                                             Processor.smsBackup(
@@ -183,7 +210,12 @@ class TelephonyActivity : ComponentActivity() {
                                         ).show()
                                     } else {
                                         when (viewModel.tabRowState.value) {
-                                            0 -> {}
+                                            0 -> {
+                                                Processor.contactsRestore(
+                                                    viewModel = viewModel,
+                                                    context = context
+                                                )
+                                            }
                                             1 -> {}
                                             2 -> {
                                                 Processor.smsRestore(
@@ -201,15 +233,24 @@ class TelephonyActivity : ComponentActivity() {
 
                                     }
                                 }
-                                else -> {
-                                }
                             }
                         }
                     },
                     onFinish = { finish() },
                     content = {
                         when (viewModel.tabRowState.value) {
-                            0 -> {}
+                            0 -> {
+                                items(items = viewModel.contactsList.value, itemContent = {
+                                    when (type) {
+                                        TypeBackupTelephony -> {
+                                            ContactsBackupItem(item = it)
+                                        }
+                                        TypeRestoreTelephony -> {
+                                            ContactsRestoreItem(item = it)
+                                        }
+                                    }
+                                })
+                            }
                             1 -> {}
                             2 -> {
                                 items(items = viewModel.smsList.value, itemContent = {
@@ -219,8 +260,6 @@ class TelephonyActivity : ComponentActivity() {
                                         }
                                         TypeRestoreTelephony -> {
                                             SmsRestoreItem(item = it)
-                                        }
-                                        else -> {
                                         }
                                     }
                                 })
@@ -233,8 +272,6 @@ class TelephonyActivity : ComponentActivity() {
                                         }
                                         TypeRestoreTelephony -> {
                                             MmsRestoreItem(item = it)
-                                        }
-                                        else -> {
                                         }
                                     }
                                 })

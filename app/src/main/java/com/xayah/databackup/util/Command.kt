@@ -6,6 +6,8 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.net.Uri
 import android.os.Build
+import android.provider.ContactsContract.Contacts
+import android.provider.ContactsContract.RawContacts
 import android.provider.Telephony
 import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
@@ -1438,6 +1440,237 @@ class Command {
                 }
             }
             return mmsList
+        }
+
+        suspend fun getContactList(context: Context, readOnly: Boolean): ContactList {
+            var contactList: ContactList = mutableListOf()
+
+            runOnIO {
+                // Read from storage
+                contactList = GsonUtil.getInstance().fromContactListJson(
+                    RootService.getInstance().readText(Path.getContactListPath())
+                )
+                contactList.forEach {
+                    it.isSelected = mutableStateOf(readOnly)
+                    it.isInLocal = mutableStateOf(true)
+                    it.isOnThisDevice = mutableStateOf(false)
+                }
+
+                context.contentResolver.query(
+                    RawContacts.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+                )?.apply {
+                    val tmpList: ContactList = mutableListOf()
+                    while (moveToNext()) {
+                        try {
+                            /**
+                             * (raw_contacts)_id -> (data)raw_contact_id
+                             */
+
+                            /**
+                             * Get data from raw_contacts table
+                             */
+                            val _id = getLong(getColumnIndexOrThrow(RawContacts._ID))
+                            val aggregationMode =
+                                getLong(getColumnIndexOrThrow(RawContacts.AGGREGATION_MODE))
+                            val backupId =
+                                getString(getColumnIndexOrThrow(RawContacts.BACKUP_ID)) ?: ""
+                            val deleted = getLong(getColumnIndexOrThrow(RawContacts.DELETED))
+                            val customRingtone =
+                                getString(getColumnIndexOrThrow(RawContacts.CUSTOM_RINGTONE)) ?: ""
+                            val displayNameAlternative =
+                                getString(getColumnIndexOrThrow(RawContacts.DISPLAY_NAME_ALTERNATIVE))
+                                    ?: ""
+                            val displayNamePrimary =
+                                getString(getColumnIndexOrThrow(RawContacts.DISPLAY_NAME_PRIMARY))
+                                    ?: ""
+                            val displayNameSource =
+                                getLong(getColumnIndexOrThrow(RawContacts.DISPLAY_NAME_SOURCE))
+                            val phoneticName =
+                                getString(getColumnIndexOrThrow(RawContacts.PHONETIC_NAME)) ?: ""
+                            val phoneticNameStyle =
+                                getString(getColumnIndexOrThrow(RawContacts.PHONETIC_NAME_STYLE))
+                                    ?: ""
+                            val sortKeyAlternative =
+                                getString(getColumnIndexOrThrow(RawContacts.SORT_KEY_ALTERNATIVE))
+                                    ?: ""
+                            val sortKeyPrimary =
+                                getString(getColumnIndexOrThrow(RawContacts.SORT_KEY_PRIMARY)) ?: ""
+                            val dirty = getLong(getColumnIndexOrThrow(RawContacts.DIRTY))
+                            val sourceId =
+                                getString(getColumnIndexOrThrow(RawContacts.SOURCE_ID)) ?: ""
+                            val version = getLong(getColumnIndexOrThrow(RawContacts.VERSION))
+                            val rawContact = ContactRawContactItem(
+                                aggregationMode = aggregationMode,
+                                backupId = backupId,
+                                deleted = deleted,
+                                customRingtone = customRingtone,
+                                displayNameAlternative = displayNameAlternative,
+                                displayNamePrimary = displayNamePrimary,
+                                displayNameSource = displayNameSource,
+                                phoneticName = phoneticName,
+                                phoneticNameStyle = phoneticNameStyle,
+                                sortKeyAlternative = sortKeyAlternative,
+                                sortKeyPrimary = sortKeyPrimary,
+                                dirty = dirty,
+                                sourceId = sourceId,
+                                version = version,
+                            )
+
+                            /**
+                             * Get data from data table
+                             */
+                            val data = mutableListOf<ContactDataItem>()
+                            context.contentResolver.query(
+                                Uri.parse("content://com.android.contacts/raw_contacts/$_id/data"),
+                                null,
+                                null,
+                                null,
+                                null
+                            )?.apply {
+                                while (moveToNext()) {
+                                    try {
+                                        val data1 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA1))
+                                                ?: ""
+                                        val data2 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA2))
+                                                ?: ""
+                                        val data3 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA3))
+                                                ?: ""
+                                        val data4 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA4))
+                                                ?: ""
+                                        val data5 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA5))
+                                                ?: ""
+                                        val data6 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA6))
+                                                ?: ""
+                                        val data7 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA7))
+                                                ?: ""
+                                        val data8 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA8))
+                                                ?: ""
+                                        val data9 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA9))
+                                                ?: ""
+                                        val data10 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA10))
+                                                ?: ""
+                                        val data11 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA11))
+                                                ?: ""
+                                        val data12 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA12))
+                                                ?: ""
+                                        val data13 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA13))
+                                                ?: ""
+                                        val data14 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA14))
+                                                ?: ""
+                                        val data15 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.DATA15))
+                                                ?: ""
+                                        val dataVersion =
+                                            getLong(getColumnIndexOrThrow(Contacts.Data.DATA_VERSION))
+                                        val isPrimary =
+                                            getLong(getColumnIndexOrThrow(Contacts.Data.IS_PRIMARY))
+                                        val isSuperPrimary =
+                                            getLong(getColumnIndexOrThrow(Contacts.Data.IS_SUPER_PRIMARY))
+                                        val mimetype =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.MIMETYPE))
+                                                ?: ""
+                                        val preferredPhoneAccountComponentName =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.PREFERRED_PHONE_ACCOUNT_COMPONENT_NAME))
+                                                ?: ""
+                                        val preferredPhoneAccountId =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.PREFERRED_PHONE_ACCOUNT_ID))
+                                                ?: ""
+                                        val sync1 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.SYNC1))
+                                                ?: ""
+                                        val sync2 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.SYNC2))
+                                                ?: ""
+                                        val sync3 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.SYNC3))
+                                                ?: ""
+                                        val sync4 =
+                                            getString(getColumnIndexOrThrow(Contacts.Data.SYNC4))
+                                                ?: ""
+                                        data.add(
+                                            ContactDataItem(
+                                                data1 = data1,
+                                                data2 = data2,
+                                                data3 = data3,
+                                                data4 = data4,
+                                                data5 = data5,
+                                                data6 = data6,
+                                                data7 = data7,
+                                                data8 = data8,
+                                                data9 = data9,
+                                                data10 = data10,
+                                                data11 = data11,
+                                                data12 = data12,
+                                                data13 = data13,
+                                                data14 = data14,
+                                                data15 = data15,
+                                                dataVersion = dataVersion,
+                                                isPrimary = isPrimary,
+                                                isSuperPrimary = isSuperPrimary,
+                                                mimetype = mimetype,
+                                                preferredPhoneAccountComponentName = preferredPhoneAccountComponentName,
+                                                preferredPhoneAccountId = preferredPhoneAccountId,
+                                                sync1 = sync1,
+                                                sync2 = sync2,
+                                                sync3 = sync3,
+                                                sync4 = sync4,
+                                            )
+                                        )
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                                close()
+                            }
+
+                            val contactItem = ContactItem(
+                                rawContact = rawContact,
+                                data = data,
+                                isSelected = mutableStateOf(true),
+                                isInLocal = mutableStateOf(false),
+                                isOnThisDevice = mutableStateOf(true),
+                            )
+
+                            var exist = false
+                            for (i in contactList) {
+                                // Check if it already exists
+                                if (i.rawContact.displayNamePrimary == displayNamePrimary && i.rawContact.displayNameAlternative == displayNameAlternative && i.rawContact.sortKeyPrimary == sortKeyPrimary && i.rawContact.sortKeyAlternative == sortKeyAlternative) {
+                                    i.isSelected.value = false
+                                    i.isOnThisDevice.value = true
+                                    exist = true
+                                    break
+                                }
+                            }
+                            if (exist) continue
+
+                            if (readOnly.not() && contactItem.data.isNotEmpty())
+                                tmpList.add(contactItem)
+                        } catch (_: Exception) {
+                        }
+                    }
+                    close()
+                    contactList.addAll(tmpList)
+                }
+            }
+            return contactList
         }
     }
 }
