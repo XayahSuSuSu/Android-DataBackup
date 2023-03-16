@@ -45,4 +45,19 @@
         <item quantity="one"><xliff:g id="count">%d</xliff:g> минута</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> минути</item>
     </plurals>
+    <string name="type">Вид</string>
+    <string name="warning">Предупреждение</string>
+    <string name="switch_to_system_app_warning">Не се препоръчва създаване на резервни копия на повечето от системните приложения, защото след възстановяване телефонът може да не стартира, предупредени сте.</string>
+    <string name="installed_app">Потребителско</string>
+    <string name="system_app">Системно</string>
+    <string name="selection_is_empty">Няма избрани</string>
+    <string name="delete_selected">Премахване на избраните</string>
+    <string name="delete_confirm">Премахване на избраните. Сигурни ли сте\?</string>
+    <string name="unavailable">Недостъпно</string>
+    <string name="update">Обновяване</string>
+    <string name="retry">Повторен опит</string>
+    <string name="compatible_mode">Режим на съвместимост</string>
+    <string name="backed_up">Има архивно копие</string>
+    <string name="card_telephony_subtitle">Резервно копие / възстановяване на обажданията или SMS/MMS</string>
+    <string name="telephony">Телефония</string>
 </resources>
