@@ -551,7 +551,6 @@ data class CallLogItem(
     @Expose var transcription: String,
     @Expose var type: Long,
     @Expose var viaNumber: String,
-    @Expose var voicemailUri: String,
     var isSelected: MutableState<Boolean>,
     var isInLocal: MutableState<Boolean>,
     var isOnThisDevice: MutableState<Boolean>,

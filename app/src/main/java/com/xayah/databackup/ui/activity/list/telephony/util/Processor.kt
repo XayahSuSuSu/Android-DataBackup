@@ -465,7 +465,6 @@ class Processor {
                         put(CallLog.Calls.TRANSCRIPTION, i.transcription)
                         put(CallLog.Calls.TYPE, i.type)
                         put(CallLog.Calls.VIA_NUMBER, i.viaNumber)
-                        put(CallLog.Calls.VOICEMAIL_URI, i.voicemailUri)
                     }
                     context.contentResolver.insert(
                         CallLog.Calls.CONTENT_URI,

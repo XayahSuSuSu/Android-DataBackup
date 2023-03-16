@@ -1718,7 +1718,6 @@ class Command {
                             val transcription = getString(getColumnIndexOrThrow(CallLog.Calls.TRANSCRIPTION)) ?: ""
                             val type = getLong(getColumnIndexOrThrow(CallLog.Calls.TYPE))
                             val viaNumber = getString(getColumnIndexOrThrow(CallLog.Calls.VIA_NUMBER)) ?: ""
-                            val voicemailUri = getString(getColumnIndexOrThrow(CallLog.Calls.VOICEMAIL_URI)) ?: ""
 
                             var exist = false
                             for (i in callLogList) {
@@ -1761,7 +1760,6 @@ class Command {
                                         transcription = transcription,
                                         type = type,
                                         viaNumber = viaNumber,
-                                        voicemailUri = voicemailUri,
                                         isSelected = mutableStateOf(true),
                                         isInLocal = mutableStateOf(false),
                                         isOnThisDevice = mutableStateOf(true),
