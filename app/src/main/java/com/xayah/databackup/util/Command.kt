@@ -1477,8 +1477,6 @@ class Command {
                             val _id = getLong(getColumnIndexOrThrow(RawContacts._ID))
                             val aggregationMode =
                                 getLong(getColumnIndexOrThrow(RawContacts.AGGREGATION_MODE))
-                            val backupId =
-                                getString(getColumnIndexOrThrow(RawContacts.BACKUP_ID)) ?: ""
                             val deleted = getLong(getColumnIndexOrThrow(RawContacts.DELETED))
                             val customRingtone =
                                 getString(getColumnIndexOrThrow(RawContacts.CUSTOM_RINGTONE)) ?: ""
@@ -1504,7 +1502,6 @@ class Command {
                             val version = getLong(getColumnIndexOrThrow(RawContacts.VERSION))
                             val rawContact = ContactRawContactItem(
                                 aggregationMode = aggregationMode,
-                                backupId = backupId,
                                 deleted = deleted,
                                 customRingtone = customRingtone,
                                 displayNameAlternative = displayNameAlternative,

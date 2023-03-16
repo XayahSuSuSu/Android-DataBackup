@@ -487,7 +487,6 @@ data class ContactDataItem(
  */
 data class ContactRawContactItem(
     @Expose var aggregationMode: Long,
-    @Expose var backupId: String,
     @Expose var deleted: Long,
     @Expose var customRingtone: String,
     @Expose var displayNameAlternative: String,

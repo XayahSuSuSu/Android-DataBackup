@@ -338,7 +338,6 @@ class Processor {
                     // Create raw_contacts first
                     val rawContactData = ContentValues().apply {
                         put(ContactsContract.RawContacts.AGGREGATION_MODE, i.rawContact.aggregationMode)
-                        put(ContactsContract.RawContacts.BACKUP_ID, i.rawContact.backupId)
                         put(ContactsContract.RawContacts.DELETED, i.rawContact.deleted)
                         put(ContactsContract.RawContacts.CUSTOM_RINGTONE, i.rawContact.customRingtone)
                         put(ContactsContract.RawContacts.DISPLAY_NAME_ALTERNATIVE, i.rawContact.displayNameAlternative)
