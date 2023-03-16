@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="backup">Архивно копие</string>
     <string name="restore">Възстановяване</string>
     <string name="application">Приложения</string>
@@ -8,4 +8,41 @@
     <string name="error">Грешка</string>
     <string name="success">Успешно</string>
     <string name="backup_processing">Създаване на архивно копие</string>
+    <string name="app_name">DataBackup</string>
+    <string name="backup_finished">Архивното копие е готово</string>
+    <string name="restore_finished">Възстановяването завърши</string>
+    <string name="backup_dir">Папка за архивни копия</string>
+    <string name="compression_type">Вид на компресията</string>
+    <string name="cancel">Орменяне</string>
+    <string name="tips">Подсказка</string>
+    <string name="restore_processing">Възстановяване</string>
+    <string name="compress">Компресиране</string>
+    <string name="decompress">Разопаковане</string>
+    <string name="environment_detection">Проучване на средата</string>
+    <string name="backup_user">Потребител на архивните копия</string>
+    <string name="restore_user">Потребител на възстановените копия</string>
+    <string name="failed">Грешка</string>
+    <string name="selected">Избрано</string>
+    <string name="grant_root_access">Достъп до суперпотребителя</string>
+    <string name="activate_bashrc">Включване на bashrc</string>
+    <string name="finish">Готово</string>
+    <string name="welcome_to_use">Добре дошли</string>
+    <string name="start_subtitle">Съгласно съответните политики, трябва внимателно да прочетете и да се съгласите със следното Споразумение с потребителя и Декларация за поверителност, преди да започнете да използвате приложението.</string>
+    <string name="internal_storage">Вътрешно хранилище</string>
+    <string name="support">Поддръжка</string>
+    <string name="posted_just_now">Току-що</string>
+    <string name="restored">Възстановено</string>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> ден</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> дена</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> час</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> часа</item>
+    </plurals>
+    <string name="posted_now">Току-що</string>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> минута</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> минути</item>
+    </plurals>
 </resources>
