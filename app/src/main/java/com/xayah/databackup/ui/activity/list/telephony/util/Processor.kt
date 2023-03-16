@@ -3,6 +3,7 @@ package com.xayah.databackup.ui.activity.list.telephony.util
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.Telephony
 import android.widget.Toast
@@ -416,5 +417,68 @@ class Processor {
                 }
             }
         }
+
+        suspend fun callLogBackup(viewModel: TelephonyViewModel, context: Context) {
+            val selectedList =
+                viewModel.callLogList.value.filter { it.isSelected.value || it.isInLocal.value }
+                    .toMutableList()
+            selectedList.forEach {
+                it.isInLocal.value = true
+                it.isSelected.value = false
+            }
+            GsonUtil.getInstance()
+                .saveCallLogListToFile(Path.getCallLogListPath(), selectedList)
+                .apply {
+                    Toast.makeText(
+                        context,
+                        context.getString(if (this) R.string.succeed else R.string.failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        }
+
+        fun callLogRestore(viewModel: TelephonyViewModel, context: Context) {
+            for (i in viewModel.callLogList.value) {
+                if (i.isSelected.value) {
+                    val data = ContentValues().apply {
+                        put(CallLog.Calls.CACHED_FORMATTED_NUMBER, i.cachedFormattedNumber)
+                        put(CallLog.Calls.CACHED_LOOKUP_URI, i.cachedLookupUri)
+                        put(CallLog.Calls.CACHED_MATCHED_NUMBER, i.cachedMatchedNumber)
+                        put(CallLog.Calls.CACHED_NAME, i.cachedName)
+                        put(CallLog.Calls.CACHED_NORMALIZED_NUMBER, i.cachedNormalizedNumber)
+                        put(CallLog.Calls.CACHED_NUMBER_LABEL, i.cachedNumberLabel)
+                        put(CallLog.Calls.CACHED_NUMBER_TYPE, i.cachedNumberType)
+                        put(CallLog.Calls.CACHED_PHOTO_ID, i.cachedPhotoId)
+                        put(CallLog.Calls.CACHED_PHOTO_URI, i.cachedPhotoUri)
+                        put(CallLog.Calls.COUNTRY_ISO, i.countryIso)
+                        put(CallLog.Calls.DATA_USAGE, i.dataUsage)
+                        put(CallLog.Calls.DATE, i.date)
+                        put(CallLog.Calls.DURATION, i.duration)
+                        put(CallLog.Calls.FEATURES, i.features)
+                        put(CallLog.Calls.GEOCODED_LOCATION, i.geocodedLocation)
+                        put(CallLog.Calls.IS_READ, i.isRead)
+                        put(CallLog.Calls.LAST_MODIFIED, i.lastModified)
+                        put(CallLog.Calls.NEW, i.new)
+                        put(CallLog.Calls.NUMBER, i.number)
+                        put(CallLog.Calls.NUMBER_PRESENTATION, i.numberPresentation)
+                        put(CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME, i.phoneAccountComponentName)
+                        put(CallLog.Calls.PHONE_ACCOUNT_ID, i.phoneAccountId)
+                        put(CallLog.Calls.POST_DIAL_DIGITS, i.postDialDigits)
+                        put(CallLog.Calls.TRANSCRIPTION, i.transcription)
+                        put(CallLog.Calls.TYPE, i.type)
+                        put(CallLog.Calls.VIA_NUMBER, i.viaNumber)
+                        put(CallLog.Calls.VOICEMAIL_URI, i.voicemailUri)
+                        put("simid", i.simId)
+                    }
+                    context.contentResolver.insert(
+                        CallLog.Calls.CONTENT_URI,
+                        data
+                    )
+                    i.isSelected.value = false
+                    i.isOnThisDevice.value = true
+                }
+            }
+        }
+
     }
 }

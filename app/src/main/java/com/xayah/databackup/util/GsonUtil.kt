@@ -411,4 +411,38 @@ class GsonUtil {
             false
         }
     }
+
+    /**
+     * Json to CallLogList
+     */
+    fun fromCallLogListJson(value: String): CallLogList {
+        return try {
+            val mapType = object : TypeToken<CallLogList>() {}
+            gson.fromJson(value, mapType.type)
+        } catch (e: Exception) {
+            mutableListOf()
+        }
+    }
+
+    /**
+     * CallLogList to json
+     */
+    private fun toCallLogListJson(value: CallLogList): String {
+        return gson.toJson(value)
+    }
+
+    /**
+     * Save sms list to file
+     */
+    suspend fun saveCallLogListToFile(path: String, list: CallLogList): Boolean {
+        return try {
+            saveToFileByMemory(
+                path,
+                getInstance().toCallLogListJson(list).toByteArray()
+            )
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
 }

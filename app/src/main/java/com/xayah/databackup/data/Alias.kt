@@ -10,3 +10,4 @@ typealias BlackListMap = HashMap<String, BlackListItem>
 typealias SmsList = MutableList<SmsItem>
 typealias MmsList = MutableList<MmsItem>
 typealias ContactList = MutableList<ContactItem>
+typealias CallLogList = MutableList<CallLogItem>

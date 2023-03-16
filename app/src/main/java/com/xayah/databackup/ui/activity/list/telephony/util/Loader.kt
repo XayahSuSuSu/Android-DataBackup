@@ -29,5 +29,13 @@ class Loader {
         suspend fun contactsRestoreList(viewModel: TelephonyViewModel, context: Context) {
             viewModel.contactsList.value.addAll(Command.getContactList(context = context, readOnly = true))
         }
+
+        suspend fun callLogBackupList(viewModel: TelephonyViewModel, context: Context) {
+            viewModel.callLogList.value.addAll(Command.getCallLogList(context = context, readOnly = false))
+        }
+
+        suspend fun callLogRestoreList(viewModel: TelephonyViewModel, context: Context) {
+            viewModel.callLogList.value.addAll(Command.getCallLogList(context = context, readOnly = true))
+        }
     }
 }

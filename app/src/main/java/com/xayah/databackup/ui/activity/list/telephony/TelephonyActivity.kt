@@ -99,6 +99,10 @@ class TelephonyActivity : ComponentActivity() {
                             viewModel = viewModel,
                             context = this@TelephonyActivity
                         )
+                        Loader.callLogBackupList(
+                            viewModel = viewModel,
+                            context = this@TelephonyActivity
+                        )
                     }
                     TypeRestoreTelephony -> {
                         Loader.smsRestoreList(
@@ -110,6 +114,10 @@ class TelephonyActivity : ComponentActivity() {
                             context = this@TelephonyActivity
                         )
                         Loader.contactsRestoreList(
+                            viewModel = viewModel,
+                            context = this@TelephonyActivity
+                        )
+                        Loader.callLogRestoreList(
                             viewModel = viewModel,
                             context = this@TelephonyActivity
                         )
@@ -147,6 +155,12 @@ class TelephonyActivity : ComponentActivity() {
                         Manifest.permission.WRITE_CONTACTS,
                     )
                 )
+                val callLogPermissionsState = rememberMultiplePermissionsState(
+                    listOf(
+                        Manifest.permission.READ_CALL_LOG,
+                        Manifest.permission.WRITE_CALL_LOG,
+                    )
+                )
                 LaunchedEffect(null) {
                     when (viewModel.tabRowState.value) {
                         0 -> {
@@ -156,6 +170,10 @@ class TelephonyActivity : ComponentActivity() {
                             }
                         }
                         1 -> {
+                            // Check call log permission
+                            if (callLogPermissionsState.allPermissionsGranted.not()) {
+                                callLogPermissionsState.launchMultiplePermissionRequest()
+                            }
                         }
                         2, 3 -> {
                             // Check sms permission
@@ -170,7 +188,7 @@ class TelephonyActivity : ComponentActivity() {
                     viewModel = viewModel,
                     isFabVisible = when (viewModel.tabRowState.value) {
                         0 -> true
-                        1 -> false
+                        1 -> true
                         2 -> true
                         3 -> true
                         else -> false
@@ -186,7 +204,12 @@ class TelephonyActivity : ComponentActivity() {
                                                 context = context
                                             )
                                         }
-                                        1 -> {}
+                                        1 -> {
+                                            Processor.callLogBackup(
+                                                viewModel = viewModel,
+                                                context = context
+                                            )
+                                        }
                                         2 -> {
                                             Processor.smsBackup(
                                                 viewModel = viewModel,
@@ -216,7 +239,12 @@ class TelephonyActivity : ComponentActivity() {
                                                     context = context
                                                 )
                                             }
-                                            1 -> {}
+                                            1 -> {
+                                                Processor.callLogRestore(
+                                                    viewModel = viewModel,
+                                                    context = context
+                                                )
+                                            }
                                             2 -> {
                                                 Processor.smsRestore(
                                                     viewModel = viewModel,
@@ -251,7 +279,18 @@ class TelephonyActivity : ComponentActivity() {
                                     }
                                 })
                             }
-                            1 -> {}
+                            1 -> {
+                                items(items = viewModel.callLogList.value, itemContent = {
+                                    when (type) {
+                                        TypeBackupTelephony -> {
+                                            CallLogBackupItem(item = it)
+                                        }
+                                        TypeRestoreTelephony -> {
+                                            CallLogRestoreItem(item = it)
+                                        }
+                                    }
+                                })
+                            }
                             2 -> {
                                 items(items = viewModel.smsList.value, itemContent = {
                                     when (type) {

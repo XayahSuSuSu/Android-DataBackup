@@ -174,13 +174,13 @@
     <string name="retry">Retry</string>
     <string name="succeed">Succeed</string>
     <string name="telephony">Telephony</string>
-    <string name="card_telephony_subtitle">Backup(Restore) contacts, call history or SMS/MMS</string>
+    <string name="card_telephony_subtitle">Backup(Restore) contacts, call log or SMS/MMS</string>
     <string name="backed_up">Backed up</string>
     <string name="restored">Restored</string>
 
     <string-array name="telephony_type">
         <item>Contacts</item>
-        <item>Call history</item>
+        <item>Call log</item>
         <item>SMS</item>
         <item>MMS</item>
     </string-array>

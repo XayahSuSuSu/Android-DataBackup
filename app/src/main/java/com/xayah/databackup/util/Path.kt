@@ -107,5 +107,9 @@ class Path {
         fun getContactListPath(): String {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/telephony/contactList"
         }
+
+        fun getCallLogListPath(): String {
+            return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/telephony/callLogList"
+        }
     }
 }

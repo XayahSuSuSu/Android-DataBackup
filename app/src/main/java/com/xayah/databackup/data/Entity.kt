@@ -522,3 +522,40 @@ data class ContactItem(
             body.trim()
         }
 }
+
+/**
+ * Call log database item
+ */
+data class CallLogItem(
+    @Expose var cachedFormattedNumber: String,
+    @Expose var cachedLookupUri: String,
+    @Expose var cachedMatchedNumber: String,
+    @Expose var cachedName: String,
+    @Expose var cachedNormalizedNumber: String,
+    @Expose var cachedNumberLabel: String,
+    @Expose var cachedNumberType: Long,
+    @Expose var cachedPhotoId: Long,
+    @Expose var cachedPhotoUri: String,
+    @Expose var countryIso: String,
+    @Expose var dataUsage: Long,
+    @Expose var date: Long,
+    @Expose var duration: Long,
+    @Expose var features: Long,
+    @Expose var geocodedLocation: String,
+    @Expose var isRead: Long,
+    @Expose var lastModified: Long,
+    @Expose var new: Long,
+    @Expose var number: String,
+    @Expose var numberPresentation: Long,
+    @Expose var phoneAccountComponentName: String,
+    @Expose var phoneAccountId: String,
+    @Expose var postDialDigits: String,
+    @Expose var transcription: String,
+    @Expose var type: Long,
+    @Expose var viaNumber: String,
+    @Expose var voicemailUri: String,
+    @Expose var simId: Long,
+    var isSelected: MutableState<Boolean>,
+    var isInLocal: MutableState<Boolean>,
+    var isOnThisDevice: MutableState<Boolean>,
+)

@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import com.xayah.databackup.data.CallLogItem
 import com.xayah.databackup.data.ContactItem
 import com.xayah.databackup.data.MmsItem
 import com.xayah.databackup.data.SmsItem
@@ -21,5 +22,8 @@ class TelephonyViewModel : ViewModel() {
     }
     val contactsList by lazy {
         MutableStateFlow(SnapshotStateList<ContactItem>())
+    }
+    val callLogList by lazy {
+        MutableStateFlow(SnapshotStateList<CallLogItem>())
     }
 }

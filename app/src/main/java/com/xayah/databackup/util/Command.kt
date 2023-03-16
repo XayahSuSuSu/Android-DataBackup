@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.net.Uri
 import android.os.Build
+import android.provider.CallLog
 import android.provider.ContactsContract.Contacts
 import android.provider.ContactsContract.RawContacts
 import android.provider.Telephony
@@ -1671,6 +1672,118 @@ class Command {
                 }
             }
             return contactList
+        }
+
+        suspend fun getCallLogList(context: Context, readOnly: Boolean): CallLogList {
+            var callLogList: CallLogList = mutableListOf()
+
+            runOnIO {
+                // Read from storage
+                callLogList = GsonUtil.getInstance().fromCallLogListJson(
+                    RootService.getInstance().readText(Path.getCallLogListPath())
+                )
+                callLogList.forEach {
+                    it.isSelected = mutableStateOf(readOnly)
+                    it.isInLocal = mutableStateOf(true)
+                    it.isOnThisDevice = mutableStateOf(false)
+                }
+
+                context.contentResolver.query(
+                    CallLog.Calls.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    CallLog.Calls.DEFAULT_SORT_ORDER
+                )?.apply {
+                    val tmpList: CallLogList = mutableListOf()
+                    while (moveToNext()) {
+                        try {
+                            val cachedFormattedNumber = getString(getColumnIndexOrThrow(CallLog.Calls.CACHED_FORMATTED_NUMBER)) ?: ""
+                            val cachedLookupUri = getString(getColumnIndexOrThrow(CallLog.Calls.CACHED_LOOKUP_URI)) ?: ""
+                            val cachedMatchedNumber = getString(getColumnIndexOrThrow(CallLog.Calls.CACHED_MATCHED_NUMBER)) ?: ""
+                            val cachedName = getString(getColumnIndexOrThrow(CallLog.Calls.CACHED_NAME)) ?: ""
+                            val cachedNormalizedNumber = getString(getColumnIndexOrThrow(CallLog.Calls.CACHED_NORMALIZED_NUMBER)) ?: ""
+                            val cachedNumberLabel = getString(getColumnIndexOrThrow(CallLog.Calls.CACHED_NUMBER_LABEL)) ?: ""
+                            val cachedNumberType = getLong(getColumnIndexOrThrow(CallLog.Calls.CACHED_NUMBER_TYPE))
+                            val cachedPhotoId = getLong(getColumnIndexOrThrow(CallLog.Calls.CACHED_PHOTO_ID))
+                            val cachedPhotoUri = getString(getColumnIndexOrThrow(CallLog.Calls.CACHED_PHOTO_URI)) ?: ""
+                            val countryIso = getString(getColumnIndexOrThrow(CallLog.Calls.COUNTRY_ISO)) ?: ""
+                            val dataUsage = getLong(getColumnIndexOrThrow(CallLog.Calls.DATA_USAGE))
+                            val date = getLong(getColumnIndexOrThrow(CallLog.Calls.DATE))
+                            val duration = getLong(getColumnIndexOrThrow(CallLog.Calls.DURATION))
+                            val features = getLong(getColumnIndexOrThrow(CallLog.Calls.FEATURES))
+                            val geocodedLocation = getString(getColumnIndexOrThrow(CallLog.Calls.GEOCODED_LOCATION)) ?: ""
+                            val isRead = getLong(getColumnIndexOrThrow(CallLog.Calls.IS_READ))
+                            val lastModified = getLong(getColumnIndexOrThrow(CallLog.Calls.LAST_MODIFIED))
+                            val new = getLong(getColumnIndexOrThrow(CallLog.Calls.NEW))
+                            val number = getString(getColumnIndexOrThrow(CallLog.Calls.NUMBER)) ?: ""
+                            val numberPresentation = getLong(getColumnIndexOrThrow(CallLog.Calls.NUMBER_PRESENTATION))
+                            val phoneAccountComponentName = getString(getColumnIndexOrThrow(CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME)) ?: ""
+                            val phoneAccountId = getString(getColumnIndexOrThrow(CallLog.Calls.PHONE_ACCOUNT_ID)) ?: ""
+                            val postDialDigits = getString(getColumnIndexOrThrow(CallLog.Calls.POST_DIAL_DIGITS)) ?: ""
+                            val transcription = getString(getColumnIndexOrThrow(CallLog.Calls.TRANSCRIPTION)) ?: ""
+                            val type = getLong(getColumnIndexOrThrow(CallLog.Calls.TYPE))
+                            val viaNumber = getString(getColumnIndexOrThrow(CallLog.Calls.VIA_NUMBER)) ?: ""
+                            val voicemailUri = getString(getColumnIndexOrThrow(CallLog.Calls.VOICEMAIL_URI)) ?: ""
+                            val simId = getLong(getColumnIndexOrThrow("simid"))
+
+                            var exist = false
+                            for (i in callLogList) {
+                                // Check if it already exists
+                                if (i.number == number && i.date == date && i.duration == duration) {
+                                    i.isSelected.value = false
+                                    i.isOnThisDevice.value = true
+                                    exist = true
+                                    break
+                                }
+                            }
+                            if (exist) continue
+
+                            if (readOnly.not())
+                                tmpList.add(
+                                    CallLogItem(
+                                        cachedFormattedNumber = cachedFormattedNumber,
+                                        cachedLookupUri = cachedLookupUri,
+                                        cachedMatchedNumber = cachedMatchedNumber,
+                                        cachedName = cachedName,
+                                        cachedNormalizedNumber = cachedNormalizedNumber,
+                                        cachedNumberLabel = cachedNumberLabel,
+                                        cachedNumberType = cachedNumberType,
+                                        cachedPhotoId = cachedPhotoId,
+                                        cachedPhotoUri = cachedPhotoUri,
+                                        countryIso = countryIso,
+                                        dataUsage = dataUsage,
+                                        date = date,
+                                        duration = duration,
+                                        features = features,
+                                        geocodedLocation = geocodedLocation,
+                                        isRead = isRead,
+                                        lastModified = lastModified,
+                                        new = new,
+                                        number = number,
+                                        numberPresentation = numberPresentation,
+                                        phoneAccountComponentName = phoneAccountComponentName,
+                                        phoneAccountId = phoneAccountId,
+                                        postDialDigits = postDialDigits,
+                                        transcription = transcription,
+                                        type = type,
+                                        viaNumber = viaNumber,
+                                        voicemailUri = voicemailUri,
+                                        simId = simId,
+                                        isSelected = mutableStateOf(true),
+                                        isInLocal = mutableStateOf(false),
+                                        isOnThisDevice = mutableStateOf(true),
+                                    )
+                                )
+                        } catch (_: Exception) {
+                        }
+                    }
+                    close()
+                    callLogList.addAll(tmpList)
+                    callLogList.sortByDescending { it.date }
+                }
+            }
+            return callLogList
         }
     }
 }
