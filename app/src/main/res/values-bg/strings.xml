@@ -60,4 +60,18 @@
     <string name="backed_up">Има архивно копие</string>
     <string name="card_telephony_subtitle">Резервно копие / възстановяване на обажданията или SMS/MMS</string>
     <string name="telephony">Телефония</string>
+    <string name="selected_data">Избрани данни</string>
+    <string name="selected_app">Избрано приложение</string>
+    <string name="manifest">Манифест</string>
+    <string name="blacklist">Черен списък</string>
+    <string name="add">Добавяне</string>
+    <string name="select_restore_app">Изберете приложението, което да бъде възстановено</string>
+    <string name="delete">Премахване</string>
+    <string name="stable_subtitle">Стабилност и надеждност</string>
+    <string name="update_channel_subtitle">Вид обновяване</string>
+    <string name="update_channel">Канал за обновяване</string>
+    <string name="test">Изпитателна</string>
+    <string name="stable">Стабилна</string>
+    <string name="link">Препратка</string>
+    <string name="select_all">Избор всички</string>
 </resources>
