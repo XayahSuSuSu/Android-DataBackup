@@ -1,2 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">DataBackup</string>
+    <string name="backup">Cadangan</string>
+    <string name="restore">Pulihkan</string>
+    <string name="error">Eror</string>
+    <string name="application">Aplikasi</string>
+    <string name="data">Data</string>
+    <string name="confirm">Konfirmasi</string>
+    <string name="backup_finished">Pencadangan selesai</string>
+    <string name="restore_finished">Pemulihan selesai</string>
+    <string name="backup_dir">Direktori cadangan</string>
+    <string name="compression_type">Jenis kompresi</string>
+    <string name="cancel">Batal</string>
+    <string name="tips">Tips</string>
+    <string name="success">Berhasil</string>
+    <string name="backup_processing">Pemrosesan pencadangan</string>
+    <string name="restore_processing">Pemrosesan pemulihan</string>
+    <string name="decompress">Dekompresi</string>
+    <string name="environment_detection">Deteksi lingkungan</string>
+    <string name="compress">Kompres</string>
+    <string name="backup_user">Pengguna cadangan</string>
+    <string name="selected">Dipilih</string>
+</resources>
