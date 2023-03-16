@@ -192,6 +192,7 @@
     <string name="sms_permission">SMS permission</string>
     <string name="contacts_permission">Contacts permission</string>
     <string name="call_log_permission">Call log permission</string>
+    <string name="miui_service_sms_tips">If you are on MIUI, please grant "Service SMS" permission manually.</string>
     <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>

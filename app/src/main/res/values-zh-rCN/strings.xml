@@ -171,6 +171,7 @@
     <string name="sms_permission">短信权限</string>
     <string name="contacts_permission">联系人权限</string>
     <string name="call_log_permission">通话记录权限</string>
+    <string name="miui_service_sms_tips">如果您正在使用MIUI，请手动授予"通知类短信"权限</string>
 
     <string-array name="telephony_type">
         <item>联系人</item>

@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
@@ -14,6 +15,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.ui.activity.guide.components.GuideScaffold
 import com.xayah.databackup.ui.activity.guide.components.card.CardEnvironment
+import com.xayah.databackup.ui.components.TextDialog
 import com.xayah.databackup.util.*
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -66,6 +68,22 @@ fun TelephonyPermission(onFinish: () -> Unit) {
             }
         }
     }
+
+    // MIUI tips
+    val isOpen = remember {
+        mutableStateOf(true)
+    }
+    TextDialog(
+        isOpen = isOpen,
+        icon = Icons.Rounded.Warning,
+        title = stringResource(id = R.string.tips),
+        content = stringResource(R.string.miui_service_sms_tips),
+        confirmText = stringResource(R.string.confirm),
+        onConfirmClick = {
+            isOpen.value = false
+        },
+        showDismissBtn = false
+    )
 
     GuideScaffold(
         title = stringResource(R.string.telephony_permissions),
