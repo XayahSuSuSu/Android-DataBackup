@@ -177,6 +177,8 @@
     <string name="card_telephony_subtitle">Backup(Restore) contacts, call log or SMS/MMS</string>
     <string name="backed_up">Backed up</string>
     <string name="restored">Restored</string>
+    <string name="posted_just_now">"Just now"</string>
+    <string name="posted_now">"Now"</string>
 
     <string-array name="telephony_type">
         <item>Contacts</item>
@@ -185,9 +187,11 @@
         <item>MMS</item>
     </string-array>
 
-    <string name="posted_just_now">"Just now"</string>
-    <string name="posted_now">"Now"</string>
     <string name="not_the_default_sms_app_info">Restoring SMS/MMS requires DataBackup to be set as default SMS app</string>
+    <string name="telephony_permissions">Telephony permissions</string>
+    <string name="sms_permission">SMS permission</string>
+    <string name="contacts_permission">Contacts permission</string>
+    <string name="call_log_permission">Call log permission</string>
     <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>

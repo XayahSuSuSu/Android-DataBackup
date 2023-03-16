@@ -165,6 +165,12 @@
     <string name="backed_up">已备份</string>
     <string name="restored">已恢复</string>
     <string name="not_the_default_sms_app_info">恢复短/彩信需要将数据备份设置为默认短信应用</string>
+    <string name="posted_just_now">"刚刚"</string>
+    <string name="posted_now">"刚刚"</string>
+    <string name="telephony_permissions">通讯权限</string>
+    <string name="sms_permission">短信权限</string>
+    <string name="contacts_permission">联系人权限</string>
+    <string name="call_log_permission">通话记录权限</string>
 
     <string-array name="telephony_type">
         <item>联系人</item>
@@ -173,8 +179,6 @@
         <item>彩信</item>
     </string-array>
 
-    <string name="posted_just_now">"刚刚"</string>
-    <string name="posted_now">"刚刚"</string>
     <plurals name="num_minutes_ago" formatted="false">
         <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 分钟</item>
     </plurals>

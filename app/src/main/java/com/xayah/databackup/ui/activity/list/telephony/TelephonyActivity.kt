@@ -22,13 +22,12 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.permissions.rememberPermissionState
 import com.xayah.databackup.R
 import com.xayah.databackup.data.TypeActivityTag
 import com.xayah.databackup.data.TypeBackupTelephony
 import com.xayah.databackup.data.TypeRestoreTelephony
+import com.xayah.databackup.ui.activity.list.telephony.components.TelephonyPermission
 import com.xayah.databackup.ui.activity.list.telephony.components.TelephonyScaffold
 import com.xayah.databackup.ui.activity.list.telephony.components.item.*
 import com.xayah.databackup.ui.activity.list.telephony.util.Loader
@@ -82,50 +81,6 @@ class TelephonyActivity : ComponentActivity() {
             viewModel.isRoleHolderDialogOpen.value = true
         }
 
-        GlobalObject.initializeRootService {
-            // Load list
-            viewModel.viewModelScope.launch {
-                when (type) {
-                    TypeBackupTelephony -> {
-                        Loader.smsBackupList(
-                            viewModel = viewModel,
-                            context = this@TelephonyActivity
-                        )
-                        Loader.mmsBackupList(
-                            viewModel = viewModel,
-                            context = this@TelephonyActivity
-                        )
-                        Loader.contactsBackupList(
-                            viewModel = viewModel,
-                            context = this@TelephonyActivity
-                        )
-                        Loader.callLogBackupList(
-                            viewModel = viewModel,
-                            context = this@TelephonyActivity
-                        )
-                    }
-                    TypeRestoreTelephony -> {
-                        Loader.smsRestoreList(
-                            viewModel = viewModel,
-                            context = this@TelephonyActivity
-                        )
-                        Loader.mmsRestoreList(
-                            viewModel = viewModel,
-                            context = this@TelephonyActivity
-                        )
-                        Loader.contactsRestoreList(
-                            viewModel = viewModel,
-                            context = this@TelephonyActivity
-                        )
-                        Loader.callLogRestoreList(
-                            viewModel = viewModel,
-                            context = this@TelephonyActivity
-                        )
-                    }
-                }
-            }
-        }
-
         setContent {
             DataBackupTheme {
                 val scope = rememberCoroutineScope()
@@ -146,178 +101,202 @@ class TelephonyActivity : ComponentActivity() {
                     showDismissBtn = true
                 )
 
-                val smsPermissionState = rememberPermissionState(
-                    Manifest.permission.READ_SMS
-                )
-                val contactsPermissionsState = rememberMultiplePermissionsState(
+                val permissionsState = rememberMultiplePermissionsState(
                     listOf(
+                        Manifest.permission.READ_SMS,
                         Manifest.permission.READ_CONTACTS,
                         Manifest.permission.WRITE_CONTACTS,
-                    )
-                )
-                val callLogPermissionsState = rememberMultiplePermissionsState(
-                    listOf(
                         Manifest.permission.READ_CALL_LOG,
                         Manifest.permission.WRITE_CALL_LOG,
                     )
                 )
-                LaunchedEffect(null) {
-                    when (viewModel.tabRowState.value) {
-                        0 -> {
-                            // Check contacts permission
-                            if (contactsPermissionsState.allPermissionsGranted.not()) {
-                                contactsPermissionsState.launchMultiplePermissionRequest()
-                            }
-                        }
-                        1 -> {
-                            // Check call log permission
-                            if (callLogPermissionsState.allPermissionsGranted.not()) {
-                                callLogPermissionsState.launchMultiplePermissionRequest()
-                            }
-                        }
-                        2, 3 -> {
-                            // Check sms permission
-                            if (smsPermissionState.status.isGranted.not()) {
-                                smsPermissionState.launchPermissionRequest()
+
+                if (permissionsState.allPermissionsGranted.not()) {
+                    TelephonyPermission {
+                        finish()
+                    }
+                } else {
+                    LaunchedEffect(null) {
+                        GlobalObject.initializeRootService {
+                            // Load list
+                            viewModel.viewModelScope.launch {
+                                when (type) {
+                                    TypeBackupTelephony -> {
+                                        Loader.smsBackupList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.mmsBackupList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.contactsBackupList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.callLogBackupList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                    }
+                                    TypeRestoreTelephony -> {
+                                        Loader.smsRestoreList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.mmsRestoreList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.contactsRestoreList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.callLogRestoreList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
-                }
-
-                TelephonyScaffold(
-                    viewModel = viewModel,
-                    isFabVisible = when (viewModel.tabRowState.value) {
-                        0 -> true
-                        1 -> true
-                        2 -> true
-                        3 -> true
-                        else -> false
-                    },
-                    onConfirm = {
-                        scope.launch {
-                            when (type) {
-                                TypeBackupTelephony -> {
-                                    when (viewModel.tabRowState.value) {
-                                        0 -> {
-                                            Processor.contactsBackup(
-                                                viewModel = viewModel,
-                                                context = context
-                                            )
-                                        }
-                                        1 -> {
-                                            Processor.callLogBackup(
-                                                viewModel = viewModel,
-                                                context = context
-                                            )
-                                        }
-                                        2 -> {
-                                            Processor.smsBackup(
-                                                viewModel = viewModel,
-                                                context = context
-                                            )
-                                        }
-                                        3 -> {
-                                            Processor.mmsBackup(
-                                                viewModel = viewModel,
-                                                context = context
-                                            )
-                                        }
-                                    }
-                                }
-                                TypeRestoreTelephony -> {
-                                    if (isRoleHeld.not()) {
-                                        Toast.makeText(
-                                            context,
-                                            context.getString(R.string.not_the_default_sms_app_info),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
+                    TelephonyScaffold(
+                        viewModel = viewModel,
+                        isFabVisible = when (viewModel.tabRowState.value) {
+                            0 -> true
+                            1 -> true
+                            2 -> true
+                            3 -> true
+                            else -> false
+                        },
+                        onConfirm = {
+                            scope.launch {
+                                when (type) {
+                                    TypeBackupTelephony -> {
                                         when (viewModel.tabRowState.value) {
                                             0 -> {
-                                                Processor.contactsRestore(
+                                                Processor.contactsBackup(
                                                     viewModel = viewModel,
                                                     context = context
                                                 )
                                             }
                                             1 -> {
-                                                Processor.callLogRestore(
+                                                Processor.callLogBackup(
                                                     viewModel = viewModel,
                                                     context = context
                                                 )
                                             }
                                             2 -> {
-                                                Processor.smsRestore(
+                                                Processor.smsBackup(
                                                     viewModel = viewModel,
                                                     context = context
                                                 )
                                             }
                                             3 -> {
-                                                Processor.mmsRestore(
+                                                Processor.mmsBackup(
                                                     viewModel = viewModel,
                                                     context = context
                                                 )
                                             }
                                         }
+                                    }
+                                    TypeRestoreTelephony -> {
+                                        if (isRoleHeld.not()) {
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.not_the_default_sms_app_info),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            when (viewModel.tabRowState.value) {
+                                                0 -> {
+                                                    Processor.contactsRestore(
+                                                        viewModel = viewModel,
+                                                        context = context
+                                                    )
+                                                }
+                                                1 -> {
+                                                    Processor.callLogRestore(
+                                                        viewModel = viewModel,
+                                                        context = context
+                                                    )
+                                                }
+                                                2 -> {
+                                                    Processor.smsRestore(
+                                                        viewModel = viewModel,
+                                                        context = context
+                                                    )
+                                                }
+                                                3 -> {
+                                                    Processor.mmsRestore(
+                                                        viewModel = viewModel,
+                                                        context = context
+                                                    )
+                                                }
+                                            }
 
+                                        }
                                     }
                                 }
                             }
+                        },
+                        onFinish = { finish() },
+                        content = {
+                            when (viewModel.tabRowState.value) {
+                                0 -> {
+                                    items(items = viewModel.contactsList.value, itemContent = {
+                                        when (type) {
+                                            TypeBackupTelephony -> {
+                                                ContactsBackupItem(item = it)
+                                            }
+                                            TypeRestoreTelephony -> {
+                                                ContactsRestoreItem(item = it)
+                                            }
+                                        }
+                                    })
+                                }
+                                1 -> {
+                                    items(items = viewModel.callLogList.value, itemContent = {
+                                        when (type) {
+                                            TypeBackupTelephony -> {
+                                                CallLogBackupItem(item = it)
+                                            }
+                                            TypeRestoreTelephony -> {
+                                                CallLogRestoreItem(item = it)
+                                            }
+                                        }
+                                    })
+                                }
+                                2 -> {
+                                    items(items = viewModel.smsList.value, itemContent = {
+                                        when (type) {
+                                            TypeBackupTelephony -> {
+                                                SmsBackupItem(item = it)
+                                            }
+                                            TypeRestoreTelephony -> {
+                                                SmsRestoreItem(item = it)
+                                            }
+                                        }
+                                    })
+                                }
+                                3 -> {
+                                    items(items = viewModel.mmsList.value, itemContent = {
+                                        when (type) {
+                                            TypeBackupTelephony -> {
+                                                MmsBackupItem(item = it)
+                                            }
+                                            TypeRestoreTelephony -> {
+                                                MmsRestoreItem(item = it)
+                                            }
+                                        }
+                                    })
+                                }
+                            }
                         }
-                    },
-                    onFinish = { finish() },
-                    content = {
-                        when (viewModel.tabRowState.value) {
-                            0 -> {
-                                items(items = viewModel.contactsList.value, itemContent = {
-                                    when (type) {
-                                        TypeBackupTelephony -> {
-                                            ContactsBackupItem(item = it)
-                                        }
-                                        TypeRestoreTelephony -> {
-                                            ContactsRestoreItem(item = it)
-                                        }
-                                    }
-                                })
-                            }
-                            1 -> {
-                                items(items = viewModel.callLogList.value, itemContent = {
-                                    when (type) {
-                                        TypeBackupTelephony -> {
-                                            CallLogBackupItem(item = it)
-                                        }
-                                        TypeRestoreTelephony -> {
-                                            CallLogRestoreItem(item = it)
-                                        }
-                                    }
-                                })
-                            }
-                            2 -> {
-                                items(items = viewModel.smsList.value, itemContent = {
-                                    when (type) {
-                                        TypeBackupTelephony -> {
-                                            SmsBackupItem(item = it)
-                                        }
-                                        TypeRestoreTelephony -> {
-                                            SmsRestoreItem(item = it)
-                                        }
-                                    }
-                                })
-                            }
-                            3 -> {
-                                items(items = viewModel.mmsList.value, itemContent = {
-                                    when (type) {
-                                        TypeBackupTelephony -> {
-                                            MmsBackupItem(item = it)
-                                        }
-                                        TypeRestoreTelephony -> {
-                                            MmsRestoreItem(item = it)
-                                        }
-                                    }
-                                })
-                            }
-                        }
-                    }
-                )
+                    )
+                }
+
             }
         }
     }
