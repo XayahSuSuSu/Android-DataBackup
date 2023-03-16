@@ -498,7 +498,6 @@ data class ContactRawContactItem(
     @Expose var sortKeyAlternative: String,
     @Expose var sortKeyPrimary: String,
     @Expose var dirty: Long,
-    @Expose var sourceId: String,
     @Expose var version: Long,
 )
 
@@ -554,7 +553,6 @@ data class CallLogItem(
     @Expose var type: Long,
     @Expose var viaNumber: String,
     @Expose var voicemailUri: String,
-    @Expose var simId: Long,
     var isSelected: MutableState<Boolean>,
     var isInLocal: MutableState<Boolean>,
     var isOnThisDevice: MutableState<Boolean>,

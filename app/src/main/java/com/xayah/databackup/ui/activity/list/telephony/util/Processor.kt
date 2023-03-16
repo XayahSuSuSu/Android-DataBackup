@@ -349,7 +349,6 @@ class Processor {
                         put(ContactsContract.RawContacts.SORT_KEY_ALTERNATIVE, i.rawContact.sortKeyAlternative)
                         put(ContactsContract.RawContacts.SORT_KEY_PRIMARY, i.rawContact.sortKeyPrimary)
                         put(ContactsContract.RawContacts.DIRTY, i.rawContact.dirty)
-                        put(ContactsContract.RawContacts.SOURCE_ID, i.rawContact.sourceId)
                         put(ContactsContract.RawContacts.VERSION, i.rawContact.version)
                     }
                     val rawContactSmsUri = context.contentResolver.insert(
@@ -468,7 +467,6 @@ class Processor {
                         put(CallLog.Calls.TYPE, i.type)
                         put(CallLog.Calls.VIA_NUMBER, i.viaNumber)
                         put(CallLog.Calls.VOICEMAIL_URI, i.voicemailUri)
-                        put("simid", i.simId)
                     }
                     context.contentResolver.insert(
                         CallLog.Calls.CONTENT_URI,

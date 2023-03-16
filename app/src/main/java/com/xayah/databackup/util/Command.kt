@@ -1501,8 +1501,6 @@ class Command {
                             val sortKeyPrimary =
                                 getString(getColumnIndexOrThrow(RawContacts.SORT_KEY_PRIMARY)) ?: ""
                             val dirty = getLong(getColumnIndexOrThrow(RawContacts.DIRTY))
-                            val sourceId =
-                                getString(getColumnIndexOrThrow(RawContacts.SOURCE_ID)) ?: ""
                             val version = getLong(getColumnIndexOrThrow(RawContacts.VERSION))
                             val rawContact = ContactRawContactItem(
                                 aggregationMode = aggregationMode,
@@ -1517,7 +1515,6 @@ class Command {
                                 sortKeyAlternative = sortKeyAlternative,
                                 sortKeyPrimary = sortKeyPrimary,
                                 dirty = dirty,
-                                sourceId = sourceId,
                                 version = version,
                             )
 
@@ -1725,7 +1722,6 @@ class Command {
                             val type = getLong(getColumnIndexOrThrow(CallLog.Calls.TYPE))
                             val viaNumber = getString(getColumnIndexOrThrow(CallLog.Calls.VIA_NUMBER)) ?: ""
                             val voicemailUri = getString(getColumnIndexOrThrow(CallLog.Calls.VOICEMAIL_URI)) ?: ""
-                            val simId = getLong(getColumnIndexOrThrow("simid"))
 
                             var exist = false
                             for (i in callLogList) {
@@ -1769,7 +1765,6 @@ class Command {
                                         type = type,
                                         viaNumber = viaNumber,
                                         voicemailUri = voicemailUri,
-                                        simId = simId,
                                         isSelected = mutableStateOf(true),
                                         isInLocal = mutableStateOf(false),
                                         isOnThisDevice = mutableStateOf(true),
