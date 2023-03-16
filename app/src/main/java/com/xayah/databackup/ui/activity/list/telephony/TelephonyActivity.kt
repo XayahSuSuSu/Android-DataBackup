@@ -15,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -32,6 +34,7 @@ import com.xayah.databackup.ui.activity.list.telephony.components.TelephonyScaff
 import com.xayah.databackup.ui.activity.list.telephony.components.item.*
 import com.xayah.databackup.ui.activity.list.telephony.util.Loader
 import com.xayah.databackup.ui.activity.list.telephony.util.Processor
+import com.xayah.databackup.ui.components.LoadingDialog
 import com.xayah.databackup.ui.components.TextDialog
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.GlobalObject
@@ -161,17 +164,19 @@ class TelephonyActivity : ComponentActivity() {
                             }
                         }
                     }
+                    val isLoadingDialogOpen = remember {
+                        mutableStateOf(false)
+                    }
+                    LoadingDialog(isOpen = isLoadingDialogOpen)
                     TelephonyScaffold(
                         viewModel = viewModel,
                         isFabVisible = when (viewModel.tabRowState.value) {
-                            0 -> true
-                            1 -> true
-                            2 -> true
-                            3 -> true
+                            0, 1, 2, 3 -> true
                             else -> false
                         },
                         onConfirm = {
                             scope.launch {
+                                isLoadingDialogOpen.value = true
                                 when (type) {
                                     TypeBackupTelephony -> {
                                         when (viewModel.tabRowState.value) {
@@ -239,6 +244,7 @@ class TelephonyActivity : ComponentActivity() {
                                         }
                                     }
                                 }
+                                isLoadingDialogOpen.value = false
                             }
                         },
                         onFinish = { finish() },
