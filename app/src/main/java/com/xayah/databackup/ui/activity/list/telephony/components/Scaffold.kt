@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.activity.list.telephony.components
 
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +25,7 @@ import com.xayah.databackup.ui.components.TopBarTitle
 @ExperimentalMaterial3Api
 @Composable
 fun TelephonyScaffold(
+    isInitialized: MutableTransitionState<Boolean>,
     viewModel: TelephonyViewModel,
     title: String,
     isFabVisible: Boolean,
@@ -59,6 +61,7 @@ fun TelephonyScaffold(
             )
         },
         topPaddingRate = 1,
+        isInitialized = isInitialized,
         topSpace = false,
         content = {
             item {

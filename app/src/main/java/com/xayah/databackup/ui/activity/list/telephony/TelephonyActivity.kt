@@ -161,6 +161,7 @@ class TelephonyActivity : ComponentActivity() {
                                         )
                                     }
                                 }
+                                viewModel.isInitialized.targetState = true
                             }
                         }
                     }
@@ -169,6 +170,7 @@ class TelephonyActivity : ComponentActivity() {
                     }
                     LoadingDialog(isOpen = isLoadingDialogOpen)
                     TelephonyScaffold(
+                        isInitialized = viewModel.isInitialized,
                         viewModel = viewModel,
                         title = stringResource(id = R.string.telephony) + when (type) {
                             TypeBackupTelephony -> {
