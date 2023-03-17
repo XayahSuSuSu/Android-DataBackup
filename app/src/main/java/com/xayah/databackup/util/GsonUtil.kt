@@ -1,7 +1,5 @@
 package com.xayah.databackup.util
 
-import android.os.MemoryFile
-import android.os.ParcelFileDescriptor
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
@@ -11,8 +9,7 @@ import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.xayah.databackup.data.*
-import com.xayah.librootservice.RootService
-import com.xayah.librootservice.reflection.MemoryFileHidden
+import com.xayah.databackup.librootservice.RootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Paths
@@ -46,12 +43,7 @@ class GsonUtil {
         suspend fun saveToFileByMemory(path: String, byteArray: ByteArray) {
             withContext(Dispatchers.IO) {
                 RootService.getInstance().mkdirs(Paths.get(path).parent.pathString)
-                val memoryFile = MemoryFile("memoryFileDataBackup", byteArray.size)
-                val fileDescriptor = MemoryFileHidden.getFileDescriptor(memoryFile)
-                memoryFile.writeBytes(byteArray, 0, 0, byteArray.size)
-                RootService.getInstance()
-                    .writeByDescriptor(path, ParcelFileDescriptor.dup(fileDescriptor))
-                memoryFile.close()
+                RootService.getInstance().writeBytesByDescriptor(path, byteArray)
             }
         }
 

@@ -1,17 +1,16 @@
-package com.xayah.librootservice.service
+package com.xayah.databackup.librootservice.service
 
 import android.annotation.SuppressLint
+import android.app.ActivityThreadHidden
 import android.app.usage.StorageStats
 import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.PackageInfo
+import android.content.pm.PackageManagerHidden
 import android.content.pm.UserInfo
-import android.os.IBinder
-import android.os.ParcelFileDescriptor
-import android.os.UserHandle
-import android.os.UserManager
-import com.xayah.librootservice.IRemoteRootService
-import org.lsposed.hiddenapibypass.HiddenApiBypass
+import android.os.*
+import com.xayah.databackup.libhiddenapi.HiddenApiBypassUtil
+import com.xayah.databackup.librootservice.IRemoteRootService
 import java.io.*
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
@@ -29,35 +28,22 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     private val packageInfoQueue: Queue<PackageInfo> = LinkedList()
     private val queuePollMaxSize = 50
 
+    private lateinit var memoryFile: MemoryFile
+
     /**
      * 获取systemContext
      */
     private fun getSystemContext(): Context {
-        val activityThread =
-            HiddenApiBypass.invoke(Class.forName("android.app.ActivityThread"), null, "systemMain")
-        return HiddenApiBypass.invoke(
-            Class.forName("android.app.ActivityThread"),
-            activityThread,
-            "getSystemContext"
-        ) as Context
+        val activityThread = ActivityThreadHidden.systemMain()
+        return ActivityThreadHidden.getSystemContext(activityThread)
     }
 
     private fun getServiceManager(): IBinder {
-        return HiddenApiBypass.invoke(
-            Class.forName("android.os.ServiceManager"),
-            null,
-            "getService",
-            "package"
-        ) as IBinder
+        return ServiceManagerHidden.getService("package")
     }
 
     private fun getUserManager(): UserManager {
-        return HiddenApiBypass.invoke(
-            Class.forName("android.os.UserManager"),
-            null,
-            "get",
-            systemContext
-        ) as UserManager
+        return UserManagerHidden.get(systemContext)
     }
 
     private fun getStorageStatsManager(): StorageStatsManager {
@@ -163,6 +149,25 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         }
     }
 
+    override fun readByDescriptor(path: String): ParcelFileDescriptor {
+        synchronized(this) {
+            val bytes = File(path).readBytes()
+            memoryFile = MemoryFile("memoryFileDataBackupRead", bytes.size).apply {
+                writeBytes(bytes, 0, 0, bytes.size)
+            }
+            return ParcelFileDescriptor.dup(MemoryFileHidden.getFileDescriptor(memoryFile))
+        }
+    }
+
+    override fun closeMemoryFile(): Boolean {
+        return try {
+            memoryFile.close()
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     override fun writeText(path: String, text: String): Boolean {
         return try {
             val file = File(path)
@@ -217,7 +222,7 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     }
 
     override fun initializeService() {
-        HiddenApiBypass.addHiddenApiExemptions("")
+        HiddenApiBypassUtil.addHiddenApiExemptions("")
         systemContext = getSystemContext()
         serviceManager = getServiceManager()
         userManager = getUserManager()
@@ -225,12 +230,7 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     }
 
     override fun getUserHandle(userId: Int): UserHandle {
-        return HiddenApiBypass.invoke(
-            Class.forName("android.os.UserHandle"),
-            null,
-            "of",
-            userId
-        ) as UserHandle
+        return UserHandleHidden.of(userId)
     }
 
     @SuppressLint("NewApi")
@@ -242,14 +242,7 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     ): MutableList<UserInfo> {
         var users = mutableListOf<UserInfo>()
         try {
-            users = (HiddenApiBypass.invoke(
-                Class.forName("android.os.UserManager"),
-                userManager,
-                "getUsers",
-                true,
-                false,
-                true
-            ) as List<UserInfo>).toMutableList()
+            users = UserManagerHidden.getUsers(userManager = userManager, excludePartial = true, excludeDying = false, excludePreCreated = true).toMutableList()
         } catch (_: Exception) {
         }
         return users
@@ -259,13 +252,7 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     override fun offerInstalledPackagesAsUser(flags: Int, userId: Int): Boolean {
         return try {
             packageInfoQueue.clear()
-            (HiddenApiBypass.invoke(
-                Class.forName("android.content.pm.PackageManager"),
-                systemContext.packageManager,
-                "getInstalledPackagesAsUser",
-                flags,
-                userId
-            ) as List<PackageInfo>).forEach {
+            PackageManagerHidden.getInstalledPackagesAsUser(systemContext.packageManager, flags, userId).forEach {
                 packageInfoQueue.offer(it)
             }
             true
@@ -289,14 +276,7 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
 
     override fun queryInstalled(packageName: String, userId: Int): Boolean {
         return try {
-            (HiddenApiBypass.invoke(
-                Class.forName("android.content.pm.PackageManager"),
-                systemContext.packageManager,
-                "getPackageInfoAsUser",
-                packageName,
-                0,
-                userId
-            ) as PackageInfo)
+            PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
             true
         } catch (_: Exception) {
             false
@@ -311,20 +291,9 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         )
     }
 
-    override fun grantRuntimePermission(
-        packageName: String,
-        permName: String,
-        userId: Int
-    ): Boolean {
+    override fun grantRuntimePermission(packageName: String, permName: String, userId: Int): Boolean {
         return try {
-            HiddenApiBypass.invoke(
-                Class.forName("android.content.pm.PackageManager"),
-                systemContext.packageManager,
-                "grantRuntimePermission",
-                packageName,
-                permName,
-                getUserHandle(userId)
-            )
+            PackageManagerHidden.grantRuntimePermission(systemContext.packageManager, packageName, permName, getUserHandle(userId))
             true
         } catch (_: Exception) {
             false

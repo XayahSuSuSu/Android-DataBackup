@@ -14,7 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.data.*
-import com.xayah.librootservice.RootService
+import com.xayah.databackup.librootservice.RootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -114,7 +114,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 appInfoBackupMap = GsonUtil.getInstance().fromAppInfoBackupMapJson(
-                    RootService.getInstance().readText(Path.getAppInfoBackupMapPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getAppInfoBackupMapPath())
                 )
                 val blackListMap = readBlackListMap(App.globalContext.readBlackListMapPath())
 
@@ -201,7 +201,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 appInfoBackupMap = GsonUtil.getInstance().fromAppInfoBackupMapJson(
-                    RootService.getInstance().readText(Path.getAppInfoBackupMapPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getAppInfoBackupMapPath())
                 )
             }
             return appInfoBackupMap
@@ -216,7 +216,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 appInfoRestoreMap = GsonUtil.getInstance().fromAppInfoRestoreMapJson(
-                    RootService.getInstance().readText(Path.getAppInfoRestoreMapPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getAppInfoRestoreMapPath())
                 )
 
                 // 根据备份目录实际文件调整列表
@@ -333,7 +333,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 mediaInfoBackupMap = GsonUtil.getInstance().fromMediaInfoBackupMapJson(
-                    RootService.getInstance().readText(Path.getMediaInfoBackupMapPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getMediaInfoBackupMapPath())
                 )
 
                 // 如果为空, 添加默认路径
@@ -376,7 +376,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 mediaInfoRestoreMap = GsonUtil.getInstance().fromMediaInfoRestoreMapJson(
-                    RootService.getInstance().readText(Path.getMediaInfoRestoreMapPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getMediaInfoRestoreMapPath())
                 )
 
                 // 根据备份目录实际文件调整列表
@@ -475,7 +475,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 backupInfoList = GsonUtil.getInstance().fromBackupInfoListJson(
-                    RootService.getInstance().readText(Path.getBackupInfoListPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getBackupInfoListPath())
                 )
             }
             return backupInfoList
@@ -490,7 +490,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 blackListMap = GsonUtil.getInstance().fromBlackListMapJson(
-                    RootService.getInstance().readText(path)
+                    RootService.getInstance().readTextByDescriptor(path)
                 )
             }
             return blackListMap
@@ -505,7 +505,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 blackListMap = GsonUtil.getInstance().fromBlackListMapJson(
-                    RootService.getInstance().readText(path)
+                    RootService.getInstance().readTextByDescriptor(path)
                 )
                 blackListMap[blackListItem.packageName] = blackListItem
                 GsonUtil.getInstance().saveBlackListMapToFile(path, blackListMap)
@@ -521,7 +521,7 @@ class Command {
             runOnIO {
                 // 读取配置文件
                 blackListMap = GsonUtil.getInstance().fromBlackListMapJson(
-                    RootService.getInstance().readText(path)
+                    RootService.getInstance().readTextByDescriptor(path)
                 )
                 blackListMap.remove(packageName)
                 GsonUtil.getInstance().saveBlackListMapToFile(path, blackListMap)
@@ -1089,7 +1089,7 @@ class Command {
             runOnIO {
                 // Read from storage
                 smsList = GsonUtil.getInstance().fromSmsListJson(
-                    RootService.getInstance().readText(Path.getSmsListPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getSmsListPath())
                 )
                 smsList.forEach {
                     it.isSelected = mutableStateOf(readOnly)
@@ -1185,7 +1185,7 @@ class Command {
             runOnIO {
                 // Read from storage
                 mmsList = GsonUtil.getInstance().fromMmsListJson(
-                    RootService.getInstance().readText(Path.getMmsListPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getMmsListPath())
                 )
                 mmsList.forEach {
                     it.isSelected = mutableStateOf(readOnly)
@@ -1449,7 +1449,7 @@ class Command {
             runOnIO {
                 // Read from storage
                 contactList = GsonUtil.getInstance().fromContactListJson(
-                    RootService.getInstance().readText(Path.getContactListPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getContactListPath())
                 )
                 contactList.forEach {
                     it.isSelected = mutableStateOf(readOnly)
@@ -1674,7 +1674,7 @@ class Command {
             runOnIO {
                 // Read from storage
                 callLogList = GsonUtil.getInstance().fromCallLogListJson(
-                    RootService.getInstance().readText(Path.getCallLogListPath())
+                    RootService.getInstance().readTextByDescriptor(Path.getCallLogListPath())
                 )
                 callLogList.forEach {
                     it.isSelected = mutableStateOf(readOnly)

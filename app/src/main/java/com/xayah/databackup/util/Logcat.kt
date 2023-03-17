@@ -1,6 +1,6 @@
 package com.xayah.databackup.util
 
-import com.xayah.librootservice.RootService
+import com.xayah.databackup.librootservice.RootService
 
 class Logcat {
     object Instance {

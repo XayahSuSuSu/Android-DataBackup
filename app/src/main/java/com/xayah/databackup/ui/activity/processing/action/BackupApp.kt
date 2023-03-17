@@ -8,12 +8,12 @@ import androidx.core.graphics.drawable.toBitmap
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
+import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
 import com.xayah.databackup.util.*
-import com.xayah.librootservice.RootService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -319,7 +319,7 @@ fun onBackupAppProcessing(
                             byteArray = byteArrayOutputStream.toByteArray()
                             byteArrayOutputStream.flush()
                             byteArrayOutputStream.close()
-                            RootService.getInstance().writeBytes(outPutIconPath, byteArray)
+                            RootService.getInstance().writeBytesByDescriptor(outPutIconPath, byteArray)
                             Logcat.getInstance()
                                 .actionLogAddLine(tag, "Icon saved successfully: ${byteArray.size}")
                         } catch (_: Exception) {

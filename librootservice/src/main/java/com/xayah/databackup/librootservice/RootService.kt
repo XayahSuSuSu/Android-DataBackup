@@ -1,19 +1,23 @@
-package com.xayah.librootservice
+package com.xayah.databackup.librootservice
 
+import android.annotation.SuppressLint
 import android.app.usage.StorageStats
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.UserInfo
+import android.os.MemoryFile
+import android.os.MemoryFileHidden
 import android.os.ParcelFileDescriptor
 import android.os.UserHandle
 import com.topjohnwu.superuser.ipc.RootService
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.service.RemoteRootServiceConnection
+import com.xayah.databackup.librootservice.service.RemoteRootService
+import com.xayah.databackup.librootservice.service.RemoteRootServiceConnection
+import java.io.FileInputStream
 
 class RootService {
     object Instance {
-        val instance = com.xayah.librootservice.RootService()
+        val instance = com.xayah.databackup.librootservice.RootService()
     }
 
     companion object {
@@ -85,6 +89,38 @@ class RootService {
         return ipc.readBytes(path)
     }
 
+    private fun readByDescriptor(path: String): ParcelFileDescriptor {
+        return ipc.readByDescriptor(path)
+    }
+
+    private fun closeMemoryFile(): Boolean {
+        return ipc.closeMemoryFile()
+    }
+
+    fun readTextByDescriptor(path: String): String {
+        var text = ""
+        try {
+            val fileDescriptor = readByDescriptor(path)
+            val fileInputStream = FileInputStream(fileDescriptor.fileDescriptor)
+            text = String(fileInputStream.readBytes())
+            closeMemoryFile()
+        } catch (_: Exception) {
+        }
+        return text
+    }
+
+    fun readBytesByDescriptor(path: String): ByteArray {
+        var bytes = ByteArray(0)
+        try {
+            val fileDescriptor = readByDescriptor(path)
+            val fileInputStream = FileInputStream(fileDescriptor.fileDescriptor)
+            bytes = fileInputStream.readBytes()
+            closeMemoryFile()
+        } catch (_: Exception) {
+        }
+        return bytes
+    }
+
     fun writeText(path: String, text: String): Boolean {
         return ipc.writeText(path, text)
     }
@@ -93,8 +129,17 @@ class RootService {
         return ipc.writeBytes(path, bytes)
     }
 
-    fun writeByDescriptor(path: String, descriptor: ParcelFileDescriptor): Boolean {
+    private fun writeByDescriptor(path: String, descriptor: ParcelFileDescriptor): Boolean {
         return ipc.writeByDescriptor(path, descriptor)
+    }
+
+    @SuppressLint("NewApi")
+    fun writeBytesByDescriptor(path: String, bytes: ByteArray) {
+        val memoryFile = MemoryFile("memoryFileDataBackupWrite", bytes.size)
+        val fileDescriptor = MemoryFileHidden.getFileDescriptor(memoryFile)
+        memoryFile.writeBytes(bytes, 0, 0, bytes.size)
+        writeByDescriptor(path, ParcelFileDescriptor.dup(fileDescriptor))
+        memoryFile.close()
     }
 
     fun initActionLogFile(path: String): Boolean {

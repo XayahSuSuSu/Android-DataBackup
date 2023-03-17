@@ -6,7 +6,7 @@ import com.xayah.databackup.data.AppInfoRestoreMap
 import com.xayah.databackup.data.MediaInfoBackupMap
 import com.xayah.databackup.data.MediaInfoRestoreMap
 import com.xayah.databackup.ui.activity.settings.components.initializeBackupDirectory
-import com.xayah.librootservice.RootService
+import com.xayah.databackup.librootservice.RootService
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class GlobalObject {

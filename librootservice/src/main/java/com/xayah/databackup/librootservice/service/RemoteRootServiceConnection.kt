@@ -1,9 +1,9 @@
-package com.xayah.librootservice.service
+package com.xayah.databackup.librootservice.service
 
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.xayah.librootservice.IRemoteRootService
+import com.xayah.databackup.librootservice.IRemoteRootService
 
 class RemoteRootServiceConnection : ServiceConnection {
     private var onServiceConnected: (ipc: IRemoteRootService) -> Unit = {}

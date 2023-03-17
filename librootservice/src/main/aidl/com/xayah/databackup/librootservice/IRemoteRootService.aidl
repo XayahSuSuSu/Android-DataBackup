@@ -1,4 +1,4 @@
-package com.xayah.librootservice;
+package com.xayah.databackup.librootservice;
 
 import android.content.pm.UserInfo;
 import android.os.UserHandle;
@@ -15,6 +15,8 @@ interface IRemoteRootService {
     long countSize(String path);
     String readText(String path);
     byte[] readBytes(String path);
+    ParcelFileDescriptor readByDescriptor(String path);
+    boolean closeMemoryFile();
     boolean writeText(String path, String text);
     boolean writeBytes(String path, in byte[] bytes);
     boolean writeByDescriptor(String path, in ParcelFileDescriptor descriptor);

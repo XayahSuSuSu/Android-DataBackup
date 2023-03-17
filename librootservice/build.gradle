@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.librootservice'
+    namespace 'com.xayah.databackup.librootservice'
     compileSdk 33
 
     compileOptions {
@@ -14,9 +14,8 @@ android {
 }
 
 dependencies {
-    implementation "com.github.topjohnwu.libsu:service:$libsu_version"
-
-    // AndroidHiddenApiBypass
-    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
     implementation project(path: ':libhiddenapi')
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
+    implementation "com.github.topjohnwu.libsu:service:$libsu_version"
 }
