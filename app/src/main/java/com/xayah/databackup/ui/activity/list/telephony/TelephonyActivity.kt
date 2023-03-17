@@ -170,6 +170,17 @@ class TelephonyActivity : ComponentActivity() {
                     LoadingDialog(isOpen = isLoadingDialogOpen)
                     TelephonyScaffold(
                         viewModel = viewModel,
+                        title = stringResource(id = R.string.telephony) + when (type) {
+                            TypeBackupTelephony -> {
+                                stringResource(id = R.string.backup)
+                            }
+                            TypeRestoreTelephony -> {
+                                stringResource(id = R.string.restore)
+                            }
+                            else -> {
+                                ""
+                            }
+                        },
                         isFabVisible = when (viewModel.tabRowState.value) {
                             0, 1, 2, 3 -> true
                             else -> false

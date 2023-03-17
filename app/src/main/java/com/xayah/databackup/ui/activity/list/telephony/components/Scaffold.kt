@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringArrayResource
-import androidx.compose.ui.res.stringResource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.list.telephony.TelephonyViewModel
@@ -26,6 +25,7 @@ import com.xayah.databackup.ui.components.TopBarTitle
 @Composable
 fun TelephonyScaffold(
     viewModel: TelephonyViewModel,
+    title: String,
     isFabVisible: Boolean,
     onConfirm: () -> Unit,
     onFinish: () -> Unit,
@@ -50,7 +50,7 @@ fun TelephonyScaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    TopBarTitle(text = stringResource(id = R.string.telephony))
+                    TopBarTitle(text = title)
                 },
                 scrollBehavior = this,
                 navigationIcon = {
