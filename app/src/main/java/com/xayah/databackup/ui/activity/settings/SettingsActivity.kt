@@ -24,6 +24,8 @@ class SettingsActivity : ComponentActivity() {
     private fun onInitialize(viewModel: SettingsViewModel) {
         viewModel.viewModelScope.launch {
             onAppInitialize(viewModel, this@SettingsActivity)
+        }
+        viewModel.viewModelScope.launch {
             onUserInitialize(viewModel, this@SettingsActivity)
             onBackupInitialize(viewModel, this@SettingsActivity)
             onRestoreInitialize(viewModel, this@SettingsActivity)
