@@ -74,4 +74,11 @@
     <string name="stable">Стабилна</string>
     <string name="link">Препратка</string>
     <string name="select_all">Избор всички</string>
+    <string name="speed">Скорост</string>
+    <string name="size">Размер</string>
+    <string name="progress">Напредък</string>
+    <string name="total">всичко</string>
+    <string name="symbol_question">\?</string>
+    <string name="symbol_exclamation">!</string>
+    <string name="start">Начало</string>
 </resources>
