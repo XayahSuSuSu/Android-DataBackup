@@ -20,13 +20,13 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.TextButton
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.readIsReadIcon
-import com.xayah.databackup.librootservice.RootService
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
@@ -62,7 +62,9 @@ fun AppRestoreItem(
         title = appInfoRestore.detailBase.appName,
         subtitle = appInfoRestore.detailBase.packageName,
         appSelected = appInfoRestore.selectApp,
+        appEnabled = appInfoRestore.hasApp,
         dataSelected = appInfoRestore.selectData,
+        dataEnabled = appInfoRestore.hasData,
         chipContent = {
             if (appInfoRestore.detailRestoreList.isNotEmpty()) {
                 var dateMenu by remember { mutableStateOf(false) }

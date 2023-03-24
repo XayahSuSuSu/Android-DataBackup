@@ -37,7 +37,9 @@ fun ListItem(
     title: String,
     subtitle: String,
     appSelected: MutableState<Boolean>?,
+    appEnabled: MutableState<Boolean> = mutableStateOf(true),
     dataSelected: MutableState<Boolean>?,
+    dataEnabled: MutableState<Boolean> = mutableStateOf(true),
     chipContent: @Composable RowScope.() -> Unit,
     actionContent: @Composable RowScope.() -> Unit,
     onClick: () -> Unit,
@@ -74,6 +76,7 @@ fun ListItem(
             if (appSelected != null)
                 FilledIconToggleButton(
                     checked = appSelected.value,
+                    enabled = appEnabled.value,
                     onCheckedChange = { appSelected.value = it }
                 ) {
                     if (appSelected.value) {
@@ -92,6 +95,7 @@ fun ListItem(
             if (dataSelected != null)
                 FilledIconToggleButton(
                     checked = dataSelected.value,
+                    enabled = dataEnabled.value,
                     onCheckedChange = { dataSelected.value = it }
                 ) {
                     if (dataSelected.value) {
