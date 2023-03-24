@@ -12,7 +12,7 @@ import com.xayah.databackup.ui.activity.settings.SettingsViewModel
 import com.xayah.databackup.ui.activity.settings.components.SwitchItem
 import com.xayah.databackup.ui.activity.settings.components.clickable.Switch
 import com.xayah.databackup.ui.activity.settings.components.clickable.Title
-import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.readIsReadIcon
 import com.xayah.databackup.util.saveAutoFixMultiUserContext
 import com.xayah.databackup.util.saveIsReadIcon

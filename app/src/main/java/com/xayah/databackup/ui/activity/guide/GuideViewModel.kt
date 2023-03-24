@@ -20,6 +20,7 @@ import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.ui.activity.guide.components.ItemEnvironment
 import com.xayah.databackup.ui.activity.guide.components.ItemUpdate
 import com.xayah.databackup.util.*
+import com.xayah.databackup.util.command.Command
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
@@ -137,13 +138,6 @@ class GuideViewModel : ViewModel() {
         }
 
         return if (checkBin) LoadingState.Success else LoadingState.Failed
-    }
-
-    /**
-     * 检查Bashrc环境
-     */
-    suspend fun checkBashrc(): LoadingState {
-        return if (Bashrc.checkBashrc()) LoadingState.Success else LoadingState.Failed
     }
 
     /**

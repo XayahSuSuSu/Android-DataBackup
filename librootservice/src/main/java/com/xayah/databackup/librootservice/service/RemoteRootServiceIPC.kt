@@ -11,6 +11,7 @@ import android.content.pm.UserInfo
 import android.os.*
 import com.xayah.databackup.libhiddenapi.HiddenApiBypassUtil
 import com.xayah.databackup.librootservice.IRemoteRootService
+import com.xayah.databackup.librootservice.parcelables.StatFsParcelable
 import java.io.*
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
@@ -221,6 +222,11 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         }
     }
 
+    override fun readStatFs(path: String): StatFsParcelable {
+        val statFs = StatFs(path)
+        return StatFsParcelable(statFs.availableBytes, statFs.totalBytes)
+    }
+
     override fun initializeService() {
         HiddenApiBypassUtil.addHiddenApiExemptions("")
         systemContext = getSystemContext()
@@ -297,6 +303,48 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
             true
         } catch (_: Exception) {
             false
+        }
+    }
+
+    override fun displayPackageFilePath(packageName: String, userId: Int): List<String> {
+        return try {
+            val list = mutableListOf<String>()
+            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+            list.add(packageInfo.applicationInfo.sourceDir)
+            val splitSourceDirs = packageInfo.applicationInfo.splitSourceDirs
+            if (splitSourceDirs != null && splitSourceDirs.isNotEmpty())
+                for (i in splitSourceDirs)
+                    list.add(i)
+            list
+        } catch (_: Exception) {
+            listOf()
+        }
+    }
+
+    override fun setPackagesSuspended(packageNames: Array<String>, suspended: Boolean): Boolean {
+        return try {
+            PackageManagerHidden.setPackagesSuspended(systemContext.packageManager, packageNames, suspended, null, null, null)
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    override fun getPackageUid(packageName: String, userId: Int): Int {
+        return try {
+            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+            packageInfo.applicationInfo.uid
+        } catch (_: Exception) {
+            -1
+        }
+    }
+
+    override fun getPackageLongVersionCode(packageName: String, userId: Int): Long {
+        return try {
+            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+            packageInfo.longVersionCode
+        } catch (_: Exception) {
+            -1L
         }
     }
 }

@@ -22,9 +22,9 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.TextButton
-import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.readIsReadIcon
 import com.xayah.databackup.librootservice.RootService
 import kotlinx.coroutines.launch

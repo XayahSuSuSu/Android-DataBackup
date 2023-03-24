@@ -1,9 +1,19 @@
 package com.xayah.databackup.util
 
 import com.xayah.databackup.App
+import java.nio.file.Paths
+import kotlin.io.path.pathString
 
 class Path {
     companion object {
+        fun getParentPath(path: String): String {
+            return Paths.get(path).parent.pathString
+        }
+
+        fun getFileNameByPath(path: String): String {
+            return Paths.get(path).fileName.pathString
+        }
+
         fun getAppInternalFilesPath(): String {
             return App.globalContext.filesDir.path
         }

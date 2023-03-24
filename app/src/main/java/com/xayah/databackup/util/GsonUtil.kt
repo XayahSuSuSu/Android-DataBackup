@@ -12,8 +12,6 @@ import com.xayah.databackup.data.*
 import com.xayah.databackup.librootservice.RootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.nio.file.Paths
-import kotlin.io.path.pathString
 
 private class MutableStateBooleanAdapter : TypeAdapter<MutableState<Boolean>>() {
     override fun write(writer: JsonWriter, value: MutableState<Boolean>) {
@@ -35,14 +33,14 @@ class GsonUtil {
 
         suspend fun saveToFile(path: String, content: String) {
             withContext(Dispatchers.IO) {
-                RootService.getInstance().mkdirs(Paths.get(path).parent.pathString)
+                RootService.getInstance().mkdirs(Path.getParentPath(path))
                 RootService.getInstance().writeText(path, content)
             }
         }
 
         suspend fun saveToFileByMemory(path: String, byteArray: ByteArray) {
             withContext(Dispatchers.IO) {
-                RootService.getInstance().mkdirs(Paths.get(path).parent.pathString)
+                RootService.getInstance().mkdirs(Path.getParentPath(path))
                 RootService.getInstance().writeBytesByDescriptor(path, byteArray)
             }
         }

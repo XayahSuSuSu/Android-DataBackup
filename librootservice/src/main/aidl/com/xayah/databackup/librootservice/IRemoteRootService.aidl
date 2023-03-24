@@ -3,6 +3,7 @@ package com.xayah.databackup.librootservice;
 import android.content.pm.UserInfo;
 import android.os.UserHandle;
 import android.app.usage.StorageStats;
+import com.xayah.databackup.librootservice.parcelables.StatFsParcelable;
 
 interface IRemoteRootService {
     boolean checkConnection();
@@ -23,6 +24,8 @@ interface IRemoteRootService {
     boolean initActionLogFile(String path);
     boolean appendActionLog(String text);
 
+    StatFsParcelable readStatFs(String path);
+
     void initializeService();
     UserHandle getUserHandle(int userId);
     List<UserInfo> getUsers(boolean excludePartial, boolean excludeDying, boolean excludePreCreated);
@@ -31,4 +34,8 @@ interface IRemoteRootService {
     boolean queryInstalled(String packageName, int userId);
     StorageStats queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
     boolean grantRuntimePermission(String packageName, String permName, int userId);
+    List<String> displayPackageFilePath(String packageName, int userId);
+    boolean setPackagesSuspended(in String[] packageNames, boolean suspended);
+    int getPackageUid(String packageName, int userId);
+    long getPackageLongVersionCode(String packageName, int userId);
 }

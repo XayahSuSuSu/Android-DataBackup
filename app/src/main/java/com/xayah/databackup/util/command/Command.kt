@@ -1,4 +1,4 @@
-package com.xayah.databackup.util
+package com.xayah.databackup.util.command
 
 import android.app.usage.StorageStatsManager
 import android.content.Context
@@ -15,6 +15,7 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.data.*
 import com.xayah.databackup.librootservice.RootService
+import com.xayah.databackup.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -610,9 +611,9 @@ class Command {
             }
             if (needUpdate) {
                 updateState(ProcessCompressing, null)
-                val (compressSuccess, out) = Bashrc.compress(
-                    compressionType,
-                    dataType,
+                val (compressSuccess, out) = Compression.compressArchive(
+                    CompressionType.to(compressionType.uppercase(Locale.getDefault())),
+                    DataType.to(dataType.uppercase(Locale.getDefault())),
                     packageName,
                     outPut,
                     dataPath,
@@ -677,16 +678,18 @@ class Command {
             val tag = "compressAPK"
             var needUpdate = true
             val filePath = "${outPut}/apk.${getSuffixByCompressionType(compressionType)}"
-            // 获取应用APK路径
-            val (getAPKPathSuccess, apkPath) = Bashrc.getAPKPath(packageName, userId)
-            if (getAPKPathSuccess.not()) {
+            // Get the path of apk
+            val apkPath: String
+            val paths = RootService.getInstance().displayPackageFilePath(packageName, userId.toInt())
+            if (paths.isNotEmpty()) {
+                apkPath = Path.getParentPath(paths[0])
+                Logcat.getInstance().actionLogAddLine(tag, "$packageName APK path: ${apkPath}.")
+            } else {
                 "Failed to get $packageName APK path.".apply {
                     updateState(ProcessError, this)
                     Logcat.getInstance().actionLogAddLine(tag, this)
                 }
                 return false
-            } else {
-                Logcat.getInstance().actionLogAddLine(tag, "$packageName APK path: ${apkPath}.")
             }
             if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
                 // 当备份策略为覆盖时, 计算目录大小并判断是否更新
@@ -707,8 +710,8 @@ class Command {
             }
             if (needUpdate) {
                 updateState(ProcessCompressing, null)
-                val (compressAPKSuccess, out) = Bashrc.compressAPK(
-                    compressionType,
+                val (compressAPKSuccess, out) = Compression.compressAPK(
+                    CompressionType.to(compressionType.uppercase(Locale.getDefault())),
                     apkPath,
                     outPut,
                     compatibleMode
@@ -771,9 +774,9 @@ class Command {
         ): Boolean {
             val tag = "decompress"
             updateState(ProcessDecompressing, null)
-            val (decompressSuccess, out) = Bashrc.decompress(
-                compressionType,
-                dataType,
+            val (decompressSuccess, out) = Compression.decompressArchive(
+                CompressionType.to(compressionType.uppercase(Locale.getDefault())),
+                DataType.to(dataType.uppercase(Locale.getDefault())),
                 inputPath,
                 packageName,
                 dataPath
@@ -795,15 +798,17 @@ class Command {
          * 安装APK
          */
         suspend fun installAPK(
-            inPath: String,
+            compressionType: String,
+            apkPath: String,
             packageName: String,
             userId: String,
             versionCode: String,
             updateState: (type: String, line: String?) -> Unit = { _, _ -> }
         ): Boolean {
             val tag = "installAPK"
-            val (getAppVersionCodeSuccess, appVersionCode) = getAppVersionCode(userId, packageName)
-            if (getAppVersionCodeSuccess.not()) {
+
+            val appVersionCode = RootService.getInstance().getPackageLongVersionCode(packageName, userId.toInt())
+            if (appVersionCode == -1L) {
                 Logcat.getInstance()
                     .actionLogAddLine(tag, "Failed to get $packageName version code.")
             } else {
@@ -815,19 +820,19 @@ class Command {
                 "versionCode: ${versionCode}, actual appVersionCode: ${appVersionCode}."
             )
             // 禁止APK验证
-            val (setInstallEnvSuccess, out) = Bashrc.setInstallEnv()
+            val (setInstallEnvSuccess, _) = Preparation.setInstallEnv()
             if (setInstallEnvSuccess.not()) {
                 "Failed to set install env.".apply {
                     Logcat.getInstance().actionLogAddLine(tag, this)
-                    Logcat.getInstance().actionLogAddLine(tag, out)
+                    Logcat.getInstance().actionLogAddLine(tag, this)
                 }
             }
 
             // 安装APK
             updateState(ProcessInstallingApk, null)
-            val (installAPKSuccess, installAPKOut) = Bashrc.installAPK(
-                inPath,
-                packageName,
+            val (installAPKSuccess, installAPKOut) = Installation.installAPK(
+                CompressionType.to(compressionType.uppercase(Locale.getDefault())),
+                apkPath,
                 userId
             )
             if (installAPKSuccess.not()) {
@@ -840,14 +845,12 @@ class Command {
                     .actionLogAddLine(tag, "Apk installed.")
             }
 
-            Bashrc.findPackage(userId, packageName).apply {
-                if (this.first.not()) {
-                    "Package: $packageName not found.".apply {
-                        updateState(ProcessError, this)
-                        Logcat.getInstance().actionLogAddLine(tag, this)
-                    }
-                    return false
+            if (RootService.getInstance().queryInstalled(packageName, userId.toInt()).not()) {
+                "Package: $packageName not found.".apply {
+                    updateState(ProcessError, this)
+                    Logcat.getInstance().actionLogAddLine(tag, this)
                 }
+                return false
             }
             updateState(ProcessFinished, null)
             return true
@@ -866,8 +869,8 @@ class Command {
         ): Boolean {
             val tag = "setOwnerAndSELinux"
             updateState(ProcessSettingSELinux, null)
-            val (setOwnerAndSELinuxSuccess, out) = Bashrc.setOwnerAndSELinux(
-                dataType,
+            val (setOwnerAndSELinuxSuccess, out) = SELinux.setOwnerAndContext(
+                DataType.to(dataType.uppercase(Locale.getDefault())),
                 packageName,
                 path,
                 userId,
@@ -887,23 +890,13 @@ class Command {
         }
 
         /**
-         * 获取应用版本代码
-         */
-        private suspend fun getAppVersionCode(
-            userId: String,
-            packageName: String
-        ): Pair<Boolean, String> {
-            return Bashrc.getAppVersionCode(userId, packageName)
-        }
-
-        /**
          * 测试压缩包
          */
         private suspend fun testArchive(
             compressionType: String,
             inputPath: String,
         ): Pair<Boolean, String> {
-            return Bashrc.testArchive(compressionType, inputPath)
+            return Compression.testArchive(CompressionType.to(compressionType.uppercase(Locale.getDefault())), inputPath)
         }
 
         /**
@@ -912,19 +905,25 @@ class Command {
         suspend fun backupItself(
             packageName: String, outPut: String, userId: String
         ): Boolean {
+            val tag = "backupItself"
             mkdir(outPut)
-            val apkPath = Bashrc.getAPKPath(packageName, userId)
-            val apkPathPair = apkPath.apply {
-                if (!this.first) {
-                    return false
+
+            val apkPath: String
+            val paths = RootService.getInstance().displayPackageFilePath(packageName, userId.toInt())
+            if (paths.isNotEmpty()) {
+                apkPath = Path.getParentPath(paths[0])
+                Logcat.getInstance().actionLogAddLine(tag, "$packageName APK path: ${apkPath}.")
+            } else {
+                "Failed to get $packageName APK path.".apply {
+                    Logcat.getInstance().actionLogAddLine(tag, this)
                 }
+                return false
             }
 
             val apkSize = RootService.getInstance().countSize("${outPut}/DataBackup.apk").toString()
-            if (RootService.getInstance().countSize(apkPathPair.second)
-                    .toString() == apkSize
+            if (RootService.getInstance().countSize(apkPath).toString() == apkSize
             ) return true
-            cp("${apkPathPair.second}/base.apk", "${outPut}/DataBackup.apk").apply {
+            cp("${apkPath}/base.apk", "${outPut}/DataBackup.apk").apply {
                 if (!this) {
                     return false
                 }
@@ -968,13 +967,6 @@ class Command {
                 }
                 return true
             }
-        }
-
-        /**
-         * 检查Bash环境
-         */
-        suspend fun checkBashrc(): Boolean {
-            return execute("check_bashrc").isSuccess
         }
 
         /**
@@ -1053,7 +1045,7 @@ class Command {
 
             if (result.code == 127) {
                 // 当exit code为127时, 环境可能丢失
-                App.initShell(App.globalContext, Shell.getShell())
+                App.initShell(Shell.getShell())
             }
 
             return result

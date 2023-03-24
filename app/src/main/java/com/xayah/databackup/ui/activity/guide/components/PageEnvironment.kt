@@ -69,13 +69,6 @@ fun PageEnvironment(
                     }
                 ),
                 ItemEnvironment(
-                    itemId = R.string.activate_bashrc,
-                    cardState = mutableStateOf(LoadingState.Loading),
-                    onCheck = {
-                        viewModel.checkBashrc()
-                    }
-                ),
-                ItemEnvironment(
                     itemId = R.string.check_storage_management_permission,
                     cardState = mutableStateOf(LoadingState.Loading),
                     onCheck = {

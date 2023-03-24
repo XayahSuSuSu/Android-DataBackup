@@ -14,8 +14,8 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.BlackListItem
 import com.xayah.databackup.ui.components.TextButton
-import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.readBlackListMapPath
 import kotlinx.coroutines.launch
 

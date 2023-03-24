@@ -7,12 +7,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
+import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.settings.SettingsViewModel
 import com.xayah.databackup.ui.activity.settings.components.SingleChoiceTextClickableItem
 import com.xayah.databackup.ui.activity.settings.components.clickable.SingleChoiceTextClickable
 import com.xayah.databackup.ui.activity.settings.components.clickable.Title
 import com.xayah.databackup.util.*
-import com.xayah.databackup.librootservice.RootService
+import com.xayah.databackup.util.command.Command
 
 suspend fun onBackupUserPrepare(context: Context): Pair<List<String>, String> {
     val users = RootService.getInstance().getUsers(

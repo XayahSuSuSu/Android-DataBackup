@@ -11,6 +11,7 @@ import android.os.MemoryFileHidden
 import android.os.ParcelFileDescriptor
 import android.os.UserHandle
 import com.topjohnwu.superuser.ipc.RootService
+import com.xayah.databackup.librootservice.parcelables.StatFsParcelable
 import com.xayah.databackup.librootservice.service.RemoteRootService
 import com.xayah.databackup.librootservice.service.RemoteRootServiceConnection
 import java.io.FileInputStream
@@ -150,6 +151,10 @@ class RootService {
         return ipc.appendActionLog(text)
     }
 
+    fun readStatFs(path: String): StatFsParcelable {
+        return ipc.readStatFs(path)
+    }
+
     fun getUserHandle(userId: Int): UserHandle {
         return ipc.getUserHandle(userId)
     }
@@ -184,5 +189,21 @@ class RootService {
         userId: Int
     ): Boolean {
         return ipc.grantRuntimePermission(packageName, permName, userId)
+    }
+
+    fun displayPackageFilePath(packageName: String, userId: Int): List<String> {
+        return ipc.displayPackageFilePath(packageName, userId)
+    }
+
+    fun setPackagesSuspended(packageNames: Array<String>, suspended: Boolean): Boolean {
+        return ipc.setPackagesSuspended(packageNames, suspended)
+    }
+
+    fun getPackageUid(packageName: String, userId: Int): Int {
+        return ipc.getPackageUid(packageName, userId)
+    }
+
+    fun getPackageLongVersionCode(packageName: String, userId: Int): Long {
+        return ipc.getPackageLongVersionCode(packageName, userId)
     }
 }

@@ -2,9 +2,9 @@ package com.xayah.databackup.ui.activity.list.common.components.item
 
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.data.MediaInfoRestore
-import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalObject
 import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.command.Command
 
 suspend fun deleteAppInfoRestoreItem(
     appInfoRestore: AppInfoRestore,

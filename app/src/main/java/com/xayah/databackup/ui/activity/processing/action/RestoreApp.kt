@@ -11,12 +11,14 @@ import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.data.ProcessError
 import com.xayah.databackup.data.ProcessingObjectType
 import com.xayah.databackup.data.TaskState
+import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
 import com.xayah.databackup.util.*
-import com.xayah.databackup.librootservice.RootService
+import com.xayah.databackup.util.command.Command
+import com.xayah.databackup.util.command.SELinux
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -138,6 +140,7 @@ fun onRestoreAppProcessing(
                 val date = appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].date
                 val inPath = "${Path.getBackupDataSavePath()}/${packageName}/${date}"
                 val suffix = Command.getSuffixByCompressionType(compressionType)
+                val apkPath = "${inPath}/apk.$suffix"
                 val userPath = "${inPath}/user.$suffix"
                 val userDePath = "${inPath}/user_de.$suffix"
                 val dataPath = "${inPath}/data.$suffix"
@@ -180,7 +183,8 @@ fun onRestoreAppProcessing(
                         when (j.type) {
                             ProcessingObjectType.APP -> {
                                 isSuccess = Command.installAPK(
-                                    inPath,
+                                    compressionType,
+                                    apkPath,
                                     packageName,
                                     userId,
                                     appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].versionCode.toString()
@@ -202,8 +206,7 @@ fun onRestoreAppProcessing(
                             }
                             ProcessingObjectType.USER -> {
                                 // 读取原有SELinux context
-                                val contextSELinux =
-                                    Bashrc.getSELinuxContext("${Path.getUserPath(userId)}/${packageName}")
+                                val (_, contextSELinux) = SELinux.getContext("${Path.getUserPath(userId)}/${packageName}")
                                 // 恢复User
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(userPath),
@@ -230,8 +233,7 @@ fun onRestoreAppProcessing(
                             }
                             ProcessingObjectType.USER_DE -> {
                                 // 读取原有SELinux context
-                                val contextSELinux =
-                                    Bashrc.getSELinuxContext("${Path.getUserDePath(userId)}/${packageName}")
+                                val (_, contextSELinux) = SELinux.getContext("${Path.getUserDePath(userId)}/${packageName}")
                                 // 恢复User_de
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(userDePath),
@@ -258,8 +260,7 @@ fun onRestoreAppProcessing(
                             }
                             ProcessingObjectType.DATA -> {
                                 // 读取原有SELinux context
-                                val contextSELinux =
-                                    Bashrc.getSELinuxContext("${Path.getDataPath(userId)}/${packageName}")
+                                val (_, contextSELinux) = SELinux.getContext("${Path.getDataPath(userId)}/${packageName}")
                                 // 恢复Data
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(dataPath),
@@ -286,8 +287,7 @@ fun onRestoreAppProcessing(
                             }
                             ProcessingObjectType.OBB -> {
                                 // 读取原有SELinux context
-                                val contextSELinux =
-                                    Bashrc.getSELinuxContext("${Path.getObbPath(userId)}/${packageName}")
+                                val (_, contextSELinux) = SELinux.getContext("${Path.getObbPath(userId)}/${packageName}")
                                 // 恢复Obb
                                 Command.decompress(
                                     Command.getCompressionTypeByPath(obbPath),

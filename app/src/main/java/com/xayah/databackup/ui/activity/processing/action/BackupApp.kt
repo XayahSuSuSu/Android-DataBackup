@@ -14,6 +14,8 @@ import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
 import com.xayah.databackup.util.*
+import com.xayah.databackup.util.command.Command
+import com.xayah.databackup.util.command.Preparation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -84,8 +86,8 @@ fun onBackupAppProcessing(
             Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
 
             // 获取默认输入法和无障碍
-            val keyboard = Bashrc.getKeyboard()
-            val services = Bashrc.getAccessibilityServices()
+            val keyboard = Preparation.getKeyboard()
+            val services = Preparation.getAccessibilityServices()
 
             Logcat.getInstance()
                 .actionLogAddLine(tag, "keyboard: ${keyboard}, services: ${services}.")
@@ -186,6 +188,8 @@ fun onBackupAppProcessing(
                     }
                 }
 
+                // Suspend the app to avoid files changing
+                RootService.getInstance().setPackagesSuspended(arrayOf(packageName), true)
                 for (j in objectList) {
                     if (viewModel.isCancel.value) break
                     if (j.visible.value) {
@@ -206,13 +210,14 @@ fun onBackupAppProcessing(
                                         isSuccess = false
                                     } else {
                                         // 保存apk大小
-                                        appInfoBackup.detailBackup.appSize =
-                                            RootService.getInstance().countSize(
-                                                Bashrc.getAPKPath(
-                                                    i.packageName,
-                                                    userId
-                                                ).second
-                                            ).toString()
+                                        val paths = RootService.getInstance().displayPackageFilePath(packageName, userId.toInt())
+                                        if (paths.isNotEmpty()) {
+                                            appInfoBackup.detailBackup.appSize =
+                                                RootService.getInstance().countSize(Path.getParentPath(paths[0])).toString()
+                                        } else {
+                                            Logcat.getInstance().actionLogAddLine(tag, "Failed to get $packageName APK path.")
+                                        }
+
                                     }
                                 }
                             }
@@ -304,6 +309,8 @@ fun onBackupAppProcessing(
                         }
                     }
                 }
+                // Unsuspend the app
+                RootService.getInstance().setPackagesSuspended(arrayOf(packageName), false)
                 if (viewModel.isCancel.value) break
 
                 appInfoBackup.detailBackup.date = date
@@ -396,10 +403,10 @@ fun onBackupAppProcessing(
 
             // 恢复默认输入法和无障碍
             keyboard.apply {
-                if (this.first) Bashrc.setKeyboard(this.second)
+                if (this.first) Preparation.setKeyboard(this.second)
             }
             services.apply {
-                if (this.first) Bashrc.setAccessibilityServices(this.second)
+                if (this.first) Preparation.setAccessibilityServices(this.second)
             }
             Logcat.getInstance().actionLogAddLine(tag, "Restore keyboard and services.")
 

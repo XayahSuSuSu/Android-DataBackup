@@ -18,8 +18,8 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.MediaInfoRestore
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.TextButton
-import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.command.Command
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi

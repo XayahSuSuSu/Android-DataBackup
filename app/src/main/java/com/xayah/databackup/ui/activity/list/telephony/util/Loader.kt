@@ -2,7 +2,7 @@ package com.xayah.databackup.ui.activity.list.telephony.util
 
 import android.content.Context
 import com.xayah.databackup.ui.activity.list.telephony.TelephonyViewModel
-import com.xayah.databackup.util.Command
+import com.xayah.databackup.util.command.Command
 
 class Loader {
     companion object {

@@ -2,6 +2,40 @@ package com.xayah.databackup.data
 
 import com.xayah.databackup.util.GlobalString
 
+enum class CompressionType(val type: String) {
+    TAR("tar"),
+    ZSTD("zstd"),
+    LZ4("lz4");
+
+    companion object {
+        fun to(name: String): CompressionType {
+            return try {
+                CompressionType.valueOf(name)
+            } catch (e: Exception) {
+                ZSTD
+            }
+        }
+    }
+}
+
+enum class DataType(val type: String) {
+    USER("user"),
+    USER_DE("user_de"),
+    DATA("data"),
+    OBB("obb"),
+    MEDIA("media");
+
+    companion object {
+        fun to(name: String): DataType {
+            return try {
+                DataType.valueOf(name)
+            } catch (e: Exception) {
+                USER
+            }
+        }
+    }
+}
+
 /**
  * 应用列表类型
  */

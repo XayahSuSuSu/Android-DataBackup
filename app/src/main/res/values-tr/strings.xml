@@ -25,7 +25,6 @@
     <string name="failed">Başarısız</string>
     <string name="grant_root_access">Kök erişimine izin ver</string>
     <string name="release_prebuilt_binaries">Ön sürüm kütüphane yayınlaması</string>
-    <string name="activate_bashrc">Bashrc onayla</string>
     <string name="finish">Bitti</string>
     <string name="welcome_to_use">Kullanmak için hoşgeldin</string>
     <string name="fetch_failed">İşleme başarısız</string>

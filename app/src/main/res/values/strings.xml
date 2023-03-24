@@ -29,7 +29,6 @@
     <string name="symbol_cross" translatable="false">✖</string>
     <string name="grant_root_access">Grant root access</string>
     <string name="release_prebuilt_binaries">Release prebuilt binaries</string>
-    <string name="activate_bashrc">Activate bashrc</string>
     <string name="finish">Finish</string>
     <string name="welcome_to_use">Welcome to use</string>
     <string name="start_subtitle">According to relevant policies, you need to carefully read and agree to the following User Agreement and Privacy Policy before you start using this application</string>

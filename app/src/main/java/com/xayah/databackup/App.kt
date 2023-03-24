@@ -5,7 +5,7 @@ import android.app.Application
 import android.content.Context
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.util.*
-import java.io.InputStream
+import com.xayah.databackup.util.command.Command
 
 class App : Application() {
     companion object {
@@ -27,23 +27,19 @@ class App : Application() {
             return System.currentTimeMillis().toString()
         }
 
-        fun initShell(context: Context, shell: Shell) {
-            val bashrc: InputStream = context.resources.openRawResource(R.raw.bashrc)
+        fun initShell(shell: Shell) {
             shell.newJob()
                 .add("nsenter -t 1 -m su")
-                .add(bashrc)
                 .add("export PATH=${Path.getAppInternalFilesPath()}/bin:\$PATH")
                 .add("export PATH=${Path.getAppInternalFilesPath()}/extend:\$PATH")
                 .add("export HOME=${Path.getAppInternalFilesPath()}")
-                .add("export ZSTD_PARA=\"zstd -r -T0 --ultra -1 -q --priority=rt\"")
-                .add("export LZ4_PARA=\"zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4\"")
                 .exec()
         }
     }
 
     class EnvInitializer : Shell.Initializer() {
         override fun onInit(context: Context, shell: Shell): Boolean {
-            initShell(context, shell)
+            initShell(shell)
             return true
         }
     }

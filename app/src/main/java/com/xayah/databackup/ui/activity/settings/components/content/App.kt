@@ -15,17 +15,20 @@ import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.data.UpdateChannel
 import com.xayah.databackup.data.ofUpdateChannel
+import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.settings.SettingsViewModel
 import com.xayah.databackup.ui.activity.settings.components.DescItem
 import com.xayah.databackup.ui.activity.settings.components.StorageRadioDialogItem
 import com.xayah.databackup.ui.activity.settings.components.clickable.*
 import com.xayah.databackup.ui.activity.settings.components.onSetBackupSavePath
 import com.xayah.databackup.util.*
+import com.xayah.databackup.util.command.Preparation
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
+    // Get releases from GitHub
     if (viewModel.newestVersion.value.isEmpty() || viewModel.newestVersionLink.value.isEmpty()) {
         Server.getInstance().releases(
             successCallback = { releaseList ->
@@ -46,7 +49,7 @@ suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
 }
 
 /**
- * 应用相关设置项
+ * Settings - application
  */
 @ExperimentalMaterial3Api
 fun LazyListScope.appItems(
@@ -87,12 +90,12 @@ fun LazyListScope.appItems(
         )
     }
     item {
-        // 检查是否存在外置存储
         val backupPath = remember {
             mutableStateOf(context.readBackupSavePath())
         }
         LaunchedEffect(null) {
-            val (_, list) = Bashrc.listExternalStorage()
+            // Check if external storage exists
+            val (_, list) = Preparation.listExternalStorage()
             if (list.isEmpty()) {
                 val customPath = context.readCustomBackupSavePath()
                 onSetBackupSavePath(context, customPath)
@@ -103,7 +106,7 @@ fun LazyListScope.appItems(
         StorageRadioClickable(
             subtitle = backupPath,
             onPrepare = {
-                // 内置存储
+                // Internal storage
                 val internalPath = context.readCustomBackupSavePath()
                 val internalItem = StorageRadioDialogItem(
                     title = context.getString(R.string.internal_storage),
@@ -111,17 +114,12 @@ fun LazyListScope.appItems(
                     path = internalPath,
                     display = internalPath,
                 )
-                val (internalSuccess, internalSpace) = Bashrc.getStorageSpace(internalPath)
-                val string =
-                    if (internalSuccess) internalSpace else context.getString(R.string.error)
-                if (internalSuccess) {
-                    try {
-                        internalItem.progress =
-                            string.split(" ").last().replace("%", "").toFloat() / 100
-                    } catch (e: Exception) {
-                        internalItem.display = context.getString(R.string.fetch_failed)
-                    }
-                } else {
+
+                // Read internal storage
+                try {
+                    val internalPathStatFs = RootService.getInstance().readStatFs(internalPath)
+                    internalItem.progress = internalPathStatFs.availableBytes.toFloat() / internalPathStatFs.totalBytes
+                } catch (_: Exception) {
                     internalItem.display = context.getString(R.string.fetch_failed)
                 }
 
@@ -129,8 +127,8 @@ fun LazyListScope.appItems(
                     internalItem
                 )
 
-                // 外置存储: /mnt/media_rw/E7F9-FA61 exfat
-                val (listExternalStorageSuccess, list) = Bashrc.listExternalStorage()
+                // Example: /mnt/media_rw/E7F9-FA61 exfat
+                val (listExternalStorageSuccess, list) = Preparation.listExternalStorage()
                 if (listExternalStorageSuccess) {
                     for (i in list) {
                         try {
@@ -142,23 +140,19 @@ fun LazyListScope.appItems(
                                 display = i,
                             )
 
-                            // 设置目录
+                            // Set backup dir
                             val outPath = "${path}/DataBackup"
                             item.path = outPath
 
-                            // 检测空间占用
-                            val (success, space) = Bashrc.getStorageSpace(outPath)
-                            if (success) {
-                                try {
-                                    item.progress =
-                                        space.split(" ").last().replace("%", "")
-                                            .toFloat() / 100
-                                } catch (e: Exception) {
-                                    item.display = context.getString(R.string.fetch_failed)
-                                }
+                            // Read external storage
+                            try {
+                                val externalPathStatFs = RootService.getInstance().readStatFs(outPath)
+                                item.progress = externalPathStatFs.availableBytes.toFloat() / externalPathStatFs.totalBytes
+                            } catch (_: Exception) {
+                                item.display = context.getString(R.string.fetch_failed)
                             }
 
-                            // 检测格式是否支持
+                            // Check the format
                             val supportedFormat =
                                 mutableListOf(
                                     "sdfat",
@@ -171,7 +165,7 @@ fun LazyListScope.appItems(
                             val support = type.lowercase() in supportedFormat
                             item.enabled = support
                             if (support.not()) {
-                                item.title = context.getString(R.string.unsupported_format)
+                                item.title = "${context.getString(R.string.unsupported_format)}: $type"
                             }
 
                             items.add(item)

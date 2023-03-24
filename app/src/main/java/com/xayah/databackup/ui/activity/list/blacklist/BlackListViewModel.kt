@@ -6,8 +6,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.data.BlackListItem
-import com.xayah.databackup.util.Command
 import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.readBlackListMapPath
 import com.xayah.databackup.util.saveBlackListMapPath
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
