@@ -29,10 +29,10 @@ fun Clickable(
         modifier = Modifier
             .clip(RoundedCornerShape(mediumPadding))
             .clickable { onClick() },
-        headlineText = {
+        headlineContent = {
             TitleMediumText(text = title)
         },
-        supportingText = {
+        supportingContent = {
             BodySmallText(text = subtitle)
         },
         trailingContent = {
