@@ -213,7 +213,7 @@ fun onBackupAppProcessing(
                                         val paths = RootService.getInstance().displayPackageFilePath(packageName, userId.toInt())
                                         if (paths.isNotEmpty()) {
                                             appInfoBackup.detailBackup.appSize =
-                                                RootService.getInstance().countSize(Path.getParentPath(paths[0])).toString()
+                                                RootService.getInstance().countSize(Path.getParentPath(paths[0]), ".*(.apk)").toString()
                                         } else {
                                             Logcat.getInstance().actionLogAddLine(tag, "Failed to get $packageName APK path.")
                                         }

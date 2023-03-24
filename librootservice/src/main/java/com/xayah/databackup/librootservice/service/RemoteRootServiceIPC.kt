@@ -106,16 +106,21 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     }
 
     /**
-     * 计算文件/文件夹大小
+     * Count size of files/directories
      */
-    override fun countSize(path: String): Long {
+    override fun countSize(path: String, regex: String): Long {
         val size = AtomicLong(0)
         try {
             Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
                 override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
-                    if (attrs != null) {
-                        size.addAndGet(attrs.size())
+                    if (file != null && attrs != null) {
+                        if (regex.isEmpty() || Regex(regex).matches(file.fileName.pathString))
+                            size.addAndGet(attrs.size())
                     }
+                    return FileVisitResult.CONTINUE
+                }
+
+                override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
                     return FileVisitResult.CONTINUE
                 }
 

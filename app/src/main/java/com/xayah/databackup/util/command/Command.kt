@@ -693,7 +693,7 @@ class Command {
             }
             if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) {
                 // 当备份策略为覆盖时, 计算目录大小并判断是否更新
-                if (RootService.getInstance().countSize(apkPath).toString() == apkSize) {
+                if (RootService.getInstance().countSize(apkPath, ".*(.apk)").toString() == apkSize) {
                     needUpdate = false
                     Logcat.getInstance()
                         .actionLogAddLine(tag, "$apkPath may have no update.")
@@ -921,7 +921,7 @@ class Command {
             }
 
             val apkSize = RootService.getInstance().countSize("${outPut}/DataBackup.apk").toString()
-            if (RootService.getInstance().countSize(apkPath).toString() == apkSize
+            if (RootService.getInstance().countSize(apkPath, ".*(.apk)").toString() == apkSize
             ) return true
             cp("${apkPath}/base.apk", "${outPut}/DataBackup.apk").apply {
                 if (!this) {

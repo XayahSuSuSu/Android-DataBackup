@@ -13,7 +13,7 @@ interface IRemoteRootService {
     boolean deleteRecursively(String path);
     boolean mkdirs(String path);
     boolean copyTo(String path, String targetPath, boolean overwrite);
-    long countSize(String path);
+    long countSize(String path, String regex);
     String readText(String path);
     byte[] readBytes(String path);
     ParcelFileDescriptor readByDescriptor(String path);

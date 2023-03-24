@@ -78,8 +78,8 @@ class RootService {
         return ipc.copyTo(path, targetPath, overwrite)
     }
 
-    fun countSize(path: String): Long {
-        return ipc.countSize(path)
+    fun countSize(path: String, regex: String = ""): Long {
+        return ipc.countSize(path, regex)
     }
 
     fun readText(path: String): String {
