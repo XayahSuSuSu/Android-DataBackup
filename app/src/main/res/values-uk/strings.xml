@@ -169,7 +169,7 @@
         <item quantity="many"><xliff:g id="count">%d</xliff:g> год.</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> год.</item>
     </plurals>
-    <string name="card_telephony_subtitle">Бекап (відновлення) контактів, списку дзвінків або СМС/ММС</string>
+    <string name="card_telephony_subtitle">Резервне копіювання контактів, журналу дзвінків або SMS/MMS</string>
     <string name="posted_just_now">Щойно</string>
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> хв.</item>
@@ -185,4 +185,9 @@
         <item quantity="many"><xliff:g id="count">%d</xliff:g> д.</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> д.</item>
     </plurals>
+    <string name="contacts_permission">Права доступу до контактів</string>
+    <string name="call_log_permission">Права доступу до ведення журналу дзвінків</string>
+    <string name="miui_service_sms_tips">Якщо ви користуєтеся MIUI, будь ласка, надайте дозвіл на службові SMS вручну.</string>
+    <string name="telephony_permissions">Права доступу до телефонії</string>
+    <string name="sms_permission">Права доступу до SMS</string>
 </resources>
