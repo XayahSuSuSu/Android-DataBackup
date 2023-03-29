@@ -29,59 +29,52 @@ fun ContactsRestoreItem(item: ContactItem) {
     val onClick = { it: Boolean ->
         item.isSelected.value = it
     }
-
     Card(
         Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .clickable {
+                if (item.isOnThisDevice.value.not())
+                    onClick(item.isSelected.value.not())
+            }
     ) {
-        Card(
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clickable {
-                    if (item.isOnThisDevice.value.not())
-                        onClick(item.isSelected.value.not())
-                }
+        Column(
+            modifier = Modifier
+                .padding(mediumPadding, smallPadding)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(mediumPadding, smallPadding)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TitleMediumText(
-                        modifier = Modifier.weight(1f),
-                        text = item.rawContact.displayNamePrimary
-                    )
-                    IconToggleButton(
-                        checked = item.isSelected.value,
-                        enabled = item.isOnThisDevice.value.not(),
-                        onCheckedChange = { onClick(it) }) {
-                        if (item.isSelected.value) {
-                            Icon(
-                                imageVector = Icons.Filled.CheckCircle,
-                                contentDescription = null
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Outlined.CheckCircle,
-                                contentDescription = null
-                            )
-                        }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TitleMediumText(
+                    modifier = Modifier.weight(1f),
+                    text = item.rawContact.displayNamePrimary
+                )
+                IconToggleButton(
+                    checked = item.isSelected.value,
+                    enabled = item.isOnThisDevice.value.not(),
+                    onCheckedChange = { onClick(it) }) {
+                    if (item.isSelected.value) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Outlined.CheckCircle,
+                            contentDescription = null
+                        )
                     }
                 }
-                BodySmallText(
-                    modifier = Modifier.paddingTop(smallPadding),
-                    text = item.bodyText,
-                    bold = false
-                )
-                Row(
-                    modifier = Modifier.paddingTop(smallPadding),
-                    horizontalArrangement = Arrangement.spacedBy(smallPadding)
-                ) {
-                    if (item.isOnThisDevice.value)
-                        SerialText(serial = stringResource(R.string.restored))
-                }
+            }
+            BodySmallText(
+                modifier = Modifier.paddingTop(smallPadding),
+                text = item.bodyText,
+                bold = false
+            )
+            Row(
+                modifier = Modifier.paddingTop(smallPadding),
+                horizontalArrangement = Arrangement.spacedBy(smallPadding)
+            ) {
+                if (item.isOnThisDevice.value)
+                    SerialText(serial = stringResource(R.string.restored))
             }
         }
     }

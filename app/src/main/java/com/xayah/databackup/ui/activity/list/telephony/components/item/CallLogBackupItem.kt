@@ -37,15 +37,10 @@ fun CallLogBackupItem(item: CallLogItem) {
         Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-    ) {
-        Card(
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clickable {
-                    if (item.isInLocal.value.not())
-                        onClick(item.isSelected.value.not())
-                }
+            .clickable {
+                if (item.isInLocal.value.not())
+                    onClick(item.isSelected.value.not())
+            }
         ) {
             Column(
                 modifier = Modifier
@@ -93,5 +88,4 @@ fun CallLogBackupItem(item: CallLogItem) {
                 }
             }
         }
-    }
 }

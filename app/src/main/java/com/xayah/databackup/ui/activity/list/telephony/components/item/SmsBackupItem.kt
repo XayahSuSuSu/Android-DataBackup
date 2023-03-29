@@ -38,63 +38,57 @@ fun SmsBackupItem(item: SmsItem) {
         Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .clickable {
+                if (item.isInLocal.value.not())
+                    onClick(item.isSelected.value.not())
+            }
     ) {
-        Card(
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clickable {
-                    if (item.isInLocal.value.not())
-                        onClick(item.isSelected.value.not())
-                }
+        Column(
+            modifier = Modifier
+                .padding(mediumPadding, smallPadding)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(mediumPadding, smallPadding)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        TitleMediumText(text = item.address)
-                        LabelSmallText(
-                            text = Dates.getShortRelativeTimeSpanString(item.date).toString(),
-                            bold = false
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    TitleMediumText(text = item.address)
+                    LabelSmallText(
+                        text = Dates.getShortRelativeTimeSpanString(item.date).toString(),
+                        bold = false
+                    )
+                }
+                IconToggleButton(
+                    checked = item.isSelected.value,
+                    enabled = item.isInLocal.value.not(),
+                    onCheckedChange = { onClick(it) }) {
+                    if (item.isSelected.value) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Outlined.CheckCircle,
+                            contentDescription = null
                         )
                     }
-                    IconToggleButton(
-                        checked = item.isSelected.value,
-                        enabled = item.isInLocal.value.not(),
-                        onCheckedChange = { onClick(it) }) {
-                        if (item.isSelected.value) {
-                            Icon(
-                                imageVector = Icons.Filled.CheckCircle,
-                                contentDescription = null
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Outlined.CheckCircle,
-                                contentDescription = null
-                            )
-                        }
-                    }
                 }
-                BodySmallText(
-                    modifier = Modifier.paddingTop(smallPadding),
-                    text = item.body,
-                    bold = false
+            }
+            BodySmallText(
+                modifier = Modifier.paddingTop(smallPadding),
+                text = item.body,
+                bold = false
+            )
+            Row(
+                modifier = Modifier.paddingTop(smallPadding),
+                horizontalArrangement = Arrangement.spacedBy(smallPadding)
+            ) {
+                SerialIcon(
+                    icon = if (item.type == 1L)
+                        ImageVector.vectorResource(id = R.drawable.ic_call_received)
+                    else
+                        ImageVector.vectorResource(id = R.drawable.ic_call_made)
                 )
-                Row(
-                    modifier = Modifier.paddingTop(smallPadding),
-                    horizontalArrangement = Arrangement.spacedBy(smallPadding)
-                ) {
-                    SerialIcon(
-                        icon = if (item.type == 1L)
-                            ImageVector.vectorResource(id = R.drawable.ic_call_received)
-                        else
-                            ImageVector.vectorResource(id = R.drawable.ic_call_made)
-                    )
-                    if (item.isInLocal.value)
-                        SerialText(serial = stringResource(R.string.backed_up))
-                }
+                if (item.isInLocal.value)
+                    SerialText(serial = stringResource(R.string.backed_up))
             }
         }
     }

@@ -37,60 +37,54 @@ fun CallLogRestoreItem(item: CallLogItem) {
         Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .clickable {
+                if (item.isOnThisDevice.value.not())
+                    onClick(item.isSelected.value.not())
+            }
     ) {
-        Card(
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clickable {
-                    if (item.isOnThisDevice.value.not())
-                        onClick(item.isSelected.value.not())
-                }
+        Column(
+            modifier = Modifier
+                .padding(mediumPadding, smallPadding)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(mediumPadding, smallPadding)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        TitleMediumText(text = item.number)
-                        LabelSmallText(
-                            text = Dates.getShortRelativeTimeSpanString(item.date).toString(),
-                            bold = false
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    TitleMediumText(text = item.number)
+                    LabelSmallText(
+                        text = Dates.getShortRelativeTimeSpanString(item.date).toString(),
+                        bold = false
+                    )
+                }
+                IconToggleButton(
+                    checked = item.isSelected.value,
+                    enabled = item.isOnThisDevice.value.not(),
+                    onCheckedChange = { onClick(it) }) {
+                    if (item.isSelected.value) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Outlined.CheckCircle,
+                            contentDescription = null
                         )
                     }
-                    IconToggleButton(
-                        checked = item.isSelected.value,
-                        enabled = item.isOnThisDevice.value.not(),
-                        onCheckedChange = { onClick(it) }) {
-                        if (item.isSelected.value) {
-                            Icon(
-                                imageVector = Icons.Filled.CheckCircle,
-                                contentDescription = null
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Outlined.CheckCircle,
-                                contentDescription = null
-                            )
-                        }
-                    }
                 }
-                Row(
-                    modifier = Modifier.paddingTop(smallPadding),
-                    horizontalArrangement = Arrangement.spacedBy(smallPadding)
-                ) {
-                    SerialIcon(
-                        icon = if (item.type == 1L)
-                            ImageVector.vectorResource(id = R.drawable.ic_call_received)
-                        else if (item.type == 2L)
-                            ImageVector.vectorResource(id = R.drawable.ic_call_made)
-                        else
-                            ImageVector.vectorResource(id = R.drawable.ic_round_question_mark)
-                    )
-                    if (item.isOnThisDevice.value)
-                        SerialText(serial = stringResource(R.string.restored))
-                }
+            }
+            Row(
+                modifier = Modifier.paddingTop(smallPadding),
+                horizontalArrangement = Arrangement.spacedBy(smallPadding)
+            ) {
+                SerialIcon(
+                    icon = if (item.type == 1L)
+                        ImageVector.vectorResource(id = R.drawable.ic_call_received)
+                    else if (item.type == 2L)
+                        ImageVector.vectorResource(id = R.drawable.ic_call_made)
+                    else
+                        ImageVector.vectorResource(id = R.drawable.ic_round_question_mark)
+                )
+                if (item.isOnThisDevice.value)
+                    SerialText(serial = stringResource(R.string.restored))
             }
         }
     }
