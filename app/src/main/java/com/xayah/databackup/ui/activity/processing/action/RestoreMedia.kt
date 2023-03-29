@@ -4,13 +4,14 @@ import android.content.Context
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.R
+import com.xayah.databackup.data.CompressionType
+import com.xayah.databackup.data.DataType
 import com.xayah.databackup.data.LoadingState
-import com.xayah.databackup.data.ProcessingObjectType
 import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
-import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
+import com.xayah.databackup.ui.activity.processing.components.onInfoUpdate
 import com.xayah.databackup.util.GlobalObject
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Logcat
@@ -20,16 +21,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun onRestoreMediaProcessing(
-    viewModel: ProcessingViewModel,
-    context: Context,
-    globalObject: GlobalObject,
-    retry: Boolean = false,
-) {
+fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, globalObject: GlobalObject, retry: Boolean = false) {
     if (viewModel.isFirst.value) {
         viewModel.isFirst.value = false
         CoroutineScope(Dispatchers.IO).launch {
-            val tag = "RestoreMedia"
+            val tag = "# RestoreMedia #"
             Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
 
             val loadingState = viewModel.loadingState
@@ -38,18 +34,18 @@ fun onRestoreMediaProcessing(
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
                 clear()
-                add(ProcessObjectItem(type = ProcessingObjectType.DATA))
+                add(ProcessObjectItem(type = DataType.DATA))
             }
             val allDone = viewModel.allDone
 
-            // 检查列表
+            // Check global map
             if (globalObject.mediaInfoRestoreMap.value.isEmpty()) {
                 globalObject.mediaInfoRestoreMap.emit(Command.getMediaInfoRestoreMap())
             }
             Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
             if (retry.not()) {
-                // 备份信息列表
+                // Add processing tasks
                 taskList.addAll(
                     globalObject.mediaInfoRestoreMap.value.values.toList()
                         .filter { if (it.detailRestoreList.isNotEmpty()) it.selectData.value else false }
@@ -72,15 +68,14 @@ fun onRestoreMediaProcessing(
 
             Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
 
-            // 前期准备完成
+            // Early stage finished
             loadingState.value = LoadingState.Success
-            topBarTitle.value =
-                "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
+            topBarTitle.value = "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
             for ((index, i) in taskList.withIndex()) {
                 // Skip while retrying not-failed task
                 if (retry && i.taskState.value != TaskState.Failed) continue
 
-                // 重置恢复目标
+                // Reset object list
                 objectList[0].apply {
                     state.value = TaskState.Waiting
                     title.value = GlobalString.ready
@@ -88,12 +83,11 @@ fun onRestoreMediaProcessing(
                     subtitle.value = GlobalString.pleaseWait
                 }
 
-                // 进入Processing状态
+                // Enter processing state
                 i.taskState.value = TaskState.Processing
-                val mediaInfoRestore =
-                    globalObject.mediaInfoRestoreMap.value[i.appName]!!
+                val mediaInfoRestore = globalObject.mediaInfoRestoreMap.value[i.appName]!!
 
-                // 滑动至目标应用
+                // Scroll to processing task
                 if (viewModel.listStateIsInitialized) {
                     if (viewModel.scopeIsInitialized) {
                         viewModel.scope.launch {
@@ -103,14 +97,12 @@ fun onRestoreMediaProcessing(
                 }
 
                 var isSuccess = true
-                val inPath =
-                    "${Path.getBackupMediaSavePath()}/${i.appName}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}"
+                val inPath = "${Path.getBackupMediaSavePath()}/${i.appName}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}"
 
                 Logcat.getInstance().actionLogAddLine(tag, "Name: ${i.appName}.")
                 Logcat.getInstance().actionLogAddLine(tag, "Path: ${i.packageName}.")
 
                 if (i.selectData) {
-                    // 添加Data备份项
                     objectList[0].visible.value = true
                 }
                 for (j in objectList) {
@@ -118,16 +110,11 @@ fun onRestoreMediaProcessing(
                     if (j.visible.value) {
                         j.state.value = TaskState.Processing
                         when (j.type) {
-                            ProcessingObjectType.DATA -> {
+                            DataType.DATA -> {
                                 val inputPath = "${inPath}/${i.appName}.tar"
-                                Command.decompress(
-                                    Command.getCompressionTypeByPath(inputPath),
-                                    "media",
-                                    inputPath,
-                                    i.appName,
-                                    i.packageName.replace("/${i.appName}", "")
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.decompress(CompressionType.TAR, DataType.DATA, inputPath, i.appName, i.packageName.replace("/${i.appName}", ""))
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -158,9 +145,7 @@ fun onRestoreMediaProcessing(
                 }
 
                 progress.value += 1
-                topBarTitle.value =
-                    "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
-
+                topBarTitle.value = "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
             }
 
             topBarTitle.value = "${context.getString(R.string.restore_finished)}!"

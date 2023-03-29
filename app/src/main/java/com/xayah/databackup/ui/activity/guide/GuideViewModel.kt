@@ -122,7 +122,7 @@ class GuideViewModel : ViewModel() {
                 Command.releaseAssets(
                     context, "bin/bin.zip", "bin.zip"
                 )
-                Command.unzipByZip4j(binZipPath, binPath)
+                Command.unzip(binZipPath, binPath)
                 context.saveAppVersion(App.versionName)
             }
             File(binPath).listFiles()?.apply {
@@ -133,7 +133,7 @@ class GuideViewModel : ViewModel() {
             checkBin = Command.checkBin().apply {
                 // 环境检测通过后删除压缩文件
                 if (this)
-                    Command.rm(binZipPath)
+                    File(binZipPath).deleteRecursively()
             }
         }
 

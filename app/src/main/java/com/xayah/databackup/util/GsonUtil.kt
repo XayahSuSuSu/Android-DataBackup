@@ -124,22 +124,6 @@ class GsonUtil {
                 }
             }
         }
-
-        /**
-         * 保存备份记录
-         */
-        suspend fun saveBackupInfoListToFile(list: BackupInfoList) {
-            withContext(Dispatchers.IO) {
-                try {
-                    saveToFile(
-                        Path.getBackupInfoListPath(),
-                        getInstance().toBackupInfoListJson(list)
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
     }
 
     private val gson: Gson =
@@ -243,25 +227,6 @@ class GsonUtil {
      * RcloneMountMap转Json
      */
     fun toRcloneMountMapJson(value: RcloneMountMap): String {
-        return gson.toJson(value)
-    }
-
-    /**
-     * Json转BackupInfoList
-     */
-    fun fromBackupInfoListJson(value: String): BackupInfoList {
-        return try {
-            val mapType = object : TypeToken<BackupInfoList>() {}
-            gson.fromJson(value, mapType.type)
-        } catch (e: Exception) {
-            mutableListOf()
-        }
-    }
-
-    /**
-     * BackupInfoList转Json
-     */
-    fun toBackupInfoListJson(value: BackupInfoList): String {
         return gson.toJson(value)
     }
 

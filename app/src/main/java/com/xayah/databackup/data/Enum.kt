@@ -1,16 +1,17 @@
 package com.xayah.databackup.data
 
 import com.xayah.databackup.util.GlobalString
+import java.util.*
 
-enum class CompressionType(val type: String) {
-    TAR("tar"),
-    ZSTD("zstd"),
-    LZ4("lz4");
+enum class CompressionType(val type: String, val suffix: String) {
+    TAR("tar", "tar"),
+    ZSTD("zstd", "tar.zst"),
+    LZ4("lz4", "tar.lz4");
 
     companion object {
-        fun to(name: String): CompressionType {
+        fun of(name: String): CompressionType {
             return try {
-                CompressionType.valueOf(name)
+                CompressionType.valueOf(name.uppercase(Locale.getDefault()))
             } catch (e: Exception) {
                 ZSTD
             }
@@ -19,6 +20,7 @@ enum class CompressionType(val type: String) {
 }
 
 enum class DataType(val type: String) {
+    APK("apk"),
     USER("user"),
     USER_DE("user_de"),
     DATA("data"),
@@ -26,9 +28,9 @@ enum class DataType(val type: String) {
     MEDIA("media");
 
     companion object {
-        fun to(name: String): DataType {
+        fun of(name: String): DataType {
             return try {
-                DataType.valueOf(name)
+                DataType.valueOf(name.uppercase(Locale.getDefault()))
             } catch (e: Exception) {
                 USER
             }
@@ -120,15 +122,6 @@ const val ProcessSettingSELinux = "SettingSELinux"
 const val ProcessInstallingApk = "InstallingApk"
 
 /**
- * Processing项目类型
- */
-const val ProcessingItemTypeAPK = "APK"
-const val ProcessingItemTypeUSER = "USER"
-const val ProcessingItemTypeUSERDE = "USER_DE"
-const val ProcessingItemTypeDATA = "DATA"
-const val ProcessingItemTypeOBB = "OBB"
-
-/**
  * ProcessingTaskFilter
  */
 enum class ProcessingTaskFilter {
@@ -163,17 +156,6 @@ enum class TaskState {
     Waiting,    // 等待中
     Success,    // 成功
     Failed,     // 失败
-}
-
-/**
- * ProcessingObject类型
- */
-enum class ProcessingObjectType {
-    APP,
-    USER,
-    USER_DE,
-    DATA,
-    OBB,
 }
 
 /**

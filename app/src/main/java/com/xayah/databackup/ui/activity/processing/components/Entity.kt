@@ -3,7 +3,7 @@ package com.xayah.databackup.ui.activity.processing.components
 import android.graphics.drawable.Drawable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.xayah.databackup.data.ProcessingObjectType
+import com.xayah.databackup.data.DataType
 import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.util.GlobalString
 
@@ -12,7 +12,7 @@ data class ProcessObjectItem(
     val visible: MutableState<Boolean> = mutableStateOf(false),
     val title: MutableState<String> = mutableStateOf(GlobalString.ready),
     val subtitle: MutableState<String> = mutableStateOf(GlobalString.pleaseWait),
-    val type: ProcessingObjectType,
+    val type: DataType,
 )
 
 /**

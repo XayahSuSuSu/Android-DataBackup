@@ -125,6 +125,11 @@ class Compression {
                             return@runOnIO
                         }
                     }
+                    else -> {
+                        isSuccess = false
+                        out = "Wrong data type: ${dataType.type}."
+                        return@runOnIO
+                    }
                 }
                 cmd = if (compatibleMode)
                     "- -C $origin ${if (compressionType == CompressionType.TAR) "" else "| $type"} > $target"

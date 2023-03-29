@@ -12,7 +12,7 @@ import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
-import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
+import com.xayah.databackup.ui.activity.processing.components.onInfoUpdate
 import com.xayah.databackup.util.*
 import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.command.Preparation
@@ -22,16 +22,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
-fun onBackupAppProcessing(
-    viewModel: ProcessingViewModel,
-    context: Context,
-    globalObject: GlobalObject,
-    retry: Boolean = false,
-) {
+fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, globalObject: GlobalObject, retry: Boolean = false) {
     if (viewModel.isFirst.value) {
         viewModel.isFirst.value = false
         CoroutineScope(Dispatchers.IO).launch {
-            val tag = "BackupApp"
+            val tag = "# BackupApp #"
             Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
 
             val loadingState = viewModel.loadingState
@@ -40,20 +35,13 @@ fun onBackupAppProcessing(
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
                 clear()
-                val typeList = listOf(
-                    ProcessingObjectType.APP,
-                    ProcessingObjectType.USER,
-                    ProcessingObjectType.USER_DE,
-                    ProcessingObjectType.DATA,
-                    ProcessingObjectType.OBB,
-                )
-                for (i in typeList) {
-                    add(ProcessObjectItem(type = i))
-                }
+                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB).map {
+                    ProcessObjectItem(type = it)
+                })
             }
             val allDone = viewModel.allDone
 
-            // 检查列表
+            // Check global map
             if (globalObject.appInfoBackupMap.value.isEmpty()) {
                 globalObject.appInfoBackupMap.emit(Command.getAppInfoBackupMap())
             }
@@ -63,17 +51,14 @@ fun onBackupAppProcessing(
             Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
             if (retry.not()) {
-                // 备份信息列表
+                // Add processing tasks
                 taskList.addAll(globalObject.appInfoBackupMap.value.values.toList()
                     .filter { it.isOnThisDevice && (it.selectApp.value || it.selectData.value) }
                     .map {
                         ProcessingTask(
                             appName = it.detailBase.appName,
                             packageName = it.detailBase.packageName,
-                            appIcon = it.detailBase.appIcon ?: AppCompatResources.getDrawable(
-                                context,
-                                R.drawable.ic_round_android
-                            ),
+                            appIcon = it.detailBase.appIcon ?: AppCompatResources.getDrawable(context, R.drawable.ic_round_android),
                             selectApp = it.selectApp.value,
                             selectData = it.selectData.value,
                             objectList = listOf()
@@ -85,45 +70,41 @@ fun onBackupAppProcessing(
 
             Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
 
-            // 获取默认输入法和无障碍
+            /**
+             * Somehow the keyboards and accessibility services
+             * will be changed after backing up on some devices,
+             * so we restore them manually.
+             */
             val keyboard = Preparation.getKeyboard()
             val services = Preparation.getAccessibilityServices()
 
-            Logcat.getInstance()
-                .actionLogAddLine(tag, "keyboard: ${keyboard}, services: ${services}.")
+            Logcat.getInstance().actionLogAddLine(tag, "keyboard: ${keyboard}, services: ${services}.")
 
-            // 备份自身
+            // Backup itself
             if (App.globalContext.readIsBackupItself()) {
-                val isSuccess = Command.backupItself(
-                    "com.xayah.databackup",
-                    App.globalContext.readBackupSavePath(),
-                    App.globalContext.readBackupUser()
-                )
-                Logcat.getInstance()
-                    .actionLogAddLine(tag, "Copy com.xayah.databackup to out: ${isSuccess}.")
+                val isSuccess = Command.backupItself("com.xayah.databackup", App.globalContext.readBackupSavePath(), App.globalContext.readBackupUser())
+                Logcat.getInstance().actionLogAddLine(tag, "Copy com.xayah.databackup to out: ${isSuccess}.")
             }
 
 
-            val date =
-                if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
+            val date = if (App.globalContext.readBackupStrategy() == BackupStrategy.Cover) GlobalString.cover else App.getTimeStamp()
             val userId = App.globalContext.readBackupUser()
-            val compressionType = App.globalContext.readCompressionType()
+            val compressionType = CompressionType.of(App.globalContext.readCompressionType())
             val compatibleMode = App.globalContext.readCompatibleMode()
 
             Logcat.getInstance().actionLogAddLine(tag, "Timestamp: ${date}.")
             Logcat.getInstance().actionLogAddLine(tag, "Date: ${Command.getDate(date)}.")
             Logcat.getInstance().actionLogAddLine(tag, "userId: ${userId}.")
-            Logcat.getInstance().actionLogAddLine(tag, "CompressionType: ${compressionType}.")
+            Logcat.getInstance().actionLogAddLine(tag, "CompressionType: ${compressionType.type}.")
 
-            // 前期准备完成
+            // Early stage finished
             loadingState.value = LoadingState.Success
-            topBarTitle.value =
-                "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
+            topBarTitle.value = "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
             for ((index, i) in taskList.withIndex()) {
                 // Skip while retrying not-failed task
                 if (retry && i.taskState.value != TaskState.Failed) continue
 
-                // 重置备份目标
+                // Reset object list
                 for (j in objectList) {
                     j.apply {
                         state.value = TaskState.Waiting
@@ -133,12 +114,11 @@ fun onBackupAppProcessing(
                     }
                 }
 
-                // 进入Processing状态
+                // Enter processing state
                 i.taskState.value = TaskState.Processing
-                val appInfoBackup =
-                    globalObject.appInfoBackupMap.value[i.packageName]!!
+                val appInfoBackup = globalObject.appInfoBackupMap.value[i.packageName]!!
 
-                // 滑动至目标应用
+                // Scroll to processing task
                 if (viewModel.listStateIsInitialized) {
                     if (viewModel.scopeIsInitialized) {
                         viewModel.scope.launch {
@@ -161,30 +141,25 @@ fun onBackupAppProcessing(
                 Logcat.getInstance().actionLogAddLine(tag, "PackageName: ${i.packageName}.")
 
                 if (i.selectApp) {
-                    // 检查是否备份APK
                     objectList[0].visible.value = true
                 }
                 if (i.selectData) {
-                    // 检查是否备份数据
-                    // USER为必备份项
+                    // USER is required in any case
                     objectList[1].visible.value = true
-                    // 检测是否存在USER_DE
-                    Command.ls(userDePath).apply {
-                        if (this) {
-                            objectList[2].visible.value = true
-                        }
+
+                    // Detect the existence of USER_DE
+                    if (RootService.getInstance().exists(userDePath)) {
+                        objectList[2].visible.value = true
                     }
-                    // 检测是否存在DATA
-                    Command.ls(dataPath).apply {
-                        if (this) {
-                            objectList[3].visible.value = true
-                        }
+
+                    // Detect the existence of DATA
+                    if (RootService.getInstance().exists(dataPath)) {
+                        objectList[3].visible.value = true
                     }
-                    // 检测是否存在OBB
-                    Command.ls(obbPath).apply {
-                        if (this) {
-                            objectList[4].visible.value = true
-                        }
+
+                    // Detect the existence of OBB
+                    if (RootService.getInstance().exists(obbPath)) {
+                        objectList[4].visible.value = true
                     }
                 }
 
@@ -195,117 +170,77 @@ fun onBackupAppProcessing(
                     if (j.visible.value) {
                         j.state.value = TaskState.Processing
                         when (j.type) {
-                            ProcessingObjectType.APP -> {
-                                Command.compressAPK(
-                                    compressionType,
-                                    packageName,
-                                    outPutPath,
-                                    userId,
-                                    appInfoBackup.detailBackup.appSize,
-                                    compatibleMode
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                            DataType.APK -> {
+                                Command.compressAPK(compressionType, packageName, outPutPath, userId, appInfoBackup.detailBackup.appSize, compatibleMode)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
-                                        // 保存apk大小
+                                        // Save the size of apk
                                         val paths = RootService.getInstance().displayPackageFilePath(packageName, userId.toInt())
                                         if (paths.isNotEmpty()) {
-                                            appInfoBackup.detailBackup.appSize =
-                                                RootService.getInstance().countSize(Path.getParentPath(paths[0]), ".*(.apk)").toString()
+                                            appInfoBackup.detailBackup.appSize = RootService.getInstance().countSize(Path.getParentPath(paths[0]), ".*(.apk)").toString()
                                         } else {
                                             Logcat.getInstance().actionLogAddLine(tag, "Failed to get $packageName APK path.")
                                         }
-
                                     }
                                 }
                             }
-                            ProcessingObjectType.USER -> {
-                                Command.compress(
-                                    compressionType,
-                                    "user",
-                                    packageName,
-                                    outPutPath,
-                                    Path.getUserPath(),
-                                    appInfoBackup.detailBackup.userSize,
-                                    compatibleMode
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                            DataType.USER -> {
+                                Command.compress(compressionType, DataType.USER, packageName, outPutPath, Path.getUserPath(), appInfoBackup.detailBackup.userSize, compatibleMode)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
-                                        // 保存user大小
-                                        appInfoBackup.detailBackup.userSize =
-                                            RootService.getInstance().countSize(userPath).toString()
+                                        // Save the size of user
+                                        appInfoBackup.detailBackup.userSize = RootService.getInstance().countSize(userPath).toString()
                                     }
                                 }
                             }
-                            ProcessingObjectType.USER_DE -> {
-                                Command.compress(
-                                    compressionType,
-                                    "user_de",
-                                    packageName,
-                                    outPutPath,
-                                    Path.getUserDePath(),
-                                    appInfoBackup.detailBackup.userDeSize,
-                                    compatibleMode
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                            DataType.USER_DE -> {
+                                Command.compress(compressionType, DataType.USER_DE, packageName, outPutPath, Path.getUserDePath(), appInfoBackup.detailBackup.userDeSize, compatibleMode)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
-                                        // 保存user_de大小
-                                        appInfoBackup.detailBackup.userDeSize =
-                                            RootService.getInstance().countSize(userDePath)
-                                                .toString()
+                                        // Save the size of user_de
+                                        appInfoBackup.detailBackup.userDeSize = RootService.getInstance().countSize(userDePath).toString()
                                     }
                                 }
                             }
-                            ProcessingObjectType.DATA -> {
-                                Command.compress(
-                                    compressionType,
-                                    "data",
-                                    packageName,
-                                    outPutPath,
-                                    Path.getDataPath(),
-                                    appInfoBackup.detailBackup.dataSize,
-                                    compatibleMode
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                            DataType.DATA -> {
+                                Command.compress(compressionType, DataType.DATA, packageName, outPutPath, Path.getDataPath(), appInfoBackup.detailBackup.dataSize, compatibleMode)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
-                                        // 保存data大小
-                                        appInfoBackup.detailBackup.dataSize =
-                                            RootService.getInstance().countSize(dataPath).toString()
+                                        // Save the size of data
+                                        appInfoBackup.detailBackup.dataSize = RootService.getInstance().countSize(dataPath).toString()
                                     }
                                 }
                             }
-                            ProcessingObjectType.OBB -> {
-                                Command.compress(
-                                    compressionType,
-                                    "obb",
-                                    packageName,
-                                    outPutPath,
-                                    Path.getObbPath(),
-                                    appInfoBackup.detailBackup.obbSize,
-                                    compatibleMode
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                            DataType.OBB -> {
+                                Command.compress(compressionType, DataType.OBB, packageName, outPutPath, Path.getObbPath(), appInfoBackup.detailBackup.obbSize, compatibleMode)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
                                     } else {
-                                        // 保存obb大小
-                                        appInfoBackup.detailBackup.obbSize =
-                                            RootService.getInstance().countSize(obbPath).toString()
+                                        // Save the size of obb
+                                        appInfoBackup.detailBackup.obbSize = RootService.getInstance().countSize(obbPath).toString()
                                     }
                                 }
                             }
+                            else -> {}
                         }
                     }
                 }
@@ -314,27 +249,21 @@ fun onBackupAppProcessing(
                 if (viewModel.isCancel.value) break
 
                 appInfoBackup.detailBackup.date = date
-                // 保存应用图标
+                // Save icon
                 if (App.globalContext.readIsBackupIcon()) {
                     withContext(Dispatchers.IO) {
                         Logcat.getInstance().actionLogAddLine(tag, "Trying to save icon.")
                         var byteArray = ByteArray(0)
                         try {
                             val byteArrayOutputStream = ByteArrayOutputStream()
-                            appInfoBackup.detailBase.appIcon?.toBitmap()
-                                ?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                            appInfoBackup.detailBase.appIcon?.toBitmap()?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
                             byteArray = byteArrayOutputStream.toByteArray()
                             byteArrayOutputStream.flush()
                             byteArrayOutputStream.close()
                             RootService.getInstance().writeBytesByDescriptor(outPutIconPath, byteArray)
-                            Logcat.getInstance()
-                                .actionLogAddLine(tag, "Icon saved successfully: ${byteArray.size}")
+                            Logcat.getInstance().actionLogAddLine(tag, "Icon saved successfully: ${byteArray.size}")
                         } catch (_: Exception) {
-                            Logcat.getInstance()
-                                .actionLogAddLine(
-                                    tag,
-                                    "Icon is too large to save: ${byteArray.size}"
-                                )
+                            Logcat.getInstance().actionLogAddLine(tag, "Icon is too large to save: ${byteArray.size}")
                         }
                     }
                 }
@@ -354,12 +283,8 @@ fun onBackupAppProcessing(
                         this.obbSize = appInfoBackup.detailBackup.obbSize
                         this.date = appInfoBackup.detailBackup.date
                     }
-                    if (globalObject.appInfoRestoreMap.value.containsKey(
-                            packageName
-                        ).not()
-                    ) {
-                        globalObject.appInfoRestoreMap.value[packageName] =
-                            AppInfoRestore()
+                    if (globalObject.appInfoRestoreMap.value.containsKey(packageName).not()) {
+                        globalObject.appInfoRestoreMap.value[packageName] = AppInfoRestore()
                     }
                     val appInfoRestore =
                         globalObject.appInfoRestoreMap.value[packageName]!!.apply {
@@ -370,11 +295,9 @@ fun onBackupAppProcessing(
                     val itemIndex =
                         appInfoRestore.detailRestoreList.indexOfFirst { date == it.date }
                     if (itemIndex == -1) {
-                        // RestoreList中不存在该Item
                         appInfoRestore.detailRestoreList.add(detail)
                         appInfoRestore.restoreIndex++
                     } else {
-                        // RestoreList中已存在该Item
                         appInfoRestore.detailRestoreList[itemIndex] = detail
                     }
                 }
@@ -397,11 +320,10 @@ fun onBackupAppProcessing(
                 }
 
                 progress.value += 1
-                topBarTitle.value =
-                    "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
+                topBarTitle.value = "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
             }
 
-            // 恢复默认输入法和无障碍
+            // Restore the keyboards and accessibility services
             keyboard.apply {
                 if (this.first) Preparation.setKeyboard(this.second)
             }
@@ -410,7 +332,7 @@ fun onBackupAppProcessing(
             }
             Logcat.getInstance().actionLogAddLine(tag, "Restore keyboard and services.")
 
-            // 保存列表数据
+            // Save lists
             GsonUtil.saveAppInfoBackupMapToFile(globalObject.appInfoBackupMap.value)
             GsonUtil.saveAppInfoRestoreMapToFile(globalObject.appInfoRestoreMap.value)
             globalObject.appInfoRestoreMap.value.clear()

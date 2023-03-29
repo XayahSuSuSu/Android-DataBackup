@@ -14,9 +14,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.databackup.R
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.DataType
+import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.ui.components.TitleMediumText
 import com.xayah.databackup.ui.components.paddingEnd
+import java.util.*
 
 @ExperimentalMaterial3Api
 @Composable
@@ -25,7 +27,7 @@ fun ProcessObject(
     visible: Boolean,
     title: String,
     subtitle: String,
-    type: ProcessingObjectType,
+    type: DataType,
 ) {
     if (visible) {
         val smallPadding = dimensionResource(R.dimen.padding_small)
@@ -63,20 +65,23 @@ fun ProcessObject(
             ) {
                 Icon(
                     imageVector = when (type) {
-                        ProcessingObjectType.APP -> {
+                        DataType.APK -> {
                             ImageVector.vectorResource(id = R.drawable.ic_round_android)
                         }
-                        ProcessingObjectType.USER -> {
+                        DataType.USER -> {
                             ImageVector.vectorResource(id = R.drawable.ic_round_person)
                         }
-                        ProcessingObjectType.USER_DE -> {
+                        DataType.USER_DE -> {
                             ImageVector.vectorResource(id = R.drawable.ic_round_person)
                         }
-                        ProcessingObjectType.DATA -> {
+                        DataType.DATA -> {
                             ImageVector.vectorResource(id = R.drawable.ic_round_database)
                         }
-                        ProcessingObjectType.OBB -> {
+                        DataType.OBB -> {
                             ImageVector.vectorResource(id = R.drawable.ic_round_esports)
+                        }
+                        else -> {
+                            ImageVector.vectorResource(id = R.drawable.ic_round_person)
                         }
                     },
                     contentDescription = null,
@@ -135,23 +140,7 @@ fun ProcessObject(
                     CircularProgressIndicator(modifier = Modifier.size(iconSmallSize))
                 else
                     TitleMediumText(
-                        text = when (type) {
-                            ProcessingObjectType.APP -> {
-                                ProcessingItemTypeAPK
-                            }
-                            ProcessingObjectType.USER -> {
-                                ProcessingItemTypeUSER
-                            }
-                            ProcessingObjectType.USER_DE -> {
-                                ProcessingItemTypeUSERDE
-                            }
-                            ProcessingObjectType.DATA -> {
-                                ProcessingItemTypeDATA
-                            }
-                            ProcessingObjectType.OBB -> {
-                                ProcessingItemTypeOBB
-                            }
-                        },
+                        text = type.type.uppercase(Locale.getDefault()),
                         color = when (cardState) {
                             TaskState.Waiting, TaskState.Processing -> {
                                 colorOnSurfaceVariant

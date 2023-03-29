@@ -7,15 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.graphics.drawable.toDrawable
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.LoadingState
-import com.xayah.databackup.data.ProcessError
-import com.xayah.databackup.data.ProcessingObjectType
-import com.xayah.databackup.data.TaskState
+import com.xayah.databackup.data.*
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
-import com.xayah.databackup.ui.activity.processing.components.parseObjectItemBySrc
+import com.xayah.databackup.ui.activity.processing.components.onInfoUpdate
 import com.xayah.databackup.util.*
 import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.command.SELinux
@@ -23,16 +20,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun onRestoreAppProcessing(
-    viewModel: ProcessingViewModel,
-    context: Context,
-    globalObject: GlobalObject,
-    retry: Boolean = false,
-) {
+fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, globalObject: GlobalObject, retry: Boolean = false) {
     if (viewModel.isFirst.value) {
         viewModel.isFirst.value = false
         CoroutineScope(Dispatchers.IO).launch {
-            val tag = "RestoreApp"
+            val tag = "# RestoreApp #"
             Logcat.getInstance().actionLogAddLine(tag, "===========${tag}===========")
 
             val loadingState = viewModel.loadingState
@@ -41,27 +33,20 @@ fun onRestoreAppProcessing(
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
                 clear()
-                val typeList = listOf(
-                    ProcessingObjectType.APP,
-                    ProcessingObjectType.USER,
-                    ProcessingObjectType.USER_DE,
-                    ProcessingObjectType.DATA,
-                    ProcessingObjectType.OBB,
-                )
-                for (i in typeList) {
-                    add(ProcessObjectItem(type = i))
-                }
+                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB).map {
+                    ProcessObjectItem(type = it)
+                })
             }
             val allDone = viewModel.allDone
 
-            // 检查列表
+            // Check global map
             if (globalObject.appInfoRestoreMap.value.isEmpty()) {
                 globalObject.appInfoRestoreMap.emit(Command.getAppInfoRestoreMap())
             }
             Logcat.getInstance().actionLogAddLine(tag, "Global map check finished.")
 
             if (retry.not()) {
-                // 备份信息列表
+                // Add processing tasks
                 taskList.addAll(
                     globalObject.appInfoRestoreMap.value.values.toList()
                         .filter { if (it.detailRestoreList.isNotEmpty()) it.selectApp.value || it.selectData.value else false }
@@ -80,11 +65,8 @@ fun onRestoreAppProcessing(
                                 if (App.globalContext.readIsReadIcon()) {
                                     try {
                                         val task = this
-                                        val bytes = RootService.getInstance()
-                                            .readBytesByDescriptor("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png")
-                                        task.appIcon =
-                                            (BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                                                .toDrawable(context.resources))
+                                        val bytes = RootService.getInstance().readBytesByDescriptor("${Path.getBackupDataSavePath()}/${it.detailBase.packageName}/icon.png")
+                                        task.appIcon = (BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources))
                                     } catch (e: Exception) {
                                         e.printStackTrace()
                                     }
@@ -98,12 +80,12 @@ fun onRestoreAppProcessing(
             Logcat.getInstance().actionLogAddLine(tag, "Task added, size: ${taskList.size}.")
 
             val userId = App.globalContext.readRestoreUser()
-            val compressionType = App.globalContext.readCompressionType()
+            val compressionType = CompressionType.of(App.globalContext.readCompressionType())
 
             Logcat.getInstance().actionLogAddLine(tag, "userId: ${userId}.")
-            Logcat.getInstance().actionLogAddLine(tag, "CompressionType: ${compressionType}.")
+            Logcat.getInstance().actionLogAddLine(tag, "CompressionType: ${compressionType.type}.")
 
-            // 前期准备完成
+            // Early stage finished
             loadingState.value = LoadingState.Success
             topBarTitle.value =
                 "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
@@ -111,7 +93,7 @@ fun onRestoreAppProcessing(
                 // Skip while retrying not-failed task
                 if (retry && i.taskState.value != TaskState.Failed) continue
 
-                // 重置恢复目标
+                // Reset object list
                 for (j in objectList) {
                     j.apply {
                         state.value = TaskState.Waiting
@@ -121,12 +103,11 @@ fun onRestoreAppProcessing(
                     }
                 }
 
-                // 进入Processing状态
+                // Enter processing state
                 i.taskState.value = TaskState.Processing
-                val appInfoRestore =
-                    globalObject.appInfoRestoreMap.value[i.packageName]!!
+                val appInfoRestore = globalObject.appInfoRestoreMap.value[i.packageName]!!
 
-                // 滑动至目标应用
+                // Scroll to processing task
                 if (viewModel.listStateIsInitialized) {
                     if (viewModel.scopeIsInitialized) {
                         viewModel.scope.launch {
@@ -139,7 +120,7 @@ fun onRestoreAppProcessing(
                 val packageName = i.packageName
                 val date = appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].date
                 val inPath = "${Path.getBackupDataSavePath()}/${packageName}/${date}"
-                val suffix = Command.getSuffixByCompressionType(compressionType)
+                val suffix = compressionType.suffix
                 val apkPath = "${inPath}/apk.$suffix"
                 val userPath = "${inPath}/user.$suffix"
                 val userDePath = "${inPath}/user_de.$suffix"
@@ -150,30 +131,25 @@ fun onRestoreAppProcessing(
                 Logcat.getInstance().actionLogAddLine(tag, "PackageName: ${i.packageName}.")
 
                 if (i.selectApp) {
-                    // 检查是否备份APK
                     objectList[0].visible.value = true
                 }
                 if (i.selectData) {
-                    // 检查是否备份数据
-                    // USER为必备份项
+                    // USER is required in any case
                     objectList[1].visible.value = true
-                    // 检测是否存在USER_DE
-                    Command.ls(userDePath).apply {
-                        if (this) {
-                            objectList[2].visible.value = true
-                        }
+
+                    // Detect the existence of USER_DE
+                    if (RootService.getInstance().exists(userDePath)) {
+                        objectList[2].visible.value = true
                     }
-                    // 检测是否存在DATA
-                    Command.ls(dataPath).apply {
-                        if (this) {
-                            objectList[3].visible.value = true
-                        }
+
+                    // Detect the existence of DATA
+                    if (RootService.getInstance().exists(dataPath)) {
+                        objectList[3].visible.value = true
                     }
-                    // 检测是否存在OBB
-                    Command.ls(obbPath).apply {
-                        if (this) {
-                            objectList[4].visible.value = true
-                        }
+
+                    // Detect the existence of OBB
+                    if (RootService.getInstance().exists(obbPath)) {
+                        objectList[4].visible.value = true
                     }
                 }
                 for ((jIndex, j) in objectList.withIndex()) {
@@ -181,137 +157,85 @@ fun onRestoreAppProcessing(
                     if (j.visible.value) {
                         j.state.value = TaskState.Processing
                         when (j.type) {
-                            ProcessingObjectType.APP -> {
-                                isSuccess = Command.installAPK(
-                                    compressionType,
-                                    apkPath,
-                                    packageName,
-                                    userId,
-                                    appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].versionCode.toString()
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                            DataType.APK -> {
+                                isSuccess = Command.installAPK(compressionType, apkPath, packageName, userId, appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].versionCode.toString())
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }
 
-                                // 如果未安装该应用, 则无法完成后续恢复
+                                // If the app isn't installed, the restoring can't move on
                                 if (!isSuccess) {
                                     for (k in jIndex + 1 until objectList.size) {
-                                        parseObjectItemBySrc(
-                                            ProcessError,
-                                            "Apk not installed.",
-                                            objectList[k]
-                                        )
+                                        onInfoUpdate(ProcessError, "Apk not installed.", objectList[k])
                                     }
                                     break
                                 }
                             }
-                            ProcessingObjectType.USER -> {
-                                // 读取原有SELinux context
+                            DataType.USER -> {
+                                // Read the original SELinux context
                                 val (_, contextSELinux) = SELinux.getContext("${Path.getUserPath(userId)}/${packageName}")
-                                // 恢复User
-                                Command.decompress(
-                                    Command.getCompressionTypeByPath(userPath),
-                                    "user",
-                                    userPath,
-                                    packageName,
-                                    Path.getUserPath(userId)
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.decompress(compressionType, DataType.USER, userPath, packageName, Path.getUserPath(userId))
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
-                                Command.setOwnerAndSELinux(
-                                    "user",
-                                    packageName,
-                                    "${Path.getUserPath(userId)}/${packageName}",
-                                    userId,
-                                    contextSELinux
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.setOwnerAndSELinux(DataType.USER, packageName, "${Path.getUserPath(userId)}/${packageName}", userId, contextSELinux)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                             }
-                            ProcessingObjectType.USER_DE -> {
-                                // 读取原有SELinux context
+                            DataType.USER_DE -> {
+                                // Read the original SELinux context
                                 val (_, contextSELinux) = SELinux.getContext("${Path.getUserDePath(userId)}/${packageName}")
-                                // 恢复User_de
-                                Command.decompress(
-                                    Command.getCompressionTypeByPath(userDePath),
-                                    "user_de",
-                                    userDePath,
-                                    packageName,
-                                    Path.getUserDePath(userId)
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.decompress(compressionType, DataType.USER_DE, userDePath, packageName, Path.getUserDePath(userId))
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
-                                Command.setOwnerAndSELinux(
-                                    "user_de",
-                                    packageName,
-                                    "${Path.getUserDePath(userId)}/${packageName}",
-                                    userId,
-                                    contextSELinux
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.setOwnerAndSELinux(DataType.USER_DE, packageName, "${Path.getUserDePath(userId)}/${packageName}", userId, contextSELinux)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                             }
-                            ProcessingObjectType.DATA -> {
-                                // 读取原有SELinux context
+                            DataType.DATA -> {
+                                // Read the original SELinux context
                                 val (_, contextSELinux) = SELinux.getContext("${Path.getDataPath(userId)}/${packageName}")
-                                // 恢复Data
-                                Command.decompress(
-                                    Command.getCompressionTypeByPath(dataPath),
-                                    "data",
-                                    dataPath,
-                                    packageName,
-                                    Path.getDataPath(userId)
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.decompress(compressionType, DataType.DATA, dataPath, packageName, Path.getDataPath(userId))
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
-                                Command.setOwnerAndSELinux(
-                                    "data",
-                                    packageName,
-                                    "${Path.getDataPath(userId)}/${packageName}",
-                                    userId,
-                                    contextSELinux
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.setOwnerAndSELinux(DataType.DATA, packageName, "${Path.getDataPath(userId)}/${packageName}", userId, contextSELinux)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                             }
-                            ProcessingObjectType.OBB -> {
-                                // 读取原有SELinux context
+                            DataType.OBB -> {
+                                // Read the original SELinux context
                                 val (_, contextSELinux) = SELinux.getContext("${Path.getObbPath(userId)}/${packageName}")
-                                // 恢复Obb
-                                Command.decompress(
-                                    Command.getCompressionTypeByPath(obbPath),
-                                    "obb",
-                                    obbPath,
-                                    packageName,
-                                    Path.getObbPath(userId)
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.decompress(compressionType, DataType.OBB, obbPath, packageName, Path.getObbPath(userId))
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
-                                Command.setOwnerAndSELinux(
-                                    "obb",
-                                    packageName,
-                                    "${Path.getObbPath(userId)}/${packageName}",
-                                    userId,
-                                    contextSELinux
-                                ) { type, line ->
-                                    parseObjectItemBySrc(type, line ?: "", j)
+                                Command.setOwnerAndSELinux(DataType.OBB, packageName, "${Path.getObbPath(userId)}/${packageName}", userId, contextSELinux)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                             }
+                            else -> {}
                         }
                     }
                 }
@@ -341,9 +265,7 @@ fun onRestoreAppProcessing(
                 }
 
                 progress.value += 1
-                topBarTitle.value =
-                    "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
-
+                topBarTitle.value = "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"
             }
 
             GsonUtil.saveAppInfoRestoreMapToFile(globalObject.appInfoRestoreMap.value)

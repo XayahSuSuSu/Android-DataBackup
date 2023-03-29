@@ -241,19 +241,6 @@ data class MediaInfoRestore(
 }
 
 /**
- * 备份记录
- */
-data class BackupInfo(
-    @Expose var version: String,
-    @Expose var startTimeStamp: String,
-    @Expose var endTimeStamp: String,
-    @Expose var startSize: String,
-    @Expose var endSize: String,
-    @Expose var type: String,
-    @Expose var backupUser: String
-)
-
-/**
  * Rclone配置信息
  */
 data class RcloneConfig(

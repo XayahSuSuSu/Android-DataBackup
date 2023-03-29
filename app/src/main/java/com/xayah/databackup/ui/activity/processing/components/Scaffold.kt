@@ -26,13 +26,9 @@ import com.xayah.databackup.ui.components.animation.ContentFade
 import com.xayah.databackup.util.GlobalString
 
 /**
- * 解析src内容并返回ProcessObjectItem
+ * Parse the content of src
  */
-fun parseObjectItemBySrc(
-    type: String,
-    src: String,
-    item: ProcessObjectItem
-) {
+fun onInfoUpdate(type: String, src: String, item: ProcessObjectItem) {
     if (item.state.value == TaskState.Failed) return
     when (type) {
         ProcessFinished -> {
