@@ -8,10 +8,10 @@ import android.provider.ContactsContract
 import android.provider.Telephony
 import android.widget.Toast
 import com.xayah.databackup.R
+import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.list.telephony.TelephonyViewModel
 import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.Path
-import com.xayah.databackup.librootservice.RootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Paths
@@ -31,11 +31,9 @@ class Processor {
                 GsonUtil.getInstance()
                     .saveSmsListToFile(Path.getSmsListPath(), selectedList)
                     .apply {
-                        Toast.makeText(
-                            context,
-                            context.getString(if (this) R.string.succeed else R.string.failed),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, context.getString(if (this@apply) R.string.succeed else R.string.failed), Toast.LENGTH_SHORT).show()
+                        }
                     }
             }
         }
@@ -97,11 +95,9 @@ class Processor {
                 GsonUtil.getInstance()
                     .saveMmsListToFile(Path.getMmsListPath(), selectedList)
                     .apply {
-                        Toast.makeText(
-                            context,
-                            context.getString(if (this) R.string.succeed else R.string.failed),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, context.getString(if (this@apply) R.string.succeed else R.string.failed), Toast.LENGTH_SHORT).show()
+                        }
                     }
             }
         }
@@ -335,11 +331,9 @@ class Processor {
                 GsonUtil.getInstance()
                     .saveContactListToFile(Path.getContactListPath(), selectedList)
                     .apply {
-                        Toast.makeText(
-                            context,
-                            context.getString(if (this) R.string.succeed else R.string.failed),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, context.getString(if (this@apply) R.string.succeed else R.string.failed), Toast.LENGTH_SHORT).show()
+                        }
                     }
             }
         }
@@ -442,11 +436,9 @@ class Processor {
                 GsonUtil.getInstance()
                     .saveCallLogListToFile(Path.getCallLogListPath(), selectedList)
                     .apply {
-                        Toast.makeText(
-                            context,
-                            context.getString(if (this) R.string.succeed else R.string.failed),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, context.getString(if (this@apply) R.string.succeed else R.string.failed), Toast.LENGTH_SHORT).show()
+                        }
                     }
             }
         }
