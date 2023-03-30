@@ -39,5 +39,10 @@
 [<img src="https://hosted.weblate.org/widgets/databackup/-/open-graph.png"
      alt="Translation">](https://hosted.weblate.org/engage/databackup/)
 
+## Contributors
+Thanks to all these wonderful people!
+
+[![Contributors](https://contrib.rocks/image?repo=XayahSuSuSu/Android-DataBackup)](https://github.com/XayahSuSuSu/Android-DataBackup/graphs/contributors)
+
 ## ЛИЦЕНЗИЯ
 [GNU General Public License v3.0](./LICENSE)

@@ -43,5 +43,10 @@ or get the APK from the [Releases](https://github.com/XayahSuSuSu/Android-DataBa
 [<img src="https://hosted.weblate.org/widgets/databackup/-/open-graph.png"
      alt="Translation">](https://hosted.weblate.org/engage/databackup/)
 
+## Contributors
+Thanks to all these wonderful people!
+
+[![Contributors](https://contrib.rocks/image?repo=XayahSuSuSu/Android-DataBackup)](https://github.com/XayahSuSuSu/Android-DataBackup/graphs/contributors)
+
 ## LICENSE
 [GNU General Public License v3.0](./LICENSE)
