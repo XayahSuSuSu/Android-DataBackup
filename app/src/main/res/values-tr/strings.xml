@@ -160,4 +160,16 @@
     <string name="switch_to_system_app_warning">Çoğu sistem uygulamasının yedeklenmesi önerilmez, bunları geri yüklemek telefonunuzun açılmasına neden olabilir, karar sizin</string>
     <string name="warning">Uyarı</string>
     <string name="type">Tip</string>
+    <string name="miui_service_sms_tips">MIUI kullanıyorsanız, lütfen Servis SMS iznini manuel olarak verin.</string>
+    <string name="restored">Kurtarıldı</string>
+    <string name="posted_just_now">Şimdilik</string>
+    <string name="telephony">Telefon</string>
+    <string name="card_telephony_subtitle">Kişileri,arama kayıtları ya da sms\'leri kayıt eder</string>
+    <string name="backed_up">Yedeklendi</string>
+    <string name="posted_now">Şimdi</string>
+    <string name="not_the_default_sms_app_info">SMS/MMS\'yi geri yüklemek için DataBackup\'ın varsayılan SMS uygulaması olarak ayarlanması gerekir</string>
+    <string name="telephony_permissions">Telefon izinleri</string>
+    <string name="sms_permission">Sms izni</string>
+    <string name="contacts_permission">Kişi erişim izni</string>
+    <string name="call_log_permission">Arama kaydı erişim izni</string>
 </resources>
