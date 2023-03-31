@@ -118,7 +118,7 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
 
                 var isSuccess = true
                 val packageName = i.packageName
-                val date = appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].date
+                val date = appInfoRestore.date
                 val inPath = "${Path.getBackupDataSavePath()}/${packageName}/${date}"
                 val suffix = compressionType.suffix
                 val apkPath = "${inPath}/apk.$suffix"
@@ -158,7 +158,7 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                         j.state.value = TaskState.Processing
                         when (j.type) {
                             DataType.APK -> {
-                                isSuccess = Command.installAPK(compressionType, apkPath, packageName, userId, appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].versionCode.toString())
+                                isSuccess = Command.installAPK(compressionType, apkPath, packageName, userId, appInfoRestore.versionCode.toString())
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
                                 }

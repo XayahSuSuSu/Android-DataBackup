@@ -5,7 +5,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.R
 import com.xayah.databackup.data.MediaInfoBackup
+import com.xayah.databackup.ui.activity.guide.components.card.SerialSize
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.TextButton
 import com.xayah.databackup.util.GlobalObject
@@ -44,10 +44,7 @@ fun MediaBackupItem(
         dataSelected = mediaInfoBackup.selectData,
         chipContent = {
             if (mediaInfoBackup.sizeBytes != 0.0) {
-                SuggestionChip(
-                    onClick = { },
-                    label = { Text(mediaInfoBackup.sizeDisplay) }
-                )
+                SerialSize(serial = mediaInfoBackup.sizeDisplay)
             }
         },
         actionContent = {

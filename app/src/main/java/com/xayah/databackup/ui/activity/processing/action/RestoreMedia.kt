@@ -97,7 +97,7 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
                 }
 
                 var isSuccess = true
-                val inPath = "${Path.getBackupMediaSavePath()}/${i.appName}/${mediaInfoRestore.detailRestoreList[mediaInfoRestore.restoreIndex].date}"
+                val inPath = "${Path.getBackupMediaSavePath()}/${i.appName}/${mediaInfoRestore.date}"
 
                 Logcat.getInstance().actionLogAddLine(tag, "Name: ${i.appName}.")
                 Logcat.getInstance().actionLogAddLine(tag, "Path: ${i.packageName}.")

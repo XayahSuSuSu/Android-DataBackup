@@ -8,8 +8,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.components.TitleSmallText
 import com.xayah.databackup.ui.components.paddingHorizontal
@@ -37,15 +40,20 @@ fun SerialWord(modifier: Modifier = Modifier, serial: String) {
 }
 
 @Composable
-fun SerialText(modifier: Modifier = Modifier, serial: String) {
-    val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-    val colorSurface = MaterialTheme.colorScheme.surface
+fun SerialText(
+    modifier: Modifier = Modifier,
+    serial: String,
+    surfaceColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    textColor: Color = MaterialTheme.colorScheme.surface,
+    onClick: () -> Unit = {}
+) {
     val serialCircleSize = dimensionResource(R.dimen.serial_circle_size)
     val serialPaddingHorizontal = dimensionResource(R.dimen.serial_padding_horizontal)
     Surface(
         shape = CircleShape,
         modifier = modifier.height(serialCircleSize),
-        color = colorOnSurfaceVariant
+        color = surfaceColor,
+        onClick = onClick
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,7 +62,7 @@ fun SerialText(modifier: Modifier = Modifier, serial: String) {
             TitleSmallText(
                 modifier = Modifier.paddingHorizontal(serialPaddingHorizontal),
                 text = serial,
-                color = colorSurface
+                color = textColor
             )
         }
     }
@@ -83,4 +91,24 @@ fun SerialIcon(modifier: Modifier = Modifier, icon: ImageVector) {
             )
         }
     }
+}
+
+@Composable
+fun SerialVersion(serial: String) {
+    SerialText(serial = serial, surfaceColor = MaterialTheme.colorScheme.error, textColor = MaterialTheme.colorScheme.onError)
+}
+
+@Composable
+fun SerialSize(serial: String) {
+    SerialText(serial = serial, surfaceColor = MaterialTheme.colorScheme.tertiary, textColor = MaterialTheme.colorScheme.onTertiary)
+}
+
+@Composable
+fun SerialDate(serial: String, onClick: () -> Unit = {}) {
+    SerialText(serial = serial, surfaceColor = MaterialTheme.colorScheme.secondary, textColor = MaterialTheme.colorScheme.onSecondary, onClick = onClick)
+}
+
+@Composable
+fun SerialInstalled() {
+    SerialText(serial = stringResource(R.string.installed), surfaceColor = colorResource(id = R.color.green))
 }

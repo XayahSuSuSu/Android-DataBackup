@@ -2,8 +2,6 @@ package com.xayah.databackup.ui.activity.list.common.components.item
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -13,6 +11,8 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoBackup
 import com.xayah.databackup.data.BlackListItem
+import com.xayah.databackup.ui.activity.guide.components.card.SerialSize
+import com.xayah.databackup.ui.activity.guide.components.card.SerialVersion
 import com.xayah.databackup.ui.components.TextButton
 import com.xayah.databackup.util.GlobalObject
 import com.xayah.databackup.util.command.Command
@@ -39,16 +39,10 @@ fun AppBackupItem(
         dataSelected = appInfoBackup.selectData,
         chipContent = {
             if (appInfoBackup.detailBackup.versionName.isNotEmpty()) {
-                SuggestionChip(
-                    onClick = { },
-                    label = { Text(appInfoBackup.detailBackup.versionName) }
-                )
+                SerialVersion(serial = appInfoBackup.detailBackup.versionName)
             }
             if (appInfoBackup.sizeBytes != 0.0) {
-                SuggestionChip(
-                    onClick = { },
-                    label = { Text(appInfoBackup.sizeDisplay) }
-                )
+                SerialSize(serial = appInfoBackup.sizeDisplay)
             }
         },
         actionContent = {

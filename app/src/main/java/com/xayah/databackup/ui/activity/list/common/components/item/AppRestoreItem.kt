@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material3.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,8 +24,12 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppInfoRestore
 import com.xayah.databackup.librootservice.RootService
+import com.xayah.databackup.ui.activity.guide.components.card.SerialDate
+import com.xayah.databackup.ui.activity.guide.components.card.SerialInstalled
+import com.xayah.databackup.ui.activity.guide.components.card.SerialSize
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.TextButton
+import com.xayah.databackup.util.Dates
 import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.command.Command
@@ -69,22 +76,23 @@ fun AppRestoreItem(
             if (appInfoRestore.detailRestoreList.isNotEmpty()) {
                 var dateMenu by remember { mutableStateOf(false) }
 
+                if (isOnThisDevice.value) {
+                    SerialInstalled()
+                }
                 Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                    SuggestionChip(
-                        onClick = { dateMenu = true },
-                        label = { Text(Command.getDate(appInfoRestore.detailRestoreList[appInfoRestore.restoreIndex].date)) }
-                    )
+                    var date = appInfoRestore.date
+                    try {
+                        date = Dates.getShortRelativeTimeSpanString(appInfoRestore.date.toLong()).toString()
+                    } catch (_: Exception) {
+                    }
+                    SerialDate(serial = date, onClick = { dateMenu = true })
                     DropdownMenu(
                         expanded = dateMenu,
                         onDismissRequest = { dateMenu = false }
                     ) {
                         val appInfoRestores = mutableListOf<String>()
                         appInfoRestore.detailRestoreList.forEach {
-                            appInfoRestores.add(
-                                Command.getDate(
-                                    it.date
-                                )
-                            )
+                            appInfoRestores.add(Command.getDate(it.date))
                         }
                         for ((index, i) in appInfoRestores.withIndex()) {
                             DropdownMenuItem(
@@ -98,16 +106,7 @@ fun AppRestoreItem(
                 }
             }
             if (appInfoRestore.sizeBytes != 0.0) {
-                SuggestionChip(
-                    onClick = { },
-                    label = { Text(appInfoRestore.sizeDisplay) }
-                )
-            }
-            if (isOnThisDevice.value) {
-                SuggestionChip(
-                    onClick = { },
-                    label = { Text(stringResource(R.string.installed)) }
-                )
+                SerialSize(serial = appInfoRestore.sizeDisplay)
             }
         },
         actionContent = {

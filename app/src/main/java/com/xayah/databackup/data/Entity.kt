@@ -132,29 +132,37 @@ data class AppInfoRestore(
     var isOnThisDevice: MutableStateFlow<Boolean> = MutableStateFlow(false)
 ) {
     val selectApp: MutableState<Boolean>
-        get() = detailRestoreList[restoreIndex].selectApp
+        get() = detailRestoreList[_restoreIndex.value].selectApp
 
     val selectData: MutableState<Boolean>
-        get() = detailRestoreList[restoreIndex].selectData
+        get() = detailRestoreList[_restoreIndex.value].selectData
 
     val hasApp: MutableState<Boolean>
-        get() = detailRestoreList[restoreIndex].hasApp
+        get() = detailRestoreList[_restoreIndex.value].hasApp
 
     val hasData: MutableState<Boolean>
-        get() = detailRestoreList[restoreIndex].hasData
+        get() = detailRestoreList[_restoreIndex.value].hasData
 
     val sizeBytes: Double
-        get() = (detailRestoreList[restoreIndex].appSize.toLongOrDefault(0) +
-                detailRestoreList[restoreIndex].userSize.toLongOrDefault(0) +
-                detailRestoreList[restoreIndex].userDeSize.toLongOrDefault(0) +
-                detailRestoreList[restoreIndex].dataSize.toLongOrDefault(0) +
-                detailRestoreList[restoreIndex].obbSize.toLongOrDefault(0)).toDouble()
+        get() = (detailRestoreList[_restoreIndex.value].appSize.toLongOrDefault(0) +
+                detailRestoreList[_restoreIndex.value].userSize.toLongOrDefault(0) +
+                detailRestoreList[_restoreIndex.value].userDeSize.toLongOrDefault(0) +
+                detailRestoreList[_restoreIndex.value].dataSize.toLongOrDefault(0) +
+                detailRestoreList[_restoreIndex.value].obbSize.toLongOrDefault(0)).toDouble()
 
     val sizeDisplay: String
         get() = formatSize(sizeBytes)
 
+    val date: String
+        get() = detailRestoreList[_restoreIndex.value].date
+
+    val versionCode: Long
+        get() = detailRestoreList[_restoreIndex.value].versionCode
+
+    private var _restoreIndex: MutableState<Int> = mutableStateOf(0)
+
     @Expose
-    var restoreIndex: Int = -1
+    var restoreIndex: Int = 0
         get() = run {
             var value = field
             if (value == -1 || value.absoluteValue >= detailRestoreList.size) {
@@ -171,6 +179,7 @@ data class AppInfoRestore(
             } else {
                 value
             }
+            _restoreIndex.value = field
         }
 }
 
@@ -219,8 +228,13 @@ data class MediaInfoRestore(
     val sizeDisplay: String
         get() = formatSize(sizeBytes)
 
+    val date: String
+        get() = detailRestoreList[_restoreIndex.value].date
+
+    private var _restoreIndex: MutableState<Int> = mutableStateOf(0)
+
     @Expose
-    var restoreIndex: Int = -1
+    var restoreIndex: Int = 0
         get() = run {
             var value = field
             if (value == -1 || value.absoluteValue >= detailRestoreList.size) {
@@ -237,6 +251,7 @@ data class MediaInfoRestore(
             } else {
                 value
             }
+            _restoreIndex.value = field
         }
 }
 
