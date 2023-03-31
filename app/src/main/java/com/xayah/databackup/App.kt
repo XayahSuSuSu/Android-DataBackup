@@ -3,6 +3,8 @@ package com.xayah.databackup
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.util.*
 import com.xayah.databackup.util.command.Command
@@ -22,6 +24,7 @@ class App : Application() {
         @SuppressLint("StaticFieldLeak")
         lateinit var globalContext: Context
         lateinit var versionName: String
+        lateinit var isDynamicColors: MutableState<Boolean>
 
         fun getTimeStamp(): String {
             return System.currentTimeMillis().toString()
@@ -47,6 +50,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         globalContext = this
+        isDynamicColors = mutableStateOf(readIsDynamicColors())
         versionName = Command.getVersion()
     }
 }

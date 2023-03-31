@@ -53,8 +53,8 @@
     <string name="log">日誌</string>
     <string name="settings">設置</string>
     <string name="stored_in">存放於</string>
-    <string name="dynamic_colors">動態取色</string>
-    <string name="dynamic_colors_title">更加 Material You，重啟應用生效</string>
+    <string name="monet">動態取色</string>
+    <string name="monet_title">啟用 Material You 的莫奈主題引擎</string>
     <string name="bin_permission_error">預編譯二進製文件權限不正確，請手動賦權[777]</string>
     <string name="backup_itself">備份自身</string>
     <string name="backup_itself_title">備份應用時自動備份自身安裝包至備份目錄下</string>

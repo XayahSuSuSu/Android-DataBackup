@@ -54,8 +54,7 @@
     <string name="log">Log</string>
     <string name="settings">Настройки</string>
     <string name="stored_in">Хранится в</string>
-    <string name="dynamic_colors">Динамические цвета</string>
-    <string name="dynamic_colors_title">Улучшенный Material You. Перезапустите для применения.</string>
+    <string name="monet">Monet</string>
     <string name="bin_permission_error">Предустановленные права доступа к файлам неверны, предоставьте их вручную [777]</string>
     <string name="backup_itself">Бекап DataBackup</string>
     <string name="backup_itself_title">При создании бекапа DataBackup автоматически создает резервную копию собственного установочного пакета в папке бекапов.</string>

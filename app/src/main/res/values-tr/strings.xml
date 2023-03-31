@@ -42,8 +42,7 @@
     <string name="please_wait">Lütfen bekleyin</string>
     <string name="log">Kayıt</string>
     <string name="settings">Ayarlar</string>
-    <string name="dynamic_colors">Monet</string>
-    <string name="dynamic_colors_title">Monet ayarı için,yeniden başlatın</string>
+    <string name="monet">Monet</string>
     <string name="bin_permission_error">Önceden oluşturulmuş dosya izinleri yanlış, lütfen manuel olarak verin [777]</string>
     <string name="backup_itself">Kendini yedekle</string>
     <string name="auto_fix_multi_user_context">Bağlam düzeltmesi</string>

@@ -53,8 +53,8 @@
     <string name="log">日志</string>
     <string name="settings">设置</string>
     <string name="stored_in">存放于</string>
-    <string name="dynamic_colors">动态取色</string>
-    <string name="dynamic_colors_title">更加 Material You，重启应用生效</string>
+    <string name="monet">莫奈</string>
+    <string name="monet_title">启用 Material You 的莫奈主题引擎</string>
     <string name="bin_permission_error">预编译二进制文件权限不正确，请手动赋权[777]</string>
     <string name="backup_itself">备份自身</string>
     <string name="backup_itself_title">备份应用时自动备份自身安装包至备份目录下</string>

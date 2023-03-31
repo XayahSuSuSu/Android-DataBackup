@@ -60,8 +60,8 @@
     <string name="log">Log</string>
     <string name="settings">Settings</string>
     <string name="stored_in">Stored in</string>
-    <string name="dynamic_colors">Dynamic colors</string>
-    <string name="dynamic_colors_title">Better Material You. Restart to take effect</string>
+    <string name="monet">Monet</string>
+    <string name="monet_title">Enable monet theme engine of Material You</string>
     <string name="bin_permission_error">Prebuilt file permissions are incorrect, please manually grant [777]</string>
     <string name="backup_itself">Backup itself</string>
     <string name="backup_itself_title">When backing up the application, it automatically backs up its own installation package to the backup directory</string>

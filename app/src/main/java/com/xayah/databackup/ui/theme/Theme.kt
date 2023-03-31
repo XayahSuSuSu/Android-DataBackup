@@ -8,7 +8,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.xayah.databackup.util.readIsDynamicColors
+import com.xayah.databackup.App
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -29,7 +29,7 @@ fun DataBackupTheme(
 ) {
     val context = LocalContext.current
     val colorScheme = when {
-        context.readIsDynamicColors() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        App.isDynamicColors.value && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         darkTheme -> DarkColorScheme

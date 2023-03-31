@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import com.xayah.databackup.App
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.data.UpdateChannel
@@ -63,14 +64,15 @@ fun LazyListScope.appItems(
     }
     item {
         Switch(
-            title = stringResource(id = R.string.dynamic_colors),
-            subtitle = stringResource(id = R.string.dynamic_colors_title),
+            title = stringResource(id = R.string.monet),
+            subtitle = stringResource(id = R.string.monet_title),
             isChecked = remember {
-                mutableStateOf(context.readIsDynamicColors())
+                mutableStateOf(App.isDynamicColors.value)
             },
             icon = ImageVector.vectorResource(id = R.drawable.ic_round_auto_awesome)
         ) {
             context.saveIsDynamicColors(it)
+            App.isDynamicColors.value = it
         }
     }
     item {
