@@ -171,10 +171,10 @@
     <string name="card_telephony_subtitle">Резервне копіювання контактів, журналу дзвінків або SMS/MMS</string>
     <string name="posted_just_now">Щойно</string>
     <plurals name="num_minutes_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> хв.</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> хв.</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> хв.</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> хв.</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> хв</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> хв</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> хв</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> хв</item>
     </plurals>
     <string name="posted_now">Зараз</string>
     <string name="not_the_default_sms_app_info">Для відновлення СМС/MMC потрібно, щоб DataBackup було встановлено CМС-додаток за замовчуванням</string>
@@ -189,4 +189,5 @@
     <string name="miui_service_sms_tips">Якщо ви користуєтеся MIUI, будь ласка, надайте дозвіл на службові SMS вручну.</string>
     <string name="telephony_permissions">Права доступу до телефонії</string>
     <string name="sms_permission">Права доступу до SMS</string>
+    <string name="monet_title">Увімкнути монет тему Material You</string>
 </resources>
