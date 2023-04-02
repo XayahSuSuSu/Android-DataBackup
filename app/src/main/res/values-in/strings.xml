@@ -34,4 +34,25 @@
     <string name="fetch_failed">Pengambilan gagal</string>
     <string name="latest">Terbaru</string>
     <string name="unsupported_format">Format tidak didukung</string>
+    <string name="total">Total</string>
+    <string name="progress">Kemajuan</string>
+    <string name="confirm_remove_all_app_and_data_that_backed_up">Pastikan untuk menghapus semua aplikasi dan data yang dicadangkan</string>
+    <string name="fetching">Mengambil</string>
+    <string name="user">Pengguna</string>
+    <string name="media">Media</string>
+    <string name="speed">Kecepatan</string>
+    <string name="size">Ukuran</string>
+    <string name="ready">Siap</string>
+    <string name="confirm_remove">Pasti akan menghapusnya</string>
+    <string name="symbol_question">\?</string>
+    <string name="remove_files_too">Ini juga akan menghapus file terkait</string>
+    <string name="symbol_exclamation">!</string>
+    <string name="remove_failed">Gagal menghapus</string>
+    <string name="start">Mulai</string>
+    <string name="app_name_is_missing">Nama aplikasi tidak ada</string>
+    <string name="please_wait">Harap tunggu</string>
+    <string name="log">Log</string>
+    <string name="settings">Pengaturan</string>
+    <string name="stored_in">Disimpan di</string>
+    <string name="monet">Monet</string>
 </resources>
