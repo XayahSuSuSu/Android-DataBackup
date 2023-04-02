@@ -700,7 +700,7 @@ class Command {
         }
 
         suspend fun checkBin(): Boolean {
-            val binList = listOf("df", "chmod", "tar", "zstd")
+            val binList = listOf("df", "tar", "zstd")
             execute("ls -l \"${Path.getAppInternalFilesPath()}/bin\" | awk '{print \$1, \$8}'").out.apply {
                 val fileList = this.subList(1, this.size)
                 for (i in binList) {
