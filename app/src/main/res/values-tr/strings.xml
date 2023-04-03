@@ -6,7 +6,7 @@
     <string name="data">Veri</string>
     <string name="restore">Kurtarma</string>
     <string name="restore_processing">kurtarma yapılıyor</string>
-    <string name="app_name">VeriYedek</string>
+    <string name="app_name">DataBackup</string>
     <string name="error">Hata</string>
     <string name="application">Uygulama</string>
     <string name="confirm">İşle</string>
@@ -171,4 +171,5 @@
     <string name="sms_permission">Sms izni</string>
     <string name="contacts_permission">Kişi erişim izni</string>
     <string name="call_log_permission">Arama kaydı erişim izni</string>
+    <string name="monet_title">\"Material you\"nun monet motorunu aktif edin</string>
 </resources>
