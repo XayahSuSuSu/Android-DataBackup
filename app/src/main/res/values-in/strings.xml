@@ -45,4 +45,8 @@
     <string name="please_wait">Harap tunggu</string>
     <string name="settings">Pengaturan</string>
     <string name="monet">Monet</string>
+    <string name="create">Membuat</string>
+    <string name="installing">Memasang</string>
+    <string name="all">Semua</string>
+    <string name="name">Nama</string>
 </resources>
