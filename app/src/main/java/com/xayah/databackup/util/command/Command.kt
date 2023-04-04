@@ -181,13 +181,13 @@ class Command {
                                             }
 
                                             detailRestoreList.add(detail)
+                                            hasApp = false
+                                            hasData = false
                                         }
                                         if (packageName != packageNameNext) {
                                             appInfoRestore.detailRestoreList = detailRestoreList
                                             appInfoRestore.detailBase.packageName = packageName
                                             detailRestoreList = mutableListOf()
-                                            hasApp = false
-                                            hasData = false
                                         }
                                     }
                                 }
@@ -309,12 +309,12 @@ class Command {
                                             }
 
                                             detailRestoreList.add(detail)
+                                            hasData = false
                                         }
                                         if (name != nameNext) {
                                             mediaInfoRestore.detailRestoreList = detailRestoreList
                                             mediaInfoRestore.name = name
                                             detailRestoreList = mutableListOf()
-                                            hasData = false
                                         }
                                     }
                                 }

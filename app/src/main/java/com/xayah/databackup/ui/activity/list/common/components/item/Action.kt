@@ -13,7 +13,7 @@ fun deleteAppInfoRestoreItem(
     val path = "${Path.getBackupDataSavePath()}/${appInfoRestore.detailBase.packageName}/${appInfoRestore.date}"
     return if (RootService.getInstance().deleteRecursively(path)) {
         appInfoRestore.detailRestoreList.removeAt(appInfoRestore.restoreIndex)
-        appInfoRestore.restoreIndex--
+        appInfoRestore.restoreIndex = appInfoRestore.detailRestoreList.size - 1
         if (appInfoRestore.detailRestoreList.isEmpty()) {
             GlobalObject.getInstance().appInfoRestoreMap.value.remove(appInfoRestore.detailBase.packageName)
         }
@@ -31,7 +31,7 @@ fun deleteMediaInfoRestoreItem(
     val path = "${Path.getBackupMediaSavePath()}/${mediaInfoRestore.name}/${mediaInfoRestore.date}"
     return if (RootService.getInstance().deleteRecursively(path)) {
         mediaInfoRestore.detailRestoreList.removeAt(mediaInfoRestore.restoreIndex)
-        mediaInfoRestore.restoreIndex--
+        mediaInfoRestore.restoreIndex = mediaInfoRestore.detailRestoreList.size - 1
         if (mediaInfoRestore.detailRestoreList.isEmpty()) {
             GlobalObject.getInstance().mediaInfoRestoreMap.value.remove(
                 mediaInfoRestore.name
