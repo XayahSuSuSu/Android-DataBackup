@@ -1,7 +1,6 @@
 package com.xayah.databackup.ui.activity.list.common.components.item
 
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
@@ -41,12 +40,7 @@ fun MediaRestoreItem(
 
     ListItem(
         modifier = modifier,
-        icon = rememberDrawablePainter(
-            drawable = AppCompatResources.getDrawable(
-                context,
-                R.drawable.ic_round_android
-            )
-        ),
+        icon = rememberDrawablePainter(drawable = mediaInfoRestore.icon),
         title = mediaInfoRestore.name,
         subtitle = mediaInfoRestore.path,
         appSelected = null,

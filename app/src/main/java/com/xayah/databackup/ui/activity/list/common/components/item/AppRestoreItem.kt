@@ -2,7 +2,6 @@ package com.xayah.databackup.ui.activity.list.common.components.item
 
 import android.graphics.BitmapFactory
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -48,18 +47,11 @@ fun AppRestoreItem(
     val scope = rememberCoroutineScope()
     val isOnThisDevice = appInfoRestore.isOnThisDevice.collectAsState()
 
-    if (appInfoRestore.detailBase.appIcon == null) {
-        appInfoRestore.detailBase.appIcon =
-            AppCompatResources.getDrawable(context, R.drawable.ic_round_android)
-        if (App.globalContext.readIsReadIcon()) {
-            try {
-                val bytes = RootService.getInstance()
-                    .readBytesByDescriptor("${Path.getBackupDataSavePath()}/${appInfoRestore.detailBase.packageName}/icon.png")
-                appInfoRestore.detailBase.appIcon =
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                        .toDrawable(context.resources)
-            } catch (_: Exception) {
-            }
+    if (App.globalContext.readIsReadIcon()) {
+        try {
+            val bytes = RootService.getInstance().readBytesByDescriptor("${Path.getBackupDataSavePath()}/${appInfoRestore.detailBase.packageName}/icon.png")
+            appInfoRestore.detailBase.appIcon = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources)
+        } catch (_: Exception) {
         }
     }
 

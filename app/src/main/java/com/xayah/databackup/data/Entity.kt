@@ -1,9 +1,12 @@
 package com.xayah.databackup.data
 
 import android.graphics.drawable.Drawable
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.annotations.Expose
+import com.xayah.databackup.App
+import com.xayah.databackup.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.internal.toLongOrDefault
 import java.text.DecimalFormat
@@ -62,7 +65,7 @@ data class AppInfoDetailBase(
     @Expose var isSystemApp: Boolean = false,    // 是否为系统应用
     @Expose var appName: String = "",            // 应用名称
     @Expose var packageName: String = "",        // 应用包名
-    var appIcon: Drawable? = null,
+    var appIcon: Drawable? = AppCompatResources.getDrawable(App.globalContext, R.drawable.ic_iconfont_unknown),
 )
 
 /**
@@ -192,6 +195,19 @@ data class MediaInfoDetailBase(
     @Expose var date: String = "",     // 备份日期(10位时间戳)
 )
 
+fun getMediaIcon(name: String): Drawable? {
+    return if (name.lowercase().contains("picture"))
+        AppCompatResources.getDrawable(App.globalContext, R.drawable.ic_iconfont_pictures)
+    else if (name.lowercase().contains("music"))
+        AppCompatResources.getDrawable(App.globalContext, R.drawable.ic_iconfont_music)
+    else if (name.lowercase().contains("download"))
+        AppCompatResources.getDrawable(App.globalContext, R.drawable.ic_iconfont_download)
+    else if (name.lowercase().contains("dcim"))
+        AppCompatResources.getDrawable(App.globalContext, R.drawable.ic_iconfont_camera)
+    else
+        AppCompatResources.getDrawable(App.globalContext, R.drawable.ic_iconfont_folder)
+}
+
 /**
  * 媒体备份信息
  */
@@ -209,6 +225,9 @@ data class MediaInfoBackup(
 
     val sizeDisplay: String
         get() = formatSize(sizeBytes)
+
+    val icon: Drawable?
+        get() = getMediaIcon(name)
 }
 
 /**
@@ -227,6 +246,9 @@ data class MediaInfoRestore(
 
     val sizeDisplay: String
         get() = formatSize(sizeBytes)
+
+    val icon: Drawable?
+        get() = getMediaIcon(name)
 
     val date: String
         get() = detailRestoreList[_restoreIndex.value].date

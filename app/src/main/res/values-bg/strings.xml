@@ -7,7 +7,6 @@
     <string name="confirm">Потвърждаване</string>
     <string name="error">Грешка</string>
     <string name="success">Успешно</string>
-    <string name="backup_processing">Създаване на архивно копие</string>
     <string name="app_name">DataBackup</string>
     <string name="backup_finished">Архивното копие е готово</string>
     <string name="restore_finished">Възстановяването завърши</string>
@@ -15,7 +14,6 @@
     <string name="compression_type">Вид на компресията</string>
     <string name="cancel">Орменяне</string>
     <string name="tips">Подсказка</string>
-    <string name="restore_processing">Възстановяване</string>
     <string name="compress">Компресиране</string>
     <string name="decompress">Разопаковане</string>
     <string name="environment_detection">Проучване на средата</string>
@@ -52,7 +50,6 @@
     <string name="selection_is_empty">Няма избрани</string>
     <string name="delete_selected">Премахване на избраните</string>
     <string name="delete_confirm">Премахване на избраните. Сигурни ли сте\?</string>
-    <string name="unavailable">Недостъпно</string>
     <string name="update">Обновяване</string>
     <string name="retry">Повторен опит</string>
     <string name="compatible_mode">Режим на съвместимост</string>
@@ -76,7 +73,6 @@
     <string name="speed">Скорост</string>
     <string name="size">Размер</string>
     <string name="progress">Напредък</string>
-    <string name="total">всичко</string>
     <string name="symbol_question">\?</string>
     <string name="symbol_exclamation">!</string>
     <string name="start">Начало</string>

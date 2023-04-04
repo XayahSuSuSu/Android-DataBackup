@@ -1,7 +1,6 @@
 package com.xayah.databackup.data
 
 import com.xayah.databackup.util.GlobalString
-import java.util.*
 
 enum class CompressionType(val type: String, val suffix: String) {
     TAR("tar", "tar"),
@@ -11,7 +10,7 @@ enum class CompressionType(val type: String, val suffix: String) {
     companion object {
         fun of(name: String): CompressionType {
             return try {
-                CompressionType.valueOf(name.uppercase(Locale.getDefault()))
+                CompressionType.valueOf(name.uppercase())
             } catch (e: Exception) {
                 ZSTD
             }
@@ -30,7 +29,7 @@ enum class DataType(val type: String) {
     companion object {
         fun of(name: String): DataType {
             return try {
-                DataType.valueOf(name.uppercase(Locale.getDefault()))
+                DataType.valueOf(name.uppercase())
             } catch (e: Exception) {
                 USER
             }

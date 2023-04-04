@@ -18,7 +18,6 @@ import com.xayah.databackup.data.DataType
 import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.ui.components.TitleMediumText
 import com.xayah.databackup.ui.components.paddingEnd
-import java.util.*
 
 @ExperimentalMaterial3Api
 @Composable
@@ -140,7 +139,7 @@ fun ProcessObject(
                     CircularProgressIndicator(modifier = Modifier.size(iconSmallSize))
                 else
                     TitleMediumText(
-                        text = type.type.uppercase(Locale.getDefault()),
+                        text = type.type.uppercase(),
                         color = when (cardState) {
                             TaskState.Waiting, TaskState.Processing -> {
                                 colorOnSurfaceVariant

@@ -1,6 +1,5 @@
 package com.xayah.databackup.ui.activity.list.common.components.item
 
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
@@ -33,10 +32,7 @@ fun MediaBackupItem(
     ListItem(
         modifier = modifier,
         icon = rememberDrawablePainter(
-            drawable = AppCompatResources.getDrawable(
-                context,
-                R.drawable.ic_round_android
-            )
+            drawable = mediaInfoBackup.icon
         ),
         title = mediaInfoBackup.name,
         subtitle = mediaInfoBackup.path,

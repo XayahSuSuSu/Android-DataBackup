@@ -2,7 +2,6 @@ package com.xayah.databackup.ui.activity.processing.action
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.graphics.drawable.toDrawable
 import com.xayah.databackup.App
@@ -54,10 +53,7 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                             ProcessingTask(
                                 appName = it.detailBase.appName,
                                 packageName = it.detailBase.packageName,
-                                appIcon = AppCompatResources.getDrawable(
-                                    context,
-                                    R.drawable.ic_round_android
-                                ),
+                                appIcon = it.detailBase.appIcon,
                                 selectApp = it.selectApp.value,
                                 selectData = it.selectData.value,
                                 objectList = listOf()

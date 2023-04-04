@@ -1,7 +1,6 @@
 package com.xayah.databackup.ui.activity.processing.action
 
 import android.content.Context
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.App
 import com.xayah.databackup.R
@@ -52,10 +51,7 @@ fun onBackupMediaProcessing(viewModel: ProcessingViewModel, context: Context, gl
                             ProcessingTask(
                                 appName = it.name,
                                 packageName = it.path,
-                                appIcon = AppCompatResources.getDrawable(
-                                    context,
-                                    R.drawable.ic_round_android
-                                ),
+                                appIcon = it.icon,
                                 selectApp = false,
                                 selectData = true,
                                 objectList = listOf()

@@ -7,8 +7,6 @@
     <string name="compression_type">Sammenpakkingstype</string>
     <string name="cancel">Avbryt</string>
     <string name="success">Vellykket</string>
-    <string name="backup_processing">Sikkerhetskopibehandling</string>
-    <string name="restore_processing">Gjenopprettingsbehandling</string>
     <string name="compress">Pakk sammen</string>
     <string name="decompress">Pakk ut</string>
     <string name="environment_detection">Miljøoppdagelse</string>

@@ -1,11 +1,12 @@
 package com.xayah.databackup.ui.activity.main.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -18,8 +19,7 @@ import com.xayah.databackup.ui.components.paddingVertical
 @ExperimentalMaterial3Api
 @Composable
 fun ItemCard(
-    icon: ImageVector,
-    iconTint: Color,
+    icon: Painter,
     title: String,
     subtitle: String,
     onBackupClick: () -> Unit,
@@ -28,22 +28,20 @@ fun ItemCard(
     val colorTertiary = MaterialTheme.colorScheme.tertiary
     val smallPadding = dimensionResource(R.dimen.padding_small)
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
-    val iconSmallSize = dimensionResource(R.dimen.icon_small_size)
+    val iconTinySize = dimensionResource(R.dimen.icon_tiny_size)
     Card(
         Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-    ) {
+            .wrapContentHeight()) {
         Column(Modifier.padding(mediumPadding)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(smallPadding)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = iconTint,
-                    modifier = Modifier.size(iconSmallSize)
+                Image(
+                    modifier = Modifier.size(iconTinySize),
+                    painter = icon,
+                    contentDescription = null
                 )
                 TitleLargeText(text = title)
             }
