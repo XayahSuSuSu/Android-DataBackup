@@ -161,4 +161,10 @@
         <item quantity="many"><xliff:g id="count">%d</xliff:g> д.</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> д.</item>
     </plurals>
+    <string name="sms_permission">СМС-разрешение</string>
+    <string name="contacts_permission">Разрешение на контакты</string>
+    <string name="telephony_permissions">Разрешения на телефонию</string>
+    <string name="call_log_permission">Разрешение на журнал вызовов</string>
+    <string name="monet_title">Включить движок темы monet Material You</string>
+    <string name="miui_service_sms_tips">Если вы используете MIUI, пожалуйста, предоставьте разрешение службы СМС вручную.</string>
 </resources>
