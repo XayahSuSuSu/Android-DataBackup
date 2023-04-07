@@ -16,8 +16,8 @@ class SELinux {
         }
 
         suspend fun getContext(path: String): Pair<Boolean, String> {
-            val exec = Command.execute("ls -Zd $QUOTE$path$QUOTE | awk 'NF>1{print ${USD}1}'")
-            return Pair(exec.isSuccess, exec.out.joinToLineString.trim())
+            val exec = Command.execute("ls -Zd $QUOTE$path$QUOTE | awk 'NF>1{print ${USD}1}'; ls -Zd $QUOTE$path$QUOTE > /dev/null 2>&1")
+            return Pair(exec.isSuccess, if (exec.isSuccess) exec.out.joinToLineString.trim() else "")
         }
 
         suspend fun setOwnerAndContext(dataType: DataType, packageName: String, path: String, userId: String, supportFixContext: Boolean, context: String): Pair<Boolean, String> {
@@ -31,7 +31,7 @@ class SELinux {
                         if (this.isSuccess.not()) isSuccess = false
                         out += this.out.joinToLineString + "\n"
                     }
-                    if (dataType == DataType.USER || dataType == DataType.USER_DE) {
+                    if (dataType == DataType.USER || dataType == DataType.USER_DE || dataType == DataType.APP_MEDIA) {
                         Command.execute("restorecon -RFD $QUOTE$path/$QUOTE").apply {
                             if (this.isSuccess.not()) isSuccess = false
                             out += this.out.joinToLineString + "\n"
@@ -44,7 +44,7 @@ class SELinux {
                                 out += this.out.joinToLineString + "\n"
                             }
                         } else {
-                            Command.execute("ls -Zd $QUOTE$path/../$QUOTE | awk 'NF>1{print ${USD}1}' | sed -e ${QUOTE}s/system_data_file/app_data_file/g$QUOTE").apply {
+                            Command.execute("ls -Zd $QUOTE$path/../$QUOTE | awk 'NF>1{print ${USD}1}' | sed -e ${QUOTE}s/system_data_file/app_data_file/g$QUOTE; ls -Zd $QUOTE$path/../$QUOTE > /dev/null 2>&1").apply {
                                 if (this.isSuccess.not()) {
                                     isSuccess = false
                                     out += this.out.joinToLineString + "\n"

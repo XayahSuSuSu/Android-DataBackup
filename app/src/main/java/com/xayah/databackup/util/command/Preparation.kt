@@ -105,7 +105,7 @@ class Preparation {
 
         suspend fun listExternalStorage(): Pair<Boolean, List<String>> {
             // mount | awk '$3 ~ /\mnt\/media_rw/ {print $3, $5}'
-            val exec = Command.execute("mount | awk '${USD}3 ~ /${BACKSLASH}mnt$BACKSLASH/media_rw/ {print ${USD}3, ${USD}5}'")
+            val exec = Command.execute("mount | awk '${USD}3 ~ /${BACKSLASH}mnt$BACKSLASH/media_rw/ {print ${USD}3, ${USD}5}'; mount > /dev/null 2>&1")
             return Pair(exec.isSuccess, exec.out)
         }
 

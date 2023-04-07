@@ -24,6 +24,7 @@ enum class DataType(val type: String) {
     USER_DE("user_de"),
     DATA("data"),
     OBB("obb"),
+    APP_MEDIA("media"), // /data/media/$user_id/Android/media
     MEDIA("media");
 
     companion object {

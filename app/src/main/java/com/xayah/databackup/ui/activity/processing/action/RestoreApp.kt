@@ -32,7 +32,7 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
                 clear()
-                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB).map {
+                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
                     ProcessObjectItem(type = it)
                 })
             }
@@ -122,6 +122,7 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                 val userDePath = "${inPath}/user_de.$suffix"
                 val dataPath = "${inPath}/data.$suffix"
                 val obbPath = "${inPath}/obb.$suffix"
+                val appMediaPath = "${inPath}/media.$suffix"
 
                 Logcat.getInstance().actionLogAddLine(tag, "AppName: ${i.appName}.")
                 Logcat.getInstance().actionLogAddLine(tag, "PackageName: ${i.packageName}.")
@@ -146,6 +147,11 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                     // Detect the existence of OBB
                     if (RootService.getInstance().exists(obbPath)) {
                         objectList[4].visible.value = true
+                    }
+
+                    // Detect the existence of APP MEDIA
+                    if (RootService.getInstance().exists(appMediaPath)) {
+                        objectList[5].visible.value = true
                     }
                 }
                 for ((jIndex, j) in objectList.withIndex()) {
@@ -225,6 +231,22 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                                     if (!this) isSuccess = false
                                 }
                                 Command.setOwnerAndSELinux(DataType.OBB, packageName, "${Path.getObbPath(userId)}/${packageName}", userId, contextSELinux)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
+                            }
+                            DataType.APP_MEDIA -> {
+                                // Read the original SELinux context
+                                val (_, contextSELinux) = SELinux.getContext("${Path.getAPPMediaPath(userId)}/${packageName}")
+                                Command.decompress(compressionType, DataType.APP_MEDIA, appMediaPath, packageName, Path.getAPPMediaPath(userId))
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
+                                }.apply {
+                                    if (!this) isSuccess = false
+                                }
+                                Command.setOwnerAndSELinux(DataType.APP_MEDIA, packageName, "${Path.getAPPMediaPath(userId)}/${packageName}", userId, contextSELinux)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
                                 }.apply {

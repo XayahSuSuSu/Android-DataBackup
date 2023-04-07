@@ -21,70 +21,88 @@ import com.xayah.databackup.ui.components.paddingEnd
 
 @ExperimentalMaterial3Api
 @Composable
-fun ProcessObject(
-    cardState: TaskState,
-    visible: Boolean,
-    title: String,
-    subtitle: String,
-    type: DataType,
-) {
-    if (visible) {
-        val smallPadding = dimensionResource(R.dimen.padding_small)
-        val bigPadding = dimensionResource(R.dimen.padding_big)
-        val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
-        val iconSmallSize = dimensionResource(R.dimen.icon_tiny_size)
-        val colorSurfaceVariant = MaterialTheme.colorScheme.surfaceVariant
-        val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
-        val colorError = MaterialTheme.colorScheme.error
-        val colorErrorContainer = MaterialTheme.colorScheme.errorContainer
-        val colorGreen = colorResource(id = R.color.green)
-        val colorGreenContainer = colorResource(id = R.color.greenContainer)
+fun ProcessObject(cardState: TaskState, title: String, subtitle: String, type: DataType) {
+    val smallPadding = dimensionResource(R.dimen.padding_small)
+    val bigPadding = dimensionResource(R.dimen.padding_big)
+    val iconMediumSize = dimensionResource(R.dimen.icon_medium_size)
+    val iconSmallSize = dimensionResource(R.dimen.icon_tiny_size)
+    val colorSurfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+    val colorOnSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val colorError = MaterialTheme.colorScheme.error
+    val colorErrorContainer = MaterialTheme.colorScheme.errorContainer
+    val colorGreen = colorResource(id = R.color.green)
+    val colorGreenContainer = colorResource(id = R.color.greenContainer)
 
-        Card(
-            modifier = Modifier
-                .clickable {}
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = when (cardState) {
+    Card(
+        modifier = Modifier
+            .clickable {}
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = when (cardState) {
+                TaskState.Waiting, TaskState.Processing -> {
+                    colorSurfaceVariant
+                }
+                TaskState.Success -> {
+                    colorGreen
+                }
+                TaskState.Failed -> {
+                    colorError
+                }
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(bigPadding),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = when (type) {
+                    DataType.APK -> {
+                        ImageVector.vectorResource(id = R.drawable.ic_round_android)
+                    }
+                    DataType.USER -> {
+                        ImageVector.vectorResource(id = R.drawable.ic_round_person)
+                    }
+                    DataType.USER_DE -> {
+                        ImageVector.vectorResource(id = R.drawable.ic_round_person)
+                    }
+                    DataType.DATA -> {
+                        ImageVector.vectorResource(id = R.drawable.ic_round_database)
+                    }
+                    DataType.OBB -> {
+                        ImageVector.vectorResource(id = R.drawable.ic_round_esports)
+                    }
+                    DataType.APP_MEDIA -> {
+                        ImageVector.vectorResource(id = R.drawable.ic_round_image)
+                    }
+                    else -> {
+                        ImageVector.vectorResource(id = R.drawable.ic_round_person)
+                    }
+                },
+                contentDescription = null,
+                tint = when (cardState) {
                     TaskState.Waiting, TaskState.Processing -> {
-                        colorSurfaceVariant
+                        colorOnSurfaceVariant
                     }
                     TaskState.Success -> {
-                        colorGreen
+                        colorGreenContainer
                     }
                     TaskState.Failed -> {
-                        colorError
+                        colorErrorContainer
                     }
-                }
+                },
+                modifier = Modifier
+                    .paddingEnd(smallPadding)
+                    .size(iconMediumSize)
+                    .clip(CircleShape)
+                    .padding(smallPadding)
             )
-        ) {
-            Row(
-                modifier = Modifier.padding(bigPadding),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = when (type) {
-                        DataType.APK -> {
-                            ImageVector.vectorResource(id = R.drawable.ic_round_android)
-                        }
-                        DataType.USER -> {
-                            ImageVector.vectorResource(id = R.drawable.ic_round_person)
-                        }
-                        DataType.USER_DE -> {
-                            ImageVector.vectorResource(id = R.drawable.ic_round_person)
-                        }
-                        DataType.DATA -> {
-                            ImageVector.vectorResource(id = R.drawable.ic_round_database)
-                        }
-                        DataType.OBB -> {
-                            ImageVector.vectorResource(id = R.drawable.ic_round_esports)
-                        }
-                        else -> {
-                            ImageVector.vectorResource(id = R.drawable.ic_round_person)
-                        }
-                    },
-                    contentDescription = null,
-                    tint = when (cardState) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = when (cardState) {
                         TaskState.Waiting, TaskState.Processing -> {
                             colorOnSurfaceVariant
                         }
@@ -94,65 +112,42 @@ fun ProcessObject(
                         TaskState.Failed -> {
                             colorErrorContainer
                         }
-                    },
-                    modifier = Modifier
-                        .paddingEnd(smallPadding)
-                        .size(iconMediumSize)
-                        .clip(CircleShape)
-                        .padding(smallPadding)
+                    }
                 )
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = when (cardState) {
-                            TaskState.Waiting, TaskState.Processing -> {
-                                colorOnSurfaceVariant
-                            }
-                            TaskState.Success -> {
-                                colorGreenContainer
-                            }
-                            TaskState.Failed -> {
-                                colorErrorContainer
-                            }
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = when (cardState) {
+                        TaskState.Waiting, TaskState.Processing -> {
+                            colorOnSurfaceVariant
                         }
-                    )
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = when (cardState) {
-                            TaskState.Waiting, TaskState.Processing -> {
-                                colorOnSurfaceVariant
-                            }
-                            TaskState.Success -> {
-                                colorGreenContainer
-                            }
-                            TaskState.Failed -> {
-                                colorErrorContainer
-                            }
+                        TaskState.Success -> {
+                            colorGreenContainer
                         }
-                    )
-                }
-
-                if (cardState == TaskState.Processing)
-                    CircularProgressIndicator(modifier = Modifier.size(iconSmallSize))
-                else
-                    TitleMediumText(
-                        text = type.type.uppercase(),
-                        color = when (cardState) {
-                            TaskState.Waiting, TaskState.Processing -> {
-                                colorOnSurfaceVariant
-                            }
-                            TaskState.Success -> {
-                                colorGreenContainer
-                            }
-                            TaskState.Failed -> {
-                                colorErrorContainer
-                            }
+                        TaskState.Failed -> {
+                            colorErrorContainer
                         }
-                    )
+                    }
+                )
             }
+
+            if (cardState == TaskState.Processing)
+                CircularProgressIndicator(modifier = Modifier.size(iconSmallSize))
+            else
+                TitleMediumText(
+                    text = type.type.uppercase(),
+                    color = when (cardState) {
+                        TaskState.Waiting, TaskState.Processing -> {
+                            colorOnSurfaceVariant
+                        }
+                        TaskState.Success -> {
+                            colorGreenContainer
+                        }
+                        TaskState.Failed -> {
+                            colorErrorContainer
+                        }
+                    }
+                )
         }
     }
 }

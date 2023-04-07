@@ -41,7 +41,10 @@ class Installation {
             runOnIO {
                 val tmpDir = "${Path.getAppInternalFilesPath()}/tmp/data_backup"
                 if (RootService.getInstance().deleteRecursively(tmpDir).not()) isSuccess = false
-                if (RootService.getInstance().mkdirs(tmpDir).not()) isSuccess = false
+                if (RootService.getInstance().mkdirs(tmpDir).not()) {
+                    isSuccess = false
+                    out += "Failed to mkdirs: $tmpDir.\n"
+                }
 
                 // Decompress apk archive
                 val input = when (compressionType) {
@@ -57,10 +60,13 @@ class Installation {
                     out += this.out.joinToLineString + "\n"
                 }
                 val apks = File(tmpDir).listFiles()
+                Command.execute("ls $tmpDir").apply {
+                    out += this.out.joinToLineString + "\n"
+                }
                 when (apks?.size ?: 0) {
                     0 -> {
                         isSuccess = false
-                        out = "$tmpDir is empty."
+                        out += "$tmpDir is empty.\n"
                         return@runOnIO
                     }
                     1 -> {
@@ -74,7 +80,7 @@ class Installation {
                         pmInstallCreate(userId).apply {
                             if (this.first.not()) {
                                 isSuccess = false
-                                out = "Failed to get install session."
+                                out += "Failed to get install session.\n"
                                 return@runOnIO
                             }
                             session = this.second

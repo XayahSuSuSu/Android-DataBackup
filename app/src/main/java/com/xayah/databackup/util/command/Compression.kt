@@ -109,7 +109,7 @@ class Compression {
                         origin = "$QUOTE$dataPath$QUOTE $QUOTE$packageName$QUOTE"
                         target = "$QUOTE${outPut}/${dataType.type}$suffix$QUOTE"
                     }
-                    DataType.DATA, DataType.OBB -> {
+                    DataType.DATA, DataType.OBB, DataType.APP_MEDIA -> {
                         exclude = "--totals --exclude=${QUOTE}Backup_$QUOTE* --exclude=$QUOTE$packageName/cache$QUOTE"
                         origin = "$QUOTE$dataPath$QUOTE $QUOTE$packageName$QUOTE"
                         target = "$QUOTE${outPut}/${dataType.type}$suffix$QUOTE"

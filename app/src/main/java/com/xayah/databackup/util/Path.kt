@@ -50,6 +50,14 @@ class Path {
             return "/data/media/${userId}/Android/obb"
         }
 
+        fun getAPPMediaPath(): String {
+            return "/data/media/${App.globalContext.readBackupUser()}/Android/media"
+        }
+
+        fun getAPPMediaPath(userId: String): String {
+            return "/data/media/${userId}/Android/media"
+        }
+
         fun getAppInfoBackupMapPath(): String {
             return "${App.globalContext.readBackupSavePath()}/backup/${App.globalContext.readBackupUser()}/config/appBackupMap"
         }

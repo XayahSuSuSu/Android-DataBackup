@@ -79,6 +79,7 @@ data class AppInfoDetailBackup(
     @Expose var userDeSize: String = "",         // 已备份User_de数据大小
     @Expose var dataSize: String = "",           // 已备份Data数据大小
     @Expose var obbSize: String = "",            // 已备份Obb数据大小
+    @Expose var mediaSize: String = "",          // 已备份Media数据大小
     @Expose var date: String = "",               // 日期(10位时间戳)
     @Expose var selectApp: MutableState<Boolean> = mutableStateOf(false),      // 是否选中APK
     @Expose var selectData: MutableState<Boolean> = mutableStateOf(false),      // 是否选中数据
@@ -95,6 +96,7 @@ data class AppInfoDetailRestore(
     @Expose var userDeSize: String = "",          // 已备份User_de数据大小
     @Expose var dataSize: String = "",            // 已备份Data数据大小
     @Expose var obbSize: String = "",             // 已备份Obb数据大小
+    @Expose var mediaSize: String = "",           // 已备份Media数据大小
     @Expose var date: String = "",                // 日期(10位时间戳)
     @Expose var selectApp: MutableState<Boolean> = mutableStateOf(false),       // 是否选中APK
     @Expose var selectData: MutableState<Boolean> = mutableStateOf(false),      // 是否选中数据
@@ -151,7 +153,8 @@ data class AppInfoRestore(
                 detailRestoreList[_restoreIndex.value].userSize.toLongOrDefault(0) +
                 detailRestoreList[_restoreIndex.value].userDeSize.toLongOrDefault(0) +
                 detailRestoreList[_restoreIndex.value].dataSize.toLongOrDefault(0) +
-                detailRestoreList[_restoreIndex.value].obbSize.toLongOrDefault(0)).toDouble()
+                detailRestoreList[_restoreIndex.value].obbSize.toLongOrDefault(0) +
+                detailRestoreList[_restoreIndex.value].mediaSize.toLongOrDefault(0)).toDouble()
 
     val sizeDisplay: String
         get() = formatSize(sizeBytes)

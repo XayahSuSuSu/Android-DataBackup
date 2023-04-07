@@ -34,7 +34,7 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
             val taskList = viewModel.taskList.value
             val objectList = viewModel.objectList.value.apply {
                 clear()
-                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB).map {
+                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
                     ProcessObjectItem(type = it)
                 })
             }
@@ -135,6 +135,7 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                 val userDePath = "${Path.getUserDePath()}/${packageName}"
                 val dataPath = "${Path.getDataPath()}/${packageName}"
                 val obbPath = "${Path.getObbPath()}/${packageName}"
+                val appMediaPath = "${Path.getAPPMediaPath()}/${packageName}"
 
                 Logcat.getInstance().actionLogAddLine(tag, "AppName: ${i.appName}.")
                 Logcat.getInstance().actionLogAddLine(tag, "PackageName: ${i.packageName}.")
@@ -159,6 +160,11 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                     // Detect the existence of OBB
                     if (RootService.getInstance().exists(obbPath)) {
                         objectList[4].visible.value = true
+                    }
+
+                    // Detect the existence of APP MEDIA
+                    if (RootService.getInstance().exists(appMediaPath)) {
+                        objectList[5].visible.value = true
                     }
                 }
 
@@ -236,6 +242,19 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                                     } else {
                                         // Save the size of obb
                                         appInfoBackup.detailBackup.obbSize = RootService.getInstance().countSize(obbPath).toString()
+                                    }
+                                }
+                            }
+                            DataType.APP_MEDIA -> {
+                                Command.compress(compressionType, DataType.APP_MEDIA, packageName, outPutPath, Path.getAPPMediaPath(), appInfoBackup.detailBackup.mediaSize, compatibleMode)
+                                { type, line ->
+                                    onInfoUpdate(type, line ?: "", j)
+                                }.apply {
+                                    if (!this) {
+                                        isSuccess = false
+                                    } else {
+                                        // Save the size of media
+                                        appInfoBackup.detailBackup.mediaSize = RootService.getInstance().countSize(appMediaPath).toString()
                                     }
                                 }
                             }

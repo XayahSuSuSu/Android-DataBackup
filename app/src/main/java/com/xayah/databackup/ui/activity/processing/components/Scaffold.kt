@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
@@ -186,17 +187,12 @@ fun ProcessingScaffold(
                         }
                     }
                 }
-                items(
-                    count = objectList.size,
-                    key = {
-                        objectList[it].type
-                    }) {
+                items(items = objectList.filter { it.visible.value }, key = { it.type }) {
                     ProcessObject(
-                        cardState = objectList[it].state.value,
-                        visible = objectList[it].visible.value,
-                        title = objectList[it].title.value,
-                        subtitle = objectList[it].subtitle.value,
-                        type = objectList[it].type,
+                        cardState = it.state.value,
+                        title = it.title.value,
+                        subtitle = it.subtitle.value,
+                        type = it.type,
                     )
                 }
             }

@@ -152,6 +152,8 @@ class Command {
                                             hasData = true
                                         else if (fileName.contains("obb.tar"))
                                             hasData = true
+                                        else if (fileName.contains("media.tar"))
+                                            hasData = true
                                         else if (fileName.contains("user.tar"))
                                             hasData = true
                                         else if (fileName.contains("user_de.tar"))
@@ -600,6 +602,7 @@ class Command {
                 Logcat.getInstance().actionLogAddLine(tag, "$packageName version code: ${appVersionCode}.")
             }
             Logcat.getInstance().actionLogAddLine(tag, "versionCode: ${versionCode}, actual appVersionCode: ${appVersionCode}.")
+            Logcat.getInstance().actionLogAddLine(tag, "apkPath: ${apkPath}.")
             // 禁止APK验证
             val (setInstallEnvSuccess, _) = Preparation.setInstallEnv()
             if (setInstallEnvSuccess.not()) {
@@ -701,7 +704,7 @@ class Command {
 
         suspend fun checkBin(): Boolean {
             val binList = listOf("df", "tar", "zstd")
-            execute("ls -l \"${Path.getAppInternalFilesPath()}/bin\" | awk '{print \$1, \$8}'").out.apply {
+            execute("ls -l \"${Path.getAppInternalFilesPath()}/bin\" | awk '{print \$1, \$8}'; ls -l \"${Path.getAppInternalFilesPath()}/bin\" > /dev/null 2>&1").out.apply {
                 val fileList = this.subList(1, this.size)
                 for (i in binList) {
                     var granted = false
