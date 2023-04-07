@@ -12,10 +12,8 @@ import com.xayah.databackup.ui.activity.settings.SettingsViewModel
 import com.xayah.databackup.ui.activity.settings.components.SwitchItem
 import com.xayah.databackup.ui.activity.settings.components.clickable.Switch
 import com.xayah.databackup.ui.activity.settings.components.clickable.Title
+import com.xayah.databackup.util.*
 import com.xayah.databackup.util.command.Command
-import com.xayah.databackup.util.readIsReadIcon
-import com.xayah.databackup.util.saveAutoFixMultiUserContext
-import com.xayah.databackup.util.saveIsReadIcon
 
 suspend fun onRestoreInitialize(viewModel: SettingsViewModel, context: Context) {
     viewModel.supportAutoFixMultiUserContext.value = Command.checkLsZd()
@@ -29,6 +27,15 @@ suspend fun onRestoreInitialize(viewModel: SettingsViewModel, context: Context) 
                 isChecked = viewModel.supportAutoFixMultiUserContext,
                 isEnabled = false,
                 onCheckedChange = {}
+            ))
+            add(SwitchItem(
+                title = context.getString(R.string.reset_restore_list),
+                subtitle = context.getString(R.string.reset_restore_list_title),
+                iconId = R.drawable.ic_round_refresh,
+                isChecked = mutableStateOf(context.readIsResetRestoreList()),
+                onCheckedChange = {
+                    context.saveIsResetRestoreList(it)
+                }
             ))
             add(SwitchItem(
                 title = context.getString(R.string.read_icon),

@@ -160,7 +160,14 @@ fun onBackupMediaProcessing(viewModel: ProcessingViewModel, context: Context, gl
                 }
 
                 i.apply {
-                    this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
+                    if (isSuccess) {
+                        if (context.readIsResetBackupList()) {
+                            if (mediaInfoBackup.selectData.value) mediaInfoBackup.selectData.value = false
+                        }
+                        this.taskState.value = TaskState.Success
+                    } else {
+                        this.taskState.value = TaskState.Failed
+                    }
                     val list = mutableListOf<ProcessObjectItem>()
                     for (j in objectList) {
                         list.add(

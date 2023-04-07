@@ -162,6 +162,10 @@
     <string name="call_log_permission">Call log permission</string>
     <string name="miui_service_sms_tips">If you are on MIUI, please grant "Service SMS" permission manually.</string>
     <string name="apk" translatable="false">APK</string>
+    <string name="reset_backup_list">Reset backup list</string>
+    <string name="reset_backup_list_title">Deselect selections after backuping</string>
+    <string name="reset_restore_list">Reset restore list</string>
+    <string name="reset_restore_list_title">Deselect selections after restoring</string>
     <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>

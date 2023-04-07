@@ -111,6 +111,22 @@ fun Context.readIsBackupTest(): Boolean {
     return readPreferencesBoolean("is_backup_test", true)
 }
 
+fun Context.saveIsResetBackupList(value: Boolean) {
+    savePreferences("reset_backup_list", value)
+}
+
+fun Context.readIsResetBackupList(): Boolean {
+    return readPreferencesBoolean("reset_backup_list", false)
+}
+
+fun Context.saveIsResetRestoreList(value: Boolean) {
+    savePreferences("reset_restore_list", value)
+}
+
+fun Context.readIsResetRestoreList(): Boolean {
+    return readPreferencesBoolean("reset_restore_list", true)
+}
+
 fun Context.saveBackupUser(user: CharSequence?) {
     savePreferences("backup_user", user.toString().trim())
 }

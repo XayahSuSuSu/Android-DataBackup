@@ -148,6 +148,10 @@
     <string name="contacts_permission">聯繫人權限</string>
     <string name="call_log_permission">通話記錄權限</string>
     <string name="miui_service_sms_tips">如果您正在使用MIUI，請手動授予"通知類短信"權限</string>
+    <string name="reset_backup_list">重置備份列表</string>
+    <string name="reset_backup_list_title">備份完成後取消勾選所選項</string>
+    <string name="reset_restore_list">重置恢復列表</string>
+    <string name="reset_restore_list_title">恢復完成後取消勾選所選項</string>
 
     <string-array name="telephony_type">
         <item>聯繫人</item>

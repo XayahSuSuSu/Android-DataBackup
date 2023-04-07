@@ -261,8 +261,10 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
 
                 i.apply {
                     if (isSuccess) {
-                        if (appInfoRestore.selectApp.value) appInfoRestore.selectApp.value = false
-                        if (appInfoRestore.selectData.value) appInfoRestore.selectData.value = false
+                        if (context.readIsResetRestoreList()) {
+                            if (appInfoRestore.selectApp.value) appInfoRestore.selectApp.value = false
+                            if (appInfoRestore.selectData.value) appInfoRestore.selectData.value = false
+                        }
                         this.taskState.value = TaskState.Success
                     } else {
                         this.taskState.value = TaskState.Failed

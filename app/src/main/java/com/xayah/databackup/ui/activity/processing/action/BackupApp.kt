@@ -321,7 +321,15 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                 }
 
                 i.apply {
-                    this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
+                    if (isSuccess) {
+                        if (context.readIsResetBackupList()) {
+                            if (appInfoBackup.selectApp.value) appInfoBackup.selectApp.value = false
+                            if (appInfoBackup.selectData.value) appInfoBackup.selectData.value = false
+                        }
+                        this.taskState.value = TaskState.Success
+                    } else {
+                        this.taskState.value = TaskState.Failed
+                    }
                     val list = mutableListOf<ProcessObjectItem>()
                     for (j in objectList) {
                         list.add(

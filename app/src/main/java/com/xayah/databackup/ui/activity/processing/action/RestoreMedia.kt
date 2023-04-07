@@ -11,10 +11,7 @@ import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.onInfoUpdate
-import com.xayah.databackup.util.GlobalObject
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.Logcat
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 import com.xayah.databackup.util.command.Command
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -124,7 +121,14 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
                 if (viewModel.isCancel.value) break
 
                 i.apply {
-                    this.taskState.value = if (isSuccess) TaskState.Success else TaskState.Failed
+                    if (isSuccess) {
+                        if (context.readIsResetRestoreList()) {
+                            if (mediaInfoRestore.selectData.value) mediaInfoRestore.selectData.value = false
+                        }
+                        this.taskState.value = TaskState.Success
+                    } else {
+                        this.taskState.value = TaskState.Failed
+                    }
                     val list = mutableListOf<ProcessObjectItem>()
                     for (j in objectList) {
                         list.add(
