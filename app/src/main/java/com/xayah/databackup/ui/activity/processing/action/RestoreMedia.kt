@@ -105,7 +105,7 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
                         when (j.type) {
                             DataType.DATA -> {
                                 val inputPath = "${inPath}/${i.appName}.tar"
-                                Command.decompress(CompressionType.TAR, DataType.DATA, inputPath, i.appName, i.packageName.replace("/${i.appName}", ""))
+                                Command.decompress(CompressionType.TAR, DataType.MEDIA, inputPath, i.appName, i.packageName.replace("/${i.appName}", ""))
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
                                 }.apply {
