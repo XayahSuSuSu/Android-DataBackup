@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="compress">Sıkıştırma</string>
     <string name="backup_dir">Yedekleme yolu</string>
     <string name="data">Veri</string>
@@ -149,4 +149,20 @@
     <string name="contacts_permission">Kişi erişim izni</string>
     <string name="call_log_permission">Arama kaydı erişim izni</string>
     <string name="monet_title">\"Material you\"nun monet motorunu aktif edin</string>
+    <string name="reset_backup_list">Yedek listesini sıfırla</string>
+    <string name="reset_backup_list_title">Yedeklemeden sonra seçimlerin seçimini kaldırın</string>
+    <string name="reset_restore_list">Kurtarma listesini sıfırla</string>
+    <string name="reset_restore_list_title">Geri yükledikten sonra seçimlerin seçimini kaldırın</string>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> dakika</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> dakikalar</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> saat</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> saatler</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> gün</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> günler</item>
+    </plurals>
 </resources>
