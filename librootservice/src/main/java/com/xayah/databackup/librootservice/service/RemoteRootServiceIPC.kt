@@ -85,6 +85,18 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         }
     }
 
+    override fun listFilesPath(path: String): MutableList<String> {
+        return try {
+            val list = mutableListOf<String>()
+            for (i in File(path).listFiles()!!) {
+                list.add(i.path)
+            }
+            list
+        } catch (e: Exception) {
+            mutableListOf()
+        }
+    }
+
     override fun mkdirs(path: String): Boolean {
         return try {
             val file = File(path)

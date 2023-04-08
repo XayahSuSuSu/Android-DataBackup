@@ -70,6 +70,10 @@ class RootService {
         return ipc.deleteRecursively(path)
     }
 
+    fun listFilesPath(path: String): MutableList<String> {
+        return ipc.listFilesPath(path)
+    }
+
     fun mkdirs(path: String): Boolean {
         return ipc.mkdirs(path)
     }

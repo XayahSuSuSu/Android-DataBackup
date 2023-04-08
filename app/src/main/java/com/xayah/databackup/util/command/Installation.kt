@@ -7,7 +7,6 @@ import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.joinToLineString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
 
 class Installation {
     companion object {
@@ -59,24 +58,24 @@ class Installation {
                     if (this.isSuccess.not()) isSuccess = false
                     out += this.out.joinToLineString + "\n"
                 }
-                val apks = File(tmpDir).listFiles()
+                val apksPath = RootService.getInstance().listFilesPath(tmpDir)
                 Command.execute("ls $tmpDir").apply {
                     out += this.out.joinToLineString + "\n"
                 }
-                when (apks?.size ?: 0) {
+                when (apksPath.size) {
                     0 -> {
                         isSuccess = false
                         out += "$tmpDir is empty.\n"
                         return@runOnIO
                     }
                     1 -> {
-                        pmInstall(userId, apks!![0].path).apply {
+                        pmInstall(userId, apksPath[0]).apply {
                             if (this.first.not()) isSuccess = false
                             out += this.second + "\n"
                         }
                     }
                     else -> {
-                        var session = ""
+                        var session: String
                         pmInstallCreate(userId).apply {
                             if (this.first.not()) {
                                 isSuccess = false
@@ -87,8 +86,8 @@ class Installation {
                             out += "Install session: $session\n"
                         }
 
-                        for (i in apks!!) {
-                            Command.execute("pm install-write $QUOTE$session$QUOTE $QUOTE${Path.getFileNameByPath(i.path)}$QUOTE $QUOTE${i.path}$QUOTE").apply {
+                        for (i in apksPath) {
+                            Command.execute("pm install-write $QUOTE$session$QUOTE $QUOTE${Path.getFileNameByPath(i)}$QUOTE $QUOTE${i}$QUOTE").apply {
                                 if (this.isSuccess.not()) {
                                     isSuccess = false
                                     out += this.out.joinToLineString + "\n"
