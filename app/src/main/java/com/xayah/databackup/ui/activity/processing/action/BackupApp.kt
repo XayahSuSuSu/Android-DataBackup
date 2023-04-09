@@ -170,6 +170,7 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
 
                 // Suspend the app to avoid files changing
                 RootService.getInstance().setPackagesSuspended(arrayOf(packageName), true)
+                Preparation.killPackage(packageName)
                 for (j in objectList) {
                     if (viewModel.isCancel.value) break
                     if (j.visible.value) {

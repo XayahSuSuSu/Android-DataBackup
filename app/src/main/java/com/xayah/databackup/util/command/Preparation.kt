@@ -108,5 +108,10 @@ class Preparation {
             val exec = Command.execute("mount | awk '${USD}3 ~ /${BACKSLASH}mnt$BACKSLASH/media_rw/ {print ${USD}3, ${USD}5}'; mount > /dev/null 2>&1")
             return Pair(exec.isSuccess, exec.out)
         }
+
+        suspend fun killPackage(packageName: String): Boolean {
+            val exec = Command.execute("am force-stop $QUOTE$packageName$QUOTE")
+            return exec.isSuccess
+        }
     }
 }
