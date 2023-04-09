@@ -1,6 +1,5 @@
 package com.xayah.databackup.ui.activity.list.common.components.item
 
-import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
@@ -23,8 +22,8 @@ import com.xayah.databackup.ui.activity.guide.components.card.SerialSize
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.TextButton
 import com.xayah.databackup.util.Dates
-import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.command.Command
+import com.xayah.databackup.util.makeActionToast
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
@@ -95,11 +94,7 @@ fun MediaRestoreItem(
                 }) {
                 scope.launch {
                     val success = deleteMediaInfoRestoreItem(mediaInfoRestore, onItemUpdate)
-                    Toast.makeText(
-                        context,
-                        if (success) GlobalString.success else GlobalString.failed,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    context.makeActionToast(success)
                 }
             }
 

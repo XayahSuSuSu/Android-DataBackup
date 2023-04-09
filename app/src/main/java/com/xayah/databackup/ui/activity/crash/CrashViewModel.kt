@@ -1,12 +1,12 @@
 package com.xayah.databackup.ui.activity.crash
 
 import android.content.Context
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.R
 import com.xayah.databackup.util.GsonUtil
+import com.xayah.databackup.util.makeFailedToast
+import com.xayah.databackup.util.makeSuccessToast
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -35,17 +35,9 @@ class CrashViewModel : ViewModel() {
                         val name =
                             "Crash-${date.replace(" ", "-").replace(":", "-")}.txt"
                         GsonUtil.saveToFile("${path}/${name}", crashInfo)
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.success),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        context.makeSuccessToast()
                     } catch (_: Exception) {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.failed),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        context.makeFailedToast()
                     }
                 }
             }

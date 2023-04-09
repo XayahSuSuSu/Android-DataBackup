@@ -1,6 +1,5 @@
 package com.xayah.databackup.ui.activity.list.common.components.menu.top
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -23,6 +22,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.paddingBottom
 import com.xayah.databackup.ui.components.paddingTop
+import com.xayah.databackup.util.makeShortToast
 
 @ExperimentalMaterial3Api
 @Composable
@@ -75,11 +75,7 @@ fun <T> MenuTopBatchDeleteButton(
         if (selectedItems.isNotEmpty()) {
             isOpen.value = true
         } else {
-            Toast.makeText(
-                context,
-                context.getString(R.string.selection_is_empty),
-                Toast.LENGTH_SHORT
-            ).show()
+            context.makeShortToast(context.getString(R.string.selection_is_empty))
         }
     }
 }

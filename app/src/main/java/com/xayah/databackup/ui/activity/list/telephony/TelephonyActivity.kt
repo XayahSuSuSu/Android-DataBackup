@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Telephony
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,6 +37,7 @@ import com.xayah.databackup.ui.components.LoadingDialog
 import com.xayah.databackup.ui.components.TextDialog
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.makeShortToast
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
@@ -221,11 +221,7 @@ class TelephonyActivity : ComponentActivity() {
                                     }
                                     TypeRestoreTelephony -> {
                                         if (isRoleHeld.not()) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.not_the_default_sms_app_info),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            context.makeShortToast(context.getString(R.string.not_the_default_sms_app_info))
                                         } else {
                                             when (viewModel.tabRowState.value) {
                                                 0 -> {

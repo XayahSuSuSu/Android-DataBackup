@@ -6,12 +6,11 @@ import android.net.Uri
 import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.Telephony
-import android.widget.Toast
-import com.xayah.databackup.R
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.list.telephony.TelephonyViewModel
 import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.makeActionToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.file.Paths
@@ -32,7 +31,7 @@ class Processor {
                     .saveSmsListToFile(Path.getSmsListPath(), selectedList)
                     .apply {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, context.getString(if (this@apply) R.string.succeed else R.string.failed), Toast.LENGTH_SHORT).show()
+                            context.makeActionToast(this@apply)
                         }
                     }
             }
@@ -96,7 +95,7 @@ class Processor {
                     .saveMmsListToFile(Path.getMmsListPath(), selectedList)
                     .apply {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, context.getString(if (this@apply) R.string.succeed else R.string.failed), Toast.LENGTH_SHORT).show()
+                            context.makeActionToast(this@apply)
                         }
                     }
             }
@@ -332,7 +331,7 @@ class Processor {
                     .saveContactListToFile(Path.getContactListPath(), selectedList)
                     .apply {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, context.getString(if (this@apply) R.string.succeed else R.string.failed), Toast.LENGTH_SHORT).show()
+                            context.makeActionToast(this@apply)
                         }
                     }
             }
@@ -437,7 +436,7 @@ class Processor {
                     .saveCallLogListToFile(Path.getCallLogListPath(), selectedList)
                     .apply {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, context.getString(if (this@apply) R.string.succeed else R.string.failed), Toast.LENGTH_SHORT).show()
+                            context.makeActionToast(this@apply)
                         }
                     }
             }

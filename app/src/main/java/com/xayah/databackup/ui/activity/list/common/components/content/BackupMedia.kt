@@ -2,7 +2,6 @@ package com.xayah.databackup.ui.activity.list.common.components.content
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListScope
@@ -159,21 +158,13 @@ fun onMediaBackupAdd(
             viewModel.viewModelScope.launch {
                 // 判断是否为备份目录
                 if (path == context.readBackupSavePath()) {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.backup_dir_as_media_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    context.makeShortToast(context.getString(R.string.backup_dir_as_media_error))
                     return@launch
                 }
                 var name = path.split("/").last()
                 for (i in viewModel.mediaBackupList.value) {
                     if (path == i.path) {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.repeat_to_add),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        context.makeShortToast(context.getString(R.string.repeat_to_add))
                         return@launch
                     }
                     if (name == i.name) {

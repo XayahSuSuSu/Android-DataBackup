@@ -152,6 +152,8 @@
     <string name="reset_backup_list_title">备份完成后取消勾选所选项</string>
     <string name="reset_restore_list">重置恢复列表</string>
     <string name="reset_restore_list_title">恢复完成后取消勾选所选项</string>
+    <string name="unsuspend_suspended_apps">恢复已暂停的应用</string>
+    <string name="unsuspend_suspended_apps_help">如果您在备份过程中强制杀死本应用，可能会导致被备份应用仍处于暂停状态，单击此处恢复</string>
 
     <string-array name="telephony_type">
         <item>联系人</item>

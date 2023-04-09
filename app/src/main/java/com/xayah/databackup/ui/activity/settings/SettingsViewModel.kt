@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.activity.settings
 
+import android.content.pm.PackageInfo
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -14,6 +15,9 @@ class SettingsViewModel : ViewModel() {
     // 应用相关设置项
     val newestVersion by lazy { mutableStateOf("") }
     val newestVersionLink by lazy { mutableStateOf("") }
+    val suspendedPackages by lazy {
+        MutableStateFlow(SnapshotStateList<PackageInfo>())
+    }
 
     // 备份相关设置项
     val backupSwitchItems by lazy {

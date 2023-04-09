@@ -164,7 +164,7 @@ class RootService {
     }
 
     fun getUsers(): MutableList<UserInfo> {
-        return ipc.getUsers()
+        return ipc.users
     }
 
     fun offerInstalledPackagesAsUser(flags: Int, userId: Int): Boolean {
@@ -175,6 +175,10 @@ class RootService {
         return ipc.pollInstalledPackages()
     }
 
+    fun getSuspendedPackages(): MutableList<PackageInfo> {
+        return ipc.suspendedPackages
+    }
+
     fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats {
         return ipc.queryStatsForPackage(packageInfo, user)
     }
@@ -183,11 +187,7 @@ class RootService {
         return ipc.queryInstalled(packageName, userId)
     }
 
-    fun grantRuntimePermission(
-        packageName: String,
-        permName: String,
-        userId: Int
-    ): Boolean {
+    fun grantRuntimePermission(packageName: String, permName: String, userId: Int): Boolean {
         return ipc.grantRuntimePermission(packageName, permName, userId)
     }
 

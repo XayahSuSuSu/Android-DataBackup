@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.os.Build
 import android.os.Process
+import android.widget.Toast
 import com.xayah.databackup.App
+import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 
 fun Context.savePreferences(key: String, value: String) {
@@ -239,8 +241,23 @@ fun Context.readListSortAscending(): Boolean {
     return readPreferencesBoolean("list_sort_ascending", true)
 }
 
-fun Context.saveSMSRoleHolder(value: String) {
-    savePreferences("sms_role_holder", value)
+fun Context.makeShortToast(content: String) {
+    Toast.makeText(this, content, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.makeSuccessToast() {
+    makeShortToast(getString(R.string.success))
+}
+
+fun Context.makeFailedToast() {
+    makeShortToast(getString(R.string.failed))
+}
+
+fun Context.makeActionToast(success: Boolean) {
+    if (success)
+        makeSuccessToast()
+    else
+        makeSuccessToast()
 }
 
 fun Context.readSMSRoleHolder(): String {

@@ -291,6 +291,23 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         return packages
     }
 
+    /**
+     * Normally there aren't too many suspended packages, so queue solution is not necessary.
+     */
+    override fun getSuspendedPackages(): MutableList<PackageInfo> {
+        val packages = mutableListOf<PackageInfo>()
+        try {
+            for (userId in UserManagerHidden.getUsers(userManager = userManager).toMutableList()) {
+                PackageManagerHidden.getInstalledPackagesAsUser(systemContext.packageManager, 0, userId.id).forEach {
+                    if (PackageManagerHidden.isPackageSuspended(systemContext.packageManager, it.packageName))
+                        packages.add(it)
+                }
+            }
+        } catch (_: Exception) {
+        }
+        return packages
+    }
+
     override fun queryInstalled(packageName: String, userId: Int): Boolean {
         return try {
             PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)

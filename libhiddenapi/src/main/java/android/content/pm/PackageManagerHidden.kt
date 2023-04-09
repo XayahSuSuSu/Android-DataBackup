@@ -24,5 +24,9 @@ class PackageManagerHidden {
         fun setPackagesSuspended(packageManager: PackageManager, packageNames: Array<String>, suspended: Boolean, appExtras: PersistableBundle?, launcherExtras: PersistableBundle?, dialogInfo: Any?) {
             HiddenApiBypass.invoke(Class.forName("android.content.pm.PackageManager"), packageManager, "setPackagesSuspended", packageNames, suspended, appExtras, launcherExtras, dialogInfo)
         }
+
+        fun isPackageSuspended(packageManager: PackageManager, packageName: String): Boolean {
+            return HiddenApiBypass.invoke(Class.forName("android.content.pm.PackageManager"), packageManager, "isPackageSuspended", packageName) as Boolean
+        }
     }
 }

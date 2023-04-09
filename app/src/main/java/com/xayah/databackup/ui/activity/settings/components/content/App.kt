@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,6 +30,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
+    getReleases(viewModel, context)
+    getSuspendedPackages(viewModel)
+}
+
+fun getSuspendedPackages(viewModel: SettingsViewModel) {
+    // Get suspended packages
+    viewModel.suspendedPackages.value.clear()
+    viewModel.suspendedPackages.value.addAll(
+        RootService.getInstance().getSuspendedPackages()
+    )
+}
+
+suspend fun getReleases(viewModel: SettingsViewModel, context: Context) {
     // Get releases from GitHub
     if (viewModel.newestVersion.value.isEmpty() || viewModel.newestVersionLink.value.isEmpty()) {
         Server.getInstance().releases(
@@ -88,6 +102,25 @@ fun LazyListScope.appItems(
             },
             onConfirm = { value ->
                 context.saveCompressionType(value)
+            }
+        )
+    }
+    item {
+        val suspendedPackages = viewModel.suspendedPackages.collectAsState()
+
+        Clickable(
+            title = stringResource(id = R.string.unsuspend_suspended_apps),
+            subtitle = stringResource(id = R.string.unsuspend_suspended_apps_help),
+            icon = ImageVector.vectorResource(id = R.drawable.ic_round_hourglass_disabled),
+            content = suspendedPackages.value.size.toString(),
+            onClick = {
+                val suspendedPackageNames = suspendedPackages.value.map { it.packageName }
+                context.makeActionToast(
+                    RootService.getInstance().setPackagesSuspended(suspendedPackageNames.toTypedArray(), false)
+                )
+                scope.launch {
+                    getSuspendedPackages(viewModel)
+                }
             }
         )
     }

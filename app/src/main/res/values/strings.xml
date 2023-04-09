@@ -166,6 +166,8 @@
     <string name="reset_backup_list_title">Deselect selections after backuping</string>
     <string name="reset_restore_list">Reset restore list</string>
     <string name="reset_restore_list_title">Deselect selections after restoring</string>
+    <string name="unsuspend_suspended_apps">Unsuspend suspended apps</string>
+    <string name="unsuspend_suspended_apps_help">If you force to kill this application during the backup, the processing application may still be suspended, click here to resume</string>
     <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>
