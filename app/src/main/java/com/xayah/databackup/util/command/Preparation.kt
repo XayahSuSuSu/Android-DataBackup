@@ -108,10 +108,5 @@ class Preparation {
             val exec = Command.execute("mount | awk '${USD}3 ~ /${BACKSLASH}mnt$BACKSLASH/media_rw/ {print ${USD}3, ${USD}5}'; mount > /dev/null 2>&1")
             return Pair(exec.isSuccess, exec.out)
         }
-
-        suspend fun listUsers(): Pair<Boolean, List<String>> {
-            val exec = Command.execute("ls -1 $QUOTE/data/user$QUOTE")
-            return Pair(exec.isSuccess, exec.out)
-        }
     }
 }

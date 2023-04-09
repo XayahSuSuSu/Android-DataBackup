@@ -29,7 +29,7 @@ interface IRemoteRootService {
 
     void initializeService();
     UserHandle getUserHandle(int userId);
-    List<UserInfo> getUsers(boolean excludePartial, boolean excludeDying, boolean excludePreCreated);
+    List<UserInfo> getUsers();
     boolean offerInstalledPackagesAsUser(int flags, int userId);
     List<PackageInfo> pollInstalledPackages();
     boolean queryInstalled(String packageName, int userId);

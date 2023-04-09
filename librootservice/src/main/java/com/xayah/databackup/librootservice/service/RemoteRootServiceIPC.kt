@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong
 import kotlin.io.path.pathString
 
 @SuppressLint("NewApi", "PrivateApi")
+@Suppress("UNCHECKED_CAST")
 class RemoteRootServiceIPC : IRemoteRootService.Stub() {
     private lateinit var systemContext: Context
     private lateinit var serviceManager: IBinder
@@ -256,22 +257,15 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         return UserHandleHidden.of(userId)
     }
 
-    @SuppressLint("NewApi")
-    @Suppress("UNCHECKED_CAST")
-    override fun getUsers(
-        excludePartial: Boolean,
-        excludeDying: Boolean,
-        excludePreCreated: Boolean
-    ): MutableList<UserInfo> {
+    override fun getUsers(): MutableList<UserInfo> {
         var users = mutableListOf<UserInfo>()
         try {
-            users = UserManagerHidden.getUsers(userManager = userManager, excludePartial = true, excludeDying = false, excludePreCreated = true).toMutableList()
+            users = UserManagerHidden.getUsers(userManager = userManager).toMutableList()
         } catch (_: Exception) {
         }
         return users
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun offerInstalledPackagesAsUser(flags: Int, userId: Int): Boolean {
         return try {
             packageInfoQueue.clear()

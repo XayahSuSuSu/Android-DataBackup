@@ -6,9 +6,9 @@ import android.os.UserHandle
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 @SuppressLint("NewApi", "PrivateApi")
+@Suppress("UNCHECKED_CAST")
 class PackageManagerHidden {
     companion object {
-        @Suppress("UNCHECKED_CAST")
         fun getInstalledPackagesAsUser(packageManager: PackageManager, flags: Int, userId: Int): List<PackageInfo> {
             return HiddenApiBypass.invoke(Class.forName("android.content.pm.PackageManager"), packageManager, "getInstalledPackagesAsUser", flags, userId) as List<PackageInfo>
         }

@@ -163,12 +163,8 @@ class RootService {
         return ipc.getUserHandle(userId)
     }
 
-    fun getUsers(
-        excludePartial: Boolean,
-        excludeDying: Boolean,
-        excludePreCreated: Boolean
-    ): MutableList<UserInfo> {
-        return ipc.getUsers(excludePartial, excludeDying, excludePreCreated)
+    fun getUsers(): MutableList<UserInfo> {
+        return ipc.getUsers()
     }
 
     fun offerInstalledPackagesAsUser(flags: Int, userId: Int): Boolean {

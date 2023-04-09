@@ -16,11 +16,7 @@ import com.xayah.databackup.util.*
 import com.xayah.databackup.util.command.Command
 
 suspend fun onBackupUserPrepare(context: Context): Pair<List<String>, String> {
-    val users = RootService.getInstance().getUsers(
-        excludePartial = true,
-        excludeDying = false,
-        excludePreCreated = true
-    )
+    val users = RootService.getInstance().getUsers()
     var items = users.map { "${it.id}: ${it.name}" }.toMutableList()
     val idItems = users.map { "${it.id}" }.toMutableList()
 
@@ -45,11 +41,7 @@ suspend fun onBackupUserPrepare(context: Context): Pair<List<String>, String> {
 }
 
 fun onRestoreUserPrepare(context: Context): Pair<List<String>, String> {
-    val users = RootService.getInstance().getUsers(
-        excludePartial = true,
-        excludeDying = false,
-        excludePreCreated = true
-    )
+    val users = RootService.getInstance().getUsers()
     val items = users.map { "${it.id}: ${it.name}" }.toMutableList()
     val idItems = users.map { "${it.id}" }.toMutableList()
 
