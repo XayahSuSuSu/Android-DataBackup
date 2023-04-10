@@ -118,6 +118,14 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         }
     }
 
+    override fun countFiles(path: String): Int {
+        return try {
+            File(path).listFiles()!!.size
+        } catch (e: Exception) {
+            0
+        }
+    }
+
     /**
      * Count size of files/directories
      */

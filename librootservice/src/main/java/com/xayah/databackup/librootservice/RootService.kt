@@ -82,6 +82,10 @@ class RootService {
         return ipc.copyTo(path, targetPath, overwrite)
     }
 
+    fun countFiles(path: String): Int {
+        return ipc.countFiles(path)
+    }
+
     fun countSize(path: String, regex: String = ""): Long {
         return ipc.countSize(path, regex)
     }

@@ -16,6 +16,7 @@ import com.xayah.databackup.App
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.data.UpdateChannel
+import com.xayah.databackup.data.formatSize
 import com.xayah.databackup.data.ofUpdateChannel
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.settings.SettingsViewModel
@@ -32,6 +33,11 @@ import kotlinx.coroutines.launch
 suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
     getReleases(viewModel, context)
     getSuspendedPackages(viewModel)
+    getLogSize(viewModel)
+}
+
+fun getLogSize(viewModel: SettingsViewModel) {
+    viewModel.logSize.value = formatSize(RootService.getInstance().countSize(Path.getLogPath()).toDouble())
 }
 
 fun getSuspendedPackages(viewModel: SettingsViewModel) {
@@ -233,6 +239,24 @@ fun LazyListScope.appItems(
             }
         )
     }
+    item {
+        val logSize = viewModel.logSize.collectAsState()
+
+        Clickable(
+            title = stringResource(id = R.string.log),
+            subtitle = stringResource(id = R.string.click_to_clear),
+            icon = ImageVector.vectorResource(id = R.drawable.ic_round_adb),
+            content = logSize.value,
+            onClick = {
+                RootService.getInstance().deleteRecursively(Path.getLogPath())
+                RootService.getInstance().mkdirs(Path.getLogPath())
+                scope.launch {
+                    getLogSize(viewModel)
+                }
+            }
+        )
+    }
+
     item {
         val items =
             listOf(

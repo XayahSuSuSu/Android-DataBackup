@@ -45,7 +45,10 @@ fun formatSize(sizeBytes: Double): String {
         size = sizeBytes / kb
         unit = "KB"
     }
-    return "${DecimalFormat("#.00").format(size)} $unit"
+    return if (size == 0.0)
+        "0.00 $unit"
+    else
+        "${DecimalFormat("#.00").format(size)} $unit"
 }
 
 /**

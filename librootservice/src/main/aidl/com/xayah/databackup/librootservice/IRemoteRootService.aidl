@@ -14,6 +14,7 @@ interface IRemoteRootService {
     List<String> listFilesPath(String path);
     boolean mkdirs(String path);
     boolean copyTo(String path, String targetPath, boolean overwrite);
+    int countFiles(String path);
     long countSize(String path, String regex);
     String readText(String path);
     byte[] readBytes(String path);
