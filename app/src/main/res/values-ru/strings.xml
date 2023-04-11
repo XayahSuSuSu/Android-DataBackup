@@ -167,4 +167,14 @@
     <string name="call_log_permission">Разрешение на журнал вызовов</string>
     <string name="monet_title">Включить движок темы monet Material You</string>
     <string name="miui_service_sms_tips">Если вы используете MIUI, пожалуйста, предоставьте разрешение службы СМС вручную.</string>
+    <string name="reset_backup_list">Сбросить список бекапов</string>
+    <string name="reset_backup_list_title">Снять выделение после бекапа</string>
+    <string name="reset_restore_list">Сбросить список восстановления</string>
+    <string name="reset_restore_list_title">Снять выделение после восстановления</string>
+    <string name="unsuspend_suspended_apps">Разблокировать приостановленные приложения</string>
+    <string name="unsuspend_suspended_apps_help">Если вы принудительно завершите это приложение во время создания бекапа, приложение обработки все еще может быть приостановлено. Нажмите здесь, чтобы возобновить</string>
+    <string name="log">Лог</string>
+    <string name="click_to_clear">Нажать для очистки</string>
+    <string name="keep_the_screen_on">Держать экран включенным</string>
+    <string name="keep_the_screen_on_help">Держать устройство в активном состоянии во время обработки</string>
 </resources>
