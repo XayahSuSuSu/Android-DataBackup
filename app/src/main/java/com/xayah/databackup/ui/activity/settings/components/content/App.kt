@@ -96,6 +96,18 @@ fun LazyListScope.appItems(
         }
     }
     item {
+        Switch(
+            title = stringResource(id = R.string.keep_the_screen_on),
+            subtitle = stringResource(id = R.string.keep_the_screen_on_help),
+            isChecked = remember {
+                mutableStateOf(context.readKeepTheScreenOn())
+            },
+            icon = ImageVector.vectorResource(id = R.drawable.ic_round_brightness_full)
+        ) {
+            context.saveKeepTheScreenOn(it)
+        }
+    }
+    item {
         SingleChoiceTextClickable(
             title = stringResource(id = R.string.compression_type),
             subtitle = stringResource(id = R.string.compression_type_help),

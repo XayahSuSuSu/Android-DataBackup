@@ -81,6 +81,14 @@ fun Context.readIsDynamicColors(): Boolean {
     return readPreferencesBoolean("is_dynamic_colors")
 }
 
+fun Context.saveKeepTheScreenOn(value: Boolean) {
+    savePreferences("keep_the_screen_on", value)
+}
+
+fun Context.readKeepTheScreenOn(): Boolean {
+    return readPreferencesBoolean("keep_the_screen_on", true)
+}
+
 fun Context.saveIsBackupItself(value: Boolean) {
     savePreferences("is_backup_itself", value)
 }

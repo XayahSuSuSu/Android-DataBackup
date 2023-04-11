@@ -156,6 +156,8 @@
     <string name="unsuspend_suspended_apps_help">如果您在备份过程中强制杀死本应用，可能会导致被备份应用仍处于暂停状态，单击此处恢复</string>
     <string name="log">日志</string>
     <string name="click_to_clear">单击此处清理</string>
+    <string name="keep_the_screen_on">保持屏幕常亮</string>
+    <string name="keep_the_screen_on_help">在备份/恢复时保持设备处于唤醒状态</string>
 
     <string-array name="telephony_type">
         <item>联系人</item>

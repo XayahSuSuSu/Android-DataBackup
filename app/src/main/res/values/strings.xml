@@ -170,6 +170,8 @@
     <string name="unsuspend_suspended_apps_help">If you force to kill this application during the backup, the processing application may still be suspended, click here to resume</string>
     <string name="log">Log</string>
     <string name="click_to_clear">Click here to clear</string>
+    <string name="keep_the_screen_on">Keep the screen on</string>
+    <string name="keep_the_screen_on_help">Keep the device awake while processing</string>
     <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>

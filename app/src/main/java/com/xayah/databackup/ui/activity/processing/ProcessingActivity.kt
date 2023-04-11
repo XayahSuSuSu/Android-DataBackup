@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.processing
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
@@ -27,6 +28,7 @@ import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.readKeepTheScreenOn
 
 @ExperimentalMaterial3Api
 class ProcessingActivity : ComponentActivity() {
@@ -70,6 +72,8 @@ class ProcessingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (readKeepTheScreenOn()) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val viewModel = ViewModelProvider(this)[ProcessingViewModel::class.java]
