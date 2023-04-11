@@ -167,12 +167,14 @@
     <string name="telephony_permissions">Права доступу до телефонії</string>
     <string name="sms_permission">Права доступу до СМС</string>
     <string name="monet_title">Увімкнути монет тему Material You</string>
-    <string name="reset_backup_list">Скинути список резервних копій</string>
-    <string name="reset_backup_list_title">Зняти виділення після резервного копіювання</string>
+    <string name="reset_backup_list">Скинути список бекапів</string>
+    <string name="reset_backup_list_title">Зняти виділення після створення бекапу</string>
     <string name="reset_restore_list">Скинути список відновлення</string>
     <string name="reset_restore_list_title">Зняти виділення після відновлення</string>
     <string name="unsuspend_suspended_apps">Відновлення призупинених програм</string>
-    <string name="unsuspend_suspended_apps_help">Якщо ви примусово закриєте цю програму під час резервного копіювання, програму для обробки може бути призупинено. Натисніть тут, щоб відновити</string>
+    <string name="unsuspend_suspended_apps_help">Якщо ви примусово закриєте цей додаток під час створення бекапу, програму для обробки може бути призупинено. Натисніть тут, щоб відновити</string>
     <string name="log">Лог</string>
     <string name="click_to_clear">Натисніть тут, щоб очистити</string>
+    <string name="keep_the_screen_on">Тримати екран увімкненим</string>
+    <string name="keep_the_screen_on_help">Тримати пристрій в активному стані під час обробки</string>
 </resources>
