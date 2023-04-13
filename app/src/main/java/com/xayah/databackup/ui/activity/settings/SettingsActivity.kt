@@ -13,7 +13,6 @@ import com.xayah.databackup.ui.activity.settings.components.content.onBackupInit
 import com.xayah.databackup.ui.activity.settings.components.content.onRestoreInitialize
 import com.xayah.databackup.ui.activity.settings.components.content.onUserInitialize
 import com.xayah.databackup.ui.theme.DataBackupTheme
-import com.xayah.databackup.util.GlobalObject
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.launch
 
@@ -39,22 +38,22 @@ class SettingsActivity : ComponentActivity() {
 
         val viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
 
-        GlobalObject.initializeRootService {
-            onInitialize(viewModel)
-        }
-
         explorer = MaterialYouFileExplorer().apply {
             initialize(this@SettingsActivity)
         }
         setContent {
-            DataBackupTheme {
-                val isInitialized = viewModel.isInitialized
-                SettingsScaffold(
-                    isInitialized = isInitialized,
-                    viewModel = viewModel,
-                    explorer = explorer
-                ) { finish() }
-            }
+            DataBackupTheme(
+                content = {
+                    val isInitialized = viewModel.isInitialized
+                    SettingsScaffold(
+                        isInitialized = isInitialized,
+                        viewModel = viewModel,
+                        explorer = explorer
+                    ) { finish() }
+                },
+                onRootServiceInitialized = {
+                    onInitialize(viewModel)
+                })
         }
     }
 }

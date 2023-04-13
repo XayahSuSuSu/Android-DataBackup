@@ -158,6 +158,7 @@
     <string name="click_to_clear">單擊此處清理</string>
     <string name="keep_the_screen_on">保持屏幕常亮</string>
     <string name="keep_the_screen_on_help">在備份/恢復時保持設備處於喚醒狀態</string>
+    <string name="failed_to_connect_rootservice">RootService連接失敗</string>
 
     <string-array name="telephony_type">
         <item>聯繫人</item>

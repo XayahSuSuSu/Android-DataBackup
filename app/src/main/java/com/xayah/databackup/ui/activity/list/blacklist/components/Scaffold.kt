@@ -9,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -36,11 +35,8 @@ fun BlackListScaffold(
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
     val list = viewModel.blackList.collectAsState()
 
-    LaunchedEffect(null) {
-        viewModel.initializeList(context)
-    }
-
     Scaffold(
+        isInitialized = viewModel.isInitialized,
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.padding(mediumPadding),

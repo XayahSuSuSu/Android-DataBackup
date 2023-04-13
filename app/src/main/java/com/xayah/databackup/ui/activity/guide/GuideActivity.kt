@@ -42,26 +42,26 @@ class GuideActivity : ComponentActivity() {
             }
         }
         setContent {
-            DataBackupTheme {
-                Crossfade(targetState = viewModel.initType.value) { screen ->
-                    when (screen) {
-                        GuideType.Introduction -> {
-                            PageIntroduction(viewModel)
-                        }
-                        GuideType.Update -> {
-                            PageUpdate(viewModel)
-                        }
-                        GuideType.Env -> {
-                            PageEnvironment(viewModel) {
-                                App.globalContext.saveInitializedVersionName(App.versionName)
-                                startActivity(Intent(this, MainActivity::class.java))
-                                finish()
+            DataBackupTheme(
+                content = {
+                    Crossfade(targetState = viewModel.initType.value) { screen ->
+                        when (screen) {
+                            GuideType.Introduction -> {
+                                PageIntroduction(viewModel)
+                            }
+                            GuideType.Update -> {
+                                PageUpdate(viewModel)
+                            }
+                            GuideType.Env -> {
+                                PageEnvironment(viewModel) {
+                                    App.globalContext.saveInitializedVersionName(App.versionName)
+                                    startActivity(Intent(this, MainActivity::class.java))
+                                    finish()
+                                }
                             }
                         }
                     }
-                }
-
-            }
+                })
         }
     }
 }

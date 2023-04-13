@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,7 +35,6 @@ import com.xayah.databackup.ui.activity.list.telephony.util.Processor
 import com.xayah.databackup.ui.components.LoadingDialog
 import com.xayah.databackup.ui.components.TextDialog
 import com.xayah.databackup.ui.theme.DataBackupTheme
-import com.xayah.databackup.util.GlobalObject
 import com.xayah.databackup.util.makeShortToast
 import kotlinx.coroutines.launch
 
@@ -85,93 +83,48 @@ class TelephonyActivity : ComponentActivity() {
         }
 
         setContent {
-            DataBackupTheme {
-                val scope = rememberCoroutineScope()
-                val context = LocalContext.current
+            DataBackupTheme(
+                content = {
+                    val scope = rememberCoroutineScope()
+                    val context = LocalContext.current
 
-                TextDialog(
-                    isOpen = viewModel.isRoleHolderDialogOpen,
-                    icon = Icons.Rounded.Warning,
-                    title = stringResource(id = R.string.tips),
-                    content = getString(R.string.not_the_default_sms_app_info),
-                    confirmText = stringResource(R.string.confirm),
-                    onConfirmClick = {
-                        requestRole()
-                    },
-                    onDismissClick = {
-                        finish()
-                    },
-                    showDismissBtn = true
-                )
-
-                val permissionsState = rememberMultiplePermissionsState(
-                    listOf(
-                        Manifest.permission.READ_SMS,
-                        Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.WRITE_CONTACTS,
-                        Manifest.permission.READ_CALL_LOG,
-                        Manifest.permission.WRITE_CALL_LOG,
+                    TextDialog(
+                        isOpen = viewModel.isRoleHolderDialogOpen,
+                        icon = Icons.Rounded.Warning,
+                        title = stringResource(id = R.string.tips),
+                        content = getString(R.string.not_the_default_sms_app_info),
+                        confirmText = stringResource(R.string.confirm),
+                        onConfirmClick = {
+                            requestRole()
+                        },
+                        onDismissClick = {
+                            finish()
+                        },
+                        showDismissBtn = true
                     )
-                )
 
-                if (permissionsState.allPermissionsGranted.not()) {
-                    TelephonyPermission {
-                        finish()
-                    }
-                } else {
-                    LaunchedEffect(null) {
-                        GlobalObject.initializeRootService {
-                            // Load list
-                            viewModel.viewModelScope.launch {
-                                when (type) {
-                                    TypeBackupTelephony -> {
-                                        Loader.smsBackupList(
-                                            viewModel = viewModel,
-                                            context = this@TelephonyActivity
-                                        )
-                                        Loader.mmsBackupList(
-                                            viewModel = viewModel,
-                                            context = this@TelephonyActivity
-                                        )
-                                        Loader.contactsBackupList(
-                                            viewModel = viewModel,
-                                            context = this@TelephonyActivity
-                                        )
-                                        Loader.callLogBackupList(
-                                            viewModel = viewModel,
-                                            context = this@TelephonyActivity
-                                        )
-                                    }
-                                    TypeRestoreTelephony -> {
-                                        Loader.smsRestoreList(
-                                            viewModel = viewModel,
-                                            context = this@TelephonyActivity
-                                        )
-                                        Loader.mmsRestoreList(
-                                            viewModel = viewModel,
-                                            context = this@TelephonyActivity
-                                        )
-                                        Loader.contactsRestoreList(
-                                            viewModel = viewModel,
-                                            context = this@TelephonyActivity
-                                        )
-                                        Loader.callLogRestoreList(
-                                            viewModel = viewModel,
-                                            context = this@TelephonyActivity
-                                        )
-                                    }
-                                }
-                                viewModel.isInitialized.targetState = true
-                            }
+                    val permissionsState = rememberMultiplePermissionsState(
+                        listOf(
+                            Manifest.permission.READ_SMS,
+                            Manifest.permission.READ_CONTACTS,
+                            Manifest.permission.WRITE_CONTACTS,
+                            Manifest.permission.READ_CALL_LOG,
+                            Manifest.permission.WRITE_CALL_LOG,
+                        )
+                    )
+
+                    if (permissionsState.allPermissionsGranted.not()) {
+                        TelephonyPermission {
+                            finish()
                         }
-                    }
-                    val isLoadingDialogOpen = remember {
-                        mutableStateOf(false)
-                    }
-                    LoadingDialog(isOpen = isLoadingDialogOpen)
-                    TelephonyScaffold(
-                        isInitialized = viewModel.isInitialized,
-                        viewModel = viewModel,
+                    } else {
+                        val isLoadingDialogOpen = remember {
+                            mutableStateOf(false)
+                        }
+                        LoadingDialog(isOpen = isLoadingDialogOpen)
+                        TelephonyScaffold(
+                            isInitialized = viewModel.isInitialized,
+                            viewModel = viewModel,
                         title = stringResource(id = R.string.telephony) + when (type) {
                             TypeBackupTelephony -> {
                                 stringResource(id = R.string.backup)
@@ -309,10 +262,54 @@ class TelephonyActivity : ComponentActivity() {
                                 }
                             }
                         }
-                    )
-                }
+                        )
+                    }
 
-            }
+                },
+                onRootServiceInitialized = {
+                    // Load list
+                    viewModel.viewModelScope.launch {
+                        when (type) {
+                            TypeBackupTelephony -> {
+                                Loader.smsBackupList(
+                                    viewModel = viewModel,
+                                    context = this@TelephonyActivity
+                                )
+                                Loader.mmsBackupList(
+                                    viewModel = viewModel,
+                                    context = this@TelephonyActivity
+                                )
+                                Loader.contactsBackupList(
+                                    viewModel = viewModel,
+                                    context = this@TelephonyActivity
+                                )
+                                Loader.callLogBackupList(
+                                    viewModel = viewModel,
+                                    context = this@TelephonyActivity
+                                )
+                            }
+                            TypeRestoreTelephony -> {
+                                Loader.smsRestoreList(
+                                    viewModel = viewModel,
+                                    context = this@TelephonyActivity
+                                )
+                                Loader.mmsRestoreList(
+                                    viewModel = viewModel,
+                                    context = this@TelephonyActivity
+                                )
+                                Loader.contactsRestoreList(
+                                    viewModel = viewModel,
+                                    context = this@TelephonyActivity
+                                )
+                                Loader.callLogRestoreList(
+                                    viewModel = viewModel,
+                                    context = this@TelephonyActivity
+                                )
+                            }
+                        }
+                        viewModel.isInitialized.targetState = true
+                    }
+                })
         }
     }
 }

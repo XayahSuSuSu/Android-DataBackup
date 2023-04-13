@@ -5,6 +5,7 @@ import android.app.ActivityThreadHidden
 import android.app.usage.StorageStats
 import android.app.usage.StorageStatsManager
 import android.content.Context
+import android.content.pm.IPackageManager
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManagerHidden
 import android.content.pm.UserInfo
@@ -21,7 +22,7 @@ import kotlin.io.path.pathString
 
 @SuppressLint("NewApi", "PrivateApi")
 @Suppress("UNCHECKED_CAST")
-class RemoteRootServiceIPC : IRemoteRootService.Stub() {
+class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private lateinit var systemContext: Context
     private lateinit var serviceManager: IBinder
     private lateinit var userManager: UserManager
@@ -54,10 +55,6 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
 
     init {
         initializeService()
-    }
-
-    override fun checkConnection(): Boolean {
-        return true
     }
 
     override fun exists(path: String): Boolean {
@@ -382,5 +379,13 @@ class RemoteRootServiceIPC : IRemoteRootService.Stub() {
         } catch (_: Exception) {
             -1L
         }
+    }
+
+    override fun setApplicationEnabledSetting(packageName: String, newState: Int, flags: Int, userId: Int) {
+        IPackageManager.Stub.asInterface(serviceManager).setApplicationEnabledSetting(packageName, newState, flags, userId, null)
+    }
+
+    override fun getApplicationEnabledSetting(packageName: String, userId: Int): Int {
+        return IPackageManager.Stub.asInterface(serviceManager).getApplicationEnabledSetting(packageName, userId)
     }
 }

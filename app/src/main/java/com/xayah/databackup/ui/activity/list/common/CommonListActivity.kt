@@ -10,17 +10,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
-import com.xayah.databackup.ui.activity.list.common.components.content.*
 import com.xayah.databackup.ui.activity.list.common.components.ListScaffold
+import com.xayah.databackup.ui.activity.list.common.components.content.*
 import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
-import com.xayah.databackup.util.GlobalObject
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,39 +70,31 @@ class CommonListActivity : ComponentActivity() {
 
         type = intent.getStringExtra(TypeActivityTag) ?: TypeBackupApp
         setContent {
-            DataBackupTheme {
-                val scope = rememberCoroutineScope()
-                LaunchedEffect(null) {
-                    GlobalObject.initializeRootService {
-                        scope.launch {
-                            onInitialize()
-                        }
-                    }
-                }
-
-                val isInitialized = viewModel.isInitialized
-                val progress = viewModel.progress
-                val onManifest by viewModel.onManifest.collectAsState()
-                ListScaffold(
-                    isInitialized = isInitialized,
-                    progress = progress.value,
-                    topBarTitle = when (type) {
-                        TypeBackupApp -> {
-                            stringResource(R.string.select_backup_app)
-                        }
-                        TypeBackupMedia -> {
-                            stringResource(R.string.select_backup_media)
-                        }
-                        TypeRestoreApp -> {
-                            stringResource(R.string.select_restore_app)
-                        }
-                        TypeRestoreMedia -> {
-                            stringResource(R.string.select_restore_media)
-                        }
-                        else -> {
-                            ""
-                        }
-                    },
+            DataBackupTheme(
+                content = {
+                    val isInitialized = viewModel.isInitialized
+                    val progress = viewModel.progress
+                    val onManifest by viewModel.onManifest.collectAsState()
+                    ListScaffold(
+                        isInitialized = isInitialized,
+                        progress = progress.value,
+                        topBarTitle = when (type) {
+                            TypeBackupApp -> {
+                                stringResource(R.string.select_backup_app)
+                            }
+                            TypeBackupMedia -> {
+                                stringResource(R.string.select_backup_media)
+                            }
+                            TypeRestoreApp -> {
+                                stringResource(R.string.select_restore_app)
+                            }
+                            TypeRestoreMedia -> {
+                                stringResource(R.string.select_restore_media)
+                            }
+                            else -> {
+                                ""
+                            }
+                        },
                     onManifest = onManifest,
                     actions = {
                         if (onManifest.not()) {
@@ -197,10 +191,13 @@ class CommonListActivity : ComponentActivity() {
                             viewModel.onManifest.value = true
                         }
                     },
-                    onFinish = {
-                        onBack()
-                    })
-            }
+                        onFinish = {
+                            onBack()
+                        })
+                },
+                onRootServiceInitialized = {
+                    onInitialize()
+                })
         }
     }
 

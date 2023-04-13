@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.list.blacklist
 
 import android.content.Context
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class BlackListViewModel : ViewModel() {
+    val isInitialized by lazy { MutableTransitionState(false) }
+
     lateinit var explorer: MaterialYouFileExplorer
 
     val blackList by lazy {
@@ -30,6 +33,7 @@ class BlackListViewModel : ViewModel() {
     suspend fun initializeList(context: Context) {
         blackList.value.clear()
         blackList.value.addAll(Command.readBlackListMap(context.readBlackListMapPath()).values)
+        isInitialized.targetState = true
     }
 
     suspend fun removeItem(context: Context, item: BlackListItem) {

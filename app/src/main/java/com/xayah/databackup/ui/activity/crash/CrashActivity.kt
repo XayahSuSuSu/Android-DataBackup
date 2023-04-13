@@ -20,11 +20,13 @@ class CrashActivity : ComponentActivity() {
         viewModel.crashInfo = intent.getStringExtra("crashInfo") ?: ""
 
         setContent {
-            DataBackupTheme {
-                CrashScaffold(viewModel) {
-                    viewModel.saveCrashInfo(this)
-                }
-            }
+            DataBackupTheme(
+                content = {
+                    CrashScaffold(viewModel) {
+                        viewModel.saveCrashInfo(this)
+                    }
+                },
+            )
         }
     }
 }

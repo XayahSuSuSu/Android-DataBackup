@@ -6,8 +6,6 @@ import android.app.usage.StorageStats;
 import com.xayah.databackup.librootservice.parcelables.StatFsParcelable;
 
 interface IRemoteRootService {
-    boolean checkConnection();
-
     boolean exists(String path);
     boolean createNewFile(String path);
     boolean deleteRecursively(String path);
@@ -41,4 +39,6 @@ interface IRemoteRootService {
     boolean setPackagesSuspended(in String[] packageNames, boolean suspended);
     int getPackageUid(String packageName, int userId);
     long getPackageLongVersionCode(String packageName, int userId);
+    void setApplicationEnabledSetting(in String packageName, in int newState, int flags, int userId);
+    int getApplicationEnabledSetting(in String packageName, int userId);
 }

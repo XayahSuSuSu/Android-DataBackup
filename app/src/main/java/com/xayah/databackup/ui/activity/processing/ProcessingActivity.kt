@@ -81,32 +81,29 @@ class ProcessingActivity : ComponentActivity() {
         val type = viewModel.listType
         val that = this
 
-        GlobalObject.initializeRootService {
-            onProcessing(viewModel, type)
-        }
-
         setContent {
-            DataBackupTheme {
-                // 是否完成
-                val exitConfirmDialog = remember { mutableStateOf(false) }
-                LaunchedEffect(null) {
-                    onBackPressedDispatcher.addCallback(that, object : OnBackPressedCallback(true) {
-                        override fun handleOnBackPressed() {
-                            if (viewModel.allDone.currentState.not()) {
-                                exitConfirmDialog.value = true
-                            } else {
-                                finish()
+            DataBackupTheme(
+                content = {
+                    // 是否完成
+                    val exitConfirmDialog = remember { mutableStateOf(false) }
+                    LaunchedEffect(null) {
+                        onBackPressedDispatcher.addCallback(that, object : OnBackPressedCallback(true) {
+                            override fun handleOnBackPressed() {
+                                if (viewModel.allDone.currentState.not()) {
+                                    exitConfirmDialog.value = true
+                                } else {
+                                    finish()
+                                }
                             }
-                        }
-                    })
-                }
+                        })
+                    }
 
-                ProcessingScaffold(
-                    viewModel = viewModel,
-                    actions = {
-                        val openBottomSheet = remember { mutableStateOf(false) }
-                        EndPageBottomSheet(isOpen = openBottomSheet, viewModel = viewModel)
-                        IconButton(icon = Icons.Rounded.Menu) {
+                    ProcessingScaffold(
+                        viewModel = viewModel,
+                        actions = {
+                            val openBottomSheet = remember { mutableStateOf(false) }
+                            EndPageBottomSheet(isOpen = openBottomSheet, viewModel = viewModel)
+                            IconButton(icon = Icons.Rounded.Menu) {
                             openBottomSheet.value = true
                         }
                     }) { finish() }
@@ -123,7 +120,10 @@ class ProcessingActivity : ComponentActivity() {
                     viewModel.topBarTitle.value = getString(R.string.cancelling)
                     viewModel.isCancel.value = true
                 }
-            }
+                },
+                onRootServiceInitialized = {
+                    onProcessing(viewModel, type)
+                })
         }
     }
 }

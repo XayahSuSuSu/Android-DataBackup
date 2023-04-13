@@ -10,7 +10,6 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.xayah.databackup.ui.activity.main.components.MainScaffold
 import com.xayah.databackup.ui.theme.DataBackupTheme
-import com.xayah.databackup.util.GlobalObject
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -23,14 +22,14 @@ class MainActivity : ComponentActivity() {
 
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        GlobalObject.initializeRootService {
-            viewModel.isRemoteFileInitialized.targetState = true
-        }
-
         setContent {
-            DataBackupTheme {
-                MainScaffold(viewModel.isRemoteFileInitialized)
-            }
+            DataBackupTheme(
+                content = {
+                    MainScaffold(viewModel.isRemoteFileInitialized)
+                },
+                onRootServiceInitialized = {
+                    viewModel.isRemoteFileInitialized.targetState = true
+                })
         }
     }
 }

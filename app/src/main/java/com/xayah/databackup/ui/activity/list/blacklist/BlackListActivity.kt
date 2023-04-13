@@ -19,9 +19,13 @@ class BlackListActivity : ComponentActivity() {
         viewModel.initializeExplorer(this)
 
         setContent {
-            DataBackupTheme {
-                BlackListScaffold(viewModel) { finish() }
-            }
+            DataBackupTheme(
+                content = {
+                    BlackListScaffold(viewModel) { finish() }
+                },
+                onRootServiceInitialized = {
+                    viewModel.initializeList(this)
+                })
         }
     }
 }

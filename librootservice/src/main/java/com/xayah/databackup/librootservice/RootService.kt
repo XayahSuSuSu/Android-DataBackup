@@ -2,20 +2,22 @@ package com.xayah.databackup.librootservice
 
 import android.annotation.SuppressLint
 import android.app.usage.StorageStats
-import android.content.Context
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageInfo
 import android.content.pm.UserInfo
-import android.os.MemoryFile
-import android.os.MemoryFileHidden
-import android.os.ParcelFileDescriptor
-import android.os.UserHandle
+import android.os.*
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.librootservice.parcelables.StatFsParcelable
-import com.xayah.databackup.librootservice.service.RemoteRootService
-import com.xayah.databackup.librootservice.service.RemoteRootServiceConnection
+import com.xayah.databackup.librootservice.service.RemoteRootServiceImpl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.FileInputStream
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
+@SuppressLint("NewApi")
 class RootService {
     object Instance {
         val instance = com.xayah.databackup.librootservice.RootService()
@@ -25,85 +27,118 @@ class RootService {
         fun getInstance() = Instance.instance
     }
 
-    private lateinit var ipc: IRemoteRootService
-    private lateinit var connection: RemoteRootServiceConnection
+    private val mConnection: RemoteRootServiceConnection = RemoteRootServiceConnection()
+    private var mLatch: CountDownLatch? = null
+    private var mService: IRemoteRootService? = null
 
-    fun isInitialize(): Boolean {
-        var needInitialize = this::ipc.isInitialized
-        if (needInitialize) {
-            needInitialize = try {
-                checkConnection()
-            } catch (e: Exception) {
-                false
-            }
+    class RemoteRootService : RootService() {
+        override fun onBind(intent: Intent): IBinder {
+            return RemoteRootServiceImpl()
         }
-        return needInitialize
     }
 
-    /**
-     * 初始化Service
-     */
-    fun initialize(context: Context, onServiceConnected: () -> Unit) {
-        val intent = Intent(context, RemoteRootService::class.java)
-        connection = RemoteRootServiceConnection().apply {
-            setOnServiceConnected {
-                ipc = it
-                onServiceConnected()
-            }
+    inner class RemoteRootServiceConnection : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            mService = IRemoteRootService.Stub.asInterface(service)
+            mLatch?.countDown()
         }
-        RootService.bind(intent, connection)
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            mService = null
+            mLatch?.countDown()
+        }
+
+        override fun onBindingDied(name: ComponentName) {
+            mService = null
+            mLatch?.countDown()
+        }
+
+        override fun onNullBinding(name: ComponentName) {
+            mService = null
+            mLatch?.countDown()
+        }
     }
 
-    private fun checkConnection(): Boolean {
-        return ipc.checkConnection()
+    private fun getService(): IRemoteRootService {
+        if (mService == null) {
+            throw RemoteException("RootService is null.")
+        }
+        return mService!!
+    }
+
+    suspend fun bindService(pkg: String, onTimeOut: () -> Unit): IRemoteRootService? {
+        if (mService == null) {
+            if (mLatch == null || mLatch?.count == 0L) {
+                mLatch = CountDownLatch(1)
+                withContext(Dispatchers.Main) {
+                    val intent = Intent().apply {
+                        component = ComponentName(pkg, RemoteRootService::class.java.name)
+                    }
+                    RootService.bind(intent, mConnection)
+                }
+            }
+
+            // Wait for binding
+            try {
+                withContext(Dispatchers.IO) {
+                    mLatch?.await(30, TimeUnit.SECONDS)
+                }
+            } catch (_: Exception) {
+            }
+
+            if (mLatch?.count != 0L) {
+                onTimeOut()
+            }
+        }
+        return mService
     }
 
     fun exists(path: String): Boolean {
-        return ipc.exists(path)
+        return getService().exists(path)
     }
 
     fun createNewFile(path: String): Boolean {
-        return ipc.createNewFile(path)
+        return getService().createNewFile(path)
     }
 
     fun deleteRecursively(path: String): Boolean {
-        return ipc.deleteRecursively(path)
+        return getService().deleteRecursively(path)
     }
 
     fun listFilesPath(path: String): MutableList<String> {
-        return ipc.listFilesPath(path)
+        return getService().listFilesPath(path)
     }
 
     fun mkdirs(path: String): Boolean {
-        return ipc.mkdirs(path)
+        return getService().mkdirs(path)
     }
 
     fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean {
-        return ipc.copyTo(path, targetPath, overwrite)
+        return getService().copyTo(path, targetPath, overwrite)
     }
 
     fun countFiles(path: String): Int {
-        return ipc.countFiles(path)
+        return getService().countFiles(path)
     }
 
     fun countSize(path: String, regex: String = ""): Long {
-        return ipc.countSize(path, regex)
+        return getService().countSize(path, regex)
     }
 
     fun readText(path: String): String {
-        return ipc.readText(path)
+        return getService().readText(path)
     }
 
     fun readBytes(path: String): ByteArray {
-        return ipc.readBytes(path)
+        return getService().readBytes(path)
     }
 
     private fun readByDescriptor(path: String): ParcelFileDescriptor {
-        return ipc.readByDescriptor(path)
+        return getService().readByDescriptor(path)
     }
 
     private fun closeMemoryFile(): Boolean {
-        return ipc.closeMemoryFile()
+        return getService().closeMemoryFile()
     }
 
     fun readTextByDescriptor(path: String): String {
@@ -131,15 +166,15 @@ class RootService {
     }
 
     fun writeText(path: String, text: String): Boolean {
-        return ipc.writeText(path, text)
+        return getService().writeText(path, text)
     }
 
     fun writeBytes(path: String, bytes: ByteArray): Boolean {
-        return ipc.writeBytes(path, bytes)
+        return getService().writeBytes(path, bytes)
     }
 
     private fun writeByDescriptor(path: String, descriptor: ParcelFileDescriptor): Boolean {
-        return ipc.writeByDescriptor(path, descriptor)
+        return getService().writeByDescriptor(path, descriptor)
     }
 
     @SuppressLint("NewApi")
@@ -152,62 +187,70 @@ class RootService {
     }
 
     fun initActionLogFile(path: String): Boolean {
-        return ipc.initActionLogFile(path)
+        return getService().initActionLogFile(path)
     }
 
     fun appendActionLog(text: String): Boolean {
-        return ipc.appendActionLog(text)
+        return getService().appendActionLog(text)
     }
 
     fun readStatFs(path: String): StatFsParcelable {
-        return ipc.readStatFs(path)
+        return getService().readStatFs(path)
     }
 
     fun getUserHandle(userId: Int): UserHandle {
-        return ipc.getUserHandle(userId)
+        return getService().getUserHandle(userId)
     }
 
     fun getUsers(): MutableList<UserInfo> {
-        return ipc.users
+        return getService().users
     }
 
     fun offerInstalledPackagesAsUser(flags: Int, userId: Int): Boolean {
-        return ipc.offerInstalledPackagesAsUser(flags, userId)
+        return getService().offerInstalledPackagesAsUser(flags, userId)
     }
 
     fun pollInstalledPackages(): MutableList<PackageInfo> {
-        return ipc.pollInstalledPackages()
+        return getService().pollInstalledPackages()
     }
 
     fun getSuspendedPackages(): MutableList<PackageInfo> {
-        return ipc.suspendedPackages
+        return getService().suspendedPackages
     }
 
     fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats {
-        return ipc.queryStatsForPackage(packageInfo, user)
+        return getService().queryStatsForPackage(packageInfo, user)
     }
 
     fun queryInstalled(packageName: String, userId: Int): Boolean {
-        return ipc.queryInstalled(packageName, userId)
+        return getService().queryInstalled(packageName, userId)
     }
 
     fun grantRuntimePermission(packageName: String, permName: String, userId: Int): Boolean {
-        return ipc.grantRuntimePermission(packageName, permName, userId)
+        return getService().grantRuntimePermission(packageName, permName, userId)
     }
 
     fun displayPackageFilePath(packageName: String, userId: Int): List<String> {
-        return ipc.displayPackageFilePath(packageName, userId)
+        return getService().displayPackageFilePath(packageName, userId)
     }
 
     fun setPackagesSuspended(packageNames: Array<String>, suspended: Boolean): Boolean {
-        return ipc.setPackagesSuspended(packageNames, suspended)
+        return getService().setPackagesSuspended(packageNames, suspended)
     }
 
     fun getPackageUid(packageName: String, userId: Int): Int {
-        return ipc.getPackageUid(packageName, userId)
+        return getService().getPackageUid(packageName, userId)
     }
 
     fun getPackageLongVersionCode(packageName: String, userId: Int): Long {
-        return ipc.getPackageLongVersionCode(packageName, userId)
+        return getService().getPackageLongVersionCode(packageName, userId)
+    }
+
+    fun setApplicationEnabledSetting(packageName: String, newState: Int, flags: Int, userId: Int) {
+        getService().setApplicationEnabledSetting(packageName, newState, flags, userId)
+    }
+
+    fun getApplicationEnabledSetting(packageName: String, userId: Int): Int {
+        return getService().getApplicationEnabledSetting(packageName, userId)
     }
 }
