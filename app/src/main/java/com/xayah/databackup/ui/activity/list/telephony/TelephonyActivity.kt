@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,11 +37,15 @@ import com.xayah.databackup.ui.components.LoadingDialog
 import com.xayah.databackup.ui.components.TextDialog
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.makeShortToast
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.CountDownLatch
 
 @ExperimentalMaterial3Api
 class TelephonyActivity : ComponentActivity() {
     private lateinit var viewModel: TelephonyViewModel
+    private val latch = CountDownLatch(1)
 
     private val isRoleHeld: Boolean
         get() = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
@@ -118,6 +123,57 @@ class TelephonyActivity : ComponentActivity() {
                             finish()
                         }
                     } else {
+                        LaunchedEffect(null) {
+                            try {
+                                withContext(Dispatchers.IO) {
+                                    latch.await()
+                                }
+                            } catch (_: Exception) {
+
+                            }
+                            // Load list
+                            viewModel.viewModelScope.launch {
+                                when (type) {
+                                    TypeBackupTelephony -> {
+                                        Loader.smsBackupList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.mmsBackupList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.contactsBackupList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.callLogBackupList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                    }
+                                    TypeRestoreTelephony -> {
+                                        Loader.smsRestoreList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.mmsRestoreList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.contactsRestoreList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                        Loader.callLogRestoreList(
+                                            viewModel = viewModel,
+                                            context = this@TelephonyActivity
+                                        )
+                                    }
+                                }
+                                viewModel.isInitialized.targetState = true
+                            }
+                        }
                         val isLoadingDialogOpen = remember {
                             mutableStateOf(false)
                         }
@@ -125,49 +181,49 @@ class TelephonyActivity : ComponentActivity() {
                         TelephonyScaffold(
                             isInitialized = viewModel.isInitialized,
                             viewModel = viewModel,
-                        title = stringResource(id = R.string.telephony) + when (type) {
-                            TypeBackupTelephony -> {
-                                stringResource(id = R.string.backup)
-                            }
-                            TypeRestoreTelephony -> {
-                                stringResource(id = R.string.restore)
-                            }
-                            else -> {
-                                ""
-                            }
-                        },
-                        isFabVisible = when (viewModel.tabRowState.value) {
-                            0, 1, 2, 3 -> true
-                            else -> false
-                        },
-                        onConfirm = {
-                            scope.launch {
-                                isLoadingDialogOpen.value = true
-                                when (type) {
-                                    TypeBackupTelephony -> {
-                                        when (viewModel.tabRowState.value) {
-                                            0 -> {
-                                                Processor.contactsBackup(
-                                                    viewModel = viewModel,
-                                                    context = context
-                                                )
-                                            }
-                                            1 -> {
-                                                Processor.callLogBackup(
-                                                    viewModel = viewModel,
-                                                    context = context
-                                                )
-                                            }
-                                            2 -> {
-                                                Processor.smsBackup(
-                                                    viewModel = viewModel,
-                                                    context = context
-                                                )
-                                            }
-                                            3 -> {
-                                                Processor.mmsBackup(
-                                                    viewModel = viewModel,
-                                                    context = context
+                            title = stringResource(id = R.string.telephony) + when (type) {
+                                TypeBackupTelephony -> {
+                                    stringResource(id = R.string.backup)
+                                }
+                                TypeRestoreTelephony -> {
+                                    stringResource(id = R.string.restore)
+                                }
+                                else -> {
+                                    ""
+                                }
+                            },
+                            isFabVisible = when (viewModel.tabRowState.value) {
+                                0, 1, 2, 3 -> true
+                                else -> false
+                            },
+                            onConfirm = {
+                                scope.launch {
+                                    isLoadingDialogOpen.value = true
+                                    when (type) {
+                                        TypeBackupTelephony -> {
+                                            when (viewModel.tabRowState.value) {
+                                                0 -> {
+                                                    Processor.contactsBackup(
+                                                        viewModel = viewModel,
+                                                        context = context
+                                                    )
+                                                }
+                                                1 -> {
+                                                    Processor.callLogBackup(
+                                                        viewModel = viewModel,
+                                                        context = context
+                                                    )
+                                                }
+                                                2 -> {
+                                                    Processor.smsBackup(
+                                                        viewModel = viewModel,
+                                                        context = context
+                                                    )
+                                                }
+                                                3 -> {
+                                                    Processor.mmsBackup(
+                                                        viewModel = viewModel,
+                                                        context = context
                                                 )
                                             }
                                         }
@@ -267,48 +323,7 @@ class TelephonyActivity : ComponentActivity() {
 
                 },
                 onRootServiceInitialized = {
-                    // Load list
-                    viewModel.viewModelScope.launch {
-                        when (type) {
-                            TypeBackupTelephony -> {
-                                Loader.smsBackupList(
-                                    viewModel = viewModel,
-                                    context = this@TelephonyActivity
-                                )
-                                Loader.mmsBackupList(
-                                    viewModel = viewModel,
-                                    context = this@TelephonyActivity
-                                )
-                                Loader.contactsBackupList(
-                                    viewModel = viewModel,
-                                    context = this@TelephonyActivity
-                                )
-                                Loader.callLogBackupList(
-                                    viewModel = viewModel,
-                                    context = this@TelephonyActivity
-                                )
-                            }
-                            TypeRestoreTelephony -> {
-                                Loader.smsRestoreList(
-                                    viewModel = viewModel,
-                                    context = this@TelephonyActivity
-                                )
-                                Loader.mmsRestoreList(
-                                    viewModel = viewModel,
-                                    context = this@TelephonyActivity
-                                )
-                                Loader.contactsRestoreList(
-                                    viewModel = viewModel,
-                                    context = this@TelephonyActivity
-                                )
-                                Loader.callLogRestoreList(
-                                    viewModel = viewModel,
-                                    context = this@TelephonyActivity
-                                )
-                            }
-                        }
-                        viewModel.isInitialized.targetState = true
-                    }
+                    latch.countDown()
                 })
         }
     }
