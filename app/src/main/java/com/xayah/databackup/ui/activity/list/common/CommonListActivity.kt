@@ -8,21 +8,29 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
+import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.list.common.components.ListScaffold
 import com.xayah.databackup.ui.activity.list.common.components.content.*
+import com.xayah.databackup.ui.components.ConfirmDialog
+import com.xayah.databackup.ui.components.EditTextDialog
 import com.xayah.databackup.ui.components.IconButton
 import com.xayah.databackup.ui.theme.DataBackupTheme
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.GsonUtil
+import com.xayah.databackup.util.joinToLineString
+import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.materialyoufileexplorer.MaterialYouFileExplorer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +80,7 @@ class CommonListActivity : ComponentActivity() {
         setContent {
             DataBackupTheme(
                 content = {
+                    val scope = rememberCoroutineScope()
                     val isInitialized = viewModel.isInitialized
                     val progress = viewModel.progress
                     val onManifest by viewModel.onManifest.collectAsState()
@@ -95,102 +104,162 @@ class CommonListActivity : ComponentActivity() {
                                 ""
                             }
                         },
-                    onManifest = onManifest,
-                    actions = {
-                        if (onManifest.not()) {
-                            Row {
-                                val openBottomSheet = remember { mutableStateOf(false) }
+                        onManifest = onManifest,
+                        actions = {
+                            if (onManifest.not()) {
+                                Row {
+                                    val openBottomSheet = remember { mutableStateOf(false) }
+                                    when (type) {
+                                        TypeBackupApp -> {
+                                            AppBackupBottomSheet(
+                                                isOpen = openBottomSheet,
+                                                viewModel = viewModel
+                                            ) { finish() }
+                                        }
+                                        TypeBackupMedia -> {
+                                            val isAddListDialogOpen = remember {
+                                                mutableStateOf(false)
+                                            }
+                                            val isResultDialogOpen = remember {
+                                                mutableStateOf(false)
+                                            }
+                                            var result by remember {
+                                                mutableStateOf("")
+                                            }
+                                            ConfirmDialog(
+                                                isOpen = isResultDialogOpen,
+                                                icon = Icons.Rounded.Info,
+                                                title = stringResource(R.string.finished),
+                                                content = {
+                                                    Text(text = result)
+                                                },
+                                                cancelable = false
+                                            ) {}
+                                            EditTextDialog(
+                                                isOpen = isAddListDialogOpen,
+                                                title = stringResource(id = R.string.add_list),
+                                                label = stringResource(id = R.string.separated_by_newlines),
+                                                defValue = stringArrayResource(id = R.array.default_media_path).toList().joinToLineString
+                                            ) {
+                                                scope.launch {
+                                                    result = ""
+                                                    val pathList = it.split("\n")
+                                                    for (path in pathList) {
+                                                        if (path.isEmpty()) continue
+                                                        if (path == App.globalContext.readBackupSavePath()) {
+                                                            result += "${getString(R.string.backup_dir)}: $path.\n"
+                                                            continue
+                                                        }
+                                                        var name = path.split("/").last()
+                                                        var isDuplicatePath = false
+                                                        for (i in viewModel.mediaBackupList.value) {
+                                                            if (path == i.path) {
+                                                                isDuplicatePath = true
+                                                                result += "${getString(R.string.duplicate)}: $path.\n"
+                                                                break
+                                                            }
+                                                            if (name == i.name) {
+                                                                name = renameDuplicateMedia(name)
+                                                            }
+                                                        }
+                                                        if (isDuplicatePath) continue
+                                                        if (RootService.getInstance().exists(path).not()) {
+                                                            result += "${getString(R.string.not_exists)}: $path.\n"
+                                                            continue
+                                                        }
+                                                        val mediaInfo = generateMediaInfoBackup(name, path)
+                                                        viewModel.mediaBackupList.value.add(mediaInfo)
+                                                        GlobalObject.getInstance().mediaInfoBackupMap.value[mediaInfo.name] = mediaInfo
+                                                        GsonUtil.saveMediaInfoBackupMapToFile(GlobalObject.getInstance().mediaInfoBackupMap.value)
+                                                        result += "${getString(R.string.added)}: $path.\n"
+                                                    }
+                                                    isResultDialogOpen.value = true
+                                                }
+                                            }
+                                            MediaBackupBottomSheet(
+                                                isOpen = openBottomSheet,
+                                                isAddListDialogOpen = isAddListDialogOpen,
+                                                viewModel = viewModel,
+                                                context = this@CommonListActivity,
+                                                explorer = explorer
+                                            )
+                                        }
+                                        TypeRestoreApp -> {
+                                            AppRestoreBottomSheet(
+                                                isOpen = openBottomSheet,
+                                                viewModel = viewModel
+                                            )
+                                        }
+                                        TypeRestoreMedia -> {
+                                            MediaRestoreBottomSheet(
+                                                isOpen = openBottomSheet,
+                                                viewModel = viewModel,
+                                            )
+                                        }
+                                    }
+                                    IconButton(icon = Icons.Rounded.Menu) {
+                                        openBottomSheet.value = true
+                                    }
+                                }
+                            }
+                        },
+                        content = {
+                            if (onManifest) {
                                 when (type) {
                                     TypeBackupApp -> {
-                                        AppBackupBottomSheet(
-                                            isOpen = openBottomSheet,
-                                            viewModel = viewModel
-                                        ) { finish() }
+                                        onAppBackupManifest(viewModel, this@CommonListActivity)
                                     }
                                     TypeBackupMedia -> {
-                                        MediaBackupBottomSheet(
-                                            isOpen = openBottomSheet,
-                                            viewModel = viewModel,
-                                            context = this@CommonListActivity,
-                                            explorer = explorer
-                                        )
+                                        onMediaBackupManifest(viewModel, this@CommonListActivity)
                                     }
                                     TypeRestoreApp -> {
-                                        AppRestoreBottomSheet(
-                                            isOpen = openBottomSheet,
-                                            viewModel = viewModel
-                                        )
+                                        onAppRestoreManifest(viewModel, this@CommonListActivity)
                                     }
                                     TypeRestoreMedia -> {
-                                        MediaRestoreBottomSheet(
-                                            isOpen = openBottomSheet,
-                                            viewModel = viewModel,
-                                        )
+                                        onMediaRestoreManifest(viewModel, this@CommonListActivity)
                                     }
                                 }
-                                IconButton(icon = Icons.Rounded.Menu) {
-                                    openBottomSheet.value = true
+                            } else {
+                                when (type) {
+                                    TypeBackupApp -> {
+                                        onAppBackupContent(viewModel)
+                                    }
+                                    TypeBackupMedia -> {
+                                        onMediaBackupContent(viewModel)
+                                    }
+                                    TypeRestoreApp -> {
+                                        onAppRestoreContent(viewModel)
+                                    }
+                                    TypeRestoreMedia -> {
+                                        onMediaRestoreContent(viewModel)
+                                    }
                                 }
                             }
-                        }
-                    },
-                    content = {
-                        if (onManifest) {
-                            when (type) {
-                                TypeBackupApp -> {
-                                    onAppBackupManifest(viewModel, this@CommonListActivity)
+                        },
+                        onNext = {
+                            if (onManifest) {
+                                when (type) {
+                                    TypeBackupApp -> {
+                                        toAppBackupProcessing(this)
+                                        finish()
+                                    }
+                                    TypeBackupMedia -> {
+                                        toMediaBackupProcessing(this)
+                                        finish()
+                                    }
+                                    TypeRestoreApp -> {
+                                        toAppRestoreProcessing(this)
+                                        finish()
+                                    }
+                                    TypeRestoreMedia -> {
+                                        toMediaRestoreProcessing(this)
+                                        finish()
+                                    }
                                 }
-                                TypeBackupMedia -> {
-                                    onMediaBackupManifest(viewModel, this@CommonListActivity)
-                                }
-                                TypeRestoreApp -> {
-                                    onAppRestoreManifest(viewModel, this@CommonListActivity)
-                                }
-                                TypeRestoreMedia -> {
-                                    onMediaRestoreManifest(viewModel, this@CommonListActivity)
-                                }
+                            } else {
+                                viewModel.onManifest.value = true
                             }
-                        } else {
-                            when (type) {
-                                TypeBackupApp -> {
-                                    onAppBackupContent(viewModel)
-                                }
-                                TypeBackupMedia -> {
-                                    onMediaBackupContent(viewModel)
-                                }
-                                TypeRestoreApp -> {
-                                    onAppRestoreContent(viewModel)
-                                }
-                                TypeRestoreMedia -> {
-                                    onMediaRestoreContent(viewModel)
-                                }
-                            }
-                        }
-                    },
-                    onNext = {
-                        if (onManifest) {
-                            when (type) {
-                                TypeBackupApp -> {
-                                    toAppBackupProcessing(this)
-                                    finish()
-                                }
-                                TypeBackupMedia -> {
-                                    toMediaBackupProcessing(this)
-                                    finish()
-                                }
-                                TypeRestoreApp -> {
-                                    toAppRestoreProcessing(this)
-                                    finish()
-                                }
-                                TypeRestoreMedia -> {
-                                    toMediaRestoreProcessing(this)
-                                    finish()
-                                }
-                            }
-                        } else {
-                            viewModel.onManifest.value = true
-                        }
-                    },
+                        },
                         onFinish = {
                             onBack()
                         })

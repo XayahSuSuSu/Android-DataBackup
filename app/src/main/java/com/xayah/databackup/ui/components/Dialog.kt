@@ -1,15 +1,16 @@
 package com.xayah.databackup.ui.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
 import com.xayah.databackup.R
@@ -133,6 +134,59 @@ fun LoadingDialog(
                 }
             },
             confirmButton = {},
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false
+            )
+        )
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun EditTextDialog(
+    isOpen: MutableState<Boolean>,
+    title: String,
+    label: String,
+    defValue: String,
+    onConfirm: (String) -> Unit
+) {
+    if (isOpen.value) {
+        val dialogMediaListMaxHeight = dimensionResource(R.dimen.dialog_media_list_max_height)
+
+        var text by rememberSaveable {
+            mutableStateOf(defValue)
+        }
+        AlertDialog(
+            onDismissRequest = {},
+            icon = {
+                Icon(
+                    imageVector = Icons.Rounded.Edit,
+                    contentDescription = null
+                )
+            },
+            title = { Text(text = title) },
+            text = {
+                OutlinedTextField(
+                    modifier = Modifier.requiredHeightIn(max = dialogMediaListMaxHeight),
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text(label) }
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    text = stringResource(id = R.string.confirm),
+                    onClick = {
+                        onConfirm(text)
+                        isOpen.value = false
+                    })
+            },
+            dismissButton = {
+                TextButton(text = stringResource(id = R.string.cancel)) {
+                    isOpen.value = false
+                }
+            },
             properties = DialogProperties(
                 dismissOnBackPress = false,
                 dismissOnClickOutside = false

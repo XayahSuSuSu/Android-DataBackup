@@ -159,6 +159,11 @@
     <string name="keep_the_screen_on">保持屏幕常亮</string>
     <string name="keep_the_screen_on_help">在备份/恢复时保持设备处于唤醒状态</string>
     <string name="failed_to_connect_rootservice">RootService连接失败</string>
+    <string name="add_list">添加列表</string>
+    <string name="separated_by_newlines">使用换行符隔开</string>
+    <string name="duplicate">重复</string>
+    <string name="not_exists">不存在</string>
+    <string name="added">已添加</string>
 
     <string-array name="telephony_type">
         <item>联系人</item>

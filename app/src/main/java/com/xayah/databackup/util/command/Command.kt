@@ -12,6 +12,7 @@ import android.provider.Telephony
 import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
+import com.xayah.databackup.R
 import com.xayah.databackup.data.*
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.util.*
@@ -228,13 +229,8 @@ class Command {
 
                 // If empty, add default paths
                 if (mediaInfoBackupMap.isEmpty()) {
-                    val nameList = listOf("Pictures", "Download", "Music", "DCIM")
-                    val pathList = listOf(
-                        "/storage/emulated/0/Pictures",
-                        "/storage/emulated/0/Download",
-                        "/storage/emulated/0/Music",
-                        "/storage/emulated/0/DCIM"
-                    )
+                    val nameList = App.globalContext.resources.getStringArray(R.array.default_media_name)
+                    val pathList = App.globalContext.resources.getStringArray(R.array.default_media_path)
                     for ((index, _) in nameList.withIndex()) {
                         mediaInfoBackupMap[nameList[index]] = MediaInfoBackup().apply {
                             this.name = nameList[index]

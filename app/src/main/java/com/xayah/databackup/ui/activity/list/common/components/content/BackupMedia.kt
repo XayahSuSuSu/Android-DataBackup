@@ -147,6 +147,30 @@ suspend fun onMediaBackupMapSave() {
     GsonUtil.saveMediaInfoBackupMapToFile(GlobalObject.getInstance().mediaInfoBackupMap.value)
 }
 
+fun renameDuplicateMedia(name: String): String {
+    val nameList = name.split("_").toMutableList()
+    val index = nameList.last().toIntOrNull()
+    if (index == null) {
+        nameList.add("0")
+    } else {
+        nameList[nameList.lastIndex] = (index + 1).toString()
+    }
+    return nameList.joinToString(separator = "_")
+}
+
+fun generateMediaInfoBackup(name: String, path: String): MediaInfoBackup {
+    return MediaInfoBackup().apply {
+        this.name = name
+        this.path = path
+        this.backupDetail.apply {
+            this.data.value = true
+            this.size = ""
+            this.date = ""
+        }
+        this.storageStats.dataBytes = RootService.getInstance().countSize(this.path)
+    }
+}
+
 fun onMediaBackupAdd(
     viewModel: CommonListViewModel,
     context: Context,
@@ -168,27 +192,10 @@ fun onMediaBackupAdd(
                         return@launch
                     }
                     if (name == i.name) {
-                        // 重名媒体资料
-                        val nameList = name.split("_").toMutableList()
-                        val index = nameList.last().toIntOrNull()
-                        if (index == null) {
-                            nameList.add("0")
-                        } else {
-                            nameList[nameList.lastIndex] = (index + 1).toString()
-                        }
-                        name = nameList.joinToString(separator = "_")
+                        name = renameDuplicateMedia(name)
                     }
                 }
-                val mediaInfo = MediaInfoBackup().apply {
-                    this.name = name
-                    this.path = path
-                    this.backupDetail.apply {
-                        this.data.value = true
-                        this.size = ""
-                        this.date = ""
-                    }
-                    this.storageStats.dataBytes = RootService.getInstance().countSize(this.path)
-                }
+                val mediaInfo = generateMediaInfoBackup(name, path)
                 viewModel.mediaBackupList.value.add(mediaInfo)
                 GlobalObject.getInstance().mediaInfoBackupMap.value[mediaInfo.name] = mediaInfo
                 GsonUtil.saveMediaInfoBackupMapToFile(GlobalObject.getInstance().mediaInfoBackupMap.value)
@@ -201,6 +208,7 @@ fun onMediaBackupAdd(
 @Composable
 fun MediaBackupBottomSheet(
     isOpen: MutableState<Boolean>,
+    isAddListDialogOpen: MutableState<Boolean>,
     viewModel: CommonListViewModel,
     context: Context,
     explorer: MaterialYouFileExplorer
@@ -219,6 +227,15 @@ fun MediaBackupBottomSheet(
                         context = context,
                         explorer = explorer
                     )
+                    isOpen.value = false
+                }
+            }
+            item {
+                MenuTopActionButton(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_format_list_bulleted),
+                    title = stringResource(R.string.add)
+                ) {
+                    isAddListDialogOpen.value = true
                     isOpen.value = false
                 }
             }

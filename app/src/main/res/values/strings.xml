@@ -148,6 +148,20 @@
     <string name="posted_just_now">"Just now"</string>
     <string name="posted_now">"Now"</string>
 
+    <string-array name="default_media_name" translatable="false">
+        <item>Pictures</item>
+        <item>Download</item>
+        <item>Music</item>
+        <item>DCIM</item>
+    </string-array>
+
+    <string-array name="default_media_path" translatable="false">
+        <item>/storage/emulated/0/Pictures</item>
+        <item>/storage/emulated/0/Download</item>
+        <item>/storage/emulated/0/Music</item>
+        <item>/storage/emulated/0/DCIM</item>
+    </string-array>
+
     <string-array name="telephony_type">
         <item>Contacts</item>
         <item>Call log</item>
@@ -173,6 +187,11 @@
     <string name="keep_the_screen_on">Keep the screen on</string>
     <string name="keep_the_screen_on_help">Keep the device awake while processing</string>
     <string name="failed_to_connect_rootservice">Failed to connect RootService</string>
+    <string name="add_list">Add list</string>
+    <string name="separated_by_newlines">Separated by newlines</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="not_exists">Not exists</string>
+    <string name="added">Added</string>
     <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>
