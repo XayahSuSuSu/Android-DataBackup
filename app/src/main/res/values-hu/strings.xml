@@ -12,7 +12,6 @@
     <string name="app_name">DataBackup</string>
     <string name="application">Applikáció</string>
     <string name="data">Adat</string>
-    <string name="decompress"></string>
     <string name="tips">Tippek</string>
     <string name="success">Siker</string>
     <string name="compress">Tömörít</string>
