@@ -1,31 +1,25 @@
 package com.xayah.databackup.ui.activity.guide.components
 
-import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.os.Build
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Warning
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.rememberPermissionState
 import com.xayah.databackup.R
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.ui.activity.guide.GuideViewModel
 import com.xayah.databackup.ui.activity.guide.components.card.CardEnvironment
 import com.xayah.databackup.ui.components.TextDialog
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.Path
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun PageEnvironment(
@@ -37,16 +31,6 @@ fun PageEnvironment(
     val isPermissionDialogOpen = viewModel.isPermissionDialogOpen
     val showFinishBtn = viewModel.showFinishBtn
     val environmentList = viewModel.environmentList.collectAsState()
-    var readPermissionState: PermissionState? = null
-    var writePermissionState: PermissionState? = null
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-        readPermissionState = rememberPermissionState(
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        writePermissionState = rememberPermissionState(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-    }
 
     LaunchedEffect(null) {
         if (viewModel.environmentList.value.isEmpty())
@@ -66,24 +50,6 @@ fun PageEnvironment(
                         if (state == LoadingState.Failed)
                             isPermissionDialogOpen.value = true
                         state
-                    }
-                ),
-                ItemEnvironment(
-                    itemId = R.string.check_storage_management_permission,
-                    cardState = mutableStateOf(LoadingState.Loading),
-                    onCheck = {
-                        viewModel.checkStorageManagementPermission(
-                            context,
-                            readPermissionState,
-                            writePermissionState
-                        )
-                    }
-                ),
-                ItemEnvironment(
-                    itemId = R.string.check_package_usage_stats_permission,
-                    cardState = mutableStateOf(LoadingState.Loading),
-                    onCheck = {
-                        viewModel.checkPackageUsageStatsPermission(context)
                     }
                 )
             )

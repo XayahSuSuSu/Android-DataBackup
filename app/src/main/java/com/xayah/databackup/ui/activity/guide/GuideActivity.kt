@@ -10,6 +10,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.data.GuideType
 import com.xayah.databackup.ui.activity.guide.components.PageEnvironment
@@ -17,10 +18,10 @@ import com.xayah.databackup.ui.activity.guide.components.PageIntroduction
 import com.xayah.databackup.ui.activity.guide.components.PageUpdate
 import com.xayah.databackup.ui.activity.main.MainActivity
 import com.xayah.databackup.ui.theme.DataBackupTheme
-import com.xayah.databackup.util.checkPackageUsageStatsPermission
+import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.readInitializedVersionName
-import com.xayah.databackup.util.readIsSupportUsageAccess
 import com.xayah.databackup.util.saveInitializedVersionName
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
@@ -34,11 +35,15 @@ class GuideActivity : ComponentActivity() {
 
         if (readInitializedVersionName().isNotEmpty()) {
             if (readInitializedVersionName() != App.versionName) {
-                // 版本更新
+                // Update
                 viewModel.initType.value = GuideType.Update
-            } else if (checkPackageUsageStatsPermission().not() && readIsSupportUsageAccess()) {
-                // 权限不够
-                viewModel.initType.value = GuideType.Env
+            } else {
+                viewModel.viewModelScope.launch {
+                    if (Command.checkRoot().not() || Command.checkBin().not()) {
+                        // Permissions not granted
+                        viewModel.initType.value = GuideType.Env
+                    }
+                }
             }
         }
         setContent {

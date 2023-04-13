@@ -703,6 +703,16 @@ class Command {
         }
 
         suspend fun checkBin(): Boolean {
+            val binVersionPath = "${Path.getAppInternalFilesPath()}/bin/version"
+            val version = String(App.globalContext.assets.open("bin/version").readBytes())
+            val localVersion = try {
+                File(binVersionPath).readText()
+            } catch (e: Exception) {
+                ""
+            }
+            if (version > localVersion) {
+                return false
+            }
             val binList = listOf("df", "tar", "zstd")
             execute("ls -l \"${Path.getAppInternalFilesPath()}/bin\" | awk '{print \$1, \$8}'; ls -l \"${Path.getAppInternalFilesPath()}/bin\" > /dev/null 2>&1").out.apply {
                 val fileList = this.subList(1, this.size)
