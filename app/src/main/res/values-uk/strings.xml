@@ -177,4 +177,10 @@
     <string name="click_to_clear">Натисніть тут, щоб очистити</string>
     <string name="keep_the_screen_on">Тримати екран увімкненим</string>
     <string name="keep_the_screen_on_help">Тримати пристрій в активному стані під час обробки</string>
+    <string name="failed_to_connect_rootservice">Не вдалося підключити RootService</string>
+    <string name="not_exists">Не існує</string>
+    <string name="added">Додано</string>
+    <string name="duplicate">Дублікат</string>
+    <string name="separated_by_newlines">Розділені новими рядками</string>
+    <string name="add_list">Додати список</string>
 </resources>
