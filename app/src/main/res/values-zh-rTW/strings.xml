@@ -164,6 +164,8 @@
     <string name="duplicate">重複</string>
     <string name="not_exists">不存在</string>
     <string name="added">已添加</string>
+    <string name="clean_restoring">乾淨恢復</string>
+    <string name="clean_restoring_help">恢復前清空目標目錄</string>
 
     <string-array name="telephony_type">
         <item>聯繫人</item>

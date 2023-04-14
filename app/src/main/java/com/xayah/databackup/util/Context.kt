@@ -133,6 +133,14 @@ fun Context.readIsResetRestoreList(): Boolean {
     return readPreferencesBoolean("reset_restore_list", true)
 }
 
+fun Context.saveIsCleanRestoring(value: Boolean) {
+    savePreferences("clean_restoring", value)
+}
+
+fun Context.readIsCleanRestoring(): Boolean {
+    return readPreferencesBoolean("clean_restoring", false)
+}
+
 fun Context.saveBackupUser(user: CharSequence?) {
     savePreferences("backup_user", user.toString().trim())
 }

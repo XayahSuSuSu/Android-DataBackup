@@ -192,6 +192,8 @@
     <string name="duplicate">Duplicate</string>
     <string name="not_exists">Not exists</string>
     <string name="added">Added</string>
+    <string name="clean_restoring">Clean restoring</string>
+    <string name="clean_restoring_help">Clear the target directory before restoring</string>
     <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>

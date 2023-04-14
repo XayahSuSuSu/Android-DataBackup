@@ -1,10 +1,12 @@
 package com.xayah.databackup.util.command
 
+import com.xayah.databackup.App
 import com.xayah.databackup.data.CompressionType
 import com.xayah.databackup.data.DataType
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.joinToLineString
+import com.xayah.databackup.util.readIsCleanRestoring
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -160,6 +162,7 @@ class Compression {
                 var mediaPath = ""
                 val parameter: String
                 val target: String
+                val cleanRestoring = if (App.globalContext.readIsCleanRestoring()) "--recursive-unlink" else ""
 
                 when (dataType) {
                     DataType.MEDIA -> {
@@ -192,7 +195,7 @@ class Compression {
                     }
                 }
                 cmd = "$target ${if (compressionType == CompressionType.TAR) "" else "-I ${QUOTE}zstd$QUOTE"}"
-                val exec = Command.execute("tar --totals --recursive-unlink $parameter $QUOTE$inputPath$QUOTE -C $cmd")
+                val exec = Command.execute("tar --totals $cleanRestoring $parameter $QUOTE$inputPath$QUOTE -C $cmd")
                 if (dataType == DataType.MEDIA) {
                     RootService.getInstance().deleteRecursively(getMediaPathFilePath(mediaPath))
                     RootService.getInstance().deleteRecursively(tmpDir)

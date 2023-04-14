@@ -29,6 +29,15 @@ suspend fun onRestoreInitialize(viewModel: SettingsViewModel, context: Context) 
                 onCheckedChange = {}
             ))
             add(SwitchItem(
+                title = context.getString(R.string.clean_restoring),
+                subtitle = context.getString(R.string.clean_restoring_help),
+                iconId = R.drawable.ic_round_mop,
+                isChecked = mutableStateOf(context.readIsCleanRestoring()),
+                onCheckedChange = {
+                    context.saveIsCleanRestoring(it)
+                }
+            ))
+            add(SwitchItem(
                 title = context.getString(R.string.reset_restore_list),
                 subtitle = context.getString(R.string.reset_restore_list_title),
                 iconId = R.drawable.ic_round_refresh,
@@ -37,15 +46,16 @@ suspend fun onRestoreInitialize(viewModel: SettingsViewModel, context: Context) 
                     context.saveIsResetRestoreList(it)
                 }
             ))
-            add(SwitchItem(
-                title = context.getString(R.string.read_icon),
-                subtitle = context.getString(R.string.read_icon_title),
-                iconId = R.drawable.ic_round_image,
-                isChecked = mutableStateOf(context.readIsReadIcon()),
-                onCheckedChange = {
-                    context.saveIsReadIcon(it)
-                }
-            ))
+            add(
+                SwitchItem(
+                    title = context.getString(R.string.read_icon),
+                    subtitle = context.getString(R.string.read_icon_title),
+                    iconId = R.drawable.ic_round_image,
+                    isChecked = mutableStateOf(context.readIsReadIcon()),
+                    onCheckedChange = {
+                        context.saveIsReadIcon(it)
+                    }
+                ))
         }
 }
 
