@@ -5,10 +5,8 @@ import android.app.ActivityThreadHidden
 import android.app.usage.StorageStats
 import android.app.usage.StorageStatsManager
 import android.content.Context
-import android.content.pm.IPackageManager
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManagerHidden
-import android.content.pm.UserInfo
+import android.content.pm.*
+import android.content.pm.PackageManager.PackageInfoFlags
 import android.os.*
 import com.xayah.databackup.libhiddenapi.HiddenApiBypassUtil
 import com.xayah.databackup.librootservice.IRemoteRootService
@@ -311,6 +309,13 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         } catch (_: Exception) {
         }
         return packages
+    }
+
+    override fun getPackageArchiveInfo(path: String): PackageInfo? {
+        return systemContext.packageManager.getPackageArchiveInfo(path, PackageInfoFlags.of(PackageManager.GET_ACTIVITIES.toLong()))?.apply {
+            applicationInfo?.sourceDir = path
+            applicationInfo?.publicSourceDir = path
+        }
     }
 
     override fun queryInstalled(packageName: String, userId: Int): Boolean {

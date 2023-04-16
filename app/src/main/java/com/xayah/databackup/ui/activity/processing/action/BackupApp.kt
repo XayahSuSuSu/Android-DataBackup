@@ -1,9 +1,7 @@
 package com.xayah.databackup.ui.activity.processing.action
 
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.graphics.drawable.toBitmap
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.*
@@ -18,8 +16,6 @@ import com.xayah.databackup.util.command.Preparation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 
 fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, globalObject: GlobalObject, retry: Boolean = false) {
     if (viewModel.isFirst.value) {
@@ -270,21 +266,7 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                 appInfoBackup.detailBackup.date = date
                 // Save icon
                 if (App.globalContext.readIsBackupIcon()) {
-                    withContext(Dispatchers.IO) {
-                        Logcat.getInstance().actionLogAddLine(tag, "Trying to save icon.")
-                        var byteArray = ByteArray(0)
-                        try {
-                            val byteArrayOutputStream = ByteArrayOutputStream()
-                            appInfoBackup.detailBase.appIcon?.toBitmap()?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-                            byteArray = byteArrayOutputStream.toByteArray()
-                            byteArrayOutputStream.flush()
-                            byteArrayOutputStream.close()
-                            RootService.getInstance().writeBytesByDescriptor(outPutIconPath, byteArray)
-                            Logcat.getInstance().actionLogAddLine(tag, "Icon saved successfully: ${byteArray.size}")
-                        } catch (_: Exception) {
-                            Logcat.getInstance().actionLogAddLine(tag, "Icon is too large to save: ${byteArray.size}")
-                        }
-                    }
+                    Preparation.saveIcon(tag, appInfoBackup.detailBase.appIcon, outPutIconPath)
                 }
 
                 if (isSuccess) {

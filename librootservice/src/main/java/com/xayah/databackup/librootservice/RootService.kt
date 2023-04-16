@@ -222,6 +222,10 @@ class RootService {
         return getService().queryStatsForPackage(packageInfo, user)
     }
 
+    fun getPackageArchiveInfo(path: String): PackageInfo? {
+        return getService().getPackageArchiveInfo(path)
+    }
+
     fun queryInstalled(packageName: String, userId: Int): Boolean {
         return getService().queryInstalled(packageName, userId)
     }

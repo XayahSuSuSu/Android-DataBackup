@@ -13,9 +13,56 @@ import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.AppInfoBackupMap
+import com.xayah.databackup.data.AppInfoDetailRestore
+import com.xayah.databackup.data.AppInfoRestore
+import com.xayah.databackup.data.AppInfoRestoreMap
+import com.xayah.databackup.data.AppInfoStorageStats
+import com.xayah.databackup.data.BackupStrategy
+import com.xayah.databackup.data.BlackListItem
+import com.xayah.databackup.data.BlackListMap
+import com.xayah.databackup.data.CallLogItem
+import com.xayah.databackup.data.CallLogList
+import com.xayah.databackup.data.CompressionType
+import com.xayah.databackup.data.ContactDataItem
+import com.xayah.databackup.data.ContactItem
+import com.xayah.databackup.data.ContactList
+import com.xayah.databackup.data.ContactRawContactItem
+import com.xayah.databackup.data.DataType
+import com.xayah.databackup.data.MediaInfoBackup
+import com.xayah.databackup.data.MediaInfoBackupMap
+import com.xayah.databackup.data.MediaInfoDetailBase
+import com.xayah.databackup.data.MediaInfoRestore
+import com.xayah.databackup.data.MediaInfoRestoreMap
+import com.xayah.databackup.data.MmsAddrItem
+import com.xayah.databackup.data.MmsItem
+import com.xayah.databackup.data.MmsList
+import com.xayah.databackup.data.MmsPartItem
+import com.xayah.databackup.data.MmsPduItem
+import com.xayah.databackup.data.ProcessCompressing
+import com.xayah.databackup.data.ProcessDecompressing
+import com.xayah.databackup.data.ProcessError
+import com.xayah.databackup.data.ProcessFinished
+import com.xayah.databackup.data.ProcessInstallingApk
+import com.xayah.databackup.data.ProcessSettingSELinux
+import com.xayah.databackup.data.ProcessShowTotal
+import com.xayah.databackup.data.ProcessSkip
+import com.xayah.databackup.data.ProcessTesting
+import com.xayah.databackup.data.SmsItem
+import com.xayah.databackup.data.SmsList
 import com.xayah.databackup.librootservice.RootService
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.GsonUtil
+import com.xayah.databackup.util.Logcat
+import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.readAutoFixMultiUserContext
+import com.xayah.databackup.util.readBackupStrategy
+import com.xayah.databackup.util.readBackupUser
+import com.xayah.databackup.util.readBlackListMapPath
+import com.xayah.databackup.util.readCompressionType
+import com.xayah.databackup.util.readIsBackupTest
+import com.xayah.databackup.util.readRestoreUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -23,7 +70,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class Command {
     companion object {
@@ -118,11 +166,14 @@ class Command {
         }
 
         suspend fun getAppInfoRestoreMap(onProgress: (Float) -> Unit = {}): AppInfoRestoreMap {
+            val tag = object {}.javaClass.enclosingMethod?.name!!
             var appInfoRestoreMap: AppInfoRestoreMap = hashMapOf()
 
             runOnIO {
                 // Read from local config
                 appInfoRestoreMap = GsonUtil.getInstance().fromAppInfoRestoreMapJson(RootService.getInstance().readTextByDescriptor(Path.getAppInfoRestoreMapPath()))
+
+                val packageManager = App.globalContext.packageManager
 
                 // Adjust the map according to the actual situation
                 execute("find \"${Path.getBackupDataSavePath()}\" -name \"*.tar*\" -type f").apply {
@@ -135,6 +186,8 @@ class Command {
                         var hasApp = false
                         var hasData = false
                         val outSize = this.out.size
+                        var packageInfo: PackageInfo? = null
+
                         for ((index, i) in this.out.withIndex()) {
                             try {
                                 if (index < this.out.size - 1) {
@@ -169,6 +222,25 @@ class Command {
                                             appInfoRestore = appInfoRestoreMap[packageName]!!
                                         }
 
+                                        // Get package info from *.apk
+                                        if (fileName.contains("apk.tar") && appInfoRestore.detailBase.appName == GlobalString.appNameIsMissing && packageInfo == null) {
+                                            val apksPath = Installation.decompressAPKArchive(
+                                                compressionType = CompressionType.of(App.globalContext.readCompressionType()),
+                                                packageName = packageName,
+                                                apkPath = i,
+                                                onSuccess = {},
+                                                onLog = {})
+                                            when (apksPath.size) {
+                                                0 -> {
+                                                    // Do nothing
+                                                }
+
+                                                else -> {
+                                                    packageInfo = RootService.getInstance().getPackageArchiveInfo(apksPath[0])
+                                                }
+                                            }
+                                        }
+
                                         if (date != dateNext || packageName != packageNameNext) {
                                             // Different date from the next path
 
@@ -183,9 +255,17 @@ class Command {
                                                 this.selectData.value = this.selectData.value && hasData
                                             }
 
+                                            if (packageInfo != null) {
+                                                Preparation.saveIcon(tag, packageInfo.applicationInfo.loadIcon(packageManager), "${Path.getBackupDataSavePath()}/${packageName}/icon.png")
+                                                appInfoRestore.detailBase.appName = packageInfo.applicationInfo.loadLabel(packageManager).toString()
+                                                detail.versionName = packageInfo.versionName
+                                                detail.versionCode = packageInfo.longVersionCode
+                                            }
+
                                             detailRestoreList.add(detail)
                                             hasApp = false
                                             hasData = false
+                                            packageInfo = null
                                         }
                                         if (packageName != packageNameNext) {
                                             appInfoRestore.detailRestoreList = detailRestoreList
@@ -199,6 +279,7 @@ class Command {
                             }
                             onProgress((index + 1).toFloat() / outSize)
                         }
+                        RootService.getInstance().deleteRecursively(Installation.tmpDir)
                     }
                 }
 
@@ -610,7 +691,7 @@ class Command {
 
             // 安装APK
             updateState(ProcessInstallingApk, null)
-            val (installAPKSuccess, installAPKOut) = Installation.installAPK(compressionType, apkPath, userId)
+            val (installAPKSuccess, installAPKOut) = Installation.installAPK(compressionType, packageName, apkPath, userId)
             if (installAPKSuccess.not()) {
                 updateState(ProcessError, installAPKOut)
                 Logcat.getInstance().actionLogAddLine(tag, installAPKOut)

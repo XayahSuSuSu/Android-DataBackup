@@ -1,8 +1,14 @@
 package com.xayah.databackup.util.command
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import androidx.core.graphics.drawable.toBitmap
+import com.xayah.databackup.librootservice.RootService
+import com.xayah.databackup.util.Logcat
 import com.xayah.databackup.util.joinToLineString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 
 class Preparation {
     companion object {
@@ -112,6 +118,24 @@ class Preparation {
         suspend fun killPackage(packageName: String): Boolean {
             val exec = Command.execute("am force-stop $QUOTE$packageName$QUOTE")
             return exec.isSuccess
+        }
+
+        suspend fun saveIcon(tag: String, appIcon: Drawable?, outPutIconPath: String) {
+            withContext(Dispatchers.IO) {
+                Logcat.getInstance().actionLogAddLine(tag, "Trying to save icon.")
+                var byteArray = ByteArray(0)
+                try {
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    appIcon?.toBitmap()?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                    byteArray = byteArrayOutputStream.toByteArray()
+                    byteArrayOutputStream.flush()
+                    byteArrayOutputStream.close()
+                    RootService.getInstance().writeBytesByDescriptor(outPutIconPath, byteArray)
+                    Logcat.getInstance().actionLogAddLine(tag, "Icon saved successfully: ${byteArray.size}")
+                } catch (_: Exception) {
+                    Logcat.getInstance().actionLogAddLine(tag, "Icon is too large to save: ${byteArray.size}")
+                }
+            }
         }
     }
 }

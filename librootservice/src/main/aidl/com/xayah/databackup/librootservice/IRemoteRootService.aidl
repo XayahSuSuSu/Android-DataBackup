@@ -32,6 +32,7 @@ interface IRemoteRootService {
     boolean offerInstalledPackagesAsUser(int flags, int userId);
     List<PackageInfo> pollInstalledPackages();
     List<PackageInfo> getSuspendedPackages();
+    PackageInfo getPackageArchiveInfo(String path);
     boolean queryInstalled(String packageName, int userId);
     StorageStats queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
     boolean grantRuntimePermission(String packageName, String permName, int userId);

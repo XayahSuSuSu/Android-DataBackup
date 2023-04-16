@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 class Installation {
     companion object {
         private const val QUOTE = '"'
+        val tmpDir = "${Path.getAppInternalFilesPath()}/tmp/data_backup"
 
         private suspend fun <T> runOnIO(block: suspend () -> T): T {
             return withContext(Dispatchers.IO) { block() }
@@ -34,40 +35,52 @@ class Installation {
             return Pair(exec.isSuccess, exec.out.joinToLineString.trim())
         }
 
-        suspend fun installAPK(compressionType: CompressionType, apkPath: String, userId: String): Pair<Boolean, String> {
+        suspend fun decompressAPKArchive(compressionType: CompressionType, packageName: String, apkPath: String, onSuccess: (Boolean) -> Unit, onLog: (String) -> Unit): MutableList<String> {
+            val apkDir = "$tmpDir/$packageName"
+            if (RootService.getInstance().deleteRecursively(apkDir).not()) onSuccess(false)
+            if (RootService.getInstance().mkdirs(apkDir).not()) {
+                onSuccess(false)
+                onLog("Failed to mkdirs: $apkDir.\n")
+            }
+
+            // Decompress apk archive
+            val input = when (compressionType) {
+                CompressionType.TAR -> {
+                    ""
+                }
+
+                CompressionType.ZSTD, CompressionType.LZ4 -> {
+                    "-I ${QUOTE}zstd$QUOTE"
+                }
+            }
+            Command.execute("tar --totals $input -xmpf $QUOTE$apkPath$QUOTE -C $QUOTE$apkDir$QUOTE").apply {
+                if (this.isSuccess.not()) onSuccess(false)
+                onLog(this.out.joinToLineString + "\n")
+            }
+            return RootService.getInstance().listFilesPath(apkDir)
+        }
+
+        suspend fun installAPK(compressionType: CompressionType, packageName: String, apkPath: String, userId: String): Pair<Boolean, String> {
             var isSuccess = true
             var out = ""
             runOnIO {
-                val tmpDir = "${Path.getAppInternalFilesPath()}/tmp/data_backup"
-                if (RootService.getInstance().deleteRecursively(tmpDir).not()) isSuccess = false
-                if (RootService.getInstance().mkdirs(tmpDir).not()) {
-                    isSuccess = false
-                    out += "Failed to mkdirs: $tmpDir.\n"
-                }
-
-                // Decompress apk archive
-                val input = when (compressionType) {
-                    CompressionType.TAR -> {
-                        ""
-                    }
-                    CompressionType.ZSTD, CompressionType.LZ4 -> {
-                        "-I ${QUOTE}zstd$QUOTE"
-                    }
-                }
-                Command.execute("tar --totals $input -xmpf $QUOTE$apkPath$QUOTE -C $QUOTE$tmpDir$QUOTE").apply {
-                    if (this.isSuccess.not()) isSuccess = false
-                    out += this.out.joinToLineString + "\n"
-                }
-                val apksPath = RootService.getInstance().listFilesPath(tmpDir)
-                Command.execute("ls $tmpDir").apply {
-                    out += this.out.joinToLineString + "\n"
-                }
+                val apksPath = decompressAPKArchive(
+                    compressionType = compressionType,
+                    packageName = packageName,
+                    apkPath = apkPath,
+                    onSuccess = {
+                        isSuccess = it
+                    },
+                    onLog = {
+                        out += it
+                    })
                 when (apksPath.size) {
                     0 -> {
                         isSuccess = false
                         out += "$tmpDir is empty.\n"
                         return@runOnIO
                     }
+
                     1 -> {
                         pmInstall(userId, apksPath[0]).apply {
                             if (this.first.not()) isSuccess = false
