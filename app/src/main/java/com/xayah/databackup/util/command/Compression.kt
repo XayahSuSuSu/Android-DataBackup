@@ -6,7 +6,9 @@ import com.xayah.databackup.data.DataType
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.joinToLineString
+import com.xayah.databackup.util.readBackupExcludeCache
 import com.xayah.databackup.util.readIsCleanRestoring
+import com.xayah.databackup.util.readRestoreExcludeCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -80,12 +82,13 @@ class Compression {
             var isSuccess = true
             var out = ""
             runOnIO {
+                val context = App.globalContext
                 // Make output dir
                 if (RootService.getInstance().mkdirs(outPut).not()) isSuccess = false
                 // Compress
                 val cmd: String
                 val (suffix, type) = getSuffixAndType(compressionType)
-                val exclude: String
+                var exclude = ""
                 val origin: String
                 val target: String
 
@@ -106,19 +109,31 @@ class Compression {
 
                 when (dataType) {
                     DataType.USER, DataType.USER_DE -> {
-                        exclude =
-                            "--totals --exclude=$QUOTE$packageName/.ota$QUOTE --exclude=$QUOTE$packageName/cache$QUOTE --exclude=$QUOTE$packageName/lib$QUOTE --exclude=$QUOTE$packageName/code_cache$QUOTE --exclude=$QUOTE$packageName/no_backup$QUOTE"
+                        if (context.readBackupExcludeCache()) {
+                            val folders = listOf(".ota", "cache", "lib", "code_cache", "no_backup")
+                            for (i in folders) {
+                                exclude += "--exclude=$QUOTE$packageName/$i$QUOTE "
+                            }
+                        }
                         origin = "$QUOTE$dataPath$QUOTE $QUOTE$packageName$QUOTE"
                         target = "$QUOTE${outPut}/${dataType.type}$suffix$QUOTE"
                     }
+
                     DataType.DATA, DataType.OBB, DataType.APP_MEDIA -> {
-                        exclude = "--totals --exclude=${QUOTE}Backup_$QUOTE* --exclude=$QUOTE$packageName/cache$QUOTE"
+                        if (context.readBackupExcludeCache()) {
+                            val folders = listOf("cache")
+                            for (i in folders) {
+                                exclude += "--exclude=$QUOTE$packageName/$i$QUOTE "
+                            }
+                            // Exclude Backup_*
+                            exclude += "--exclude=${QUOTE}Backup_$QUOTE*"
+                        }
                         origin = "$QUOTE$dataPath$QUOTE $QUOTE$packageName$QUOTE"
                         target = "$QUOTE${outPut}/${dataType.type}$suffix$QUOTE"
                     }
+
                     DataType.MEDIA -> {
                         val fileName = Path.getFileNameByPath(dataPath)
-                        exclude = "--totals --exclude=${QUOTE}Backup_$QUOTE* --exclude=$QUOTE${fileName}/cache$QUOTE"
                         origin = "$QUOTE${Path.getParentPath(dataPath)}$QUOTE $QUOTE${Path.getFileNameByPath(dataPath)}$QUOTE"
                         target = "$QUOTE${outPut}/$fileName$suffix$QUOTE"
                         if (RootService.getInstance().writeText(getMediaPathFilePath(dataPath), dataPath).not()) {
@@ -127,6 +142,7 @@ class Compression {
                             return@runOnIO
                         }
                     }
+
                     else -> {
                         isSuccess = false
                         out = "Wrong data type: ${dataType.type}."
@@ -157,10 +173,12 @@ class Compression {
             var isSuccess = true
             var out = ""
             runOnIO {
+                val context = App.globalContext
                 val cmd: String
                 var tmpDir = ""
                 var mediaPath = ""
                 val parameter: String
+                var exclude = ""
                 val target: String
                 val cleanRestoring = if (App.globalContext.readIsCleanRestoring()) "--recursive-unlink" else ""
 
@@ -189,13 +207,24 @@ class Compression {
                             return@runOnIO
                         }
                     }
+
                     else -> {
+                        if (context.readRestoreExcludeCache()) {
+                            val folders = listOf(".ota", "cache", "lib", "code_cache", "no_backup")
+                            for (i in folders) {
+                                exclude += "--exclude=$QUOTE$packageName/$i$QUOTE "
+                            }
+                            if (dataType == DataType.DATA || dataType == DataType.OBB || dataType == DataType.APP_MEDIA) {
+                                // Exclude Backup_*
+                                exclude += "--exclude=${QUOTE}Backup_$QUOTE*"
+                            }
+                        }
                         parameter = "-xmpf"
                         target = "$QUOTE${dataPath}$QUOTE"
                     }
                 }
                 cmd = "$target ${if (compressionType == CompressionType.TAR) "" else "-I ${QUOTE}zstd$QUOTE"}"
-                val exec = Command.execute("tar --totals $cleanRestoring $parameter $QUOTE$inputPath$QUOTE -C $cmd")
+                val exec = Command.execute("tar --totals $exclude $cleanRestoring $parameter $QUOTE$inputPath$QUOTE -C $cmd")
                 if (dataType == DataType.MEDIA) {
                     RootService.getInstance().deleteRecursively(getMediaPathFilePath(mediaPath))
                     RootService.getInstance().deleteRecursively(tmpDir)

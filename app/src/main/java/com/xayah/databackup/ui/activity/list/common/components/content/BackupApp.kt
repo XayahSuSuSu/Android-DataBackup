@@ -11,23 +11,36 @@ import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.AppInfoBackup
+import com.xayah.databackup.data.AppListFilter
+import com.xayah.databackup.data.AppListSort
+import com.xayah.databackup.data.AppListType
+import com.xayah.databackup.data.TypeActivityTag
+import com.xayah.databackup.data.TypeBackupApp
+import com.xayah.databackup.data.ofBackupStrategy
 import com.xayah.databackup.ui.activity.list.blacklist.BlackListActivity
 import com.xayah.databackup.ui.activity.list.common.CommonListViewModel
 import com.xayah.databackup.ui.activity.list.common.components.FilterItem
 import com.xayah.databackup.ui.activity.list.common.components.ManifestDescItem
+import com.xayah.databackup.ui.activity.list.common.components.SelectionItem
 import com.xayah.databackup.ui.activity.list.common.components.SortItem
 import com.xayah.databackup.ui.activity.list.common.components.item.AppBackupItem
 import com.xayah.databackup.ui.activity.list.common.components.manifest.contentManifest
 import com.xayah.databackup.ui.activity.list.common.components.menu.ListBottomSheet
 import com.xayah.databackup.ui.activity.list.common.components.menu.item.FilterItem
+import com.xayah.databackup.ui.activity.list.common.components.menu.item.SelectionItem
 import com.xayah.databackup.ui.activity.list.common.components.menu.item.SortItem
 import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopActionButton
 import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopBackupUserButton
@@ -35,10 +48,18 @@ import com.xayah.databackup.ui.activity.list.common.components.menu.top.MenuTopR
 import com.xayah.databackup.ui.activity.processing.ProcessingActivity
 import com.xayah.databackup.ui.components.ConfirmDialog
 import com.xayah.databackup.ui.components.SearchBar
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.command.Command
+import com.xayah.databackup.util.readBackupExcludeCache
+import com.xayah.databackup.util.readBackupSavePath
+import com.xayah.databackup.util.readBackupStrategy
+import com.xayah.databackup.util.readBackupUser
+import com.xayah.databackup.util.readCompressionType
+import com.xayah.databackup.util.readRestoreUser
+import com.xayah.databackup.util.saveBackupExcludeCache
 import java.text.Collator
-import java.util.*
+import java.util.Locale
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -308,6 +329,21 @@ fun AppBackupBottomSheet(
                             refreshAppBackupList(viewModel)
                         }
                     }
+                }
+            )
+
+            // Others
+            val othersList = listOf(
+                SelectionItem(
+                    text = stringResource(R.string.exclude_cache),
+                    selected = context.readBackupExcludeCache()
+                ),
+            )
+            SelectionItem(
+                title = stringResource(id = R.string.others),
+                list = othersList,
+                onClick = {
+                    context.saveBackupExcludeCache(it)
                 }
             )
         }

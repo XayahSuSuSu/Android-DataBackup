@@ -4,7 +4,12 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.widget.Toast
 import com.xayah.databackup.R
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.AppListSort
+import com.xayah.databackup.data.BackupStrategy
+import com.xayah.databackup.data.UpdateChannel
+import com.xayah.databackup.data.toAppListSort
+import com.xayah.databackup.data.toBackupStrategy
+import com.xayah.databackup.data.toUpdateChannel
 
 fun Context.savePreferences(key: String, value: String) {
     getSharedPreferences("settings", MODE_PRIVATE).edit().apply {
@@ -243,6 +248,22 @@ fun Context.saveListSortAscending(value: Boolean) {
 
 fun Context.readListSortAscending(): Boolean {
     return readPreferencesBoolean("list_sort_ascending", true)
+}
+
+fun Context.saveBackupExcludeCache(value: Boolean) {
+    savePreferences("backup_exclude_cache", value)
+}
+
+fun Context.readBackupExcludeCache(): Boolean {
+    return readPreferencesBoolean("backup_exclude_cache", true)
+}
+
+fun Context.saveRestoreExcludeCache(value: Boolean) {
+    savePreferences("restore_exclude_cache", value)
+}
+
+fun Context.readRestoreExcludeCache(): Boolean {
+    return readPreferencesBoolean("restore_exclude_cache", true)
 }
 
 fun Context.makeShortToast(content: String) {

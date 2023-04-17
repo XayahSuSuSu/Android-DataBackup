@@ -20,3 +20,8 @@ data class FilterItem<T>(
     val text: String,
     val type: T,
 )
+
+data class SelectionItem(
+    val text: String,
+    var selected: Boolean,
+)

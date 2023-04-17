@@ -166,6 +166,8 @@
     <string name="added">已添加</string>
     <string name="clean_restoring">干净恢复</string>
     <string name="clean_restoring_help">恢复前清空目标目录</string>
+    <string name="exclude_cache">排除缓存</string>
+    <string name="others">其它</string>
 
     <string-array name="telephony_type">
         <item>联系人</item>
