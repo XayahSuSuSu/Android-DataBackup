@@ -88,7 +88,7 @@
     <string name="loading_failed">加載失敗</string>
     <string name="update_records">更新記錄</string>
     <string name="path_permission_error">權限錯誤，以下路徑需要正確的權限</string>
-    <string name="backuping">備份中</string>
+    <string name="backing_up">備份中</string>
     <string name="restoring">恢復中</string>
     <string name="read_icon">讀取圖標</string>
     <string name="read_icon_title">圖標讀取需要大量的內存，如果您在恢復過程中遇到崩潰問題，請嘗試關閉此選項</string>

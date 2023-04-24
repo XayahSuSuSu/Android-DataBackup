@@ -88,7 +88,7 @@
     <string name="loading_failed">Сбой загрузки</string>
     <string name="update_records">Список изменений</string>
     <string name="path_permission_error">Ошибка разрешений, следующие пути требуют правильных разрешений.</string>
-    <string name="backuping">Создание бекапа</string>
+    <string name="backing_up">Создание бекапа</string>
     <string name="restoring">Восстановление</string>
     <string name="read_icon">Чтение значков</string>
     <string name="read_icon_title">Для чтения значков требуется много памяти, если у вас возникают сбои при восстановлении, попробуйте отключить эту опцию.</string>

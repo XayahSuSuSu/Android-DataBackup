@@ -88,7 +88,7 @@
     <string name="loading_failed">Не вдалося завантажити</string>
     <string name="update_records">Список змін</string>
     <string name="path_permission_error">Помилка дозволів, для наступних шляхів потрібні правильні дозволи</string>
-    <string name="backuping">Створення бекапу</string>
+    <string name="backing_up">Створення бекапу</string>
     <string name="restoring">Відновлення</string>
     <string name="read_icon">Зчитування іконок</string>
     <string name="read_icon_title">Читання іконок вимагає багато пам\'яті, якщо під час відновлення виникають збої, спробуйте вимкнути цю опцію</string>

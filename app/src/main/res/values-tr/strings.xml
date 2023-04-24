@@ -67,7 +67,7 @@
     <string name="finished">Bitti</string>
     <string name="no_change_and_skip">Seçenek yok, geç</string>
     <string name="loading">Yükleniyor</string>
-    <string name="backuping">Yedekleniyor</string>
+    <string name="backing_up">Yedekleniyor</string>
     <string name="restoring">Kurtarılıyor</string>
     <string name="read_icon">İkon okuma</string>
     <string name="app_crashed">Uygulama çöküşü</string>

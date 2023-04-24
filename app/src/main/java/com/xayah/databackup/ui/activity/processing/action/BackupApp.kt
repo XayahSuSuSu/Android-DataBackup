@@ -94,7 +94,7 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
 
             // Early stage finished
             loadingState.value = LoadingState.Success
-            topBarTitle.value = "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
+            topBarTitle.value = "${context.getString(R.string.backing_up)}(${progress.value}/${taskList.size})"
             for ((index, i) in taskList.withIndex()) {
                 // Skip while retrying not-failed task
                 if (retry && i.taskState.value != TaskState.Failed) continue
@@ -329,7 +329,7 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                 }
 
                 progress.value += 1
-                topBarTitle.value = "${context.getString(R.string.backuping)}(${progress.value}/${taskList.size})"
+                topBarTitle.value = "${context.getString(R.string.backing_up)}(${progress.value}/${taskList.size})"
             }
 
             // Restore the keyboards and accessibility services

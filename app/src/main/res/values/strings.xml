@@ -92,7 +92,7 @@
     <string name="loading_failed">Loading failed</string>
     <string name="update_records">Update records</string>
     <string name="path_permission_error">Permissions error, the following paths require the correct permissions</string>
-    <string name="backuping">Backuping</string>
+    <string name="backing_up">Backing up</string>
     <string name="restoring">Restoring</string>
     <string name="read_icon">Read icon</string>
     <string name="read_icon_title">Icon reading requires a lot of memory, if you experience crashes during restoring, try turning this option off</string>
@@ -101,7 +101,7 @@
     <string name="copy_grant_command">Copy grant command</string>
     <string name="card_app_subtitle">Backup(Restore) third-party apps or system apps</string>
     <string name="card_media_subtitle">Backup(Restore) media files or custom directories</string>
-    <string name="settings_backup_user_subtitle">The target user while backuping</string>
+    <string name="settings_backup_user_subtitle">The target user while backing up</string>
     <string name="settings_restore_user_subtitle">Data is restored from backup user to restore user</string>
     <string name="backup_storage_method">Backup storage method</string>
     <string name="select_backup_app">Select backup app</string>
