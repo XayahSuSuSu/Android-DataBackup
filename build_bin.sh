@@ -3,7 +3,8 @@
 # Tested on Ubuntu22.04.1(WSL2)
 
 # Config
-# `bash build_bin.sh`: Will build for armeabi-v7a arm64-v8a x86 x86_64
+# $type: built-in, extend, all
+# `bash build_bin.sh $type`: Will build for armeabi-v7a arm64-v8a x86 x86_64
 
 # Whether use dev branch instead of release
 ZSTD_DEV=true
@@ -361,6 +362,8 @@ package_built_in() {
     mkdir -p built_in/$TARGET_ARCH
     echo "$BIN_VERSION" > built_in/version
     zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df tar/bin/tar zstd/bin/zstd built_in/version
+    rm -rf ../app/src/$TARGET_ARCH/assets/bin/bin.zip
+    cp built_in/$TARGET_ARCH/bin.zip ../app/src/$TARGET_ARCH/assets/bin/bin.zip
 }
 
 package_extend() {
@@ -368,19 +371,21 @@ package_extend() {
     mkdir -p extend
     echo "$EXTEND_VERSION" > extend/version
     zip -pj extend/$TARGET_ARCH fuse/bin/fusermount rclone/rclone extend/version
+    rm -rf ../extend/${TARGET_ARCH}.zip
+    cp extend/${TARGET_ARCH}.zip ../extend/${TARGET_ARCH}.zip
 }
 
 build() {
     # $1: type
     case "$1" in
-    *)
-        build_built_in
-        build_extend
-        ;;
     built-in)
         build_built_in
         ;;
     extend)
+        build_extend
+        ;;
+    *)
+        build_built_in
         build_extend
         ;;
     esac
@@ -389,14 +394,14 @@ build() {
 package() {
     # $1: type
     case "$1" in
-    *)
-        package_built_in
-        package_extend
-        ;;
     built-in)
         package_built_in
         ;;
     extend)
+        package_extend
+        ;;
+    *)
+        package_built_in
         package_extend
         ;;
     esac
@@ -410,8 +415,8 @@ abis=("armeabi-v7a" "arm64-v8a" "x86" "x86_64")
 for abi in ${abis[@]}; do
     TARGET_ARCH=$abi
     set_up_environment
-    build
-    package
+    build $1
+    package $1
     # Clean build files
     rm -rf NDK coreutls tar zstd fuse rclone
 done
