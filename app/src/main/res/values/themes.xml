@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.DataBackup" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.DataBackup.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.DataBackup</item>
+    </style>
 </resources>
