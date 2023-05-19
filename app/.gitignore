@@ -1,2 +1,9 @@
 /build
-/release
+/arm64-v8aFoss
+/arm64-v8aPremium
+/armeabi-v7aFoss
+/armeabi-v7aPremium
+/x86Foss
+/x86Premium
+/x86_64Foss
+/x86_64Premium

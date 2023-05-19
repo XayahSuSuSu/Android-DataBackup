@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -13,12 +15,43 @@ android {
         applicationId = "com.xayah.databackup"
         minSdk = 28
         targetSdk = 33
-        versionCode = 98
+        versionCode = 3300098
         versionName = "1.0.1-alpha02"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    // __(API)_(feature)_(abi)___(version)
+    flavorDimensions += listOf("abi", "feature")
+    productFlavors {
+        create("arm64-v8a") {
+            dimension = "abi"
+            versionCode = 1000 + (android.defaultConfig.versionCode ?: 0)
+        }
+        create("armeabi-v7a") {
+            dimension = "abi"
+            versionCode = 2000 + (android.defaultConfig.versionCode ?: 0)
+        }
+        create("x86") {
+            dimension = "abi"
+            versionCode = 3000 + (android.defaultConfig.versionCode ?: 0)
+        }
+        create("x86_64") {
+            dimension = "abi"
+            versionCode = 4000 + (android.defaultConfig.versionCode ?: 0)
+        }
+        create("foss") {
+            dimension = "feature"
+            versionCode = 10000 + (android.defaultConfig.versionCode ?: 0)
+            applicationIdSuffix = ".foss"
+        }
+        create("premium") {
+            dimension = "feature"
+            versionCode = 20000 + (android.defaultConfig.versionCode ?: 0)
+            applicationIdSuffix = ".premium"
         }
     }
 
@@ -50,6 +83,13 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    applicationVariants.all {
+        outputs.forEach { output ->
+            (output as BaseVariantOutputImpl).outputFileName =
+                "DataBackup-${versionName}-${productFlavors[0].name}-${buildType.name}.apk"
         }
     }
 }
