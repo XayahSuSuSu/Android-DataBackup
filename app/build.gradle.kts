@@ -124,6 +124,9 @@ dependencies {
 
     // Gson
     implementation(libs.gson)
+
+    // libsu
+    implementation(libs.libsu.core)
 }
 
 kapt {
