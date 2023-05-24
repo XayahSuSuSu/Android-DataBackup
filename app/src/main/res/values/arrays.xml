@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="bottom_bar_items">
+        <item>Home</item>
+        <item>Cloud</item>
+        <item>Backup</item>
+        <item>Restore</item>
+    </string-array>
+</resources>

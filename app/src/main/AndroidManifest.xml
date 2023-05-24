@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Update/Firebase -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".DataBackupApplication"
         android:allowBackup="true"
@@ -25,7 +28,7 @@
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.main.MainActivity"
             android:exported="false" />
     </application>
 </manifest>

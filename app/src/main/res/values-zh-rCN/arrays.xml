@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="bottom_bar_items">
+        <item>主页</item>
+        <item>云端</item>
+        <item>备份</item>
+        <item>恢复</item>
+    </string-array>
+</resources>
