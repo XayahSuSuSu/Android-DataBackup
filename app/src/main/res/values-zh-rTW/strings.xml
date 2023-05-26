@@ -16,4 +16,6 @@
     <string name="loading_failed">載入失敗</string>
     <string name="grant_root_access">取得Root權限</string>
     <string name="release_prebuilt_binaries">釋放預編譯二進製文件</string>
+    <string name="confirm">確定</string>
+    <string name="cancel">取消</string>
 </resources>

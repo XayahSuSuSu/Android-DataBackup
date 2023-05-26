@@ -16,4 +16,6 @@
     <string name="loading_failed">加载失败</string>
     <string name="grant_root_access">获取Root权限</string>
     <string name="release_prebuilt_binaries">释放预编译二进制文件</string>
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
 </resources>

@@ -19,4 +19,6 @@
     <string name="loading_failed">Loading failed</string>
     <string name="grant_root_access">Grant root access</string>
     <string name="release_prebuilt_binaries">Release prebuilt binaries</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
 </resources>

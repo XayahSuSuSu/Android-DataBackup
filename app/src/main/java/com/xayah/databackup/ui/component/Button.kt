@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.component
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,5 +20,13 @@ fun IconTextButton(icon: ImageVector, text: String, onClick: () -> Unit) {
             )
             TitleSmallBoldText(text = text)
         }
+    )
+}
+
+@Composable
+fun TextButton(text: String, onClick: () -> Unit) {
+    TextButton(
+        onClick = onClick,
+        content = { TitleSmallBoldText(text = text) }
     )
 }
