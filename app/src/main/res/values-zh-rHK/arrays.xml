@@ -1,8 +1,8 @@
 <resources>
     <string-array name="bottom_bar_items">
-        <item>主頁</item>
-        <item>雲端</item>
         <item>備份</item>
         <item>恢復</item>
+        <item>雲端</item>
+        <item>設置</item>
     </string-array>
 </resources>

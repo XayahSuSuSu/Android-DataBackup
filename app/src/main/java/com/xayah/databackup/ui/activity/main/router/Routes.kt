@@ -12,8 +12,8 @@ sealed class GuideRoutes(val route: String) {
 }
 
 sealed class MainRoutes(val route: String) {
-    object Home : MainRoutes(route = "main_home")
-    object Cloud : MainRoutes(route = "main_cloud")
     object Backup : MainRoutes(route = "main_backup")
     object Restore : MainRoutes(route = "main_restore")
+    object Cloud : MainRoutes(route = "main_cloud")
+    object Settings : MainRoutes(route = "main_settings")
 }

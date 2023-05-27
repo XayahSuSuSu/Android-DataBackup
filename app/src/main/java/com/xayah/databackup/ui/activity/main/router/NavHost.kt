@@ -85,15 +85,15 @@ fun GuideNavHost(navController: NavHostController, viewModel: GuideViewModel) {
 fun MainNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = MainRoutes.Home.route,
+        startDestination = MainRoutes.Settings.route,
     ) {
-        composable(MainRoutes.Home.route) {
-        }
-        composable(MainRoutes.Cloud.route) {
-        }
         composable(MainRoutes.Backup.route) {
         }
         composable(MainRoutes.Restore.route) {
+        }
+        composable(MainRoutes.Cloud.route) {
+        }
+        composable(MainRoutes.Settings.route) {
         }
     }
 }

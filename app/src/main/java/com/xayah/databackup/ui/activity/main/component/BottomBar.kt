@@ -19,10 +19,10 @@ fun MainBottomBar() {
     var selectedItem by remember { mutableStateOf(0) }
     val items = stringArrayResource(id = R.array.bottom_bar_items)
     val icons = listOf(
-        ImageVector.vectorResource(R.drawable.ic_rounded_home),
-        ImageVector.vectorResource(R.drawable.ic_rounded_cloud_upload),
         ImageVector.vectorResource(R.drawable.ic_rounded_acute),
-        ImageVector.vectorResource(R.drawable.ic_rounded_history)
+        ImageVector.vectorResource(R.drawable.ic_rounded_history),
+        ImageVector.vectorResource(R.drawable.ic_rounded_cloud_upload),
+        ImageVector.vectorResource(R.drawable.ic_rounded_settings),
     )
     NavigationBar {
         items.forEachIndexed { index, item ->
