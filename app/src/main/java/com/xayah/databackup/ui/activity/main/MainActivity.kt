@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.xayah.databackup.ui.activity.main.router.ScaffoldNavHost
 import com.xayah.databackup.ui.activity.main.router.ScaffoldRoutes
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopBackStack
+import com.xayah.databackup.ui.component.rememberSlotScope
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 import com.xayah.databackup.util.readAppVersionName
@@ -26,16 +27,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DataBackupTheme {
-                val navController = rememberNavController()
+                val slotScope = rememberSlotScope()
+                val scaffoldNavController = rememberNavController()
                 LaunchedEffect(null) {
                     var route = ScaffoldRoutes.Main.route
                     if (getCurrentAppVersionName() > readAppVersionName()) {
                         // There is an update
                         route = ScaffoldRoutes.Guide.route
                     }
-                    navController.navigateAndPopBackStack(route)
+                    scaffoldNavController.navigateAndPopBackStack(route)
                 }
-                ScaffoldNavHost(scaffoldNavController = navController)
+                slotScope.ScaffoldNavHost(scaffoldNavController = scaffoldNavController)
             }
         }
     }

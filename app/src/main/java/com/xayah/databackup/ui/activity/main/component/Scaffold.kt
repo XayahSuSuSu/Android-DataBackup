@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.guide.GuideViewModel
 import com.xayah.databackup.ui.component.BottomSpacer
+import com.xayah.databackup.ui.component.SlotScope
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.CommonTokens
@@ -48,7 +49,7 @@ fun GuideScaffold(
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainScaffold(
+fun SlotScope.MainScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
     content: @Composable () -> Unit
 ) {

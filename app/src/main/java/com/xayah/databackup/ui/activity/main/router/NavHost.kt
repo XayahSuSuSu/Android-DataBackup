@@ -19,6 +19,12 @@ import com.xayah.databackup.ui.activity.main.page.guide.GuideViewModel
 import com.xayah.databackup.ui.activity.main.page.guide.PageEnv
 import com.xayah.databackup.ui.activity.main.page.guide.PageIntro
 import com.xayah.databackup.ui.activity.main.page.guide.PageUpdate
+import com.xayah.databackup.ui.activity.main.page.main.PageBackup
+import com.xayah.databackup.ui.activity.main.router.MainRoutes.Backup
+import com.xayah.databackup.ui.activity.main.router.MainRoutes.Cloud
+import com.xayah.databackup.ui.activity.main.router.MainRoutes.Restore
+import com.xayah.databackup.ui.activity.main.router.MainRoutes.Settings
+import com.xayah.databackup.ui.component.SlotScope
 
 fun NavHostController.navigateAndPopBackStack(route: String) {
     navigate(route) { popBackStack() }
@@ -27,13 +33,12 @@ fun NavHostController.navigateAndPopBackStack(route: String) {
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun ScaffoldNavHost(scaffoldNavController: NavHostController) {
+fun SlotScope.ScaffoldNavHost(scaffoldNavController: NavHostController) {
     NavHost(
         navController = scaffoldNavController,
         startDestination = ScaffoldRoutes.Main.route,
     ) {
         composable(ScaffoldRoutes.Guide.route) {
-            val navController = rememberNavController()
             val guideViewModel = hiltViewModel<GuideViewModel>()
             GuideScaffold(
                 scaffoldNavController = scaffoldNavController,
@@ -45,7 +50,6 @@ fun ScaffoldNavHost(scaffoldNavController: NavHostController) {
         }
 
         composable(ScaffoldRoutes.Main.route) {
-            val navController = rememberNavController()
             MainScaffold(scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()) {
                 MainNavHost(navController = navController)
             }
@@ -85,15 +89,15 @@ fun GuideNavHost(navController: NavHostController, viewModel: GuideViewModel) {
 fun MainNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = MainRoutes.Settings.route,
+        startDestination = Backup.route,
     ) {
-        composable(MainRoutes.Backup.route) {
+        composable(Backup.route) {
         }
-        composable(MainRoutes.Restore.route) {
+        composable(Restore.route) {
         }
-        composable(MainRoutes.Cloud.route) {
+        composable(Cloud.route) {
         }
-        composable(MainRoutes.Settings.route) {
+        composable(Settings.route) {
         }
     }
 }
