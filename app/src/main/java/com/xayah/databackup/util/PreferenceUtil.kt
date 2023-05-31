@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.content.Context
+import com.xayah.databackup.R
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 
 const val PreferenceName = "settings"
@@ -50,4 +51,12 @@ fun Context.saveAppVersionName() {
 
 fun Context.readAppVersionName(): String {
     return readPreferencesString("app_version_name") ?: ""
+}
+
+fun Context.saveLastBackupTime(time: String) {
+    savePreferences("last_backup_time", time)
+}
+
+fun Context.readLastBackupTime(): String {
+    return readPreferencesString("last_backup_time", getString(R.string.none)) ?: getString(R.string.none)
 }

@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,22 +18,31 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.BodyMediumBoldText
 import com.xayah.databackup.ui.component.BodySmallBoldText
+import com.xayah.databackup.ui.component.BodySmallText
 import com.xayah.databackup.ui.component.IconTextButton
+import com.xayah.databackup.ui.component.LabelLargeExtraBoldText
 import com.xayah.databackup.ui.component.Serial
+import com.xayah.databackup.ui.component.TitleLargeBoldText
 import com.xayah.databackup.ui.component.TitleLargeText
 import com.xayah.databackup.ui.component.paddingBottom
+import com.xayah.databackup.ui.component.paddingEnd
 import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.theme.ColorScheme
+import com.xayah.databackup.ui.token.ButtonTokens
+import com.xayah.databackup.ui.token.CardTokens
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.State
+import com.xayah.databackup.util.readLastBackupTime
 
 @Composable
 fun IntroCard(serial: Char, title: String, subtitle: String, content: String) {
@@ -126,6 +136,34 @@ fun EnvCard(content: String, state: State, onClick: () -> Unit) {
                     State.Failed -> ColorScheme.errorContainer()
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun OverLookCard() {
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        colors = CardDefaults.cardColors(containerColor = ColorScheme.primaryContainer())
+    ) {
+        Column(modifier = Modifier.padding(CardTokens.ContentPadding)) {
+            Row(
+                modifier = Modifier.paddingBottom(CardTokens.ContentPadding),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_rounded_token),
+                    contentDescription = null,
+                    modifier = Modifier.paddingEnd(ButtonTokens.IconTextButtonPadding),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                LabelLargeExtraBoldText(text = stringResource(R.string.overlook))
+            }
+            BodySmallText(text = stringResource(R.string.last_backup))
+            TitleLargeBoldText(text = context.readLastBackupTime())
         }
     }
 }

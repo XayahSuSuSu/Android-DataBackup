@@ -21,4 +21,15 @@
     <string name="release_prebuilt_binaries">Release prebuilt binaries</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="overlook">Overlook</string>
+    <string name="last_backup">Last backup</string>
+    <string name="none">None</string>
+    <string name="utilities">Utilities</string>
+    <string name="activities">Activities</string>
+    <string name="directory">Directory</string>
+    <string name="structure">Structure</string>
+    <string name="log">Log</string>
+    <string name="app_and_data">App and data</string>
+    <string name="media">Media</string>
+    <string name="telephony">Telephony</string>
 </resources>

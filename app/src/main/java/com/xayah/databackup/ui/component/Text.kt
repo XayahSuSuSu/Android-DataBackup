@@ -29,6 +29,31 @@ fun TitleLargeText(modifier: Modifier = Modifier, text: String) {
 }
 
 @Composable
+fun TitleLargeBoldText(modifier: Modifier = Modifier, text: String) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+    )
+}
+
+@Composable
+fun TitleMediumBoldText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = color,
+    )
+}
+
+@Composable
 fun TitleSmallBoldText(
     modifier: Modifier = Modifier,
     text: String,
@@ -40,6 +65,15 @@ fun TitleSmallBoldText(
         style = MaterialTheme.typography.titleSmall,
         fontWeight = FontWeight.Bold,
         color = color,
+    )
+}
+
+@Composable
+fun BodySmallText(modifier: Modifier = Modifier, text: String) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
     )
 }
 
@@ -61,5 +95,24 @@ fun BodyMediumBoldText(modifier: Modifier = Modifier, text: String, color: Color
         style = MaterialTheme.typography.bodyMedium,
         fontWeight = FontWeight.Bold,
         color = color
+    )
+}
+
+@Composable
+fun LabelLargeText(modifier: Modifier = Modifier, text: String) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+    )
+}
+
+@Composable
+fun LabelLargeExtraBoldText(modifier: Modifier = Modifier, text: String) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = FontWeight.ExtraBold,
     )
 }

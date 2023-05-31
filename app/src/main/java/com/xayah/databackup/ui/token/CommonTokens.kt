@@ -7,4 +7,5 @@ object CommonTokens {
     val IconMediumSize = 48.dp
     val PaddingSmall = 8.dp
     val PaddingMedium = 16.dp
+    val PaddingLarge = 24.dp
 }

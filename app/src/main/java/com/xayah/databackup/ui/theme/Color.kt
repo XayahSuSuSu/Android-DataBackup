@@ -36,5 +36,14 @@ class ColorScheme {
 
         @Composable
         fun greenContainer() = colorResource(id = R.color.greenContainer)
+
+        @Composable
+        fun onPrimary() = MaterialTheme.colorScheme.onPrimary
+
+        @Composable
+        fun primaryContainer() = MaterialTheme.colorScheme.primaryContainer
+
+        @Composable
+        fun tertiaryContainer() = MaterialTheme.colorScheme.tertiaryContainer
     }
 }

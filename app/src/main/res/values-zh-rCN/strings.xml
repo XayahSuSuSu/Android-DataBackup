@@ -18,4 +18,15 @@
     <string name="release_prebuilt_binaries">释放预编译二进制文件</string>
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
+    <string name="overlook">一览</string>
+    <string name="last_backup">上次备份</string>
+    <string name="none">无</string>
+    <string name="utilities">工具</string>
+    <string name="activities">活动</string>
+    <string name="directory">目录</string>
+    <string name="structure">结构</string>
+    <string name="log">日志</string>
+    <string name="app_and_data">应用和数据</string>
+    <string name="media">媒体</string>
+    <string name="telephony">通讯</string>
 </resources>

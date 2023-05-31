@@ -18,4 +18,15 @@
     <string name="release_prebuilt_binaries">釋放預編譯二進製文件</string>
     <string name="confirm">確定</string>
     <string name="cancel">取消</string>
+    <string name="overlook">一覽</string>
+    <string name="last_backup">上次備份</string>
+    <string name="none">無</string>
+    <string name="utilities">工具</string>
+    <string name="activities">活動</string>
+    <string name="directory">目錄</string>
+    <string name="structure">結構</string>
+    <string name="log">日誌</string>
+    <string name="app_and_data">應用和數據</string>
+    <string name="media">媒體</string>
+    <string name="telephony">通訊</string>
 </resources>
