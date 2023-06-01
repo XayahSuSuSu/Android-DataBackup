@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.main.component.EnvCard
+import com.xayah.databackup.ui.component.EnvCard
 import com.xayah.databackup.ui.activity.main.router.ScaffoldRoutes
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopBackStack
 import com.xayah.databackup.ui.component.paddingBottom

@@ -19,8 +19,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.main.component.Module
-import com.xayah.databackup.ui.activity.main.component.OverLookCard
+import com.xayah.databackup.ui.component.Module
+import com.xayah.databackup.ui.component.OverLookCard
 import com.xayah.databackup.ui.component.CardActionButton
 import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.token.CommonTokens

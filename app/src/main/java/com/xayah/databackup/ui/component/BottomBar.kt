@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.component
+package com.xayah.databackup.ui.component
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -14,7 +14,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopBackStack
-import com.xayah.databackup.ui.component.SlotScope
 
 @Composable
 fun SlotScope.MainBottomBar() {

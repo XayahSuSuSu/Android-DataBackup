@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.xayah.databackup.ui.activity.main.component.UpdateCard
+import com.xayah.databackup.ui.component.UpdateCard
 import com.xayah.databackup.ui.component.State
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingTop

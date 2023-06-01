@@ -11,10 +11,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.main.component.GuideScaffold
-import com.xayah.databackup.ui.activity.main.component.MainScaffold
+import com.xayah.databackup.ui.component.GuideScaffold
+import com.xayah.databackup.ui.component.MainScaffold
 import com.xayah.databackup.ui.activity.main.page.guide.GuideUiState
 import com.xayah.databackup.ui.activity.main.page.guide.GuideViewModel
 import com.xayah.databackup.ui.activity.main.page.guide.PageEnv

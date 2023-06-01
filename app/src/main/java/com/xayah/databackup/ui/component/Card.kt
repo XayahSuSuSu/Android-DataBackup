@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.component
+package com.xayah.databackup.ui.component
 
 import android.content.Intent
 import android.net.Uri

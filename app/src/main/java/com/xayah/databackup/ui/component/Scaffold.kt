@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.component
+package com.xayah.databackup.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,10 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.guide.GuideViewModel
-import com.xayah.databackup.ui.component.BottomSpacer
-import com.xayah.databackup.ui.component.SlotScope
-import com.xayah.databackup.ui.component.TopSpacer
-import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.CommonTokens
 
 @ExperimentalMaterial3Api
