@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "DataBackup"
 include(":app")
+include(":librootservice")
