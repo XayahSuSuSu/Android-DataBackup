@@ -11,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.GuideScaffold
 import com.xayah.databackup.ui.component.MainScaffold
@@ -40,6 +41,7 @@ fun SlotScope.ScaffoldNavHost(scaffoldNavController: NavHostController) {
         startDestination = ScaffoldRoutes.Main.route,
     ) {
         composable(ScaffoldRoutes.Guide.route) {
+            val navController = rememberNavController()
             val guideViewModel = hiltViewModel<GuideViewModel>()
             GuideScaffold(
                 scaffoldNavController = scaffoldNavController,
