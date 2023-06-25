@@ -26,7 +26,7 @@ zip4j = "2.11.5"
 kotlinx-coroutines-core-jvm = "1.6.4"
 
 # plugins
-androidGradlePlugin = "8.0.1"
+androidGradlePlugin = "8.0.2"
 kotlin = "1.8.10"
 hilt = "2.44"
 
