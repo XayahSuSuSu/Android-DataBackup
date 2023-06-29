@@ -12,19 +12,23 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class DataBackupApplication : Application() {
     companion object {
+        lateinit var application: Application
+
         class EnvInitializer : Shell.Initializer() {
+            companion object {
+                fun initShell(shell: Shell, context: Context) {
+                    shell.newJob()
+                        .add("nsenter -t 1 -m su") // Switch to global namespace
+                        .add("export PATH=${context.binPath()}:${SymbolUtil.USD}PATH")
+                        .add("export PATH=${context.extendPath()}:${SymbolUtil.USD}PATH")
+                        .add("export HOME=${context.filesPath()}")
+                        .exec()
+                }
+            }
+
             override fun onInit(context: Context, shell: Shell): Boolean {
                 initShell(shell, context)
                 return true
-            }
-
-            private fun initShell(shell: Shell, context: Context) {
-                shell.newJob()
-                    .add("nsenter -t 1 -m su") // Switch to global namespace
-                    .add("export PATH=${context.binPath()}:${SymbolUtil.USD}PATH")
-                    .add("export PATH=${context.extendPath()}:${SymbolUtil.USD}PATH")
-                    .add("export HOME=${context.filesPath()}")
-                    .exec()
             }
         }
     }
@@ -40,5 +44,10 @@ class DataBackupApplication : Application() {
                 .setContext(base)
                 .setTimeout(3)
         )
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        application = this
     }
 }

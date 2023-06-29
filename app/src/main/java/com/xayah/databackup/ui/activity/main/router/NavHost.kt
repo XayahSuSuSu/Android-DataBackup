@@ -13,8 +13,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.component.GuideScaffold
-import com.xayah.databackup.ui.component.MainScaffold
 import com.xayah.databackup.ui.activity.main.page.guide.GuideUiState
 import com.xayah.databackup.ui.activity.main.page.guide.GuideViewModel
 import com.xayah.databackup.ui.activity.main.page.guide.PageEnv
@@ -25,6 +23,8 @@ import com.xayah.databackup.ui.activity.main.router.MainRoutes.Backup
 import com.xayah.databackup.ui.activity.main.router.MainRoutes.Cloud
 import com.xayah.databackup.ui.activity.main.router.MainRoutes.Restore
 import com.xayah.databackup.ui.activity.main.router.MainRoutes.Settings
+import com.xayah.databackup.ui.component.GuideScaffold
+import com.xayah.databackup.ui.component.MainScaffold
 import com.xayah.databackup.ui.component.SlotScope
 
 fun NavHostController.navigateAndPopBackStack(route: String) {
@@ -91,7 +91,7 @@ fun GuideNavHost(navController: NavHostController, viewModel: GuideViewModel) {
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
-fun MainNavHost(navController: NavHostController) {
+fun SlotScope.MainNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = Backup.route,

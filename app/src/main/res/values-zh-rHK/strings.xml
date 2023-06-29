@@ -29,4 +29,9 @@
     <string name="app_and_data">應用和數據</string>
     <string name="media">媒體</string>
     <string name="telephony">通訊</string>
+    <string name="internal_storage">內部存儲</string>
+    <string name="fetch_failed">獲取失敗</string>
+    <string name="unsupported_format">不支持的格式</string>
+    <string name="backup_dir">備份目錄</string>
+    <string name="external_storage">外部存儲</string>
 </resources>

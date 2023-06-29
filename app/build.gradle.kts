@@ -133,6 +133,9 @@ dependencies {
 
     // zip4j
     implementation(libs.zip4j)
+
+    // RootService
+    implementation(project(":librootservice"))
 }
 
 kapt {

@@ -19,6 +19,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class RemoteRootService(private val context: Context) {
     private var mService: IRemoteRootService? = null
+    private var mConnection: ServiceConnection? = null
     private var isFirstConnection = true
 
     class RemoteRootService : RootService() {
@@ -29,7 +30,7 @@ class RemoteRootService(private val context: Context) {
 
     private suspend fun bindService(): IRemoteRootService = suspendCoroutine { continuation ->
         if (mService == null) {
-            val connection = object : ServiceConnection {
+            mConnection = object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName, service: IBinder) {
                     mService = IRemoteRootService.Stub.asInterface(service)
                     continuation.resume(mService!!)
@@ -37,6 +38,7 @@ class RemoteRootService(private val context: Context) {
 
                 override fun onServiceDisconnected(name: ComponentName) {
                     mService = null
+                    mConnection = null
                     val msg = "Service disconnected."
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     continuation.resumeWithException(RemoteException(msg))
@@ -44,6 +46,7 @@ class RemoteRootService(private val context: Context) {
 
                 override fun onBindingDied(name: ComponentName) {
                     mService = null
+                    mConnection = null
                     val msg = "Binding died."
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     continuation.resumeWithException(RemoteException(msg))
@@ -51,6 +54,7 @@ class RemoteRootService(private val context: Context) {
 
                 override fun onNullBinding(name: ComponentName) {
                     mService = null
+                    mConnection = null
                     val msg = "Null binding."
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     continuation.resumeWithException(RemoteException(msg))
@@ -58,11 +62,23 @@ class RemoteRootService(private val context: Context) {
             }
             val intent = Intent().apply {
                 component = ComponentName(context.packageName, RemoteRootService::class.java.name)
+                addCategory(RootService.CATEGORY_DAEMON_MODE)
             }
-            RootService.bind(intent, connection)
+            RootService.bind(intent, mConnection!!)
         } else {
             mService
         }
+    }
+
+    /**
+     * Destroy the service.
+     */
+    fun destroyService(killDaemon: Boolean = false) {
+        if (killDaemon)
+            if (mConnection != null)
+                RootService.unbind(mConnection!!)
+        mConnection = null
+        mService = null
     }
 
     private suspend fun getService(): IRemoteRootService {

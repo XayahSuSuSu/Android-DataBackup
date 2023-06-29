@@ -1,17 +1,25 @@
 package com.xayah.databackup.ui.component
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.token.DialogTokens
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -35,14 +43,21 @@ class DialogState {
         content = null
     }
 
+    /**
+     * Return **Pair<Boolean, T>**.
+     *
+     * If user clicks **confirmButton**, then return **Pair(true, T)**,
+     * otherwise return **Pair(false, T)**.
+     */
     suspend fun <T> open(
         initialState: T,
         title: String,
         icon: ImageVector? = null,
         confirmText: String? = null,
         dismissText: String? = null,
+        onLoading: suspend () -> Unit = {},
         block: @Composable (MutableState<T>) -> Unit
-    ): T {
+    ): Pair<Boolean, T> {
         return suspendCancellableCoroutine { continuation ->
             continuation.invokeOnCancellation { dismiss() }
             content = {
@@ -50,23 +65,44 @@ class DialogState {
                 AlertDialog(
                     onDismissRequest = {
                         dismiss()
-                        continuation.resume(uiState.value)
+                        continuation.resume(Pair(false, uiState.value))
                     },
                     confirmButton = {
                         TextButton(text = confirmText ?: stringResource(id = R.string.confirm), onClick = {
                             dismiss()
-                            continuation.resume(uiState.value)
+                            continuation.resume(Pair(true, uiState.value))
                         })
                     },
                     dismissButton = {
                         TextButton(text = dismissText ?: stringResource(id = R.string.cancel), onClick = {
                             dismiss()
-                            continuation.resume(uiState.value)
+                            continuation.resume(Pair(false, uiState.value))
                         })
                     },
                     title = { Text(text = title) },
                     icon = icon?.let { { Icon(imageVector = icon, contentDescription = null) } },
-                    text = { block(uiState) },
+                    text = {
+                        var isLoading by remember { mutableStateOf(true) }
+                        LaunchedEffect(null) {
+                            onLoading()
+                            isLoading = false
+                        }
+                        Crossfade(
+                            targetState = isLoading,
+                            label = DialogTokens.CrossFadeLabel
+                        ) { state ->
+                            when (state) {
+                                true -> Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+
+                                false -> block(uiState)
+                            }
+                        }
+                    },
                 )
             }
         }

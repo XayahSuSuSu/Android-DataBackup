@@ -32,4 +32,9 @@
     <string name="app_and_data">App and data</string>
     <string name="media">Media</string>
     <string name="telephony">Telephony</string>
+    <string name="internal_storage">Internal storage</string>
+    <string name="fetch_failed">Fetch failed</string>
+    <string name="unsupported_format">Unsupported format</string>
+    <string name="backup_dir">Backup directory</string>
+    <string name="external_storage">External storage</string>
 </resources>
