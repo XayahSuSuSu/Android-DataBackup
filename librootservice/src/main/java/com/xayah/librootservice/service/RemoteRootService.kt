@@ -13,6 +13,7 @@ import com.xayah.librootservice.impl.RemoteRootServiceImpl
 import com.xayah.librootservice.parcelables.StatFsParcelable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -105,5 +106,16 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun readStatFs(path: String): StatFsParcelable {
         return getService().readStatFs(path)
+    }
+
+    suspend fun writeText(text: String, path: String, context: Context): Boolean {
+        var state = true
+        val tmpFilePath = "${context.cacheDir.path}/tmp"
+        val tmpFile = File(tmpFilePath)
+        tmpFile.writeText(text)
+        if (getService().mkdirs(path).not()) state = false
+        if (getService().copyTo(tmpFilePath, path, true).not()) state = false
+        tmpFile.deleteRecursively()
+        return state
     }
 }

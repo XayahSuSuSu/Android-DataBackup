@@ -65,7 +65,6 @@ data class StorageItem(
 
 @ExperimentalMaterial3Api
 private suspend fun DialogState.openDirectoryDialog(context: Context) {
-    val remoteRootService = RemoteRootService(context)
     val items = mutableListOf<StorageItem>()
 
     val (state, item) = open(
@@ -81,6 +80,8 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
         title = context.getString(R.string.backup_dir),
         icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
         onLoading = {
+            val remoteRootService = RemoteRootService(context)
+
             // Internal storage
             val internalParent = ConstantUtil.DefaultBackupParent
             val internalChild = context.readInternalBackupSaveChild()
@@ -135,6 +136,7 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
                 } catch (_: Exception) {
                 }
             }
+            remoteRootService.destroyService()
         },
         block = { uiState ->
             var defIndex = items.indexOfFirst { it.display == context.readBackupSavePath() }
