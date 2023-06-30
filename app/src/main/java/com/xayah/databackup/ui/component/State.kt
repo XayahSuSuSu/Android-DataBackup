@@ -14,13 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.theme.ColorScheme
+import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.State
 import com.xayah.databackup.ui.token.StateTokens
 
 @Composable
 fun State(modifier: Modifier = Modifier, state: State = State.Loading, content: @Composable () -> Unit) {
     val colorError = ColorScheme.error()
-    Crossfade(targetState = state, label = StateTokens.CrossFadeLabel) {
+    Crossfade(targetState = state, label = AnimationTokens.CrossFadeLabel) {
         Column(
             modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally

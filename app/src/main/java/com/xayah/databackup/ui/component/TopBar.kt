@@ -16,8 +16,8 @@ import androidx.compose.ui.platform.LocalContext
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.main.router.currentRoute
 import com.xayah.databackup.ui.theme.ColorScheme
+import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
-import com.xayah.databackup.ui.token.StateTokens
 import com.xayah.databackup.util.ConstantUtil
 
 @Composable
@@ -46,7 +46,7 @@ fun SlotScope.MainTopBar(scrollBehavior: TopAppBarScrollBehavior) {
         title = { TopBarTitle(text = MainRoutes.ofTitle(context, currentRoute)) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            Crossfade(targetState = currentRoute, label = StateTokens.CrossFadeLabel) { route ->
+            Crossfade(targetState = currentRoute, label = AnimationTokens.CrossFadeLabel) { route ->
                 if ((route in routes).not())
                     ArrowBackButton {
                         navController.popBackStack()

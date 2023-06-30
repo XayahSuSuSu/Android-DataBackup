@@ -11,5 +11,4 @@ sealed class State {
 object StateTokens {
     val IconSize = 48.dp
     val IndicatorPadding = 8.dp
-    const val CrossFadeLabel = "StateCrossFade"
 }
