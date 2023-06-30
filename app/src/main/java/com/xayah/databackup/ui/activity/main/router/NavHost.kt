@@ -6,11 +6,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.guide.GuideUiState
@@ -29,6 +31,12 @@ import com.xayah.databackup.ui.component.SlotScope
 
 fun NavHostController.navigateAndPopBackStack(route: String) {
     navigate(route) { popBackStack() }
+}
+
+@Composable
+fun NavHostController.currentRoute(): String? {
+    val navBackStackEntry by currentBackStackEntryAsState()
+    return navBackStackEntry?.destination?.route
 }
 
 @ExperimentalLayoutApi

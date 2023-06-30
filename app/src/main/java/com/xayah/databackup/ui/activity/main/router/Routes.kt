@@ -1,5 +1,8 @@
 package com.xayah.databackup.ui.activity.main.router
 
+import android.content.Context
+import com.xayah.databackup.R
+
 sealed class ScaffoldRoutes(val route: String) {
     object Guide : ScaffoldRoutes(route = "scaffold_guide")
     object Main : ScaffoldRoutes(route = "scaffold_main")
@@ -16,4 +19,12 @@ sealed class MainRoutes(val route: String) {
     object Restore : MainRoutes(route = "main_restore")
     object Cloud : MainRoutes(route = "main_cloud")
     object Settings : MainRoutes(route = "main_settings")
+
+    companion object {
+        fun ofTitle(context: Context, route: String?): String {
+            return when (route) {
+                else -> context.getString(R.string.app_name)
+            }
+        }
+    }
 }
