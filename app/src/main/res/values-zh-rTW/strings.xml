@@ -34,4 +34,10 @@
     <string name="unsupported_format">不支援的格式</string>
     <string name="backup_dir">備份目錄</string>
     <string name="external_storage">外部儲存空間</string>
+    <string name="directory_structure">目錄結構</string>
+    <string name="copy">複製</string>
+    <string name="save">保存</string>
+    <string name="succeed">成功</string>
+    <string name="failed">失敗</string>
+    <string name="save_directory_structure">保存目錄結構</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,10 +38,19 @@ fun IconTextButton(icon: ImageVector, text: String, onClick: () -> Unit) {
 }
 
 @Composable
+fun CommonButton(text: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        content = { TitleSmallBoldText(text = text) }
+    )
+}
+
+@Composable
 fun TextButton(text: String, onClick: () -> Unit) {
     TextButton(
         onClick = onClick,
-        content = { TitleSmallBoldText(text = text) }
+        content = { TitleSmallBoldText(text = text) },
+        contentPadding = ButtonDefaults.ContentPadding
     )
 }
 

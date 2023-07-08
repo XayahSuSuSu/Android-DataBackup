@@ -20,4 +20,5 @@ object ConstantUtil {
         MainRoutes.Cloud.route,
         MainRoutes.Settings.route,
     )
+    const val ClipDataLabel = "DataBackupClipData"
 }

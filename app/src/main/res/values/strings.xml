@@ -37,4 +37,10 @@
     <string name="unsupported_format">Unsupported format</string>
     <string name="backup_dir">Backup directory</string>
     <string name="external_storage">External storage</string>
+    <string name="directory_structure">Directory structure</string>
+    <string name="copy">Copy</string>
+    <string name="save">Save</string>
+    <string name="succeed">Succeed</string>
+    <string name="failed">Failed</string>
+    <string name="save_directory_structure">Save directory structure</string>
 </resources>

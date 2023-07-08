@@ -21,10 +21,12 @@ import com.xayah.databackup.ui.activity.main.page.guide.PageEnv
 import com.xayah.databackup.ui.activity.main.page.guide.PageIntro
 import com.xayah.databackup.ui.activity.main.page.guide.PageUpdate
 import com.xayah.databackup.ui.activity.main.page.main.PageBackup
+import com.xayah.databackup.ui.activity.main.page.main.PageTree
 import com.xayah.databackup.ui.activity.main.router.MainRoutes.Backup
 import com.xayah.databackup.ui.activity.main.router.MainRoutes.Cloud
 import com.xayah.databackup.ui.activity.main.router.MainRoutes.Restore
 import com.xayah.databackup.ui.activity.main.router.MainRoutes.Settings
+import com.xayah.databackup.ui.activity.main.router.MainRoutes.Tree
 import com.xayah.databackup.ui.component.GuideScaffold
 import com.xayah.databackup.ui.component.MainScaffold
 import com.xayah.databackup.ui.component.SlotScope
@@ -106,6 +108,9 @@ fun SlotScope.MainNavHost(navController: NavHostController) {
     ) {
         composable(Backup.route) {
             PageBackup()
+        }
+        composable(Tree.route) {
+            PageTree()
         }
         composable(Restore.route) {
         }

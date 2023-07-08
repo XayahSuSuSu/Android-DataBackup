@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.content.Context
+import com.xayah.databackup.DataBackupApplication
 
 fun Context.filesPath(): String {
     return filesDir.path
@@ -18,4 +19,12 @@ fun Context.extendPath(): String {
     return "${filesPath()}/extend"
 }
 
-object PathUtil
+object PathUtil {
+    private fun getBackupSavePath(): String {
+        return DataBackupApplication.application.readBackupSavePath()
+    }
+
+    fun getTreePath(): String {
+        return "${getBackupSavePath()}/tree"
+    }
+}

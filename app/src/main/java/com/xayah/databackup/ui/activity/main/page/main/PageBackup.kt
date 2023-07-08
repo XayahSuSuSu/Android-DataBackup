@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.component.CardActionButton
 import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.Module
@@ -37,6 +38,7 @@ import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.ConstantUtil
+import com.xayah.databackup.util.command.CommonUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.databackup.util.readExternalBackupSaveChild
@@ -218,7 +220,7 @@ fun SlotScope.PageBackup() {
                         dialogSlot.openDirectoryDialog(context)
                     },
                     {
-
+                        navController.navigate(MainRoutes.Tree.route)
                     },
                     {
 

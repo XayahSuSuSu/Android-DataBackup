@@ -1,8 +1,12 @@
 package com.xayah.databackup.util.command
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.util.Log
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.DataBackupApplication
+import com.xayah.databackup.util.ConstantUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -12,6 +16,11 @@ object CommonUtil {
      */
     private suspend fun <T> runOnIO(block: suspend () -> T): T {
         return withContext(Dispatchers.IO) { block() }
+    }
+
+    fun Context.copyToClipboard(content: String) {
+        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(ConstantUtil.ClipDataLabel, content))
     }
 
     /**
@@ -40,4 +49,7 @@ object CommonUtil {
         return result
     }
 
+    fun Shell.Result.outString(): String {
+        return out.joinToString(separator = "\n")
+    }
 }
