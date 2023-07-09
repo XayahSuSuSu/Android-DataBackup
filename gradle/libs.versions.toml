@@ -26,6 +26,7 @@ libsu = "5.0.5"
 zip4j = "2.11.5"
 kotlinx-coroutines-core-jvm = "1.6.4"
 room = "2.5.2"
+coil-compose = "2.4.0"
 
 # plugins
 android-gradle-plugin = "8.0.2"
@@ -49,6 +50,7 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-android-compiler" }
