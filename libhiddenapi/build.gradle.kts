@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.xayah.librootservice"
+    namespace = "com.xayah.libhiddenapi"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -23,13 +23,8 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildFeatures {
-        aidl = true
-    }
 }
 
 dependencies {
-    implementation(libs.kotlinx.coroutines.core.jvm)
-    implementation(libs.libsu.service)
-    implementation(project(":libhiddenapi"))
+    implementation(libs.hiddenapibypass)
 }

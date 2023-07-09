@@ -27,6 +27,7 @@ zip4j = "2.11.5"
 kotlinx-coroutines-core-jvm = "1.6.4"
 room = "2.5.2"
 coil-compose = "2.4.0"
+hiddenapibypass = "4.3"
 
 # plugins
 android-gradle-plugin = "8.0.2"
@@ -52,6 +53,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-android-compiler" }
 kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core-jvm" }
