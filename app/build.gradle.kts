@@ -112,8 +112,9 @@ dependencies {
     // RootService
     implementation(project(":librootservice"))
 
-    // System UI Controller
+    // Accompanist
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.drawablepainter)
 
     // Hilt
     implementation(libs.hilt.android)

@@ -8,7 +8,7 @@ versionName = "1.0.1-alpha02"
 compose-compiler = "1.4.3"
 
 # libraries
-accompanist-systemuicontroller = "0.30.1"
+accompanist = "0.30.1"
 activity-compose = "1.7.1"
 appcompat = "1.6.1"
 compose-bom = "2023.05.01"
@@ -36,7 +36,8 @@ hilt = "2.44"
 ksp-kotlin = "1.8.10-1.0.9"
 
 [libraries]
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist-systemuicontroller" }
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
