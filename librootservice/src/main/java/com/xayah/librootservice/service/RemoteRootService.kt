@@ -4,7 +4,10 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageInfo
 import android.os.IBinder
+import android.os.Parcel
+import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.widget.Toast
 import com.topjohnwu.superuser.ipc.RootService
@@ -117,5 +120,20 @@ class RemoteRootService(private val context: Context) {
         if (getService().copyTo(tmpFilePath, path, true).not()) state = false
         tmpFile.deleteRecursively()
         return state
+    }
+
+    suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
+        val pfd = getService().getInstalledPackagesAsUser(flags, userId)
+        val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
+        val bytes = stream.readBytes()
+        val parcel = Parcel.obtain()
+
+        parcel.unmarshall(bytes, 0, bytes.size)
+        parcel.setDataPosition(0)
+
+        val packages = mutableListOf<PackageInfo>()
+        parcel.readTypedList(packages, PackageInfo.CREATOR)
+        parcel.recycle()
+        return packages
     }
 }
