@@ -14,8 +14,7 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-class ColorScheme {
-    companion object {
+object ColorScheme {
         @Composable
         fun surface() = MaterialTheme.colorScheme.surface
 
@@ -44,6 +43,11 @@ class ColorScheme {
         fun primaryContainer() = MaterialTheme.colorScheme.primaryContainer
 
         @Composable
+        fun onTertiary() = MaterialTheme.colorScheme.onTertiary
+
+        @Composable
         fun tertiaryContainer() = MaterialTheme.colorScheme.tertiaryContainer
-    }
+
+        @Composable
+        fun inverseOnSurface() = MaterialTheme.colorScheme.inverseOnSurface
 }

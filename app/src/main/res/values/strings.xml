@@ -43,4 +43,8 @@
     <string name="succeed">Succeed</string>
     <string name="failed">Failed</string>
     <string name="save_directory_structure">Save directory structure</string>
+    <string name="backup_list">Backup list</string>
+    <string name="search_bar_hint">Search for name or package…</string>
+    <string name="apk">APK</string>
+    <string name="data">Data</string>
 </resources>

@@ -16,6 +16,7 @@ sealed class GuideRoutes(val route: String) {
 
 sealed class MainRoutes(val route: String) {
     object Backup : MainRoutes(route = "main_backup")
+    object BackupList : MainRoutes(route = "main_backup_list")
     object Tree : MainRoutes(route = "main_tree")
     object Restore : MainRoutes(route = "main_restore")
     object Cloud : MainRoutes(route = "main_cloud")
@@ -25,6 +26,7 @@ sealed class MainRoutes(val route: String) {
         fun ofTitle(context: Context, route: String?): String {
             return when (route) {
                 Tree.route -> context.getString(R.string.directory_structure)
+                BackupList.route -> context.getString(R.string.backup_list)
                 else -> context.getString(R.string.app_name)
             }
         }

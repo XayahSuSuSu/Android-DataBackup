@@ -4,14 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build
+import androidx.core.graphics.drawable.toBitmap
 import com.xayah.databackup.util.ExceptionUtil.tryOn
 import com.xayah.databackup.util.binArchivePath
 import com.xayah.databackup.util.binPath
 import com.xayah.databackup.util.filesPath
+import com.xayah.databackup.util.iconPath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
@@ -89,6 +94,31 @@ object EnvUtil {
             binArchive.deleteRecursively()
 
             return@withContext true
+        }
+    }
+
+    suspend fun saveIcon(context: Context, packageName: String, appIcon: Drawable) {
+        withContext(Dispatchers.IO) {
+            tryOn {
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+                val byteArray = byteArrayOutputStream.toByteArray()
+                byteArrayOutputStream.flush()
+                byteArrayOutputStream.close()
+                File("${context.iconPath()}/$packageName.png").writeBytes(byteArray)
+            }
+        }
+    }
+
+    /**
+     * Create internal icon directory for caching.
+     */
+    suspend fun createIconDirectory(context: Context) {
+        withContext(Dispatchers.IO) {
+            tryOn {
+                val icon = File(context.iconPath())
+                if (icon.exists().not()) icon.mkdirs()
+            }
         }
     }
 }

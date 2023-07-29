@@ -21,12 +21,8 @@ import com.xayah.databackup.ui.activity.main.page.guide.PageEnv
 import com.xayah.databackup.ui.activity.main.page.guide.PageIntro
 import com.xayah.databackup.ui.activity.main.page.guide.PageUpdate
 import com.xayah.databackup.ui.activity.main.page.main.PageBackup
+import com.xayah.databackup.ui.activity.main.page.main.PageBackupList
 import com.xayah.databackup.ui.activity.main.page.main.PageTree
-import com.xayah.databackup.ui.activity.main.router.MainRoutes.Backup
-import com.xayah.databackup.ui.activity.main.router.MainRoutes.Cloud
-import com.xayah.databackup.ui.activity.main.router.MainRoutes.Restore
-import com.xayah.databackup.ui.activity.main.router.MainRoutes.Settings
-import com.xayah.databackup.ui.activity.main.router.MainRoutes.Tree
 import com.xayah.databackup.ui.component.GuideScaffold
 import com.xayah.databackup.ui.component.MainScaffold
 import com.xayah.databackup.ui.component.SlotScope
@@ -104,19 +100,22 @@ fun GuideNavHost(navController: NavHostController, viewModel: GuideViewModel) {
 fun SlotScope.MainNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Backup.route,
+        startDestination = MainRoutes.Backup.route,
     ) {
-        composable(Backup.route) {
+        composable(MainRoutes.Backup.route) {
             PageBackup()
         }
-        composable(Tree.route) {
+        composable(MainRoutes.BackupList.route) {
+            PageBackupList()
+        }
+        composable(MainRoutes.Tree.route) {
             PageTree()
         }
-        composable(Restore.route) {
+        composable(MainRoutes.Restore.route) {
         }
-        composable(Cloud.route) {
+        composable(MainRoutes.Cloud.route) {
         }
-        composable(Settings.route) {
+        composable(MainRoutes.Settings.route) {
         }
     }
 }

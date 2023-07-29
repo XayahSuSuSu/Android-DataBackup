@@ -40,4 +40,8 @@
     <string name="succeed">成功</string>
     <string name="failed">失敗</string>
     <string name="save_directory_structure">保存目錄結構</string>
+    <string name="backup_list">備份列表</string>
+    <string name="search_bar_hint">搜索應用程式名稱或包名…</string>
+    <string name="apk">安裝包</string>
+    <string name="data">數據</string>
 </resources>

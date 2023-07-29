@@ -38,7 +38,6 @@ import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.ConstantUtil
-import com.xayah.databackup.util.command.CommonUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.databackup.util.readExternalBackupSaveChild
@@ -256,7 +255,12 @@ fun SlotScope.PageBackup() {
                     ImageVector.vectorResource(R.drawable.ic_rounded_image),
                     ImageVector.vectorResource(R.drawable.ic_rounded_call),
                 )
-                val onClicks = listOf({}, {}, {})
+                val onClicks = listOf(
+                    {
+                        navController.navigate(MainRoutes.BackupList.route)
+                    },
+                    {},
+                    {})
                 VerticalGrid(
                     columns = 2,
                     count = items.size,

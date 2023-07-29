@@ -116,3 +116,12 @@ fun LabelLargeExtraBoldText(modifier: Modifier = Modifier, text: String) {
         fontWeight = FontWeight.ExtraBold,
     )
 }
+
+@Composable
+fun LabelSmallText(modifier: Modifier = Modifier, text: String) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+    )
+}

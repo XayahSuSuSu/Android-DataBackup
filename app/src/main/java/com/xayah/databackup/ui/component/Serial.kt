@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
@@ -24,6 +25,26 @@ fun Serial(modifier: Modifier = Modifier, serial: Char) {
         ) {
             TitleSmallBoldText(
                 text = serial.toString(),
+                color = ColorScheme.surface()
+            )
+        }
+    }
+}
+
+@Composable
+fun Serial(modifier: Modifier = Modifier, serial: String) {
+    Surface(
+        shape = CircleShape,
+        modifier = modifier.height(SerialTokens.CircleSize),
+        color = ColorScheme.onSurfaceVariant()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            TitleSmallBoldText(
+                modifier = Modifier.paddingHorizontal(SerialTokens.PaddingHorizontal),
+                text = serial,
                 color = ColorScheme.surface()
             )
         }

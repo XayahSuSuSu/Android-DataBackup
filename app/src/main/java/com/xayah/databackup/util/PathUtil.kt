@@ -19,6 +19,10 @@ fun Context.extendPath(): String {
     return "${filesPath()}/extend"
 }
 
+fun Context.iconPath(): String {
+    return "${filesPath()}/icon"
+}
+
 object PathUtil {
     private fun getBackupSavePath(): String {
         return DataBackupApplication.application.readBackupSavePath()

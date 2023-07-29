@@ -3,6 +3,7 @@ package com.xayah.databackup.ui.token
 import androidx.compose.ui.unit.dp
 
 object CommonTokens {
+    val None = 0.dp
     val IconSmallSize = 36.dp
     val IconMediumSize = 48.dp
     val PaddingTiny = 4.dp
