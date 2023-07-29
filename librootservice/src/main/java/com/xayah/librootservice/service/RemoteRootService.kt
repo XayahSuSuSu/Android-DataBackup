@@ -86,24 +86,22 @@ class RemoteRootService(private val context: Context) {
     }
 
     private suspend fun getService(): IRemoteRootService {
-        return if (mService == null) {
-            val msg = "Service is null."
-            if (isFirstConnection)
-                isFirstConnection = false
-            else
-                withContext(Dispatchers.Main) {
+        return withContext(Dispatchers.Main) {
+            if (mService == null) {
+                val msg = "Service is null."
+                if (isFirstConnection)
+                    isFirstConnection = false
+                else
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                }
-            bindService()
-        } else if (mService!!.asBinder().isBinderAlive.not()) {
-            mService = null
-            val msg = "Service is dead."
-            withContext(Dispatchers.Main) {
+                bindService()
+            } else if (mService!!.asBinder().isBinderAlive.not()) {
+                mService = null
+                val msg = "Service is dead."
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                bindService()
+            } else {
+                mService!!
             }
-            bindService()
-        } else {
-            mService!!
         }
     }
 
