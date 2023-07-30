@@ -21,6 +21,9 @@ interface PackageBackupDao {
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1")
     fun queryActivePackages(): Flow<List<PackageBackupEntire>>
 
+    @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1")
+    fun countActivePackages(): Int
+
     @Query("UPDATE PackageBackupEntire SET active = :active")
     suspend fun updateActive(active: Boolean)
 }

@@ -39,7 +39,7 @@ import coil.request.ImageRequest
 import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.PackageBackupEntire
-import com.xayah.databackup.ui.activity.main.page.main.MainBackupListViewModel
+import com.xayah.databackup.ui.activity.operation.page.packageBackup.PackageBackupListViewModel
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.ListItemTokens
 import com.xayah.databackup.util.ExceptionUtil
@@ -55,7 +55,7 @@ fun ListItemPackage(
     chipGroup: @Composable RowScope.() -> Unit,
 ) {
     val context = LocalContext.current
-    val viewModel = hiltViewModel<MainBackupListViewModel>()
+    val viewModel = hiltViewModel<PackageBackupListViewModel>()
     val scope = rememberCoroutineScope()
     val icon = remember { mutableStateOf<Any>(0) }
     LaunchedEffect(null) {

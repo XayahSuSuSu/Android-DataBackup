@@ -21,7 +21,6 @@ import com.xayah.databackup.ui.activity.main.page.guide.PageEnv
 import com.xayah.databackup.ui.activity.main.page.guide.PageIntro
 import com.xayah.databackup.ui.activity.main.page.guide.PageUpdate
 import com.xayah.databackup.ui.activity.main.page.main.PageBackup
-import com.xayah.databackup.ui.activity.main.page.main.PageBackupList
 import com.xayah.databackup.ui.activity.main.page.main.PageTree
 import com.xayah.databackup.ui.component.GuideScaffold
 import com.xayah.databackup.ui.component.MainScaffold
@@ -104,9 +103,6 @@ fun SlotScope.MainNavHost(navController: NavHostController) {
     ) {
         composable(MainRoutes.Backup.route) {
             PageBackup()
-        }
-        composable(MainRoutes.BackupList.route) {
-            PageBackupList()
         }
         composable(MainRoutes.Tree.route) {
             PageTree()

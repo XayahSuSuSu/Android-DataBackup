@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.main.page.main
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
+import com.xayah.databackup.ui.activity.operation.OperationActivity
 import com.xayah.databackup.ui.component.CardActionButton
 import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.Module
@@ -261,7 +263,7 @@ fun SlotScope.PageBackup() {
                 )
                 val onClicks = listOf(
                     {
-                        navController.navigate(MainRoutes.BackupList.route)
+                        context.startActivity(Intent(context, OperationActivity::class.java))
                     },
                     {},
                     {})

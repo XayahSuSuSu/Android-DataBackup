@@ -55,3 +55,15 @@ fun SlotScope.MainTopBar(scrollBehavior: TopAppBarScrollBehavior) {
         },
     )
 }
+
+@ExperimentalMaterial3Api
+@Composable
+fun ListTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, onBack: () -> Unit) {
+    CenterAlignedTopAppBar(
+        title = { TopBarTitle(text = title) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            ArrowBackButton(onClick = onBack)
+        },
+    )
+}
