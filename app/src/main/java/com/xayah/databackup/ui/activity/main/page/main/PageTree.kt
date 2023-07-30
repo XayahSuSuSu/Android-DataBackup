@@ -40,6 +40,7 @@ import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.theme.JetbrainsMonoFamily
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DateUtil
+import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.CommonUtil.copyToClipboard
 import com.xayah.databackup.util.command.PreparationUtil
@@ -50,22 +51,22 @@ import kotlinx.coroutines.launch
 private suspend fun DialogState.openSaveDialog(context: Context, text: String) {
     val remoteRootService = RemoteRootService(context)
     val filePath = "${PathUtil.getTreePath()}/tree_${DateUtil.getTimestamp()}"
-    var state = false
+    var msg: String? = null
 
     open(
         initialState = false,
         title = context.getString(R.string.save_directory_structure),
         icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_account_tree),
         onLoading = {
-            state = remoteRootService.writeText(text, filePath, context)
+            ExceptionUtil.tryService(onFailed = { msg = it }) {
+                remoteRootService.writeText(text, filePath, context)
+            }
             remoteRootService.destroyService()
         },
         block = { _ ->
             Text(
-                text = if (state)
-                    "${context.getString(R.string.succeed)}: $filePath"
-                else
-                    context.getString(R.string.failed)
+                text = if (msg == null) "${context.getString(R.string.succeed)}: $filePath"
+                else "${context.getString(R.string.failed)}: $msg\n${context.getString(R.string.remote_service_err_reboot)}"
             )
         }
     )

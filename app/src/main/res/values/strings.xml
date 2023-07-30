@@ -47,4 +47,5 @@
     <string name="search_bar_hint">Search for name or package…</string>
     <string name="apk">APK</string>
     <string name="data">Data</string>
+    <string name="remote_service_err_reboot">Please try restarting the device</string>
 </resources>

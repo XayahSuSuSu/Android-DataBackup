@@ -10,4 +10,15 @@ object ExceptionUtil {
         } catch (_: Exception) {
         }
     }
+
+    /**
+     * Run remote service and catch all exception.
+     */
+    suspend fun tryService(onFailed: (msg: String?) -> Unit = {}, block: suspend () -> Unit) {
+        return try {
+            block()
+        } catch (e: Exception) {
+            onFailed(e.message)
+        }
+    }
 }

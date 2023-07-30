@@ -44,4 +44,5 @@
     <string name="search_bar_hint">搜索應用程式名稱或包名…</string>
     <string name="apk">安裝包</string>
     <string name="data">數據</string>
+    <string name="remote_service_err_reboot">請嘗試重啟設備</string>
 </resources>

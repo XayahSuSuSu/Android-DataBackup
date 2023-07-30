@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.activity.main.page.main
 
+import android.content.pm.PackageInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -19,6 +20,7 @@ import com.xayah.databackup.ui.component.SearchBar
 import com.xayah.databackup.ui.component.Serial
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.CommonTokens
+import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.command.EnvUtil
 import com.xayah.librootservice.service.RemoteRootService
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +40,10 @@ fun PageBackupList() {
 
             // Inactivate all packages and activate installed only.
             viewModel.inactivatePackages()
-            val installedPackages = remoteRootService.getInstalledPackagesAsUser(0, 0)
+            var installedPackages = listOf<PackageInfo>()
+            ExceptionUtil.tryService {
+                installedPackages = remoteRootService.getInstalledPackagesAsUser(0, 0)
+            }
             val activePackages = mutableListOf<PackageBackupActivate>()
             installedPackages.forEach { packageInfo ->
                 activePackages.add(PackageBackupActivate(packageName = packageInfo.packageName, active = true))

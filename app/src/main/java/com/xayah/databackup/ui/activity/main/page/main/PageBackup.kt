@@ -38,6 +38,7 @@ import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.ConstantUtil
+import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.databackup.util.readExternalBackupSaveChild
@@ -96,11 +97,13 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
                 display = internalPath,
                 enabled = true
             )
-            try {
+
+            ExceptionUtil.tryService(onFailed = { msg ->
+                internalItem.display =
+                    "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_reboot)}"
+            }) {
                 val internalStatFs = remoteRootService.readStatFs(internalParent)
                 internalItem.progress = internalStatFs.availableBytes.toFloat() / internalStatFs.totalBytes
-            } catch (_: Exception) {
-                internalItem.display = context.getString(R.string.fetch_failed)
             }
             items.add(internalItem)
 
@@ -121,11 +124,12 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
                         display = externalPath,
                         enabled = true
                     )
-                    try {
+                    ExceptionUtil.tryService(onFailed = { msg ->
+                        item.display =
+                            "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_reboot)}"
+                    }) {
                         val externalPathStatFs = remoteRootService.readStatFs(parent)
                         item.progress = externalPathStatFs.availableBytes.toFloat() / externalPathStatFs.totalBytes
-                    } catch (_: Exception) {
-                        item.display = context.getString(R.string.fetch_failed)
                     }
                     // Check the format
                     val supported = type.lowercase() in ConstantUtil.SupportedExternalStorageFormat
