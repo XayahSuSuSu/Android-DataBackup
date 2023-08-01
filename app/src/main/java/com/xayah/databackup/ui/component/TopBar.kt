@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.component
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,12 +59,16 @@ fun SlotScope.MainTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun ListTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, onBack: () -> Unit) {
+fun ListTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String) {
+    val context = LocalContext.current
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title) },
+
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            ArrowBackButton(onClick = onBack)
+            ArrowBackButton(onClick = {
+                (context as ComponentActivity).finish()
+            })
         },
     )
 }

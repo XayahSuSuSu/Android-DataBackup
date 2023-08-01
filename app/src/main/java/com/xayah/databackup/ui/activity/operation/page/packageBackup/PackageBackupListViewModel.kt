@@ -13,14 +13,24 @@ import javax.inject.Inject
 
 data class PackageBackupListUiState(
     val packages: Flow<List<PackageBackupEntire>>,
+    val selectedAPKs: Flow<Int>,
+    val selectedData: Flow<Int>,
 )
 
 @HiltViewModel
 class PackageBackupListViewModel @Inject constructor(private val packageBackupDao: PackageBackupDao) : ViewModel() {
-    private val _uiState = mutableStateOf(PackageBackupListUiState(packages = packageBackupDao.queryActivePackages()))
+    private val _uiState = mutableStateOf(
+        PackageBackupListUiState(
+            packages = packageBackupDao.queryActivePackages(),
+            selectedAPKs = packageBackupDao.countSelectedAPKs(),
+            selectedData = packageBackupDao.countSelectedData(),
+        )
+    )
     val uiState: State<PackageBackupListUiState>
         get() = _uiState
     val packages = uiState.value.packages
+    val selectedAPKs = uiState.value.selectedAPKs
+    val selectedData = uiState.value.selectedData
 
     suspend fun inactivatePackages() = packageBackupDao.updateActive(false)
     suspend fun activatePackages(items: List<PackageBackupActivate>) = packageBackupDao.update(items)

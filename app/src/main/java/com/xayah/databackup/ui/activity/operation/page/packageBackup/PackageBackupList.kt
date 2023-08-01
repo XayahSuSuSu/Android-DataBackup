@@ -8,11 +8,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,7 +38,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.data.PackageBackupActivate
 import com.xayah.databackup.data.PackageBackupUpdate
-import com.xayah.databackup.ui.component.BottomSpacer
 import com.xayah.databackup.ui.component.ListItemPackage
 import com.xayah.databackup.ui.component.ListTopBar
 import com.xayah.databackup.ui.component.SearchBar
@@ -52,6 +59,9 @@ fun PackageBackupList() {
     val viewModel = hiltViewModel<PackageBackupListViewModel>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val packages = viewModel.packages.collectAsState(initial = listOf())
+    val selectedAPKs = viewModel.selectedAPKs.collectAsState(initial = 0)
+    val selectedData = viewModel.selectedData.collectAsState(initial = 0)
+    val selected = selectedAPKs.value != 0 || selectedData.value != 0
     val packageManager = context.packageManager
     var progress by remember { mutableFloatStateOf(1F) }
     var visible by remember { mutableStateOf(false) }
@@ -107,15 +117,39 @@ fun PackageBackupList() {
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             Column {
-                ListTopBar(scrollBehavior = scrollBehavior, title = stringResource(id = R.string.backup_list)) {
-
-                }
+                ListTopBar(scrollBehavior = scrollBehavior, title = stringResource(id = R.string.backup_list))
                 if (progress != 1F) LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                     progress = progress
                 )
             }
         },
+        floatingActionButton = {
+            Crossfade(targetState = visible, label = AnimationTokens.CrossFadeLabel) { visible ->
+                if (visible)
+                    ExtendedFloatingActionButton(
+                        modifier = Modifier.padding(CommonTokens.PaddingMedium),
+                        onClick = { },
+                        expanded = selected,
+                        icon = {
+                            Icon(
+                                imageVector = if (selected) Icons.Rounded.ArrowForward else Icons.Rounded.Close,
+                                contentDescription = null
+                            )
+                        },
+                        text = {
+                            Text(
+                                text = "${selectedAPKs.value} ${stringResource(id = R.string.apk)}, ${selectedData.value} ${
+                                    stringResource(
+                                        id = R.string.data
+                                    )
+                                }"
+                            )
+                        },
+                    )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
     ) { innerPadding ->
         Column {
             TopSpacer(innerPadding = innerPadding)
@@ -145,8 +179,6 @@ fun PackageBackupList() {
                         }
                 }
             }
-
-            BottomSpacer(innerPadding = innerPadding)
         }
     }
 }
