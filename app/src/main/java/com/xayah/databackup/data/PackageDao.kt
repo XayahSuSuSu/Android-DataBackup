@@ -1,15 +1,14 @@
 package com.xayah.databackup.data
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PackageBackupDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = PackageBackupEntire::class)
+    @Upsert(entity = PackageBackupEntire::class)
     suspend fun insert(items: List<PackageBackupUpdate>)
 
     @Update(entity = PackageBackupEntire::class)
