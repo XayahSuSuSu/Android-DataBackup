@@ -8,8 +8,10 @@ import androidx.room.PrimaryKey
  * Binary mask for operation code.
  */
 object OperationMask {
-    const val Apk = 2 // 10
+    const val None = 0 // 00
     const val Data = 1 // 01
+    const val Apk = 2 // 10
+    const val Both = 3 // 11
 
     fun isApkSelected(packageInfo: PackageBackupEntire): Boolean = packageInfo.operationCode and Apk == Apk
     fun isDataSelected(packageInfo: PackageBackupEntire): Boolean = packageInfo.operationCode and Data == Data

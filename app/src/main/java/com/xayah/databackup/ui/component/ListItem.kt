@@ -2,9 +2,7 @@ package com.xayah.databackup.ui.component
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,6 +56,8 @@ fun ListItemPackage(
     val viewModel = hiltViewModel<PackageBackupListViewModel>()
     val scope = rememberCoroutineScope()
     val icon = remember { mutableStateOf<Any>(0) }
+    var apkSelected by remember { mutableStateOf(OperationMask.isApkSelected(packageInfo)) }
+    var dataSelected by remember { mutableStateOf(OperationMask.isDataSelected(packageInfo)) }
     LaunchedEffect(null) {
         // Read icon from cached internal dir.
         ExceptionUtil.tryOn {
@@ -66,14 +66,18 @@ fun ListItemPackage(
         }
     }
     Card(
-        modifier
+        modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {},
-            )
+            .wrapContentHeight(),
+        onClick = {
+            scope.launch {
+                packageInfo.operationCode =
+                    if (packageInfo.operationCode == OperationMask.Both) OperationMask.None else OperationMask.Both
+                apkSelected = OperationMask.isApkSelected(packageInfo)
+                dataSelected = OperationMask.isDataSelected(packageInfo)
+                viewModel.updatePackage(packageInfo)
+            }
+        },
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingMedium)
@@ -119,8 +123,6 @@ fun ListItemPackage(
                     .paddingHorizontal(ListItemTokens.PaddingMedium),
                 horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingMedium, Alignment.End)
             ) {
-                var apkSelected by remember { mutableStateOf(OperationMask.isApkSelected(packageInfo)) }
-                var dataSelected by remember { mutableStateOf(OperationMask.isDataSelected(packageInfo)) }
                 FilterChip(
                     selected = apkSelected,
                     onClick = {
