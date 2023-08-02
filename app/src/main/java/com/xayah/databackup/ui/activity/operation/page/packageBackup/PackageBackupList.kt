@@ -1,7 +1,11 @@
 package com.xayah.databackup.ui.activity.operation.page.packageBackup
 
 import android.content.pm.PackageInfo
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +56,7 @@ import com.xayah.librootservice.service.RemoteRootService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun PackageBackupList() {
@@ -125,28 +130,27 @@ fun PackageBackupList() {
             }
         },
         floatingActionButton = {
-            Crossfade(targetState = visible, label = AnimationTokens.CrossFadeLabel) { visible ->
-                if (visible)
-                    ExtendedFloatingActionButton(
-                        modifier = Modifier.padding(CommonTokens.PaddingMedium),
-                        onClick = { },
-                        expanded = selected,
-                        icon = {
-                            Icon(
-                                imageVector = if (selected) Icons.Rounded.ArrowForward else Icons.Rounded.Close,
-                                contentDescription = null
-                            )
-                        },
-                        text = {
-                            Text(
-                                text = "${selectedAPKs.value} ${stringResource(id = R.string.apk)}, ${selectedData.value} ${
-                                    stringResource(
-                                        id = R.string.data
-                                    )
-                                }"
-                            )
-                        },
-                    )
+            AnimatedVisibility(visible = visible, enter = scaleIn(), exit = scaleOut()) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier.padding(CommonTokens.PaddingMedium),
+                    onClick = { },
+                    expanded = selected,
+                    icon = {
+                        Icon(
+                            imageVector = if (selected) Icons.Rounded.ArrowForward else Icons.Rounded.Close,
+                            contentDescription = null
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "${selectedAPKs.value} ${stringResource(id = R.string.apk)}, ${selectedData.value} ${
+                                stringResource(
+                                    id = R.string.data
+                                )
+                            }"
+                        )
+                    },
+                )
             }
         },
         floatingActionButtonPosition = FabPosition.Center,

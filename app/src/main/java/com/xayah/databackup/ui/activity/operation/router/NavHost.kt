@@ -26,6 +26,7 @@ fun SlotScope.OperationNavHost(navController: NavHostController) {
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 fun NavGraphBuilder.packageBackupGraph() {
     navigation(
