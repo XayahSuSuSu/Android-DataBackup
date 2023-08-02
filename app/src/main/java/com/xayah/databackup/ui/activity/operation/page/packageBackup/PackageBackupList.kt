@@ -24,6 +24,9 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -33,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -54,6 +58,7 @@ import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.command.EnvUtil
 import com.xayah.librootservice.service.RemoteRootService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @ExperimentalAnimationApi
@@ -70,6 +75,8 @@ fun PackageBackupList() {
     val packageManager = context.packageManager
     var progress by remember { mutableFloatStateOf(1F) }
     var visible by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(null) {
         withContext(Dispatchers.IO) {
@@ -78,7 +85,14 @@ fun PackageBackupList() {
             // Inactivate all packages and activate installed only.
             viewModel.inactivatePackages()
             var installedPackages = listOf<PackageInfo>()
-            ExceptionUtil.tryService {
+            ExceptionUtil.tryService(onFailed = { msg ->
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "$msg\n${context.getString(R.string.remote_service_err_info)}",
+                        duration = SnackbarDuration.Indefinite
+                    )
+                }
+            }) {
                 installedPackages = remoteRootService.getInstalledPackagesAsUser(0, 0)
             }
             val activePackages = mutableListOf<PackageBackupActivate>()
@@ -129,6 +143,7 @@ fun PackageBackupList() {
                 )
             }
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             AnimatedVisibility(visible = visible, enter = scaleIn(), exit = scaleOut()) {
                 ExtendedFloatingActionButton(
