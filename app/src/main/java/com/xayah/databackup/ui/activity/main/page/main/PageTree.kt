@@ -66,7 +66,7 @@ private suspend fun DialogState.openSaveDialog(context: Context, text: String) {
         block = { _ ->
             Text(
                 text = if (msg == null) "${context.getString(R.string.succeed)}: $filePath"
-                else "${context.getString(R.string.failed)}: $msg\n${context.getString(R.string.remote_service_err_reboot)}"
+                else "${context.getString(R.string.failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}"
             )
         }
     )

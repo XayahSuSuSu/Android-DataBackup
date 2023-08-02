@@ -102,7 +102,7 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
 
             ExceptionUtil.tryService(onFailed = { msg ->
                 internalItem.display =
-                    "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_reboot)}"
+                    "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}"
             }) {
                 val internalStatFs = remoteRootService.readStatFs(internalParent)
                 internalItem.progress = internalStatFs.availableBytes.toFloat() / internalStatFs.totalBytes
@@ -128,7 +128,7 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
                     )
                     ExceptionUtil.tryService(onFailed = { msg ->
                         item.display =
-                            "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_reboot)}"
+                            "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}"
                     }) {
                         val externalPathStatFs = remoteRootService.readStatFs(parent)
                         item.progress = externalPathStatFs.availableBytes.toFloat() / externalPathStatFs.totalBytes
