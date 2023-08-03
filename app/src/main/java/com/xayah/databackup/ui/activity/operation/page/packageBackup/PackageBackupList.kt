@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -51,6 +52,7 @@ import com.xayah.databackup.ui.component.ListTopBar
 import com.xayah.databackup.ui.component.SearchBar
 import com.xayah.databackup.ui.component.Serial
 import com.xayah.databackup.ui.component.TopSpacer
+import com.xayah.databackup.ui.component.emphasizedOffset
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
@@ -77,6 +79,8 @@ fun PackageBackupList() {
     var visible by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var emphasizedState by remember { mutableStateOf(false) }
+    val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)
 
     LaunchedEffect(null) {
         withContext(Dispatchers.IO) {
@@ -147,8 +151,12 @@ fun PackageBackupList() {
         floatingActionButton = {
             AnimatedVisibility(visible = visible, enter = scaleIn(), exit = scaleOut()) {
                 ExtendedFloatingActionButton(
-                    modifier = Modifier.padding(CommonTokens.PaddingMedium),
-                    onClick = { },
+                    modifier = Modifier
+                        .padding(CommonTokens.PaddingMedium)
+                        .offset(x = emphasizedOffset),
+                    onClick = {
+                        if (selected.not()) emphasizedState = !emphasizedState
+                    },
                     expanded = selected,
                     icon = {
                         Icon(
