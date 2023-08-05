@@ -48,4 +48,9 @@
     <string name="apk">APK</string>
     <string name="data">Data</string>
     <string name="remote_service_err_info">Please try restarting the device or reinstall Magisk</string>
+    <string name="updating">Updating</string>
+    <string name="both">Both</string>
+    <string name="manifest">Manifest</string>
+    <string name="selected_apks">Selected apks</string>
+    <string name="selected_data">Selected data</string>
 </resources>

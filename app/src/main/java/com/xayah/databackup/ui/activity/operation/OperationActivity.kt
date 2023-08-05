@@ -24,7 +24,7 @@ class OperationActivity : ComponentActivity() {
         setContent {
             DataBackupTheme {
                 val slotScope = rememberSlotScope()
-                slotScope.OperationNavHost(navController = slotScope.navController)
+                slotScope.OperationNavHost()
             }
         }
     }

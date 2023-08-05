@@ -20,6 +20,15 @@ interface PackageBackupDao {
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1")
     fun queryActivePackages(): Flow<List<PackageBackupEntire>>
 
+    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 3")
+    fun queryActiveBothPackages(): Flow<List<PackageBackupManifest>>
+
+    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 2")
+    fun queryActiveAPKOnlyPackages(): Flow<List<PackageBackupManifest>>
+
+    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 1")
+    fun queryActiveDataOnlyPackages(): Flow<List<PackageBackupManifest>>
+
     @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1")
     suspend fun countActivePackages(): Int
 

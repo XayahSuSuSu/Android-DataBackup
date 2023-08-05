@@ -45,4 +45,9 @@
     <string name="apk">安装包</string>
     <string name="data">数据</string>
     <string name="remote_service_err_info">请尝试重启设备或重装Magisk</string>
+    <string name="updating">更新中</string>
+    <string name="both">全部</string>
+    <string name="manifest">清单</string>
+    <string name="selected_apks">已选安装包</string>
+    <string name="selected_data">已选数据</string>
 </resources>

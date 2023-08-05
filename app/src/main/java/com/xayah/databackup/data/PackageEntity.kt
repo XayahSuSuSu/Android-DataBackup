@@ -70,3 +70,12 @@ data class PackageBackupActivate(
     @PrimaryKey var packageName: String,
     var active: Boolean,
 )
+
+/**
+ * For manifest only.
+ */
+@Entity
+data class PackageBackupManifest(
+    @PrimaryKey var packageName: String,
+    var label: String,
+)

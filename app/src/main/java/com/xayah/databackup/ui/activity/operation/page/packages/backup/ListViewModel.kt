@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.operation.page.packageBackup
+package com.xayah.databackup.ui.activity.operation.page.packages.backup
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -11,31 +11,26 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-data class PackageBackupListUiState(
+data class ListUiState(
     val packages: Flow<List<PackageBackupEntire>>,
     val selectedAPKs: Flow<Int>,
     val selectedData: Flow<Int>,
 )
 
 @HiltViewModel
-class PackageBackupListViewModel @Inject constructor(private val packageBackupDao: PackageBackupDao) : ViewModel() {
+class ListViewModel @Inject constructor(private val packageBackupDao: PackageBackupDao) : ViewModel() {
     private val _uiState = mutableStateOf(
-        PackageBackupListUiState(
+        ListUiState(
             packages = packageBackupDao.queryActivePackages(),
             selectedAPKs = packageBackupDao.countSelectedAPKs(),
             selectedData = packageBackupDao.countSelectedData(),
         )
     )
-    val uiState: State<PackageBackupListUiState>
+    val uiState: State<ListUiState>
         get() = _uiState
-    val packages = uiState.value.packages
-    val selectedAPKs = uiState.value.selectedAPKs
-    val selectedData = uiState.value.selectedData
 
     suspend fun inactivatePackages() = packageBackupDao.updateActive(false)
     suspend fun activatePackages(items: List<PackageBackupActivate>) = packageBackupDao.update(items)
-    suspend fun countActivePackages() = packageBackupDao.countActivePackages()
     suspend fun updatePackages(items: List<PackageBackupUpdate>) = packageBackupDao.insert(items)
     suspend fun updatePackage(item: PackageBackupEntire) = packageBackupDao.update(item)
-
 }

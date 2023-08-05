@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.operation.page.packageBackup
+package com.xayah.databackup.ui.activity.operation.page.packages.backup
 
 import android.content.pm.PackageInfo
 import androidx.compose.animation.AnimatedVisibility
@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
@@ -47,10 +48,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.data.PackageBackupActivate
 import com.xayah.databackup.data.PackageBackupUpdate
+import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.ListItemPackage
 import com.xayah.databackup.ui.component.ListTopBar
 import com.xayah.databackup.ui.component.SearchBar
 import com.xayah.databackup.ui.component.Serial
+import com.xayah.databackup.ui.component.SlotScope
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.emphasizedOffset
 import com.xayah.databackup.ui.component.paddingHorizontal
@@ -63,24 +66,31 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+enum class ListState {
+    Idle,
+    Update,
+    Done,
+}
+
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun PackageBackupList() {
+fun SlotScope.PackageBackupList() {
     val context = LocalContext.current
-    val viewModel = hiltViewModel<PackageBackupListViewModel>()
+    val viewModel = hiltViewModel<ListViewModel>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val packages = viewModel.packages.collectAsState(initial = listOf())
-    val selectedAPKs = viewModel.selectedAPKs.collectAsState(initial = 0)
-    val selectedData = viewModel.selectedData.collectAsState(initial = 0)
+    val packages = viewModel.uiState.value.packages.collectAsState(initial = listOf())
+    val selectedAPKs = viewModel.uiState.value.selectedAPKs.collectAsState(initial = 0)
+    val selectedData = viewModel.uiState.value.selectedData.collectAsState(initial = 0)
     val selected = selectedAPKs.value != 0 || selectedData.value != 0
     val packageManager = context.packageManager
     var progress by remember { mutableFloatStateOf(1F) }
-    var visible by remember { mutableStateOf(false) }
+    var state by remember { mutableStateOf(ListState.Idle) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var emphasizedState by remember { mutableStateOf(false) }
     val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)
+    var updatingText: String? by remember { mutableStateOf(null) }
 
     LaunchedEffect(null) {
         withContext(Dispatchers.IO) {
@@ -105,7 +115,7 @@ fun PackageBackupList() {
             }
             viewModel.activatePackages(activePackages)
             val activatePackagesEndIndex = activePackages.size - 1
-            if (viewModel.countActivePackages() != 0) visible = true
+            state = ListState.Update
 
             val newPackages = mutableListOf<PackageBackupUpdate>()
             EnvUtil.createIconDirectory(context)
@@ -131,9 +141,11 @@ fun PackageBackupList() {
                     )
                 )
                 progress = index.toFloat() / activatePackagesEndIndex
+                updatingText = "${context.getString(R.string.updating)} (${index + 1}/${activatePackagesEndIndex + 1})"
             }
             viewModel.updatePackages(newPackages)
-            visible = true
+            state = ListState.Done
+            updatingText = null
         }
     }
     Scaffold(
@@ -149,28 +161,26 @@ fun PackageBackupList() {
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            AnimatedVisibility(visible = visible, enter = scaleIn(), exit = scaleOut()) {
+            AnimatedVisibility(visible = state != ListState.Idle, enter = scaleIn(), exit = scaleOut()) {
                 ExtendedFloatingActionButton(
                     modifier = Modifier
                         .padding(CommonTokens.PaddingMedium)
                         .offset(x = emphasizedOffset),
                     onClick = {
-                        if (selected.not()) emphasizedState = !emphasizedState
+                        if (selected.not() || state != ListState.Done) emphasizedState = !emphasizedState
+                        else navController.navigate(OperationRoutes.PackageBackupManifest.route)
                     },
-                    expanded = selected,
+                    expanded = selected || state != ListState.Done,
                     icon = {
                         Icon(
-                            imageVector = if (selected) Icons.Rounded.ArrowForward else Icons.Rounded.Close,
+                            imageVector = if (state != ListState.Done) Icons.Rounded.Refresh else if (selected) Icons.Rounded.ArrowForward else Icons.Rounded.Close,
                             contentDescription = null
                         )
                     },
                     text = {
                         Text(
-                            text = "${selectedAPKs.value} ${stringResource(id = R.string.apk)}, ${selectedData.value} ${
-                                stringResource(
-                                    id = R.string.data
-                                )
-                            }"
+                            text = if (updatingText != null) updatingText!!
+                            else "${selectedAPKs.value} ${stringResource(id = R.string.apk)}, ${selectedData.value} ${stringResource(id = R.string.data)}"
                         )
                     },
                 )
@@ -182,8 +192,8 @@ fun PackageBackupList() {
             TopSpacer(innerPadding = innerPadding)
 
             Box(modifier = Modifier.weight(1f)) {
-                Crossfade(targetState = visible, label = AnimationTokens.CrossFadeLabel) { visible ->
-                    if (visible)
+                Crossfade(targetState = state, label = AnimationTokens.CrossFadeLabel) { state ->
+                    if (state != ListState.Idle)
                         LazyColumn(
                             modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium),
                             verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)
