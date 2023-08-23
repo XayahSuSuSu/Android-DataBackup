@@ -6,6 +6,8 @@ object ConstantUtil {
     const val DefaultBackupParent = "/storage/emulated/0"
     const val DefaultBackupChild = "DataBackup"
     const val DefaultBackupSavePath = "${DefaultBackupParent}/${DefaultBackupChild}"
+    const val DefaultBackupUserId = 0
+
     val SupportedExternalStorageFormat = listOf(
         "sdfat",
         "fuseblk",
@@ -14,11 +16,13 @@ object ConstantUtil {
         "ext4",
         "f2fs"
     )
+
     val MainBottomBarRoutes = listOf(
         MainRoutes.Backup.route,
         MainRoutes.Restore.route,
         MainRoutes.Cloud.route,
         MainRoutes.Settings.route,
     )
+
     const val ClipDataLabel = "DataBackupClipData"
 }

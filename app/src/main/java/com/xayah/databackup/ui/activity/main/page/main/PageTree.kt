@@ -40,12 +40,12 @@ import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.theme.JetbrainsMonoFamily
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DateUtil
-import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.CommonUtil.copyToClipboard
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.librootservice.util.ExceptionUtil.tryService
 import kotlinx.coroutines.launch
 
 private suspend fun DialogState.openSaveDialog(context: Context, text: String) {
@@ -58,7 +58,7 @@ private suspend fun DialogState.openSaveDialog(context: Context, text: String) {
         title = context.getString(R.string.save_directory_structure),
         icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_account_tree),
         onLoading = {
-            ExceptionUtil.tryService(onFailed = { msg = it }) {
+            tryService(onFailed = { msg = it }) {
                 remoteRootService.writeText(text, filePath, context)
             }
             remoteRootService.destroyService()
@@ -88,6 +88,7 @@ fun SlotScope.PageTree() {
                 OutlinedCard(
                     modifier = Modifier
                         .weight(1f)
+                        .fillMaxWidth()
                         .paddingTop(CommonTokens.PaddingSmall)
                         .paddingHorizontal(CommonTokens.PaddingSmall)
                 ) {

@@ -17,6 +17,10 @@
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
 
+        <service
+            android:name=".service.OperationLocalServiceImpl"
+            android:exported="false" />
+
         <activity
             android:name=".ui.activity.splash.SplashActivity"
             android:exported="true"

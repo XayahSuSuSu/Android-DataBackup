@@ -19,8 +19,8 @@ import androidx.core.graphics.drawable.toDrawable
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.xayah.databackup.ui.token.GridItemTokens
-import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.iconPath
+import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -33,7 +33,7 @@ fun GridItemPackage(packageName: String, label: String) {
     LaunchedEffect(null) {
         // Read icon from cached internal dir.
         withContext(Dispatchers.IO) {
-            ExceptionUtil.tryOn {
+            tryOn {
                 val bytes = File("${context.iconPath()}/${packageName}.png").readBytes()
                 icon = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources)
             }

@@ -7,7 +7,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface PackageBackupDao {
+interface PackageBackupEntireDao {
     @Upsert(entity = PackageBackupEntire::class)
     suspend fun insert(items: List<PackageBackupUpdate>)
 
@@ -20,6 +20,9 @@ interface PackageBackupDao {
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1")
     fun queryActivePackages(): Flow<List<PackageBackupEntire>>
 
+    @Query("SELECT * FROM PackageBackupEntire WHERE packageName = :packageName LIMIT 1")
+    suspend fun queryManifestPackage(packageName: String): PackageBackupManifest
+
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 3")
     fun queryActiveBothPackages(): Flow<List<PackageBackupManifest>>
 
@@ -31,6 +34,9 @@ interface PackageBackupDao {
 
     @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1")
     suspend fun countActivePackages(): Int
+
+    @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE operationCode = 1 OR operationCode = 2 OR operationCode = 3")
+    fun countSelectedTotal(): Flow<Int>
 
     @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE operationCode = 2 OR operationCode = 3")
     fun countSelectedAPKs(): Flow<Int>

@@ -2,4 +2,5 @@
 <resources>
     <color name="green">#5DDDA2</color>
     <color name="greenContainer">#015232</color>
+    <color name="yellow">#FEB96B</color>
 </resources>

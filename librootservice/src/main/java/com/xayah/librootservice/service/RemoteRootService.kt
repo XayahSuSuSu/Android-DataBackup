@@ -27,9 +27,7 @@ class RemoteRootService(private val context: Context) {
     private var isFirstConnection = true
 
     class RemoteRootService : RootService() {
-        override fun onBind(intent: Intent): IBinder {
-            return RemoteRootServiceImpl()
-        }
+        override fun onBind(intent: Intent): IBinder = RemoteRootServiceImpl()
     }
 
     private suspend fun bindService(): IRemoteRootService = suspendCoroutine { continuation ->
@@ -105,9 +103,9 @@ class RemoteRootService(private val context: Context) {
         }
     }
 
-    suspend fun readStatFs(path: String): StatFsParcelable {
-        return getService().readStatFs(path)
-    }
+    suspend fun readStatFs(path: String): StatFsParcelable = getService().readStatFs(path)
+
+    suspend fun mkdirs(path: String): Boolean = getService().mkdirs(path)
 
     suspend fun writeText(text: String, path: String, context: Context): Boolean {
         var state = true
@@ -119,6 +117,9 @@ class RemoteRootService(private val context: Context) {
         tmpFile.deleteRecursively()
         return state
     }
+
+
+    suspend fun exists(path: String): Boolean = getService().exists(path)
 
     suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)
@@ -134,4 +135,6 @@ class RemoteRootService(private val context: Context) {
         parcel.recycle()
         return packages
     }
+
+    suspend fun getPackageSourceDir(packageName: String, userId: Int): List<String> = getService().getPackageSourceDir(packageName, userId)
 }

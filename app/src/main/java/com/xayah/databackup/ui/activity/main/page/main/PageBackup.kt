@@ -40,7 +40,6 @@ import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.ConstantUtil
-import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.databackup.util.readExternalBackupSaveChild
@@ -49,6 +48,7 @@ import com.xayah.databackup.util.saveBackupSavePath
 import com.xayah.databackup.util.saveExternalBackupSaveChild
 import com.xayah.databackup.util.saveInternalBackupSaveChild
 import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.librootservice.util.ExceptionUtil.tryService
 import kotlinx.coroutines.launch
 
 enum class StorageItemType {
@@ -100,7 +100,7 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
                 enabled = true
             )
 
-            ExceptionUtil.tryService(onFailed = { msg ->
+            tryService(onFailed = { msg ->
                 internalItem.display =
                     "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}"
             }) {
@@ -126,7 +126,7 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
                         display = externalPath,
                         enabled = true
                     )
-                    ExceptionUtil.tryService(onFailed = { msg ->
+                    tryService(onFailed = { msg ->
                         item.display =
                             "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}"
                     }) {

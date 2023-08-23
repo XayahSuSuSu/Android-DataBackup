@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.GridItemPackage
 import com.xayah.databackup.ui.component.ListItemManifest
 import com.xayah.databackup.ui.component.ManifestTopBar
@@ -67,7 +68,9 @@ fun SlotScope.PackageBackupManifest() {
             AnimatedVisibility(visible = true, enter = scaleIn(), exit = scaleOut()) {
                 FloatingActionButton(
                     modifier = Modifier.padding(CommonTokens.PaddingMedium),
-                    onClick = {},
+                    onClick = {
+                        navController.navigate(OperationRoutes.PackageBackupProcessing.route)
+                    },
                     content = {
                         Icon(imageVector = Icons.Rounded.ArrowForward, contentDescription = null)
                     }

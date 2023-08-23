@@ -53,4 +53,6 @@
     <string name="manifest">Manifest</string>
     <string name="selected_apks">Selected apks</string>
     <string name="selected_data">Selected data</string>
+    <string name="idle">Idle</string>
+    <string name="backing_up">Backing up</string>
 </resources>

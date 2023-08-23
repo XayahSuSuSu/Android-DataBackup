@@ -59,9 +59,9 @@ import com.xayah.databackup.ui.component.emphasizedOffset
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
-import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.command.EnvUtil
 import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.librootservice.util.ExceptionUtil.tryService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -84,7 +84,7 @@ fun SlotScope.PackageBackupList() {
     val selectedData = viewModel.uiState.value.selectedData.collectAsState(initial = 0)
     val selected = selectedAPKs.value != 0 || selectedData.value != 0
     val packageManager = context.packageManager
-    var progress by remember { mutableFloatStateOf(1F) }
+    var progress by remember { mutableFloatStateOf(1f) }
     var state by remember { mutableStateOf(ListState.Idle) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -99,7 +99,7 @@ fun SlotScope.PackageBackupList() {
             // Inactivate all packages and activate installed only.
             viewModel.inactivatePackages()
             var installedPackages = listOf<PackageInfo>()
-            ExceptionUtil.tryService(onFailed = { msg ->
+            tryService(onFailed = { msg ->
                 scope.launch {
                     snackbarHostState.showSnackbar(
                         message = "$msg\n${context.getString(R.string.remote_service_err_info)}",

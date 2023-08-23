@@ -38,6 +38,21 @@ fun HeadlineLargeBoldText(
 }
 
 @Composable
+fun HeadlineMediumBoldText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.headlineMedium,
+        fontWeight = FontWeight.Bold,
+        color = color,
+    )
+}
+
+@Composable
 fun TitleLargeText(modifier: Modifier = Modifier, text: String) {
     Text(
         modifier = modifier,
@@ -67,6 +82,20 @@ fun TitleMediumBoldText(
         text = text,
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
+        color = color,
+    )
+}
+
+@Composable
+fun TitleMediumText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
         color = color,
     )
 }
@@ -132,6 +161,16 @@ fun LabelLargeExtraBoldText(modifier: Modifier = Modifier, text: String) {
         text = text,
         style = MaterialTheme.typography.labelLarge,
         fontWeight = FontWeight.ExtraBold,
+    )
+}
+
+@Composable
+fun LabelMediumText(modifier: Modifier = Modifier, textAlign: TextAlign? = null, text: String) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        textAlign = textAlign,
     )
 }
 

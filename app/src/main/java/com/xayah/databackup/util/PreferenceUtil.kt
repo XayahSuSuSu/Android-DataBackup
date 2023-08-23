@@ -3,6 +3,47 @@ package com.xayah.databackup.util
 import android.content.Context
 import com.xayah.databackup.R
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
+import com.xayah.librootservice.util.ExceptionUtil.tryOn
+
+enum class CompressionType(val type: String, val suffix: String, val para: String) {
+    TAR("tar", "tar", ""),
+    ZSTD("zstd", "tar.zst", "zstd -r -T0 --ultra -1 -q --priority=rt"),
+    LZ4("lz4", "tar.lz4", "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4");
+
+    companion object {
+        fun of(name: String): CompressionType {
+            return tryOn(
+                block = {
+                    CompressionType.valueOf(name.uppercase())
+                },
+                onException = {
+                    ZSTD
+                })
+        }
+    }
+}
+
+enum class DataType(val type: String) {
+    PACKAGE_APK("apk"),
+    PACKAGE_USER("user"),
+    PACKAGE_USER_DE("user_de"),
+    PACKAGE_DATA("data"),
+    PACKAGE_OBB("obb"),
+    PACKAGE_MEDIA("media"),            // /data/media/$user_id/Android/media
+    MEDIA_MEDIA("media");
+
+    companion object {
+        fun of(name: String): DataType {
+            return tryOn(
+                block = {
+                    DataType.valueOf(name.uppercase())
+                },
+                onException = {
+                    PACKAGE_USER
+                })
+        }
+    }
+}
 
 const val PreferenceName = "settings"
 
@@ -53,12 +94,36 @@ fun Context.readAppVersionName(): String {
     return readPreferencesString("app_version_name") ?: ""
 }
 
+fun Context.saveCompressionType(ct: CompressionType) {
+    savePreferences("compression_type", ct.type)
+}
+
+fun Context.readCompressionType(): CompressionType {
+    return CompressionType.of(readPreferencesString("compression_type") ?: CompressionType.ZSTD.type)
+}
+
+fun Context.saveCompatibleMode(value: Boolean) {
+    savePreferences("compatible_mode", value)
+}
+
+fun Context.readCompatibleMode(): Boolean {
+    return readPreferencesBoolean("compatible_mode", false)
+}
+
 fun Context.saveLastBackupTime(time: String) {
     savePreferences("last_backup_time", time)
 }
 
 fun Context.readLastBackupTime(): String {
     return readPreferencesString("last_backup_time", getString(R.string.none)) ?: getString(R.string.none)
+}
+
+fun Context.saveBackupUserId(userId: Int) {
+    savePreferences("backup_user_id", userId)
+}
+
+fun Context.readBackupUserId(): Int {
+    return readPreferencesInt("backup_user_id", ConstantUtil.DefaultBackupUserId)
 }
 
 fun Context.saveBackupSavePath(path: String) {

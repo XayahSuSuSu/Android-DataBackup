@@ -17,7 +17,6 @@ val Pink40 = Color(0xFF7D5260)
 object ColorScheme {
         @Composable
         fun surface() = MaterialTheme.colorScheme.surface
-
         @Composable
         fun onSurfaceVariant() = MaterialTheme.colorScheme.onSurfaceVariant
 
@@ -37,10 +36,31 @@ object ColorScheme {
         fun greenContainer() = colorResource(id = R.color.greenContainer)
 
         @Composable
+        fun yellow() = colorResource(id = R.color.yellow)
+
+        @Composable
+        fun primary() = MaterialTheme.colorScheme.primary
+
+        @Composable
         fun onPrimary() = MaterialTheme.colorScheme.onPrimary
 
         @Composable
         fun primaryContainer() = MaterialTheme.colorScheme.primaryContainer
+
+        @Composable
+        fun inversePrimary() = MaterialTheme.colorScheme.inversePrimary
+
+        @Composable
+        fun secondary() = MaterialTheme.colorScheme.secondary
+
+        @Composable
+        fun secondaryContainer() = MaterialTheme.colorScheme.secondaryContainer
+
+        @Composable
+        fun onSecondaryContainer() = MaterialTheme.colorScheme.onSecondaryContainer
+
+        @Composable
+        fun tertiary() = MaterialTheme.colorScheme.tertiary
 
         @Composable
         fun onTertiary() = MaterialTheme.colorScheme.onTertiary

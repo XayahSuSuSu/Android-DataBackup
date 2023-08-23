@@ -1,34 +1,26 @@
 package com.xayah.databackup.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.xayah.databackup.DataBackupApplication
+import java.nio.file.Paths
+import kotlin.io.path.pathString
 
-fun Context.filesPath(): String {
-    return filesDir.path
-}
+fun Context.filesPath(): String = filesDir.path
 
-fun Context.binPath(): String {
-    return "${filesPath()}/bin"
-}
+fun Context.binPath(): String = "${filesPath()}/bin"
 
-fun Context.binArchivePath(): String {
-    return "${filesPath()}/bin.zip"
-}
+fun Context.binArchivePath(): String = "${filesPath()}/bin.zip"
 
-fun Context.extendPath(): String {
-    return "${filesPath()}/extend"
-}
+fun Context.extendPath(): String = "${filesPath()}/extend"
 
-fun Context.iconPath(): String {
-    return "${filesPath()}/icon"
-}
+fun Context.iconPath(): String = "${filesPath()}/icon"
 
+@SuppressLint("SdCardPath")
 object PathUtil {
-    private fun getBackupSavePath(): String {
-        return DataBackupApplication.application.readBackupSavePath()
-    }
+    fun getParentPath(path: String): String = Paths.get(path).parent.pathString
+    private fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
+    fun getTreePath(): String = "${getBackupSavePath()}/tree"
 
-    fun getTreePath(): String {
-        return "${getBackupSavePath()}/tree"
-    }
+    fun getPackageUserPath(userId: Int): String = "/data/user/${userId}"
 }

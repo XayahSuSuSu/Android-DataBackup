@@ -42,8 +42,8 @@ import com.xayah.databackup.data.PackageBackupEntire
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.ListViewModel
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.ListItemTokens
-import com.xayah.databackup.util.ExceptionUtil
 import com.xayah.databackup.util.iconPath
+import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -62,7 +62,7 @@ fun ListItemPackage(
     var dataSelected by remember { mutableStateOf(OperationMask.isDataSelected(packageInfo)) }
     LaunchedEffect(null) {
         // Read icon from cached internal dir.
-        ExceptionUtil.tryOn {
+        tryOn {
             val bytes = File("${context.iconPath()}/${packageInfo.packageName}.png").readBytes()
             icon.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources)
         }

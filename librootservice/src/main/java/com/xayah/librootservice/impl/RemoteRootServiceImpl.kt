@@ -9,7 +9,8 @@ import android.os.StatFs
 import com.xayah.libhiddenapi.HiddenApiBypassUtil
 import com.xayah.librootservice.IRemoteRootService
 import com.xayah.librootservice.parcelables.StatFsParcelable
-import com.xayah.librootservice.util.ExceptionUtil
+import com.xayah.librootservice.util.ExceptionUtil.tryOn
+import com.xayah.librootservice.util.ExceptionUtil.tryWithBoolean
 import java.io.File
 
 internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
@@ -40,18 +41,22 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun mkdirs(path: String): Boolean {
         synchronized(lock) {
-            return ExceptionUtil.tryOn {
+            return tryWithBoolean {
                 val file = File(path)
                 if (file.exists().not()) file.mkdirs()
             }
         }
     }
 
-    override fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean {
-        synchronized(lock) {
-            return ExceptionUtil.tryOn {
-                File(path).copyTo(File(targetPath), overwrite)
-            }
+    override fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean = synchronized(lock) {
+        tryWithBoolean {
+            File(path).copyTo(File(targetPath), overwrite)
+        }
+    }
+
+    override fun exists(path: String): Boolean = synchronized(lock) {
+        tryWithBoolean {
+            File(path).exists()
         }
     }
 
@@ -75,7 +80,20 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
             parcel.recycle()
             return pfd
-
         }
+    }
+
+    override fun getPackageSourceDir(packageName: String, userId: Int): List<String> = synchronized(lock) {
+        tryOn(
+            block = {
+                val sourceDirList = mutableListOf<String>()
+                val packageInfo = PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+                sourceDirList.add(packageInfo.applicationInfo.sourceDir)
+                val splitSourceDirs = packageInfo.applicationInfo.splitSourceDirs
+                if (!splitSourceDirs.isNullOrEmpty()) for (i in splitSourceDirs) sourceDirList.add(i)
+                sourceDirList
+            },
+            onException = { listOf() }
+        )
     }
 }

@@ -14,7 +14,7 @@ object CommonUtil {
     /**
      * Switch to IO coroutine
      */
-    private suspend fun <T> runOnIO(block: suspend () -> T): T {
+    suspend fun <T> runOnIO(block: suspend () -> T): T {
         return withContext(Dispatchers.IO) { block() }
     }
 

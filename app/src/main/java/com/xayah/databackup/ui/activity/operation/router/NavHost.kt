@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupList
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupManifest
+import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupProcessing
 import com.xayah.databackup.ui.component.SlotScope
 
 
@@ -39,6 +40,10 @@ fun NavGraphBuilder.packageBackupGraph(slotScope: SlotScope) {
 
         composable(OperationRoutes.PackageBackupManifest.route) {
             slotScope.PackageBackupManifest()
+        }
+
+        composable(OperationRoutes.PackageBackupProcessing.route) {
+            PackageBackupProcessing()
         }
     }
 }

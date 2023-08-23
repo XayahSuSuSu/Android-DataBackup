@@ -50,4 +50,6 @@
     <string name="manifest">清單</string>
     <string name="selected_apks">已選安裝包</string>
     <string name="selected_data">Selected data</string>
+    <string name="idle">空閒</string>
+    <string name="backing_up">備份中</string>
 </resources>
