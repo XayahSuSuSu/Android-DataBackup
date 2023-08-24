@@ -55,9 +55,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun exists(path: String): Boolean = synchronized(lock) {
-        tryWithBoolean {
-            File(path).exists()
-        }
+        tryOn(block = { File(path).exists() }, onException = { false })
     }
 
     /**
