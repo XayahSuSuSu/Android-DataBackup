@@ -55,4 +55,10 @@
     <string name="selected_data">Selected data</string>
     <string name="idle">Idle</string>
     <string name="backing_up">Backing up</string>
+    <string name="failed_and_terminated">Failed and terminated</string>
+    <string name="not_exist">Not exist</string>
+    <string name="not_exist_and_skip">Not exist and skip</string>
+    <string name="backup_completed">Backup completed</string>
+    <string name="word_return">Return</string>
+    <string name="time">Time</string>
 </resources>

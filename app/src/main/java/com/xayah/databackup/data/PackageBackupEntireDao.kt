@@ -23,6 +23,9 @@ interface PackageBackupEntireDao {
     @Query("SELECT * FROM PackageBackupEntire WHERE packageName = :packageName LIMIT 1")
     suspend fun queryManifestPackage(packageName: String): PackageBackupManifest
 
+    @Query("SELECT * FROM PackageBackupEntire WHERE operationCode = 1 OR operationCode = 2 OR operationCode = 3")
+    suspend fun queryActiveTotalPackages(): List<PackageBackupOp>
+
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 3")
     fun queryActiveBothPackages(): Flow<List<PackageBackupManifest>>
 

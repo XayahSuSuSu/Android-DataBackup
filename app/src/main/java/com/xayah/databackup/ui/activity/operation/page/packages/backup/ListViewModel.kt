@@ -9,14 +9,15 @@ import com.xayah.databackup.data.PackageBackupEntireDao
 import com.xayah.databackup.data.PackageBackupUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 data class ListUiState(
     val packageBackupEntireDao: PackageBackupEntireDao,
 ) {
-    val packages: Flow<List<PackageBackupEntire>> = packageBackupEntireDao.queryActivePackages()
-    val selectedAPKs: Flow<Int> = packageBackupEntireDao.countSelectedAPKs()
-    val selectedData: Flow<Int> = packageBackupEntireDao.countSelectedData()
+    val packages: Flow<List<PackageBackupEntire>> = packageBackupEntireDao.queryActivePackages().distinctUntilChanged()
+    val selectedAPKs: Flow<Int> = packageBackupEntireDao.countSelectedAPKs().distinctUntilChanged()
+    val selectedData: Flow<Int> = packageBackupEntireDao.countSelectedData().distinctUntilChanged()
 }
 
 @HiltViewModel

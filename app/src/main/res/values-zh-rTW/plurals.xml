@@ -1,0 +1,14 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_seconds_ago" formatted="false">
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> 秒</item>
+    </plurals>
+    <plurals name="num_minutes_ago" formatted="false">
+        <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 分鐘</item>
+    </plurals>
+    <plurals name="num_hours_ago" formatted="false">
+        <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 小時</item>
+    </plurals>
+    <plurals name="num_days_ago" formatted="false">
+        <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 天</item>
+    </plurals>
+</resources>

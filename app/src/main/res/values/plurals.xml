@@ -1,0 +1,22 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Abbreviated message to express that something occurred some number of seconds in the past (e.g., 5 seconds ago). -->
+    <plurals name="num_seconds_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> second</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> seconds</item>
+    </plurals>
+    <!-- Abbreviated message to express that something occurred some number of minutes in the past (e.g., 5 minutes ago). -->
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> mins</item>
+    </plurals>
+    <!-- Abbreviated message to express that something occurred some number of hours in the past (e.g., 5 hours ago). -->
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> hour</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> hours</item>
+    </plurals>
+    <!-- Abbreviated message to express that something occurred some number of days in the past (e.g., 5 days ago). -->
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> day</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> days</item>
+    </plurals>
+</resources>

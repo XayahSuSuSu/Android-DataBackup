@@ -52,4 +52,10 @@
     <string name="selected_data">已选数据</string>
     <string name="idle">空闲</string>
     <string name="backing_up">备份中</string>
+    <string name="failed_and_terminated">失败, 终止</string>
+    <string name="not_exist">不存在</string>
+    <string name="not_exist_and_skip">不存在, 跳过</string>
+    <string name="backup_completed">备份完成</string>
+    <string name="word_return">返回</string>
+    <string name="time">时间</string>
 </resources>

@@ -13,6 +13,7 @@ import com.xayah.databackup.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -23,9 +24,9 @@ data class ProcessingUiState(
     val packageBackupEntireDao: PackageBackupEntireDao,
     val packageBackupOperationDao: PackageBackupOperationDao
 ) {
-    val latestPackage: Flow<PackageBackupOperation> = packageBackupOperationDao.queryOperationPackage(timestamp)
-    val selectedBothCount: Flow<Int> = packageBackupEntireDao.countSelectedTotal()
-    val operationCount: Flow<Int> = packageBackupOperationDao.countByTimestamp(timestamp)
+    val latestPackage: Flow<PackageBackupOperation> = packageBackupOperationDao.queryLastOperationPackage(timestamp).distinctUntilChanged()
+    val selectedBothCount: Flow<Int> = packageBackupEntireDao.countSelectedTotal().distinctUntilChanged()
+    val operationCount: Flow<Int> = packageBackupOperationDao.countByTimestamp(timestamp).distinctUntilChanged()
 }
 
 @HiltViewModel
@@ -45,7 +46,7 @@ class ProcessingViewModel @Inject constructor(
     val uiState: State<ProcessingUiState>
         get() = _uiState
 
-    fun backupPackages() {
+    fun backupPackages(onCompleted: suspend () -> Unit) {
         if (_uiState.value.effectLaunched.not())
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
@@ -53,6 +54,7 @@ class ProcessingViewModel @Inject constructor(
                     val operationLocalService = OperationLocalService(context, uiState.value.timestamp)
                     operationLocalService.backupPackages()
                     operationLocalService.destroyService()
+                    onCompleted()
                 }
             }
     }

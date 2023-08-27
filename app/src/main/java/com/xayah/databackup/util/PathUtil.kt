@@ -23,4 +23,8 @@ object PathUtil {
     fun getTreePath(): String = "${getBackupSavePath()}/tree"
 
     fun getPackageUserPath(userId: Int): String = "/data/user/${userId}"
+    fun getPackageUserDePath(userId: Int): String = "/data/user_de/${userId}"
+    fun getPackageDataPath(userId: Int): String = "/data/media/${userId}/Android/data"
+    fun getPackageObbPath(userId: Int): String = "/data/media/${userId}/Android/obb"
+    fun getPackageMediaPath(userId: Int): String = "/data/media/${userId}/Android/media"
 }

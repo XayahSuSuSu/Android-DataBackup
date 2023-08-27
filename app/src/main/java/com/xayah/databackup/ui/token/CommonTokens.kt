@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.token
 
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 object CommonTokens {
     val None = 0.dp
@@ -11,4 +12,5 @@ object CommonTokens {
     val PaddingSmall = 8.dp
     val PaddingMedium = 16.dp
     val PaddingLarge = 24.dp
+    val EmojiLargeSize = 100.sp
 }

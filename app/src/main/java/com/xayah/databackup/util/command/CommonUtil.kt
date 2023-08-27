@@ -3,10 +3,11 @@ package com.xayah.databackup.util.command
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.DataBackupApplication
+import com.xayah.databackup.data.LogCmdType
 import com.xayah.databackup.util.ConstantUtil
+import com.xayah.databackup.util.LogUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,30 +24,35 @@ object CommonUtil {
         clipboardManager.setPrimaryClip(ClipData.newPlainText(ConstantUtil.ClipDataLabel, content))
     }
 
+    suspend fun execute(cmd: String): Shell.Result = runOnIO {
+        Shell.cmd(cmd).exec().also { result ->
+            if (result.code == 127) {
+                // If the code is 127, the shell may have been dead.
+                DataBackupApplication.Companion.EnvInitializer.initShell(
+                    Shell.getShell(),
+                    DataBackupApplication.application
+                )
+            }
+        }
+    }
+
     /**
      * Execution functions encapsulated by Log
      */
-    suspend fun execute(cmd: String, logcat: Boolean = true): Shell.Result {
-        val tag = object {}.javaClass.enclosingMethod?.name
-
-        val result = runOnIO {
-            if (logcat) Log.d(tag, "SHELL_IN: $cmd")
-            Shell.cmd(cmd).exec().apply {
-                if (logcat) for (i in this.out) Log.d(tag, "SHELL_OUT: $i")
+    suspend fun LogUtil.executeWithLog(logId: Long, cmd: String): Shell.Result = runOnIO {
+        logCmd(logId, LogCmdType.SHELL_IN, cmd)
+        Shell.cmd(cmd).exec().also { result ->
+            for (line in result.out) logCmd(logId, LogCmdType.SHELL_OUT, line)
+            if (result.code == 127) {
+                // If the code is 127, the shell may have been dead.
+                DataBackupApplication.Companion.EnvInitializer.initShell(
+                    Shell.getShell(),
+                    DataBackupApplication.application
+                )
+                logCmd(logId, LogCmdType.SHELL_OUT, "The shell may have been dead.")
             }
+            logCmd(logId, LogCmdType.SHELL_CODE, result.code.toString())
         }
-
-        if (result.code == 127) {
-            // If the code is 127, the shell may have been dead.
-            DataBackupApplication.Companion.EnvInitializer.initShell(
-                Shell.getShell(),
-                DataBackupApplication.application
-            )
-
-            if (logcat) Log.d(tag, "The shell may have been dead.")
-        }
-
-        return result
     }
 
     fun Shell.Result.outString(): String {

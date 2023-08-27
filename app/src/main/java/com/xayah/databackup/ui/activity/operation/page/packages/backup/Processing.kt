@@ -35,10 +35,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
+import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
+import com.xayah.databackup.ui.activity.main.router.navigateAndPopBackStack
+import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.BodySmallBoldText
 import com.xayah.databackup.ui.component.OperationCard
 import com.xayah.databackup.ui.component.OperationCardConfig
 import com.xayah.databackup.ui.component.ProcessingTopBar
+import com.xayah.databackup.ui.component.SlotScope
 import com.xayah.databackup.ui.component.TitleLargeBoldText
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.WaverImage
@@ -56,7 +60,7 @@ import java.io.File
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun PackageBackupProcessing() {
+fun SlotScope.PackageBackupProcessing() {
     val viewModel = hiltViewModel<ProcessingViewModel>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
@@ -70,7 +74,7 @@ fun PackageBackupProcessing() {
     val selectedBothCount by viewModel.uiState.value.selectedBothCount.collectAsState(initial = 0)
     val operationCount by viewModel.uiState.value.operationCount.collectAsState(initial = 0)
     val totalProgressAnimation: Float by animateFloatAsState(
-        if (selectedBothCount == 0) 0f else operationCount.toFloat() / selectedBothCount,
+        if (selectedBothCount == 0) 0f else (operationCount.toFloat() - 1).coerceAtLeast(0F) / selectedBothCount,
         label = AnimationTokens.AnimateFloatAsStateLabel,
         animationSpec = tween(durationMillis = AnimationTokens.TweenDuration)
     )
@@ -126,7 +130,11 @@ fun PackageBackupProcessing() {
     }
 
     LaunchedEffect(null) {
-        viewModel.backupPackages()
+        viewModel.backupPackages {
+            withContext(Dispatchers.Main) {
+                navController.navigateAndPopAllStack(OperationRoutes.PackageBackupCompletion.route)
+            }
+        }
     }
 
     Scaffold(

@@ -205,7 +205,21 @@ fun ProcessingTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String) {
     val context = LocalContext.current
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            ArrowBackButton {
+                (context as ComponentActivity).finish()
+            }
+        },
+    )
+}
 
+@ExperimentalMaterial3Api
+@Composable
+fun CompletionTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String) {
+    val context = LocalContext.current
+    CenterAlignedTopAppBar(
+        title = { TopBarTitle(text = title) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             ArrowBackButton {

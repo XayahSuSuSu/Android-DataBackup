@@ -3,6 +3,7 @@ package com.xayah.databackup.ui.component
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -53,5 +54,18 @@ fun GridItemPackage(packageName: String, label: String) {
             contentDescription = null
         )
         LabelSmallText(text = label, textAlign = TextAlign.Center)
+    }
+}
+
+data class GridItemCompletionConfig(val emoji: EmojiString, val title: String, val content: String)
+
+@Composable
+fun GridItemCompletion(config: GridItemCompletionConfig) {
+    Row(horizontalArrangement = Arrangement.spacedBy(GridItemTokens.PaddingTiny), verticalAlignment = Alignment.CenterVertically) {
+        EmojiText(emoji = config.emoji, size = GridItemTokens.EmojiSize)
+        Column {
+            BodySmallText(text = config.title)
+            TitleLargeBoldText(text = config.content)
+        }
     }
 }

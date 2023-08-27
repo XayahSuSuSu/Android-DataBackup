@@ -7,16 +7,17 @@ import com.xayah.databackup.data.PackageBackupEntireDao
 import com.xayah.databackup.data.PackageBackupManifest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 data class ManifestUiState(
     val packageBackupEntireDao: PackageBackupEntireDao,
 ) {
-    val bothPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveBothPackages()
-    val apkOnlyPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveAPKOnlyPackages()
-    val dataOnlyPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveDataOnlyPackages()
-    val selectedAPKs: Flow<Int> = packageBackupEntireDao.countSelectedAPKs()
-    val selectedData: Flow<Int> = packageBackupEntireDao.countSelectedData()
+    val bothPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveBothPackages().distinctUntilChanged()
+    val apkOnlyPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveAPKOnlyPackages().distinctUntilChanged()
+    val dataOnlyPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveDataOnlyPackages().distinctUntilChanged()
+    val selectedAPKs: Flow<Int> = packageBackupEntireDao.countSelectedAPKs().distinctUntilChanged()
+    val selectedData: Flow<Int> = packageBackupEntireDao.countSelectedData().distinctUntilChanged()
 }
 
 @HiltViewModel

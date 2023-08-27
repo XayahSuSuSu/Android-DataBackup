@@ -13,8 +13,8 @@ object OperationMask {
     const val Apk = 2 // 10
     const val Both = 3 // 11
 
-    fun isApkSelected(packageInfo: PackageBackupEntire): Boolean = packageInfo.operationCode and Apk == Apk
-    fun isDataSelected(packageInfo: PackageBackupEntire): Boolean = packageInfo.operationCode and Data == Data
+    fun isApkSelected(opCode: Int): Boolean = opCode and Apk == Apk
+    fun isDataSelected(opCode: Int): Boolean = opCode and Data == Data
 }
 
 /**
@@ -78,4 +78,14 @@ data class PackageBackupActivate(
 data class PackageBackupManifest(
     @PrimaryKey var packageName: String,
     var label: String,
+)
+
+/**
+ * For operation info in [com.xayah.databackup.service.OperationLocalServiceImpl.backupPackages].
+ */
+@Entity
+data class PackageBackupOp(
+    @PrimaryKey var packageName: String,
+    var label: String,
+    var operationCode: Int,
 )

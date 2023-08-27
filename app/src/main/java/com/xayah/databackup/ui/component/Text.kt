@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 
 @Composable
 fun TopBarTitle(modifier: Modifier = Modifier, textAlign: TextAlign? = null, text: String) {
@@ -187,4 +188,16 @@ fun LabelSmallText(modifier: Modifier = Modifier, textAlign: TextAlign? = null, 
 @Composable
 fun TabText(text: String) {
     Text(text = text, maxLines = 2, overflow = TextOverflow.Ellipsis)
+}
+
+enum class EmojiString(val emoji: String) {
+    PARTY_POPPER("🎉"),
+    ALARM_CLOCK("⏰"),
+    SPARKLING_HEART("💖"),
+    BROKEN_HEART("💔"),
+}
+
+@Composable
+fun EmojiText(emoji: EmojiString, size: TextUnit) {
+    Text(text = emoji.emoji, fontSize = size)
 }

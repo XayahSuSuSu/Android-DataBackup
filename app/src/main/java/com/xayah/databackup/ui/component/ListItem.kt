@@ -58,8 +58,8 @@ fun ListItemPackage(
     val viewModel = hiltViewModel<ListViewModel>()
     val scope = rememberCoroutineScope()
     val icon = remember { mutableStateOf<Any>(0) }
-    var apkSelected by remember { mutableStateOf(OperationMask.isApkSelected(packageInfo)) }
-    var dataSelected by remember { mutableStateOf(OperationMask.isDataSelected(packageInfo)) }
+    var apkSelected by remember { mutableStateOf(OperationMask.isApkSelected(packageInfo.operationCode)) }
+    var dataSelected by remember { mutableStateOf(OperationMask.isDataSelected(packageInfo.operationCode)) }
     LaunchedEffect(null) {
         // Read icon from cached internal dir.
         tryOn {
@@ -75,8 +75,8 @@ fun ListItemPackage(
             scope.launch {
                 packageInfo.operationCode =
                     if (packageInfo.operationCode == OperationMask.Both) OperationMask.None else OperationMask.Both
-                apkSelected = OperationMask.isApkSelected(packageInfo)
-                dataSelected = OperationMask.isDataSelected(packageInfo)
+                apkSelected = OperationMask.isApkSelected(packageInfo.operationCode)
+                dataSelected = OperationMask.isDataSelected(packageInfo.operationCode)
                 viewModel.updatePackage(packageInfo)
             }
         },
@@ -130,7 +130,7 @@ fun ListItemPackage(
                     onClick = {
                         scope.launch {
                             packageInfo.operationCode = packageInfo.operationCode xor OperationMask.Apk
-                            apkSelected = OperationMask.isApkSelected(packageInfo)
+                            apkSelected = OperationMask.isApkSelected(packageInfo.operationCode)
                             viewModel.updatePackage(packageInfo)
                         }
                     },
@@ -152,7 +152,7 @@ fun ListItemPackage(
                     onClick = {
                         scope.launch {
                             packageInfo.operationCode = packageInfo.operationCode xor OperationMask.Data
-                            dataSelected = OperationMask.isDataSelected(packageInfo)
+                            dataSelected = OperationMask.isDataSelected(packageInfo.operationCode)
                             viewModel.updatePackage(packageInfo)
                         }
                     },

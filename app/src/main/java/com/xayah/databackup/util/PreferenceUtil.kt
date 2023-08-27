@@ -2,6 +2,8 @@ package com.xayah.databackup.util
 
 import android.content.Context
 import com.xayah.databackup.R
+import com.xayah.databackup.data.OperationState
+import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 
@@ -11,10 +13,10 @@ enum class CompressionType(val type: String, val suffix: String, val para: Strin
     LZ4("lz4", "tar.lz4", "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4");
 
     companion object {
-        fun of(name: String): CompressionType {
+        fun of(name: String?): CompressionType {
             return tryOn(
                 block = {
-                    CompressionType.valueOf(name.uppercase())
+                    CompressionType.valueOf(name!!.uppercase())
                 },
                 onException = {
                     ZSTD
@@ -31,6 +33,37 @@ enum class DataType(val type: String) {
     PACKAGE_OBB("obb"),
     PACKAGE_MEDIA("media"),            // /data/media/$user_id/Android/media
     MEDIA_MEDIA("media");
+
+    fun origin(userId: Int): String = when (this) {
+        PACKAGE_USER -> PathUtil.getPackageUserPath(userId)
+        PACKAGE_USER_DE -> PathUtil.getPackageUserDePath(userId)
+        PACKAGE_DATA -> PathUtil.getPackageDataPath(userId)
+        PACKAGE_OBB -> PathUtil.getPackageObbPath(userId)
+        PACKAGE_MEDIA -> PathUtil.getPackageMediaPath(userId)
+        else -> ""
+    }
+
+    fun updateEntityLog(entity: PackageBackupOperation, msg: String) {
+        when (this) {
+            PACKAGE_USER -> entity.userLog = msg
+            PACKAGE_USER_DE -> entity.userDeLog = msg
+            PACKAGE_DATA -> entity.dataLog = msg
+            PACKAGE_OBB -> entity.obbLog = msg
+            PACKAGE_MEDIA -> entity.mediaLog = msg
+            else -> {}
+        }
+    }
+
+    fun updateEntityState(entity: PackageBackupOperation, state: OperationState) {
+        when (this) {
+            PACKAGE_USER -> entity.userState = state
+            PACKAGE_USER_DE -> entity.userDeState = state
+            PACKAGE_DATA -> entity.dataState = state
+            PACKAGE_OBB -> entity.obbState = state
+            PACKAGE_MEDIA -> entity.mediaState = state
+            else -> {}
+        }
+    }
 
     companion object {
         fun of(name: String): DataType {
@@ -99,7 +132,7 @@ fun Context.saveCompressionType(ct: CompressionType) {
 }
 
 fun Context.readCompressionType(): CompressionType {
-    return CompressionType.of(readPreferencesString("compression_type") ?: CompressionType.ZSTD.type)
+    return CompressionType.of(readPreferencesString("compression_type"))
 }
 
 fun Context.saveCompatibleMode(value: Boolean) {
