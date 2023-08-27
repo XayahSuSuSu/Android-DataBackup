@@ -28,13 +28,13 @@ class LogUtil @Inject constructor(private val logDao: LogDao) {
 
     private val startTimestamp: Long = DateUtil.getTimestamp()
 
-    fun log(tag: String, msg: String): Long {
+    suspend fun log(tag: String, msg: String): Long = withContext(Dispatchers.IO) {
         val logEntity = LogEntity(startTimestamp = startTimestamp, tag = tag, msg = msg)
-        return logDao.insert(logEntity)
+        logDao.insert(logEntity)
     }
 
-    fun logCmd(logId: Long, type: LogCmdType, msg: String): Long {
+    suspend fun logCmd(logId: Long, type: LogCmdType, msg: String): Long = withContext(Dispatchers.IO) {
         val cmdEntity = CmdEntity(logId = logId, type = type, msg = msg)
-        return logDao.insert(cmdEntity)
+        logDao.insert(cmdEntity)
     }
 }
