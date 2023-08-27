@@ -93,7 +93,7 @@ android {
     applicationVariants.all {
         outputs.forEach { output ->
             (output as BaseVariantOutputImpl).outputFileName =
-                "DataBackup-${versionName}-${productFlavors[0].name}-${buildType.name}.apk"
+                "DataBackup-${versionName}-${productFlavors[0].name}-${productFlavors[1].name}-${buildType.name}.apk"
         }
     }
 }

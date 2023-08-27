@@ -30,7 +30,7 @@ coil-compose = "2.4.0"
 hiddenapibypass = "4.3"
 
 # plugins
-android-gradle-plugin = "8.1.0"
+android-gradle-plugin = "8.1.1"
 kotlin = "1.8.10"
 hilt = "2.44"
 ksp-kotlin = "1.8.10-1.0.9"
