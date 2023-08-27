@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.activity.operation.page.packages.backup
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
@@ -39,6 +41,7 @@ import com.xayah.databackup.ui.token.CommonTokens
 @ExperimentalMaterial3Api
 @Composable
 fun PackageBackupCompletion() {
+    val context = LocalContext.current
     val viewModel = hiltViewModel<CompletionViewModel>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val relativeTime = viewModel.uiState.value.relativeTime
@@ -59,7 +62,9 @@ fun PackageBackupCompletion() {
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 modifier = Modifier.padding(CommonTokens.PaddingMedium),
-                onClick = {},
+                onClick = {
+                    (context as ComponentActivity).finish()
+                },
                 expanded = true,
                 icon = { Icon(imageVector = Icons.Rounded.KeyboardArrowLeft, contentDescription = null) },
                 text = { Text(text = stringResource(R.string.word_return)) },
