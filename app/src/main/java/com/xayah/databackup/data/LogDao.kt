@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LogDao {
     @Upsert(entity = LogEntity::class)
-    suspend fun insert(item: LogEntity): Long
+    suspend fun upsert(item: LogEntity): Long
 
     @Upsert(entity = CmdEntity::class)
-    suspend fun insert(item: CmdEntity): Long
+    suspend fun upsert(item: CmdEntity): Long
 
     @Transaction
     @Query("SELECT * FROM LogEntity")

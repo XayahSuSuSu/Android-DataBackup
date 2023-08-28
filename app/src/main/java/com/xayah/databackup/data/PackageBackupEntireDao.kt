@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PackageBackupEntireDao {
     @Upsert(entity = PackageBackupEntire::class)
-    suspend fun insert(items: List<PackageBackupUpdate>)
+    suspend fun upsert(items: List<PackageBackupUpdate>)
 
     @Update(entity = PackageBackupEntire::class)
     suspend fun update(items: List<PackageBackupActivate>)

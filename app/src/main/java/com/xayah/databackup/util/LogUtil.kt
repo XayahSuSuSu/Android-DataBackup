@@ -30,11 +30,11 @@ class LogUtil @Inject constructor(private val logDao: LogDao) {
 
     suspend fun log(tag: String, msg: String): Long = withContext(Dispatchers.IO) {
         val logEntity = LogEntity(startTimestamp = startTimestamp, tag = tag, msg = msg)
-        logDao.insert(logEntity)
+        logDao.upsert(logEntity)
     }
 
     suspend fun logCmd(logId: Long, type: LogCmdType, msg: String): Long = withContext(Dispatchers.IO) {
         val cmdEntity = CmdEntity(logId = logId, type = type, msg = msg)
-        logDao.insert(cmdEntity)
+        logDao.upsert(cmdEntity)
     }
 }

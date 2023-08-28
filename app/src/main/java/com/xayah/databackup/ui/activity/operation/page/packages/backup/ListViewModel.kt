@@ -28,6 +28,6 @@ class ListViewModel @Inject constructor(private val packageBackupEntireDao: Pack
 
     suspend fun inactivatePackages() = packageBackupEntireDao.updateActive(false)
     suspend fun activatePackages(items: List<PackageBackupActivate>) = packageBackupEntireDao.update(items)
-    suspend fun updatePackages(items: List<PackageBackupUpdate>) = packageBackupEntireDao.insert(items)
+    suspend fun updatePackages(items: List<PackageBackupUpdate>) = packageBackupEntireDao.upsert(items)
     suspend fun updatePackage(item: PackageBackupEntire) = packageBackupEntireDao.update(item)
 }
