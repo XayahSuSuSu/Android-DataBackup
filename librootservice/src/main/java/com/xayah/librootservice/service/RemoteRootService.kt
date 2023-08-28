@@ -107,6 +107,10 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun mkdirs(path: String): Boolean = getService().mkdirs(path)
 
+    suspend fun copyRecursively(path: String, targetPath: String, overwrite: Boolean): Boolean = getService().copyRecursively(path, targetPath, overwrite)
+
+    suspend fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean = getService().copyTo(path, targetPath, overwrite)
+
     suspend fun writeText(text: String, path: String, context: Context): Boolean {
         var state = true
         val tmpFilePath = "${context.cacheDir.path}/tmp"
@@ -120,6 +124,8 @@ class RemoteRootService(private val context: Context) {
 
 
     suspend fun exists(path: String): Boolean = getService().exists(path)
+
+    suspend fun createNewFile(path: String): Boolean = getService().createNewFile(path)
 
     suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)

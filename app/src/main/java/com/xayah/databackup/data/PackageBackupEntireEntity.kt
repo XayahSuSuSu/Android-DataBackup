@@ -88,4 +88,6 @@ data class PackageBackupOp(
     @PrimaryKey var packageName: String,
     var label: String,
     var operationCode: Int,
+    var versionName: String,
+    var versionCode: Long,
 )

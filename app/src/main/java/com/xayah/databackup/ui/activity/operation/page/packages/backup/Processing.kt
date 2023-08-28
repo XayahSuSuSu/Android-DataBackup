@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,6 +39,7 @@ import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.BodySmallBoldText
+import com.xayah.databackup.ui.component.Loader
 import com.xayah.databackup.ui.component.OperationCard
 import com.xayah.databackup.ui.component.OperationCardConfig
 import com.xayah.databackup.ui.component.ProcessingTopBar
@@ -128,14 +130,6 @@ fun SlotScope.PackageBackupProcessing() {
         }
     }
 
-    LaunchedEffect(null) {
-        viewModel.backupPackages {
-            withContext(Dispatchers.Main) {
-                navController.navigateAndPopAllStack(OperationRoutes.PackageBackupCompletion.route)
-            }
-        }
-    }
-
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -152,32 +146,44 @@ fun SlotScope.PackageBackupProcessing() {
             TopSpacer(innerPadding = innerPadding)
 
             Box(modifier = Modifier.weight(1f)) {
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .paddingHorizontal(CommonTokens.PaddingMedium)
-                        .paddingVertical(CommonTokens.PaddingMedium)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)
-                    ) {
-                        WaverImage(size = CommonTokens.IconLargeSize, sourceBitmap = icon, progress = progressAnimation)
-                        Column(modifier = Modifier.weight(1f)) {
-                            TitleLargeBoldText(text = label)
-                            BodySmallBoldText(text = packageName)
+                Loader(
+                    modifier = Modifier.fillMaxSize(),
+                    onLoading = {
+                        viewModel.backupPackages {
+                            withContext(Dispatchers.Main) {
+                                navController.navigateAndPopAllStack(OperationRoutes.PackageBackupCompletion.route)
+                            }
+                        }
+                    },
+                    content = {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(rememberScrollState())
+                                .paddingHorizontal(CommonTokens.PaddingMedium)
+                                .paddingVertical(CommonTokens.PaddingMedium)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)
+                            ) {
+                                WaverImage(size = CommonTokens.IconLargeSize, sourceBitmap = icon, progress = progressAnimation)
+                                Column(modifier = Modifier.weight(1f)) {
+                                    TitleLargeBoldText(text = label)
+                                    BodySmallBoldText(text = packageName)
+                                }
+                            }
+
+                            Divider()
+
+                            operationCardConfigs.forEach { config ->
+                                OperationCard(title = config.title, content = config.content, state = config.state, icon = config.icon)
+                            }
                         }
                     }
-
-                    Divider()
-
-                    operationCardConfigs.forEach { config ->
-                        OperationCard(title = config.title, content = config.content, state = config.state, icon = config.icon)
-                    }
-                }
+                )
             }
         }
     }

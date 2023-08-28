@@ -48,14 +48,24 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         }
     }
 
+    override fun copyRecursively(path: String, targetPath: String, overwrite: Boolean): Boolean = synchronized(lock) {
+        tryWithBoolean {
+            File(path).copyRecursively(target = File(targetPath), overwrite = overwrite)
+        }
+    }
+
     override fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean = synchronized(lock) {
         tryWithBoolean {
-            File(path).copyTo(File(targetPath), overwrite)
+            File(path).copyTo(target = File(targetPath), overwrite = overwrite)
         }
     }
 
     override fun exists(path: String): Boolean = synchronized(lock) {
         tryOn(block = { File(path).exists() }, onException = { false })
+    }
+
+    override fun createNewFile(path: String): Boolean = synchronized(lock) {
+        tryOn(block = { File(path).createNewFile() }, onException = { false })
     }
 
     /**

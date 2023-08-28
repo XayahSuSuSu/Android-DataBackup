@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -18,7 +19,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -31,6 +31,7 @@ import com.xayah.databackup.ui.component.EmojiText
 import com.xayah.databackup.ui.component.GridItemCompletion
 import com.xayah.databackup.ui.component.GridItemCompletionConfig
 import com.xayah.databackup.ui.component.HeadlineMediumBoldText
+import com.xayah.databackup.ui.component.Loader
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.component.paddingHorizontal
@@ -53,10 +54,6 @@ fun PackageBackupCompletion() {
         GridItemCompletionConfig(emoji = EmojiString.ALARM_CLOCK, title = stringResource(R.string.time), content = relativeTime),
     )
 
-    LaunchedEffect(null) {
-        viewModel.initializeUiState()
-    }
-
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
@@ -77,23 +74,31 @@ fun PackageBackupCompletion() {
             TopSpacer(innerPadding = innerPadding)
 
             Box(modifier = Modifier.weight(1f)) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .paddingHorizontal(CommonTokens.PaddingMedium),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    EmojiText(emoji = EmojiString.PARTY_POPPER, size = CommonTokens.EmojiLargeSize)
-                    HeadlineMediumBoldText(text = stringResource(R.string.backup_completed))
-                    Divider(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium))
-                    VerticalGrid(
-                        columns = 2,
-                        count = completionItems.size,
-                        verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium),
-                    ) { index ->
-                        GridItemCompletion(config = completionItems[index])
+                Loader(
+                    modifier = Modifier.fillMaxSize(),
+                    onLoading = {
+                        viewModel.initializeUiState()
+                    },
+                    content = {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .paddingHorizontal(CommonTokens.PaddingMedium),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            EmojiText(emoji = EmojiString.PARTY_POPPER, size = CommonTokens.EmojiLargeSize)
+                            HeadlineMediumBoldText(text = stringResource(R.string.backup_completed))
+                            Divider(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium))
+                            VerticalGrid(
+                                columns = 2,
+                                count = completionItems.size,
+                                verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium),
+                            ) { index ->
+                                GridItemCompletion(config = completionItems[index])
+                            }
+                        }
                     }
-                }
+                )
             }
         }
     }

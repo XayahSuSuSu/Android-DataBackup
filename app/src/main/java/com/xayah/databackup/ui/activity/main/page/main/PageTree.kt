@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 
 private suspend fun DialogState.openSaveDialog(context: Context, text: String) {
     val remoteRootService = RemoteRootService(context)
-    val filePath = "${PathUtil.getTreePath()}/tree_${DateUtil.getTimestamp()}"
+    val filePath = "${PathUtil.getTreeSavePath()}/tree_${DateUtil.getTimestamp()}"
     var msg: String? = null
 
     open(
@@ -92,7 +92,7 @@ fun SlotScope.PageTree() {
                         .paddingTop(CommonTokens.PaddingSmall)
                         .paddingHorizontal(CommonTokens.PaddingSmall)
                 ) {
-                    SelectionContainer() {
+                    SelectionContainer {
                         Text(
                             text = text,
                             modifier = Modifier

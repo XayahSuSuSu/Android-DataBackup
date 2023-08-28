@@ -8,12 +8,17 @@ import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.PackageBackupEntireDao
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageBackupOperationDao
+import com.xayah.databackup.data.PackageRestoreEntire
+import com.xayah.databackup.data.PackageRestoreEntireDao
 import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.LogUtil
+import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.CommonUtil.runOnIO
 import com.xayah.databackup.util.command.OperationUtil
 import com.xayah.databackup.util.command.PreparationUtil
+import com.xayah.databackup.util.databasePath
+import com.xayah.databackup.util.iconPath
 import com.xayah.librootservice.service.RemoteRootService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.sync.Mutex
@@ -44,6 +49,9 @@ class OperationLocalServiceImpl : Service() {
 
     @Inject
     lateinit var packageBackupOperationDao: PackageBackupOperationDao
+
+    @Inject
+    lateinit var packageRestoreEntireDao: PackageRestoreEntireDao
 
     suspend fun backupPackages(timestamp: Long) {
         val logTag = "Packages backup"
@@ -101,7 +109,40 @@ class OperationLocalServiceImpl : Service() {
                     packageBackupOperation.packageState = packageBackupOperation.isSucceed
                     packageBackupOperation.endTimestamp = DateUtil.getTimestamp()
                     packageBackupOperationDao.upsert(packageBackupOperation)
+
+                    // Insert restore config into database.
+                    if (packageBackupOperation.isSucceed) {
+                        val restoreEntire = PackageRestoreEntire(
+                            packageName = currentPackage.packageName,
+                            label = currentPackage.label,
+                            backupOpCode = currentPackage.operationCode,
+                            operationCode = OperationMask.None,
+                            timestamp = timestamp,
+                            versionName = currentPackage.versionName,
+                            versionCode = currentPackage.versionCode,
+                        )
+                        packageRestoreEntireDao.upsert(restoreEntire)
+                    }
                 }
+
+                // Restore keyboard and services.
+                if (keyboard.isNotEmpty()) {
+                    PreparationUtil.setKeyboard(keyboard)
+                    logUtil.log(logTag, "Keyboard restored: $keyboard")
+                } else {
+                    logUtil.log(logTag, "Keyboard is empty, skip restoring.")
+                }
+                if (services.isNotEmpty()) {
+                    PreparationUtil.setAccessibilityServices(services)
+                    logUtil.log(logTag, "Services restored: $services")
+                } else {
+                    logUtil.log(logTag, "Service is empty, skip restoring.")
+                }
+
+                // Backup database and icons.
+                remoteRootService.copyRecursively(path = context.iconPath(), targetPath = PathUtil.getIconSavePath(), overwrite = true)
+                remoteRootService.createNewFile(path = PathUtil.getIconNoMediaSavePath())
+                remoteRootService.copyRecursively(path = context.databasePath(), targetPath = PathUtil.getDatabaseSavePath(), overwrite = true)
             }
         }
     }
