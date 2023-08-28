@@ -101,6 +101,13 @@ private fun Context.savePreferences(key: String, value: Int) {
     }
 }
 
+private fun Context.savePreferences(key: String, value: Long) {
+    getSharedPreferences(PreferenceName, Context.MODE_PRIVATE).edit().apply {
+        putLong(key, value)
+        apply()
+    }
+}
+
 private fun Context.readPreferencesString(key: String, defValue: String = ""): String? {
     getSharedPreferences(PreferenceName, Context.MODE_PRIVATE).apply {
         return getString(key, defValue)
@@ -116,6 +123,12 @@ private fun Context.readPreferencesBoolean(key: String, defValue: Boolean): Bool
 private fun Context.readPreferencesInt(key: String, defValue: Int): Int {
     getSharedPreferences(PreferenceName, Context.MODE_PRIVATE).apply {
         return getInt(key, defValue)
+    }
+}
+
+private fun Context.readPreferencesLong(key: String, defValue: Long): Long {
+    getSharedPreferences(PreferenceName, Context.MODE_PRIVATE).apply {
+        return getLong(key, defValue)
     }
 }
 
@@ -200,4 +213,12 @@ fun Context.saveExternalBackupSaveChild(child: String) {
 fun Context.readExternalBackupSaveChild(): String {
     return readPreferencesString("backup_save_child_external", ConstantUtil.DefaultBackupChild)
         ?: ConstantUtil.DefaultBackupChild
+}
+
+fun Context.saveIconSaveTime(timestamp: Long) {
+    savePreferences("icon_save_time", timestamp)
+}
+
+fun Context.readIconSaveTime(): Long {
+    return readPreferencesLong("icon_save_time", 0)
 }

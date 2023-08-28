@@ -21,6 +21,7 @@ object PathUtil {
     fun getParentPath(path: String): String = Paths.get(path).parent.pathString
     private fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
     fun getTreePath(): String = "${getBackupSavePath()}/tree"
+    fun getIconPath(context: Context, packageName: String): String = "${context.iconPath()}/${packageName}.png"
 
     fun getPackageUserPath(userId: Int): String = "/data/user/${userId}"
     fun getPackageUserDePath(userId: Int): String = "/data/user_de/${userId}"

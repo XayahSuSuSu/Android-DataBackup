@@ -36,7 +36,6 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
-import com.xayah.databackup.ui.activity.main.router.navigateAndPopBackStack
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.BodySmallBoldText
 import com.xayah.databackup.ui.component.OperationCard
@@ -51,7 +50,7 @@ import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DataType
-import com.xayah.databackup.util.iconPath
+import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -123,7 +122,7 @@ fun SlotScope.PackageBackupProcessing() {
         withContext(Dispatchers.IO) {
             tryOn {
                 // Read icon from cached internal dir.
-                val bytes = File("${context.iconPath()}/${packageName}.png").readBytes()
+                val bytes = File(PathUtil.getIconPath(context, packageName)).readBytes()
                 icon = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             }
         }

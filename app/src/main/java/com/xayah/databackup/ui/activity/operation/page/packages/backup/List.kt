@@ -59,7 +59,11 @@ import com.xayah.databackup.ui.component.emphasizedOffset
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
+import com.xayah.databackup.util.DateUtil
+import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.EnvUtil
+import com.xayah.databackup.util.readIconSaveTime
+import com.xayah.databackup.util.saveIconSaveTime
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryService
 import kotlinx.coroutines.Dispatchers
@@ -120,9 +124,16 @@ fun SlotScope.PackageBackupList() {
             val newPackages = mutableListOf<PackageBackupUpdate>()
             EnvUtil.createIconDirectory(context)
             // Update packages' info.
+            val iconSaveTime = context.readIconSaveTime()
+            val now = DateUtil.getTimestamp()
+            val hasPassedOneDay = DateUtil.getNumberOfDaysPassed(iconSaveTime, now) >= 1
+            if (hasPassedOneDay) context.saveIconSaveTime(now)
             installedPackages.forEachIndexed { index, packageInfo ->
-                val icon = packageInfo.applicationInfo.loadIcon(packageManager)
-                EnvUtil.saveIcon(context, packageInfo.packageName, icon)
+                val iconExists = remoteRootService.exists(PathUtil.getIconPath(context, packageInfo.packageName))
+                if (iconExists.not() || (iconExists && hasPassedOneDay)) {
+                    val icon = packageInfo.applicationInfo.loadIcon(packageManager)
+                    EnvUtil.saveIcon(context, packageInfo.packageName, icon)
+                }
 
                 newPackages.add(
                     PackageBackupUpdate(
@@ -167,7 +178,7 @@ fun SlotScope.PackageBackupList() {
                         .padding(CommonTokens.PaddingMedium)
                         .offset(x = emphasizedOffset),
                     onClick = {
-                        if (selected.not() || state != ListState.Done) emphasizedState = !emphasizedState
+                        if (selected.not()) emphasizedState = !emphasizedState
                         else navController.navigate(OperationRoutes.PackageBackupManifest.route)
                     },
                     expanded = selected || state != ListState.Done,

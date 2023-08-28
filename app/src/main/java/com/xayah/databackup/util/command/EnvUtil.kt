@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.core.graphics.drawable.toBitmap
+import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.binArchivePath
 import com.xayah.databackup.util.binPath
 import com.xayah.databackup.util.filesPath
@@ -105,7 +106,7 @@ object EnvUtil {
                 val byteArray = byteArrayOutputStream.toByteArray()
                 byteArrayOutputStream.flush()
                 byteArrayOutputStream.close()
-                File("${context.iconPath()}/$packageName.png").writeBytes(byteArray)
+                File(PathUtil.getIconPath(context, packageName)).writeBytes(byteArray)
             }
         }
     }
