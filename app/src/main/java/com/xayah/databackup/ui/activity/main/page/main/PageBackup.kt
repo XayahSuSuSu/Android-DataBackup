@@ -32,10 +32,10 @@ import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.operation.OperationActivity
 import com.xayah.databackup.ui.component.CardActionButton
 import com.xayah.databackup.ui.component.DialogState
+import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.Module
 import com.xayah.databackup.ui.component.OverLookCard
 import com.xayah.databackup.ui.component.RadioButtonGroup
-import com.xayah.databackup.ui.component.SlotScope
 import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.RadioTokens
@@ -197,9 +197,11 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.PageBackup() {
+fun PageBackup() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
+    val navController = LocalSlotScope.current!!.navController
     LazyColumn(
         modifier = Modifier.padding(CommonTokens.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingLarge)

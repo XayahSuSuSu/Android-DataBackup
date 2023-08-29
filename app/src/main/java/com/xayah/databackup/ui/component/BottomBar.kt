@@ -14,7 +14,8 @@ import com.xayah.databackup.ui.activity.main.router.navigateAndPopBackStack
 import com.xayah.databackup.util.ConstantUtil
 
 @Composable
-fun SlotScope.MainBottomBar() {
+fun MainBottomBar() {
+    val navController = LocalSlotScope.current!!.navController
     val items = stringArrayResource(id = R.array.bottom_bar_items)
     val icons = listOf(
         ImageVector.vectorResource(R.drawable.ic_rounded_acute),

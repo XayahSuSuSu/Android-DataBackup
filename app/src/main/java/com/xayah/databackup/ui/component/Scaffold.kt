@@ -44,9 +44,9 @@ fun GuideScaffold(
 
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.MainScaffold(
+fun MainScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

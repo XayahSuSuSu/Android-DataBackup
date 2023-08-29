@@ -35,8 +35,8 @@ import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.GridItemPackage
 import com.xayah.databackup.ui.component.ListItemManifest
+import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.ManifestTopBar
-import com.xayah.databackup.ui.component.SlotScope
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
@@ -47,8 +47,9 @@ import com.xayah.databackup.ui.token.GridItemTokens
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.PackageBackupManifest() {
+fun PackageBackupManifest() {
     val viewModel = hiltViewModel<ManifestViewModel>()
+    val navController = LocalSlotScope.current!!.navController
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val selectedTabIndex = remember { mutableIntStateOf(0) }
     val titles =

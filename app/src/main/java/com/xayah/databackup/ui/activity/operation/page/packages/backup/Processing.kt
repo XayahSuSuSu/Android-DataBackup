@@ -40,10 +40,10 @@ import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.BodySmallBoldText
 import com.xayah.databackup.ui.component.Loader
+import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.OperationCard
 import com.xayah.databackup.ui.component.OperationCardConfig
 import com.xayah.databackup.ui.component.ProcessingTopBar
-import com.xayah.databackup.ui.component.SlotScope
 import com.xayah.databackup.ui.component.TitleLargeBoldText
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.WaverImage
@@ -61,8 +61,9 @@ import java.io.File
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.PackageBackupProcessing() {
+fun PackageBackupProcessing() {
     val viewModel = hiltViewModel<ProcessingViewModel>()
+    val navController = LocalSlotScope.current!!.navController
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     var icon: Bitmap? by remember { mutableStateOf(null) }

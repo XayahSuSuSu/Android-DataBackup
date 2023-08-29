@@ -51,9 +51,9 @@ import com.xayah.databackup.data.PackageBackupUpdate
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.ListItemPackage
 import com.xayah.databackup.ui.component.ListTopBar
+import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.SearchBar
 import com.xayah.databackup.ui.component.Serial
-import com.xayah.databackup.ui.component.SlotScope
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.emphasizedOffset
 import com.xayah.databackup.ui.component.paddingHorizontal
@@ -79,9 +79,10 @@ enum class ListState {
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.PackageBackupList() {
+fun PackageBackupList() {
     val context = LocalContext.current
     val viewModel = hiltViewModel<ListViewModel>()
+    val navController = LocalSlotScope.current!!.navController
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val packages = viewModel.uiState.value.packages.collectAsState(initial = listOf())
     val selectedAPKs = viewModel.uiState.value.selectedAPKs.collectAsState(initial = 0)

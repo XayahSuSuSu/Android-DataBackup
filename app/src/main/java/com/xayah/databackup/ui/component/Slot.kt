@@ -1,7 +1,9 @@
 package com.xayah.databackup.ui.component
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
@@ -18,5 +20,10 @@ fun rememberSlotScope(): SlotScope {
 
 data class SlotScope(
     val navController: NavHostController,
-    val dialogSlot: DialogState
+    val dialogSlot: DialogState,
 )
+
+/**
+ * Provide this [androidx.compose.runtime.CompositionLocal] at top-level composable for passing [SlotScope] down through the Composition implicitly.
+ */
+val LocalSlotScope: ProvidableCompositionLocal<SlotScope?> = staticCompositionLocalOf { null }

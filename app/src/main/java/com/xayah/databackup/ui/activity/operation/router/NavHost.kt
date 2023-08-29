@@ -12,39 +12,40 @@ import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBa
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupList
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupManifest
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupProcessing
-import com.xayah.databackup.ui.component.SlotScope
+import com.xayah.databackup.ui.component.LocalSlotScope
 
 
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.OperationNavHost() {
+fun OperationNavHost() {
+    val navController = LocalSlotScope.current!!.navController
     NavHost(
         navController = navController,
         startDestination = OperationRoutes.PackageBackup.route,
     ) {
-        packageBackupGraph(slotScope = this@OperationNavHost)
+        packageBackupGraph()
     }
 }
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
-fun NavGraphBuilder.packageBackupGraph(slotScope: SlotScope) {
+fun NavGraphBuilder.packageBackupGraph() {
     navigation(
         startDestination = OperationRoutes.PackageBackupList.route,
         route = OperationRoutes.PackageBackup.route
     ) {
         composable(OperationRoutes.PackageBackupList.route) {
-            slotScope.PackageBackupList()
+            PackageBackupList()
         }
 
         composable(OperationRoutes.PackageBackupManifest.route) {
-            slotScope.PackageBackupManifest()
+            PackageBackupManifest()
         }
 
         composable(OperationRoutes.PackageBackupProcessing.route) {
-            slotScope.PackageBackupProcessing()
+            PackageBackupProcessing()
         }
         composable(OperationRoutes.PackageBackupCompletion.route) {
             PackageBackupCompletion()

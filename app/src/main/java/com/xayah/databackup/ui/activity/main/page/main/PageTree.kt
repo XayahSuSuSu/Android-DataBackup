@@ -32,7 +32,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.CommonButton
 import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.Loader
-import com.xayah.databackup.ui.component.SlotScope
+import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.TextButton
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingTop
@@ -73,9 +73,10 @@ private suspend fun DialogState.openSaveDialog(context: Context, text: String) {
 }
 
 @Composable
-fun SlotScope.PageTree() {
+fun PageTree() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
     var text by remember { mutableStateOf("") }
 
     Loader(

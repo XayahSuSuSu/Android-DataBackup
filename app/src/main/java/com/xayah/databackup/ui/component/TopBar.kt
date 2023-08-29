@@ -62,8 +62,9 @@ fun GuideTopBar(title: String, icon: ImageVector) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.MainTopBar(scrollBehavior: TopAppBarScrollBehavior) {
+fun MainTopBar(scrollBehavior: TopAppBarScrollBehavior) {
     val context = LocalContext.current
+    val navController = LocalSlotScope.current!!.navController
     val routes = ConstantUtil.MainBottomBarRoutes
     val currentRoute = navController.currentRoute()
 
@@ -179,7 +180,8 @@ internal fun ColumnExtendedTopAppBar(
 
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.ManifestTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, selectedTabIndex: MutableState<Int>, titles: List<String>) {
+fun ManifestTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, selectedTabIndex: MutableState<Int>, titles: List<String>) {
+    val navController = LocalSlotScope.current!!.navController
     ColumnExtendedTopAppBar(
         scrollBehavior = scrollBehavior,
         title = title,

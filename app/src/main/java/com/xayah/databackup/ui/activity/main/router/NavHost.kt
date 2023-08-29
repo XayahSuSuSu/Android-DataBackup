@@ -23,8 +23,8 @@ import com.xayah.databackup.ui.activity.main.page.guide.PageUpdate
 import com.xayah.databackup.ui.activity.main.page.main.PageBackup
 import com.xayah.databackup.ui.activity.main.page.main.PageTree
 import com.xayah.databackup.ui.component.GuideScaffold
+import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.MainScaffold
-import com.xayah.databackup.ui.component.SlotScope
 
 fun NavHostController.navigateAndPopBackStack(route: String) {
     navigate(route) { popBackStack() }
@@ -48,7 +48,7 @@ fun NavHostController.currentRoute(): String? {
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.ScaffoldNavHost(scaffoldNavController: NavHostController) {
+fun ScaffoldNavHost(scaffoldNavController: NavHostController) {
     NavHost(
         navController = scaffoldNavController,
         startDestination = ScaffoldRoutes.Main.route,
@@ -67,7 +67,7 @@ fun SlotScope.ScaffoldNavHost(scaffoldNavController: NavHostController) {
 
         composable(ScaffoldRoutes.Main.route) {
             MainScaffold(scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()) {
-                MainNavHost(navController = navController)
+                MainNavHost(navController = LocalSlotScope.current!!.navController)
             }
         }
     }
@@ -104,7 +104,7 @@ fun GuideNavHost(navController: NavHostController, viewModel: GuideViewModel) {
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
-fun SlotScope.MainNavHost(navController: NavHostController) {
+fun MainNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = MainRoutes.Backup.route,
