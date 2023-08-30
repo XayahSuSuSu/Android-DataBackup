@@ -10,4 +10,5 @@ object MenuTokens {
     val RoundedCornerShapeSize = 16.dp
     val ContainerElevation = 8.dp
     val DropdownMenuVerticalPadding = 0.dp
+    val ModalDropdownMenuPadding = 16.dp
 }

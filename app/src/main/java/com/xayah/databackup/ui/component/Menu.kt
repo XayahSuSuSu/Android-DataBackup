@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -34,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpOffset
@@ -268,24 +271,53 @@ fun ModalDropdownMenu(
 @Composable
 fun ModalStringListDropdownMenu(
     expanded: Boolean,
-    defSelected: String,
+    selectedIndex: Int,
     list: List<String>,
+    maxDisplay: Int? = null,
     onSelected: (index: Int, selected: String) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    var selectedIndex by remember { mutableIntStateOf(list.indexOf(defSelected).coerceAtLeast(0)) }
     ModalDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
-        list.forEachIndexed { index, item ->
-            val selected = index == selectedIndex
-            DropdownMenuItem(
-                modifier = Modifier.background(if (selected) ColorScheme.primaryContainer() else ColorScheme.onPrimary()),
-                text = { Text(modifier = Modifier.paddingHorizontal(16.dp), text = item, color = if (selected) ColorScheme.primary() else Color.Unspecified) },
-                onClick = {
-                    selectedIndex = index
-                    onSelected(selectedIndex, list[selectedIndex])
-                },
-                trailingIcon = { if (selected) Icon(imageVector = Icons.Rounded.Done, contentDescription = null, tint = ColorScheme.primary()) }
-            )
+        var itemHeightPx by remember { mutableIntStateOf(0) }
+        var modifier: Modifier = Modifier
+        if (maxDisplay != null) {
+            val scrollState = rememberScrollState()
+            LaunchedEffect(expanded) {
+                if (expanded) {
+                    // Scroll to selected item.
+                    val itemValue = scrollState.maxValue / list.size
+                    scrollState.scrollTo(itemValue * selectedIndex)
+                }
+            }
+            with(LocalDensity.current) {
+                /**
+                 * If [maxDisplay] is non-null, limit the max height.
+                 */
+                modifier = Modifier
+                    .heightIn(max = ((itemHeightPx * maxDisplay).toDp()))
+                    .verticalScroll(scrollState)
+            }
+        }
+        Column(modifier = modifier) {
+            list.forEachIndexed { index, item ->
+                val selected = index == selectedIndex
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .background(if (selected) ColorScheme.primaryContainer() else ColorScheme.onPrimary())
+                        .onSizeChanged { itemHeightPx = it.height },
+                    text = {
+                        Text(
+                            modifier = Modifier.paddingHorizontal(MenuTokens.ModalDropdownMenuPadding),
+                            text = item,
+                            color = if (selected) ColorScheme.primary() else Color.Unspecified
+                        )
+                    },
+                    onClick = {
+                        onSelected(index, list[index])
+                    },
+                    trailingIcon = { if (selected) Icon(imageVector = Icons.Rounded.Done, contentDescription = null, tint = ColorScheme.primary()) }
+                )
+            }
         }
     }
 }
