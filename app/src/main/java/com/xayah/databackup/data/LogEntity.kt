@@ -2,6 +2,7 @@ package com.xayah.databackup.data
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.xayah.databackup.util.DateUtil
@@ -24,7 +25,7 @@ data class LogEntity(
 /**
  * Shell command records.
  */
-@Entity
+@Entity(foreignKeys = [ForeignKey(entity = LogEntity::class, parentColumns = arrayOf("id"), childColumns = arrayOf("logId"), onDelete = ForeignKey.CASCADE)])
 data class CmdEntity(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     var logId: Long,

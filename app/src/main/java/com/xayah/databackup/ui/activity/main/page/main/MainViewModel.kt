@@ -1,0 +1,99 @@
+package com.xayah.databackup.ui.activity.main.page.main
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.lifecycle.ViewModel
+import com.xayah.databackup.R
+import com.xayah.databackup.ui.component.LocalSlotScope
+import com.xayah.databackup.ui.component.LogTopBar
+import com.xayah.databackup.ui.component.MainBottomBar
+import com.xayah.databackup.ui.component.MainTopBar
+import com.xayah.databackup.ui.component.openFileOpDialog
+import com.xayah.databackup.util.DateUtil
+import com.xayah.databackup.util.PathUtil
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@ExperimentalMaterial3Api
+sealed class MainUiState(
+    val scrollBehavior: TopAppBarScrollBehavior?,
+    val topBar: @Composable () -> Unit = {},
+    val bottomBar: @Composable () -> Unit = {},
+    val floatingActionButton: @Composable () -> Unit = {},
+    val floatingActionButtonPosition: FabPosition = FabPosition.End,
+) {
+    @ExperimentalMaterial3Api
+    class Main(scrollBehavior: TopAppBarScrollBehavior?) : MainUiState(
+        scrollBehavior = scrollBehavior,
+        topBar = {
+            MainTopBar(scrollBehavior = scrollBehavior)
+        },
+        bottomBar = {
+            MainBottomBar()
+        }
+    )
+
+    class Log(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageLogViewModel) : MainUiState(
+        scrollBehavior = scrollBehavior,
+        topBar = {
+            LogTopBar(scrollBehavior = scrollBehavior, viewModel = viewModel)
+        },
+        floatingActionButton = {
+            val context = LocalContext.current
+            val scope = rememberCoroutineScope()
+            val dialogSlot = LocalSlotScope.current!!.dialogSlot
+            val logText = viewModel.uiState.value.logText
+            val selectedIndex = viewModel.uiState.value.selectedIndex
+            ExtendedFloatingActionButton(
+                onClick = {
+                    scope.launch {
+                        if (selectedIndex != -1) {
+                            val filePath = PathUtil.getLogSavePath(timestamp = DateUtil.getTimestamp())
+                            dialogSlot.openFileOpDialog(
+                                context = context,
+                                title = context.getString(R.string.export),
+                                filePath = filePath,
+                                icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_save),
+                                text = logText
+                            )
+                        }
+                    }
+                },
+                expanded = true,
+                icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_rounded_save),
+                        contentDescription = null
+                    )
+                },
+                text = { Text(text = stringResource(id = R.string.export)) },
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    )
+}
+
+@ExperimentalMaterial3Api
+@HiltViewModel
+class MainViewModel @Inject constructor() : ViewModel() {
+    private val _uiState = mutableStateOf<MainUiState>(MainUiState.Main(null))
+    val uiState: State<MainUiState>
+        get() = _uiState
+
+    fun toUiState(uiState: MainUiState) {
+        _uiState.value = uiState
+    }
+}

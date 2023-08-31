@@ -27,7 +27,7 @@ object DateUtil {
      * Format given [timestamp] as date.
      */
     fun formatTimestamp(timestamp: Long): String = ExceptionUtil.tryOn(
-        block = { SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(Date(timestamp)) },
+        block = { SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(Date(timestamp)) },
         onException = { "Unknown" }
     )
 

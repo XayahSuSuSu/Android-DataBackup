@@ -20,7 +20,11 @@ import com.xayah.databackup.ui.activity.main.page.guide.GuideViewModel
 import com.xayah.databackup.ui.activity.main.page.guide.PageEnv
 import com.xayah.databackup.ui.activity.main.page.guide.PageIntro
 import com.xayah.databackup.ui.activity.main.page.guide.PageUpdate
+import com.xayah.databackup.ui.activity.main.page.main.MainUiState
+import com.xayah.databackup.ui.activity.main.page.main.MainViewModel
 import com.xayah.databackup.ui.activity.main.page.main.PageBackup
+import com.xayah.databackup.ui.activity.main.page.main.PageLog
+import com.xayah.databackup.ui.activity.main.page.main.PageLogViewModel
 import com.xayah.databackup.ui.activity.main.page.main.PageTree
 import com.xayah.databackup.ui.component.GuideScaffold
 import com.xayah.databackup.ui.component.LocalSlotScope
@@ -66,8 +70,9 @@ fun ScaffoldNavHost(scaffoldNavController: NavHostController) {
         }
 
         composable(ScaffoldRoutes.Main.route) {
-            MainScaffold(scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()) {
-                MainNavHost(navController = LocalSlotScope.current!!.navController)
+            val mainViewModel = hiltViewModel<MainViewModel>()
+            MainScaffold(viewModel = mainViewModel) {
+                MainNavHost(navController = LocalSlotScope.current!!.navController, viewModel = mainViewModel)
             }
         }
     }
@@ -101,25 +106,43 @@ fun GuideNavHost(navController: NavHostController, viewModel: GuideViewModel) {
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
-fun MainNavHost(navController: NavHostController) {
+fun MainNavHost(navController: NavHostController, viewModel: MainViewModel) {
     NavHost(
         navController = navController,
         startDestination = MainRoutes.Backup.route,
     ) {
         composable(MainRoutes.Backup.route) {
+            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+            LaunchedEffect(null) {
+                viewModel.toUiState(MainUiState.Main(scrollBehavior))
+            }
             PageBackup()
-        }
-        composable(MainRoutes.Tree.route) {
-            PageTree()
         }
         composable(MainRoutes.Restore.route) {
         }
         composable(MainRoutes.Cloud.route) {
         }
         composable(MainRoutes.Settings.route) {
+        }
+        composable(MainRoutes.Tree.route) {
+            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+            LaunchedEffect(null) {
+                viewModel.toUiState(MainUiState.Main(scrollBehavior))
+            }
+            PageTree()
+        }
+        composable(MainRoutes.Log.route) {
+            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+            val logViewModel = hiltViewModel<PageLogViewModel>()
+
+            LaunchedEffect(null) {
+                viewModel.toUiState(MainUiState.Log(scrollBehavior = scrollBehavior, viewModel = logViewModel))
+            }
+            PageLog(viewModel = logViewModel)
         }
     }
 }

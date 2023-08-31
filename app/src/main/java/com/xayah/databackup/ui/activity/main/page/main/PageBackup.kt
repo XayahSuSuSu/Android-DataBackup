@@ -230,7 +230,7 @@ fun PageBackup() {
                         navController.navigate(MainRoutes.Tree.route)
                     },
                     {
-
+                        navController.navigate(MainRoutes.Log.route)
                     }
                 )
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

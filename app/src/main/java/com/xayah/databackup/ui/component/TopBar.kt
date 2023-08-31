@@ -12,9 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -26,6 +30,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -34,8 +42,11 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.main.page.main.PageLogViewModel
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.main.router.currentRoute
 import com.xayah.databackup.ui.theme.ColorScheme
@@ -43,6 +54,8 @@ import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.TopBarTokens
 import com.xayah.databackup.util.ConstantUtil
+import com.xayah.databackup.util.DateUtil
+import kotlinx.coroutines.launch
 import androidx.compose.material3.ColorScheme as MaterialColorScheme
 
 @Composable
@@ -62,7 +75,7 @@ fun GuideTopBar(title: String, icon: ImageVector) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainTopBar(scrollBehavior: TopAppBarScrollBehavior) {
+fun MainTopBar(scrollBehavior: TopAppBarScrollBehavior?) {
     val context = LocalContext.current
     val navController = LocalSlotScope.current!!.navController
     val routes = ConstantUtil.MainBottomBarRoutes
@@ -79,6 +92,63 @@ fun MainTopBar(scrollBehavior: TopAppBarScrollBehavior) {
                     }
             }
         },
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun LogTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageLogViewModel) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val dateList = viewModel.uiState.value.startTimestamps.map { timestamp -> DateUtil.formatTimestamp(timestamp) }
+    val selectedIndex = viewModel.uiState.value.selectedIndex
+    val navController = LocalSlotScope.current!!.navController
+    val routes = ConstantUtil.MainBottomBarRoutes
+    val currentRoute = navController.currentRoute()
+
+    CenterAlignedTopAppBar(
+        title = { TopBarTitle(text = MainRoutes.ofTitle(context, currentRoute)) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            Crossfade(targetState = currentRoute, label = AnimationTokens.CrossFadeLabel) { route ->
+                if ((route in routes).not())
+                    ArrowBackButton {
+                        navController.popBackStack()
+                    }
+            }
+        },
+        actions = {
+            var expanded by remember { mutableStateOf(false) }
+
+            Box(
+                modifier = Modifier.wrapContentSize(Alignment.TopStart)
+            ) {
+                IconButton(onClick = { if (dateList.isNotEmpty()) expanded = true }) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_rounded_unfold_more),
+                        contentDescription = null
+                    )
+                }
+                ModalStringListDropdownMenu(
+                    expanded = expanded,
+                    selectedIndex = selectedIndex,
+                    list = dateList,
+                    maxDisplay = 6,
+                    onSelected = { index, _ ->
+                        scope.launch {
+                            expanded = false
+                            viewModel.setSelectedIndex(index)
+                        }
+                    },
+                    onDismissRequest = { expanded = false })
+            }
+            IconButton(onClick = { scope.launch { viewModel.deleteCurrentLog() } }) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = null
+                )
+            }
+        }
     )
 }
 

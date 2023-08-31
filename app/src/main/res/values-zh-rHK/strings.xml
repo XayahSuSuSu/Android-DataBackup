@@ -58,4 +58,5 @@
     <string name="backup_completed">備份完成</string>
     <string name="word_return">返回</string>
     <string name="time">時間</string>
+    <string name="export">導出</string>
 </resources>

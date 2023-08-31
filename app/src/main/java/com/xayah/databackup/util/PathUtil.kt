@@ -27,10 +27,13 @@ object PathUtil {
 
     // Paths for backup save dir.
     private fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
-    fun getTreeSavePath(): String = "${getBackupSavePath()}/tree"
+    private fun getTreeSavePath(): String = "${getBackupSavePath()}/tree"
+    fun getTreeSavePath(timestamp: Long): String = "${getTreeSavePath()}/tree_${timestamp}"
     fun getIconSavePath(): String = "${getBackupSavePath()}/icon"
     fun getIconNoMediaSavePath(): String = "${getIconSavePath()}/.nomedia"
     fun getDatabaseSavePath(): String = "${getBackupSavePath()}/databases"
+    private fun getLogSavePath(): String = "${getBackupSavePath()}/log"
+    fun getLogSavePath(timestamp: Long): String = "${getLogSavePath()}/log_${timestamp}"
 
     // Paths for processing.
     fun getPackageUserPath(userId: Int): String = "/data/user/${userId}"

@@ -7,12 +7,12 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NavHostController
 import com.xayah.databackup.ui.activity.main.page.guide.GuideViewModel
+import com.xayah.databackup.ui.activity.main.page.main.MainViewModel
 import com.xayah.databackup.ui.token.CommonTokens
 
 @ExperimentalMaterial3Api
@@ -44,18 +44,14 @@ fun GuideScaffold(
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainScaffold(
-    scrollBehavior: TopAppBarScrollBehavior,
-    content: @Composable () -> Unit,
-) {
+fun MainScaffold(viewModel: MainViewModel, content: @Composable () -> Unit) {
+    val uiState = viewModel.uiState.value
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            MainTopBar(scrollBehavior = scrollBehavior)
-        },
-        bottomBar = {
-            MainBottomBar()
-        }
+        modifier = if (uiState.scrollBehavior != null) Modifier.nestedScroll(uiState.scrollBehavior.nestedScrollConnection) else Modifier,
+        topBar = uiState.topBar,
+        bottomBar = uiState.bottomBar,
+        floatingActionButton = uiState.floatingActionButton,
+        floatingActionButtonPosition = uiState.floatingActionButtonPosition
     ) { innerPadding ->
         Column {
             TopSpacer(innerPadding = innerPadding)

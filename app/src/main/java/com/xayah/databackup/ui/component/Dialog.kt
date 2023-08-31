@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.component
 
+import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -14,7 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.xayah.databackup.R
+import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.librootservice.util.ExceptionUtil
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
 /**
@@ -87,4 +92,29 @@ class DialogState {
             }
         }
     }
+}
+
+suspend fun DialogState.openFileOpDialog(context: Context, title: String, filePath: String, icon: ImageVector, text: String) {
+    val remoteRootService = RemoteRootService(context)
+    var msg: String? = null
+
+    open(
+        initialState = false,
+        title = title,
+        icon = icon,
+        onLoading = {
+            withContext(Dispatchers.IO) {
+                ExceptionUtil.tryService(onFailed = { msg = it }) {
+                    remoteRootService.writeText(text, filePath, context)
+                }
+                remoteRootService.destroyService()
+            }
+        },
+        block = { _ ->
+            Text(
+                text = if (msg == null) "${context.getString(R.string.succeed)}: $filePath"
+                else "${context.getString(R.string.failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}"
+            )
+        }
+    )
 }

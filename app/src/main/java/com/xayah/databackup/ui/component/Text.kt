@@ -1,14 +1,17 @@
 package com.xayah.databackup.ui.component
 
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import com.xayah.databackup.ui.theme.JetbrainsMonoFamily
 
 @Composable
 fun TopBarTitle(modifier: Modifier = Modifier, textAlign: TextAlign? = null, text: String) {
@@ -183,6 +186,21 @@ fun LabelSmallText(modifier: Modifier = Modifier, textAlign: TextAlign? = null, 
         style = MaterialTheme.typography.labelSmall,
         textAlign = textAlign,
     )
+}
+
+@Composable
+fun JetbrainsMonoText(modifier: Modifier = Modifier, text: String, style: TextStyle = LocalTextStyle.current) {
+    Text(
+        text = text,
+        modifier = modifier,
+        fontFamily = JetbrainsMonoFamily,
+        style = style,
+    )
+}
+
+@Composable
+fun JetbrainsMonoLabelMediumText(modifier: Modifier = Modifier, text: String) {
+    JetbrainsMonoText(modifier = modifier, text = text, style = MaterialTheme.typography.labelMedium)
 }
 
 @Composable
