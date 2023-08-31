@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -37,6 +36,9 @@ import com.xayah.databackup.ui.component.Module
 import com.xayah.databackup.ui.component.OverLookCard
 import com.xayah.databackup.ui.component.RadioButtonGroup
 import com.xayah.databackup.ui.component.VerticalGrid
+import com.xayah.databackup.ui.component.paddingBottom
+import com.xayah.databackup.ui.component.paddingHorizontal
+import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.ConstantUtil
@@ -203,10 +205,11 @@ fun PageBackup() {
     val dialogSlot = LocalSlotScope.current!!.dialogSlot
     val navController = LocalSlotScope.current!!.navController
     LazyColumn(
-        modifier = Modifier.padding(CommonTokens.PaddingMedium),
+        modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingLarge)
     ) {
         item {
+            Spacer(modifier = Modifier.paddingTop(CommonTokens.PaddingMedium))
             OverLookCard()
         }
 
@@ -288,6 +291,7 @@ fun PageBackup() {
                     )
                 }
             }
+            Spacer(modifier = Modifier.paddingBottom(CommonTokens.PaddingMedium))
         }
     }
 }

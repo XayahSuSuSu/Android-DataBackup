@@ -34,7 +34,7 @@ import javax.inject.Inject
 sealed class MainUiState(
     val scrollBehavior: TopAppBarScrollBehavior?,
     val topBar: @Composable () -> Unit = {},
-    val bottomBar: @Composable () -> Unit = {},
+    val bottomBar: @Composable (() -> Unit)?,
     val floatingActionButton: @Composable () -> Unit = {},
     val floatingActionButtonPosition: FabPosition = FabPosition.End,
 ) {
@@ -63,6 +63,7 @@ sealed class MainUiState(
         topBar = {
             LogTopBar(scrollBehavior = scrollBehavior, viewModel = viewModel)
         },
+        bottomBar = null,
         floatingActionButton = {
             val context = LocalContext.current
             val scope = rememberCoroutineScope()

@@ -48,7 +48,7 @@ fun MainScaffold(viewModel: MainViewModel, content: @Composable () -> Unit) {
     Scaffold(
         modifier = if (uiState.scrollBehavior != null) Modifier.nestedScroll(uiState.scrollBehavior.nestedScrollConnection) else Modifier,
         topBar = uiState.topBar,
-        bottomBar = uiState.bottomBar,
+        bottomBar = uiState.bottomBar ?: {},
         floatingActionButton = uiState.floatingActionButton,
         floatingActionButtonPosition = uiState.floatingActionButtonPosition
     ) { innerPadding ->
@@ -59,7 +59,8 @@ fun MainScaffold(viewModel: MainViewModel, content: @Composable () -> Unit) {
                 content()
             }
 
-            BottomSpacer(innerPadding = innerPadding)
+            // If there's no bottom bar, the navigation bar needs to be transparent.
+            if (uiState.bottomBar != null) BottomSpacer(innerPadding = innerPadding)
         }
     }
 }
