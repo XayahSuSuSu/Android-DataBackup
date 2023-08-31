@@ -17,10 +17,17 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+enum class ProcessingState {
+    Idle,
+    Waiting,
+    Processing,
+}
+
 data class ProcessingUiState(
     val timestamp: Long,
     var effectLaunched: Boolean,
     var effectFinished: Boolean,
+    var effectState: ProcessingState,
     val packageBackupEntireDao: PackageBackupEntireDao,
     val packageBackupOperationDao: PackageBackupOperationDao,
 ) {
@@ -40,6 +47,7 @@ class ProcessingViewModel @Inject constructor(
             timestamp = DateUtil.getTimestamp(),
             effectLaunched = false,
             effectFinished = false,
+            effectState = ProcessingState.Idle,
             packageBackupEntireDao = packageBackupEntireDao,
             packageBackupOperationDao = packageBackupOperationDao
         )
@@ -54,7 +62,14 @@ class ProcessingViewModel @Inject constructor(
                 withIOContext {
                     _uiState.value = uiState.copy(effectLaunched = true)
                     val operationLocalService = OperationLocalService(context, uiState.timestamp)
+                    val preparation = operationLocalService.backupPackagesPreparation()
+
+                    _uiState.value = uiState.copy(effectState = ProcessingState.Processing)
                     operationLocalService.backupPackages()
+
+                    _uiState.value = uiState.copy(effectState = ProcessingState.Waiting)
+                    operationLocalService.backupPackagesAfterwards(preparation)
+
                     operationLocalService.destroyService()
                     _uiState.value = uiState.copy(effectFinished = true)
                 }

@@ -17,6 +17,9 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,6 +71,8 @@ fun PackageBackupProcessing() {
     var icon: Bitmap? by remember { mutableStateOf(null) }
     val uiState = viewModel.uiState.value
     val effectFinished = uiState.effectFinished
+    val effectState = uiState.effectState
+    val snackbarHostState = remember { SnackbarHostState() }
     val latestPackage: PackageBackupOperation? by uiState.latestPackage.collectAsState(null)
     val progressAnimation: Float by animateFloatAsState(
         latestPackage?.progress ?: 0f,
@@ -77,7 +82,7 @@ fun PackageBackupProcessing() {
     val selectedBothCount by uiState.selectedBothCount.collectAsState(initial = 0)
     val operationCount by uiState.operationCount.collectAsState(initial = 0)
     val totalProgressAnimation: Float by animateFloatAsState(
-        if (selectedBothCount == 0) 0f else (operationCount.toFloat() - 1).coerceAtLeast(0F) / selectedBothCount,
+        if (selectedBothCount == 0) 0f else operationCount.toFloat().coerceAtLeast(0F) / selectedBothCount,
         label = AnimationTokens.AnimateFloatAsStateLabel,
         animationSpec = tween(durationMillis = AnimationTokens.TweenDuration)
     )
@@ -137,6 +142,15 @@ fun PackageBackupProcessing() {
         if (effectFinished) navController.navigateAndPopAllStack(OperationRoutes.PackageBackupCompletion.route)
     }
 
+    LaunchedEffect(effectState) {
+        if (effectState == ProcessingState.Waiting) snackbarHostState.showSnackbar(
+            message = context.getString(R.string.wait_for_remaining_data_processing),
+            duration = SnackbarDuration.Indefinite
+        ) else {
+            snackbarHostState.currentSnackbarData?.dismiss()
+        }
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -148,6 +162,7 @@ fun PackageBackupProcessing() {
                 )
             }
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Column {
             TopSpacer(innerPadding = innerPadding)

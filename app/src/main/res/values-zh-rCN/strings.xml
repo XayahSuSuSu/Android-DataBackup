@@ -61,4 +61,5 @@
     <string name="export">导出</string>
     <string name="simplify">精简</string>
     <string name="integral">完整</string>
+    <string name="wait_for_remaining_data_processing">请稍等, 正在处理余下数据🦖</string>
 </resources>

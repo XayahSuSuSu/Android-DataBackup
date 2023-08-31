@@ -53,102 +53,132 @@ class OperationLocalServiceImpl : Service() {
     @Inject
     lateinit var packageRestoreEntireDao: PackageRestoreEntireDao
 
-    suspend fun backupPackages(timestamp: Long) {
-        val logTag = "Packages backup"
+    suspend fun backupPackagesPreparation(): BackupPreparation = withIOContext {
+        mutex.withLock {
+            val logTag = "Packages backup preparation"
+            logUtil.log(logTag, "Started.")
 
-        withIOContext {
-            mutex.withLock {
-                val context = applicationContext
-                val remoteRootService = RemoteRootService(context)
-                val operationUtil = OperationUtil(context, timestamp, logUtil, remoteRootService, packageBackupOperationDao)
+            /**
+             * Somehow the keyboards and accessibility services
+             * will be changed after backing up on some devices,
+             * so we restore them manually.
+             */
+            /**
+             * Somehow the keyboards and accessibility services
+             * will be changed after backing up on some devices,
+             * so we restore them manually.
+             */
+            val (_, keyboard) = PreparationUtil.getKeyboard()
+            val (_, services) = PreparationUtil.getAccessibilityServices()
+            logUtil.log(logTag, "Keyboard: $keyboard")
+            logUtil.log(logTag, "Services: $services")
+            BackupPreparation(keyboard = keyboard, services = services)
+        }
+    }
 
-                logUtil.log(logTag, "Backup started, timestamp: $timestamp, date: ${DateUtil.formatTimestamp(timestamp)}")
+    suspend fun backupPackages(timestamp: Long) = withIOContext {
+        mutex.withLock {
+            val logTag = "Packages backup"
+            val context = applicationContext
+            val remoteRootService = RemoteRootService(context)
+            val operationUtil = OperationUtil(context, timestamp, logUtil, remoteRootService, packageBackupOperationDao)
 
-                /**
-                 * Somehow the keyboards and accessibility services
-                 * will be changed after backing up on some devices,
-                 * so we restore them manually.
-                 */
-                /**
-                 * Somehow the keyboards and accessibility services
-                 * will be changed after backing up on some devices,
-                 * so we restore them manually.
-                 */
-                val (_, keyboard) = PreparationUtil.getKeyboard()
-                val (_, services) = PreparationUtil.getAccessibilityServices()
-                logUtil.log(logTag, "Keyboard: $keyboard")
-                logUtil.log(logTag, "Services: $services")
+            logUtil.log(logTag, "Started.")
+            val packages = packageBackupEntireDao.queryActiveTotalPackages()
+            packages.forEach { currentPackage ->
+                val packageName = currentPackage.packageName
+                val isApkSelected = OperationMask.isApkSelected(currentPackage.operationCode)
+                val isDataSelected = OperationMask.isDataSelected(currentPackage.operationCode)
+                logUtil.log(logTag, "Current package: $packageName")
+                logUtil.log(logTag, "isApkSelected: $isApkSelected")
+                logUtil.log(logTag, "isDataSelected: $isDataSelected")
+                remoteRootService.mkdirs(operationUtil.getPackageItemSavePath(packageName))
 
-                val packages = packageBackupEntireDao.queryActiveTotalPackages()
-                packages.forEach { currentPackage ->
-                    val packageName = currentPackage.packageName
-                    val isApkSelected = OperationMask.isApkSelected(currentPackage.operationCode)
-                    val isDataSelected = OperationMask.isDataSelected(currentPackage.operationCode)
-                    logUtil.log(logTag, "Current package: $packageName")
-                    logUtil.log(logTag, "isApkSelected: $isApkSelected")
-                    logUtil.log(logTag, "isDataSelected: $isDataSelected")
-                    remoteRootService.mkdirs(operationUtil.getPackageItemSavePath(packageName))
-
-                    val packageBackupOperation =
-                        PackageBackupOperation(
-                            packageName = packageName,
-                            timestamp = timestamp,
-                            startTimestamp = DateUtil.getTimestamp(),
-                            endTimestamp = 0,
-                            label = currentPackage.label
-                        ).also { entity ->
-                            entity.id = packageBackupOperationDao.upsert(entity)
-                        }
-
-                    if (isApkSelected)
-                        operationUtil.backupApk(packageBackupOperation, packageName)
-                    if (isDataSelected) {
-                        operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER)
-                        operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER_DE)
-                        operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_DATA)
-                        operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_OBB)
-                        operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_MEDIA)
+                val packageBackupOperation =
+                    PackageBackupOperation(
+                        packageName = packageName,
+                        timestamp = timestamp,
+                        startTimestamp = DateUtil.getTimestamp(),
+                        endTimestamp = 0,
+                        label = currentPackage.label
+                    ).also { entity ->
+                        entity.id = packageBackupOperationDao.upsert(entity)
                     }
 
-                    // Update package state and end time.
-                    packageBackupOperation.packageState = packageBackupOperation.isSucceed
-                    packageBackupOperation.endTimestamp = DateUtil.getTimestamp()
-                    packageBackupOperationDao.upsert(packageBackupOperation)
-
-                    // Insert restore config into database.
-                    if (packageBackupOperation.isSucceed) {
-                        val restoreEntire = PackageRestoreEntire(
-                            packageName = currentPackage.packageName,
-                            label = currentPackage.label,
-                            backupOpCode = currentPackage.operationCode,
-                            operationCode = OperationMask.None,
-                            timestamp = timestamp,
-                            versionName = currentPackage.versionName,
-                            versionCode = currentPackage.versionCode,
-                        )
-                        packageRestoreEntireDao.upsert(restoreEntire)
-                    }
+                if (isApkSelected)
+                    operationUtil.backupApk(packageBackupOperation, packageName)
+                if (isDataSelected) {
+                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER)
+                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER_DE)
+                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_DATA)
+                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_OBB)
+                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_MEDIA)
                 }
 
-                // Restore keyboard and services.
-                if (keyboard.isNotEmpty()) {
-                    PreparationUtil.setKeyboard(keyboard)
-                    logUtil.log(logTag, "Keyboard restored: $keyboard")
-                } else {
-                    logUtil.log(logTag, "Keyboard is empty, skip restoring.")
-                }
-                if (services.isNotEmpty()) {
-                    PreparationUtil.setAccessibilityServices(services)
-                    logUtil.log(logTag, "Services restored: $services")
-                } else {
-                    logUtil.log(logTag, "Service is empty, skip restoring.")
-                }
+                // Update package state and end time.
+                if (packageBackupOperation.isSucceed)
+                    logUtil.log(logTag, "Backup succeed.")
+                else
+                    logUtil.log(logTag, "Backup failed.")
+                packageBackupOperation.packageState = packageBackupOperation.isSucceed
+                packageBackupOperation.endTimestamp = DateUtil.getTimestamp()
+                packageBackupOperationDao.upsert(packageBackupOperation)
 
-                // Backup database and icons.
-                remoteRootService.copyRecursively(path = context.iconPath(), targetPath = PathUtil.getIconSavePath(), overwrite = true)
-                remoteRootService.createNewFile(path = PathUtil.getIconNoMediaSavePath())
-                remoteRootService.copyRecursively(path = context.databasePath(), targetPath = PathUtil.getDatabaseSavePath(), overwrite = true)
+                // Insert restore config into database.
+                if (packageBackupOperation.isSucceed) {
+                    val restoreEntire = PackageRestoreEntire(
+                        packageName = currentPackage.packageName,
+                        label = currentPackage.label,
+                        backupOpCode = currentPackage.operationCode,
+                        operationCode = OperationMask.None,
+                        timestamp = timestamp,
+                        versionName = currentPackage.versionName,
+                        versionCode = currentPackage.versionCode,
+                    )
+                    packageRestoreEntireDao.upsert(restoreEntire)
+                }
             }
+            remoteRootService.destroyService()
+        }
+    }
+
+    suspend fun backupPackagesAfterwards(preparation: BackupPreparation) = withIOContext {
+        mutex.withLock {
+            val logTag = "Packages backup afterwards"
+            val context = applicationContext
+            val remoteRootService = RemoteRootService(context)
+            logUtil.log(logTag, "Started.")
+
+            // Restore keyboard and services.
+            if (preparation.keyboard.isNotEmpty()) {
+                PreparationUtil.setKeyboard(preparation.keyboard)
+                logUtil.log(logTag, "Keyboard restored: ${preparation.keyboard}")
+            } else {
+                logUtil.log(logTag, "Keyboard is empty, skip restoring.")
+            }
+            if (preparation.services.isNotEmpty()) {
+                PreparationUtil.setAccessibilityServices(preparation.services)
+                logUtil.log(logTag, "Services restored: ${preparation.services}")
+            } else {
+                logUtil.log(logTag, "Service is empty, skip restoring.")
+            }
+
+            // Backup database and icons.
+            val iconPath = context.iconPath()
+            val iconSavePath = PathUtil.getIconSavePath()
+            remoteRootService.copyRecursively(path = iconPath, targetPath = iconSavePath, overwrite = true)
+            logUtil.log(logTag, "Copied from $iconPath to $iconSavePath.")
+
+            val noMediaSavePath = PathUtil.getIconNoMediaSavePath()
+            remoteRootService.createNewFile(path = noMediaSavePath)
+            logUtil.log(logTag, "Created $noMediaSavePath.")
+
+            val databasePath = context.databasePath()
+            val databaseSavePath = PathUtil.getDatabaseSavePath()
+            remoteRootService.copyRecursively(path = databasePath, targetPath = databaseSavePath, overwrite = true)
+            logUtil.log(logTag, "Copied from $databasePath to $databaseSavePath.")
+
+            remoteRootService.destroyService()
         }
     }
 }

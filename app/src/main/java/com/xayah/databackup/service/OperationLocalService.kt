@@ -11,6 +11,11 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+data class BackupPreparation(
+    val keyboard: String,
+    val services: String,
+)
+
 class OperationLocalService(private val context: Context, private val timestamp: Long) {
     private var mBinder: IBinder? = null
     private var mService: OperationLocalServiceImpl? = null
@@ -67,20 +72,19 @@ class OperationLocalService(private val context: Context, private val timestamp:
         mConnection = null
     }
 
-    private suspend fun getService(): OperationLocalServiceImpl {
-        return withMainContext {
-            if (mService == null) {
-                bindService()
-            } else if (mBinder!!.isBinderAlive.not()) {
-                destroyService()
-                bindService()
-            } else {
-                mService!!
-            }
+    private suspend fun getService(): OperationLocalServiceImpl = withMainContext {
+        if (mService == null) {
+            bindService()
+        } else if (mBinder!!.isBinderAlive.not()) {
+            destroyService()
+            bindService()
+        } else {
+            mService!!
         }
     }
 
-    suspend fun backupPackages() {
-        getService().backupPackages(timestamp)
-    }
+    suspend fun backupPackagesPreparation(): BackupPreparation = getService().backupPackagesPreparation()
+    suspend fun backupPackages() = getService().backupPackages(timestamp)
+    suspend fun backupPackagesAfterwards(preparation: BackupPreparation) = getService().backupPackagesAfterwards(preparation)
+
 }

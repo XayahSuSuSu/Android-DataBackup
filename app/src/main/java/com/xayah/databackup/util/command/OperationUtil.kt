@@ -81,9 +81,13 @@ class OperationUtil(
      * Package data: USER, USER_DE, DATA, OBB, MEDIA
      */
     suspend fun backupData(entity: PackageBackupOperation, packageName: String, dataType: DataType) {
+        val logTag = dataType.type.uppercase()
+
         // Set processing state
         if (entity.userState == OperationState.ERROR) {
-            dataType.updateEntityLog(entity, "${context.getString(R.string.failed_and_terminated)}: ${DataType.PACKAGE_USER.type.uppercase()}")
+            val msg = "${context.getString(R.string.failed_and_terminated)}: ${DataType.PACKAGE_USER.type.uppercase()}"
+            logUtil.log(logTag, msg)
+            dataType.updateEntityLog(entity, msg)
             dataType.updateEntityState(entity, OperationState.ERROR)
             packageBackupOperationDao.upsert(entity)
             return
@@ -93,7 +97,6 @@ class OperationUtil(
             packageBackupOperationDao.upsert(entity)
         }
 
-        val logTag = dataType.type.uppercase()
         val logId = logUtil.log(logTag, "Start backing up...")
         val archivePath = "${getPackageItemSavePath(packageName)}/${dataType.type}.${compressionType.suffix}"
         val originPath = dataType.origin(userId)
@@ -104,11 +107,15 @@ class OperationUtil(
             val originPathExists = remoteRootService.exists(path)
             if (originPathExists.not()) {
                 if (dataType == DataType.PACKAGE_USER) {
-                    dataType.updateEntityLog(entity, "${context.getString(R.string.not_exist)}: $path")
+                    val msg = "${context.getString(R.string.not_exist)}: $path"
+                    dataType.updateEntityLog(entity, msg)
                     dataType.updateEntityState(entity, OperationState.ERROR)
+                    logUtil.log(logTag, msg)
                 } else {
-                    dataType.updateEntityLog(entity, "${context.getString(R.string.not_exist_and_skip)}: $path")
+                    val msg = "${context.getString(R.string.not_exist_and_skip)}: $path"
+                    dataType.updateEntityLog(entity, msg)
                     dataType.updateEntityState(entity, OperationState.SKIP)
+                    logUtil.log(logTag, msg)
                 }
                 packageBackupOperationDao.upsert(entity)
                 return

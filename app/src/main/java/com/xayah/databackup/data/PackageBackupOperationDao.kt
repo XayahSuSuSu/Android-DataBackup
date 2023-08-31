@@ -22,7 +22,7 @@ interface PackageBackupOperationDao {
     @Query("SELECT * FROM PackageBackupOperation WHERE timestamp = :timestamp ORDER BY id DESC LIMIT 1")
     fun queryLastOperationPackage(timestamp: Long): Flow<PackageBackupOperation>
 
-    @Query("SELECT COUNT(*) FROM PackageBackupOperation WHERE timestamp = :timestamp")
+    @Query("SELECT COUNT(*) FROM PackageBackupOperation WHERE timestamp = :timestamp AND endTimestamp != 0")
     fun countByTimestamp(timestamp: Long): Flow<Int>
 
     @Query("SELECT COUNT(*) FROM PackageBackupOperation WHERE timestamp = :timestamp AND packageState = 1")

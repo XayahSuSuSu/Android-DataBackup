@@ -64,4 +64,5 @@
     <string name="export">Export</string>
     <string name="simplify">Simplify</string>
     <string name="integral">Integral</string>
+    <string name="wait_for_remaining_data_processing">Please wait for processing the remaining data🦖</string>
 </resources>
