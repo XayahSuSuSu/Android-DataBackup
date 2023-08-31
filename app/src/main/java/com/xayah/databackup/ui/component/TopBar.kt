@@ -46,8 +46,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.main.page.main.PageLogViewModel
-import com.xayah.databackup.ui.activity.main.page.main.PageTreeViewModel
+import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
+import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.main.router.currentRoute
 import com.xayah.databackup.ui.theme.ColorScheme
@@ -98,7 +98,7 @@ fun MainTopBar(scrollBehavior: TopAppBarScrollBehavior?) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun TreeTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageTreeViewModel) {
+fun TreeTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: TreeViewModel) {
     val context = LocalContext.current
     val navController = LocalSlotScope.current!!.navController
     val routes = ConstantUtil.MainBottomBarRoutes
@@ -150,11 +150,12 @@ fun TreeTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageTreeView
 
 @ExperimentalMaterial3Api
 @Composable
-fun LogTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageLogViewModel) {
+fun LogTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: LogViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val dateList = viewModel.uiState.value.startTimestamps.map { timestamp -> DateUtil.formatTimestamp(timestamp) }
-    val selectedIndex = viewModel.uiState.value.selectedIndex
+    val uiState = viewModel.uiState.value
+    val dateList = uiState.startTimestamps.map { timestamp -> DateUtil.formatTimestamp(timestamp) }
+    val selectedIndex = uiState.selectedIndex
     val navController = LocalSlotScope.current!!.navController
     val routes = ConstantUtil.MainBottomBarRoutes
     val currentRoute = navController.currentRoute()

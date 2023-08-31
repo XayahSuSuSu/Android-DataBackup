@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.main
+package com.xayah.databackup.ui.activity.main.page.tree
 
 import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
@@ -38,7 +38,7 @@ import com.xayah.databackup.util.command.CommonUtil.copyToClipboard
 import kotlinx.coroutines.launch
 
 @Composable
-fun PageTree(viewModel: PageTreeViewModel) {
+fun PageTree(viewModel: TreeViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dialogSlot = LocalSlotScope.current!!.dialogSlot

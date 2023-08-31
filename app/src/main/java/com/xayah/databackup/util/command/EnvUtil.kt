@@ -14,8 +14,7 @@ import com.xayah.databackup.util.binPath
 import com.xayah.databackup.util.filesPath
 import com.xayah.databackup.util.iconPath
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.xayah.librootservice.util.withIOContext
 import net.lingala.zip4j.ZipFile
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -23,7 +22,7 @@ import java.io.FileOutputStream
 
 object EnvUtil {
     private suspend fun releaseAssets(context: Context, path: String, name: String) {
-        withContext(Dispatchers.IO) {
+        withIOContext {
             tryOn {
                 val assets = File(context.filesPath(), name)
                 if (!assets.exists()) {
@@ -66,7 +65,7 @@ object EnvUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
         } else {
-            @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
+            getPackageInfo(packageName, flags)
         }
 
     fun Context.getCurrentAppVersionName(): String {
@@ -74,7 +73,7 @@ object EnvUtil {
     }
 
     suspend fun releaseBin(context: Context): Boolean {
-        return withContext(Dispatchers.IO) {
+        return withIOContext {
             val bin = File(context.binPath())
             val binArchive = File(context.binArchivePath())
 
@@ -88,18 +87,18 @@ object EnvUtil {
 
             // All binaries need full permissions
             bin.listFiles()?.forEach { file ->
-                if (file.setPermissions().not()) return@withContext false
+                if (file.setPermissions().not()) return@withIOContext false
             }
 
             // Remove binary archive
             binArchive.deleteRecursively()
 
-            return@withContext true
+            return@withIOContext true
         }
     }
 
     suspend fun saveIcon(context: Context, packageName: String, appIcon: Drawable) {
-        withContext(Dispatchers.IO) {
+        withIOContext {
             tryOn {
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 appIcon.toBitmap().compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
@@ -115,7 +114,7 @@ object EnvUtil {
      * Create internal icon directory for caching.
      */
     suspend fun createIconDirectory(context: Context) {
-        withContext(Dispatchers.IO) {
+        withIOContext {
             tryOn {
                 val icon = File(context.iconPath())
                 if (icon.exists().not()) icon.mkdirs()

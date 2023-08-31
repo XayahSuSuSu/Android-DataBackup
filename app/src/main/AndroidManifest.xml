@@ -32,6 +32,10 @@
         </activity>
 
         <activity
+            android:name=".ui.activity.guide.GuideActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.activity.main.MainActivity"
             android:exported="false" />
 

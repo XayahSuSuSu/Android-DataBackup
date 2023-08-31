@@ -54,8 +54,8 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.xayah.librootservice.util.withIOContext
+import com.xayah.librootservice.util.withMainContext
 import java.io.File
 
 @ExperimentalAnimationApi
@@ -67,14 +67,15 @@ fun PackageBackupProcessing() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     var icon: Bitmap? by remember { mutableStateOf(null) }
-    val latestPackage: PackageBackupOperation? by viewModel.uiState.value.latestPackage.collectAsState(null)
+    val uiState = viewModel.uiState.value
+    val latestPackage: PackageBackupOperation? by uiState.latestPackage.collectAsState(null)
     val progressAnimation: Float by animateFloatAsState(
         latestPackage?.progress ?: 0f,
         label = AnimationTokens.AnimateFloatAsStateLabel,
         animationSpec = tween(durationMillis = AnimationTokens.TweenDuration)
     )
-    val selectedBothCount by viewModel.uiState.value.selectedBothCount.collectAsState(initial = 0)
-    val operationCount by viewModel.uiState.value.operationCount.collectAsState(initial = 0)
+    val selectedBothCount by uiState.selectedBothCount.collectAsState(initial = 0)
+    val operationCount by uiState.operationCount.collectAsState(initial = 0)
     val totalProgressAnimation: Float by animateFloatAsState(
         if (selectedBothCount == 0) 0f else (operationCount.toFloat() - 1).coerceAtLeast(0F) / selectedBothCount,
         label = AnimationTokens.AnimateFloatAsStateLabel,
@@ -122,7 +123,7 @@ fun PackageBackupProcessing() {
     )
 
     LaunchedEffect(latestPackage) {
-        withContext(Dispatchers.IO) {
+        withIOContext {
             tryOn {
                 // Read icon from cached internal dir.
                 val bytes = File(PathUtil.getIconPath(context, packageName)).readBytes()
@@ -151,7 +152,7 @@ fun PackageBackupProcessing() {
                     modifier = Modifier.fillMaxSize(),
                     onLoading = {
                         viewModel.backupPackages {
-                            withContext(Dispatchers.Main) {
+                            withMainContext {
                                 navController.navigateAndPopAllStack(OperationRoutes.PackageBackupCompletion.route)
                             }
                         }

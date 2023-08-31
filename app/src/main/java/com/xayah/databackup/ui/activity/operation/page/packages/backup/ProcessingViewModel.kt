@@ -10,12 +10,11 @@ import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageBackupOperationDao
 import com.xayah.databackup.service.OperationLocalService
 import com.xayah.databackup.util.DateUtil
+import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class ProcessingUiState(
@@ -47,11 +46,12 @@ class ProcessingViewModel @Inject constructor(
         get() = _uiState
 
     fun backupPackages(onCompleted: suspend () -> Unit) {
+        val uiState = uiState.value
         if (_uiState.value.effectLaunched.not())
             viewModelScope.launch {
-                withContext(Dispatchers.IO) {
+                withIOContext {
                     _uiState.value.effectLaunched = true
-                    val operationLocalService = OperationLocalService(context, uiState.value.timestamp)
+                    val operationLocalService = OperationLocalService(context, uiState.timestamp)
                     operationLocalService.backupPackages()
                     operationLocalService.destroyService()
                     onCompleted()

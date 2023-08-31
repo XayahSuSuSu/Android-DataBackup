@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.main
+package com.xayah.databackup.ui.activity.main.page.log
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
@@ -14,8 +14,9 @@ import com.xayah.databackup.ui.component.Loader
 import com.xayah.databackup.ui.token.CommonTokens
 
 @Composable
-fun PageLog(viewModel: PageLogViewModel) {
-    val logText = viewModel.uiState.value.logText
+fun PageLog(viewModel: LogViewModel) {
+    val uiState = viewModel.uiState.value
+    val logText = uiState.logText
 
     Loader(
         modifier = Modifier.fillMaxSize(),

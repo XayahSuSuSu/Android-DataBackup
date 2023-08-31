@@ -17,9 +17,8 @@ import androidx.compose.ui.res.stringResource
 import com.xayah.databackup.R
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil
-import kotlinx.coroutines.Dispatchers
+import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
 /**
@@ -103,7 +102,7 @@ suspend fun DialogState.openFileOpDialog(context: Context, title: String, filePa
         title = title,
         icon = icon,
         onLoading = {
-            withContext(Dispatchers.IO) {
+            withIOContext {
                 ExceptionUtil.tryService(onFailed = { msg = it }) {
                     remoteRootService.writeText(text, filePath, context)
                 }

@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.main
+package com.xayah.databackup.ui.activity.main.page.tree
 
 import android.content.Context
 import androidx.compose.runtime.State
@@ -8,9 +8,8 @@ import com.xayah.databackup.R
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.readBackupSavePath
+import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 enum class TreeType {
@@ -23,27 +22,30 @@ enum class TreeType {
     }
 }
 
-data class PageTreeUiState(
+data class TreeUiState(
     val treeText: String,
     val typeList: List<TreeType>,
     val selectedIndex: Int,
 )
 
 @HiltViewModel
-class PageTreeViewModel @Inject constructor() : ViewModel() {
+class TreeViewModel @Inject constructor() : ViewModel() {
     private val _uiState = mutableStateOf(
-        PageTreeUiState(
+        TreeUiState(
             treeText = "",
             typeList = listOf(TreeType.Simplify, TreeType.Integral),
             selectedIndex = 0
         )
     )
-    val uiState: State<PageTreeUiState>
+    val uiState: State<TreeUiState>
         get() = _uiState
 
-    private suspend fun loadTree(context: Context) = when (uiState.value.typeList[uiState.value.selectedIndex]) {
-        TreeType.Simplify -> PreparationUtil.tree(path = context.readBackupSavePath(), exclude = PathUtil.getExcludeDirs())
-        TreeType.Integral -> PreparationUtil.tree(path = context.readBackupSavePath())
+    private suspend fun loadTree(context: Context) = withIOContext {
+        val uiState = uiState.value
+        when (uiState.typeList[uiState.selectedIndex]) {
+            TreeType.Simplify -> PreparationUtil.tree(path = context.readBackupSavePath(), exclude = PathUtil.getExcludeDirs())
+            TreeType.Integral -> PreparationUtil.tree(path = context.readBackupSavePath())
+        }
     }
 
     suspend fun setTreeText(context: Context) {
@@ -51,9 +53,10 @@ class PageTreeViewModel @Inject constructor() : ViewModel() {
     }
 
     suspend fun setTreeType(context: Context, type: TreeType) {
-        withContext(Dispatchers.IO) {
-            val list = uiState.value.typeList
-            _uiState.value = uiState.value.copy(selectedIndex = list.indexOf(type))
+        withIOContext {
+            val uiState = uiState.value
+            val typeList = uiState.typeList
+            _uiState.value = uiState.copy(selectedIndex = typeList.indexOf(type))
             setTreeText(context)
         }
     }

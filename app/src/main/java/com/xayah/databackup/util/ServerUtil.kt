@@ -4,8 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.xayah.databackup.module.GitHub
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.xayah.librootservice.util.withIOContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject
@@ -44,7 +43,7 @@ class ServerUtil @Inject constructor() {
     lateinit var gson: Gson
 
     suspend fun getReleases(onSucceed: (releases: List<Release>) -> Unit, onFailed: () -> Unit) {
-        withContext(Dispatchers.IO) {
+        withIOContext {
             try {
                 val request = Request.Builder().url(apiReleases).build()
                 okHttpClient.newCall(request).execute().use { response ->

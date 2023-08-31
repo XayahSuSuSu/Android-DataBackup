@@ -14,12 +14,12 @@ import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
-import com.xayah.databackup.util.command.CommonUtil.runOnIO
 import com.xayah.databackup.util.command.OperationUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.databasePath
 import com.xayah.databackup.util.iconPath
 import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -56,7 +56,7 @@ class OperationLocalServiceImpl : Service() {
     suspend fun backupPackages(timestamp: Long) {
         val logTag = "Packages backup"
 
-        runOnIO {
+        withIOContext {
             mutex.withLock {
                 val context = applicationContext
                 val remoteRootService = RemoteRootService(context)
@@ -64,6 +64,11 @@ class OperationLocalServiceImpl : Service() {
 
                 logUtil.log(logTag, "Backup started, timestamp: $timestamp, date: ${DateUtil.formatTimestamp(timestamp)}")
 
+                /**
+                 * Somehow the keyboards and accessibility services
+                 * will be changed after backing up on some devices,
+                 * so we restore them manually.
+                 */
                 /**
                  * Somehow the keyboards and accessibility services
                  * will be changed after backing up on some devices,

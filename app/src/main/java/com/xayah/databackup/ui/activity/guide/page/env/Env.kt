@@ -1,5 +1,7 @@
-package com.xayah.databackup.ui.activity.main.page.guide
+package com.xayah.databackup.ui.activity.guide.page.env
 
+import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,18 +19,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.guide.page.GuideUiState
+import com.xayah.databackup.ui.activity.guide.page.GuideViewModel
+import com.xayah.databackup.ui.activity.main.MainActivity
 import com.xayah.databackup.ui.component.EnvCard
-import com.xayah.databackup.ui.activity.main.router.ScaffoldRoutes
-import com.xayah.databackup.ui.activity.main.router.navigateAndPopBackStack
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.State
 import com.xayah.databackup.util.command.EnvUtil
 import com.xayah.databackup.util.saveAppVersionName
-import kotlinx.coroutines.Dispatchers
+import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @ExperimentalMaterial3Api
 @Composable
@@ -52,8 +54,9 @@ fun PageEnv(viewModel: GuideViewModel) {
                 GuideUiState.Env(
                     title = context.getString(R.string.environment_detection),
                     fabIcon = Icons.Rounded.Check,
-                    onFabClick = { scaffoldNavController, _ ->
-                        scaffoldNavController.navigateAndPopBackStack(ScaffoldRoutes.Main.route)
+                    onFabClick = { _ ->
+                        context.startActivity(Intent(context, MainActivity::class.java))
+                        (context as ComponentActivity).finish()
                     }
                 )
             )
@@ -64,7 +67,7 @@ fun PageEnv(viewModel: GuideViewModel) {
         {
             if (states.value[0] != State.Succeed)
                 runAndValidate {
-                    withContext(Dispatchers.IO) {
+                    withIOContext {
                         val statesList = states.value.toMutableList()
                         statesList[0] = if (Shell.getShell().isRoot) State.Succeed else State.Failed
                         states.value = statesList.toList()
@@ -74,9 +77,11 @@ fun PageEnv(viewModel: GuideViewModel) {
         {
             if (states.value[1] != State.Succeed)
                 runAndValidate {
-                    val statesList = states.value.toMutableList()
-                    statesList[1] = if (EnvUtil.releaseBin(context)) State.Succeed else State.Failed
-                    states.value = statesList.toList()
+                    withIOContext {
+                        val statesList = states.value.toMutableList()
+                        statesList[1] = if (EnvUtil.releaseBin(context)) State.Succeed else State.Failed
+                        states.value = statesList.toList()
+                    }
                 }
         }
     )
@@ -86,7 +91,7 @@ fun PageEnv(viewModel: GuideViewModel) {
             GuideUiState.Env(
                 title = context.getString(R.string.environment_detection),
                 fabIcon = Icons.Rounded.ArrowForward,
-                onFabClick = { _, _ ->
+                onFabClick = { _ ->
                     scope.launch {
                         for (i in onClicks) {
                             i()

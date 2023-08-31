@@ -11,14 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NavHostController
-import com.xayah.databackup.ui.activity.main.page.guide.GuideViewModel
-import com.xayah.databackup.ui.activity.main.page.main.MainViewModel
+import com.xayah.databackup.ui.activity.guide.page.GuideViewModel
+import com.xayah.databackup.ui.activity.main.page.MainViewModel
 import com.xayah.databackup.ui.token.CommonTokens
 
 @ExperimentalMaterial3Api
 @Composable
 fun GuideScaffold(
-    scaffoldNavController: NavHostController,
     navController: NavHostController,
     viewModel: GuideViewModel,
     content: @Composable () -> Unit
@@ -27,7 +26,7 @@ fun GuideScaffold(
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
-            FloatingActionButton(onClick = { uiState.onFabClick(scaffoldNavController, navController) }) {
+            FloatingActionButton(onClick = { uiState.onFabClick(navController) }) {
                 Icon(uiState.fabIcon, null)
             }
         }

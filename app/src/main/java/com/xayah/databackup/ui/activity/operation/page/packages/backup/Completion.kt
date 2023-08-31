@@ -45,9 +45,10 @@ fun PackageBackupCompletion() {
     val context = LocalContext.current
     val viewModel = hiltViewModel<CompletionViewModel>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val relativeTime = viewModel.uiState.value.relativeTime
-    val succeedNum = viewModel.uiState.value.succeedNum
-    val failedNum = viewModel.uiState.value.failedNum
+    val uiState = viewModel.uiState.value
+    val relativeTime = uiState.relativeTime
+    val succeedNum = uiState.succeedNum
+    val failedNum = uiState.failedNum
     val completionItems = listOf(
         GridItemCompletionConfig(emoji = EmojiString.SPARKLING_HEART, title = stringResource(id = R.string.succeed), content = succeedNum.toString()),
         GridItemCompletionConfig(emoji = EmojiString.BROKEN_HEART, title = stringResource(id = R.string.failed), content = failedNum.toString()),

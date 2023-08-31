@@ -6,10 +6,10 @@ import com.xayah.databackup.data.CmdEntity
 import com.xayah.databackup.data.LogCmdType
 import com.xayah.databackup.data.LogDao
 import com.xayah.databackup.data.LogEntity
+import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,12 +28,12 @@ class LogUtil @Inject constructor(private val logDao: LogDao) {
 
     private val startTimestamp: Long = DateUtil.getTimestamp()
 
-    suspend fun log(tag: String, msg: String): Long = withContext(Dispatchers.IO) {
+    suspend fun log(tag: String, msg: String): Long = withIOContext {
         val logEntity = LogEntity(startTimestamp = startTimestamp, tag = tag, msg = msg)
         logDao.upsert(logEntity)
     }
 
-    suspend fun logCmd(logId: Long, type: LogCmdType, msg: String): Long = withContext(Dispatchers.IO) {
+    suspend fun logCmd(logId: Long, type: LogCmdType, msg: String): Long = withIOContext {
         val cmdEntity = CmdEntity(logId = logId, type = type, msg = msg)
         logDao.upsert(cmdEntity)
     }

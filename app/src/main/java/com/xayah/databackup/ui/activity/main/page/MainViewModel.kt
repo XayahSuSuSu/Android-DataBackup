@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.main
+package com.xayah.databackup.ui.activity.main.page
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -16,6 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
+import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.LogTopBar
 import com.xayah.databackup.ui.component.MainBottomBar
@@ -46,7 +48,7 @@ sealed class MainUiState(
         }
     )
 
-    class Tree(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageTreeViewModel) : MainUiState(
+    class Tree(scrollBehavior: TopAppBarScrollBehavior?, viewModel: TreeViewModel) : MainUiState(
         scrollBehavior = scrollBehavior,
         topBar = {
             TreeTopBar(scrollBehavior = scrollBehavior, viewModel = viewModel)
@@ -56,7 +58,7 @@ sealed class MainUiState(
         }
     )
 
-    class Log(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageLogViewModel) : MainUiState(
+    class Log(scrollBehavior: TopAppBarScrollBehavior?, viewModel: LogViewModel) : MainUiState(
         scrollBehavior = scrollBehavior,
         topBar = {
             LogTopBar(scrollBehavior = scrollBehavior, viewModel = viewModel)
@@ -65,8 +67,9 @@ sealed class MainUiState(
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
             val dialogSlot = LocalSlotScope.current!!.dialogSlot
-            val logText = viewModel.uiState.value.logText
-            val selectedIndex = viewModel.uiState.value.selectedIndex
+            val uiState = viewModel.uiState.value
+            val logText = uiState.logText
+            val selectedIndex = uiState.selectedIndex
             ExtendedFloatingActionButton(
                 onClick = {
                     scope.launch {

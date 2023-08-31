@@ -6,8 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.os.RemoteException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.xayah.librootservice.util.withMainContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -69,7 +68,7 @@ class OperationLocalService(private val context: Context, private val timestamp:
     }
 
     private suspend fun getService(): OperationLocalServiceImpl {
-        return withContext(Dispatchers.Main) {
+        return withMainContext {
             if (mService == null) {
                 bindService()
             } else if (mBinder!!.isBinderAlive.not()) {

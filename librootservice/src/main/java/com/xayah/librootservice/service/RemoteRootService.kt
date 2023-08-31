@@ -14,8 +14,7 @@ import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.librootservice.IRemoteRootService
 import com.xayah.librootservice.impl.RemoteRootServiceImpl
 import com.xayah.librootservice.parcelables.StatFsParcelable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.xayah.librootservice.util.withMainContext
 import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -84,7 +83,7 @@ class RemoteRootService(private val context: Context) {
     }
 
     private suspend fun getService(): IRemoteRootService {
-        return withContext(Dispatchers.Main) {
+        return withMainContext {
             if (mService == null) {
                 val msg = "Service is null."
                 if (isFirstConnection)

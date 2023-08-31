@@ -66,9 +66,8 @@ import com.xayah.databackup.util.readIconSaveTime
 import com.xayah.databackup.util.saveIconSaveTime
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryService
-import kotlinx.coroutines.Dispatchers
+import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 enum class ListState {
     Idle,
@@ -87,9 +86,10 @@ fun PackageBackupList() {
     val viewModel = hiltViewModel<ListViewModel>()
     val navController = LocalSlotScope.current!!.navController
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val packages = viewModel.uiState.value.packages.collectAsState(initial = listOf())
-    val selectedAPKs = viewModel.uiState.value.selectedAPKs.collectAsState(initial = 0)
-    val selectedData = viewModel.uiState.value.selectedData.collectAsState(initial = 0)
+    val uiState = viewModel.uiState.value
+    val packages = uiState.packages.collectAsState(initial = listOf())
+    val selectedAPKs = uiState.selectedAPKs.collectAsState(initial = 0)
+    val selectedData = uiState.selectedData.collectAsState(initial = 0)
     val selected = selectedAPKs.value != 0 || selectedData.value != 0
     val packageManager = context.packageManager
     var progress by remember { mutableFloatStateOf(1f) }
@@ -101,7 +101,7 @@ fun PackageBackupList() {
     var updatingText: String? by remember { mutableStateOf(null) }
 
     LaunchedEffect(null) {
-        withContext(Dispatchers.IO) {
+        withIOContext {
             val remoteRootService = RemoteRootService(context)
 
             // Inactivate all packages and activate installed only.

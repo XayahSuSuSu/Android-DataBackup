@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.guide
+package com.xayah.databackup.ui.activity.guide.page.intro
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer

@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.guide
+package com.xayah.databackup.ui.activity.guide.page.update
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class GuideUpdateViewModel @Inject constructor(private val serverUtil: ServerUtil) : ViewModel() {
+class UpdateViewModel @Inject constructor(private val serverUtil: ServerUtil) : ViewModel() {
     var releases: MutableState<List<Release>> = mutableStateOf(listOf())
 
     suspend fun getReleases(onSucceed: (releases: List<Release>) -> Unit, onFailed: () -> Unit) {

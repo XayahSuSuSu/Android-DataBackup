@@ -54,11 +54,12 @@ fun PackageBackupManifest() {
     val selectedTabIndex = remember { mutableIntStateOf(0) }
     val titles =
         listOf(stringResource(id = R.string.overlook), stringResource(R.string.both), stringResource(id = R.string.apk), stringResource(id = R.string.data))
-    val selectedAPKs by viewModel.uiState.value.selectedAPKs.collectAsState(initial = 0)
-    val selectedData by viewModel.uiState.value.selectedData.collectAsState(initial = 0)
-    val bothPackages by viewModel.uiState.value.bothPackages.collectAsState(initial = listOf())
-    val apkOnlyPackages by viewModel.uiState.value.apkOnlyPackages.collectAsState(initial = listOf())
-    val dataOnlyPackages by viewModel.uiState.value.dataOnlyPackages.collectAsState(initial = listOf())
+    val uiState = viewModel.uiState.value
+    val selectedAPKs by uiState.selectedAPKs.collectAsState(initial = 0)
+    val selectedData by uiState.selectedData.collectAsState(initial = 0)
+    val bothPackages by uiState.bothPackages.collectAsState(initial = listOf())
+    val apkOnlyPackages by uiState.apkOnlyPackages.collectAsState(initial = listOf())
+    val dataOnlyPackages by uiState.dataOnlyPackages.collectAsState(initial = listOf())
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

@@ -22,8 +22,7 @@ import coil.request.ImageRequest
 import com.xayah.databackup.ui.token.GridItemTokens
 import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.xayah.librootservice.util.withIOContext
 import java.io.File
 
 @ExperimentalMaterial3Api
@@ -33,7 +32,7 @@ fun GridItemPackage(packageName: String, label: String) {
     var icon by remember { mutableStateOf<Any>(0) }
     LaunchedEffect(null) {
         // Read icon from cached internal dir.
-        withContext(Dispatchers.IO) {
+        withIOContext {
             tryOn {
                 val bytes = File(PathUtil.getIconPath(context, packageName)).readBytes()
                 icon = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources)

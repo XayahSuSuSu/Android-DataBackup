@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.guide
+package com.xayah.databackup.ui.activity.guide.page.update
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.xayah.databackup.ui.component.UpdateCard
 import com.xayah.databackup.ui.component.State
+import com.xayah.databackup.ui.component.UpdateCard
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
@@ -22,7 +22,7 @@ import com.xayah.databackup.ui.token.State
 @ExperimentalMaterial3Api
 @Composable
 fun PageUpdate() {
-    val viewModel = hiltViewModel<GuideUpdateViewModel>()
+    val viewModel = hiltViewModel<UpdateViewModel>()
     val state: MutableState<State> = remember { mutableStateOf(State.Loading) }
     val releases = viewModel.releases
     LaunchedEffect(null) {

@@ -35,13 +35,14 @@ class CompletionViewModel @Inject constructor(
         get() = _uiState
 
     suspend fun initializeUiState() {
-        val dao = uiState.value.packageBackupOperationDao
+        val uiState = uiState.value
+        val dao = uiState.packageBackupOperationDao
         val timestamp = dao.queryLastOperationTime()
         val startTimestamp = dao.queryFirstOperationStartTime(timestamp)
         val endTimestamp = dao.queryLastOperationEndTime(timestamp)
         val relativeTime = DateUtil.getShortRelativeTimeSpanString(context, startTimestamp, endTimestamp)
         val succeedNum = dao.countSucceedByTimestamp(timestamp)
         val failedNum = dao.countFailedByTimestamp(timestamp)
-        _uiState.value = uiState.value.copy(relativeTime = relativeTime, succeedNum = succeedNum, failedNum = failedNum)
+        _uiState.value = uiState.copy(relativeTime = relativeTime, succeedNum = succeedNum, failedNum = failedNum)
     }
 }

@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.guide
+package com.xayah.databackup.ui.activity.guide.page
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import com.xayah.databackup.ui.activity.main.router.GuideRoutes
+import com.xayah.databackup.ui.activity.guide.router.GuideRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -18,13 +18,13 @@ sealed class GuideUiState(
     val title: String,
     val icon: ImageVector,
     val fabIcon: ImageVector,
-    val onFabClick: (scaffoldNavController: NavHostController, navController: NavHostController) -> Unit
+    val onFabClick: (navController: NavHostController) -> Unit,
 ) {
     class Intro(title: String = "") : GuideUiState(
         title = title,
         icon = Icons.Rounded.AccountCircle,
         fabIcon = Icons.Rounded.ArrowForward,
-        onFabClick = { _, navController ->
+        onFabClick = { navController ->
             navController.navigate(GuideRoutes.Update.route)
         }
     )
@@ -33,7 +33,7 @@ sealed class GuideUiState(
         title = title,
         icon = Icons.Rounded.Notifications,
         fabIcon = Icons.Rounded.ArrowForward,
-        onFabClick = { _, navController ->
+        onFabClick = { navController ->
             navController.navigate(GuideRoutes.Env.route)
         }
     )
@@ -41,7 +41,7 @@ sealed class GuideUiState(
     class Env(
         title: String = "",
         fabIcon: ImageVector,
-        onFabClick: (scaffoldNavController: NavHostController, navController: NavHostController) -> Unit
+        onFabClick: (navController: NavHostController) -> Unit,
     ) :
         GuideUiState(
             title = title,
