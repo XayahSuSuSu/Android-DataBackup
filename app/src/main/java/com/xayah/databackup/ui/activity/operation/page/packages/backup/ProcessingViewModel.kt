@@ -20,8 +20,9 @@ import javax.inject.Inject
 data class ProcessingUiState(
     val timestamp: Long,
     var effectLaunched: Boolean,
+    var effectFinished: Boolean,
     val packageBackupEntireDao: PackageBackupEntireDao,
-    val packageBackupOperationDao: PackageBackupOperationDao
+    val packageBackupOperationDao: PackageBackupOperationDao,
 ) {
     val latestPackage: Flow<PackageBackupOperation> = packageBackupOperationDao.queryLastOperationPackage(timestamp).distinctUntilChanged()
     val selectedBothCount: Flow<Int> = packageBackupEntireDao.countSelectedTotal().distinctUntilChanged()
@@ -38,6 +39,7 @@ class ProcessingViewModel @Inject constructor(
         ProcessingUiState(
             timestamp = DateUtil.getTimestamp(),
             effectLaunched = false,
+            effectFinished = false,
             packageBackupEntireDao = packageBackupEntireDao,
             packageBackupOperationDao = packageBackupOperationDao
         )
@@ -45,16 +47,16 @@ class ProcessingViewModel @Inject constructor(
     val uiState: State<ProcessingUiState>
         get() = _uiState
 
-    fun backupPackages(onCompleted: suspend () -> Unit) {
+    fun backupPackages() {
         val uiState = uiState.value
         if (_uiState.value.effectLaunched.not())
             viewModelScope.launch {
                 withIOContext {
-                    _uiState.value.effectLaunched = true
+                    _uiState.value = uiState.copy(effectLaunched = true)
                     val operationLocalService = OperationLocalService(context, uiState.timestamp)
                     operationLocalService.backupPackages()
                     operationLocalService.destroyService()
-                    onCompleted()
+                    _uiState.value = uiState.copy(effectFinished = true)
                 }
             }
     }

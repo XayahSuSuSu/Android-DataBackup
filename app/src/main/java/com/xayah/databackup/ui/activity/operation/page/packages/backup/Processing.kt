@@ -55,7 +55,6 @@ import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.withIOContext
-import com.xayah.librootservice.util.withMainContext
 import java.io.File
 
 @ExperimentalAnimationApi
@@ -68,6 +67,7 @@ fun PackageBackupProcessing() {
     val context = LocalContext.current
     var icon: Bitmap? by remember { mutableStateOf(null) }
     val uiState = viewModel.uiState.value
+    val effectFinished = uiState.effectFinished
     val latestPackage: PackageBackupOperation? by uiState.latestPackage.collectAsState(null)
     val progressAnimation: Float by animateFloatAsState(
         latestPackage?.progress ?: 0f,
@@ -132,6 +132,11 @@ fun PackageBackupProcessing() {
         }
     }
 
+
+    LaunchedEffect(effectFinished) {
+        if (effectFinished) navController.navigateAndPopAllStack(OperationRoutes.PackageBackupCompletion.route)
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -151,11 +156,7 @@ fun PackageBackupProcessing() {
                 Loader(
                     modifier = Modifier.fillMaxSize(),
                     onLoading = {
-                        viewModel.backupPackages {
-                            withMainContext {
-                                navController.navigateAndPopAllStack(OperationRoutes.PackageBackupCompletion.route)
-                            }
-                        }
+                        viewModel.backupPackages()
                     },
                     content = {
                         Column(
