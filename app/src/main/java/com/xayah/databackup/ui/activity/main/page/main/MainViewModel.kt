@@ -20,6 +20,7 @@ import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.LogTopBar
 import com.xayah.databackup.ui.component.MainBottomBar
 import com.xayah.databackup.ui.component.MainTopBar
+import com.xayah.databackup.ui.component.TreeTopBar
 import com.xayah.databackup.ui.component.openFileOpDialog
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.PathUtil
@@ -35,11 +36,20 @@ sealed class MainUiState(
     val floatingActionButton: @Composable () -> Unit = {},
     val floatingActionButtonPosition: FabPosition = FabPosition.End,
 ) {
-    @ExperimentalMaterial3Api
     class Main(scrollBehavior: TopAppBarScrollBehavior?) : MainUiState(
         scrollBehavior = scrollBehavior,
         topBar = {
             MainTopBar(scrollBehavior = scrollBehavior)
+        },
+        bottomBar = {
+            MainBottomBar()
+        }
+    )
+
+    class Tree(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageTreeViewModel) : MainUiState(
+        scrollBehavior = scrollBehavior,
+        topBar = {
+            TreeTopBar(scrollBehavior = scrollBehavior, viewModel = viewModel)
         },
         bottomBar = {
             MainBottomBar()

@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.main.PageLogViewModel
+import com.xayah.databackup.ui.activity.main.page.main.PageTreeViewModel
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.main.router.currentRoute
 import com.xayah.databackup.ui.theme.ColorScheme
@@ -92,6 +93,58 @@ fun MainTopBar(scrollBehavior: TopAppBarScrollBehavior?) {
                     }
             }
         },
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun TreeTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: PageTreeViewModel) {
+    val context = LocalContext.current
+    val navController = LocalSlotScope.current!!.navController
+    val routes = ConstantUtil.MainBottomBarRoutes
+    val currentRoute = navController.currentRoute()
+
+    CenterAlignedTopAppBar(
+        title = { TopBarTitle(text = MainRoutes.ofTitle(context, currentRoute)) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            Crossfade(targetState = currentRoute, label = AnimationTokens.CrossFadeLabel) { route ->
+                if ((route in routes).not())
+                    ArrowBackButton {
+                        navController.popBackStack()
+                    }
+            }
+        },
+        actions = {
+            val scope = rememberCoroutineScope()
+            var expanded by remember { mutableStateOf(false) }
+            val uiState = viewModel.uiState.value
+            val typeList = uiState.typeList
+            val typeStringList = uiState.typeList.map { it.ofString(context) }
+            val selectedIndex = uiState.selectedIndex
+
+            Box(
+                modifier = Modifier.wrapContentSize(Alignment.TopStart)
+            ) {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_rounded_filter_list),
+                        contentDescription = null
+                    )
+                }
+                ModalStringListDropdownMenu(
+                    expanded = expanded,
+                    selectedIndex = selectedIndex,
+                    list = typeStringList,
+                    onSelected = { index, _ ->
+                        scope.launch {
+                            expanded = false
+                            viewModel.setTreeType(context = context, type = typeList[index])
+                        }
+                    },
+                    onDismissRequest = { expanded = false })
+            }
+        }
     )
 }
 

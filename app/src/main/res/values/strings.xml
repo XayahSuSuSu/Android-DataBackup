@@ -62,4 +62,6 @@
     <string name="word_return">Return</string>
     <string name="time">Time</string>
     <string name="export">Export</string>
+    <string name="simplify">Simplify</string>
+    <string name="integral">Integral</string>
 </resources>

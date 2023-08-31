@@ -59,4 +59,6 @@
     <string name="word_return">返回</string>
     <string name="time">时间</string>
     <string name="export">导出</string>
+    <string name="simplify">精简</string>
+    <string name="integral">完整</string>
 </resources>

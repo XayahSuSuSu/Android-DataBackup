@@ -1,6 +1,5 @@
 package com.xayah.databackup.ui.activity.main.page.main
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -16,11 +15,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -40,23 +35,20 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.CommonUtil.copyToClipboard
-import com.xayah.databackup.util.command.PreparationUtil
-import com.xayah.databackup.util.readBackupSavePath
 import kotlinx.coroutines.launch
 
-private suspend fun loadTree(context: Context) = PreparationUtil.tree(context.readBackupSavePath())
-
 @Composable
-fun PageTree() {
+fun PageTree(viewModel: PageTreeViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dialogSlot = LocalSlotScope.current!!.dialogSlot
-    var text by remember { mutableStateOf("") }
+    val uiState = viewModel.uiState.value
+    val treeText = uiState.treeText
 
     Loader(
         modifier = Modifier.fillMaxSize(),
         onLoading = {
-            text = loadTree(context)
+            viewModel.setTreeText(context)
         },
         content = {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -73,7 +65,7 @@ fun PageTree() {
                                 .verticalScroll(rememberScrollState())
                                 .horizontalScroll(rememberScrollState())
                                 .padding(CommonTokens.PaddingSmall),
-                            text = text,
+                            text = treeText,
                         )
                     }
                 }
@@ -85,7 +77,7 @@ fun PageTree() {
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(text = stringResource(R.string.copy)) {
-                        context.copyToClipboard(text)
+                        context.copyToClipboard(treeText)
                         Toast.makeText(context, context.getString(R.string.succeed), Toast.LENGTH_SHORT).show()
                     }
                     Spacer(modifier = Modifier.width(CommonTokens.PaddingMedium))
@@ -97,9 +89,9 @@ fun PageTree() {
                                 title = context.getString(R.string.save_directory_structure),
                                 filePath = filePath,
                                 icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_account_tree),
-                                text = text
+                                text = treeText
                             )
-                            text = loadTree(context)
+                            viewModel.setTreeText(context)
                         }
                     }
                 }

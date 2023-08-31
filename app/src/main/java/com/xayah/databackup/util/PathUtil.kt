@@ -25,6 +25,9 @@ object PathUtil {
     // Paths for internal usage.
     fun getIconPath(context: Context, packageName: String): String = "${context.iconPath()}/${packageName}.png"
 
+    // Exclude dirs while running `tree` command.
+    fun getExcludeDirs(): List<String> = listOf("tree", "icon", "databases", "log")
+
     // Paths for backup save dir.
     private fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
     private fun getTreeSavePath(): String = "${getBackupSavePath()}/tree"

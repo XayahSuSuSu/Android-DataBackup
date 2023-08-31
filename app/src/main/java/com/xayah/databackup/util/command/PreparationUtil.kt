@@ -17,6 +17,12 @@ object PreparationUtil {
         return exec.outString()
     }
 
+    suspend fun tree(path: String, exclude: List<String>): String {
+        val para = exclude.joinToString(separator = "|")
+        val exec = CommonUtil.execute("tree -N $path -I '$para'")
+        return exec.outString()
+    }
+
     suspend fun getKeyboard(): Pair<Boolean, String> {
         val exec = CommonUtil.execute("settings get secure default_input_method")
         return Pair(exec.isSuccess, exec.outString().trim())
