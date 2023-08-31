@@ -73,7 +73,10 @@ import kotlinx.coroutines.withContext
 enum class ListState {
     Idle,
     Update,
-    Done,
+    Error,
+    Done;
+
+    fun setState(state: ListState): ListState = if (this == Error) Error else state
 }
 
 @ExperimentalAnimationApi
@@ -106,6 +109,7 @@ fun PackageBackupList() {
             var installedPackages = listOf<PackageInfo>()
             tryService(onFailed = { msg ->
                 scope.launch {
+                    state = state.setState(ListState.Error)
                     snackbarHostState.showSnackbar(
                         message = "$msg\n${context.getString(R.string.remote_service_err_info)}",
                         duration = SnackbarDuration.Indefinite
@@ -120,7 +124,7 @@ fun PackageBackupList() {
             }
             viewModel.activatePackages(activePackages)
             val activatePackagesEndIndex = activePackages.size - 1
-            state = ListState.Update
+            state = state.setState(ListState.Update)
 
             val newPackages = mutableListOf<PackageBackupUpdate>()
             EnvUtil.createIconDirectory(context)
@@ -156,7 +160,7 @@ fun PackageBackupList() {
                 updatingText = "${context.getString(R.string.updating)} (${index + 1}/${activatePackagesEndIndex + 1})"
             }
             viewModel.updatePackages(newPackages)
-            state = ListState.Done
+            state = state.setState(ListState.Done)
             updatingText = null
         }
     }
@@ -179,7 +183,7 @@ fun PackageBackupList() {
                         .padding(CommonTokens.PaddingMedium)
                         .offset(x = emphasizedOffset),
                     onClick = {
-                        if (selected.not()) emphasizedState = !emphasizedState
+                        if (selected.not() || state == ListState.Error) emphasizedState = !emphasizedState
                         else navController.navigate(OperationRoutes.PackageBackupManifest.route)
                     },
                     expanded = selected || state != ListState.Done,
