@@ -22,11 +22,15 @@ fun Context.databasePath(): String = "${filesDir.parent}/databases"
 object PathUtil {
     fun getParentPath(path: String): String = Paths.get(path).parent.pathString
 
+    fun getFileName(path: String): String = Paths.get(path).fileName.pathString
+
     // Paths for internal usage.
     fun getIconPath(context: Context, packageName: String): String = "${context.iconPath()}/${packageName}.png"
 
     // Exclude dirs while running `tree` command.
     fun getExcludeDirs(): List<String> = listOf("tree", "icon", "databases", "log")
+
+    fun getTmpApkPath(context: Context, packageName: String): String = "${context.filesPath()}/tmp/apks/$packageName"
 
     // Paths for backup save dir.
     private fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()

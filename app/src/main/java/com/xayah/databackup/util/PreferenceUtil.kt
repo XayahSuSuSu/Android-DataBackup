@@ -4,13 +4,16 @@ import android.content.Context
 import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
+import com.xayah.databackup.data.PackageRestoreOperation
+import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
+import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 
-enum class CompressionType(val type: String, val suffix: String, val para: String) {
-    TAR("tar", "tar", ""),
-    ZSTD("zstd", "tar.zst", "zstd -r -T0 --ultra -1 -q --priority=rt"),
-    LZ4("lz4", "tar.lz4", "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4");
+enum class CompressionType(val type: String, val suffix: String, val compressPara: String, val decompressPara: String) {
+    TAR("tar", "tar", "", ""),
+    ZSTD("zstd", "tar.zst", "zstd -r -T0 --ultra -1 -q --priority=rt", "-I ${QUOTE}zstd${QUOTE}"),
+    LZ4("lz4", "tar.lz4", "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4", "-I ${QUOTE}zstd${QUOTE}");
 
     companion object {
         fun of(name: String?): CompressionType {
@@ -54,7 +57,29 @@ enum class DataType(val type: String) {
         }
     }
 
+    fun updateEntityLog(entity: PackageRestoreOperation, msg: String) {
+        when (this) {
+            PACKAGE_USER -> entity.userLog = msg
+            PACKAGE_USER_DE -> entity.userDeLog = msg
+            PACKAGE_DATA -> entity.dataLog = msg
+            PACKAGE_OBB -> entity.obbLog = msg
+            PACKAGE_MEDIA -> entity.mediaLog = msg
+            else -> {}
+        }
+    }
+
     fun updateEntityState(entity: PackageBackupOperation, state: OperationState) {
+        when (this) {
+            PACKAGE_USER -> entity.userState = state
+            PACKAGE_USER_DE -> entity.userDeState = state
+            PACKAGE_DATA -> entity.dataState = state
+            PACKAGE_OBB -> entity.obbState = state
+            PACKAGE_MEDIA -> entity.mediaState = state
+            else -> {}
+        }
+    }
+
+    fun updateEntityState(entity: PackageRestoreOperation, state: OperationState) {
         when (this) {
             PACKAGE_USER -> entity.userState = state
             PACKAGE_USER_DE -> entity.userDeState = state
@@ -164,18 +189,30 @@ fun Context.readLastBackupTime(): String {
     return readPreferencesString("last_backup_time", getString(R.string.none)) ?: getString(R.string.none)
 }
 
+/**
+ * The source user while backing up.
+ */
 fun Context.saveBackupUserId(userId: Int) {
     savePreferences("backup_user_id", userId)
 }
 
+/**
+ * @see [saveBackupUserId]
+ */
 fun Context.readBackupUserId(): Int {
     return readPreferencesInt("backup_user_id", ConstantUtil.DefaultBackupUserId)
 }
 
+/**
+ * The final path for saving the backup.
+ */
 fun Context.saveBackupSavePath(path: String) {
     savePreferences("backup_save_path", path.trim())
 }
 
+/**
+ * @see [saveBackupSavePath]
+ */
 fun Context.readBackupSavePath(): String {
     return readPreferencesString("backup_save_path", ConstantUtil.DefaultBackupSavePath)
         ?: ConstantUtil.DefaultBackupSavePath
@@ -215,10 +252,83 @@ fun Context.readExternalBackupSaveChild(): String {
         ?: ConstantUtil.DefaultBackupChild
 }
 
+/**
+ * The target user while restoring.
+ */
+fun Context.saveRestoreUserId(userId: Int) {
+    savePreferences("restore_user_id", userId)
+}
+
+/**
+ * @see [saveRestoreUserId]
+ */
+fun Context.readRestoreUserId(): Int {
+    return readPreferencesInt("restore_user_id", ConstantUtil.DefaultRestoreUserId)
+}
+
+/**
+ * It defines restore source path, user can set it at [PageRestore].
+ * Databases, icons, archives and other stuffs need to be reloaded
+ * each time since the path is changed.
+ */
+fun Context.saveRestoreSavePath(path: String) {
+    savePreferences("restore_save_path", path.trim())
+}
+
+/**
+ * @see [saveRestoreSavePath]
+ */
+fun Context.readRestoreSavePath(): String {
+    return readPreferencesString("restore_save_path", ConstantUtil.DefaultRestoreSavePath)
+        ?: ConstantUtil.DefaultRestoreSavePath
+}
+
+/**
+ * The child of internal path.
+ * e.g. "DataBackup" in "/storage/emulated/0/DataBackup".
+ */
+fun Context.saveInternalRestoreSaveChild(child: String) {
+    savePreferences("restore_save_child_internal", child.trim())
+}
+
+/**
+ * @see [saveInternalRestoreSaveChild]
+ */
+fun Context.readInternalRestoreSaveChild(): String {
+    return readPreferencesString("restore_save_child_internal", ConstantUtil.DefaultRestoreChild)
+        ?: ConstantUtil.DefaultRestoreChild
+}
+
+/**
+ * The child of external path.
+ * Though there could be more than one external storage devices,
+ * we save only one child of them.
+ * e.g. "DataBackup" in "/mnt/media_rw/E7F9-FA61/DataBackup".
+ */
+fun Context.saveExternalRestoreSaveChild(child: String) {
+    savePreferences("restore_save_child_external", child.trim())
+}
+
+/**
+ * @see [saveExternalRestoreSaveChild]
+ */
+fun Context.readExternalRestoreSaveChild(): String {
+    return readPreferencesString("restore_save_child_external", ConstantUtil.DefaultRestoreChild)
+        ?: ConstantUtil.DefaultRestoreChild
+}
+
 fun Context.saveIconSaveTime(timestamp: Long) {
     savePreferences("icon_save_time", timestamp)
 }
 
 fun Context.readIconSaveTime(): Long {
     return readPreferencesLong("icon_save_time", 0)
+}
+
+fun Context.saveIsCleanRestoring(value: Boolean) {
+    savePreferences("is_clean_restoring", value)
+}
+
+fun Context.readIsCleanRestoring(): Boolean {
+    return readPreferencesBoolean("is_clean_restoring", false)
 }

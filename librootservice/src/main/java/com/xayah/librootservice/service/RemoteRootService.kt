@@ -102,6 +102,8 @@ class RemoteRootService(private val context: Context) {
         }
     }
 
+    suspend fun testService(): IRemoteRootService = getService()
+
     suspend fun readStatFs(path: String): StatFsParcelable = getService().readStatFs(path)
 
     suspend fun mkdirs(path: String): Boolean = getService().mkdirs(path)
@@ -126,6 +128,10 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun createNewFile(path: String): Boolean = getService().createNewFile(path)
 
+    suspend fun deleteRecursively(path: String): Boolean = getService().deleteRecursively(path)
+
+    suspend fun listFilePaths(path: String): List<String> = getService().listFilePaths(path)
+
     suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)
         val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
@@ -142,4 +148,8 @@ class RemoteRootService(private val context: Context) {
     }
 
     suspend fun getPackageSourceDir(packageName: String, userId: Int): List<String> = getService().getPackageSourceDir(packageName, userId)
+
+    suspend fun queryInstalled(packageName: String, userId: Int): Boolean = getService().queryInstalled(packageName, userId)
+
+    suspend fun getPackageUid(packageName: String, userId: Int): Int = getService().getPackageUid(packageName, userId)
 }

@@ -82,4 +82,39 @@ object PreparationUtil {
         }
         return Pair(isSuccess, out.trim())
     }
+
+    suspend fun setInstallEnv(): Pair<Boolean, String> {
+        var isSuccess = true
+        var out = ""
+        CommonUtil.execute("settings put global verifier_verify_adb_installs 0").apply {
+            if (this.isSuccess.not()) {
+                isSuccess = false
+                out += this.outString() + "\n"
+            }
+        }
+        CommonUtil.execute("settings put global package_verifier_enable 0").apply {
+            if (this.isSuccess.not()) {
+                isSuccess = false
+                out += this.outString() + "\n"
+            }
+        }
+        CommonUtil.execute("settings get global package_verifier_user_consent").apply {
+            if (this.outString().trim() != "-1") {
+                CommonUtil.execute("settings put global package_verifier_user_consent -1").apply {
+                    if (this.isSuccess.not()) {
+                        isSuccess = false
+                        out += this.outString() + "\n"
+                    }
+                }
+                CommonUtil.execute("settings put global upload_apk_enable 0").apply {
+                    if (this.isSuccess.not()) {
+                        isSuccess = false
+                        out += this.outString() + "\n"
+                    }
+                }
+            }
+        }
+
+        return Pair(isSuccess, out.trim())
+    }
 }

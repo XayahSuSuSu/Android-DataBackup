@@ -29,6 +29,7 @@ class LogUtil @Inject constructor(private val logDao: LogDao) {
     private val startTimestamp: Long = DateUtil.getTimestamp()
 
     suspend fun log(tag: String, msg: String): Long = withIOContext {
+        if (msg.trim().isEmpty()) return@withIOContext -1
         val logEntity = LogEntity(startTimestamp = startTimestamp, tag = tag, msg = msg)
         logDao.upsert(logEntity)
     }

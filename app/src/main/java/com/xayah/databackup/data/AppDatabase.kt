@@ -10,6 +10,7 @@ import androidx.room.RoomDatabase
         PackageBackupEntire::class,
         PackageBackupOperation::class,
         PackageRestoreEntire::class,
+        PackageRestoreOperation::class,
     ], version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -17,4 +18,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun packageBackupEntireDao(): PackageBackupEntireDao
     abstract fun packageBackupOperationDao(): PackageBackupOperationDao
     abstract fun packageRestoreEntireDao(): PackageRestoreEntireDao
+    abstract fun packageRestoreOperationDao(): PackageRestoreOperationDao
 }

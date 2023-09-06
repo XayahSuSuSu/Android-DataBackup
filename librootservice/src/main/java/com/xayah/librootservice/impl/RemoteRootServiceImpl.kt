@@ -32,26 +32,24 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         systemContext = getSystemContext()
     }
 
-    override fun readStatFs(path: String): StatFsParcelable {
-        synchronized(lock) {
-            val statFs = StatFs(path)
-            return StatFsParcelable(statFs.availableBytes, statFs.totalBytes)
-        }
+    override fun readStatFs(path: String): StatFsParcelable = synchronized(lock) {
+        val statFs = StatFs(path)
+        StatFsParcelable(statFs.availableBytes, statFs.totalBytes)
     }
 
-    override fun mkdirs(path: String): Boolean {
-        synchronized(lock) {
-            return tryWithBoolean {
+    override fun mkdirs(path: String): Boolean = synchronized(lock) {
+        tryOn(
+            block = {
                 val file = File(path)
-                if (file.exists().not()) file.mkdirs()
-            }
-        }
+                if (file.exists().not()) file.mkdirs() else true
+            },
+            onException = { false }
+        )
     }
+
 
     override fun copyRecursively(path: String, targetPath: String, overwrite: Boolean): Boolean = synchronized(lock) {
-        tryWithBoolean {
-            File(path).copyRecursively(target = File(targetPath), overwrite = overwrite)
-        }
+        tryOn(block = { File(path).copyRecursively(target = File(targetPath), overwrite = overwrite) }, onException = { false })
     }
 
     override fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean = synchronized(lock) {
@@ -68,28 +66,42 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         tryOn(block = { File(path).createNewFile() }, onException = { false })
     }
 
+    override fun deleteRecursively(path: String): Boolean = synchronized(lock) {
+        tryOn(block = { File(path).deleteRecursively() }, onException = { false })
+    }
+
+    override fun listFilePaths(path: String): List<String> = synchronized(lock) {
+        tryOn(
+            block = {
+                File(path).listFiles()!!.map { it.path }
+            },
+            onException = {
+                listOf()
+            }
+        )
+    }
+
     /**
      * AIDL limits transaction to 1M which means it may throw [android.os.TransactionTooLargeException]
      * when the package list is too large. So we just make it parcelable and write into tmp file to avoid that.
      */
-    override fun getInstalledPackagesAsUser(flags: Int, userId: Int): ParcelFileDescriptor {
-        synchronized(lock) {
-            val parcel = Parcel.obtain()
-            parcel.setDataPosition(0)
+    override fun getInstalledPackagesAsUser(flags: Int, userId: Int): ParcelFileDescriptor = synchronized(lock) {
+        val parcel = Parcel.obtain()
+        parcel.setDataPosition(0)
 
-            val packages = PackageManagerHidden.getInstalledPackagesAsUser(systemContext.packageManager, flags, userId)
-            parcel.writeTypedList(packages)
+        val packages = PackageManagerHidden.getInstalledPackagesAsUser(systemContext.packageManager, flags, userId)
+        parcel.writeTypedList(packages)
 
-            val tmp = File(ParcelTmpFilePath, ParcelTmpFileName)
-            tmp.createNewFile()
-            tmp.writeBytes(parcel.marshall())
-            val pfd = ParcelFileDescriptor.open(tmp, ParcelFileDescriptor.MODE_READ_WRITE)
-            tmp.deleteRecursively()
+        val tmp = File(ParcelTmpFilePath, ParcelTmpFileName)
+        tmp.createNewFile()
+        tmp.writeBytes(parcel.marshall())
+        val pfd = ParcelFileDescriptor.open(tmp, ParcelFileDescriptor.MODE_READ_WRITE)
+        tmp.deleteRecursively()
 
-            parcel.recycle()
-            return pfd
-        }
+        parcel.recycle()
+        pfd
     }
+
 
     override fun getPackageSourceDir(packageName: String, userId: Int): List<String> = synchronized(lock) {
         tryOn(
@@ -102,6 +114,23 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
                 sourceDirList
             },
             onException = { listOf() }
+        )
+    }
+
+    override fun queryInstalled(packageName: String, userId: Int): Boolean = synchronized(lock) {
+        tryWithBoolean {
+            PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+        }
+    }
+
+    override fun getPackageUid(packageName: String, userId: Int): Int = synchronized(lock) {
+        tryOn(
+            block = {
+                PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId).applicationInfo.uid
+            },
+            onException = {
+                -1
+            }
         )
     }
 }

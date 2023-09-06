@@ -16,7 +16,7 @@ data class BackupPreparation(
     val services: String,
 )
 
-class OperationLocalService(private val context: Context, private val timestamp: Long) {
+class OperationLocalService(private val context: Context) {
     private var mBinder: IBinder? = null
     private var mService: OperationLocalServiceImpl? = null
     private var mConnection: ServiceConnection? = null
@@ -84,7 +84,8 @@ class OperationLocalService(private val context: Context, private val timestamp:
     }
 
     suspend fun backupPackagesPreparation(): BackupPreparation = getService().backupPackagesPreparation()
-    suspend fun backupPackages() = getService().backupPackages(timestamp)
+    suspend fun backupPackages(timestamp: Long) = getService().backupPackages(timestamp)
     suspend fun backupPackagesAfterwards(preparation: BackupPreparation) = getService().backupPackagesAfterwards(preparation)
-
+    suspend fun restorePackagesPreparation() = getService().restorePackagesPreparation()
+    suspend fun restorePackages(timestamp: Long) = getService().restorePackages(timestamp)
 }

@@ -1,4 +1,4 @@
-package com.xayah.databackup.ui.activity.main.page.backup
+package com.xayah.databackup.ui.activity.main.page.restore
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,13 +28,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.main.page.backup.StorageItem
+import com.xayah.databackup.ui.activity.main.page.backup.StorageItemType
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.CardActionButton
 import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.Module
-import com.xayah.databackup.ui.component.OverLookBackupCard
+import com.xayah.databackup.ui.component.OverLookRestoreCard
 import com.xayah.databackup.ui.component.RadioButtonGroup
 import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.component.paddingBottom
@@ -43,31 +47,15 @@ import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.IntentUtil
 import com.xayah.databackup.util.command.PreparationUtil
-import com.xayah.databackup.util.readBackupSavePath
-import com.xayah.databackup.util.readExternalBackupSaveChild
-import com.xayah.databackup.util.readInternalBackupSaveChild
-import com.xayah.databackup.util.saveBackupSavePath
-import com.xayah.databackup.util.saveExternalBackupSaveChild
-import com.xayah.databackup.util.saveInternalBackupSaveChild
+import com.xayah.databackup.util.readExternalRestoreSaveChild
+import com.xayah.databackup.util.readInternalRestoreSaveChild
+import com.xayah.databackup.util.readRestoreSavePath
+import com.xayah.databackup.util.saveExternalRestoreSaveChild
+import com.xayah.databackup.util.saveInternalRestoreSaveChild
+import com.xayah.databackup.util.saveRestoreSavePath
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryService
 import kotlinx.coroutines.launch
-
-enum class StorageItemType {
-    Internal,
-    External,
-    Custom,
-}
-
-data class StorageItem(
-    var title: String,
-    var type: StorageItemType,
-    var progress: Float,
-    var parent: String,      // default: /storage/emulated/0
-    var child: String,       // default: DataBackup
-    var display: String,     // default: /storage/emulated/0/DataBackup
-    var enabled: Boolean,
-)
 
 @ExperimentalMaterial3Api
 private suspend fun DialogState.openDirectoryDialog(context: Context) {
@@ -83,14 +71,14 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
             display = "",
             enabled = true
         ),
-        title = context.getString(R.string.backup_dir),
+        title = context.getString(R.string.restore_dir),
         icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
         onLoading = {
             val remoteRootService = RemoteRootService(context)
 
             // Internal storage
-            val internalParent = ConstantUtil.DefaultBackupParent
-            val internalChild = context.readInternalBackupSaveChild()
+            val internalParent = ConstantUtil.DefaultRestoreParent
+            val internalChild = context.readInternalRestoreSaveChild()
             val internalPath = "${internalParent}/${internalChild}"
             val internalItem = StorageItem(
                 title = context.getString(R.string.internal_storage),
@@ -113,7 +101,7 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
 
             // External storage
             val externalList = PreparationUtil.listExternalStorage()
-            val externalChild = context.readExternalBackupSaveChild()
+            val externalChild = context.readExternalRestoreSaveChild()
             for (storageItem in externalList) {
                 // e.g. /mnt/media_rw/E7F9-FA61 exfat
                 try {
@@ -148,10 +136,10 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
             remoteRootService.destroyService()
         },
         block = { uiState ->
-            var defIndex = items.indexOfFirst { it.display == context.readBackupSavePath() }
+            var defIndex = items.indexOfFirst { it.display == context.readRestoreSavePath() }
             if (defIndex == -1) {
                 // The save path is not in storage items, reset it.
-                context.saveBackupSavePath(ConstantUtil.DefaultBackupSavePath)
+                context.saveRestoreSavePath(ConstantUtil.DefaultRestoreSavePath)
                 defIndex = 0
             }
             RadioButtonGroup(
@@ -183,23 +171,23 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
     if (state) {
         when (item.type) {
             StorageItemType.Internal -> {
-                context.saveInternalBackupSaveChild(item.child)
+                context.saveInternalRestoreSaveChild(item.child)
             }
 
             StorageItemType.External -> {
-                context.saveExternalBackupSaveChild(item.child)
+                context.saveExternalRestoreSaveChild(item.child)
             }
 
             else -> {}
         }
-        context.saveBackupSavePath("${item.parent}/${item.child}")
+        context.saveRestoreSavePath("${item.parent}/${item.child}")
     }
 }
 
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
-fun PageBackup() {
+fun PageRestore() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val dialogSlot = LocalSlotScope.current!!.dialogSlot
@@ -210,22 +198,27 @@ fun PageBackup() {
     ) {
         item {
             Spacer(modifier = Modifier.paddingTop(CommonTokens.PaddingMedium))
-            OverLookBackupCard()
+            OverLookRestoreCard()
         }
 
         item {
             Module(title = stringResource(R.string.utilities)) {
                 val actions = listOf(
+                    "重载",
                     stringResource(R.string.directory),
                     stringResource(R.string.structure),
                     stringResource(R.string.log)
                 )
                 val icons = listOf(
+                    Icons.Rounded.Refresh,
                     ImageVector.vectorResource(R.drawable.ic_rounded_folder_open),
                     ImageVector.vectorResource(R.drawable.ic_rounded_account_tree),
                     ImageVector.vectorResource(R.drawable.ic_rounded_bug_report)
                 )
                 val onClicks = listOf<suspend () -> Unit>(
+                    {
+
+                    },
                     {
                         dialogSlot.openDirectoryDialog(context)
                     },
@@ -268,10 +261,11 @@ fun PageBackup() {
                 )
                 val onClicks = listOf(
                     {
-                        IntentUtil.toOperationActivity(context = context, route = OperationRoutes.PackageBackup)
+                        IntentUtil.toOperationActivity(context = context, route = OperationRoutes.PackageRestore)
                     },
                     {},
-                    {})
+                    {}
+                )
                 VerticalGrid(
                     columns = 2,
                     count = items.size,

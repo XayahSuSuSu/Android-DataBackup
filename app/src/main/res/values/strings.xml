@@ -65,4 +65,10 @@
     <string name="simplify">Simplify</string>
     <string name="integral">Integral</string>
     <string name="wait_for_remaining_data_processing">Please wait for processing the remaining data🦖</string>
+    <string name="restore">Restore</string>
+    <string name="last_restore">Last restore</string>
+    <string name="restore_dir">Restore directory</string>
+    <string name="restore_list">Restore list</string>
+    <string name="date">Date</string>
+    <string name="restoring">Restoring</string>
 </resources>

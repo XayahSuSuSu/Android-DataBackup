@@ -7,6 +7,7 @@ import com.xayah.databackup.data.LogDao
 import com.xayah.databackup.data.PackageBackupEntireDao
 import com.xayah.databackup.data.PackageBackupOperationDao
 import com.xayah.databackup.data.PackageRestoreEntireDao
+import com.xayah.databackup.data.PackageRestoreOperationDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,4 +38,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePackageRestoreEntireDao(database: AppDatabase): PackageRestoreEntireDao = database.packageRestoreEntireDao()
+
+    @Provides
+    @Singleton
+    fun providePackageRestoreOperationDao(database: AppDatabase): PackageRestoreOperationDao = database.packageRestoreOperationDao()
 }

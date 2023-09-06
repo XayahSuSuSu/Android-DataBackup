@@ -136,7 +136,7 @@ fun EnvCard(content: String, state: State, onClick: () -> Unit) {
 }
 
 @Composable
-fun OverLookCard() {
+fun OverLookBackupCard() {
     val context = LocalContext.current
     Card(
         modifier = Modifier
@@ -158,6 +158,34 @@ fun OverLookCard() {
                 LabelLargeExtraBoldText(text = stringResource(R.string.overlook))
             }
             BodySmallText(text = stringResource(R.string.last_backup))
+            TitleLargeBoldText(text = context.readLastBackupTime())
+        }
+    }
+}
+
+@Composable
+fun OverLookRestoreCard() {
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        colors = CardDefaults.cardColors(containerColor = ColorScheme.primaryContainer())
+    ) {
+        Column(modifier = Modifier.padding(CardTokens.ContentPadding)) {
+            Row(
+                modifier = Modifier.paddingBottom(CardTokens.ContentPadding),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_rounded_token),
+                    contentDescription = null,
+                    modifier = Modifier.paddingEnd(ButtonTokens.IconTextButtonPadding),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                LabelLargeExtraBoldText(text = stringResource(R.string.overlook))
+            }
+            BodySmallText(text = stringResource(R.string.last_restore))
             TitleLargeBoldText(text = context.readLastBackupTime())
         }
     }

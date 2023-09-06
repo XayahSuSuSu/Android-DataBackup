@@ -12,6 +12,10 @@ import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBa
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupList
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupManifest
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupProcessing
+import com.xayah.databackup.ui.activity.operation.page.packages.restore.PackageRestoreCompletion
+import com.xayah.databackup.ui.activity.operation.page.packages.restore.PackageRestoreList
+import com.xayah.databackup.ui.activity.operation.page.packages.restore.PackageRestoreManifest
+import com.xayah.databackup.ui.activity.operation.page.packages.restore.PackageRestoreProcessing
 import com.xayah.databackup.ui.component.LocalSlotScope
 
 
@@ -19,13 +23,14 @@ import com.xayah.databackup.ui.component.LocalSlotScope
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun OperationNavHost() {
+fun OperationNavHost(startDestination: String) {
     val navController = LocalSlotScope.current!!.navController
     NavHost(
         navController = navController,
-        startDestination = OperationRoutes.PackageBackup.route,
+        startDestination = startDestination,
     ) {
         packageBackupGraph()
+        packageRestoreGraph()
     }
 }
 
@@ -39,16 +44,36 @@ fun NavGraphBuilder.packageBackupGraph() {
         composable(OperationRoutes.PackageBackupList.route) {
             PackageBackupList()
         }
-
         composable(OperationRoutes.PackageBackupManifest.route) {
             PackageBackupManifest()
         }
-
         composable(OperationRoutes.PackageBackupProcessing.route) {
             PackageBackupProcessing()
         }
         composable(OperationRoutes.PackageBackupCompletion.route) {
             PackageBackupCompletion()
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+fun NavGraphBuilder.packageRestoreGraph() {
+    navigation(
+        startDestination = OperationRoutes.PackageRestoreList.route,
+        route = OperationRoutes.PackageRestore.route
+    ) {
+        composable(OperationRoutes.PackageRestoreList.route) {
+            PackageRestoreList()
+        }
+        composable(OperationRoutes.PackageRestoreManifest.route) {
+            PackageRestoreManifest()
+        }
+        composable(OperationRoutes.PackageRestoreProcessing.route) {
+            PackageRestoreProcessing()
+        }
+        composable(OperationRoutes.PackageRestoreCompletion.route) {
+            PackageRestoreCompletion()
         }
     }
 }

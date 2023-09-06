@@ -39,47 +39,37 @@ import coil.request.ImageRequest
 import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.PackageBackupEntire
-import com.xayah.databackup.ui.activity.operation.page.packages.backup.ListViewModel
+import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.ListItemTokens
 import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
+import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
 import java.io.File
+import com.xayah.databackup.ui.activity.operation.page.packages.backup.ListViewModel as BackupListViewModel
+import com.xayah.databackup.ui.activity.operation.page.packages.restore.ListViewModel as RestoreListViewModel
 
 @ExperimentalMaterial3Api
 @Composable
 fun ListItemPackage(
     modifier: Modifier = Modifier,
-    packageInfo: PackageBackupEntire,
+    packageName: String,
+    label: String,
+    icon: Any,
+    apkSelected: Boolean,
+    dataSelected: Boolean,
+    onApkSelected: () -> Unit,
+    onDataSelected: () -> Unit,
+    onCardClick: () -> Unit,
     chipGroup: @Composable RowScope.() -> Unit,
 ) {
     val context = LocalContext.current
-    val viewModel = hiltViewModel<ListViewModel>()
-    val scope = rememberCoroutineScope()
-    val icon = remember { mutableStateOf<Any>(0) }
-    var apkSelected by remember { mutableStateOf(OperationMask.isApkSelected(packageInfo.operationCode)) }
-    var dataSelected by remember { mutableStateOf(OperationMask.isDataSelected(packageInfo.operationCode)) }
-    LaunchedEffect(null) {
-        // Read icon from cached internal dir.
-        tryOn {
-            val bytes = File(PathUtil.getIconPath(context, packageInfo.packageName)).readBytes()
-            icon.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources)
-        }
-    }
     Card(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        onClick = {
-            scope.launch {
-                packageInfo.operationCode =
-                    if (packageInfo.operationCode == OperationMask.Both) OperationMask.None else OperationMask.Both
-                apkSelected = OperationMask.isApkSelected(packageInfo.operationCode)
-                dataSelected = OperationMask.isDataSelected(packageInfo.operationCode)
-                viewModel.updatePackage(packageInfo)
-            }
-        },
+        onClick = onCardClick,
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingMedium)
@@ -94,14 +84,14 @@ fun ListItemPackage(
                 AsyncImage(
                     modifier = Modifier.size(ListItemTokens.IconSize),
                     model = ImageRequest.Builder(context)
-                        .data(icon.value)
+                        .data(icon)
                         .crossfade(true)
                         .build(),
                     contentDescription = null
                 )
                 Column(modifier = Modifier.weight(1f)) {
-                    TitleMediumBoldText(text = packageInfo.label)
-                    LabelSmallText(text = packageInfo.packageName)
+                    TitleMediumBoldText(text = label)
+                    LabelSmallText(text = packageName)
                 }
             }
             Row(
@@ -127,13 +117,7 @@ fun ListItemPackage(
             ) {
                 FilterChip(
                     selected = apkSelected,
-                    onClick = {
-                        scope.launch {
-                            packageInfo.operationCode = packageInfo.operationCode xor OperationMask.Apk
-                            apkSelected = OperationMask.isApkSelected(packageInfo.operationCode)
-                            viewModel.updatePackage(packageInfo)
-                        }
-                    },
+                    onClick = onApkSelected,
                     label = { Text(stringResource(R.string.apk)) },
                     leadingIcon = if (apkSelected) {
                         {
@@ -149,13 +133,7 @@ fun ListItemPackage(
                 )
                 FilterChip(
                     selected = dataSelected,
-                    onClick = {
-                        scope.launch {
-                            packageInfo.operationCode = packageInfo.operationCode xor OperationMask.Data
-                            dataSelected = OperationMask.isDataSelected(packageInfo.operationCode)
-                            viewModel.updatePackage(packageInfo)
-                        }
-                    },
+                    onClick = onDataSelected,
                     label = { Text(stringResource(R.string.data)) },
                     leadingIcon = if (dataSelected) {
                         {
@@ -169,6 +147,134 @@ fun ListItemPackage(
                         null
                     }
                 )
+            }
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun ListItemPackageBackup(
+    modifier: Modifier = Modifier,
+    packageInfo: PackageBackupEntire,
+) {
+    val context = LocalContext.current
+    val viewModel = hiltViewModel<BackupListViewModel>()
+    val scope = rememberCoroutineScope()
+    var icon by remember { mutableStateOf<Any>(0) }
+    var apkSelected by remember { mutableStateOf(OperationMask.isApkSelected(packageInfo.operationCode)) }
+    var dataSelected by remember { mutableStateOf(OperationMask.isDataSelected(packageInfo.operationCode)) }
+
+    ListItemPackage(
+        modifier = modifier,
+        packageName = packageInfo.packageName,
+        label = packageInfo.label,
+        icon = icon,
+        apkSelected = apkSelected,
+        dataSelected = dataSelected,
+        onApkSelected = {
+            scope.launch {
+                withIOContext {
+                    packageInfo.operationCode = packageInfo.operationCode xor OperationMask.Apk
+                    apkSelected = OperationMask.isApkSelected(packageInfo.operationCode)
+                    viewModel.updatePackage(packageInfo)
+                }
+            }
+        },
+        onDataSelected = {
+            scope.launch {
+                withIOContext {
+                    packageInfo.operationCode = packageInfo.operationCode xor OperationMask.Data
+                    dataSelected = OperationMask.isDataSelected(packageInfo.operationCode)
+                    viewModel.updatePackage(packageInfo)
+                }
+            }
+        },
+        onCardClick = {
+            scope.launch {
+                withIOContext {
+                    packageInfo.operationCode =
+                        if (packageInfo.operationCode == OperationMask.Both) OperationMask.None else OperationMask.Both
+                    apkSelected = OperationMask.isApkSelected(packageInfo.operationCode)
+                    dataSelected = OperationMask.isDataSelected(packageInfo.operationCode)
+                    viewModel.updatePackage(packageInfo)
+                }
+            }
+        }
+    ) {
+        Serial(serial = packageInfo.versionName)
+    }
+
+    LaunchedEffect(null) {
+        // Read icon from cached internal dir.
+        withIOContext {
+            tryOn {
+                val bytes = File(PathUtil.getIconPath(context, packageInfo.packageName)).readBytes()
+                icon = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources)
+            }
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun ListItemPackageRestore(
+    modifier: Modifier = Modifier,
+    packageInfo: PackageRestoreEntire,
+) {
+    val context = LocalContext.current
+    val viewModel = hiltViewModel<RestoreListViewModel>()
+    val scope = rememberCoroutineScope()
+    var icon by remember { mutableStateOf<Any>(0) }
+    var apkSelected by remember { mutableStateOf(OperationMask.isApkSelected(packageInfo.operationCode)) }
+    var dataSelected by remember { mutableStateOf(OperationMask.isDataSelected(packageInfo.operationCode)) }
+
+    ListItemPackage(
+        modifier = modifier,
+        packageName = packageInfo.packageName,
+        label = packageInfo.label,
+        icon = icon,
+        apkSelected = apkSelected,
+        dataSelected = dataSelected,
+        onApkSelected = {
+            scope.launch {
+                withIOContext {
+                    packageInfo.operationCode = packageInfo.operationCode xor OperationMask.Apk
+                    apkSelected = OperationMask.isApkSelected(packageInfo.operationCode)
+                    viewModel.updatePackage(packageInfo)
+                }
+            }
+        },
+        onDataSelected = {
+            scope.launch {
+                withIOContext {
+                    packageInfo.operationCode = packageInfo.operationCode xor OperationMask.Data
+                    dataSelected = OperationMask.isDataSelected(packageInfo.operationCode)
+                    viewModel.updatePackage(packageInfo)
+                }
+            }
+        },
+        onCardClick = {
+            scope.launch {
+                withIOContext {
+                    packageInfo.operationCode =
+                        if (packageInfo.operationCode == OperationMask.Both) OperationMask.None else OperationMask.Both
+                    apkSelected = OperationMask.isApkSelected(packageInfo.operationCode)
+                    dataSelected = OperationMask.isDataSelected(packageInfo.operationCode)
+                    viewModel.updatePackage(packageInfo)
+                }
+            }
+        }
+    ) {
+        Serial(serial = packageInfo.versionName)
+    }
+
+    LaunchedEffect(null) {
+        // Read icon from cached internal dir.
+        withIOContext {
+            tryOn {
+                val bytes = File(PathUtil.getIconPath(context, packageInfo.packageName)).readBytes()
+                icon = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources)
             }
         }
     }

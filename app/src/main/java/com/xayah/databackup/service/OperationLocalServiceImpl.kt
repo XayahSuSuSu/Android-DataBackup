@@ -10,14 +10,18 @@ import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageBackupOperationDao
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.data.PackageRestoreEntireDao
+import com.xayah.databackup.data.PackageRestoreOperation
+import com.xayah.databackup.data.PackageRestoreOperationDao
 import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
-import com.xayah.databackup.util.command.OperationUtil
+import com.xayah.databackup.util.command.OperationBackupUtil
+import com.xayah.databackup.util.command.OperationRestoreUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.databasePath
 import com.xayah.databackup.util.iconPath
+import com.xayah.databackup.util.readCompressionType
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,16 +57,14 @@ class OperationLocalServiceImpl : Service() {
     @Inject
     lateinit var packageRestoreEntireDao: PackageRestoreEntireDao
 
+    @Inject
+    lateinit var packageRestoreOperationDao: PackageRestoreOperationDao
+
     suspend fun backupPackagesPreparation(): BackupPreparation = withIOContext {
         mutex.withLock {
             val logTag = "Packages backup preparation"
             logUtil.log(logTag, "Started.")
 
-            /**
-             * Somehow the keyboards and accessibility services
-             * will be changed after backing up on some devices,
-             * so we restore them manually.
-             */
             /**
              * Somehow the keyboards and accessibility services
              * will be changed after backing up on some devices,
@@ -81,7 +83,7 @@ class OperationLocalServiceImpl : Service() {
             val logTag = "Packages backup"
             val context = applicationContext
             val remoteRootService = RemoteRootService(context)
-            val operationUtil = OperationUtil(context, timestamp, logUtil, remoteRootService, packageBackupOperationDao)
+            val operationBackupUtil = OperationBackupUtil(context, timestamp, logUtil, remoteRootService, packageBackupOperationDao)
 
             logUtil.log(logTag, "Started.")
             val packages = packageBackupEntireDao.queryActiveTotalPackages()
@@ -92,7 +94,7 @@ class OperationLocalServiceImpl : Service() {
                 logUtil.log(logTag, "Current package: $packageName")
                 logUtil.log(logTag, "isApkSelected: $isApkSelected")
                 logUtil.log(logTag, "isDataSelected: $isDataSelected")
-                remoteRootService.mkdirs(operationUtil.getPackageItemSavePath(packageName))
+                remoteRootService.mkdirs(operationBackupUtil.getPackageItemSavePath(packageName))
 
                 val packageBackupOperation =
                     PackageBackupOperation(
@@ -106,13 +108,13 @@ class OperationLocalServiceImpl : Service() {
                     }
 
                 if (isApkSelected)
-                    operationUtil.backupApk(packageBackupOperation, packageName)
+                    operationBackupUtil.backupApk(packageBackupOperation, packageName)
                 if (isDataSelected) {
-                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER)
-                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER_DE)
-                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_DATA)
-                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_OBB)
-                    operationUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_MEDIA)
+                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER)
+                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER_DE)
+                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_DATA)
+                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_OBB)
+                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_MEDIA)
                 }
 
                 // Update package state and end time.
@@ -134,6 +136,8 @@ class OperationLocalServiceImpl : Service() {
                         timestamp = timestamp,
                         versionName = currentPackage.versionName,
                         versionCode = currentPackage.versionCode,
+                        compressionType = context.readCompressionType(),
+                        active = false
                     )
                     packageRestoreEntireDao.upsert(restoreEntire)
                 }
@@ -178,6 +182,70 @@ class OperationLocalServiceImpl : Service() {
             remoteRootService.copyRecursively(path = databasePath, targetPath = databaseSavePath, overwrite = true)
             logUtil.log(logTag, "Copied from $databasePath to $databaseSavePath.")
 
+            remoteRootService.destroyService()
+        }
+    }
+
+    suspend fun restorePackagesPreparation() = withIOContext {
+        mutex.withLock {
+            val logTag = "Packages restore preparation"
+            logUtil.log(logTag, "Started.")
+
+            // Enable adb install permissions.
+            val (_, output) = PreparationUtil.setInstallEnv()
+            logUtil.log(logTag, "Enable adb install permissions: $output")
+        }
+    }
+
+    suspend fun restorePackages(timestamp: Long) = withIOContext {
+        mutex.withLock {
+            val logTag = "Packages restore"
+            val context = applicationContext
+            val remoteRootService = RemoteRootService(context)
+            val operationRestoreUtil = OperationRestoreUtil(context, logUtil, remoteRootService, packageRestoreOperationDao)
+
+            logUtil.log(logTag, "Started.")
+            val packages = packageRestoreEntireDao.queryActiveTotalPackages()
+            packages.forEach { currentPackage ->
+                val packageName = currentPackage.packageName
+                val compressionType = currentPackage.compressionType
+                val packageTimestamp = currentPackage.timestamp
+                val isApkSelected = OperationMask.isApkSelected(currentPackage.operationCode)
+                val isDataSelected = OperationMask.isDataSelected(currentPackage.operationCode)
+                logUtil.log(logTag, "Current package: $packageName")
+                logUtil.log(logTag, "isApkSelected: $isApkSelected")
+                logUtil.log(logTag, "isDataSelected: $isDataSelected")
+
+                val packageRestoreOperation =
+                    PackageRestoreOperation(
+                        packageName = packageName,
+                        timestamp = timestamp,
+                        startTimestamp = DateUtil.getTimestamp(),
+                        endTimestamp = 0,
+                        label = currentPackage.label
+                    ).also { entity ->
+                        entity.id = packageRestoreOperationDao.upsert(entity)
+                    }
+
+                if (isApkSelected)
+                    operationRestoreUtil.restoreApk(packageRestoreOperation, packageName, packageTimestamp, compressionType)
+                if (isDataSelected) {
+                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_USER)
+                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_USER_DE)
+                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_DATA)
+                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_OBB)
+                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_MEDIA)
+                }
+
+                // Update package state and end time.
+                if (packageRestoreOperation.isSucceed)
+                    logUtil.log(logTag, "Restoring succeed.")
+                else
+                    logUtil.log(logTag, "Restoring failed.")
+                packageRestoreOperation.packageState = packageRestoreOperation.isSucceed
+                packageRestoreOperation.endTimestamp = DateUtil.getTimestamp()
+                packageRestoreOperationDao.upsert(packageRestoreOperation)
+            }
             remoteRootService.destroyService()
         }
     }

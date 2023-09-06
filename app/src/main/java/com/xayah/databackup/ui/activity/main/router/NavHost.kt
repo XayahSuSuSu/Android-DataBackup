@@ -16,6 +16,7 @@ import com.xayah.databackup.ui.activity.main.page.MainViewModel
 import com.xayah.databackup.ui.activity.main.page.backup.PageBackup
 import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
 import com.xayah.databackup.ui.activity.main.page.log.PageLog
+import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
 import com.xayah.databackup.ui.activity.main.page.tree.PageTree
 import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 
@@ -53,6 +54,11 @@ fun MainNavHost(navController: NavHostController, viewModel: MainViewModel) {
             PageBackup()
         }
         composable(MainRoutes.Restore.route) {
+            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+            LaunchedEffect(null) {
+                viewModel.toUiState(MainUiState.Main(scrollBehavior))
+            }
+            PageRestore()
         }
         composable(MainRoutes.Cloud.route) {
         }

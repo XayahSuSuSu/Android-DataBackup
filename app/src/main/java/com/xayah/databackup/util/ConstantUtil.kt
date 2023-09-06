@@ -8,6 +8,11 @@ object ConstantUtil {
     const val DefaultBackupSavePath = "${DefaultBackupParent}/${DefaultBackupChild}"
     const val DefaultBackupUserId = 0
 
+    const val DefaultRestoreParent = "/storage/emulated/0"
+    const val DefaultRestoreChild = "DataBackup"
+    const val DefaultRestoreSavePath = "${DefaultRestoreParent}/${DefaultRestoreChild}"
+    const val DefaultRestoreUserId = 0
+
     val SupportedExternalStorageFormat = listOf(
         "sdfat",
         "fuseblk",
