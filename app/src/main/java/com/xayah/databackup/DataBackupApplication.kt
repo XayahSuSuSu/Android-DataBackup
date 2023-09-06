@@ -22,6 +22,7 @@ class DataBackupApplication : Application() {
                         .add("export PATH=${context.binPath()}:${SymbolUtil.USD}PATH")
                         .add("export PATH=${context.extendPath()}:${SymbolUtil.USD}PATH")
                         .add("export HOME=${context.filesPath()}")
+                        .add("set -o pipefail") // Ensure that the exit code of each command is correct.
                         .exec()
                 }
             }
