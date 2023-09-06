@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
+import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.ListState
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.ListItemPackageRestore
@@ -78,6 +79,7 @@ fun PackageRestoreList() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uiState by viewModel.uiState
     val packages by uiState.packages.collectAsState(initial = listOf())
+    var predicate: (PackageRestoreEntire) -> Boolean by remember { mutableStateOf({ true }) }
     val selectedAPKs by uiState.selectedAPKs.collectAsState(initial = 0)
     val selectedData by uiState.selectedData.collectAsState(initial = 0)
     val selected = selectedAPKs != 0 || selectedData != 0
@@ -149,7 +151,12 @@ fun PackageRestoreList() {
                         ) {
                             item {
                                 Spacer(modifier = Modifier.height(CommonTokens.PaddingMedium))
-                                SearchBar(onTextChange = {})
+                                SearchBar(onTextChange = { text ->
+                                    predicate = { packageBackupEntire ->
+                                        packageBackupEntire.label.lowercase().contains(text.lowercase())
+                                                || packageBackupEntire.packageName.lowercase().contains(text.lowercase())
+                                    }
+                                })
                             }
 
                             item {
@@ -187,7 +194,7 @@ fun PackageRestoreList() {
                                 }
                             }
 
-                            items(items = packages, key = { it.packageName }) { packageInfo ->
+                            items(items = packages.filter(predicate), key = { it.packageName }) { packageInfo ->
                                 ListItemPackageRestore(packageInfo = packageInfo)
                             }
                             item {

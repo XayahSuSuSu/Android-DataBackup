@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.data.PackageBackupActivate
+import com.xayah.databackup.data.PackageBackupEntire
 import com.xayah.databackup.data.PackageBackupUpdate
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.ListItemPackageBackup
@@ -85,11 +86,12 @@ fun PackageBackupList() {
     val viewModel = hiltViewModel<ListViewModel>()
     val navController = LocalSlotScope.current!!.navController
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val uiState = viewModel.uiState.value
-    val packages = uiState.packages.collectAsState(initial = listOf())
-    val selectedAPKs = uiState.selectedAPKs.collectAsState(initial = 0)
-    val selectedData = uiState.selectedData.collectAsState(initial = 0)
-    val selected = selectedAPKs.value != 0 || selectedData.value != 0
+    val uiState by viewModel.uiState
+    val packages by uiState.packages.collectAsState(initial = listOf())
+    var predicate: (PackageBackupEntire) -> Boolean by remember { mutableStateOf({ true }) }
+    val selectedAPKs by uiState.selectedAPKs.collectAsState(initial = 0)
+    val selectedData by uiState.selectedData.collectAsState(initial = 0)
+    val selected = selectedAPKs != 0 || selectedData != 0
     val packageManager = context.packageManager
     var progress by remember { mutableFloatStateOf(1f) }
     var state by remember { mutableStateOf(ListState.Idle) }
@@ -195,7 +197,7 @@ fun PackageBackupList() {
                     text = {
                         Text(
                             text = if (updatingText != null) updatingText!!
-                            else "${selectedAPKs.value} ${stringResource(id = R.string.apk)}, ${selectedData.value} ${stringResource(id = R.string.data)}"
+                            else "$selectedAPKs ${stringResource(id = R.string.apk)}, $selectedData ${stringResource(id = R.string.data)}"
                         )
                     },
                 )
@@ -215,9 +217,14 @@ fun PackageBackupList() {
                         ) {
                             item {
                                 Spacer(modifier = Modifier.height(CommonTokens.PaddingMedium))
-                                SearchBar(onTextChange = {})
+                                SearchBar(onTextChange = { text ->
+                                    predicate = { packageBackupEntire ->
+                                        packageBackupEntire.label.lowercase().contains(text.lowercase())
+                                                || packageBackupEntire.packageName.lowercase().contains(text.lowercase())
+                                    }
+                                })
                             }
-                            items(items = packages.value, key = { it.packageName }) { packageInfo ->
+                            items(items = packages.filter(predicate), key = { it.packageName }) { packageInfo ->
                                 ListItemPackageBackup(packageInfo = packageInfo)
                             }
                             item {
