@@ -1,5 +1,6 @@
 package com.xayah.librootservice.service
 
+import android.app.usage.StorageStats
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,7 @@ import android.os.IBinder
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
+import android.os.UserHandle
 import android.widget.Toast
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.librootservice.IRemoteRootService
@@ -152,4 +154,8 @@ class RemoteRootService(private val context: Context) {
     suspend fun queryInstalled(packageName: String, userId: Int): Boolean = getService().queryInstalled(packageName, userId)
 
     suspend fun getPackageUid(packageName: String, userId: Int): Int = getService().getPackageUid(packageName, userId)
+
+    suspend fun getUserHandle(userId: Int): UserHandle = getService().getUserHandle(userId)
+
+    suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats = getService().queryStatsForPackage(packageInfo, user)
 }

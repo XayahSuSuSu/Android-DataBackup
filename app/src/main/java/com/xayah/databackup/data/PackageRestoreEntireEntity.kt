@@ -19,6 +19,7 @@ data class PackageRestoreEntire(
     @ColumnInfo(defaultValue = "0") var timestamp: Long,
     var versionName: String,
     var versionCode: Long,
+    var flags: Int,
     var compressionType: CompressionType,
     var active: Boolean,
 )

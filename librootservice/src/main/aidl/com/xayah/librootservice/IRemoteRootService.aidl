@@ -16,4 +16,6 @@ interface IRemoteRootService {
     List<String> getPackageSourceDir(String packageName, int userId);
     boolean queryInstalled(String packageName, int userId);
     int getPackageUid(String packageName, int userId);
+    UserHandle getUserHandle(int userId);
+    StorageStats queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
 }

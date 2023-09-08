@@ -11,4 +11,5 @@ object MenuTokens {
     val ContainerElevation = 8.dp
     val DropdownMenuVerticalPadding = 0.dp
     val ModalDropdownMenuPadding = 16.dp
+    const val DefaultMaxDisplay = 6
 }

@@ -6,17 +6,24 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -32,10 +39,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -49,6 +58,7 @@ import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.MenuTokens
+import com.xayah.librootservice.util.ExceptionUtil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -272,6 +282,7 @@ fun ModalDropdownMenu(
 fun ModalStringListDropdownMenu(
     expanded: Boolean,
     selectedIndex: Int,
+    selectedIcon: ImageVector = Icons.Rounded.Done,
     list: List<String>,
     maxDisplay: Int? = null,
     onSelected: (index: Int, selected: String) -> Unit,
@@ -315,9 +326,124 @@ fun ModalStringListDropdownMenu(
                     onClick = {
                         onSelected(index, list[index])
                     },
-                    trailingIcon = { if (selected) Icon(imageVector = Icons.Rounded.Done, contentDescription = null, tint = ColorScheme.primary()) }
+                    trailingIcon = { if (selected) Icon(imageVector = selectedIcon, contentDescription = null, tint = ColorScheme.primary()) }
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ChipDropdownMenu(
+    label: String? = null,
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
+    defaultSelectedIndex: Int = 0,
+    list: List<String>,
+    onSelected: (index: Int, selected: String) -> Unit,
+) {
+    var selectedIndex by remember { mutableIntStateOf(defaultSelectedIndex) }
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+        AssistChip(
+            onClick = { if (list.isNotEmpty()) expanded = true },
+            label = { Text(text = label ?: list[selectedIndex]) },
+            leadingIcon = if (leadingIcon != null) {
+                {
+                    Icon(
+                        imageVector = leadingIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(AssistChipDefaults.IconSize)
+                    )
+                }
+            } else null,
+            trailingIcon = if (trailingIcon != null) {
+                {
+                    Icon(
+                        imageVector = trailingIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(AssistChipDefaults.IconSize)
+                    )
+                }
+            } else null
+        )
+
+        ModalStringListDropdownMenu(
+            expanded = expanded,
+            selectedIndex = selectedIndex,
+            list = list,
+            maxDisplay = MenuTokens.DefaultMaxDisplay,
+            onSelected = { index, selected ->
+                expanded = false
+                onSelected(index, selected)
+                selectedIndex = index
+            },
+            onDismissRequest = { expanded = false }
+        )
+    }
+}
+
+enum class SortState {
+    ASCENDING,
+    DESCENDING;
+
+    companion object {
+        fun of(state: String?): SortState {
+            return ExceptionUtil.tryOn(
+                block = {
+                    SortState.valueOf(state!!.uppercase())
+                },
+                onException = {
+                    ASCENDING
+                })
+        }
+    }
+}
+
+@Composable
+fun SortStateChipDropdownMenu(
+    icon: ImageVector,
+    defaultSelectedIndex: Int = 0,
+    defaultSortState: SortState = SortState.ASCENDING,
+    list: List<String>,
+    onSelected: (index: Int, selected: String, state: SortState) -> Unit,
+) {
+    var selectedIndex by remember { mutableIntStateOf(defaultSelectedIndex) }
+    var expanded by remember { mutableStateOf(false) }
+    var state by remember { mutableStateOf(defaultSortState) }
+    val selectedIcon = if (state == SortState.ASCENDING) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+        AssistChip(
+            onClick = { if (list.isNotEmpty()) expanded = true },
+            label = { Text(text = list[selectedIndex]) },
+            leadingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    imageVector = selectedIcon,
+                    contentDescription = null,
+                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                )
+            }
+        )
+
+        ModalStringListDropdownMenu(
+            expanded = expanded,
+            selectedIndex = selectedIndex,
+            selectedIcon = if (state == SortState.ASCENDING) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+            list = list,
+            maxDisplay = MenuTokens.DefaultMaxDisplay,
+            onSelected = { index, selected ->
+                if (selectedIndex == index) state = if (state == SortState.ASCENDING) SortState.DESCENDING else SortState.ASCENDING
+                else selectedIndex = index
+                onSelected(index, selected, state)
+            },
+            onDismissRequest = { expanded = false }
+        )
     }
 }

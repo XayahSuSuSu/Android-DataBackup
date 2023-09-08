@@ -6,6 +6,7 @@ import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageRestoreOperation
 import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
+import com.xayah.databackup.ui.component.SortState
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
@@ -331,4 +332,36 @@ fun Context.saveIsCleanRestoring(value: Boolean) {
 
 fun Context.readIsCleanRestoring(): Boolean {
     return readPreferencesBoolean("is_clean_restoring", false)
+}
+
+fun Context.saveBackupSortTypeIndex(index: Int) {
+    savePreferences("backup_sort_type_index", index)
+}
+
+fun Context.readBackupSortTypeIndex(): Int {
+    return readPreferencesInt("backup_sort_type_index", 0)
+}
+
+fun Context.saveBackupSortState(state: SortState) {
+    savePreferences("backup_sort_state", state.toString())
+}
+
+fun Context.readBackupSortState(): SortState {
+    return SortState.of(readPreferencesString("backup_sort_state", SortState.ASCENDING.toString()))
+}
+
+fun Context.saveBackupFilterTypeIndex(index: Int) {
+    savePreferences("backup_filter_type_index", index)
+}
+
+fun Context.readBackupFilterTypeIndex(): Int {
+    return readPreferencesInt("backup_filter_type_index", 0)
+}
+
+fun Context.saveBackupFlagTypeIndex(index: Int) {
+    savePreferences("backup_flag_type_index", index)
+}
+
+fun Context.readBackupFlagTypeIndex(): Int {
+    return readPreferencesInt("backup_flag_type_index", 1)
 }

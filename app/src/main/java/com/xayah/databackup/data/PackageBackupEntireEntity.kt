@@ -1,8 +1,11 @@
 package com.xayah.databackup.data
 
+import android.content.pm.ApplicationInfo
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.text.DecimalFormat
 
 /**
  * Binary mask for operation code.
@@ -16,6 +19,36 @@ object OperationMask {
     fun isApkSelected(opCode: Int): Boolean = opCode and Apk == Apk
     fun isDataSelected(opCode: Int): Boolean = opCode and Data == Data
 }
+
+data class StorageStats(
+    var appBytes: Long = 0,
+    var cacheBytes: Long = 0,
+    var dataBytes: Long = 0,
+    var externalCacheBytes: Long = 0,
+)
+
+private fun formatSize(sizeBytes: Double): String = run {
+    var unit = "Bytes"
+    var size = sizeBytes
+    val gb = (1000 * 1000 * 1000).toDouble()
+    val mb = (1000 * 1000).toDouble()
+    val kb = (1000).toDouble()
+    if (sizeBytes > gb) {
+        // GB
+        size = sizeBytes / gb
+        unit = "GB"
+    } else if (sizeBytes > mb) {
+        // GB
+        size = sizeBytes / mb
+        unit = "MB"
+    } else if (sizeBytes > kb) {
+        // GB
+        size = sizeBytes / kb
+        unit = "KB"
+    }
+    if (size == 0.0) "0.00 $unit" else "${DecimalFormat("#.00").format(size)} $unit"
+}
+
 
 /**
  * All fields are defined here.
@@ -33,15 +66,20 @@ data class PackageBackupEntire(
     @ColumnInfo(defaultValue = "0") var timestamp: Long,
     var versionName: String,
     var versionCode: Long,
-    var apkSize: Long,
-    var userSize: Long,
-    var userDeSize: Long,
-    var dataSize: Long,
-    var obbSize: Long,
-    var mediaSize: Long,
+    @Embedded var storageStats: StorageStats,
+    var flags: Int,
     var firstInstallTime: Long,
     var active: Boolean,
-)
+) {
+    val sizeBytes: Double
+        get() = (storageStats.appBytes + storageStats.dataBytes).toDouble()
+
+    val sizeDisplay: String
+        get() = formatSize(sizeBytes)
+
+    val isSystemApp: Boolean
+        get() = (flags and ApplicationInfo.FLAG_SYSTEM) != 0
+}
 
 /**
  * Insert or update item without some operation fields being updated.
@@ -52,12 +90,8 @@ data class PackageBackupUpdate(
     var label: String,
     var versionName: String,
     var versionCode: Long,
-    var apkSize: Long,
-    var userSize: Long,
-    var userDeSize: Long,
-    var dataSize: Long,
-    var obbSize: Long,
-    var mediaSize: Long,
+    @Embedded var storageStats: StorageStats,
+    var flags: Int,
     var firstInstallTime: Long,
     var active: Boolean,
 )
@@ -90,4 +124,5 @@ data class PackageBackupOp(
     var operationCode: Int,
     var versionName: String,
     var versionCode: Long,
+    var flags: Int,
 )

@@ -5,4 +5,19 @@
         <item>Cloud</item>
         <item>Settings</item>
     </string-array>
+    <string-array name="sort_type_items">
+        <item>Alphabet</item>
+        <item>Install time</item>
+        <item>Data size</item>
+    </string-array>
+    <string-array name="filter_type_items">
+        <item>None</item>
+        <item>Selected</item>
+        <item>Not selected</item>
+    </string-array>
+    <string-array name="flag_type_items">
+        <item>Both</item>
+        <item>Third party</item>
+        <item>System</item>
+    </string-array>
 </resources>

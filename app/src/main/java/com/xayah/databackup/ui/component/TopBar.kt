@@ -53,6 +53,7 @@ import com.xayah.databackup.ui.activity.main.router.currentRoute
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
+import com.xayah.databackup.ui.token.MenuTokens
 import com.xayah.databackup.ui.token.TopBarTokens
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.DateUtil
@@ -187,7 +188,7 @@ fun LogTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: LogViewModel)
                     expanded = expanded,
                     selectedIndex = selectedIndex,
                     list = dateList,
-                    maxDisplay = 6,
+                    maxDisplay = MenuTokens.DefaultMaxDisplay,
                     onSelected = { index, _ ->
                         scope.launch {
                             expanded = false

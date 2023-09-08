@@ -203,6 +203,7 @@ fun ListItemPackageBackup(
         }
     ) {
         Serial(serial = packageInfo.versionName)
+        Serial(serial = packageInfo.sizeDisplay)
     }
 
     LaunchedEffect(null) {

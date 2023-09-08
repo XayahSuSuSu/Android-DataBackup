@@ -1,11 +1,16 @@
 package com.xayah.librootservice.impl
 
 import android.app.ActivityThreadHidden
+import android.app.usage.StorageStats
+import android.app.usage.StorageStatsManager
 import android.content.Context
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManagerHidden
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.StatFs
+import android.os.UserHandle
+import android.os.UserHandleHidden
 import com.xayah.libhiddenapi.HiddenApiBypassUtil
 import com.xayah.librootservice.IRemoteRootService
 import com.xayah.librootservice.parcelables.StatFsParcelable
@@ -21,15 +26,16 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     private val lock = Any()
     private var systemContext: Context
+    private var storageStatsManager: StorageStatsManager
 
-    private fun getSystemContext(): Context {
-        val activityThread = ActivityThreadHidden.systemMain()
-        return ActivityThreadHidden.getSystemContext(activityThread)
-    }
+    private fun getSystemContext(): Context = ActivityThreadHidden.getSystemContext(ActivityThreadHidden.systemMain())
+
+    private fun getStorageStatsManager(): StorageStatsManager = systemContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
 
     init {
         HiddenApiBypassUtil.addHiddenApiExemptions("")
         systemContext = getSystemContext()
+        storageStatsManager = getStorageStatsManager()
     }
 
     override fun readStatFs(path: String): StatFsParcelable = synchronized(lock) {
@@ -132,5 +138,13 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
                 -1
             }
         )
+    }
+
+    override fun getUserHandle(userId: Int): UserHandle = synchronized(lock) {
+        UserHandleHidden.of(userId)
+    }
+
+    override fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats = synchronized(lock) {
+        storageStatsManager.queryStatsForPackage(packageInfo.applicationInfo.storageUuid, packageInfo.packageName, user)
     }
 }

@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.operation.page.packages.backup
 
 import android.content.pm.PackageInfo
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -9,6 +10,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,20 +42,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
+import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.PackageBackupActivate
 import com.xayah.databackup.data.PackageBackupEntire
 import com.xayah.databackup.data.PackageBackupUpdate
+import com.xayah.databackup.data.StorageStats
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
+import com.xayah.databackup.ui.component.ChipDropdownMenu
 import com.xayah.databackup.ui.component.ListItemPackageBackup
 import com.xayah.databackup.ui.component.ListTopBar
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.SearchBar
+import com.xayah.databackup.ui.component.SortState
+import com.xayah.databackup.ui.component.SortStateChipDropdownMenu
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.emphasizedOffset
 import com.xayah.databackup.ui.component.paddingHorizontal
@@ -62,12 +73,22 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.EnvUtil
+import com.xayah.databackup.util.readBackupFilterTypeIndex
+import com.xayah.databackup.util.readBackupFlagTypeIndex
+import com.xayah.databackup.util.readBackupSortState
+import com.xayah.databackup.util.readBackupSortTypeIndex
+import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readIconSaveTime
+import com.xayah.databackup.util.saveBackupFilterTypeIndex
+import com.xayah.databackup.util.saveBackupFlagTypeIndex
+import com.xayah.databackup.util.saveBackupSortState
+import com.xayah.databackup.util.saveBackupSortTypeIndex
 import com.xayah.databackup.util.saveIconSaveTime
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryService
 import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
+import java.text.Collator
 
 enum class ListState {
     Idle,
@@ -76,6 +97,74 @@ enum class ListState {
     Done;
 
     fun setState(state: ListState): ListState = if (this == Error) Error else state
+}
+
+private fun sortByAlphabet(state: SortState): Comparator<PackageBackupEntire> = Comparator { entity1, entity2 ->
+    if (entity1 == null && entity2 == null) {
+        0
+    } else if (entity1 == null) {
+        -1
+    } else if (entity2 == null) {
+        1
+    } else {
+        when (state) {
+            SortState.ASCENDING -> {
+                Collator.getInstance().let { collator ->
+                    collator.getCollationKey(entity1.label)
+                        .compareTo(collator.getCollationKey(entity2.label))
+                }
+            }
+
+            SortState.DESCENDING -> {
+                Collator.getInstance().let { collator ->
+                    collator.getCollationKey(entity2.label)
+                        .compareTo(collator.getCollationKey(entity1.label))
+                }
+            }
+        }
+    }
+}
+
+private fun sortByInstallTime(state: SortState): Comparator<PackageBackupEntire> = when (state) {
+    SortState.ASCENDING -> {
+        compareBy { entity -> entity.firstInstallTime }
+    }
+
+    SortState.DESCENDING -> {
+        compareByDescending { entity -> entity.firstInstallTime }
+    }
+}
+
+private fun sortByDataSize(state: SortState): Comparator<PackageBackupEntire> = when (state) {
+    SortState.ASCENDING -> {
+        compareBy { entity -> entity.sizeBytes }
+    }
+
+    SortState.DESCENDING -> {
+        compareByDescending { entity -> entity.sizeBytes }
+    }
+}
+
+private fun sort(index: Int, state: SortState): Comparator<PackageBackupEntire> = when (index) {
+    1 -> sortByInstallTime(state)
+    2 -> sortByDataSize(state)
+    else -> sortByAlphabet(state)
+}
+
+private fun filter(index: Int, isFlagType: Boolean): (PackageBackupEntire) -> Boolean = { packageBackupEntire ->
+    if (isFlagType.not()) {
+        when (index) {
+            1 -> packageBackupEntire.operationCode != OperationMask.None
+            2 -> packageBackupEntire.operationCode == OperationMask.None
+            else -> true
+        }
+    } else {
+        when (index) {
+            1 -> packageBackupEntire.isSystemApp.not()
+            2 -> packageBackupEntire.isSystemApp
+            else -> true
+        }
+    }
 }
 
 @ExperimentalAnimationApi
@@ -88,7 +177,17 @@ fun PackageBackupList() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uiState by viewModel.uiState
     val packages by uiState.packages.collectAsState(initial = listOf())
-    var predicate: (PackageBackupEntire) -> Boolean by remember { mutableStateOf({ true }) }
+    var packageSearchPredicate: (PackageBackupEntire) -> Boolean by remember { mutableStateOf({ true }) }
+    var packageSelectionPredicate: (PackageBackupEntire) -> Boolean by remember { mutableStateOf(filter(context.readBackupFilterTypeIndex(), false)) }
+    var packageFlagTypePredicate: (PackageBackupEntire) -> Boolean by remember { mutableStateOf(filter(context.readBackupFlagTypeIndex(), true)) }
+    var packageSortComparator: Comparator<in PackageBackupEntire> by remember {
+        mutableStateOf(
+            sort(
+                index = context.readBackupSortTypeIndex(),
+                state = context.readBackupSortState()
+            )
+        )
+    }
     val selectedAPKs by uiState.selectedAPKs.collectAsState(initial = 0)
     val selectedData by uiState.selectedData.collectAsState(initial = 0)
     val selected = selectedAPKs != 0 || selectedData != 0
@@ -104,6 +203,7 @@ fun PackageBackupList() {
     LaunchedEffect(null) {
         withIOContext {
             val remoteRootService = RemoteRootService(context)
+            val userId = context.readBackupUserId()
 
             // Inactivate all packages and activate installed only.
             viewModel.inactivatePackages()
@@ -140,6 +240,13 @@ fun PackageBackupList() {
                     val icon = packageInfo.applicationInfo.loadIcon(packageManager)
                     EnvUtil.saveIcon(context, packageInfo.packageName, icon)
                 }
+                val storageStats = StorageStats()
+                remoteRootService.queryStatsForPackage(packageInfo, remoteRootService.getUserHandle(userId)).also { stats ->
+                    storageStats.appBytes = stats.appBytes
+                    storageStats.cacheBytes = stats.cacheBytes
+                    storageStats.dataBytes = stats.dataBytes
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) storageStats.externalCacheBytes = stats.externalCacheBytes
+                }
 
                 newPackages.add(
                     PackageBackupUpdate(
@@ -147,12 +254,8 @@ fun PackageBackupList() {
                         label = packageInfo.applicationInfo.loadLabel(packageManager).toString(),
                         versionName = packageInfo.versionName,
                         versionCode = packageInfo.longVersionCode,
-                        apkSize = 0,
-                        userSize = 0,
-                        userDeSize = 0,
-                        dataSize = 0,
-                        obbSize = 0,
-                        mediaSize = 0,
+                        storageStats = storageStats,
+                        flags = packageInfo.applicationInfo.flags,
                         firstInstallTime = packageInfo.firstInstallTime,
                         active = true
                     )
@@ -218,13 +321,51 @@ fun PackageBackupList() {
                             item {
                                 Spacer(modifier = Modifier.height(CommonTokens.PaddingMedium))
                                 SearchBar(onTextChange = { text ->
-                                    predicate = { packageBackupEntire ->
+                                    packageSearchPredicate = { packageBackupEntire ->
                                         packageBackupEntire.label.lowercase().contains(text.lowercase())
                                                 || packageBackupEntire.packageName.lowercase().contains(text.lowercase())
                                     }
                                 })
                             }
-                            items(items = packages.filter(predicate), key = { it.packageName }) { packageInfo ->
+
+                            item {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)) {
+                                    SortStateChipDropdownMenu(
+                                        icon = ImageVector.vectorResource(R.drawable.ic_rounded_sort),
+                                        defaultSelectedIndex = remember { context.readBackupSortTypeIndex() },
+                                        defaultSortState = remember { context.readBackupSortState() },
+                                        list = stringArrayResource(id = R.array.sort_type_items).toList(),
+                                        onSelected = { index, _, state ->
+                                            context.saveBackupSortTypeIndex(index)
+                                            context.saveBackupSortState(state)
+                                            packageSortComparator = sort(index = index, state = state)
+                                        }
+                                    )
+
+                                    ChipDropdownMenu(
+                                        leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_filter_list),
+                                        defaultSelectedIndex = remember { context.readBackupFilterTypeIndex() },
+                                        list = stringArrayResource(id = R.array.filter_type_items).toList(),
+                                    ) { index, _ ->
+                                        context.saveBackupFilterTypeIndex(index)
+                                        packageSelectionPredicate = filter(index, false)
+                                    }
+
+                                    ChipDropdownMenu(
+                                        leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_deployed_code),
+                                        defaultSelectedIndex = remember { context.readBackupFlagTypeIndex() },
+                                        list = stringArrayResource(id = R.array.flag_type_items).toList(),
+                                    ) { index, _ ->
+                                        context.saveBackupFlagTypeIndex(index)
+                                        packageFlagTypePredicate = filter(index, true)
+                                    }
+                                }
+                            }
+
+                            items(
+                                items = packages.filter(packageSearchPredicate).filter(packageSelectionPredicate).filter(packageFlagTypePredicate)
+                                    .sortedWith(packageSortComparator),
+                                key = { it.packageName }) { packageInfo ->
                                 ListItemPackageBackup(packageInfo = packageInfo)
                             }
                             item {

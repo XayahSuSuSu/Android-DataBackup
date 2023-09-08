@@ -12,16 +12,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
@@ -40,7 +36,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -52,10 +47,10 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.ListState
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
+import com.xayah.databackup.ui.component.ChipDropdownMenu
 import com.xayah.databackup.ui.component.ListItemPackageRestore
 import com.xayah.databackup.ui.component.ListTopBar
 import com.xayah.databackup.ui.component.LocalSlotScope
-import com.xayah.databackup.ui.component.ModalStringListDropdownMenu
 import com.xayah.databackup.ui.component.SearchBar
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.emphasizedOffset
@@ -160,37 +155,16 @@ fun PackageRestoreList() {
                             }
 
                             item {
-                                var expanded by remember { mutableStateOf(false) }
                                 val dateList = uiState.timestamps.map { timestamp -> DateUtil.formatTimestamp(timestamp) }
-                                val selectedIndex = uiState.selectedIndex
-
-                                Box(
-                                    modifier = Modifier.wrapContentSize(Alignment.TopStart)
-                                ) {
-                                    AssistChip(
-                                        onClick = { if (dateList.isNotEmpty()) expanded = true },
-                                        label = { Text(stringResource(R.string.date)) },
-                                        trailingIcon = {
-                                            Icon(
-                                                imageVector = ImageVector.vectorResource(R.drawable.ic_rounded_unfold_more),
-                                                contentDescription = null,
-                                                modifier = Modifier.size(AssistChipDefaults.IconSize)
-                                            )
-                                        }
-                                    )
-
-                                    ModalStringListDropdownMenu(
-                                        expanded = expanded,
-                                        selectedIndex = selectedIndex,
-                                        list = dateList,
-                                        maxDisplay = 6,
-                                        onSelected = { index, _ ->
-                                            scope.launch {
-                                                expanded = false
-                                                viewModel.setSelectedIndex(index)
-                                            }
-                                        },
-                                        onDismissRequest = { expanded = false })
+                                ChipDropdownMenu(
+                                    label = stringResource(R.string.date),
+                                    trailingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_unfold_more),
+                                    defaultSelectedIndex = uiState.selectedIndex,
+                                    list = dateList,
+                                ) { index, _ ->
+                                    scope.launch {
+                                        viewModel.setSelectedIndex(index)
+                                    }
                                 }
                             }
 
