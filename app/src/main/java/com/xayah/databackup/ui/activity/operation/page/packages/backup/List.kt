@@ -7,6 +7,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Close
@@ -67,6 +69,7 @@ import com.xayah.databackup.ui.component.SortState
 import com.xayah.databackup.ui.component.SortStateChipDropdownMenu
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.emphasizedOffset
+import com.xayah.databackup.ui.component.ignorePaddingHorizontal
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
@@ -329,12 +332,19 @@ fun PackageBackupList() {
                             }
 
                             item {
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)) {
+                                Row(
+                                    modifier = Modifier
+                                        .ignorePaddingHorizontal(CommonTokens.PaddingMedium)
+                                        .horizontalScroll(rememberScrollState())
+                                        .paddingHorizontal(CommonTokens.PaddingMedium),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)
+                                ) {
                                     SortStateChipDropdownMenu(
                                         icon = ImageVector.vectorResource(R.drawable.ic_rounded_sort),
                                         defaultSelectedIndex = remember { context.readBackupSortTypeIndex() },
                                         defaultSortState = remember { context.readBackupSortState() },
-                                        list = stringArrayResource(id = R.array.sort_type_items).toList(),
+                                        list = stringArrayResource(id = R.array.backup_sort_type_items).toList(),
                                         onSelected = { index, _, state ->
                                             context.saveBackupSortTypeIndex(index)
                                             context.saveBackupSortState(state)

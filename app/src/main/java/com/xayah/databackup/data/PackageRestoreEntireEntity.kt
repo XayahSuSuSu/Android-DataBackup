@@ -1,5 +1,6 @@
 package com.xayah.databackup.data
 
+import android.content.pm.ApplicationInfo
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -22,7 +23,10 @@ data class PackageRestoreEntire(
     var flags: Int,
     var compressionType: CompressionType,
     var active: Boolean,
-)
+) {
+    val isSystemApp: Boolean
+        get() = (flags and ApplicationInfo.FLAG_SYSTEM) != 0
+}
 
 /**
  * For manifest only.

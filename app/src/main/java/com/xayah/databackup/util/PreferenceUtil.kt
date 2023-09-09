@@ -365,3 +365,35 @@ fun Context.saveBackupFlagTypeIndex(index: Int) {
 fun Context.readBackupFlagTypeIndex(): Int {
     return readPreferencesInt("backup_flag_type_index", 1)
 }
+
+fun Context.saveRestoreSortTypeIndex(index: Int) {
+    savePreferences("restore_sort_type_index", index)
+}
+
+fun Context.readRestoreSortTypeIndex(): Int {
+    return readPreferencesInt("restore_sort_type_index", 0)
+}
+
+fun Context.saveRestoreSortState(state: SortState) {
+    savePreferences("restore_sort_state", state.toString())
+}
+
+fun Context.readRestoreSortState(): SortState {
+    return SortState.of(readPreferencesString("restore_sort_state", SortState.ASCENDING.toString()))
+}
+
+fun Context.saveRestoreFilterTypeIndex(index: Int) {
+    savePreferences("restore_filter_type_index", index)
+}
+
+fun Context.readRestoreFilterTypeIndex(): Int {
+    return readPreferencesInt("restore_filter_type_index", 0)
+}
+
+fun Context.saveRestoreFlagTypeIndex(index: Int) {
+    savePreferences("restore_flag_type_index", index)
+}
+
+fun Context.readRestoreFlagTypeIndex(): Int {
+    return readPreferencesInt("restore_flag_type_index", 1)
+}

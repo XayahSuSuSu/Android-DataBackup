@@ -5,7 +5,7 @@
         <item>雲端</item>
         <item>設置</item>
     </string-array>
-    <string-array name="sort_type_items">
+    <string-array name="backup_sort_type_items">
         <item>字母表序</item>
         <item>安裝時間</item>
         <item>數據大小</item>
@@ -19,5 +19,8 @@
         <item>全部</item>
         <item>第三方</item>
         <item>系統</item>
+    </string-array>
+    <string-array name="restore_sort_type_items">
+        <item>字母表序</item>
     </string-array>
 </resources>
