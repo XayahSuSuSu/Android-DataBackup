@@ -202,6 +202,9 @@ fun PackageBackupList() {
     val packageManager = remember { context.packageManager }
     var progress by remember { mutableFloatStateOf(1f) }
     var state by remember { mutableStateOf(ListState.Idle) }
+    val fadeState by remember(state) {
+        mutableStateOf(state == ListState.Idle)
+    }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var emphasizedState by remember { mutableStateOf(false) }
@@ -320,8 +323,8 @@ fun PackageBackupList() {
             TopSpacer(innerPadding = innerPadding)
 
             Box(modifier = Modifier.weight(1f)) {
-                Crossfade(targetState = state, label = AnimationTokens.CrossFadeLabel) { state ->
-                    if (state != ListState.Idle)
+                Crossfade(targetState = fadeState, label = AnimationTokens.CrossFadeLabel) { fade ->
+                    if (fade.not())
                         LazyColumn(
                             modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium),
                             verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)

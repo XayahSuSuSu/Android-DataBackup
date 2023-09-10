@@ -158,6 +158,9 @@ fun PackageRestoreList() {
         selectedAPKs != 0 || selectedData != 0
     }
     var state by remember { mutableStateOf(ListState.Idle) }
+    val fadeState by remember(state) {
+        mutableStateOf(state == ListState.Idle)
+    }
     val snackbarHostState = remember { SnackbarHostState() }
     var emphasizedState by remember { mutableStateOf(false) }
     val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)
@@ -217,8 +220,8 @@ fun PackageRestoreList() {
             TopSpacer(innerPadding = innerPadding)
 
             Box(modifier = Modifier.weight(1f)) {
-                Crossfade(targetState = state, label = AnimationTokens.CrossFadeLabel) { state ->
-                    if (state != ListState.Idle)
+                Crossfade(targetState = fadeState, label = AnimationTokens.CrossFadeLabel) { fade ->
+                    if (fade.not())
                         LazyColumn(
                             modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium),
                             verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)
