@@ -146,6 +146,9 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // Palette
+    implementation(libs.androidx.palette)
 }
 
 kapt {

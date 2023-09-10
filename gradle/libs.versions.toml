@@ -28,6 +28,7 @@ kotlinx-coroutines-core-jvm = "1.7.1"
 room = "2.5.2"
 coil-compose = "2.4.0"
 hiddenapibypass = "4.3"
+palette = "1.0.0"
 
 # plugins
 android-gradle-plugin = "8.1.1"
@@ -50,6 +51,7 @@ androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graph
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+androidx-palette = { module = "androidx.palette:palette", version.ref = "palette" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
