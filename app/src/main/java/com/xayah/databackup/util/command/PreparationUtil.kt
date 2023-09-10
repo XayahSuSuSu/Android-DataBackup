@@ -1,5 +1,6 @@
 package com.xayah.databackup.util.command
 
+import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.util.SymbolUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.outString
@@ -116,5 +117,17 @@ object PreparationUtil {
         }
 
         return Pair(isSuccess, out.trim())
+    }
+
+    /**
+     * [copyRecursively] actually [deleteRecursively] then [copyTo] target path.
+     *
+     *
+     * This implement [copyRecursively] and preserve the specified attributes (default: mode,ownership,timestamps),
+     * if possible additional attributes: context, links, xattr, all) via shell command.
+     */
+    suspend fun copyRecursivelyAndPreserve(path: String, targetPath: String): Pair<Boolean, String> {
+        val exec = CommonUtil.execute("cp -rp $path $targetPath")
+        return Pair(exec.isSuccess, exec.outString().trim())
     }
 }

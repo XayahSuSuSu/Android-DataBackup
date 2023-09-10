@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.main.page.restore
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -39,6 +40,7 @@ import com.xayah.databackup.ui.component.Module
 import com.xayah.databackup.ui.component.OverLookRestoreCard
 import com.xayah.databackup.ui.component.RadioButtonGroup
 import com.xayah.databackup.ui.component.VerticalGrid
+import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingTop
@@ -46,7 +48,11 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.IntentUtil
+import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.PreparationUtil
+import com.xayah.databackup.util.command.toLineString
+import com.xayah.databackup.util.databasePath
+import com.xayah.databackup.util.iconPath
 import com.xayah.databackup.util.readExternalRestoreSaveChild
 import com.xayah.databackup.util.readInternalRestoreSaveChild
 import com.xayah.databackup.util.readRestoreSavePath
@@ -54,8 +60,10 @@ import com.xayah.databackup.util.saveExternalRestoreSaveChild
 import com.xayah.databackup.util.saveInternalRestoreSaveChild
 import com.xayah.databackup.util.saveRestoreSavePath
 import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.ExceptionUtil.tryService
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 @ExperimentalMaterial3Api
 private suspend fun DialogState.openDirectoryDialog(context: Context) {
@@ -184,6 +192,45 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
     }
 }
 
+@ExperimentalMaterial3Api
+private suspend fun DialogState.openReloadDialog(context: Context) {
+    val textList = mutableListOf<String>()
+    open(
+        title = context.getString(R.string.prompt),
+        icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
+        onLoading = {
+            // Copy the databases and icons from restore save path.
+            var isSuccess = true
+            PreparationUtil.copyRecursivelyAndPreserve(path = PathUtil.getDatabaseSavePath(), targetPath = PathUtil.getParentPath(context.databasePath()))
+                .also { (succeed, out) ->
+                    if (succeed.not()) {
+                        isSuccess = false
+                        textList.add("${context.getString(R.string.databases_reload_failed)}: ${out}.")
+                    }
+                }
+            PreparationUtil.copyRecursivelyAndPreserve(path = PathUtil.getIconSavePath(), targetPath = PathUtil.getParentPath(context.iconPath()))
+                .also { (succeed, out) ->
+                    if (succeed.not()) {
+                        isSuccess = false
+                        textList.add("${context.getString(R.string.icon_reload_failed)}: ${out}.")
+                    }
+                }
+
+            // Try to restart application.
+            if (isSuccess) tryOn(block = {
+                context.packageManager.getLaunchIntentForPackage(context.packageName).also { intent: Intent? ->
+                    intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    context.applicationContext.startActivity(intent)
+                    exitProcess(0)
+                }
+            }, onException = {
+                textList.add(context.getString(R.string.restart_failed))
+            })
+        },
+        block = { Text(text = textList.toLineString().trim()) }
+    )
+}
+
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
@@ -204,7 +251,7 @@ fun PageRestore() {
         item {
             Module(title = stringResource(R.string.utilities)) {
                 val actions = listOf(
-                    "重载",
+                    stringResource(R.string.reload),
                     stringResource(R.string.directory),
                     stringResource(R.string.structure),
                     stringResource(R.string.log)
@@ -217,7 +264,9 @@ fun PageRestore() {
                 )
                 val onClicks = listOf<suspend () -> Unit>(
                     {
-
+                        dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_reload)).also { (confirmed, _) ->
+                            if (confirmed) dialogSlot.openReloadDialog(context)
+                        }
                     },
                     {
                         dialogSlot.openDirectoryDialog(context)

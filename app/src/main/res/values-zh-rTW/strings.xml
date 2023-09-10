@@ -70,4 +70,9 @@
     <string name="restoring">恢復中</string>
     <string name="prompt">提示</string>
     <string name="processing_exit_confirmation">確定退出嗎？這將會中斷操作。</string>
+    <string name="reload">重載</string>
+    <string name="databases_reload_failed">數據庫重載失敗</string>
+    <string name="icon_reload_failed">圖標重載失敗</string>
+    <string name="restart_failed">重啟失敗, 請手動重啟本應用</string>
+    <string name="confirm_reload">重載將使用恢復目錄下的數據庫並覆蓋當前數據庫(包括備份恢復列表以及日誌等), 重載完成後需要重啟本應用, 確定要重載嗎？</string>
 </resources>
