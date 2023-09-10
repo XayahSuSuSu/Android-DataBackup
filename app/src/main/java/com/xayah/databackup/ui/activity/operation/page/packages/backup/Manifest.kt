@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.GridItemPackage
 import com.xayah.databackup.ui.component.ListItemManifest
@@ -81,7 +82,7 @@ fun PackageBackupManifest() {
                 FloatingActionButton(
                     modifier = Modifier.padding(CommonTokens.PaddingMedium),
                     onClick = {
-                        navController.navigate(OperationRoutes.PackageBackupProcessing.route)
+                        navController.navigateAndPopAllStack(OperationRoutes.PackageBackupProcessing.route)
                     },
                     content = {
                         Icon(imageVector = Icons.Rounded.ArrowForward, contentDescription = null)

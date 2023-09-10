@@ -71,4 +71,6 @@
     <string name="restore_list">Restore list</string>
     <string name="date">Date</string>
     <string name="restoring">Restoring</string>
+    <string name="prompt">Prompt</string>
+    <string name="processing_exit_confirmation">Sure to exit? This will interrupt the operation.</string>
 </resources>

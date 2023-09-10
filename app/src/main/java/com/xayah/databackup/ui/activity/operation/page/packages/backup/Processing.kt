@@ -1,7 +1,10 @@
 package com.xayah.databackup.ui.activity.operation.page.packages.backup
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -27,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +46,7 @@ import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.BodySmallBoldText
+import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.Loader
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.OperationCard
@@ -50,6 +55,7 @@ import com.xayah.databackup.ui.component.ProcessingTopBar
 import com.xayah.databackup.ui.component.TitleLargeBoldText
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.WaverImage
+import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.AnimationTokens
@@ -58,7 +64,14 @@ import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.withIOContext
+import kotlinx.coroutines.launch
 import java.io.File
+
+suspend fun confirmExit(dialogSlot: DialogState, context: Context) {
+    dialogSlot.openConfirmDialog(context, context.getString(R.string.processing_exit_confirmation)).also { (confirmed, _) ->
+        if (confirmed) (context as ComponentActivity).finish()
+    }
+}
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -66,6 +79,8 @@ import java.io.File
 fun PackageBackupProcessing() {
     val viewModel = hiltViewModel<ProcessingViewModel>()
     val navController = LocalSlotScope.current!!.navController
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     var icon: Bitmap? by remember { mutableStateOf(null) }
@@ -157,11 +172,21 @@ fun PackageBackupProcessing() {
         }
     }
 
+    BackHandler {
+        scope.launch {
+            confirmExit(dialogSlot, context)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             Column {
-                ProcessingTopBar(scrollBehavior = scrollBehavior, title = "${stringResource(R.string.backing_up)}($operationCount/$selectedBothCount)")
+                ProcessingTopBar(scrollBehavior = scrollBehavior, title = "${stringResource(R.string.backing_up)}($operationCount/$selectedBothCount)") {
+                    scope.launch {
+                        confirmExit(dialogSlot, context)
+                    }
+                }
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                     progress = totalProgressAnimation

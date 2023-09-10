@@ -333,15 +333,12 @@ fun ManifestTopBar(
 
 @ExperimentalMaterial3Api
 @Composable
-fun ProcessingTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String) {
-    val context = LocalContext.current
+fun ProcessingTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, onArrowBackPressed: () -> Unit) {
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            ArrowBackButton {
-                (context as ComponentActivity).finish()
-            }
+            ArrowBackButton(onArrowBackPressed)
         },
     )
 }

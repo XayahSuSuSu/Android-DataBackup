@@ -2,6 +2,8 @@ package com.xayah.databackup.ui.component
 
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -53,8 +55,8 @@ class DialogState {
         icon: ImageVector? = null,
         confirmText: String? = null,
         dismissText: String? = null,
-        onLoading: suspend () -> Unit = {},
-        block: @Composable (MutableState<T>) -> Unit
+        onLoading: (suspend () -> Unit)? = null,
+        block: @Composable (MutableState<T>) -> Unit,
     ): Pair<Boolean, T> {
         return suspendCancellableCoroutine { continuation ->
             continuation.invokeOnCancellation { dismiss() }
@@ -80,12 +82,8 @@ class DialogState {
                     title = { Text(text = title) },
                     icon = icon?.let { { Icon(imageVector = icon, contentDescription = null) } },
                     text = {
-                        Loader(
-                            modifier = Modifier.fillMaxWidth(),
-                            onLoading = onLoading,
-                            uiState = uiState,
-                            content = block
-                        )
+                        if (onLoading == null) block(uiState)
+                        else Loader(modifier = Modifier.fillMaxWidth(), onLoading = onLoading, uiState = uiState, content = block)
                     },
                 )
             }
@@ -117,3 +115,10 @@ suspend fun DialogState.openFileOpDialog(context: Context, title: String, filePa
         }
     )
 }
+
+suspend fun DialogState.openConfirmDialog(context: Context, text: String) = open(
+    initialState = false,
+    title = context.getString(R.string.prompt),
+    icon = Icons.Outlined.Info,
+    block = { _ -> Text(text = text) }
+)

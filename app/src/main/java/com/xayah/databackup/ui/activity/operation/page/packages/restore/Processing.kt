@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.operation.page.packages.restore
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -27,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +43,7 @@ import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageRestoreOperation
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.ProcessingState
+import com.xayah.databackup.ui.activity.operation.page.packages.backup.confirmExit
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.BodySmallBoldText
 import com.xayah.databackup.ui.component.Loader
@@ -59,6 +62,7 @@ import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.withIOContext
+import kotlinx.coroutines.launch
 import java.io.File
 
 @ExperimentalAnimationApi
@@ -67,6 +71,8 @@ import java.io.File
 fun PackageRestoreProcessing() {
     val viewModel = hiltViewModel<ProcessingViewModel>()
     val navController = LocalSlotScope.current!!.navController
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     var icon: Bitmap? by remember { mutableStateOf(null) }
@@ -158,11 +164,21 @@ fun PackageRestoreProcessing() {
         }
     }
 
+    BackHandler {
+        scope.launch {
+            confirmExit(dialogSlot, context)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             Column {
-                ProcessingTopBar(scrollBehavior = scrollBehavior, title = "${stringResource(R.string.backing_up)}($operationCount/$selectedBothCount)")
+                ProcessingTopBar(scrollBehavior = scrollBehavior, title = "${stringResource(R.string.backing_up)}($operationCount/$selectedBothCount)") {
+                    scope.launch {
+                        confirmExit(dialogSlot, context)
+                    }
+                }
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                     progress = totalProgressAnimation
