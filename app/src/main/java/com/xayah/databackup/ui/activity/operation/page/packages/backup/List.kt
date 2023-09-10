@@ -179,7 +179,7 @@ fun PackageBackupList() {
     val navController = LocalSlotScope.current!!.navController
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uiState by viewModel.uiState
-    val packages by uiState.packages.collectAsState(initial = listOf())
+    val packagesState by uiState.packages.collectAsState(initial = listOf())
     var packageSearchPredicate: (PackageBackupEntire) -> Boolean by remember { mutableStateOf({ true }) }
     var packageSelectionPredicate: (PackageBackupEntire) -> Boolean by remember { mutableStateOf(filter(context.readBackupFilterTypeIndex(), false)) }
     var packageFlagTypePredicate: (PackageBackupEntire) -> Boolean by remember { mutableStateOf(filter(context.readBackupFlagTypeIndex(), true)) }
@@ -191,10 +191,15 @@ fun PackageBackupList() {
             )
         )
     }
+    val packages = remember(packagesState, packageSearchPredicate, packageSelectionPredicate, packageFlagTypePredicate, packageSortComparator) {
+        packagesState.filter(packageSearchPredicate).filter(packageSelectionPredicate).filter(packageFlagTypePredicate).sortedWith(packageSortComparator)
+    }
     val selectedAPKs by uiState.selectedAPKs.collectAsState(initial = 0)
     val selectedData by uiState.selectedData.collectAsState(initial = 0)
-    val selected = selectedAPKs != 0 || selectedData != 0
-    val packageManager = context.packageManager
+    val selected = remember(selectedAPKs, selectedData) {
+        selectedAPKs != 0 || selectedData != 0
+    }
+    val packageManager = remember { context.packageManager }
     var progress by remember { mutableFloatStateOf(1f) }
     var state by remember { mutableStateOf(ListState.Idle) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -373,8 +378,7 @@ fun PackageBackupList() {
                             }
 
                             items(
-                                items = packages.filter(packageSearchPredicate).filter(packageSelectionPredicate).filter(packageFlagTypePredicate)
-                                    .sortedWith(packageSortComparator),
+                                items = packages,
                                 key = { it.packageName }) { packageInfo ->
                                 ListItemPackageBackup(packageInfo = packageInfo)
                             }

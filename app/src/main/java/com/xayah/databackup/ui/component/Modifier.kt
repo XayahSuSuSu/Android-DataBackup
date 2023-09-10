@@ -20,8 +20,9 @@ fun Modifier.paddingVertical(vertical: Dp) = padding(0.dp, vertical)
 
 fun Modifier.ignorePaddingHorizontal(horizontal: Dp) = layout { measurable, constraints ->
     if (constraints.maxWidth == Int.MAX_VALUE) throw IllegalArgumentException("The measuring failed, maybe you placed this modifier after horizontalScroll(), please place it at the first place.")
-    val placeable = measurable.measure(constraints.copy(maxWidth = constraints.maxWidth + horizontal.roundToPx() * 2))
+    val placeable = measurable.measure(constraints.copy(maxWidth = constraints.maxWidth + (horizontal * 2).roundToPx()))
+    val x = if (constraints.maxWidth < placeable.width) 0 else -horizontal.roundToPx()
     layout(placeable.width, placeable.height) {
-        placeable.place(0, 0)
+        placeable.place(x, 0)
     }
 }

@@ -27,7 +27,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -305,20 +304,26 @@ internal fun ColumnExtendedTopAppBar(
 
 @ExperimentalMaterial3Api
 @Composable
-fun ManifestTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, selectedTabIndex: MutableState<Int>, titles: List<String>) {
+fun ManifestTopBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    title: String,
+    selectedTabIndex: Int,
+    onTabClick: (index: Int) -> Unit,
+    titles: List<String>,
+) {
     val navController = LocalSlotScope.current!!.navController
     ColumnExtendedTopAppBar(
         scrollBehavior = scrollBehavior,
         title = title,
         onArrowBackPressed = { navController.popBackStack() }
     ) { appBarContainerColor ->
-        TabRow(selectedTabIndex = selectedTabIndex.value,
+        TabRow(selectedTabIndex = selectedTabIndex,
             containerColor = appBarContainerColor,
             divider = {}) {
             titles.forEachIndexed { index, title ->
                 Tab(
-                    selected = selectedTabIndex.value == index,
-                    onClick = { selectedTabIndex.value = index },
+                    selected = selectedTabIndex == index,
+                    onClick = { onTabClick(index) },
                     text = { TabText(text = title) }
                 )
             }

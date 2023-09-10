@@ -70,7 +70,7 @@ fun PackageRestoreProcessing() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     var icon: Bitmap? by remember { mutableStateOf(null) }
-    val uiState = viewModel.uiState.value
+    val uiState by viewModel.uiState
     val effectFinished = uiState.effectFinished
     val effectState = uiState.effectState
     val snackbarHostState = remember { SnackbarHostState() }
@@ -87,46 +87,52 @@ fun PackageRestoreProcessing() {
         label = AnimationTokens.AnimateFloatAsStateLabel,
         animationSpec = tween(durationMillis = AnimationTokens.TweenDuration)
     )
-    val label = if (latestPackage == null) stringResource(R.string.idle) else latestPackage!!.label
-    val packageName = if (latestPackage == null) stringResource(R.string.idle) else latestPackage!!.packageName
-    val operationCardConfigs = listOf(
-        OperationCardConfig(
-            type = DataType.PACKAGE_APK,
-            content = if (latestPackage?.apkLog.isNullOrEmpty()) stringResource(R.string.idle) else latestPackage!!.apkLog,
-            state = if (latestPackage?.apkState == null) OperationState.IDLE else latestPackage!!.apkState,
-            icon = ImageVector.vectorResource(R.drawable.ic_rounded_android)
-        ),
-        OperationCardConfig(
-            type = DataType.PACKAGE_USER,
-            content = if (latestPackage?.userLog.isNullOrEmpty()) stringResource(R.string.idle) else latestPackage!!.userLog,
-            state = if (latestPackage?.userState == null) OperationState.IDLE else latestPackage!!.userState,
-            icon = ImageVector.vectorResource(R.drawable.ic_rounded_person)
-        ),
-        OperationCardConfig(
-            type = DataType.PACKAGE_USER_DE,
-            content = if (latestPackage?.userDeLog.isNullOrEmpty()) stringResource(R.string.idle) else latestPackage!!.userDeLog,
-            state = if (latestPackage?.userDeState == null) OperationState.IDLE else latestPackage!!.userDeState,
-            icon = ImageVector.vectorResource(R.drawable.ic_rounded_manage_accounts)
-        ),
-        OperationCardConfig(
-            type = DataType.PACKAGE_DATA,
-            content = if (latestPackage?.dataLog.isNullOrEmpty()) stringResource(R.string.idle) else latestPackage!!.dataLog,
-            state = if (latestPackage?.dataState == null) OperationState.IDLE else latestPackage!!.dataState,
-            icon = ImageVector.vectorResource(R.drawable.ic_rounded_database)
-        ),
-        OperationCardConfig(
-            type = DataType.PACKAGE_OBB,
-            content = if (latestPackage?.obbLog.isNullOrEmpty()) stringResource(R.string.idle) else latestPackage!!.obbLog,
-            state = if (latestPackage?.obbState == null) OperationState.IDLE else latestPackage!!.obbState,
-            icon = ImageVector.vectorResource(R.drawable.ic_rounded_stadia_controller)
-        ),
-        OperationCardConfig(
-            type = DataType.PACKAGE_MEDIA,
-            content = if (latestPackage?.mediaLog.isNullOrEmpty()) stringResource(R.string.idle) else latestPackage!!.mediaLog,
-            state = if (latestPackage?.mediaState == null) OperationState.IDLE else latestPackage!!.mediaState,
-            icon = ImageVector.vectorResource(R.drawable.ic_rounded_image)
+    val label = remember(latestPackage) {
+        if (latestPackage == null) context.getString(R.string.idle) else latestPackage!!.label
+    }
+    val packageName = remember(latestPackage) {
+        if (latestPackage == null) context.getString(R.string.idle) else latestPackage!!.packageName
+    }
+    val operationCardConfigs = remember(latestPackage) {
+        listOf(
+            OperationCardConfig(
+                type = DataType.PACKAGE_APK,
+                content = if (latestPackage?.apkLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.apkLog,
+                state = if (latestPackage?.apkState == null) OperationState.IDLE else latestPackage!!.apkState,
+                icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_android)
+            ),
+            OperationCardConfig(
+                type = DataType.PACKAGE_USER,
+                content = if (latestPackage?.userLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.userLog,
+                state = if (latestPackage?.userState == null) OperationState.IDLE else latestPackage!!.userState,
+                icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_person)
+            ),
+            OperationCardConfig(
+                type = DataType.PACKAGE_USER_DE,
+                content = if (latestPackage?.userDeLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.userDeLog,
+                state = if (latestPackage?.userDeState == null) OperationState.IDLE else latestPackage!!.userDeState,
+                icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_manage_accounts)
+            ),
+            OperationCardConfig(
+                type = DataType.PACKAGE_DATA,
+                content = if (latestPackage?.dataLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.dataLog,
+                state = if (latestPackage?.dataState == null) OperationState.IDLE else latestPackage!!.dataState,
+                icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_database)
+            ),
+            OperationCardConfig(
+                type = DataType.PACKAGE_OBB,
+                content = if (latestPackage?.obbLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.obbLog,
+                state = if (latestPackage?.obbState == null) OperationState.IDLE else latestPackage!!.obbState,
+                icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_stadia_controller)
+            ),
+            OperationCardConfig(
+                type = DataType.PACKAGE_MEDIA,
+                content = if (latestPackage?.mediaLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.mediaLog,
+                state = if (latestPackage?.mediaState == null) OperationState.IDLE else latestPackage!!.mediaState,
+                icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_image)
+            )
         )
-    )
+    }
 
     LaunchedEffect(latestPackage) {
         withIOContext {

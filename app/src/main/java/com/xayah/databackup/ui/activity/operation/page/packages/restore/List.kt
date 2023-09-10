@@ -137,7 +137,7 @@ fun PackageRestoreList() {
     val navController = LocalSlotScope.current!!.navController
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uiState by viewModel.uiState
-    val packages by uiState.packages.collectAsState(initial = listOf())
+    val packagesState by uiState.packages.collectAsState(initial = listOf())
     var packageSearchPredicate: (PackageRestoreEntire) -> Boolean by remember { mutableStateOf({ true }) }
     var packageSelectionPredicate: (PackageRestoreEntire) -> Boolean by remember { mutableStateOf(filter(context.readRestoreFilterTypeIndex(), false)) }
     var packageFlagTypePredicate: (PackageRestoreEntire) -> Boolean by remember { mutableStateOf(filter(context.readRestoreFlagTypeIndex(), true)) }
@@ -149,9 +149,14 @@ fun PackageRestoreList() {
             )
         )
     }
+    val packages = remember(packagesState, packageSearchPredicate, packageSelectionPredicate, packageFlagTypePredicate, packageSortComparator) {
+        packagesState.filter(packageSearchPredicate).filter(packageSelectionPredicate).filter(packageFlagTypePredicate).sortedWith(packageSortComparator)
+    }
     val selectedAPKs by uiState.selectedAPKs.collectAsState(initial = 0)
     val selectedData by uiState.selectedData.collectAsState(initial = 0)
-    val selected = selectedAPKs != 0 || selectedData != 0
+    val selected = remember(selectedAPKs, selectedData) {
+        selectedAPKs != 0 || selectedData != 0
+    }
     var state by remember { mutableStateOf(ListState.Idle) }
     val snackbarHostState = remember { SnackbarHostState() }
     var emphasizedState by remember { mutableStateOf(false) }
@@ -282,8 +287,7 @@ fun PackageRestoreList() {
                             }
 
                             items(
-                                items = packages.filter(packageSearchPredicate).filter(packageSelectionPredicate).filter(packageFlagTypePredicate)
-                                    .sortedWith(packageSortComparator), key = { it.packageName }) { packageInfo ->
+                                items = packages, key = { it.packageName }) { packageInfo ->
                                 ListItemPackageRestore(packageInfo = packageInfo)
                             }
                             item {

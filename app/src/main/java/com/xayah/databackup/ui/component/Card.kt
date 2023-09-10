@@ -195,42 +195,59 @@ data class OperationCardConfig(
     val type: DataType,
     var content: String,
     var state: OperationState,
-    val icon: ImageVector
+    val icon: ImageVector,
 ) {
     val title = type.type.uppercase()
 }
 
 @Composable
-fun OperationCard(title: String, content: String, state: OperationState, icon: ImageVector) {
-    val actionIcon: ImageVector
-    val actionColor: Color
-    when (state) {
-        OperationState.IDLE -> {
-            actionIcon = ImageVector.vectorResource(R.drawable.ic_rounded_adjust_circle)
-            actionColor = ColorScheme.primary()
-        }
-
-        OperationState.SKIP -> {
-            actionIcon = ImageVector.vectorResource(R.drawable.ic_rounded_not_started_circle)
-            actionColor = ColorScheme.primary()
-        }
-
-        OperationState.Processing -> {
-            actionIcon = ImageVector.vectorResource(R.drawable.ic_rounded_pending_circle)
-            actionColor = ColorScheme.yellow()
-        }
-
-        OperationState.DONE -> {
-            actionIcon = ImageVector.vectorResource(R.drawable.ic_rounded_check_circle)
-            actionColor = ColorScheme.green()
-        }
-
-        OperationState.ERROR -> {
-            actionIcon = ImageVector.vectorResource(R.drawable.ic_rounded_cancel_circle)
-            actionColor = ColorScheme.error()
-        }
+private fun getActionIcon(state: OperationState): ImageVector = when (state) {
+    OperationState.IDLE -> {
+        ImageVector.vectorResource(R.drawable.ic_rounded_adjust_circle)
     }
 
+    OperationState.SKIP -> {
+        ImageVector.vectorResource(R.drawable.ic_rounded_not_started_circle)
+    }
+
+    OperationState.Processing -> {
+        ImageVector.vectorResource(R.drawable.ic_rounded_pending_circle)
+    }
+
+    OperationState.DONE -> {
+        ImageVector.vectorResource(R.drawable.ic_rounded_check_circle)
+    }
+
+    OperationState.ERROR -> {
+        ImageVector.vectorResource(R.drawable.ic_rounded_cancel_circle)
+    }
+}
+
+@Composable
+private fun getActionColor(state: OperationState): Color = when (state) {
+    OperationState.IDLE -> {
+        ColorScheme.primary()
+    }
+
+    OperationState.SKIP -> {
+        ColorScheme.primary()
+    }
+
+    OperationState.Processing -> {
+        ColorScheme.yellow()
+    }
+
+    OperationState.DONE -> {
+        ColorScheme.green()
+    }
+
+    OperationState.ERROR -> {
+        ColorScheme.error()
+    }
+}
+
+@Composable
+fun OperationCard(title: String, content: String, state: OperationState, icon: ImageVector) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.padding(CardTokens.OpCardPadding),
@@ -259,9 +276,9 @@ fun OperationCard(title: String, content: String, state: OperationState, icon: I
                 ) {
                     Icon(
                         modifier = Modifier.padding(CardTokens.OpCardActionIconInternalPadding),
-                        imageVector = actionIcon,
+                        imageVector = getActionIcon(state = state),
                         contentDescription = null,
-                        tint = actionColor
+                        tint = getActionColor(state = state)
                     )
                 }
             }
