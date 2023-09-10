@@ -20,19 +20,19 @@ interface PackageBackupEntireDao {
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1")
     fun queryActivePackages(): Flow<List<PackageBackupEntire>>
 
-    @Query("SELECT * FROM PackageBackupEntire WHERE packageName = :packageName LIMIT 1")
+    @Query("SELECT packageName, label FROM PackageBackupEntire WHERE packageName = :packageName LIMIT 1")
     suspend fun queryManifestPackage(packageName: String): PackageBackupManifest
 
-    @Query("SELECT * FROM PackageBackupEntire WHERE operationCode = 1 OR operationCode = 2 OR operationCode = 3")
+    @Query("SELECT packageName, label, operationCode, versionName, versionCode, flags FROM PackageBackupEntire WHERE operationCode = 1 OR operationCode = 2 OR operationCode = 3")
     suspend fun queryActiveTotalPackages(): List<PackageBackupOp>
 
-    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 3")
+    @Query("SELECT packageName, label FROM PackageBackupEntire WHERE active = 1 AND operationCode = 3")
     fun queryActiveBothPackages(): Flow<List<PackageBackupManifest>>
 
-    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 2")
+    @Query("SELECT packageName, label FROM PackageBackupEntire WHERE active = 1 AND operationCode = 2")
     fun queryActiveAPKOnlyPackages(): Flow<List<PackageBackupManifest>>
 
-    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 1")
+    @Query("SELECT packageName, label FROM PackageBackupEntire WHERE active = 1 AND operationCode = 1")
     fun queryActiveDataOnlyPackages(): Flow<List<PackageBackupManifest>>
 
     @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1")

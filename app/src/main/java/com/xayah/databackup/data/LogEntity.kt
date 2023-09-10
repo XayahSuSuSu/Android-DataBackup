@@ -1,5 +1,6 @@
 package com.xayah.databackup.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -28,7 +29,7 @@ data class LogEntity(
 @Entity(foreignKeys = [ForeignKey(entity = LogEntity::class, parentColumns = arrayOf("id"), childColumns = arrayOf("logId"), onDelete = ForeignKey.CASCADE)])
 data class CmdEntity(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
-    var logId: Long,
+    @ColumnInfo(index = true) var logId: Long,
     var timestamp: Long = DateUtil.getTimestamp(),
     var type: LogCmdType,
     var msg: String,

@@ -23,13 +23,13 @@ interface PackageRestoreEntireDao {
     @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
     fun queryActiveTotalPackages(): List<PackageRestoreEntire>
 
-    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 3")
+    @Query("SELECT id, packageName, label FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 3")
     fun queryActiveBothPackages(): Flow<List<PackageRestoreManifest>>
 
-    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 2")
+    @Query("SELECT id, packageName, label FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 2")
     fun queryActiveAPKOnlyPackages(): Flow<List<PackageRestoreManifest>>
 
-    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 1")
+    @Query("SELECT id, packageName, label FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 1")
     fun queryActiveDataOnlyPackages(): Flow<List<PackageRestoreManifest>>
 
     @Query("SELECT COUNT(*) FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")

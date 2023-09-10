@@ -23,6 +23,15 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += mapOf(
+                    "room.schemaLocation" to "$projectDir/schemas",
+                    "room.incremental" to "true"
+                )
+            }
+        }
     }
 
     // __(API)_(feature)_(abi)___(version)
