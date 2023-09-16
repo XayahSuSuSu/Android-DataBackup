@@ -75,4 +75,9 @@
     <string name="icon_reload_failed">圖標重載失敗</string>
     <string name="restart_failed">重啟失敗, 請手動重啟本應用</string>
     <string name="confirm_reload">重載將使用恢復目錄下的數據庫並覆蓋當前數據庫(包括備份恢復列表以及日誌等), 重載完成後需要重啟本應用, 確定要重載嗎？</string>
+    <string name="version">版本</string>
+    <string name="feature">特性</string>
+    <string name="architecture">架構</string>
+    <string name="monet">莫奈</string>
+    <string name="monet_desc">Material You莫奈主題引擎</string>
 </resources>

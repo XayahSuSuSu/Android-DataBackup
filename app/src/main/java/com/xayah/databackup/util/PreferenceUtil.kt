@@ -166,6 +166,14 @@ fun Context.readAppVersionName(): String {
     return readPreferencesString("app_version_name") ?: ""
 }
 
+fun Context.saveMonetEnabled(value: Boolean) {
+    savePreferences("monet_enabled", value)
+}
+
+fun Context.readMonetEnabled(): Boolean {
+    return readPreferencesBoolean("monet_enabled", true)
+}
+
 fun Context.saveCompressionType(ct: CompressionType) {
     savePreferences("compression_type", ct.type)
 }

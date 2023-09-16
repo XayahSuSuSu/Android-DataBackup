@@ -2,17 +2,21 @@ package com.xayah.databackup
 
 import android.app.Application
 import android.content.Context
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.util.SymbolUtil
 import com.xayah.databackup.util.binPath
 import com.xayah.databackup.util.extendPath
 import com.xayah.databackup.util.filesPath
+import com.xayah.databackup.util.readMonetEnabled
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class DataBackupApplication : Application() {
     companion object {
         lateinit var application: Application
+        lateinit var monetEnabled: MutableState<Boolean>
 
         class EnvInitializer : Shell.Initializer() {
             companion object {
@@ -50,5 +54,6 @@ class DataBackupApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         application = this
+        monetEnabled = mutableStateOf(readMonetEnabled())
     }
 }
