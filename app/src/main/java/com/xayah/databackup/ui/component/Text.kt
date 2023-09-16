@@ -57,11 +57,12 @@ fun HeadlineMediumBoldText(
 }
 
 @Composable
-fun TitleLargeText(modifier: Modifier = Modifier, text: String) {
+fun TitleLargeText(modifier: Modifier = Modifier, text: String, color: Color = Color.Unspecified) {
     Text(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.titleLarge,
+        color = color,
     )
 }
 
@@ -213,6 +214,7 @@ enum class EmojiString(val emoji: String) {
     ALARM_CLOCK("⏰"),
     SPARKLING_HEART("💖"),
     BROKEN_HEART("💔"),
+    SWEAT_DROPLETS("💦"),
 }
 
 @Composable

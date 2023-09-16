@@ -80,4 +80,5 @@
     <string name="architecture">架构</string>
     <string name="monet">莫奈</string>
     <string name="monet_desc">Material You莫奈主题引擎</string>
+    <string name="premium_for_this_feature">请下载Premium版本以获取此功能</string>
 </resources>
