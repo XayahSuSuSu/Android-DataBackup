@@ -85,4 +85,6 @@
     <string name="monet">Monet</string>
     <string name="monet_desc">Monet theme engine of Material You</string>
     <string name="premium_for_this_feature">Please download premium version for this feature</string>
+    <string name="keep_screen_on">Keep screen on</string>
+    <string name="keep_screen_on_desc">Keep device awake while processing</string>
 </resources>

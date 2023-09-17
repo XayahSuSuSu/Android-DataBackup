@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
@@ -25,9 +26,11 @@ import com.xayah.databackup.ui.component.SettingsGridItemConfig
 import com.xayah.databackup.ui.component.SettingsSwitch
 import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.component.paddingHorizontal
-import com.xayah.databackup.ui.component.paddingTop
+import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.CommonTokens
+import com.xayah.databackup.util.readKeepScreenOn
 import com.xayah.databackup.util.readMonetEnabled
+import com.xayah.databackup.util.saveKeepScreenOn
 import com.xayah.databackup.util.saveMonetEnabled
 
 @Composable
@@ -74,10 +77,9 @@ private fun InfoCard() {
 fun PageSettings() {
     val context = LocalContext.current
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        Spacer(modifier = Modifier.paddingTop(CommonTokens.PaddingMedium))
+        Spacer(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium))
         InfoCard()
-
-        Spacer(modifier = Modifier.paddingTop(CommonTokens.PaddingMedium))
+        Divider(modifier = Modifier.padding(CommonTokens.PaddingMedium))
         SettingsSwitch(
             icon = ImageVector.vectorResource(R.drawable.ic_round_auto_awesome),
             title = stringResource(R.string.monet),
@@ -86,6 +88,14 @@ fun PageSettings() {
         ) {
             context.saveMonetEnabled(it)
             DataBackupApplication.monetEnabled.value = it
+        }
+        SettingsSwitch(
+            icon = ImageVector.vectorResource(R.drawable.ic_rounded_brightness_high),
+            title = stringResource(R.string.keep_screen_on),
+            defaultValue = remember { context.readKeepScreenOn() },
+            content = stringResource(R.string.keep_screen_on_desc)
+        ) {
+            context.saveKeepScreenOn(it)
         }
     }
 }

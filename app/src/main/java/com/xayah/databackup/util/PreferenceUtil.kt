@@ -174,6 +174,14 @@ fun Context.readMonetEnabled(): Boolean {
     return readPreferencesBoolean("monet_enabled", true)
 }
 
+fun Context.saveKeepScreenOn(value: Boolean) {
+    savePreferences("keep_screen_on", value)
+}
+
+fun Context.readKeepScreenOn(): Boolean {
+    return readPreferencesBoolean("keep_screen_on", true)
+}
+
 fun Context.saveCompressionType(ct: CompressionType) {
     savePreferences("compression_type", ct.type)
 }

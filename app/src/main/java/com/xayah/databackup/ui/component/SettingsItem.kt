@@ -21,8 +21,8 @@ import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.SettingsItemTokens
 
 @Composable
-fun SettingsTitle(title: String) {
-    TitleSmallBoldText(modifier = Modifier.paddingHorizontal(SettingsItemTokens.SettingsTitlePadding), text = title, color = ColorScheme.primary())
+fun SettingsTitle(modifier: Modifier = Modifier, title: String) {
+    TitleSmallBoldText(modifier = modifier.paddingHorizontal(SettingsItemTokens.SettingsTitlePadding), text = title, color = ColorScheme.primary())
 }
 
 data class SettingsGridItemConfig(

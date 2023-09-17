@@ -81,4 +81,6 @@
     <string name="monet">莫奈</string>
     <string name="monet_desc">Material You莫奈主題引擎</string>
     <string name="premium_for_this_feature">請下載Premium版本以獲取此功能</string>
+    <string name="keep_screen_on">保持屏幕常亮</string>
+    <string name="keep_screen_on_desc">在備份/恢復時保持設備處於喚醒狀態</string>
 </resources>
