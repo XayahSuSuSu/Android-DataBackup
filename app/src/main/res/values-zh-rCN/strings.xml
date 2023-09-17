@@ -83,4 +83,6 @@
     <string name="premium_for_this_feature">请下载Premium版本以获取此功能</string>
     <string name="keep_screen_on">保持屏幕常亮</string>
     <string name="keep_screen_on_desc">在备份/恢复时保持设备处于唤醒状态</string>
+    <string name="compression_type">压缩方式</string>
+    <string name="compression_type_desc">压缩算法，这会同时影响到备份与恢复。如果您不清楚此选项的用途，请不要随意更改</string>
 </resources>

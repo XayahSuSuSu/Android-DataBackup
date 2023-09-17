@@ -23,13 +23,17 @@ import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.SettingsGridItem
 import com.xayah.databackup.ui.component.SettingsGridItemConfig
+import com.xayah.databackup.ui.component.SettingsModalDropdownMenu
 import com.xayah.databackup.ui.component.SettingsSwitch
 import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.CommonTokens
+import com.xayah.databackup.util.CompressionType
+import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readKeepScreenOn
 import com.xayah.databackup.util.readMonetEnabled
+import com.xayah.databackup.util.saveCompressionType
 import com.xayah.databackup.util.saveKeepScreenOn
 import com.xayah.databackup.util.saveMonetEnabled
 
@@ -71,31 +75,48 @@ private fun InfoCard() {
     }
 }
 
+@Composable
+private fun ApplicationSettings() {
+    val context = LocalContext.current
+    SettingsSwitch(
+        icon = ImageVector.vectorResource(R.drawable.ic_round_auto_awesome),
+        title = stringResource(R.string.monet),
+        defaultValue = remember { context.readMonetEnabled() },
+        content = stringResource(R.string.monet_desc)
+    ) {
+        context.saveMonetEnabled(it)
+        DataBackupApplication.monetEnabled.value = it
+    }
+    SettingsSwitch(
+        icon = ImageVector.vectorResource(R.drawable.ic_rounded_brightness_high),
+        title = stringResource(R.string.keep_screen_on),
+        defaultValue = remember { context.readKeepScreenOn() },
+        content = stringResource(R.string.keep_screen_on_desc)
+    ) {
+        context.saveKeepScreenOn(it)
+    }
+
+    val ctList = remember { listOf(CompressionType.TAR, CompressionType.ZSTD, CompressionType.LZ4).map { it.type } }
+    val ctIndex = remember { ctList.indexOf(context.readCompressionType().type) }
+    SettingsModalDropdownMenu(
+        icon = ImageVector.vectorResource(R.drawable.ic_rounded_bolt),
+        title = stringResource(R.string.compression_type),
+        content = stringResource(R.string.compression_type_desc),
+        defaultValue = ctIndex,
+        list = ctList
+    ) { _, selected ->
+        context.saveCompressionType(CompressionType.of(selected))
+    }
+}
+
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
 fun PageSettings() {
-    val context = LocalContext.current
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Spacer(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium))
         InfoCard()
         Divider(modifier = Modifier.padding(CommonTokens.PaddingMedium))
-        SettingsSwitch(
-            icon = ImageVector.vectorResource(R.drawable.ic_round_auto_awesome),
-            title = stringResource(R.string.monet),
-            defaultValue = remember { context.readMonetEnabled() },
-            content = stringResource(R.string.monet_desc)
-        ) {
-            context.saveMonetEnabled(it)
-            DataBackupApplication.monetEnabled.value = it
-        }
-        SettingsSwitch(
-            icon = ImageVector.vectorResource(R.drawable.ic_rounded_brightness_high),
-            title = stringResource(R.string.keep_screen_on),
-            defaultValue = remember { context.readKeepScreenOn() },
-            content = stringResource(R.string.keep_screen_on_desc)
-        ) {
-            context.saveKeepScreenOn(it)
-        }
+        ApplicationSettings()
     }
 }

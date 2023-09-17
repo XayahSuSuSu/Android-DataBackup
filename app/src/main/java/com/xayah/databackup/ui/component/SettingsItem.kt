@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -18,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.xayah.databackup.ui.theme.ColorScheme
+import com.xayah.databackup.ui.token.MenuTokens
 import com.xayah.databackup.ui.token.SettingsItemTokens
 
 @Composable
@@ -101,5 +104,52 @@ fun SettingsSwitch(
     ) {
         isChecked = isChecked.not()
         onCheckedChange(isChecked)
+    }
+}
+
+@Composable
+fun SettingsModalDropdownMenu(
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    title: String,
+    content: String,
+    defaultValue: Int = 0,
+    list: List<String>,
+    onSelected: (index: Int, selected: String) -> Unit,
+) {
+    var selectedIndex by remember { mutableIntStateOf(defaultValue) }
+    var expanded by remember { mutableStateOf(false) }
+
+    SettingsClickable(
+        modifier = modifier,
+        leadingContent = {
+            icon?.let { Icon(imageVector = it, contentDescription = null) }
+        },
+        headlineContent = {
+            TitleMediumText(text = title)
+        },
+        supportingContent = {
+            BodySmallBoldText(text = content)
+        },
+        trailingContent = {
+            Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                TitleMediumText(modifier = Modifier.paddingStart(SettingsItemTokens.SettingsItemPadding), text = list.getOrNull(selectedIndex) ?: "")
+
+                ModalStringListDropdownMenu(
+                    expanded = expanded,
+                    selectedIndex = selectedIndex,
+                    list = list,
+                    maxDisplay = MenuTokens.DefaultMaxDisplay,
+                    onSelected = { index, selected ->
+                        expanded = false
+                        onSelected(index, selected)
+                        selectedIndex = index
+                    },
+                    onDismissRequest = { expanded = false }
+                )
+            }
+        }
+    ) {
+        if (list.isNotEmpty()) expanded = true
     }
 }

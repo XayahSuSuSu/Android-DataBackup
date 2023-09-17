@@ -87,4 +87,6 @@
     <string name="premium_for_this_feature">Please download premium version for this feature</string>
     <string name="keep_screen_on">Keep screen on</string>
     <string name="keep_screen_on_desc">Keep device awake while processing</string>
+    <string name="compression_type">Compression type</string>
+    <string name="compression_type_desc">Compression algorithm which affects both backup and restore. If you don\'t know what this option is for, don\'t change it</string>
 </resources>
