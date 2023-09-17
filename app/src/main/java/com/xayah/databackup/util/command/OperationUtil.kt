@@ -14,11 +14,9 @@ import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.executeWithLog
 import com.xayah.databackup.util.command.CommonUtil.outString
-import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCompatibleMode
 import com.xayah.databackup.util.readCompressionType
-import com.xayah.databackup.util.readRestoreSavePath
 import com.xayah.databackup.util.readRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
 
@@ -34,7 +32,7 @@ class OperationBackupUtil(
     private val userId = context.readBackupUserId()
     private val compressionType = context.readCompressionType()
     private val compatibleMode = context.readCompatibleMode()
-    private val packageSavePath = "${context.readBackupSavePath()}/archives/${userId}/packages"
+    private val packageSavePath = PathUtil.getBackupPackagesSavePath()
 
     fun getPackageItemSavePath(packageName: String): String = "${packageSavePath}/${packageName}/$timestamp"
 
@@ -149,9 +147,9 @@ class OperationRestoreUtil(
     private val packageRestoreOperationDao: PackageRestoreOperationDao,
 ) {
     private val userId = context.readRestoreUserId()
-    private val packageSavePath = "${context.readRestoreSavePath()}/archives/${userId}/packages"
+    private val packageRestorePath = PathUtil.getRestorePackagesSavePath()
 
-    private fun getPackageItemSavePath(packageName: String, timestamp: Long): String = "${packageSavePath}/${packageName}/$timestamp"
+    private fun getPackageItemSavePath(packageName: String, timestamp: Long): String = "${packageRestorePath}/${packageName}/$timestamp"
 
     suspend fun restoreApk(entity: PackageRestoreOperation, packageName: String, timestamp: Long, compressionType: CompressionType) {
         // Set processing state
