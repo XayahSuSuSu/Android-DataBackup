@@ -6,11 +6,14 @@ import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManagerHidden
+import android.content.pm.UserInfo
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.StatFs
 import android.os.UserHandle
 import android.os.UserHandleHidden
+import android.os.UserManager
+import android.os.UserManagerHidden
 import com.xayah.libhiddenapi.HiddenApiBypassUtil
 import com.xayah.librootservice.IRemoteRootService
 import com.xayah.librootservice.parcelables.StatFsParcelable
@@ -27,15 +30,19 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private val lock = Any()
     private var systemContext: Context
     private var storageStatsManager: StorageStatsManager
+    private var userManager: UserManager
 
     private fun getSystemContext(): Context = ActivityThreadHidden.getSystemContext(ActivityThreadHidden.systemMain())
 
     private fun getStorageStatsManager(): StorageStatsManager = systemContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
 
+    private fun getUserManager(): UserManager = UserManagerHidden.get(systemContext)
+
     init {
         HiddenApiBypassUtil.addHiddenApiExemptions("")
         systemContext = getSystemContext()
         storageStatsManager = getStorageStatsManager()
+        userManager = getUserManager()
     }
 
     override fun readStatFs(path: String): StatFsParcelable = synchronized(lock) {
@@ -146,5 +153,16 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats = synchronized(lock) {
         storageStatsManager.queryStatsForPackage(packageInfo.applicationInfo.storageUuid, packageInfo.packageName, user)
+    }
+
+    override fun getUsers(): List<UserInfo> = synchronized(lock) {
+        tryOn(
+            block = {
+                UserManagerHidden.getUsers(userManager = userManager)
+            },
+            onException = {
+                listOf()
+            }
+        )
     }
 }

@@ -89,4 +89,9 @@
     <string name="keep_screen_on_desc">Keep device awake while processing</string>
     <string name="compression_type">Compression type</string>
     <string name="compression_type_desc">Compression algorithm which affects both backup and restore. If you don\'t know what this option is for, don\'t change it</string>
+    <string name="backup_user">Backup user</string>
+    <string name="backup_user_desc">Target user while loading backup list or backing up</string>
+    <string name="user">User</string>
+    <string name="restore_user">Restore user</string>
+    <string name="restore_user_desc">Target user while loading restore list or restoring</string>
 </resources>

@@ -121,6 +121,9 @@ dependencies {
     // RootService
     implementation(project(":librootservice"))
 
+    // Hidden api
+    implementation(project(":libhiddenapi"))
+
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.drawablepainter)

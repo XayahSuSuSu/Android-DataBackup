@@ -6,4 +6,5 @@ object SettingsItemTokens {
     val SettingsItemPadding = 16.dp
     val SettingsTitlePadding = 56.dp
     val SettingsGridItemPadding = 8.dp
+    val SettingsMenuIndicatorSize = 28.dp
 }

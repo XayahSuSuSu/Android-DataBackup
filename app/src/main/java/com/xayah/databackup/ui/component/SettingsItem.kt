@@ -4,8 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Switch
@@ -15,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +25,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.MenuTokens
 import com.xayah.databackup.ui.token.SettingsItemTokens
+import com.xayah.librootservice.util.withIOContext
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsTitle(modifier: Modifier = Modifier, title: String) {
@@ -132,7 +137,7 @@ fun SettingsModalDropdownMenu(
             BodySmallBoldText(text = content)
         },
         trailingContent = {
-            Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+            Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
                 TitleMediumText(modifier = Modifier.paddingStart(SettingsItemTokens.SettingsItemPadding), text = list.getOrNull(selectedIndex) ?: "")
 
                 ModalStringListDropdownMenu(
@@ -151,5 +156,68 @@ fun SettingsModalDropdownMenu(
         }
     ) {
         if (list.isNotEmpty()) expanded = true
+    }
+}
+
+@Composable
+fun SettingsModalDropdownMenu(
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    title: String,
+    content: String,
+    selectedIndex: Int,
+    displayValue: String,
+    onLoading: suspend () -> List<String>,
+    onSelected: (index: Int, selected: String) -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+    var list: List<String> by remember { mutableStateOf(listOf()) }
+
+    SettingsClickable(
+        modifier = modifier,
+        leadingContent = {
+            icon?.let { Icon(imageVector = it, contentDescription = null) }
+        },
+        headlineContent = {
+            TitleMediumText(text = title)
+        },
+        supportingContent = {
+            BodySmallBoldText(text = content)
+        },
+        trailingContent = {
+            Box(
+                modifier = Modifier
+                    .paddingStart(SettingsItemTokens.SettingsItemPadding)
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                if (isLoading) CircularProgressIndicator(modifier = Modifier.size(SettingsItemTokens.SettingsMenuIndicatorSize))
+                else TitleMediumText(text = displayValue)
+
+                ModalStringListDropdownMenu(
+                    expanded = expanded,
+                    selectedIndex = selectedIndex,
+                    list = list,
+                    maxDisplay = MenuTokens.DefaultMaxDisplay,
+                    onSelected = { index, selected ->
+                        expanded = false
+                        onSelected(index, selected)
+                    },
+                    onDismissRequest = { expanded = false }
+                )
+            }
+        }
+    ) {
+        if (isLoading.not()) {
+            scope.launch {
+                withIOContext {
+                    isLoading = true
+                    list = onLoading()
+                    isLoading = false
+                    if (list.isNotEmpty()) expanded = true
+                }
+            }
+        }
     }
 }

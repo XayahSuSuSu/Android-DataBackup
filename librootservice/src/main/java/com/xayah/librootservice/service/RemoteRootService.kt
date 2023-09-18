@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageInfo
+import android.content.pm.UserInfo
 import android.os.IBinder
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
@@ -158,4 +159,6 @@ class RemoteRootService(private val context: Context) {
     suspend fun getUserHandle(userId: Int): UserHandle = getService().getUserHandle(userId)
 
     suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats = getService().queryStatsForPackage(packageInfo, user)
+
+    suspend fun getUsers(): List<UserInfo> = getService().users
 }

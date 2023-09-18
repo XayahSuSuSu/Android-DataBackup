@@ -85,4 +85,9 @@
     <string name="keep_screen_on_desc">在備份/恢復時保持設備處於喚醒狀態</string>
     <string name="compression_type">壓縮方式</string>
     <string name="compression_type_desc">壓縮算法，这会同时影响到备份与恢复。如果您不清楚此选项的用途，请不要随意更改</string>
+    <string name="backup_user">備份用戶</string>
+    <string name="backup_user_desc">讀取備份列表/備份數據時的目標用戶</string>
+    <string name="user">用戶</string>
+    <string name="restore_user">恢復用戶</string>
+    <string name="restore_user_desc">讀取恢復列表恢復數據時的目標用戶</string>
 </resources>

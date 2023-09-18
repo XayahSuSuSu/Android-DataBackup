@@ -18,4 +18,5 @@ interface IRemoteRootService {
     int getPackageUid(String packageName, int userId);
     UserHandle getUserHandle(int userId);
     StorageStats queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
+    List<UserInfo> getUsers();
 }
