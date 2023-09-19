@@ -1,6 +1,5 @@
 package com.xayah.databackup.util.command
 
-import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.SymbolUtil.USD
@@ -21,7 +20,7 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
         return Pair(isSuccess, out.trim())
     }
 
-    suspend fun restoreContext(path: String, pathContext: String, packageName: String, uid: Int, dataType: DataType): Pair<Boolean, String> {
+    suspend fun restoreContext(path: String, pathContext: String, packageName: String, uid: Int): Pair<Boolean, String> {
         var isSuccess = true
         var out = ""
 
@@ -33,14 +32,6 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
                 if (result.isSuccess.not()) {
                     isSuccess = false
                     out += result.outString() + "\n"
-                }
-            }
-            if (dataType == DataType.PACKAGE_USER || dataType == DataType.PACKAGE_USER_DE || dataType == DataType.PACKAGE_MEDIA) {
-                logUtil.executeWithLog(logId, "restorecon -RFD $QUOTE$path/$QUOTE").also { result ->
-                    if (result.isSuccess.not()) {
-                        isSuccess = false
-                        out += result.outString() + "\n"
-                    }
                 }
             }
             if (pathContext.isNotEmpty()) {

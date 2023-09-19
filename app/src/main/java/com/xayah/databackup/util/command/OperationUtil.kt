@@ -308,7 +308,7 @@ class OperationRestoreUtil(
             logUtil.log(logTag, out)
         }
         // Restore the SELinux context of the path.
-        seLinuxUtil.restoreContext(originPath, pathContext, packageName, uid, dataType).also { (succeed, out) ->
+        seLinuxUtil.restoreContext(originPath, pathContext, packageName, uid).also { (succeed, out) ->
             if (succeed.not()) isSuccess = false
             outList.add(out)
             logUtil.log(logTag, out)
