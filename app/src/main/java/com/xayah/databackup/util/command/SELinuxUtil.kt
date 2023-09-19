@@ -15,8 +15,8 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
         logUtil.executeWithLog(logId, "ls -Zd $QUOTE$path$QUOTE | awk 'NF>1{print ${USD}1}'").also { result ->
             if (result.isSuccess.not()) {
                 isSuccess = false
-                out += result.outString() + "\n"
             }
+            out += result.outString() + "\n"
         }
         return Pair(isSuccess, out.trim())
     }

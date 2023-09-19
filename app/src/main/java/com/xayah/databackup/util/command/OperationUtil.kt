@@ -298,8 +298,8 @@ class OperationRestoreUtil(
         }
 
         // Get the SELinux context of the path.
-        seLinuxUtil.getContext(originPath).also { (_, context) ->
-            pathContext = context
+        seLinuxUtil.getContext(originPath).also { (isSuccess, context) ->
+            pathContext = if (isSuccess) context else ""
         }
         // Decompress the archive.
         CompressionUtil.decompress(logUtil, logId, context, userId, compressionType, archivePath, packageName, dataType).also { (succeed, out) ->
