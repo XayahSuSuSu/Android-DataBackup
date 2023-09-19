@@ -91,7 +91,7 @@ fun PackageRestoreCompletion() {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             EmojiText(emoji = EmojiString.PARTY_POPPER, size = CommonTokens.EmojiLargeSize)
-                            HeadlineMediumBoldText(text = stringResource(R.string.backup_completed))
+                            HeadlineMediumBoldText(text = stringResource(R.string.restore_completed))
                             Divider(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium))
                             VerticalGrid(
                                 columns = 2,

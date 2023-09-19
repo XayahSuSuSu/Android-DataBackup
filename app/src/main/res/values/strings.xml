@@ -94,4 +94,5 @@
     <string name="user">User</string>
     <string name="restore_user">Restore user</string>
     <string name="restore_user_desc">Target user while loading restore list or restoring</string>
+    <string name="restore_completed">Restoring completed</string>
 </resources>

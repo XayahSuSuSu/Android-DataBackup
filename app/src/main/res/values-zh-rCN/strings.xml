@@ -90,4 +90,5 @@
     <string name="user">用户</string>
     <string name="restore_user">恢复用户</string>
     <string name="restore_user_desc">读取恢复列表/恢复数据时的目标用户</string>
+    <string name="restore_completed">恢复完成</string>
 </resources>
