@@ -228,7 +228,7 @@ fun PackageBackupList() {
                     )
                 }
             }) {
-                installedPackages = remoteRootService.getInstalledPackagesAsUser(0, 0)
+                installedPackages = remoteRootService.getInstalledPackagesAsUser(0, userId)
             }
             val activePackages = mutableListOf<PackageBackupActivate>()
             installedPackages.forEach { packageInfo ->
