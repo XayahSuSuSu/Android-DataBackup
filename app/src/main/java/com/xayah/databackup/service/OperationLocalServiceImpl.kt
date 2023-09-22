@@ -260,6 +260,8 @@ class OperationLocalServiceImpl : Service() {
                         entity.id = packageRestoreOperationDao.upsert(entity)
                     }
 
+                // Check the installation first.
+                operationRestoreUtil.queryInstalled(packageRestoreOperation, packageName)
                 if (isApkSelected)
                     operationRestoreUtil.restoreApk(packageRestoreOperation, packageName, packageTimestamp, compressionType)
                 if (isDataSelected) {

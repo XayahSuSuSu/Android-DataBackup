@@ -190,6 +190,24 @@ class OperationRestoreUtil(
 
     private fun getPackageItemSavePath(packageName: String, timestamp: Long): String = "${packageRestorePath}/${packageName}/$timestamp"
 
+    suspend fun queryInstalled(entity: PackageRestoreOperation, packageName: String) {
+        val logTag = "APK"
+        var isSuccess = true
+        val outList = mutableListOf<String>()
+
+        // Check the installation.
+        if (remoteRootService.queryInstalled(packageName, userId).not()) {
+            isSuccess = false
+            val msg = "Not installed: $packageName."
+            outList.add(msg)
+            logUtil.log(logTag, msg)
+        }
+
+        entity.apkLog = if (isSuccess) context.getString(R.string.installed) else outList.toLineString().trim()
+        entity.apkState = if (isSuccess) OperationState.DONE else OperationState.ERROR
+        packageRestoreOperationDao.upsert(entity)
+    }
+
     suspend fun restoreApk(entity: PackageRestoreOperation, packageName: String, timestamp: Long, compressionType: CompressionType) {
         // Set processing state
         entity.apkLog = context.getString(R.string.restoring)

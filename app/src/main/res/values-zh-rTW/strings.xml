@@ -104,4 +104,5 @@
     <string name="compatible_mode_desc" tools:ignore="TypographyDashes">使用管道而非參作為 tar 的輸入。當遇到\"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"時開啟它</string>
     <string name="clean_restoring">乾淨恢復</string>
     <string name="clean_restoring_desc">恢復前清空目標目錄</string>
+    <string name="installed">已安裝</string>
 </resources>

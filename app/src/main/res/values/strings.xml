@@ -108,4 +108,5 @@
     <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
     <string name="clean_restoring">Clean restoring</string>
     <string name="clean_restoring_desc">Clear the target directory before restoring</string>
+    <string name="installed">Installed</string>
 </resources>
