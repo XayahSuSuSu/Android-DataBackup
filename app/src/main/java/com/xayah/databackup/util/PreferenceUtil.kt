@@ -190,12 +190,52 @@ fun Context.readCompressionType(): CompressionType {
     return CompressionType.of(readPreferencesString("compression_type"))
 }
 
+fun Context.saveBackupItself(value: Boolean) {
+    savePreferences("backup_itself", value)
+}
+
+fun Context.readBackupItself(): Boolean {
+    return readPreferencesBoolean("backup_itself", true)
+}
+
+fun Context.saveCompressionTest(value: Boolean) {
+    savePreferences("compression_test", value)
+}
+
+fun Context.readCompressionTest(): Boolean {
+    return readPreferencesBoolean("compression_test", true)
+}
+
+fun Context.saveResetBackupList(value: Boolean) {
+    savePreferences("reset_backup_list", value)
+}
+
+fun Context.readResetBackupList(): Boolean {
+    return readPreferencesBoolean("reset_backup_list", false)
+}
+
+fun Context.saveResetRestoreList(value: Boolean) {
+    savePreferences("reset_restore_list", value)
+}
+
+fun Context.readResetRestoreList(): Boolean {
+    return readPreferencesBoolean("reset_restore_list", true)
+}
+
 fun Context.saveCompatibleMode(value: Boolean) {
     savePreferences("compatible_mode", value)
 }
 
 fun Context.readCompatibleMode(): Boolean {
     return readPreferencesBoolean("compatible_mode", false)
+}
+
+fun Context.saveCleanRestoring(value: Boolean) {
+    savePreferences("clean_restoring", value)
+}
+
+fun Context.readCleanRestoring(): Boolean {
+    return readPreferencesBoolean("clean_restoring", false)
 }
 
 fun Context.saveLastBackupTime(time: String) {
@@ -340,14 +380,6 @@ fun Context.saveIconSaveTime(timestamp: Long) {
 
 fun Context.readIconSaveTime(): Long {
     return readPreferencesLong("icon_save_time", 0)
-}
-
-fun Context.saveIsCleanRestoring(value: Boolean) {
-    savePreferences("is_clean_restoring", value)
-}
-
-fun Context.readIsCleanRestoring(): Boolean {
-    return readPreferencesBoolean("is_clean_restoring", false)
 }
 
 fun Context.saveBackupSortTypeIndex(index: Int) {

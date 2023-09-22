@@ -36,15 +36,27 @@ import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.CompressionType
+import com.xayah.databackup.util.readBackupItself
 import com.xayah.databackup.util.readBackupUserId
+import com.xayah.databackup.util.readCleanRestoring
+import com.xayah.databackup.util.readCompatibleMode
+import com.xayah.databackup.util.readCompressionTest
 import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readKeepScreenOn
 import com.xayah.databackup.util.readMonetEnabled
+import com.xayah.databackup.util.readResetBackupList
+import com.xayah.databackup.util.readResetRestoreList
 import com.xayah.databackup.util.readRestoreUserId
+import com.xayah.databackup.util.saveBackupItself
 import com.xayah.databackup.util.saveBackupUserId
+import com.xayah.databackup.util.saveCleanRestoring
+import com.xayah.databackup.util.saveCompatibleMode
+import com.xayah.databackup.util.saveCompressionTest
 import com.xayah.databackup.util.saveCompressionType
 import com.xayah.databackup.util.saveKeepScreenOn
 import com.xayah.databackup.util.saveMonetEnabled
+import com.xayah.databackup.util.saveResetBackupList
+import com.xayah.databackup.util.saveResetRestoreList
 import com.xayah.databackup.util.saveRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryService
@@ -201,6 +213,64 @@ private fun UserSettings() {
     RestoreUserSettings()
 }
 
+@Composable
+private fun BackupSettings() {
+    val context = LocalContext.current
+    SettingsSwitch(
+        icon = ImageVector.vectorResource(R.drawable.ic_rounded_join_inner),
+        title = stringResource(R.string.backup_itself),
+        defaultValue = remember { context.readBackupItself() },
+        content = stringResource(R.string.backup_itself_desc)
+    ) {
+        context.saveBackupItself(it)
+    }
+    SettingsSwitch(
+        icon = ImageVector.vectorResource(R.drawable.ic_rounded_layers),
+        title = stringResource(R.string.compression_test),
+        defaultValue = remember { context.readCompressionTest() },
+        content = stringResource(R.string.compression_test_desc)
+    ) {
+        context.saveCompressionTest(it)
+    }
+    SettingsSwitch(
+        icon = ImageVector.vectorResource(R.drawable.ic_rounded_restart_alt),
+        title = stringResource(R.string.reset_backup_list),
+        defaultValue = remember { context.readResetBackupList() },
+        content = stringResource(R.string.reset_backup_list_desc)
+    ) {
+        context.saveResetBackupList(it)
+    }
+    SettingsSwitch(
+        icon = ImageVector.vectorResource(R.drawable.ic_rounded_build),
+        title = stringResource(R.string.compatible_mode),
+        defaultValue = remember { context.readCompatibleMode() },
+        content = stringResource(R.string.compatible_mode_desc)
+    ) {
+        context.saveCompatibleMode(it)
+    }
+}
+
+@Composable
+private fun RestoreSettings() {
+    val context = LocalContext.current
+    SettingsSwitch(
+        icon = ImageVector.vectorResource(R.drawable.ic_rounded_mop),
+        title = stringResource(R.string.clean_restoring),
+        defaultValue = remember { context.readCleanRestoring() },
+        content = stringResource(R.string.clean_restoring_desc)
+    ) {
+        context.saveCleanRestoring(it)
+    }
+    SettingsSwitch(
+        icon = ImageVector.vectorResource(R.drawable.ic_rounded_restart_alt),
+        title = stringResource(R.string.reset_restore_list),
+        defaultValue = remember { context.readResetRestoreList() },
+        content = stringResource(R.string.reset_restore_list_desc)
+    ) {
+        context.saveResetRestoreList(it)
+    }
+}
+
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
@@ -212,6 +282,10 @@ fun PageSettings() {
         ApplicationSettings()
         SettingsTitle(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium), title = stringResource(R.string.user))
         UserSettings()
+        SettingsTitle(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium), title = stringResource(R.string.backup))
+        BackupSettings()
+        SettingsTitle(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium), title = stringResource(R.string.restore))
+        RestoreSettings()
         Spacer(modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium))
     }
 }

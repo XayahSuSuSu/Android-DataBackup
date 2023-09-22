@@ -33,7 +33,7 @@ object PathUtil {
     fun getTmpApkPath(context: Context, packageName: String): String = "${context.filesPath()}/tmp/apks/$packageName"
 
     // Paths for backup save dir.
-    private fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
+    fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
     private fun getBackupArchivesSavePath(): String = "${getBackupSavePath()}/archives"
     fun getBackupPackagesSavePath(): String = "${getBackupArchivesSavePath()}/packages"
     private fun getTreeSavePath(): String = "${getBackupSavePath()}/tree"

@@ -16,6 +16,7 @@ import com.xayah.databackup.util.command.CommonUtil.executeWithLog
 import com.xayah.databackup.util.command.CommonUtil.outString
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCompatibleMode
+import com.xayah.databackup.util.readCompressionTest
 import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
@@ -76,6 +77,25 @@ class OperationBackupUtil(
             logUtil.log(logTag, msg)
         }
 
+        // Test the archive if enabled.
+        if (context.readCompressionTest()) {
+            CompressionUtil.test(
+                logUtil = logUtil,
+                logId = logId,
+                compressionType = compressionType,
+                archivePath = archivePath,
+                remoteRootService = remoteRootService
+            ).also { (succeed, out) ->
+                if (succeed.not()) {
+                    isSuccess = false
+                    outList.add(out)
+                    logUtil.log(logTag, out)
+                } else {
+                    logUtil.log(logTag, "$archivePath is tested well.")
+                }
+            }
+        }
+
         entity.apkLog = outList.toLineString().trim()
         entity.apkState = if (isSuccess) OperationState.DONE else OperationState.ERROR
         packageBackupOperationDao.upsert(entity)
@@ -132,6 +152,25 @@ class OperationBackupUtil(
             if (succeed.not()) isSuccess = false
             outList.add(out)
             logUtil.log(logTag, out)
+        }
+
+        // Test the archive if enabled.
+        if (context.readCompressionTest()) {
+            CompressionUtil.test(
+                logUtil = logUtil,
+                logId = logId,
+                compressionType = compressionType,
+                archivePath = archivePath,
+                remoteRootService = remoteRootService
+            ).also { (succeed, out) ->
+                if (succeed.not()) {
+                    isSuccess = false
+                    outList.add(out)
+                    logUtil.log(logTag, out)
+                } else {
+                    logUtil.log(logTag, "$archivePath is tested well.")
+                }
+            }
         }
 
         dataType.updateEntityLog(entity, outList.toLineString().trim())

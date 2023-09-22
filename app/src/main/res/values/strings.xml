@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">DataBackup</string>
     <string name="welcome_to_use">Welcome to use</string>
     <string name="update_records">Update records</string>
@@ -95,4 +95,17 @@
     <string name="restore_user">Restore user</string>
     <string name="restore_user_desc">Target user while loading restore list or restoring</string>
     <string name="restore_completed">Restoring completed</string>
+    <string name="backup">Backup</string>
+    <string name="backup_itself">Backup itself</string>
+    <string name="backup_itself_desc">Automatically copy the apk to the backup directory after backing up</string>
+    <string name="compression_test">Compression test</string>
+    <string name="compression_test_desc">Immediately test whether the archive is broken after compression</string>
+    <string name="reset_backup_list">Reset backup list</string>
+    <string name="reset_backup_list_desc">Deselect selections after backing up</string>
+    <string name="reset_restore_list">Reset restore list</string>
+    <string name="reset_restore_list_desc">Deselect selections after restoring</string>
+    <string name="compatible_mode">Compatible mode</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
+    <string name="clean_restoring">Clean restoring</string>
+    <string name="clean_restoring_desc">Clear the target directory before restoring</string>
 </resources>

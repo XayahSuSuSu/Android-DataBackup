@@ -101,7 +101,7 @@ fun SettingsSwitch(
             BodySmallBoldText(text = content)
         },
         trailingContent = {
-            Switch(checked = isChecked, onCheckedChange = {
+            Switch(modifier = Modifier.paddingStart(SettingsItemTokens.SettingsItemPadding), checked = isChecked, onCheckedChange = {
                 isChecked = isChecked.not()
                 onCheckedChange(isChecked)
             })
@@ -192,8 +192,12 @@ fun SettingsModalDropdownMenu(
                     .paddingStart(SettingsItemTokens.SettingsItemPadding)
                     .wrapContentSize(Alignment.Center)
             ) {
-                if (isLoading) CircularProgressIndicator(modifier = Modifier.size(SettingsItemTokens.SettingsMenuIndicatorSize))
-                else TitleMediumText(text = displayValue)
+                if (isLoading) CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(SettingsItemTokens.SettingsMenuIndicatorSize)
+                        .paddingStart(SettingsItemTokens.SettingsItemPadding)
+                )
+                else TitleMediumText(modifier = Modifier.paddingStart(SettingsItemTokens.SettingsItemPadding), text = displayValue)
 
                 ModalStringListDropdownMenu(
                     expanded = expanded,

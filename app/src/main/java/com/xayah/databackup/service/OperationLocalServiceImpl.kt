@@ -21,7 +21,11 @@ import com.xayah.databackup.util.command.OperationRestoreUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.databasePath
 import com.xayah.databackup.util.iconPath
+import com.xayah.databackup.util.readBackupItself
+import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCompressionType
+import com.xayah.databackup.util.readResetBackupList
+import com.xayah.databackup.util.readResetRestoreList
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
@@ -118,10 +122,11 @@ class OperationLocalServiceImpl : Service() {
                 }
 
                 // Update package state and end time.
-                if (packageBackupOperation.isSucceed)
+                if (packageBackupOperation.isSucceed) {
                     logUtil.log(logTag, "Backup succeed.")
-                else
+                } else {
                     logUtil.log(logTag, "Backup failed.")
+                }
                 packageBackupOperation.packageState = packageBackupOperation.isSucceed
                 packageBackupOperation.endTimestamp = DateUtil.getTimestamp()
                 packageBackupOperationDao.upsert(packageBackupOperation)
@@ -141,6 +146,12 @@ class OperationLocalServiceImpl : Service() {
                         active = false
                     )
                     packageRestoreEntireDao.upsert(restoreEntire)
+
+                    // Reset selected items if enabled.
+                    if (context.readResetBackupList()) {
+                        currentPackage.operationCode = OperationMask.None
+                        packageBackupEntireDao.update(currentPackage)
+                    }
                 }
             }
             remoteRootService.destroyService()
@@ -166,6 +177,27 @@ class OperationLocalServiceImpl : Service() {
                 logUtil.log(logTag, "Services restored: ${preparation.services}")
             } else {
                 logUtil.log(logTag, "Service is empty, skip restoring.")
+            }
+
+            // Backup itself if enabled.
+            if (context.readBackupItself()) {
+                val outPath = PathUtil.getBackupSavePath()
+                val userId = context.readBackupUserId()
+                val sourceDirList = remoteRootService.getPackageSourceDir(packageName, userId)
+                if (sourceDirList.isNotEmpty()) {
+                    val apkPath = PathUtil.getParentPath(sourceDirList[0])
+                    val path = "${apkPath}/base.apk"
+                    val targetPath = "${outPath}/DataBackup.apk"
+                    remoteRootService.copyTo(path = path, targetPath = targetPath, overwrite = true).also { result ->
+                        if (result.not()) {
+                            logUtil.log(logTag, "Failed to copy $path to $targetPath.")
+                        } else {
+                            logUtil.log(logTag, "Copied from $path to $targetPath.")
+                        }
+                    }
+                } else {
+                    logUtil.log(logTag, "Failed to get apk path of $packageName.")
+                }
             }
 
             // Backup database and icons.
@@ -239,10 +271,17 @@ class OperationLocalServiceImpl : Service() {
                 }
 
                 // Update package state and end time.
-                if (packageRestoreOperation.isSucceed)
+                if (packageRestoreOperation.isSucceed) {
                     logUtil.log(logTag, "Restoring succeed.")
-                else
+
+                    // Reset selected items if enabled.
+                    if (context.readResetRestoreList()) {
+                        currentPackage.operationCode = OperationMask.None
+                        packageRestoreEntireDao.update(currentPackage)
+                    }
+                } else {
                     logUtil.log(logTag, "Restoring failed.")
+                }
                 packageRestoreOperation.packageState = packageRestoreOperation.isSucceed
                 packageRestoreOperation.endTimestamp = DateUtil.getTimestamp()
                 packageRestoreOperationDao.upsert(packageRestoreOperation)

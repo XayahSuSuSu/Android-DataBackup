@@ -17,6 +17,9 @@ interface PackageBackupEntireDao {
     @Update(entity = PackageBackupEntire::class)
     suspend fun update(item: PackageBackupEntire)
 
+    @Update(entity = PackageBackupEntire::class)
+    suspend fun update(item: PackageBackupOp)
+
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1")
     fun queryActivePackages(): Flow<List<PackageBackupEntire>>
 

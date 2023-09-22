@@ -7,7 +7,8 @@ import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.executeWithLog
 import com.xayah.databackup.util.command.CommonUtil.outString
-import com.xayah.databackup.util.readIsCleanRestoring
+import com.xayah.databackup.util.readCleanRestoring
+import com.xayah.librootservice.service.RemoteRootService
 
 object CompressionUtil {
     suspend fun compress(
@@ -76,7 +77,7 @@ object CompressionUtil {
         var isSuccess = true
         val outList = mutableListOf<String>()
         var excludePara = ""
-        val cleanRestoringPara = if (context.readIsCleanRestoring()) "--recursive-unlink" else ""
+        val cleanRestoringPara = if (context.readCleanRestoring()) "--recursive-unlink" else ""
         val originPath = dataType.origin(userId)
 
         when (dataType) {
@@ -105,6 +106,30 @@ object CompressionUtil {
         logUtil.executeWithLog(logId, "tar --totals $excludePara $cleanRestoringPara -xmpf $cmd").also { result ->
             if (result.isSuccess.not()) isSuccess = false
             outList.add(result.outString())
+        }
+
+        return Pair(isSuccess, outList.toLineString().trim())
+    }
+
+    suspend fun test(
+        logUtil: LogUtil,
+        logId: Long,
+        compressionType: CompressionType,
+        archivePath: String,
+        remoteRootService: RemoteRootService,
+    ): Pair<Boolean, String> {
+        var isSuccess = true
+        val outList = mutableListOf<String>()
+
+        val cmd = "$QUOTE$archivePath$QUOTE ${compressionType.decompressPara}"
+        // Test the archive.
+        logUtil.executeWithLog(logId, "tar -t -f $cmd > /dev/null 2>&1").also { result ->
+            if (result.isSuccess.not()) {
+                isSuccess = false
+                outList.add("$archivePath is broken, trying to delete it.")
+                // Delete the archive if test failed.
+                remoteRootService.deleteRecursively(archivePath)
+            }
         }
 
         return Pair(isSuccess, outList.toLineString().trim())

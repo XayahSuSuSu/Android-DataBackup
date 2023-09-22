@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">數據備份</string>
     <string name="welcome_to_use">歡迎使用</string>
     <string name="update_records">更新記錄</string>
@@ -91,4 +91,17 @@
     <string name="restore_user">恢復用戶</string>
     <string name="restore_user_desc">讀取恢復列表恢復數據時的目標用戶</string>
     <string name="restore_completed">恢復完成</string>
+    <string name="backup">備份</string>
+    <string name="backup_itself">備份自身</string>
+    <string name="backup_itself_desc">備份後自動複製安裝包至備份目錄</string>
+    <string name="compression_test">壓縮測試</string>
+    <string name="compression_test_desc">壓縮後立即測試壓縮包是否損壞</string>
+    <string name="reset_backup_list">重置備份列表</string>
+    <string name="reset_backup_list_desc">備份完成後取消勾選所選選項</string>
+    <string name="reset_restore_list">重置恢復列表</string>
+    <string name="reset_restore_list_desc">恢復完成後取消勾選所選選項</string>
+    <string name="compatible_mode">相容模式</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">使用管道而非參作為 tar 的輸入。當遇到\"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"時開啟它</string>
+    <string name="clean_restoring">乾淨恢復</string>
+    <string name="clean_restoring_desc">恢復前清空目標目錄</string>
 </resources>
