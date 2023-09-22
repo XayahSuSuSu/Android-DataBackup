@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -60,6 +61,8 @@ import com.xayah.databackup.util.saveResetRestoreList
 import com.xayah.databackup.util.saveRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryService
+import com.xayah.librootservice.util.withMainContext
+import kotlinx.coroutines.launch
 
 @Composable
 private fun InfoCard() {
@@ -136,6 +139,7 @@ private fun ApplicationSettings() {
 @Composable
 private fun BackupUserSettings() {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var userIdList: List<Int> by remember { mutableStateOf(listOf(context.readBackupUserId())) }
     var userList: List<String> by remember { mutableStateOf(listOf()) }
     var userIdIndex: Int by remember { mutableIntStateOf(0) }
@@ -148,7 +152,11 @@ private fun BackupUserSettings() {
         onLoading = {
             val remoteRootService = RemoteRootService(context)
             tryService(onFailed = { msg ->
-                Toast.makeText(context, "$msg\n${context.getString(R.string.remote_service_err_info)}", Toast.LENGTH_LONG).show()
+                scope.launch {
+                    withMainContext {
+                        Toast.makeText(context, "$msg\n${context.getString(R.string.remote_service_err_info)}", Toast.LENGTH_LONG).show()
+                    }
+                }
             }) {
                 val oldUserId = userIdList[userIdIndex]
                 val users = remoteRootService.getUsers()
