@@ -20,6 +20,8 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--dontwarn com.xayah.databackup.**
+-dontwarn com.xayah.**
+-dontwarn android.**
 
--keep class com.xayah.databackup.** { *; }
+-keep class com.xayah.** { *; }
+-keep class android.** { *; }
