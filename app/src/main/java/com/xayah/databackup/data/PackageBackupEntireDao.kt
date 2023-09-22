@@ -26,7 +26,7 @@ interface PackageBackupEntireDao {
     @Query("SELECT packageName, label FROM PackageBackupEntire WHERE packageName = :packageName LIMIT 1")
     suspend fun queryManifestPackage(packageName: String): PackageBackupManifest
 
-    @Query("SELECT packageName, label, operationCode, versionName, versionCode, flags FROM PackageBackupEntire WHERE operationCode = 1 OR operationCode = 2 OR operationCode = 3")
+    @Query("SELECT packageName, label, operationCode, versionName, versionCode, flags FROM PackageBackupEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
     suspend fun queryActiveTotalPackages(): List<PackageBackupOp>
 
     @Query("SELECT packageName, label FROM PackageBackupEntire WHERE active = 1 AND operationCode = 3")
@@ -41,13 +41,13 @@ interface PackageBackupEntireDao {
     @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1")
     suspend fun countActivePackages(): Int
 
-    @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE operationCode = 1 OR operationCode = 2 OR operationCode = 3")
+    @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
     fun countSelectedTotal(): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE operationCode = 2 OR operationCode = 3")
+    @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1 AND (operationCode = 2 OR operationCode = 3)")
     fun countSelectedAPKs(): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE operationCode = 1 OR operationCode = 3")
+    @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 3)")
     fun countSelectedData(): Flow<Int>
 
     @Query("UPDATE PackageBackupEntire SET active = :active")
