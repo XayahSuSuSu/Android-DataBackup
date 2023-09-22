@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import com.xayah.databackup.data.OperationMask
+import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupEntireDao
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageBackupOperationDao
@@ -111,14 +112,27 @@ class OperationLocalServiceImpl : Service() {
                         entity.id = packageBackupOperationDao.upsert(entity)
                     }
 
-                if (isApkSelected)
+                if (isApkSelected) {
                     operationBackupUtil.backupApk(packageBackupOperation, packageName)
+                } else {
+                    packageBackupOperation.apkState = OperationState.SKIP
+                }
                 if (isDataSelected) {
-                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER)
-                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER_DE)
-                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_DATA)
-                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_OBB)
-                    operationBackupUtil.backupData(packageBackupOperation, packageName, DataType.PACKAGE_MEDIA)
+                    operationBackupUtil.apply {
+                        backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER)
+                        backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER_DE)
+                        backupData(packageBackupOperation, packageName, DataType.PACKAGE_DATA)
+                        backupData(packageBackupOperation, packageName, DataType.PACKAGE_OBB)
+                        backupData(packageBackupOperation, packageName, DataType.PACKAGE_MEDIA)
+                    }
+                } else {
+                    packageBackupOperation.apply {
+                        userState = OperationState.SKIP
+                        userDeState = OperationState.SKIP
+                        dataState = OperationState.SKIP
+                        obbState = OperationState.SKIP
+                        mediaState = OperationState.SKIP
+                    }
                 }
 
                 // Update package state and end time.
@@ -260,16 +274,27 @@ class OperationLocalServiceImpl : Service() {
                         entity.id = packageRestoreOperationDao.upsert(entity)
                     }
 
-                // Check the installation first.
-                operationRestoreUtil.queryInstalled(packageRestoreOperation, packageName)
-                if (isApkSelected)
+                if (isApkSelected) {
                     operationRestoreUtil.restoreApk(packageRestoreOperation, packageName, packageTimestamp, compressionType)
+                } else {
+                    operationRestoreUtil.queryInstalled(packageRestoreOperation, packageName)
+                }
                 if (isDataSelected) {
-                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_USER)
-                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_USER_DE)
-                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_DATA)
-                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_OBB)
-                    operationRestoreUtil.restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_MEDIA)
+                    operationRestoreUtil.apply {
+                        restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_USER)
+                        restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_USER_DE)
+                        restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_DATA)
+                        restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_OBB)
+                        restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_MEDIA)
+                    }
+                } else {
+                    packageRestoreOperation.apply {
+                        userState = OperationState.SKIP
+                        userDeState = OperationState.SKIP
+                        dataState = OperationState.SKIP
+                        obbState = OperationState.SKIP
+                        mediaState = OperationState.SKIP
+                    }
                 }
 
                 // Update package state and end time.
