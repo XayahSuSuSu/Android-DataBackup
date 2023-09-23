@@ -40,7 +40,7 @@ The script has been **widely acclaimed** since the author made it. This app was 
 or get the APK from the [Releases](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest).
 
 ## Translation
-[<img src="https://hosted.weblate.org/widgets/databackup/-/open-graph.png"
+[<img src="https://hosted.weblate.org/widget/databackup/app/open-graph.png"
      alt="Translation">](https://hosted.weblate.org/engage/databackup/)
 
 ## Contributors

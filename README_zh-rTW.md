@@ -36,7 +36,7 @@
 或者從 [Releases](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest) 下載
 
 ## 翻譯
-[<img src="https://hosted.weblate.org/widgets/databackup/-/open-graph.png"
+[<img src="https://hosted.weblate.org/widget/databackup/app/open-graph.png"
      alt="Translation">](https://hosted.weblate.org/engage/databackup/)
 
 ## 貢獻者
