@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">DataBackup</string>
     <string name="welcome_to_use">Welcome to use</string>
@@ -51,7 +52,7 @@
     <string name="updating">Updating</string>
     <string name="both">Both</string>
     <string name="manifest">Manifest</string>
-    <string name="selected_apks">Selected apks</string>
+    <string name="selected_apks">Selected APKs</string>
     <string name="selected_data">Selected data</string>
     <string name="idle">Idle</string>
     <string name="backing_up">Backing up</string>
