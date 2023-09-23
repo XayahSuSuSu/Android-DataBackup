@@ -27,6 +27,8 @@ import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readResetBackupList
 import com.xayah.databackup.util.readResetRestoreList
+import com.xayah.databackup.util.saveLastBackupTime
+import com.xayah.databackup.util.saveLastRestoringTime
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
@@ -168,6 +170,8 @@ class OperationLocalServiceImpl : Service() {
                     }
                 }
             }
+
+            context.saveLastBackupTime(timestamp)
             remoteRootService.destroyService()
         }
     }
@@ -313,6 +317,8 @@ class OperationLocalServiceImpl : Service() {
                 packageRestoreOperation.endTimestamp = DateUtil.getTimestamp()
                 packageRestoreOperationDao.upsert(packageRestoreOperation)
             }
+
+            context.saveLastRestoringTime(timestamp)
             remoteRootService.destroyService()
         }
     }

@@ -1,7 +1,6 @@
 package com.xayah.databackup.util
 
 import android.content.Context
-import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageRestoreOperation
@@ -238,12 +237,20 @@ fun Context.readCleanRestoring(): Boolean {
     return readPreferencesBoolean("clean_restoring", false)
 }
 
-fun Context.saveLastBackupTime(time: String) {
+fun Context.saveLastBackupTime(time: Long) {
     savePreferences("last_backup_time", time)
 }
 
-fun Context.readLastBackupTime(): String {
-    return readPreferencesString("last_backup_time", getString(R.string.none)) ?: getString(R.string.none)
+fun Context.readLastBackupTime(): Long {
+    return readPreferencesLong("last_backup_time", 0)
+}
+
+fun Context.saveLastRestoringTime(time: Long) {
+    savePreferences("last_restoring_time", time)
+}
+
+fun Context.readLastRestoringTime(): Long {
+    return readPreferencesLong("last_restoring_time", 0)
 }
 
 /**

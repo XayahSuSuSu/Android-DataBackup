@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,7 +38,9 @@ import com.xayah.databackup.ui.token.CardTokens
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.State
 import com.xayah.databackup.util.DataType
+import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.readLastBackupTime
+import com.xayah.databackup.util.readLastRestoringTime
 
 @Composable
 fun IntroCard(serial: Char, title: String, subtitle: String, content: String) {
@@ -158,7 +161,11 @@ fun OverLookBackupCard() {
                 LabelLargeExtraBoldText(text = stringResource(R.string.overlook))
             }
             BodySmallText(text = stringResource(R.string.last_backup))
-            TitleLargeBoldText(text = context.readLastBackupTime())
+            TitleLargeBoldText(text = remember {
+                val time = context.readLastBackupTime()
+                if (time == 0L) context.getString(R.string.none)
+                else DateUtil.getShortRelativeTimeSpanString(context, time, DateUtil.getTimestamp())
+            })
         }
     }
 }
@@ -186,7 +193,11 @@ fun OverLookRestoreCard() {
                 LabelLargeExtraBoldText(text = stringResource(R.string.overlook))
             }
             BodySmallText(text = stringResource(R.string.last_restore))
-            TitleLargeBoldText(text = context.readLastBackupTime())
+            TitleLargeBoldText(text = remember {
+                val time = context.readLastRestoringTime()
+                if (time == 0L) context.getString(R.string.none)
+                else DateUtil.getShortRelativeTimeSpanString(context, time, DateUtil.getTimestamp())
+            })
         }
     }
 }
