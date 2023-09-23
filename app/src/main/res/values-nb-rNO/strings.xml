@@ -75,4 +75,7 @@
     <string name="telephony_permissions">Telefoni-tilganger</string>
     <string name="sms_permission">SMS-tilganger</string>
     <string name="contacts_permission">Kontakt-tilgang</string>
+    <string name="storage">Lagring</string>
+    <string name="network">Nettverk</string>
+    <string name="log">Logg</string>
 </resources>
