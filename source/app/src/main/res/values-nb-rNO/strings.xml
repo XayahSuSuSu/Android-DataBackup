@@ -1,2 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="storage">Lagring</string>
+    <string name="save">Lagre</string>
+    <string name="both">Begge</string>
+    <string name="user">Bruker</string>
+    <string name="activities">Aktiviteter</string>
+    <string name="internal_storage">Internlagring</string>
+    <string name="date">Dato</string>
+    <string name="telephony">Telefoni</string>
+    <string name="restore">Gjenopprett</string>
+    <string name="copy">Kopier</string>
+    <string name="none">Ingen</string>
+    <string name="installed">Installert</string>
+    <string name="utilities">Verktøy</string>
+    <string name="restore_user">Gjenopprett bruker</string>
+    <string name="start">Start</string>
+    <string name="data">Data</string>
+    <string name="version">Versjon</string>
+    <string name="keep_screen_on">Behold skjermen påslått</string>
+    <string name="selected_apks">Valgte APK-er</string>
+    <string name="apk">APK</string>
+    <string name="network">Nettverk</string>
+    <string name="application">Program</string>
+    <string name="reload">Last inn igjen</string>
+    <string name="feature">Funksjon</string>
+    <string name="cancel">Avbryt</string>
+    <string name="log">Logg</string>
+    <string name="selected_data">Valgt data</string>
+    <string name="confirm">Bekreft</string>
+    <string name="media">Media</string>
+    <string name="architecture">Arkitektur</string>
+    <string name="restore_list">Gjenopprettelsesliste</string>
+    <string name="grant_root_access">Innvilg rot-tilgang</string>
+    <string name="compression_type">Sammenpakkingstype</string>
+    <string name="environment_detection">Miljøoppdagelse</string>
+    <string name="time">Tid</string>
+    <string name="external_storage">Eksternlagring</string>
+</resources>
