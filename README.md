@@ -10,6 +10,7 @@
 
 ## Overview
 :fire: The [script](https://github.com/YAWAsau/backup_script) has been **acclaimed** since the [author](https://github.com/YAWAsau) wrote it.
+
 :sparkling_heart: This application was born **with the consent of the author**.
 
 ## Features
@@ -38,7 +39,7 @@ None
 or get the APK from the [Releases](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest).
 
 ## Translation
-[<img src="https://hosted.weblate.org/widgets/databackup/-/open-graph.png"
+[<img src="https://hosted.weblate.org/widget/databackup/1-1-x/open-graph.png"
      alt="Translation">](https://hosted.weblate.org/engage/databackup/)
 
 ## Contributors
