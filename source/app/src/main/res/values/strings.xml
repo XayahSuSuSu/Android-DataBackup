@@ -109,4 +109,5 @@
     <string name="clean_restoring">Clean restoring</string>
     <string name="clean_restoring_desc">Clear the target directory before restoring</string>
     <string name="installed">Installed</string>
+    <string name="sooner_or_later">Sooner or later</string>
 </resources>

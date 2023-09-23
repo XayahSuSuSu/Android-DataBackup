@@ -105,4 +105,5 @@
     <string name="clean_restoring">干净恢复</string>
     <string name="clean_restoring_desc">恢复前清空目标目录</string>
     <string name="installed">已安装</string>
+    <string name="sooner_or_later">即将到来</string>
 </resources>
