@@ -7,6 +7,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,6 +64,7 @@ import com.xayah.databackup.data.StorageStats
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.ChipDropdownMenu
 import com.xayah.databackup.ui.component.ListItemPackageBackup
+import com.xayah.databackup.ui.component.ListSelectionModeTopBar
 import com.xayah.databackup.ui.component.ListTopBar
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.SearchBar
@@ -170,6 +173,7 @@ private fun filter(index: Int, isFlagType: Boolean): (PackageBackupEntire) -> Bo
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
@@ -210,6 +214,8 @@ fun PackageBackupList() {
     var emphasizedState by remember { mutableStateOf(false) }
     val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)
     var updatingText: String? by remember { mutableStateOf(null) }
+    var selectedCount by remember { mutableIntStateOf(0) }
+    val selectionMode by remember(selectedCount) { mutableStateOf(selectedCount != 0) }
 
     LaunchedEffect(null) {
         withIOContext {
@@ -283,7 +289,85 @@ fun PackageBackupList() {
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             Column {
-                ListTopBar(scrollBehavior = scrollBehavior, title = stringResource(id = R.string.backup_list))
+                if (selectionMode.not()) {
+                    ListTopBar(scrollBehavior = scrollBehavior, title = stringResource(id = R.string.backup_list))
+                } else {
+                    var allSelected by remember { mutableStateOf(false) }
+                    var allApkSelected by remember { mutableStateOf(false) }
+                    var allDataSelected by remember { mutableStateOf(false) }
+                    ListSelectionModeTopBar(
+                        scrollBehavior = scrollBehavior,
+                        title = "${stringArrayResource(id = R.array.filter_type_items)[1]}: $selectedCount",
+                        onArrowBackPressed = {
+                            scope.launch {
+                                withIOContext {
+                                    packages.forEach { it.selected.value = false }
+                                    selectedCount = 0
+                                }
+                            }
+                        },
+                        onCheckListPressed = {
+                            scope.launch {
+                                withIOContext {
+                                    if (allSelected.not()) {
+                                        packages.forEach { it.selected.value = true }
+                                        selectedCount = packages.size
+                                    } else {
+                                        packages.forEach { it.selected.value = false }
+                                        selectedCount = 0
+                                    }
+                                    allSelected = allSelected.not()
+                                }
+                            }
+                        },
+                        apkChipSelected = allApkSelected,
+                        dataChipSelected = allDataSelected,
+                        onApkChipClick = {
+                            scope.launch {
+                                withIOContext {
+                                    if (allApkSelected.not()) {
+                                        packages.forEach { packageInfo ->
+                                            if (packageInfo.selected.value) {
+                                                packageInfo.operationCode = packageInfo.operationCode or OperationMask.Apk
+                                            }
+                                        }
+                                        viewModel.updateEntirePackages(packages)
+                                    } else {
+                                        packages.forEach { packageInfo ->
+                                            if (packageInfo.selected.value) {
+                                                packageInfo.operationCode = packageInfo.operationCode and OperationMask.Apk.inv()
+                                            }
+                                        }
+                                        viewModel.updateEntirePackages(packages)
+                                    }
+                                    allApkSelected = allApkSelected.not()
+                                }
+                            }
+                        },
+                        onDataChipClick = {
+                            scope.launch {
+                                withIOContext {
+                                    if (allDataSelected.not()) {
+                                        packages.forEach { packageInfo ->
+                                            if (packageInfo.selected.value) {
+                                                packageInfo.operationCode = packageInfo.operationCode or OperationMask.Data
+                                            }
+                                        }
+                                        viewModel.updateEntirePackages(packages)
+                                    } else {
+                                        packages.forEach { packageInfo ->
+                                            if (packageInfo.selected.value) {
+                                                packageInfo.operationCode = packageInfo.operationCode and OperationMask.Data.inv()
+                                            }
+                                        }
+                                        viewModel.updateEntirePackages(packages)
+                                    }
+                                    allDataSelected = allDataSelected.not()
+                                }
+                            }
+                        },
+                    )
+                }
                 if (progress != 1F) LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                     progress = progress
@@ -380,10 +464,13 @@ fun PackageBackupList() {
                                 }
                             }
 
-                            items(
-                                items = packages,
-                                key = { it.packageName }) { packageInfo ->
-                                ListItemPackageBackup(packageInfo = packageInfo)
+                            items(items = packages, key = { it.packageName }) { packageInfo ->
+                                ListItemPackageBackup(packageInfo = packageInfo, selectionMode = selectionMode) {
+                                    if (state == ListState.Done) {
+                                        packageInfo.selected.value = packageInfo.selected.value.not()
+                                        selectedCount += 1 * if (packageInfo.selected.value) 1 else -1
+                                    }
+                                }
                             }
                             item {
                                 Spacer(modifier = Modifier.height(CommonTokens.None))

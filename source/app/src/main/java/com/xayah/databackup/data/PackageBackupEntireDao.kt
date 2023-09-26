@@ -14,6 +14,9 @@ interface PackageBackupEntireDao {
     @Update(entity = PackageBackupEntire::class)
     suspend fun update(items: List<PackageBackupActivate>)
 
+    @Upsert(entity = PackageBackupEntire::class)
+    suspend fun upsertEntire(items: List<PackageBackupEntire>)
+
     @Update(entity = PackageBackupEntire::class)
     suspend fun update(item: PackageBackupEntire)
 

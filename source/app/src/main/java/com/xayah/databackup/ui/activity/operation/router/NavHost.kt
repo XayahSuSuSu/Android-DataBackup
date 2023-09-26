@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.operation.router
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import com.xayah.databackup.ui.activity.operation.page.packages.restore.PackageR
 import com.xayah.databackup.ui.component.LocalSlotScope
 
 
+@ExperimentalFoundationApi
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -34,6 +36,7 @@ fun OperationNavHost(startDestination: String) {
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 fun NavGraphBuilder.packageBackupGraph() {
@@ -56,6 +59,7 @@ fun NavGraphBuilder.packageBackupGraph() {
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 fun NavGraphBuilder.packageRestoreGraph() {

@@ -1,8 +1,11 @@
 package com.xayah.databackup.data
 
 import android.content.pm.ApplicationInfo
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.xayah.databackup.util.CompressionType
 
@@ -24,6 +27,9 @@ data class PackageRestoreEntire(
     var compressionType: CompressionType,
     var active: Boolean,
 ) {
+    @Ignore
+    var selected: MutableState<Boolean> = mutableStateOf(false)
+
     val isSystemApp: Boolean
         get() = (flags and ApplicationInfo.FLAG_SYSTEM) != 0
 }

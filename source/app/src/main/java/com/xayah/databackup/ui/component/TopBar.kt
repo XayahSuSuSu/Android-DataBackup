@@ -6,8 +6,10 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -212,7 +214,6 @@ fun ListTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String) {
     val context = LocalContext.current
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title) },
-
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             ArrowBackButton {
@@ -220,6 +221,37 @@ fun ListTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String) {
             }
         },
     )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun ListSelectionModeTopBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    title: String,
+    onArrowBackPressed: () -> Unit,
+    onCheckListPressed: () -> Unit,
+    apkChipSelected: Boolean,
+    dataChipSelected: Boolean,
+    onApkChipClick: () -> Unit,
+    onDataChipClick: () -> Unit,
+) {
+    val navController = LocalSlotScope.current!!.navController
+    CustomTopAppBar(scrollBehavior) { _ ->
+        Box(
+            modifier = Modifier
+                .paddingTop(TopBarTokens.VerticalPadding)
+                .paddingHorizontal(TopBarTokens.HorizontalPadding),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            ArrowBackButton(modifier = Modifier.align(Alignment.CenterStart), onClick = onArrowBackPressed)
+            TopBarTitle(modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, text = title)
+            CheckListButton(modifier = Modifier.align(Alignment.CenterEnd), onClick = onCheckListPressed)
+        }
+        Row(modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium), horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)) {
+            ApkChip(selected = apkChipSelected, onClick = onApkChipClick)
+            DataChip(selected = dataChipSelected, onClick = onDataChipClick)
+        }
+    }
 }
 
 fun MaterialColorScheme.applyTonalElevation(backgroundColor: Color, elevation: Dp): Color {
@@ -243,12 +275,7 @@ internal fun containerColor(
 
 @ExperimentalMaterial3Api
 @Composable
-internal fun ColumnExtendedTopAppBar(
-    scrollBehavior: TopAppBarScrollBehavior,
-    title: String,
-    onArrowBackPressed: () -> Unit,
-    content: @Composable (appBarContainerColor: Color) -> Unit = {}
-) {
+internal fun CustomTopAppBar(scrollBehavior: TopAppBarScrollBehavior, content: @Composable (appBarContainerColor: Color) -> Unit = {}) {
     // Sets the app bar's height offset to collapse the entire bar's height when content is
     // scrolled.
     val heightOffsetLimit = with(LocalDensity.current) { -TopBarTokens.ContainerHeight.toPx() }
@@ -288,17 +315,30 @@ internal fun ColumnExtendedTopAppBar(
                 // clip after padding so we don't show the title over the inset area
                 .clipToBounds()
         ) {
-            Box(
-                modifier = Modifier
-                    .paddingTop(TopBarTokens.Padding)
-                    .paddingHorizontal(TopBarTokens.Padding),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                ArrowBackButton(onArrowBackPressed)
-                TopBarTitle(modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, text = title)
-            }
             content(appBarContainerColor = appBarContainerColor)
         }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+internal fun ColumnExtendedTopAppBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    title: String,
+    onArrowBackPressed: () -> Unit,
+    content: @Composable (appBarContainerColor: Color) -> Unit = {},
+) {
+    CustomTopAppBar(scrollBehavior) { appBarContainerColor ->
+        Box(
+            modifier = Modifier
+                .paddingVertical(TopBarTokens.VerticalPadding)
+                .paddingHorizontal(TopBarTokens.HorizontalPadding),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            ArrowBackButton(onClick = onArrowBackPressed)
+            TopBarTitle(modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, text = title)
+        }
+        content(appBarContainerColor = appBarContainerColor)
     }
 }
 
@@ -338,7 +378,7 @@ fun ProcessingTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, onA
         title = { TopBarTitle(text = title) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            ArrowBackButton(onArrowBackPressed)
+            ArrowBackButton(onClick = onArrowBackPressed)
         },
     )
 }

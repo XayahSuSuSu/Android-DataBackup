@@ -1,9 +1,12 @@
 package com.xayah.databackup.data
 
 import android.content.pm.ApplicationInfo
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.text.DecimalFormat
 
@@ -71,6 +74,9 @@ data class PackageBackupEntire(
     var firstInstallTime: Long,
     var active: Boolean,
 ) {
+    @Ignore
+    var selected: MutableState<Boolean> = mutableStateOf(false)
+
     val sizeBytes: Double
         get() = (storageStats.appBytes + storageStats.dataBytes).toDouble()
 

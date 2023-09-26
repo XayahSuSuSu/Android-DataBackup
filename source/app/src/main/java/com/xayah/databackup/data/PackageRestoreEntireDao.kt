@@ -14,6 +14,9 @@ interface PackageRestoreEntireDao {
     @Update(entity = PackageRestoreEntire::class)
     suspend fun update(item: PackageRestoreEntire)
 
+    @Upsert(entity = PackageRestoreEntire::class)
+    suspend fun upsert(items: List<PackageRestoreEntire>)
+
     @Query("SELECT DISTINCT timestamp FROM PackageRestoreEntire")
     suspend fun queryTimestamps(): List<Long>
 

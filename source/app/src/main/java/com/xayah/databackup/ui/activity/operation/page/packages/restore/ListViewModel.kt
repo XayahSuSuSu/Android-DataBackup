@@ -33,6 +33,7 @@ class ListViewModel @Inject constructor(
         get() = _uiState
 
     suspend fun updatePackage(item: PackageRestoreEntire) = packageRestoreEntireDao.update(item)
+    suspend fun updatePackages(items: List<PackageRestoreEntire>) = packageRestoreEntireDao.upsert(items)
 
     private fun setTimestamps(timestamps: List<Long>) {
         _uiState.value = uiState.value.copy(timestamps = timestamps)

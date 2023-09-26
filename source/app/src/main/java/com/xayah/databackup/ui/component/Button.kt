@@ -18,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.xayah.databackup.R
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.ButtonTokens
 import com.xayah.databackup.ui.token.CardTokens
@@ -76,10 +78,21 @@ fun CardActionButton(modifier: Modifier = Modifier, text: String, icon: ImageVec
 }
 
 @Composable
-fun ArrowBackButton(onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
+fun ArrowBackButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    IconButton(modifier = modifier, onClick = onClick) {
         Icon(
             imageVector = Icons.Rounded.ArrowBack,
+            contentDescription = null
+        )
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun CheckListButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    IconButton(modifier = modifier, onClick = onClick) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_rounded_checklist),
             contentDescription = null
         )
     }

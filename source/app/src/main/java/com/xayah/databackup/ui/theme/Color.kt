@@ -70,4 +70,10 @@ object ColorScheme {
 
         @Composable
         fun inverseOnSurface() = MaterialTheme.colorScheme.inverseOnSurface
+
+        @Composable
+        fun outline() = MaterialTheme.colorScheme.outline
+
+        @Composable
+        fun background() = MaterialTheme.colorScheme.background
 }
