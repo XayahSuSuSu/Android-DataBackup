@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kapt)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -158,6 +160,11 @@ dependencies {
 
     // Palette
     implementation(libs.androidx.palette)
+
+    // Firebase
+    "premiumImplementation"(platform(libs.firebase.bom))
+    "premiumImplementation"(libs.firebase.crashlytics)
+    "premiumImplementation"(libs.firebase.analytics)
 }
 
 kapt {

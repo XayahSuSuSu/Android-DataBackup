@@ -108,4 +108,5 @@
     <string name="sooner_or_later">即将到来</string>
     <string name="delete">删除</string>
     <string name="confirm_delete">确定要从数据库以及本地文件中删除所选项吗</string>
+    <string name="app_crashed">应用发生崩溃</string>
 </resources>

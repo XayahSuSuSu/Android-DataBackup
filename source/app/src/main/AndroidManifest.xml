@@ -21,6 +21,14 @@
             android:name=".service.OperationLocalServiceImpl"
             android:exported="false" />
 
+        <!-- Workaround for CrashHandler -->
+        <provider
+            android:name=".ui.activity.crash.CrashProvider"
+            android:authorities="com.xayah.CrashProvider"
+            android:exported="false"
+            android:initOrder="101" />
+        <!-- End -->
+
         <activity
             android:name=".ui.activity.splash.SplashActivity"
             android:exported="true"
@@ -30,6 +38,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.activity.crash.CrashActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ui.activity.guide.GuideActivity"

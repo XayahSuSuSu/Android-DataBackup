@@ -29,6 +29,9 @@ room = "2.5.2"
 coil-compose = "2.4.0"
 hiddenapibypass = "4.3"
 palette = "1.0.0"
+google-services = "4.4.0"
+firebase-crashlytics-gradle = "2.9.9"
+firebase-bom = "32.3.1"
 
 # plugins
 android-gradle-plugin = "8.1.1"
@@ -65,6 +68,11 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
 libsu-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsu" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
+google-services = { module = "com.google.gms:google-services", version.ref = "google-services" }
+firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -73,3 +81,4 @@ kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 com-android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-kotlin" }
+gms-google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }

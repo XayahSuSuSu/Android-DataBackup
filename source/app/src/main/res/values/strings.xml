@@ -113,4 +113,5 @@
     <string name="sooner_or_later">Sooner or later</string>
     <string name="delete">Delete</string>
     <string name="confirm_delete">Sure to delete selected items from the database and local files</string>
+    <string name="app_crashed">App crashed</string>
 </resources>
