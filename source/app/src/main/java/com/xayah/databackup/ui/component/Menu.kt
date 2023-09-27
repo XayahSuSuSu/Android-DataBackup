@@ -341,12 +341,16 @@ fun ChipDropdownMenu(
     defaultSelectedIndex: Int = 0,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
+    onClick: () -> Unit,
 ) {
     var selectedIndex by remember(defaultSelectedIndex) { mutableIntStateOf(defaultSelectedIndex) }
     var expanded by remember { mutableStateOf(false) }
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
         AssistChip(
-            onClick = { if (list.isNotEmpty()) expanded = true },
+            onClick = {
+                onClick()
+                if (list.isNotEmpty()) expanded = true
+            },
             label = { Text(text = label ?: list[selectedIndex]) },
             leadingIcon = if (leadingIcon != null) {
                 {
@@ -407,6 +411,7 @@ fun SortStateChipDropdownMenu(
     defaultSortState: SortState = SortState.ASCENDING,
     list: List<String>,
     onSelected: (index: Int, selected: String, state: SortState) -> Unit,
+    onClick: () -> Unit,
 ) {
     var selectedIndex by remember { mutableIntStateOf(defaultSelectedIndex) }
     var expanded by remember { mutableStateOf(false) }
@@ -414,7 +419,10 @@ fun SortStateChipDropdownMenu(
     val selectedIcon = if (state == SortState.ASCENDING) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
         AssistChip(
-            onClick = { if (list.isNotEmpty()) expanded = true },
+            onClick = {
+                onClick()
+                if (list.isNotEmpty()) expanded = true
+            },
             label = { Text(text = list[selectedIndex]) },
             leadingIcon = {
                 Icon(

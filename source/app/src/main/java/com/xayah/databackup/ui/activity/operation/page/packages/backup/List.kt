@@ -218,6 +218,14 @@ fun PackageBackupList() {
     var updatingText: String? by remember { mutableStateOf(null) }
     var selectedCount by remember { mutableIntStateOf(0) }
     val selectionMode by remember(selectedCount) { mutableStateOf(selectedCount != 0) }
+    val selectAll = {
+        packages.forEach { it.selected.value = true }
+        selectedCount = packages.size
+    }
+    val deselectAll = {
+        packages.forEach { it.selected.value = false }
+        selectedCount = 0
+    }
 
     LaunchedEffect(null) {
         withIOContext {
@@ -304,8 +312,7 @@ fun PackageBackupList() {
                         onArrowBackPressed = {
                             scope.launch {
                                 withIOContext {
-                                    packages.forEach { it.selected.value = false }
-                                    selectedCount = 0
+                                    deselectAll()
                                 }
                             }
                         },
@@ -313,11 +320,9 @@ fun PackageBackupList() {
                             scope.launch {
                                 withIOContext {
                                     if (allSelected.not()) {
-                                        packages.forEach { it.selected.value = true }
-                                        selectedCount = packages.size
+                                        selectAll()
                                     } else {
-                                        packages.forEach { it.selected.value = false }
-                                        selectedCount = 0
+                                        deselectAll()
                                     }
                                     allSelected = allSelected.not()
                                 }
@@ -419,6 +424,7 @@ fun PackageBackupList() {
                             item {
                                 Spacer(modifier = Modifier.height(CommonTokens.PaddingMedium))
                                 SearchBar(onTextChange = { text ->
+                                    deselectAll()
                                     packageSearchPredicate = { packageBackupEntire ->
                                         packageBackupEntire.label.lowercase().contains(text.lowercase())
                                                 || packageBackupEntire.packageName.lowercase().contains(text.lowercase())
@@ -444,26 +450,31 @@ fun PackageBackupList() {
                                             context.saveBackupSortTypeIndex(index)
                                             context.saveBackupSortState(state)
                                             packageSortComparator = sort(index = index, state = state)
-                                        }
+                                        },
+                                        onClick = deselectAll
                                     )
 
                                     ChipDropdownMenu(
                                         leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_filter_list),
                                         defaultSelectedIndex = remember { context.readBackupFilterTypeIndex() },
                                         list = stringArrayResource(id = R.array.filter_type_items).toList(),
-                                    ) { index, _ ->
-                                        context.saveBackupFilterTypeIndex(index)
-                                        packageSelectionPredicate = filter(index, false)
-                                    }
+                                        onSelected = { index, _ ->
+                                            context.saveBackupFilterTypeIndex(index)
+                                            packageSelectionPredicate = filter(index, false)
+                                        },
+                                        onClick = deselectAll
+                                    )
 
                                     ChipDropdownMenu(
                                         leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_deployed_code),
                                         defaultSelectedIndex = remember { context.readBackupFlagTypeIndex() },
                                         list = stringArrayResource(id = R.array.flag_type_items).toList(),
-                                    ) { index, _ ->
-                                        context.saveBackupFlagTypeIndex(index)
-                                        packageFlagTypePredicate = filter(index, true)
-                                    }
+                                        onSelected = { index, _ ->
+                                            context.saveBackupFlagTypeIndex(index)
+                                            packageFlagTypePredicate = filter(index, true)
+                                        },
+                                        onClick = deselectAll
+                                    )
                                 }
                             }
 

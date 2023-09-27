@@ -213,6 +213,14 @@ fun PackageRestoreList() {
     val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)
     var selectedCount by remember { mutableIntStateOf(0) }
     val selectionMode by remember(selectedCount) { mutableStateOf(selectedCount != 0) }
+    val selectAll = {
+        packages.forEach { it.selected.value = true }
+        selectedCount = packages.size
+    }
+    val deselectAll = {
+        packages.forEach { it.selected.value = false }
+        selectedCount = 0
+    }
 
     LaunchedEffect(null) {
         withIOContext {
@@ -248,8 +256,7 @@ fun PackageRestoreList() {
                     onArrowBackPressed = {
                         scope.launch {
                             withIOContext {
-                                packages.forEach { it.selected.value = false }
-                                selectedCount = 0
+                                deselectAll()
                             }
                         }
                     },
@@ -257,11 +264,9 @@ fun PackageRestoreList() {
                         scope.launch {
                             withIOContext {
                                 if (allSelected.not()) {
-                                    packages.forEach { it.selected.value = true }
-                                    selectedCount = packages.size
+                                    selectAll()
                                 } else {
-                                    packages.forEach { it.selected.value = false }
-                                    selectedCount = 0
+                                    deselectAll()
                                 }
                                 allSelected = allSelected.not()
                             }
@@ -323,8 +328,7 @@ fun PackageRestoreList() {
                                                 viewModel = viewModel,
                                                 selectedPackages = packages.filter { it.selected.value }
                                             )
-                                            packages.forEach { it.selected.value = false }
-                                            selectedCount = 0
+                                            deselectAll()
                                             viewModel.initializeUiState()
                                         }
                                     }
@@ -376,6 +380,7 @@ fun PackageRestoreList() {
                             item {
                                 Spacer(modifier = Modifier.height(CommonTokens.PaddingMedium))
                                 SearchBar(onTextChange = { text ->
+                                    deselectAll()
                                     packageSearchPredicate = { packageRestoreEntire ->
                                         packageRestoreEntire.label.lowercase().contains(text.lowercase())
                                                 || packageRestoreEntire.packageName.lowercase().contains(text.lowercase())
@@ -398,11 +403,13 @@ fun PackageRestoreList() {
                                         trailingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_unfold_more),
                                         defaultSelectedIndex = uiState.selectedIndex,
                                         list = dateList,
-                                    ) { index, _ ->
-                                        scope.launch {
-                                            viewModel.setSelectedIndex(index)
-                                        }
-                                    }
+                                        onSelected = { index, _ ->
+                                            scope.launch {
+                                                viewModel.setSelectedIndex(index)
+                                            }
+                                        },
+                                        onClick = deselectAll
+                                    )
 
                                     SortStateChipDropdownMenu(
                                         icon = ImageVector.vectorResource(R.drawable.ic_rounded_sort),
@@ -413,26 +420,31 @@ fun PackageRestoreList() {
                                             context.saveRestoreSortTypeIndex(index)
                                             context.saveRestoreSortState(state)
                                             packageSortComparator = sort(index = index, state = state)
-                                        }
+                                        },
+                                        onClick = deselectAll
                                     )
 
                                     ChipDropdownMenu(
                                         leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_filter_list),
                                         defaultSelectedIndex = remember { context.readRestoreFilterTypeIndex() },
                                         list = stringArrayResource(id = R.array.filter_type_items).toList(),
-                                    ) { index, _ ->
-                                        context.saveRestoreFilterTypeIndex(index)
-                                        packageSelectionPredicate = filter(index, false)
-                                    }
+                                        onSelected = { index, _ ->
+                                            context.saveRestoreFilterTypeIndex(index)
+                                            packageSelectionPredicate = filter(index, false)
+                                        },
+                                        onClick = deselectAll
+                                    )
 
                                     ChipDropdownMenu(
                                         leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_deployed_code),
                                         defaultSelectedIndex = remember { context.readRestoreFlagTypeIndex() },
                                         list = stringArrayResource(id = R.array.flag_type_items).toList(),
-                                    ) { index, _ ->
-                                        context.saveRestoreFlagTypeIndex(index)
-                                        packageFlagTypePredicate = filter(index, true)
-                                    }
+                                        onSelected = { index, _ ->
+                                            context.saveRestoreFlagTypeIndex(index)
+                                            packageFlagTypePredicate = filter(index, true)
+                                        },
+                                        onClick = deselectAll
+                                    )
                                 }
                             }
 
