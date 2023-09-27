@@ -279,7 +279,7 @@ fun PackageBackupList() {
                     PackageBackupUpdate(
                         packageName = packageInfo.packageName,
                         label = packageInfo.applicationInfo.loadLabel(packageManager).toString(),
-                        versionName = packageInfo.versionName,
+                        versionName = packageInfo.versionName ?: "",
                         versionCode = packageInfo.longVersionCode,
                         storageStats = storageStats,
                         flags = packageInfo.applicationInfo.flags,
