@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="storage">Pamięć</string>
+    <string name="none">Brak</string>
+    <string name="start">Rozpocznij</string>
+    <string name="network">Sieć</string>
+    <string name="application">Aplikacja</string>
+    <string name="cancel">Anuluj</string>
+    <string name="log">Dziennik</string>
+    <string name="confirm">Potwierdź</string>
+    <string name="loading">Ładowanie</string>
+</resources>
