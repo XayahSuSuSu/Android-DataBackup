@@ -115,6 +115,36 @@ class DialogState {
             }
         }
     }
+
+    /**
+     * Loading dialog
+     */
+    suspend fun openLoading(title: String, icon: ImageVector, onLoading: suspend () -> Unit) {
+        return suspendCancellableCoroutine { continuation ->
+            continuation.invokeOnCancellation { dismiss() }
+            content = {
+                AlertDialog(
+                    onDismissRequest = {},
+                    confirmButton = {},
+                    dismissButton = null,
+                    title = { Text(text = title) },
+                    icon = { Icon(imageVector = icon, contentDescription = null) },
+                    text = {
+                        Loader(
+                            modifier = Modifier.fillMaxWidth(),
+                            onLoading = {
+                                onLoading()
+                                dismiss()
+                                continuation.resume(Unit)
+                            },
+                            content = {}
+                        )
+                    },
+                    properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+                )
+            }
+        }
+    }
 }
 
 suspend fun DialogState.openFileOpDialog(context: Context, title: String, filePath: String, icon: ImageVector, text: String) {

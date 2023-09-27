@@ -342,7 +342,7 @@ fun ChipDropdownMenu(
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
 ) {
-    var selectedIndex by remember { mutableIntStateOf(defaultSelectedIndex) }
+    var selectedIndex by remember(defaultSelectedIndex) { mutableIntStateOf(defaultSelectedIndex) }
     var expanded by remember { mutableStateOf(false) }
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
         AssistChip(

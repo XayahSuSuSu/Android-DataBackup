@@ -106,4 +106,6 @@
     <string name="clean_restoring_desc">恢复前清空目标目录</string>
     <string name="installed">已安装</string>
     <string name="sooner_or_later">即将到来</string>
+    <string name="delete">删除</string>
+    <string name="confirm_delete">确定要从数据库以及本地文件中删除所选项吗</string>
 </resources>

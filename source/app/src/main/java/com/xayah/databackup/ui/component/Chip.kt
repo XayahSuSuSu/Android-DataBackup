@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.component
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -51,6 +52,23 @@ fun DataChip(selected: Boolean, onClick: () -> Unit) {
             }
         } else {
             null
+        }
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun DeleteChip(onClick: () -> Unit) {
+    FilterChip(
+        selected = true,
+        onClick = onClick,
+        label = { Text(stringResource(R.string.delete)) },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = null,
+                modifier = Modifier.size(FilterChipDefaults.IconSize)
+            )
         }
     )
 }

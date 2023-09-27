@@ -1,5 +1,7 @@
 package com.xayah.databackup.ui.activity.operation.page.packages.restore
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -55,7 +57,11 @@ import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.ListState
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
+import com.xayah.databackup.ui.component.ApkChip
 import com.xayah.databackup.ui.component.ChipDropdownMenu
+import com.xayah.databackup.ui.component.DataChip
+import com.xayah.databackup.ui.component.DeleteChip
+import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.ListItemPackageRestore
 import com.xayah.databackup.ui.component.ListSelectionModeTopBar
 import com.xayah.databackup.ui.component.ListTopBar
@@ -66,10 +72,12 @@ import com.xayah.databackup.ui.component.SortStateChipDropdownMenu
 import com.xayah.databackup.ui.component.TopSpacer
 import com.xayah.databackup.ui.component.emphasizedOffset
 import com.xayah.databackup.ui.component.ignorePaddingHorizontal
+import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DateUtil
+import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.readRestoreFilterTypeIndex
 import com.xayah.databackup.util.readRestoreFlagTypeIndex
 import com.xayah.databackup.util.readRestoreSortState
@@ -81,6 +89,7 @@ import com.xayah.databackup.util.saveRestoreSortTypeIndex
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryService
 import com.xayah.librootservice.util.withIOContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.Collator
 
@@ -130,6 +139,39 @@ private fun filter(index: Int, isFlagType: Boolean): (PackageRestoreEntire) -> B
     }
 }
 
+@ExperimentalMaterial3Api
+private suspend fun DialogState.openDeleteDialog(
+    context: Context,
+    scope: CoroutineScope,
+    viewModel: ListViewModel,
+    selectedPackages: List<PackageRestoreEntire>,
+) {
+    openLoading(
+        title = context.getString(R.string.prompt),
+        icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
+        onLoading = {
+            viewModel.delete(selectedPackages)
+            val remoteRootService = RemoteRootService(context)
+            tryService(onFailed = { msg ->
+                scope.launch {
+                    withIOContext {
+                        Toast.makeText(
+                            context,
+                            "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }) {
+                selectedPackages.forEach {
+                    remoteRootService.deleteRecursively("${PathUtil.getRestorePackagesSavePath()}/${it.packageName}/${it.timestamp}")
+                }
+            }
+            remoteRootService.destroyService()
+        },
+    )
+}
+
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -137,6 +179,7 @@ private fun filter(index: Int, isFlagType: Boolean): (PackageRestoreEntire) -> B
 fun PackageRestoreList() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
     val viewModel = hiltViewModel<ListViewModel>()
     val navController = LocalSlotScope.current!!.navController
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -187,6 +230,7 @@ fun PackageRestoreList() {
             }
             viewModel.initializeUiState()
             state = state.setState(ListState.Done)
+            remoteRootService.destroyService()
         }
     }
     Scaffold(
@@ -223,52 +267,71 @@ fun PackageRestoreList() {
                             }
                         }
                     },
-                    apkChipSelected = allApkSelected,
-                    dataChipSelected = allDataSelected,
-                    onApkChipClick = {
-                        scope.launch {
-                            withIOContext {
-                                if (allApkSelected.not()) {
-                                    packages.forEach { packageInfo ->
-                                        if (packageInfo.selected.value) {
-                                            packageInfo.operationCode = packageInfo.operationCode or OperationMask.Apk
+                    chipContent = {
+                        ApkChip(selected = allApkSelected, onClick = {
+                            scope.launch {
+                                withIOContext {
+                                    if (allApkSelected.not()) {
+                                        packages.forEach { packageInfo ->
+                                            if (packageInfo.selected.value) {
+                                                packageInfo.operationCode = packageInfo.operationCode or OperationMask.Apk
+                                            }
                                         }
-                                    }
-                                    viewModel.updatePackages(packages)
-                                } else {
-                                    packages.forEach { packageInfo ->
-                                        if (packageInfo.selected.value) {
-                                            packageInfo.operationCode = packageInfo.operationCode and OperationMask.Apk.inv()
+                                        viewModel.updatePackages(packages)
+                                    } else {
+                                        packages.forEach { packageInfo ->
+                                            if (packageInfo.selected.value) {
+                                                packageInfo.operationCode = packageInfo.operationCode and OperationMask.Apk.inv()
+                                            }
                                         }
+                                        viewModel.updatePackages(packages)
                                     }
-                                    viewModel.updatePackages(packages)
+                                    allApkSelected = allApkSelected.not()
                                 }
-                                allApkSelected = allApkSelected.not()
+                            }
+                        })
+                        DataChip(selected = allDataSelected, onClick = {
+                            scope.launch {
+                                withIOContext {
+                                    if (allDataSelected.not()) {
+                                        packages.forEach { packageInfo ->
+                                            if (packageInfo.selected.value) {
+                                                packageInfo.operationCode = packageInfo.operationCode or OperationMask.Data
+                                            }
+                                        }
+                                        viewModel.updatePackages(packages)
+                                    } else {
+                                        packages.forEach { packageInfo ->
+                                            if (packageInfo.selected.value) {
+                                                packageInfo.operationCode = packageInfo.operationCode and OperationMask.Data.inv()
+                                            }
+                                        }
+                                        viewModel.updatePackages(packages)
+                                    }
+                                    allDataSelected = allDataSelected.not()
+                                }
+                            }
+                        })
+                        DeleteChip {
+                            scope.launch {
+                                withIOContext {
+                                    dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete)).also { (confirmed, _) ->
+                                        if (confirmed) {
+                                            dialogSlot.openDeleteDialog(
+                                                context = context,
+                                                scope = scope,
+                                                viewModel = viewModel,
+                                                selectedPackages = packages.filter { it.selected.value }
+                                            )
+                                            packages.forEach { it.selected.value = false }
+                                            selectedCount = 0
+                                            viewModel.initializeUiState()
+                                        }
+                                    }
+                                }
                             }
                         }
-                    },
-                    onDataChipClick = {
-                        scope.launch {
-                            withIOContext {
-                                if (allDataSelected.not()) {
-                                    packages.forEach { packageInfo ->
-                                        if (packageInfo.selected.value) {
-                                            packageInfo.operationCode = packageInfo.operationCode or OperationMask.Data
-                                        }
-                                    }
-                                    viewModel.updatePackages(packages)
-                                } else {
-                                    packages.forEach { packageInfo ->
-                                        if (packageInfo.selected.value) {
-                                            packageInfo.operationCode = packageInfo.operationCode and OperationMask.Data.inv()
-                                        }
-                                    }
-                                    viewModel.updatePackages(packages)
-                                }
-                                allDataSelected = allDataSelected.not()
-                            }
-                        }
-                    },
+                    }
                 )
             }
         },

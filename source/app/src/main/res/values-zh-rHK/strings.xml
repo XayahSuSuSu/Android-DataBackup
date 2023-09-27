@@ -106,4 +106,6 @@
     <string name="clean_restoring_desc">恢復前清空目標目錄</string>
     <string name="installed">已安裝</string>
     <string name="sooner_or_later">即將到來</string>
+    <string name="delete">刪除</string>
+    <string name="confirm_delete">確定要從資料庫以及本機檔案中刪除所選用嗎</string>
 </resources>

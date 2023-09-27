@@ -1,6 +1,7 @@
 package com.xayah.databackup.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
@@ -49,4 +50,7 @@ interface PackageRestoreEntireDao {
 
     @Query("UPDATE PackageRestoreEntire SET active = :active WHERE timestamp = :timestamp")
     suspend fun updateActive(timestamp: Long, active: Boolean)
+
+    @Delete(entity = PackageRestoreEntire::class)
+    suspend fun delete(items: List<PackageRestoreEntire>)
 }

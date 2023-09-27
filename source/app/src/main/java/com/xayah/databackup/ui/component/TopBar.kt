@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -230,10 +231,7 @@ fun ListSelectionModeTopBar(
     title: String,
     onArrowBackPressed: () -> Unit,
     onCheckListPressed: () -> Unit,
-    apkChipSelected: Boolean,
-    dataChipSelected: Boolean,
-    onApkChipClick: () -> Unit,
-    onDataChipClick: () -> Unit,
+    chipContent: @Composable RowScope.() -> Unit,
 ) {
     val navController = LocalSlotScope.current!!.navController
     CustomTopAppBar(scrollBehavior) { _ ->
@@ -247,10 +245,11 @@ fun ListSelectionModeTopBar(
             TopBarTitle(modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, text = title)
             CheckListButton(modifier = Modifier.align(Alignment.CenterEnd), onClick = onCheckListPressed)
         }
-        Row(modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium), horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)) {
-            ApkChip(selected = apkChipSelected, onClick = onApkChipClick)
-            DataChip(selected = dataChipSelected, onClick = onDataChipClick)
-        }
+        Row(
+            modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium),
+            horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium),
+            content = chipContent
+        )
     }
 }
 

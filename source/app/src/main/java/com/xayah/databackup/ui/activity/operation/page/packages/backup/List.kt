@@ -62,7 +62,9 @@ import com.xayah.databackup.data.PackageBackupEntire
 import com.xayah.databackup.data.PackageBackupUpdate
 import com.xayah.databackup.data.StorageStats
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
+import com.xayah.databackup.ui.component.ApkChip
 import com.xayah.databackup.ui.component.ChipDropdownMenu
+import com.xayah.databackup.ui.component.DataChip
 import com.xayah.databackup.ui.component.ListItemPackageBackup
 import com.xayah.databackup.ui.component.ListSelectionModeTopBar
 import com.xayah.databackup.ui.component.ListTopBar
@@ -283,6 +285,7 @@ fun PackageBackupList() {
             viewModel.updatePackages(newPackages)
             state = state.setState(ListState.Done)
             updatingText = null
+            remoteRootService.destroyService()
         }
     }
     Scaffold(
@@ -320,52 +323,52 @@ fun PackageBackupList() {
                                 }
                             }
                         },
-                        apkChipSelected = allApkSelected,
-                        dataChipSelected = allDataSelected,
-                        onApkChipClick = {
-                            scope.launch {
-                                withIOContext {
-                                    if (allApkSelected.not()) {
-                                        packages.forEach { packageInfo ->
-                                            if (packageInfo.selected.value) {
-                                                packageInfo.operationCode = packageInfo.operationCode or OperationMask.Apk
+                        chipContent = {
+                            ApkChip(selected = allApkSelected, onClick = {
+                                scope.launch {
+                                    withIOContext {
+                                        if (allApkSelected.not()) {
+                                            packages.forEach { packageInfo ->
+                                                if (packageInfo.selected.value) {
+                                                    packageInfo.operationCode = packageInfo.operationCode or OperationMask.Apk
+                                                }
                                             }
-                                        }
-                                        viewModel.updateEntirePackages(packages)
-                                    } else {
-                                        packages.forEach { packageInfo ->
-                                            if (packageInfo.selected.value) {
-                                                packageInfo.operationCode = packageInfo.operationCode and OperationMask.Apk.inv()
+                                            viewModel.updateEntirePackages(packages)
+                                        } else {
+                                            packages.forEach { packageInfo ->
+                                                if (packageInfo.selected.value) {
+                                                    packageInfo.operationCode = packageInfo.operationCode and OperationMask.Apk.inv()
+                                                }
                                             }
+                                            viewModel.updateEntirePackages(packages)
                                         }
-                                        viewModel.updateEntirePackages(packages)
+                                        allApkSelected = allApkSelected.not()
                                     }
-                                    allApkSelected = allApkSelected.not()
                                 }
-                            }
-                        },
-                        onDataChipClick = {
-                            scope.launch {
-                                withIOContext {
-                                    if (allDataSelected.not()) {
-                                        packages.forEach { packageInfo ->
-                                            if (packageInfo.selected.value) {
-                                                packageInfo.operationCode = packageInfo.operationCode or OperationMask.Data
+                            })
+                            DataChip(selected = allDataSelected, onClick = {
+                                scope.launch {
+                                    withIOContext {
+                                        if (allDataSelected.not()) {
+                                            packages.forEach { packageInfo ->
+                                                if (packageInfo.selected.value) {
+                                                    packageInfo.operationCode = packageInfo.operationCode or OperationMask.Data
+                                                }
                                             }
-                                        }
-                                        viewModel.updateEntirePackages(packages)
-                                    } else {
-                                        packages.forEach { packageInfo ->
-                                            if (packageInfo.selected.value) {
-                                                packageInfo.operationCode = packageInfo.operationCode and OperationMask.Data.inv()
+                                            viewModel.updateEntirePackages(packages)
+                                        } else {
+                                            packages.forEach { packageInfo ->
+                                                if (packageInfo.selected.value) {
+                                                    packageInfo.operationCode = packageInfo.operationCode and OperationMask.Data.inv()
+                                                }
                                             }
+                                            viewModel.updateEntirePackages(packages)
                                         }
-                                        viewModel.updateEntirePackages(packages)
+                                        allDataSelected = allDataSelected.not()
                                     }
-                                    allDataSelected = allDataSelected.not()
                                 }
-                            }
-                        },
+                            })
+                        }
                     )
                 }
                 if (progress != 1F) LinearProgressIndicator(
