@@ -50,17 +50,14 @@ class InstallationUtil(private val logId: Long, private val logUtil: LogUtil) {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             logUtil.executeWithLog(logId, "pm install-create --user $QUOTE$userId$QUOTE -t | grep -E -o '[0-9]+'").also { result ->
-                if (result.isSuccess.not()) {
-                    isSuccess = false
-                    session = result.outString() + "\n"
-                }
+                if (result.isSuccess.not()) isSuccess = false
+                session = result.outString() + "\n"
+
             }
         } else {
             logUtil.executeWithLog(logId, "pm install-create -i com.android.vending --user $QUOTE$userId$QUOTE -t | grep -E -o '[0-9]+'").also { result ->
-                if (result.isSuccess.not()) {
-                    isSuccess = false
-                    session = result.outString() + "\n"
-                }
+                if (result.isSuccess.not()) isSuccess = false
+                session = result.outString() + "\n"
             }
         }
         return Pair(isSuccess, session.trim())
