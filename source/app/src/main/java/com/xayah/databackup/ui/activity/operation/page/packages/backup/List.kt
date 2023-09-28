@@ -268,11 +268,23 @@ fun PackageBackupList() {
                     EnvUtil.saveIcon(context, packageInfo.packageName, icon)
                 }
                 val storageStats = StorageStats()
-                remoteRootService.queryStatsForPackage(packageInfo, remoteRootService.getUserHandle(userId)).also { stats ->
-                    storageStats.appBytes = stats.appBytes
-                    storageStats.cacheBytes = stats.cacheBytes
-                    storageStats.dataBytes = stats.dataBytes
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) storageStats.externalCacheBytes = stats.externalCacheBytes
+                tryService(onFailed = { msg ->
+                    scope.launch {
+                        state = state.setState(ListState.Error)
+                        snackbarHostState.showSnackbar(
+                            message = "$msg\n${context.getString(R.string.remote_service_err_info)}",
+                            duration = SnackbarDuration.Indefinite
+                        )
+                    }
+                }) {
+                    remoteRootService.queryStatsForPackage(packageInfo, remoteRootService.getUserHandle(userId)).also { stats ->
+                        if (stats != null) {
+                            storageStats.appBytes = stats.appBytes
+                            storageStats.cacheBytes = stats.cacheBytes
+                            storageStats.dataBytes = stats.dataBytes
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) storageStats.externalCacheBytes = stats.externalCacheBytes
+                        }
+                    }
                 }
 
                 newPackages.add(

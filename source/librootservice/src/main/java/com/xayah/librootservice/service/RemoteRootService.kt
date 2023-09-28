@@ -158,7 +158,7 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun getUserHandle(userId: Int): UserHandle = getService().getUserHandle(userId)
 
-    suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats = getService().queryStatsForPackage(packageInfo, user)
+    suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats? = getService().queryStatsForPackage(packageInfo, user)
 
     suspend fun getUsers(): List<UserInfo> = getService().users
 }
