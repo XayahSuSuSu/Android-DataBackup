@@ -152,7 +152,14 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats? = synchronized(lock) {
-        storageStatsManager.queryStatsForPackage(packageInfo.applicationInfo.storageUuid, packageInfo.packageName, user)
+        tryOn(
+            block = {
+                storageStatsManager.queryStatsForPackage(packageInfo.applicationInfo.storageUuid, packageInfo.packageName, user)
+            },
+            onException = {
+                null
+            }
+        )
     }
 
     override fun getUsers(): List<UserInfo> = synchronized(lock) {
