@@ -13,14 +13,14 @@ ZSTD_DEV=false
 
 NDK_VERSION=r25c
 
-BIN_VERSION=1.4
-ZLIB_VERSION=1.2.13            # https://zlib.net/
-XZ_VERSION=5.4.3               # https://tukaani.org/xz/
+BIN_VERSION=1.5
+ZLIB_VERSION=1.3               # https://zlib.net/
+XZ_VERSION=5.4.4               # https://tukaani.org/xz/
 LZ4_VERSION=1.9.4              # https://github.com/lz4/lz4/releases
 ZSTD_VERSION=1.5.5             # https://github.com/facebook/zstd/releases
-TAR_VERSION=1.34               # https://ftp.gnu.org/gnu/tar/?C=M;O=D
-COREUTLS_VERSION=9.3           # https://ftp.gnu.org/gnu/coreutils/?C=M;O=D
-TREE_VERSION=2.1.0             # https://mama.indstate.edu/users/ice/tree
+TAR_VERSION=1.35               # https://ftp.gnu.org/gnu/tar/?C=M;O=D
+COREUTLS_VERSION=9.4           # https://ftp.gnu.org/gnu/coreutils/?C=M;O=D
+TREE_VERSION=2.1.1             # https://mama.indstate.edu/users/ice/tree
 
 EXTEND_VERSION=1.1.1
 LIBFUSE_VERSION=3.12.0         # https://github.com/libfuse/libfuse/releases
@@ -41,14 +41,18 @@ set_up_environment() {
     # Set build target
     export TARGET=aarch64-linux-android
     case "$TARGET_ARCH" in
+
+    # DISABLE_YEAR2038_PARA: Workaround for https://github.com/msys2/MSYS2-packages/pull/4080
     armeabi-v7a)
         export TARGET=armv7a-linux-androideabi
+        export DISABLE_YEAR2038_PARA=--disable-year2038
         ;;
     arm64-v8a)
         export TARGET=aarch64-linux-android
         ;;
     x86)
         export TARGET=i686-linux-android
+        export DISABLE_YEAR2038_PARA=--disable-year2038
         ;;
     x86_64)
         export TARGET=x86_64-linux-android
@@ -219,12 +223,12 @@ build_tar() {
         rm -rf tar-$TAR_VERSION
     fi
     tar xf tar-$TAR_VERSION.tar.xz
-    cd tar-1.34
+    cd tar-$TAR_VERSION
 
     # Patch duplicate symbols
     patch_gnu_symbols "gnu"
 
-    ./configure --host=$TARGET LDFLAGS="$BUILD_LDFLAGS_STATIC" CFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" CXXFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0"
+    ./configure --host=$TARGET LDFLAGS="$BUILD_LDFLAGS_STATIC" CFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" CXXFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" $DISABLE_YEAR2038_PARA
     make -j8
     make install prefix= DESTDIR=$LOCAL_PATH/tar
     $STRIP $LOCAL_PATH/tar/bin/tar
@@ -246,7 +250,7 @@ build_coreutls() {
     # Patch duplicate symbols
     patch_gnu_symbols "lib"
 
-    ./configure --host=$TARGET LDFLAGS="$BUILD_LDFLAGS_STATIC" CFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" CXXFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0"
+    ./configure --host=$TARGET LDFLAGS="$BUILD_LDFLAGS_STATIC" CFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" CXXFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0"  $DISABLE_YEAR2038_PARA
     make -j8
     make install prefix= DESTDIR=$LOCAL_PATH/coreutls
     $STRIP $LOCAL_PATH/coreutls/bin/df
@@ -399,8 +403,6 @@ package_built_in() {
     mkdir -p built_in/$TARGET_ARCH
     echo "$BIN_VERSION" > built_in/version
     zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df tar/bin/tar zstd/bin/zstd built_in/version tree/tree
-    rm -rf ../app/src/$TARGET_ARCH/assets/bin/bin.zip
-    cp built_in/$TARGET_ARCH/bin.zip ../app/src/$TARGET_ARCH/assets/bin/bin.zip
 }
 
 package_extend() {
@@ -408,8 +410,6 @@ package_extend() {
     mkdir -p extend
     echo "$EXTEND_VERSION" > extend/version
     zip -pj extend/$TARGET_ARCH fuse/bin/fusermount rclone/rclone extend/version
-    rm -rf ../extend/${TARGET_ARCH}.zip
-    cp extend/${TARGET_ARCH}.zip ../extend/${TARGET_ARCH}.zip
 }
 
 build() {
