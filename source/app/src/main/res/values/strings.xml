@@ -114,4 +114,5 @@
     <string name="delete">Delete</string>
     <string name="confirm_delete">Sure to delete selected items from the database and local files</string>
     <string name="app_crashed">App crashed</string>
+    <string name="no_browser">Maybe there is no browser to open it</string>
 </resources>

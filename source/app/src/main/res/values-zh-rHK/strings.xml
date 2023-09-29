@@ -109,4 +109,5 @@
     <string name="delete">刪除</string>
     <string name="confirm_delete">確定要從資料庫以及本機檔案中刪除所選用嗎</string>
     <string name="app_crashed">應用發生崩潰</string>
+    <string name="no_browser">也許沒有瀏覽器能夠打開它</string>
 </resources>

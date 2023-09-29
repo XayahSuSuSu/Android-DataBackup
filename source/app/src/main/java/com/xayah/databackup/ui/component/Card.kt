@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.component
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.readLastBackupTime
 import com.xayah.databackup.util.readLastRestoringTime
+import com.xayah.librootservice.util.ExceptionUtil.tryOn
 
 @Composable
 fun IntroCard(serial: Char, title: String, subtitle: String, content: String) {
@@ -75,7 +77,14 @@ fun UpdateCard(content: String, version: String, link: String) {
                 horizontalArrangement = Arrangement.End
             ) {
                 IconTextButton(icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_link), text = version) {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+                    tryOn(
+                        block = {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+                        },
+                        onException = {
+                            Toast.makeText(context, context.getString(R.string.no_browser), Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 }
             }
         }
