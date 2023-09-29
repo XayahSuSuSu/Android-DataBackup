@@ -74,7 +74,7 @@
     <string name="databases_reload_failed">数据库重载失败</string>
     <string name="icon_reload_failed">图标重载失败</string>
     <string name="restart_failed">重启失败, 请手动重启本应用</string>
-    <string name="confirm_reload">重载将使用恢复目录下的数据库并覆盖当前数据库(包括备份/恢复列表以及日志等), 重载完成后需要重启本应用, 确定要重载吗？</string>
+    <string name="confirm_reload">确定要重载吗？</string>
     <string name="version">版本</string>
     <string name="feature">特性</string>
     <string name="architecture">架构</string>

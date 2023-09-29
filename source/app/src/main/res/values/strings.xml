@@ -78,7 +78,7 @@
     <string name="databases_reload_failed">Failed to reload databases</string>
     <string name="icon_reload_failed">Failed to reload icon</string>
     <string name="restart_failed">Failed to restart, please restart the application manually.</string>
-    <string name="confirm_reload">Reloading will use the database in the restore directory and overwrite the current database (including backup and restore lists and logs, etc.). After that, you need to restart the application. Sure to reload?</string>
+    <string name="confirm_reload">Sure to reload?</string>
     <string name="version">Version</string>
     <string name="feature">Feature</string>
     <string name="abi" translatable="false">ABI</string>

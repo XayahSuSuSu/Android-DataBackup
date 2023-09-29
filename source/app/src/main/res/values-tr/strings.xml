@@ -12,7 +12,7 @@
     <string name="activities">Aktiviteler</string>
     <string name="not_exist">Var değil</string>
     <string name="last_backup">Son yedek</string>
-    <string name="confirm_reload">Yeniden yükleme, geri yükleme dizinindeki veritabanını kullanacak ve mevcut veritabanının üzerine yazacaktır (yedekleme ve geri yükleme listeleri ve günlükleri vb. dahil). Bundan sonra uygulamayı yeniden başlatmanız gerekir. Yeniden yüklemek istediğinizden emin misiniz\?</string>
+    <string name="confirm_reload">Yeniden yüklemek istediğinizden emin misiniz\?</string>
     <string name="start_desc">Bu uygulama tarafından oluşturulan tüm veriler yalnızca yedekleme/geri yükleme için kullanılır ve yalnızca yerel olarak depolanır. Yasadışı yeniden satış kesinlikle yasaktır</string>
     <string name="internal_storage">Ana hafıza</string>
     <string name="overlook">Üst görünüm</string>
