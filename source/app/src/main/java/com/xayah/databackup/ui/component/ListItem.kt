@@ -190,7 +190,7 @@ fun ListItemPackageBackup(
         },
         onCardLongClick = onSelectedChange
     ) {
-        Serial(serial = packageInfo.versionName)
+        if (packageInfo.versionName.isNotEmpty()) Serial(serial = packageInfo.versionName)
         Serial(serial = packageInfo.sizeDisplay)
     }
 
@@ -259,7 +259,7 @@ fun ListItemPackageRestore(
         },
         onCardLongClick = onSelectedChange
     ) {
-        Serial(serial = packageInfo.versionName)
+        if (packageInfo.versionName.isNotEmpty()) Serial(serial = packageInfo.versionName)
     }
 
     LaunchedEffect(null) {
