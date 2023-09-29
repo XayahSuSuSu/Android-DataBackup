@@ -136,6 +136,20 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun listFilePaths(path: String): List<String> = getService().listFilePaths(path)
 
+    suspend fun readText(path: String): String {
+        val pfd = getService().readText(path)
+        val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
+        val bytes = stream.readBytes()
+        val parcel = Parcel.obtain()
+
+        parcel.unmarshall(bytes, 0, bytes.size)
+        parcel.setDataPosition(0)
+
+        val text = parcel.readString() ?: ""
+        parcel.recycle()
+        return text
+    }
+
     suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)
         val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)

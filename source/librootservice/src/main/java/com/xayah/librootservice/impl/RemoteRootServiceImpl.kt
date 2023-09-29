@@ -107,6 +107,30 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         )
     }
 
+    override fun readText(path: String): ParcelFileDescriptor = synchronized(lock) {
+        val parcel = Parcel.obtain()
+        parcel.setDataPosition(0)
+
+        val text = tryOn(
+            block = {
+                File(path).readText()
+            },
+            onException = {
+                ""
+            }
+        )
+        parcel.writeString(text)
+
+        val tmp = File(ParcelTmpFilePath, ParcelTmpFileName)
+        tmp.createNewFile()
+        tmp.writeBytes(parcel.marshall())
+        val pfd = ParcelFileDescriptor.open(tmp, ParcelFileDescriptor.MODE_READ_WRITE)
+        tmp.deleteRecursively()
+
+        parcel.recycle()
+        pfd
+    }
+
     /**
      * AIDL limits transaction to 1M which means it may throw [android.os.TransactionTooLargeException]
      * when the package list is too large. So we just make it parcelable and write into tmp file to avoid that.

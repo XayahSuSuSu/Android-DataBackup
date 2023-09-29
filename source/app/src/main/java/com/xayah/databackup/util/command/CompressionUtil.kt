@@ -66,6 +66,39 @@ object CompressionUtil {
         return Pair(isSuccess, outList.toLineString().trim())
     }
 
+    suspend fun compress(
+        logUtil: LogUtil,
+        logId: Long,
+        compatibleMode: Boolean,
+        compressionType: CompressionType,
+        archivePath: String,
+        originPath: String,
+    ): Pair<Boolean, String> {
+        var isSuccess = true
+        val outList = mutableListOf<String>()
+
+        val cmd = if (compatibleMode)
+            "- ./* ${if (compressionType == CompressionType.TAR) "" else "| ${compressionType.compressPara}"} > $archivePath"
+        else
+            "$archivePath ./* ${if (compressionType == CompressionType.TAR) "" else "-I $QUOTE${compressionType.compressPara}$QUOTE"}"
+
+        // Compress config dir.
+        logUtil.executeWithLog(logId, "cd $originPath").also { result ->
+            if (result.isSuccess.not()) isSuccess = false
+            outList.add(result.outString())
+        }
+        logUtil.executeWithLog(logId, "tar --totals -cpf $cmd").also { result ->
+            if (result.isSuccess.not()) isSuccess = false
+            outList.add(result.outString())
+        }
+        logUtil.executeWithLog(logId, "cd /").also { result ->
+            if (result.isSuccess.not()) isSuccess = false
+            outList.add(result.outString())
+        }
+
+        return Pair(isSuccess, outList.toLineString().trim())
+    }
+
     suspend fun decompress(
         logUtil: LogUtil,
         logId: Long,

@@ -5,10 +5,12 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageBackupOperationDao
+import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.data.PackageRestoreOperation
 import com.xayah.databackup.data.PackageRestoreOperationDao
 import com.xayah.databackup.util.CompressionType
 import com.xayah.databackup.util.DataType
+import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
@@ -29,6 +31,7 @@ class OperationBackupUtil(
     private val logUtil: LogUtil,
     private val remoteRootService: RemoteRootService,
     private val packageBackupOperationDao: PackageBackupOperationDao,
+    private val gsonUtil: GsonUtil,
 ) {
     private val userId = context.readBackupUserId()
     private val compressionType = context.readCompressionType()
@@ -176,6 +179,46 @@ class OperationBackupUtil(
         dataType.updateEntityLog(entity, outList.toLineString().trim())
         dataType.updateEntityState(entity, if (isSuccess) OperationState.DONE else OperationState.ERROR)
         packageBackupOperationDao.upsert(entity)
+    }
+
+    suspend fun backupConfig(entity: PackageRestoreEntire, dataType: DataType) {
+        val logTag = "Config"
+        val logId = logUtil.log(logTag, "Start backing up...")
+        val packageName = entity.packageName
+        val archivePath = "${getPackageItemSavePath(packageName)}/${dataType.type}.${compressionType.suffix}"
+        val outList = mutableListOf<String>()
+
+        val tmpConfigPath = PathUtil.getTmpConfigPath(context = context, packageName = packageName, timestamp = entity.timestamp)
+        val tmpConfigFilePath = PathUtil.getTmpConfigFilePath(context = context, packageName = packageName, timestamp = entity.timestamp)
+        remoteRootService.deleteRecursively(tmpConfigPath)
+        remoteRootService.mkdirs(tmpConfigPath)
+
+        remoteRootService.writeText(text = gsonUtil.toJson(entity), path = tmpConfigFilePath, context = context)
+        // Compress the dir.
+        CompressionUtil.compress(logUtil, logId, compatibleMode, compressionType, archivePath, tmpConfigPath).also { (_, out) ->
+            outList.add(out)
+            logUtil.log(logTag, out)
+        }
+
+        remoteRootService.deleteRecursively(tmpConfigPath)
+
+        // Test the archive if enabled.
+        if (context.readCompressionTest()) {
+            CompressionUtil.test(
+                logUtil = logUtil,
+                logId = logId,
+                compressionType = compressionType,
+                archivePath = archivePath,
+                remoteRootService = remoteRootService
+            ).also { (succeed, out) ->
+                if (succeed.not()) {
+                    outList.add(out)
+                    logUtil.log(logTag, out)
+                } else {
+                    logUtil.log(logTag, "$archivePath is tested well.")
+                }
+            }
+        }
     }
 }
 

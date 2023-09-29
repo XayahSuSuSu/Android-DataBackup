@@ -28,6 +28,7 @@ data class PackageRestoreEntire(
     var active: Boolean,
 ) {
     @Ignore
+    @Transient
     var selected: MutableState<Boolean> = mutableStateOf(false)
 
     val isSystemApp: Boolean

@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.gson.reflect.TypeToken
 import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.PackageRestoreEntire
@@ -54,12 +55,14 @@ import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.CompressionType
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.DataType
+import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.IntentUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.EnvUtil
 import com.xayah.databackup.util.command.InstallationUtil
 import com.xayah.databackup.util.command.PreparationUtil
+import com.xayah.databackup.util.iconPath
 import com.xayah.databackup.util.readExternalRestoreSaveChild
 import com.xayah.databackup.util.readInternalRestoreSaveChild
 import com.xayah.databackup.util.readRestoreSavePath
@@ -211,7 +214,7 @@ private data class TypedPath(
 )
 
 @ExperimentalMaterial3Api
-private suspend fun DialogState.openReloadDialog(context: Context, logUtil: LogUtil, packageRestoreEntireDao: PackageRestoreEntireDao) {
+private suspend fun DialogState.openReloadDialog(context: Context, logUtil: LogUtil, packageRestoreEntireDao: PackageRestoreEntireDao, gsonUtil: GsonUtil) {
     openLoading(
         title = context.getString(R.string.prompt),
         icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
@@ -228,8 +231,9 @@ private suspend fun DialogState.openReloadDialog(context: Context, logUtil: LogU
                 logUtil.log(logTag, "Clear the table and try to create icon dir")
                 // Clear table first
                 packageRestoreEntireDao.clearTable()
-                // Create icon dir if it doesn't exist
+                // Create icon dir if it doesn't exist, then copy icons from backup dir.
                 EnvUtil.createIconDirectory(context)
+                remoteRootService.copyRecursively(path = PathUtil.getRestoreIconSavePath(), targetPath = context.iconPath(), overwrite = true)
 
                 logUtil.log(logTag, "Classify the paths")
                 // Classify the paths
@@ -276,8 +280,12 @@ private suspend fun DialogState.openReloadDialog(context: Context, logUtil: LogU
 
                         logUtil.log(logTag, "Timestamp: $timestamp")
                         val tmpApkPath = PathUtil.getTmpApkPath(context = context, packageName = packageName)
+                        val tmpConfigPath = PathUtil.getTmpConfigPath(context = context, packageName = packageName, timestamp = timestamp)
+                        val tmpConfigFilePath = PathUtil.getTmpConfigFilePath(context = context, packageName = packageName, timestamp = timestamp)
                         remoteRootService.deleteRecursively(tmpApkPath)
+                        remoteRootService.deleteRecursively(tmpConfigPath)
                         remoteRootService.mkdirs(tmpApkPath)
+                        remoteRootService.mkdirs(tmpConfigPath)
 
                         archivePathList.forEach { archivePath ->
                             // For each archive
@@ -305,6 +313,20 @@ private suspend fun DialogState.openReloadDialog(context: Context, logUtil: LogU
                                             }
                                         }
 
+                                        DataType.PACKAGE_CONFIG.type -> {
+                                            val type = CompressionType.suffixOf(archivePath.extension)
+                                            if (type != null) {
+                                                compressionType = type
+                                                installationUtil.decompress(
+                                                    archivePath = archivePath.pathString,
+                                                    tmpApkPath = tmpConfigPath,
+                                                    compressionType = type
+                                                )
+                                            } else {
+                                                logUtil.log(logTag, "Failed to parse compression type: ${archivePath.extension}")
+                                            }
+                                        }
+
                                         DataType.PACKAGE_USER.type -> {
                                             operationCode = operationCode or OperationMask.Data
                                         }
@@ -316,32 +338,42 @@ private suspend fun DialogState.openReloadDialog(context: Context, logUtil: LogU
                             )
                         }
 
-                        val packageRestoreEntire = PackageRestoreEntire(
-                            packageName = packageName,
-                            label = "",
-                            backupOpCode = operationCode,
-                            operationCode = OperationMask.None,
-                            timestamp = timestamp,
-                            versionName = "",
-                            versionCode = 0,
-                            flags = 0,
-                            compressionType = compressionType,
-                            active = false
-                        )
-                        packageInfo?.apply {
-                            packageRestoreEntire.also { entity ->
-                                entity.label = applicationInfo.loadLabel(packageManager).toString()
-                                entity.versionName = versionName ?: ""
-                                entity.versionCode = longVersionCode
-                                entity.flags = applicationInfo.flags
+                        // Check config first
+                        val packageRestoreEntire: PackageRestoreEntire
+                        if (remoteRootService.exists(tmpConfigFilePath)) {
+                            // Directly read from config
+                            val json = remoteRootService.readText(tmpConfigFilePath)
+                            val type = object : TypeToken<PackageRestoreEntire>() {}.type
+                            packageRestoreEntire = gsonUtil.fromJson(json, type)
+                        } else {
+                            packageRestoreEntire = PackageRestoreEntire(
+                                packageName = packageName,
+                                label = "",
+                                backupOpCode = operationCode,
+                                operationCode = OperationMask.None,
+                                timestamp = timestamp,
+                                versionName = "",
+                                versionCode = 0,
+                                flags = 0,
+                                compressionType = compressionType,
+                                active = false
+                            )
+                            packageInfo?.apply {
+                                packageRestoreEntire.also { entity ->
+                                    entity.label = applicationInfo.loadLabel(packageManager).toString()
+                                    entity.versionName = versionName ?: ""
+                                    entity.versionCode = longVersionCode
+                                    entity.flags = applicationInfo.flags
+                                }
+                                val icon = applicationInfo.loadIcon(packageManager)
+                                EnvUtil.saveIcon(context, packageName, icon)
+                                logUtil.log(logTag, "Icon saved")
                             }
-                            val icon = applicationInfo.loadIcon(packageManager)
-                            EnvUtil.saveIcon(context, packageName, icon)
-                            logUtil.log(logTag, "Icon saved")
                         }
                         packageRestoreEntireDao.upsert(packageRestoreEntire)
 
                         remoteRootService.deleteRecursively(tmpApkPath)
+                        remoteRootService.deleteRecursively(tmpConfigPath)
                     }
                 }
                 remoteRootService.destroyService()
@@ -387,7 +419,7 @@ fun PageRestore() {
                 val onClicks = listOf<suspend () -> Unit>(
                     {
                         dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_reload)).also { (confirmed, _) ->
-                            if (confirmed) dialogSlot.openReloadDialog(context, uiState.logUtil, uiState.packageRestoreEntireDao)
+                            if (confirmed) dialogSlot.openReloadDialog(context, uiState.logUtil, uiState.packageRestoreEntireDao, uiState.gsonUtil)
                         }
                     },
                     {

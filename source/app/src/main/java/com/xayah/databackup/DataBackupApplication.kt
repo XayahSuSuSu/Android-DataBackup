@@ -10,6 +10,7 @@ import com.xayah.databackup.util.binPath
 import com.xayah.databackup.util.extendPath
 import com.xayah.databackup.util.filesPath
 import com.xayah.databackup.util.readMonetEnabled
+import com.xayah.librootservice.service.RemoteRootService
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -55,5 +56,7 @@ class DataBackupApplication : Application() {
         super.onCreate()
         application = this
         monetEnabled = mutableStateOf(readMonetEnabled())
+        // Kill daemon
+        RemoteRootService(this).destroyService(killDaemon = true)
     }
 }

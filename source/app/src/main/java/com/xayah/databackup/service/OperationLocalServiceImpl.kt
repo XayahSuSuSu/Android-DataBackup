@@ -15,12 +15,12 @@ import com.xayah.databackup.data.PackageRestoreOperation
 import com.xayah.databackup.data.PackageRestoreOperationDao
 import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
+import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.OperationBackupUtil
 import com.xayah.databackup.util.command.OperationRestoreUtil
 import com.xayah.databackup.util.command.PreparationUtil
-import com.xayah.databackup.util.databasePath
 import com.xayah.databackup.util.iconPath
 import com.xayah.databackup.util.readBackupItself
 import com.xayah.databackup.util.readBackupUserId
@@ -67,6 +67,9 @@ class OperationLocalServiceImpl : Service() {
     @Inject
     lateinit var packageRestoreOperationDao: PackageRestoreOperationDao
 
+    @Inject
+    lateinit var gsonUtil: GsonUtil
+
     suspend fun backupPackagesPreparation(): BackupPreparation = withIOContext {
         mutex.withLock {
             val logTag = "Packages backup preparation"
@@ -90,7 +93,7 @@ class OperationLocalServiceImpl : Service() {
             val logTag = "Packages backup"
             val context = applicationContext
             val remoteRootService = RemoteRootService(context)
-            val operationBackupUtil = OperationBackupUtil(context, timestamp, logUtil, remoteRootService, packageBackupOperationDao)
+            val operationBackupUtil = OperationBackupUtil(context, timestamp, logUtil, remoteRootService, packageBackupOperationDao, gsonUtil)
 
             logUtil.log(logTag, "Started.")
             val packages = packageBackupEntireDao.queryActiveTotalPackages()
@@ -163,6 +166,9 @@ class OperationLocalServiceImpl : Service() {
                     )
                     packageRestoreEntireDao.upsert(restoreEntire)
 
+                    // Save config
+                    operationBackupUtil.backupConfig(restoreEntire, DataType.PACKAGE_CONFIG)
+
                     // Reset selected items if enabled.
                     if (context.readResetBackupList()) {
                         currentPackage.operationCode = OperationMask.None
@@ -218,7 +224,7 @@ class OperationLocalServiceImpl : Service() {
                 }
             }
 
-            // Backup database and icons.
+            // Backup icons.
             val iconPath = context.iconPath()
             val iconSavePath = PathUtil.getIconSavePath()
             remoteRootService.copyRecursively(path = iconPath, targetPath = iconSavePath, overwrite = true)
@@ -227,11 +233,6 @@ class OperationLocalServiceImpl : Service() {
             val noMediaSavePath = PathUtil.getIconNoMediaSavePath()
             remoteRootService.createNewFile(path = noMediaSavePath)
             logUtil.log(logTag, "Created $noMediaSavePath.")
-
-            val databasePath = context.databasePath()
-            val databaseSavePath = PathUtil.getDatabaseSavePath()
-            remoteRootService.copyRecursively(path = databasePath, targetPath = databaseSavePath, overwrite = true)
-            logUtil.log(logTag, "Copied from $databasePath to $databaseSavePath.")
 
             remoteRootService.destroyService()
         }

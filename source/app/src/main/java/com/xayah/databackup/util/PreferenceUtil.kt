@@ -44,6 +44,7 @@ enum class DataType(val type: String) {
     PACKAGE_DATA("data"),
     PACKAGE_OBB("obb"),
     PACKAGE_MEDIA("media"),            // /data/media/$user_id/Android/media
+    PACKAGE_CONFIG("config"),          // Json file for reloading
     MEDIA_MEDIA("media");
 
     fun origin(userId: Int): String = when (this) {

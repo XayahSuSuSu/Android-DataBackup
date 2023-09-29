@@ -16,8 +16,6 @@ fun Context.extendPath(): String = "${filesPath()}/extend"
 
 fun Context.iconPath(): String = "${filesPath()}/icon"
 
-fun Context.databasePath(): String = "${filesDir.parent}/databases"
-
 @SuppressLint("SdCardPath")
 object PathUtil {
     fun getParentPath(path: String): String = Paths.get(path).parent.pathString
@@ -32,6 +30,10 @@ object PathUtil {
 
     fun getTmpApkPath(context: Context, packageName: String): String = "${context.filesPath()}/tmp/apks/$packageName"
 
+    fun getTmpConfigPath(context: Context, packageName: String, timestamp: Long): String = "${context.filesPath()}/tmp/config/$packageName/$timestamp"
+    fun getTmpConfigFilePath(context: Context, packageName: String, timestamp: Long): String =
+        "${getTmpConfigPath(context, packageName, timestamp)}/PackageRestoreEntire"
+
     // Paths for backup save dir.
     fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
     private fun getBackupArchivesSavePath(): String = "${getBackupSavePath()}/archives"
@@ -40,7 +42,6 @@ object PathUtil {
     fun getTreeSavePath(timestamp: Long): String = "${getTreeSavePath()}/tree_${timestamp}"
     fun getIconSavePath(): String = "${getBackupSavePath()}/icon"
     fun getIconNoMediaSavePath(): String = "${getIconSavePath()}/.nomedia"
-    fun getDatabaseSavePath(): String = "${getBackupSavePath()}/databases"
     private fun getLogSavePath(): String = "${getBackupSavePath()}/log"
     fun getLogSavePath(timestamp: Long): String = "${getLogSavePath()}/log_${timestamp}"
 
@@ -48,6 +49,7 @@ object PathUtil {
     private fun getRestoreSavePath(): String = DataBackupApplication.application.readRestoreSavePath()
     private fun getRestoreArchivesSavePath(): String = "${getRestoreSavePath()}/archives"
     fun getRestorePackagesSavePath(): String = "${getRestoreArchivesSavePath()}/packages"
+    fun getRestoreIconSavePath(): String = "${getRestoreSavePath()}/icon"
 
     // Paths for processing.
     fun getPackageUserPath(userId: Int): String = "/data/user/${userId}"
