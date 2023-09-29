@@ -53,4 +53,7 @@ interface PackageRestoreEntireDao {
 
     @Delete(entity = PackageRestoreEntire::class)
     suspend fun delete(items: List<PackageRestoreEntire>)
+
+    @Query("DELETE FROM PackageRestoreEntire")
+    suspend fun clearTable()
 }

@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.librootservice.IRemoteRootService
 import com.xayah.librootservice.impl.RemoteRootServiceImpl
+import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.parcelables.StatFsParcelable
 import com.xayah.librootservice.util.withMainContext
 import java.io.File
@@ -161,4 +162,21 @@ class RemoteRootService(private val context: Context) {
     suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats? = getService().queryStatsForPackage(packageInfo, user)
 
     suspend fun getUsers(): List<UserInfo> = getService().users
+
+    suspend fun walkFileTree(path: String): List<PathParcelable> {
+        val pfd = getService().walkFileTree(path)
+        val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
+        val bytes = stream.readBytes()
+        val parcel = Parcel.obtain()
+
+        parcel.unmarshall(bytes, 0, bytes.size)
+        parcel.setDataPosition(0)
+
+        val list = mutableListOf<PathParcelable>()
+        parcel.readTypedList(list, PathParcelable.CREATOR)
+        parcel.recycle()
+        return list
+    }
+
+    suspend fun getPackageArchiveInfo(path: String): PackageInfo? = getService().getPackageArchiveInfo(path)
 }

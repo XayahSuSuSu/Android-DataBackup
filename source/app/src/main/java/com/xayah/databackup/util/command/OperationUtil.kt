@@ -45,7 +45,7 @@ class OperationBackupUtil(
 
         val logTag = "APK"
         val logId = logUtil.log(logTag, "Start backing up...")
-        val archivePath = "${getPackageItemSavePath(packageName)}/apk.${compressionType.suffix}"
+        val archivePath = "${getPackageItemSavePath(packageName)}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
         val cmd = if (compatibleMode)
             "- ./*.apk ${if (compressionType == CompressionType.TAR) "" else "| ${compressionType.compressPara}"} > $archivePath"
         else
@@ -216,7 +216,7 @@ class OperationRestoreUtil(
 
         val logTag = "APK"
         val logId = logUtil.log(logTag, "Start restoring...")
-        val archivePath = "${getPackageItemSavePath(packageName = packageName, timestamp = timestamp)}/apk.${compressionType.suffix}"
+        val archivePath = "${getPackageItemSavePath(packageName = packageName, timestamp = timestamp)}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
 
         // Return if the archive doesn't exist.
         remoteRootService.exists(archivePath).also { exists ->

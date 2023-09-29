@@ -19,4 +19,6 @@ interface IRemoteRootService {
     UserHandle getUserHandle(int userId);
     StorageStats queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
     List<UserInfo> getUsers();
+    ParcelFileDescriptor walkFileTree(String path);
+    PackageInfo getPackageArchiveInfo(String path);
 }

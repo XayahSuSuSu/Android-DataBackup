@@ -23,7 +23,6 @@ import com.xayah.librootservice.util.ExceptionUtil
 import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Creates a [DialogState] and acts as a slot with [DialogState.Insert].
@@ -87,30 +86,6 @@ class DialogState {
                         if (onLoading == null) block(uiState)
                         else Loader(modifier = Modifier.fillMaxWidth(), onLoading = onLoading, uiState = uiState, content = block)
                     },
-                )
-            }
-        }
-    }
-
-    /**
-     * Suspend forever for special usages.
-     */
-    suspend fun open(
-        title: String,
-        icon: ImageVector,
-        onLoading: suspend () -> Unit,
-        block: @Composable () -> Unit,
-    ) {
-        return suspendCoroutine {
-            content = {
-                AlertDialog(
-                    onDismissRequest = {},
-                    confirmButton = {},
-                    dismissButton = null,
-                    title = { Text(text = title) },
-                    icon = { Icon(imageVector = icon, contentDescription = null) },
-                    text = { Loader(modifier = Modifier.fillMaxWidth(), onLoading = onLoading, content = block) },
-                    properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
                 )
             }
         }

@@ -1,7 +1,7 @@
 package com.xayah.databackup.ui.activity.main.page.restore
 
 import android.content.Context
-import android.content.Intent
+import android.content.pm.PackageInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -21,6 +21,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +29,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
+import com.xayah.databackup.data.OperationMask
+import com.xayah.databackup.data.PackageRestoreEntire
+import com.xayah.databackup.data.PackageRestoreEntireDao
 import com.xayah.databackup.ui.activity.main.page.backup.StorageItem
 import com.xayah.databackup.ui.activity.main.page.backup.StorageItemType
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
@@ -46,24 +51,27 @@ import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.RadioTokens
+import com.xayah.databackup.util.CompressionType
 import com.xayah.databackup.util.ConstantUtil
+import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.IntentUtil
+import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
+import com.xayah.databackup.util.command.EnvUtil
+import com.xayah.databackup.util.command.InstallationUtil
 import com.xayah.databackup.util.command.PreparationUtil
-import com.xayah.databackup.util.command.toLineString
-import com.xayah.databackup.util.databasePath
-import com.xayah.databackup.util.iconPath
 import com.xayah.databackup.util.readExternalRestoreSaveChild
 import com.xayah.databackup.util.readInternalRestoreSaveChild
 import com.xayah.databackup.util.readRestoreSavePath
 import com.xayah.databackup.util.saveExternalRestoreSaveChild
 import com.xayah.databackup.util.saveInternalRestoreSaveChild
 import com.xayah.databackup.util.saveRestoreSavePath
+import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.ExceptionUtil.tryOn
+import com.xayah.librootservice.util.ExceptionUtil.tryOnScope
 import com.xayah.librootservice.util.ExceptionUtil.tryService
+import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
-import kotlin.system.exitProcess
 
 @ExperimentalMaterial3Api
 private suspend fun DialogState.openDirectoryDialog(context: Context) {
@@ -192,42 +200,153 @@ private suspend fun DialogState.openDirectoryDialog(context: Context) {
     }
 }
 
+private data class TypedTimestamp(
+    val timestamp: Long,
+    val archivePathList: MutableList<PathParcelable>,
+)
+
+private data class TypedPath(
+    val packageName: String,
+    val typedTimestampList: MutableList<TypedTimestamp>,
+)
+
 @ExperimentalMaterial3Api
-private suspend fun DialogState.openReloadDialog(context: Context) {
-    val textList = mutableListOf<String>()
-    open(
+private suspend fun DialogState.openReloadDialog(context: Context, logUtil: LogUtil, packageRestoreEntireDao: PackageRestoreEntireDao) {
+    openLoading(
         title = context.getString(R.string.prompt),
         icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
         onLoading = {
-            // Copy the databases and icons from restore save path.
-            var isSuccess = true
-            PreparationUtil.copyRecursivelyAndPreserve(path = PathUtil.getDatabaseSavePath(), targetPath = PathUtil.getParentPath(context.databasePath()))
-                .also { (succeed, out) ->
-                    if (succeed.not()) {
-                        isSuccess = false
-                        textList.add("${context.getString(R.string.databases_reload_failed)}: ${out}.")
-                    }
-                }
-            PreparationUtil.copyRecursivelyAndPreserve(path = PathUtil.getIconSavePath(), targetPath = PathUtil.getParentPath(context.iconPath()))
-                .also { (succeed, out) ->
-                    if (succeed.not()) {
-                        isSuccess = false
-                        textList.add("${context.getString(R.string.icon_reload_failed)}: ${out}.")
-                    }
+            withIOContext {
+                val logTag = "Reload"
+                val logId = logUtil.log(logTag, "Start reloading...")
+                val remoteRootService = RemoteRootService(context)
+                val packageManager = context.packageManager
+                val installationUtil = InstallationUtil(logId, logUtil)
+                val pathList = remoteRootService.walkFileTree(PathUtil.getRestorePackagesSavePath())
+                val typedPathList = mutableListOf<TypedPath>()
+
+                logUtil.log(logTag, "Clear the table and try to create icon dir")
+                // Clear table first
+                packageRestoreEntireDao.clearTable()
+                // Create icon dir if it doesn't exist
+                EnvUtil.createIconDirectory(context)
+
+                logUtil.log(logTag, "Classify the paths")
+                // Classify the paths
+                pathList.forEach { path ->
+                    tryOnScope(
+                        block = {
+                            val pathListSize = path.pathList.size
+                            val packageName = path.pathList[pathListSize - 3]
+                            val timestamp = path.pathList[pathListSize - 2].toLong()
+                            val typedPathListIndex = typedPathList.indexOfLast { it.packageName == packageName }
+                            if (typedPathListIndex == -1) {
+                                val typedTimestamp = TypedTimestamp(timestamp = timestamp, archivePathList = mutableListOf(path))
+                                typedPathList.add(TypedPath(packageName = packageName, typedTimestampList = mutableListOf(typedTimestamp)))
+                            } else {
+                                val typedTimestampList = typedPathList[typedPathListIndex].typedTimestampList
+                                val typedTimestampIndex = typedTimestampList.indexOfLast { it.timestamp == timestamp }
+                                if (typedTimestampIndex == -1) {
+                                    val typedTimestamp = TypedTimestamp(timestamp = timestamp, archivePathList = mutableListOf(path))
+                                    typedPathList[typedPathListIndex].typedTimestampList.add(typedTimestamp)
+                                } else {
+                                    typedPathList[typedPathListIndex].typedTimestampList[typedTimestampIndex].archivePathList.add(path)
+                                }
+                            }
+                        },
+                        onException = {
+                            logUtil.log(logTag, "Failed: ${it.message}")
+                        }
+                    )
                 }
 
-            // Try to restart application.
-            if (isSuccess) tryOn(block = {
-                context.packageManager.getLaunchIntentForPackage(context.packageName).also { intent: Intent? ->
-                    intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    context.applicationContext.startActivity(intent)
-                    exitProcess(0)
+                logUtil.log(logTag, "Reload the archives")
+                typedPathList.forEach { typedPath ->
+                    // For each package
+                    val packageName = typedPath.packageName
+                    logUtil.log(logTag, "Package: $packageName")
+
+                    typedPath.typedTimestampList.forEach { typedTimestamp ->
+                        // For each timestamp
+                        var packageInfo: PackageInfo? = null
+                        val timestamp = typedTimestamp.timestamp
+                        val archivePathList = typedTimestamp.archivePathList
+                        var compressionType: CompressionType = CompressionType.ZSTD
+                        var operationCode = OperationMask.None
+
+                        logUtil.log(logTag, "Timestamp: $timestamp")
+                        val tmpApkPath = PathUtil.getTmpApkPath(context = context, packageName = packageName)
+                        remoteRootService.deleteRecursively(tmpApkPath)
+                        remoteRootService.mkdirs(tmpApkPath)
+
+                        archivePathList.forEach { archivePath ->
+                            // For each archive
+                            logUtil.log(logTag, "Archive: ${archivePath.pathString}")
+                            tryOnScope(
+                                block = {
+                                    when (archivePath.nameWithoutExtension) {
+                                        DataType.PACKAGE_APK.type -> {
+                                            val type = CompressionType.suffixOf(archivePath.extension)
+                                            if (type != null) {
+                                                compressionType = type
+                                                installationUtil.decompress(
+                                                    archivePath = archivePath.pathString,
+                                                    tmpApkPath = tmpApkPath,
+                                                    compressionType = type
+                                                )
+                                                remoteRootService.listFilePaths(tmpApkPath).also { pathList ->
+                                                    if (pathList.isNotEmpty()) {
+                                                        packageInfo = remoteRootService.getPackageArchiveInfo(pathList.first())
+                                                        operationCode = operationCode or OperationMask.Apk
+                                                    }
+                                                }
+                                            } else {
+                                                logUtil.log(logTag, "Failed to parse compression type: ${archivePath.extension}")
+                                            }
+                                        }
+
+                                        DataType.PACKAGE_USER.type -> {
+                                            operationCode = operationCode or OperationMask.Data
+                                        }
+                                    }
+                                },
+                                onException = {
+                                    logUtil.log(logTag, "Failed: ${it.message}")
+                                }
+                            )
+                        }
+
+                        val packageRestoreEntire = PackageRestoreEntire(
+                            packageName = packageName,
+                            label = "",
+                            backupOpCode = operationCode,
+                            operationCode = OperationMask.None,
+                            timestamp = timestamp,
+                            versionName = "",
+                            versionCode = 0,
+                            flags = 0,
+                            compressionType = compressionType,
+                            active = false
+                        )
+                        packageInfo?.apply {
+                            packageRestoreEntire.also { entity ->
+                                entity.label = applicationInfo.loadLabel(packageManager).toString()
+                                entity.versionName = versionName ?: ""
+                                entity.versionCode = longVersionCode
+                                entity.flags = applicationInfo.flags
+                            }
+                            val icon = applicationInfo.loadIcon(packageManager)
+                            EnvUtil.saveIcon(context, packageName, icon)
+                            logUtil.log(logTag, "Icon saved")
+                        }
+                        packageRestoreEntireDao.upsert(packageRestoreEntire)
+
+                        remoteRootService.deleteRecursively(tmpApkPath)
+                    }
                 }
-            }, onException = {
-                textList.add(context.getString(R.string.restart_failed))
-            })
+                remoteRootService.destroyService()
+            }
         },
-        block = { Text(text = textList.toLineString().trim()) }
     )
 }
 
@@ -237,8 +356,11 @@ private suspend fun DialogState.openReloadDialog(context: Context) {
 fun PageRestore() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val viewModel = hiltViewModel<RestoreViewModel>()
     val dialogSlot = LocalSlotScope.current!!.dialogSlot
     val navController = LocalSlotScope.current!!.navController
+    val uiState by viewModel.uiState
+
     LazyColumn(
         modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingLarge)
@@ -265,7 +387,7 @@ fun PageRestore() {
                 val onClicks = listOf<suspend () -> Unit>(
                     {
                         dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_reload)).also { (confirmed, _) ->
-                            if (confirmed) dialogSlot.openReloadDialog(context)
+                            if (confirmed) dialogSlot.openReloadDialog(context, uiState.logUtil, uiState.packageRestoreEntireDao)
                         }
                     },
                     {

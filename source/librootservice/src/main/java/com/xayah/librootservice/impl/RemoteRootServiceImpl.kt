@@ -5,8 +5,11 @@ import android.app.usage.StorageStats
 import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PackageInfoFlags
 import android.content.pm.PackageManagerHidden
 import android.content.pm.UserInfo
+import android.os.Build
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.StatFs
@@ -16,10 +19,20 @@ import android.os.UserManager
 import android.os.UserManagerHidden
 import com.xayah.libhiddenapi.HiddenApiBypassUtil
 import com.xayah.librootservice.IRemoteRootService
+import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.parcelables.StatFsParcelable
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.ExceptionUtil.tryWithBoolean
 import java.io.File
+import java.io.IOException
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
+import kotlin.io.path.name
+import kotlin.io.path.pathString
 
 internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     companion object {
@@ -171,5 +184,69 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
                 listOf()
             }
         )
+    }
+
+    override fun walkFileTree(path: String): ParcelFileDescriptor = synchronized(lock) {
+        val parcel = Parcel.obtain()
+        parcel.setDataPosition(0)
+
+        parcel.writeTypedList(
+            tryOn(
+                block = {
+                    val pathParcelableList = mutableListOf<PathParcelable>()
+                    Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
+                        override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                            return FileVisitResult.CONTINUE
+                        }
+
+                        override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                            if (file != null && attrs != null) {
+                                val pathList = file.pathString.split("/")
+                                val pathString = file.pathString
+                                val nameWithoutExtension = file.name.split(".").first()
+                                val extension = file.name.replace("${nameWithoutExtension}.", "")
+                                pathParcelableList.add(PathParcelable(pathList, pathString, nameWithoutExtension, extension))
+                            }
+                            return FileVisitResult.CONTINUE
+                        }
+
+                        override fun visitFileFailed(file: Path?, exc: IOException?): FileVisitResult {
+                            return FileVisitResult.CONTINUE
+                        }
+
+                        override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
+                            return FileVisitResult.CONTINUE
+                        }
+                    })
+                    pathParcelableList
+                },
+                onException = {
+                    listOf()
+                }
+            )
+        )
+
+        val tmp = File(ParcelTmpFilePath, ParcelTmpFileName)
+        tmp.createNewFile()
+        tmp.writeBytes(parcel.marshall())
+        val pfd = ParcelFileDescriptor.open(tmp, ParcelFileDescriptor.MODE_READ_WRITE)
+        tmp.deleteRecursively()
+
+        parcel.recycle()
+        pfd
+    }
+
+    override fun getPackageArchiveInfo(path: String): PackageInfo? = synchronized(lock) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            systemContext.packageManager.getPackageArchiveInfo(path, PackageInfoFlags.of(PackageManager.GET_ACTIVITIES.toLong()))?.apply {
+                applicationInfo?.sourceDir = path
+                applicationInfo?.publicSourceDir = path
+            }
+        } else {
+            systemContext.packageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES)?.apply {
+                applicationInfo?.sourceDir = path
+                applicationInfo?.publicSourceDir = path
+            }
+        }
     }
 }

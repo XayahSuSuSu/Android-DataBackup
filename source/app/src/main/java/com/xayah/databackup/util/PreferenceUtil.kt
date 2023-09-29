@@ -10,20 +10,29 @@ import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 
+private const val TAR_SUFFIX = "tar"
+private const val ZSTD_SUFFIX = "tar.zst"
+private const val LZ4_SUFFIX = "tar.lz4"
+
 enum class CompressionType(val type: String, val suffix: String, val compressPara: String, val decompressPara: String) {
-    TAR("tar", "tar", "", ""),
-    ZSTD("zstd", "tar.zst", "zstd -r -T0 --ultra -1 -q --priority=rt", "-I ${QUOTE}zstd${QUOTE}"),
-    LZ4("lz4", "tar.lz4", "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4", "-I ${QUOTE}zstd${QUOTE}");
+    TAR("tar", TAR_SUFFIX, "", ""),
+    ZSTD("zstd", ZSTD_SUFFIX, "zstd -r -T0 --ultra -1 -q --priority=rt", "-I ${QUOTE}zstd${QUOTE}"),
+    LZ4("lz4", LZ4_SUFFIX, "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4", "-I ${QUOTE}zstd${QUOTE}");
 
     companion object {
-        fun of(name: String?): CompressionType {
-            return tryOn(
-                block = {
-                    CompressionType.valueOf(name!!.uppercase())
-                },
-                onException = {
-                    ZSTD
-                })
+        fun of(name: String?): CompressionType = tryOn(
+            block = {
+                CompressionType.valueOf(name!!.uppercase())
+            },
+            onException = {
+                ZSTD
+            })
+
+        fun suffixOf(suffix: String): CompressionType? = when (suffix) {
+            TAR_SUFFIX -> TAR
+            ZSTD_SUFFIX -> ZSTD
+            LZ4_SUFFIX -> LZ4
+            else -> null
         }
     }
 }
