@@ -70,7 +70,7 @@
     <string name="backing_up">Yedekleniyor</string>
     <string name="restoring">Kurtarılıyor</string>
     <string name="read_icon">İkon okuma</string>
-    <string name="app_crashed">Uygulama çöküşü</string>
+    <string name="app_crashed">Uygulama çöktü</string>
     <string name="cancelling">İptal ediliyor</string>
     <string name="copy_grant_command">Hibe komutunu kopyala</string>
     <string name="card_app_subtitle">Üçüncü taraf uygulamalarını veya sistem uygulamalarını Yedekleme (Geri Yükleme)</string>
