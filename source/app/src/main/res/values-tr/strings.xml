@@ -32,7 +32,7 @@
     <string name="search_bar_hint">İsim veya paket arayın…</string>
     <string name="none">Yok</string>
     <string name="export">Dışa Aktar</string>
-    <string name="restore_completed">Geri yükleme tamamlandı</string>
+    <string name="restore_completed">Restorasyon tamamlandı</string>
     <string name="installed">Kuruldu</string>
     <string name="failed_and_terminated">Başarısız oldu ve sonlandırıldı</string>
     <string name="utilities">Yardımcı Hizmetler</string>
@@ -49,9 +49,9 @@
     <string name="network_desc">Uygulama güncelleme bilgilerini, uygulama analizlerini almak için kullanılır</string>
     <string name="keep_screen_on">Ekranı açık tutun</string>
     <string name="reset_backup_list_desc">Yedeklemeden sonra seçimlerin seçimini kaldırma</string>
-    <string name="selected_apks">Seçili apk\'lar</string>
+    <string name="selected_apks">Seçili paketler</string>
     <string name="structure">Yapı</string>
-    <string name="apk">Yükleyi̇ci̇</string>
+    <string name="apk">APK</string>
     <string name="backup">Yedek</string>
     <string name="network">Şebeke</string>
     <string name="processing_exit_confirmation">Çıkmak istediğinizden emin misiniz\? Bu, işlemi yarıda kesecektir.</string>
@@ -107,4 +107,7 @@
     <string name="compression_test">Sıkıştırma testi</string>
     <string name="failed">Başarısız</string>
     <string name="restore_dir">Kurtarma hedefi</string>
+    <string name="confirm_delete">Seçilen öğeleri veritabanından ve yerel dosyalardan sildiğinizden emin olun</string>
+    <string name="delete">Sil</string>
+    <string name="app_crashed">Uygulama çöktü</string>
 </resources>
