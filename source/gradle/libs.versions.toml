@@ -3,8 +3,8 @@
 compileSdk = "34"
 minSdk = "28"
 targetSdk = "34"
-versionCode = "3400099"
-versionName = "1.1.0-alpha01"
+versionCode = "3400100"
+versionName = "1.1.0-alpha02"
 compose-compiler = "1.4.3"
 
 # libraries
