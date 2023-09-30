@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
+    version = 1,
+    exportSchema = true,
     entities = [
         LogEntity::class,
         CmdEntity::class,
@@ -11,7 +13,7 @@ import androidx.room.RoomDatabase
         PackageBackupOperation::class,
         PackageRestoreEntire::class,
         PackageRestoreOperation::class,
-    ], version = 1
+    ],
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun logDao(): LogDao

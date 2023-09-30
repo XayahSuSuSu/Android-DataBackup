@@ -25,12 +25,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += "room.schemaLocation" to "$projectDir/schemas"
-            }
-        }
     }
 
     // __(API)_(feature)_(abi)___(version)
@@ -169,4 +163,8 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

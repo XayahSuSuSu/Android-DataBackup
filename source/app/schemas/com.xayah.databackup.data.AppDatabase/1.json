@@ -1,0 +1,575 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "8f337a1137874a704facf08344affa87",
+    "entities": [
+      {
+        "tableName": "LogEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `startTimestamp` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `tag` TEXT NOT NULL, `msg` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTimestamp",
+            "columnName": "startTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tag",
+            "columnName": "tag",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "msg",
+            "columnName": "msg",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "CmdEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `logId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `type` TEXT NOT NULL, `msg` TEXT NOT NULL, FOREIGN KEY(`logId`) REFERENCES `LogEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logId",
+            "columnName": "logId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "msg",
+            "columnName": "msg",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_CmdEntity_logId",
+            "unique": false,
+            "columnNames": [
+              "logId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_CmdEntity_logId` ON `${TABLE_NAME}` (`logId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "LogEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "logId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "PackageBackupEntire",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `operationCode` INTEGER NOT NULL DEFAULT 0, `timestamp` INTEGER NOT NULL DEFAULT 0, `versionName` TEXT NOT NULL, `versionCode` INTEGER NOT NULL, `flags` INTEGER NOT NULL, `firstInstallTime` INTEGER NOT NULL, `active` INTEGER NOT NULL, `appBytes` INTEGER NOT NULL, `cacheBytes` INTEGER NOT NULL, `dataBytes` INTEGER NOT NULL, `externalCacheBytes` INTEGER NOT NULL, PRIMARY KEY(`packageName`))",
+        "fields": [
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "operationCode",
+            "columnName": "operationCode",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "versionName",
+            "columnName": "versionName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "versionCode",
+            "columnName": "versionCode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flags",
+            "columnName": "flags",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstInstallTime",
+            "columnName": "firstInstallTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageStats.appBytes",
+            "columnName": "appBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageStats.cacheBytes",
+            "columnName": "cacheBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageStats.dataBytes",
+            "columnName": "dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageStats.externalCacheBytes",
+            "columnName": "externalCacheBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "packageName"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PackageBackupOperation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL DEFAULT 0, `startTimestamp` INTEGER NOT NULL DEFAULT 0, `endTimestamp` INTEGER NOT NULL DEFAULT 0, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `packageState` INTEGER NOT NULL, `apkLog` TEXT NOT NULL, `apkState` TEXT NOT NULL DEFAULT 'IDLE', `userLog` TEXT NOT NULL, `userState` TEXT NOT NULL DEFAULT 'IDLE', `userDeLog` TEXT NOT NULL, `userDeState` TEXT NOT NULL DEFAULT 'IDLE', `dataLog` TEXT NOT NULL, `dataState` TEXT NOT NULL DEFAULT 'IDLE', `obbLog` TEXT NOT NULL, `obbState` TEXT NOT NULL DEFAULT 'IDLE', `mediaLog` TEXT NOT NULL, `mediaState` TEXT NOT NULL DEFAULT 'IDLE')",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "startTimestamp",
+            "columnName": "startTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "endTimestamp",
+            "columnName": "endTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageState",
+            "columnName": "packageState",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkLog",
+            "columnName": "apkLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkState",
+            "columnName": "apkState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "userLog",
+            "columnName": "userLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userState",
+            "columnName": "userState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "userDeLog",
+            "columnName": "userDeLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDeState",
+            "columnName": "userDeState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "dataLog",
+            "columnName": "dataLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataState",
+            "columnName": "dataState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "obbLog",
+            "columnName": "obbLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obbState",
+            "columnName": "obbState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "mediaLog",
+            "columnName": "mediaLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaState",
+            "columnName": "mediaState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PackageRestoreEntire",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `backupOpCode` INTEGER NOT NULL DEFAULT 0, `operationCode` INTEGER NOT NULL DEFAULT 0, `timestamp` INTEGER NOT NULL DEFAULT 0, `versionName` TEXT NOT NULL, `versionCode` INTEGER NOT NULL, `flags` INTEGER NOT NULL, `compressionType` TEXT NOT NULL, `active` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "backupOpCode",
+            "columnName": "backupOpCode",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "operationCode",
+            "columnName": "operationCode",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "versionName",
+            "columnName": "versionName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "versionCode",
+            "columnName": "versionCode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flags",
+            "columnName": "flags",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "compressionType",
+            "columnName": "compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PackageRestoreOperation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL DEFAULT 0, `startTimestamp` INTEGER NOT NULL DEFAULT 0, `endTimestamp` INTEGER NOT NULL DEFAULT 0, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `packageState` INTEGER NOT NULL, `apkLog` TEXT NOT NULL, `apkState` TEXT NOT NULL DEFAULT 'IDLE', `userLog` TEXT NOT NULL, `userState` TEXT NOT NULL DEFAULT 'IDLE', `userDeLog` TEXT NOT NULL, `userDeState` TEXT NOT NULL DEFAULT 'IDLE', `dataLog` TEXT NOT NULL, `dataState` TEXT NOT NULL DEFAULT 'IDLE', `obbLog` TEXT NOT NULL, `obbState` TEXT NOT NULL DEFAULT 'IDLE', `mediaLog` TEXT NOT NULL, `mediaState` TEXT NOT NULL DEFAULT 'IDLE')",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "startTimestamp",
+            "columnName": "startTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "endTimestamp",
+            "columnName": "endTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageState",
+            "columnName": "packageState",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkLog",
+            "columnName": "apkLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkState",
+            "columnName": "apkState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "userLog",
+            "columnName": "userLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userState",
+            "columnName": "userState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "userDeLog",
+            "columnName": "userDeLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDeState",
+            "columnName": "userDeState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "dataLog",
+            "columnName": "dataLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataState",
+            "columnName": "dataState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "obbLog",
+            "columnName": "obbLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obbState",
+            "columnName": "obbState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "mediaLog",
+            "columnName": "mediaLog",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaState",
+            "columnName": "mediaState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8f337a1137874a704facf08344affa87')"
+    ]
+  }
+}
