@@ -174,7 +174,7 @@ fun PackageRestoreProcessing() {
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             Column {
-                ProcessingTopBar(scrollBehavior = scrollBehavior, title = "${stringResource(R.string.backing_up)}($operationCount/$selectedBothCount)") {
+                ProcessingTopBar(scrollBehavior = scrollBehavior, title = "${stringResource(R.string.restoring)}($operationCount/$selectedBothCount)") {
                     scope.launch {
                         confirmExit(dialogSlot, context)
                     }
