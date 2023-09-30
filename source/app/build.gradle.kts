@@ -159,6 +159,9 @@ dependencies {
     "premiumImplementation"(platform(libs.firebase.bom))
     "premiumImplementation"(libs.firebase.crashlytics)
     "premiumImplementation"(libs.firebase.analytics)
+
+    // PickYou
+    implementation(libs.pickyou)
 }
 
 kapt {

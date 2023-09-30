@@ -32,6 +32,7 @@ palette = "1.0.0"
 google-services = "4.4.0"
 firebase-crashlytics-gradle = "2.9.9"
 firebase-bom = "32.3.1"
+pickyou = "2.0.0"
 
 # plugins
 android-gradle-plugin = "8.1.1"
@@ -73,6 +74,7 @@ firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlyti
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
+pickyou = { module = "com.github.XayahSuSuSu:AndroidModule-PickYou", version.ref = "pickyou" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
