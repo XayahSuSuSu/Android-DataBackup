@@ -110,4 +110,10 @@
     <string name="confirm_delete_selected_restoring_items">Seçilen öğeleri veritabanından ve yerel dosyalardan sildiğinizden emin olun</string>
     <string name="delete">Sil</string>
     <string name="app_crashed">Uygulama çöktü</string>
+    <string name="select_a_dir">Hedef seçin</string>
+    <string name="confirm_delete">Silmeye emin misin\?</string>
+    <string name="custom_storage">Özel depolama</string>
+    <string name="supported_format">Desteklenen format</string>
+    <string name="no_browser">Belki de açacak bir tarayıcı yoktur</string>
+    <string name="add">Ekle</string>
 </resources>
