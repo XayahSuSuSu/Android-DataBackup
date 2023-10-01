@@ -35,7 +35,7 @@ firebase-bom = "32.3.1"
 pickyou = "2.0.0"
 
 # plugins
-android-gradle-plugin = "8.1.1"
+android-gradle-plugin = "8.1.2"
 kotlin = "1.8.10"
 hilt = "2.44"
 ksp-kotlin = "1.8.10-1.0.9"
