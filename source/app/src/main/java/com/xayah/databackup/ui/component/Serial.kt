@@ -32,11 +32,11 @@ fun Serial(modifier: Modifier = Modifier, serial: Char) {
 }
 
 @Composable
-fun Serial(modifier: Modifier = Modifier, serial: String) {
+fun Serial(modifier: Modifier = Modifier, serial: String, enabled: Boolean = true) {
     Surface(
         shape = CircleShape,
         modifier = modifier.height(SerialTokens.CircleSize),
-        color = ColorScheme.onSurfaceVariant()
+        color = if (enabled) ColorScheme.onSurfaceVariant() else ColorScheme.onSurfaceVariant().copy(alpha = SerialTokens.DisabledAlpha)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -45,7 +45,7 @@ fun Serial(modifier: Modifier = Modifier, serial: String) {
             TitleSmallBoldText(
                 modifier = Modifier.paddingHorizontal(SerialTokens.PaddingHorizontal),
                 text = serial,
-                color = ColorScheme.surface()
+                color = if (enabled) ColorScheme.surface() else ColorScheme.surface().copy(alpha = SerialTokens.DisabledAlpha)
             )
         }
     }

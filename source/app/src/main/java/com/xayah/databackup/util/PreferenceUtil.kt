@@ -293,40 +293,6 @@ fun Context.readBackupSavePath(): String {
 }
 
 /**
- * The child of internal path.
- * e.g. "DataBackup" in "/storage/emulated/0/DataBackup".
- */
-fun Context.saveInternalBackupSaveChild(child: String) {
-    savePreferences("backup_save_child_internal", child.trim())
-}
-
-/**
- * @see [saveInternalBackupSaveChild]
- */
-fun Context.readInternalBackupSaveChild(): String {
-    return readPreferencesString("backup_save_child_internal", ConstantUtil.DefaultBackupChild)
-        ?: ConstantUtil.DefaultBackupChild
-}
-
-/**
- * The child of external path.
- * Though there could be more than one external storage devices,
- * we save only one child of them.
- * e.g. "DataBackup" in "/mnt/media_rw/E7F9-FA61/DataBackup".
- */
-fun Context.saveExternalBackupSaveChild(child: String) {
-    savePreferences("backup_save_child_external", child.trim())
-}
-
-/**
- * @see [saveExternalBackupSaveChild]
- */
-fun Context.readExternalBackupSaveChild(): String {
-    return readPreferencesString("backup_save_child_external", ConstantUtil.DefaultBackupChild)
-        ?: ConstantUtil.DefaultBackupChild
-}
-
-/**
  * The target user while restoring.
  */
 fun Context.saveRestoreUserId(userId: Int) {
@@ -355,40 +321,6 @@ fun Context.saveRestoreSavePath(path: String) {
 fun Context.readRestoreSavePath(): String {
     return readPreferencesString("restore_save_path", ConstantUtil.DefaultRestoreSavePath)
         ?: ConstantUtil.DefaultRestoreSavePath
-}
-
-/**
- * The child of internal path.
- * e.g. "DataBackup" in "/storage/emulated/0/DataBackup".
- */
-fun Context.saveInternalRestoreSaveChild(child: String) {
-    savePreferences("restore_save_child_internal", child.trim())
-}
-
-/**
- * @see [saveInternalRestoreSaveChild]
- */
-fun Context.readInternalRestoreSaveChild(): String {
-    return readPreferencesString("restore_save_child_internal", ConstantUtil.DefaultRestoreChild)
-        ?: ConstantUtil.DefaultRestoreChild
-}
-
-/**
- * The child of external path.
- * Though there could be more than one external storage devices,
- * we save only one child of them.
- * e.g. "DataBackup" in "/mnt/media_rw/E7F9-FA61/DataBackup".
- */
-fun Context.saveExternalRestoreSaveChild(child: String) {
-    savePreferences("restore_save_child_external", child.trim())
-}
-
-/**
- * @see [saveExternalRestoreSaveChild]
- */
-fun Context.readExternalRestoreSaveChild(): String {
-    return readPreferencesString("restore_save_child_external", ConstantUtil.DefaultRestoreChild)
-        ?: ConstantUtil.DefaultRestoreChild
 }
 
 fun Context.saveIconSaveTime(timestamp: Long) {

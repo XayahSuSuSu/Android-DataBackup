@@ -12,6 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.xayah.databackup.ui.theme.JetbrainsMonoFamily
+import com.xayah.databackup.ui.token.CommonTokens
 
 @Composable
 fun TopBarTitle(modifier: Modifier = Modifier, textAlign: TextAlign? = null, text: String) {
@@ -130,12 +131,13 @@ fun BodySmallText(modifier: Modifier = Modifier, text: String) {
 }
 
 @Composable
-fun BodySmallBoldText(modifier: Modifier = Modifier, text: String) {
+fun BodySmallBoldText(modifier: Modifier = Modifier, text: String, color: Color = Color.Unspecified, enabled: Boolean = true) {
     Text(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodySmall,
         fontWeight = FontWeight.Bold,
+        color = if (enabled) color else color.copy(alpha = CommonTokens.DisabledAlpha),
     )
 }
 

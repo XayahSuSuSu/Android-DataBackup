@@ -30,7 +30,7 @@ data class StorageStats(
     var externalCacheBytes: Long = 0,
 )
 
-private fun formatSize(sizeBytes: Double): String = run {
+fun formatSize(sizeBytes: Double): String = run {
     var unit = "Bytes"
     var size = sizeBytes
     val gb = (1000 * 1000 * 1000).toDouble()

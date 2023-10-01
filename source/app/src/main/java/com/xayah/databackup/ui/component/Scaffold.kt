@@ -7,12 +7,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -103,6 +107,35 @@ fun CrashScaffold(viewModel: CrashViewModel) {
             LabelSmallText(text = uiState.text)
 
             BottomSpacer(innerPadding = innerPadding)
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun DirectoryScaffold(title: String, onFabClick: () -> Unit, content: @Composable () -> Unit) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            DirectoryTopBar(scrollBehavior = scrollBehavior, title = title)
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onFabClick,
+                expanded = true,
+                icon = { Icon(imageVector = Icons.Rounded.Add, contentDescription = null) },
+                text = { Text(text = stringResource(id = R.string.add)) },
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    ) { innerPadding ->
+        Column {
+            TopSpacer(innerPadding = innerPadding)
+
+            Box(modifier = Modifier.weight(1f)) {
+                content()
+            }
         }
     }
 }

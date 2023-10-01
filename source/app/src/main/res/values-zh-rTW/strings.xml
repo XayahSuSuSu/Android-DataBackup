@@ -107,7 +107,12 @@
     <string name="installed">已安裝</string>
     <string name="sooner_or_later">即將到來</string>
     <string name="delete">刪除</string>
-    <string name="confirm_delete">確定要從資料庫以及本機檔案中刪除所選用嗎</string>
+    <string name="confirm_delete_selected_restoring_items">確定要從資料庫以及本機檔案中刪除所選用嗎</string>
     <string name="app_crashed">應用程式產生崩潰</string>
     <string name="no_browser">也許沒有瀏覽器能夠打開它</string>
+    <string name="supported_format">支持的格式</string>
+    <string name="add">添加</string>
+    <string name="custom_storage">自訂存儲</string>
+    <string name="select_a_dir">選擇一個目錄</string>
+    <string name="confirm_delete">確定要刪除嗎？</string>
 </resources>

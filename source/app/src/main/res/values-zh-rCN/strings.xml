@@ -107,7 +107,12 @@
     <string name="installed">已安装</string>
     <string name="sooner_or_later">即将到来</string>
     <string name="delete">删除</string>
-    <string name="confirm_delete">确定要从数据库以及本地文件中删除所选项吗</string>
+    <string name="confirm_delete_selected_restoring_items">确定要从数据库以及本地文件中删除所选项吗</string>
     <string name="app_crashed">应用发生崩溃</string>
     <string name="no_browser">也许没有浏览器能够打开它</string>
+    <string name="supported_format">支持的格式</string>
+    <string name="add">添加</string>
+    <string name="custom_storage">自定义存储</string>
+    <string name="select_a_dir">选择一个目录</string>
+    <string name="confirm_delete">确定要删除吗？</string>
 </resources>

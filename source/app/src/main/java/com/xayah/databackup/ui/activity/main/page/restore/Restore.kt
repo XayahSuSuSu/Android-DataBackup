@@ -3,28 +3,23 @@ package com.xayah.databackup.ui.activity.main.page.restore
 import android.content.Context
 import android.content.pm.PackageInfo
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,8 +30,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.data.PackageRestoreEntireDao
-import com.xayah.databackup.ui.activity.main.page.backup.StorageItem
-import com.xayah.databackup.ui.activity.main.page.backup.StorageItemType
+import com.xayah.databackup.ui.activity.directory.router.DirectoryRoutes
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.CardActionButton
@@ -44,16 +38,13 @@ import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.Module
 import com.xayah.databackup.ui.component.OverLookRestoreCard
-import com.xayah.databackup.ui.component.RadioButtonGroup
 import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
-import com.xayah.databackup.ui.token.RadioTokens
 import com.xayah.databackup.util.CompressionType
-import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.IntentUtil
@@ -61,147 +52,12 @@ import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.EnvUtil
 import com.xayah.databackup.util.command.InstallationUtil
-import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.iconPath
-import com.xayah.databackup.util.readExternalRestoreSaveChild
-import com.xayah.databackup.util.readInternalRestoreSaveChild
-import com.xayah.databackup.util.readRestoreSavePath
-import com.xayah.databackup.util.saveExternalRestoreSaveChild
-import com.xayah.databackup.util.saveInternalRestoreSaveChild
-import com.xayah.databackup.util.saveRestoreSavePath
 import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryOnScope
-import com.xayah.librootservice.util.ExceptionUtil.tryService
 import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
-
-@ExperimentalMaterial3Api
-private suspend fun DialogState.openDirectoryDialog(context: Context) {
-    val items = mutableListOf<StorageItem>()
-
-    val (state, item) = open(
-        initialState = StorageItem(
-            title = "",
-            type = StorageItemType.Internal,
-            progress = 0f,
-            parent = "",
-            child = "",
-            display = "",
-            enabled = true
-        ),
-        title = context.getString(R.string.restore_dir),
-        icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
-        onLoading = {
-            val remoteRootService = RemoteRootService(context)
-
-            // Internal storage
-            val internalParent = ConstantUtil.DefaultRestoreParent
-            val internalChild = context.readInternalRestoreSaveChild()
-            val internalPath = "${internalParent}/${internalChild}"
-            val internalItem = StorageItem(
-                title = context.getString(R.string.internal_storage),
-                type = StorageItemType.Internal,
-                progress = 0f,
-                parent = internalParent,
-                child = internalChild,
-                display = internalPath,
-                enabled = true
-            )
-
-            tryService(onFailed = { msg ->
-                internalItem.display =
-                    "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}"
-            }) {
-                val internalStatFs = remoteRootService.readStatFs(internalParent)
-                internalItem.progress = internalStatFs.availableBytes.toFloat() / internalStatFs.totalBytes
-            }
-            items.add(internalItem)
-
-            // External storage
-            val externalList = PreparationUtil.listExternalStorage()
-            val externalChild = context.readExternalRestoreSaveChild()
-            for (storageItem in externalList) {
-                // e.g. /mnt/media_rw/E7F9-FA61 exfat
-                try {
-                    val (parent, type) = storageItem.split(" ")
-                    val externalPath = "${parent}/${externalChild}"
-                    val item = StorageItem(
-                        title = "${context.getString(R.string.external_storage)} $type",
-                        type = StorageItemType.External,
-                        progress = 0f,
-                        parent = parent,
-                        child = externalChild,
-                        display = externalPath,
-                        enabled = true
-                    )
-                    tryService(onFailed = { msg ->
-                        item.display =
-                            "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}"
-                    }) {
-                        val externalPathStatFs = remoteRootService.readStatFs(parent)
-                        item.progress = externalPathStatFs.availableBytes.toFloat() / externalPathStatFs.totalBytes
-                    }
-                    // Check the format
-                    val supported = type.lowercase() in ConstantUtil.SupportedExternalStorageFormat
-                    if (supported.not()) {
-                        item.title = "${context.getString(R.string.unsupported_format)}: $type"
-                        item.enabled = false
-                    }
-                    items.add(item)
-                } catch (_: Exception) {
-                }
-            }
-            remoteRootService.destroyService()
-        },
-        block = { uiState ->
-            var defIndex = items.indexOfFirst { it.display == context.readRestoreSavePath() }
-            if (defIndex == -1) {
-                // The save path is not in storage items, reset it.
-                context.saveRestoreSavePath(ConstantUtil.DefaultRestoreSavePath)
-                defIndex = 0
-            }
-            RadioButtonGroup(
-                items = items.toList(),
-                defSelected = items[defIndex],
-                itemVerticalArrangement = Arrangement.spacedBy(RadioTokens.ItemVerticalPadding),
-                onItemClick = {
-                    uiState.value = it
-                },
-                onItemEnabled = { it.enabled }
-            ) { item ->
-                Column(verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingTiny)) {
-                    Text(
-                        text = item.title,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                    LinearProgressIndicator(
-                        modifier = Modifier.clip(CircleShape),
-                        progress = item.progress
-                    )
-                    Text(
-                        text = item.display,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
-            }
-        }
-    )
-    if (state) {
-        when (item.type) {
-            StorageItemType.Internal -> {
-                context.saveInternalRestoreSaveChild(item.child)
-            }
-
-            StorageItemType.External -> {
-                context.saveExternalRestoreSaveChild(item.child)
-            }
-
-            else -> {}
-        }
-        context.saveRestoreSavePath("${item.parent}/${item.child}")
-    }
-}
 
 private data class TypedTimestamp(
     val timestamp: Long,
@@ -423,7 +279,7 @@ fun PageRestore() {
                         }
                     },
                     {
-                        dialogSlot.openDirectoryDialog(context)
+                        IntentUtil.toDirectoryActivity(context = context, route = DirectoryRoutes.DirectoryRestore)
                     },
                     {
                         navController.navigate(MainRoutes.Tree.route)

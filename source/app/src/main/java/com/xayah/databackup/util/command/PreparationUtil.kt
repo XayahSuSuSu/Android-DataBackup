@@ -1,16 +1,21 @@
 package com.xayah.databackup.util.command
 
-import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.util.SymbolUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.outString
 
 object PreparationUtil {
     suspend fun listExternalStorage(): List<String> {
-        // mount | awk '$3 ~ /\mnt\/media_rw/ {print $3, $5}'
+        // mount | awk '$3 ~ /\mnt\/media_rw/ {print $3}'
         val exec =
-            CommonUtil.execute("mount | awk '${SymbolUtil.USD}3 ~ /${SymbolUtil.BACKSLASH}mnt${SymbolUtil.BACKSLASH}/media_rw/ {print ${SymbolUtil.USD}3, ${SymbolUtil.USD}5}'")
+            CommonUtil.execute("mount | awk '${SymbolUtil.USD}3 ~ /${SymbolUtil.BACKSLASH}mnt${SymbolUtil.BACKSLASH}/media_rw/ {print ${SymbolUtil.USD}3}'")
         return exec.out
+    }
+
+    suspend fun getExternalStorageType(path: String): String {
+        // mount | awk '$3 == "/mnt/media_rw/6EBF-FE14" {print $5}'
+        val exec = CommonUtil.execute("mount | awk '${SymbolUtil.USD}3 == $QUOTE${path}$QUOTE {print ${SymbolUtil.USD}5}'")
+        return exec.out.firstOrNull() ?: ""
     }
 
     suspend fun tree(path: String): String {

@@ -320,7 +320,7 @@ fun PackageRestoreList() {
                         DeleteChip {
                             scope.launch {
                                 withIOContext {
-                                    dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete)).also { (confirmed, _) ->
+                                    dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete_selected_restoring_items)).also { (confirmed, _) ->
                                         if (confirmed) {
                                             dialogSlot.openDeleteDialog(
                                                 context = context,

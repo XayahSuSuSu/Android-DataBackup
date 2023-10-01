@@ -333,6 +333,55 @@ fun ModalStringListDropdownMenu(
     }
 }
 
+data class ActionMenuItem(
+    val title: String,
+    val icon: ImageVector,
+    val enabled: Boolean,
+    val onClick: () -> Unit,
+)
+
+@Composable
+fun ModalActionDropdownMenu(
+    expanded: Boolean,
+    actionList: List<ActionMenuItem>,
+    maxDisplay: Int? = null,
+    onDismissRequest: () -> Unit,
+) {
+    ModalDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+        var itemHeightPx by remember { mutableIntStateOf(0) }
+        var modifier: Modifier = Modifier
+        if (maxDisplay != null) {
+            val scrollState = rememberScrollState()
+            with(LocalDensity.current) {
+                /**
+                 * If [maxDisplay] is non-null, limit the max height.
+                 */
+                modifier = Modifier
+                    .heightIn(max = ((itemHeightPx * maxDisplay).toDp()))
+                    .verticalScroll(scrollState)
+            }
+        }
+        Column(modifier = modifier) {
+            actionList.forEach { item ->
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .background(ColorScheme.onPrimary())
+                        .onSizeChanged { itemHeightPx = it.height },
+                    text = {
+                        Text(
+                            modifier = Modifier.paddingHorizontal(MenuTokens.ModalDropdownMenuPadding),
+                            text = item.title,
+                        )
+                    },
+                    enabled = item.enabled,
+                    onClick = item.onClick,
+                    leadingIcon = { Icon(imageVector = item.icon, contentDescription = null) },
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun ChipDropdownMenu(
     label: String? = null,

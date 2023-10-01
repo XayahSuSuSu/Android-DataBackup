@@ -34,11 +34,25 @@ fun Loader(modifier: Modifier, onLoading: suspend () -> Unit = {}, content: @Com
 }
 
 @Composable
+fun Loader(modifier: Modifier, isLoading: Boolean, content: @Composable () -> Unit) {
+    Crossfade(
+        targetState = isLoading,
+        label = AnimationTokens.CrossFadeLabel
+    ) { state ->
+        when (state) {
+            true -> Box(modifier = modifier, contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+
+            false -> content()
+        }
+    }
+}
+
+@Composable
 fun <T> Loader(
     modifier: Modifier,
     onLoading: suspend () -> Unit = {},
     uiState: MutableState<T>,
-    content: @Composable (MutableState<T>) -> Unit
+    content: @Composable (MutableState<T>) -> Unit,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     LaunchedEffect(null) {

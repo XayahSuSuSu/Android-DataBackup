@@ -107,7 +107,7 @@
     <string name="compression_test">Sıkıştırma testi</string>
     <string name="failed">Başarısız</string>
     <string name="restore_dir">Kurtarma hedefi</string>
-    <string name="confirm_delete">Seçilen öğeleri veritabanından ve yerel dosyalardan sildiğinizden emin olun</string>
+    <string name="confirm_delete_selected_restoring_items">Seçilen öğeleri veritabanından ve yerel dosyalardan sildiğinizden emin olun</string>
     <string name="delete">Sil</string>
     <string name="app_crashed">Uygulama çöktü</string>
 </resources>

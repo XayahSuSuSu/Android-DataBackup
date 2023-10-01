@@ -46,5 +46,9 @@
         <activity
             android:name=".ui.activity.operation.OperationActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.activity.directory.DirectoryActivity"
+            android:exported="false" />
     </application>
 </manifest>

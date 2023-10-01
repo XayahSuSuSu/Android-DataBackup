@@ -112,7 +112,12 @@
     <string name="installed">Installed</string>
     <string name="sooner_or_later">Sooner or later</string>
     <string name="delete">Delete</string>
-    <string name="confirm_delete">Sure to delete selected items from the database and local files</string>
+    <string name="confirm_delete_selected_restoring_items">Sure to delete selected items from the database and local files</string>
     <string name="app_crashed">App crashed</string>
     <string name="no_browser">Maybe there is no browser to open it</string>
+    <string name="supported_format">Supported format</string>
+    <string name="add">Add</string>
+    <string name="custom_storage">Custom storage</string>
+    <string name="select_a_dir">Select a directory</string>
+    <string name="confirm_delete">Sure to delete?</string>
 </resources>

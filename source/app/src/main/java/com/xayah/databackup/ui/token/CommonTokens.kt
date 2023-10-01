@@ -13,4 +13,5 @@ object CommonTokens {
     val PaddingMedium = 16.dp
     val PaddingLarge = 24.dp
     val EmojiLargeSize = 100.sp
+    const val DisabledAlpha = 0.38f
 }
