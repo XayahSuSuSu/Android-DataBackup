@@ -32,12 +32,17 @@ import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.saveAppVersionName
 import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 @ExperimentalMaterial3Api
 @Composable
 fun PageEnv(viewModel: GuideViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val mutex = remember {
+        Mutex()
+    }
     val contents = listOf(
         stringResource(id = R.string.grant_root_access),
         stringResource(id = R.string.release_prebuilt_binaries),
@@ -116,7 +121,9 @@ fun PageEnv(viewModel: GuideViewModel) {
                 state = states.value[it],
                 onClick = {
                     scope.launch {
-                        onClicks[it]()
+                        mutex.withLock {
+                            onClicks[it]()
+                        }
                     }
                 })
         }
