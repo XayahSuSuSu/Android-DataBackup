@@ -202,8 +202,8 @@ fun JetbrainsMonoText(modifier: Modifier = Modifier, text: String, style: TextSt
 }
 
 @Composable
-fun JetbrainsMonoLabelMediumText(modifier: Modifier = Modifier, text: String) {
-    JetbrainsMonoText(modifier = modifier, text = text, style = MaterialTheme.typography.labelMedium)
+fun JetbrainsMonoLabelSmallText(modifier: Modifier = Modifier, text: String) {
+    JetbrainsMonoText(modifier = modifier, text = text, style = MaterialTheme.typography.labelSmall)
 }
 
 @Composable

@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.CommonButton
-import com.xayah.databackup.ui.component.JetbrainsMonoLabelMediumText
+import com.xayah.databackup.ui.component.JetbrainsMonoLabelSmallText
 import com.xayah.databackup.ui.component.Loader
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.TextButton
@@ -36,6 +36,7 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.CommonUtil.copyToClipboard
+import com.xayah.databackup.util.command.toLineString
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,7 +45,7 @@ fun PageTree(viewModel: TreeViewModel) {
     val scope = rememberCoroutineScope()
     val dialogSlot = LocalSlotScope.current!!.dialogSlot
     val uiState by viewModel.uiState
-    val treeText = uiState.treeText
+    val treeTextList = uiState.treeTextList
 
     Loader(
         modifier = Modifier.fillMaxSize(),
@@ -60,14 +61,18 @@ fun PageTree(viewModel: TreeViewModel) {
                         .paddingTop(CommonTokens.PaddingSmall)
                         .paddingHorizontal(CommonTokens.PaddingSmall)
                 ) {
-                    SelectionContainer {
-                        JetbrainsMonoLabelMediumText(
-                            modifier = Modifier
-                                .verticalScroll(rememberScrollState())
-                                .horizontalScroll(rememberScrollState())
-                                .padding(CommonTokens.PaddingSmall),
-                            text = treeText,
-                        )
+                    LazyColumn(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+                        item {
+                            Spacer(modifier = Modifier.height(CommonTokens.PaddingMedium))
+                        }
+
+                        items(items = treeTextList) {
+                            JetbrainsMonoLabelSmallText(modifier = Modifier.paddingHorizontal(CommonTokens.PaddingMedium), text = it)
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.height(CommonTokens.PaddingMedium))
+                        }
                     }
                 }
                 Row(
@@ -78,7 +83,7 @@ fun PageTree(viewModel: TreeViewModel) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(text = stringResource(R.string.copy)) {
-                        context.copyToClipboard(treeText)
+                        context.copyToClipboard(treeTextList.toLineString())
                         Toast.makeText(context, context.getString(R.string.succeed), Toast.LENGTH_SHORT).show()
                     }
                     Spacer(modifier = Modifier.width(CommonTokens.PaddingMedium))
@@ -90,7 +95,7 @@ fun PageTree(viewModel: TreeViewModel) {
                                 title = context.getString(R.string.save_directory_structure),
                                 filePath = filePath,
                                 icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_account_tree),
-                                text = treeText
+                                text = treeTextList.toLineString()
                             )
                             viewModel.setTreeText(context)
                         }

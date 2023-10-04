@@ -12,14 +12,14 @@ import javax.inject.Inject
 
 data class LogUiState(
     val logDao: LogDao,
-    val logText: String,
+    val logTextList: List<String>,
     val startTimestamps: List<Long>,
     val selectedIndex: Int,
 )
 
 @HiltViewModel
 class LogViewModel @Inject constructor(logDao: LogDao) : ViewModel() {
-    private val _uiState = mutableStateOf(LogUiState(logDao = logDao, logText = "", startTimestamps = listOf(), selectedIndex = 0))
+    private val _uiState = mutableStateOf(LogUiState(logDao = logDao, logTextList = listOf(), startTimestamps = listOf(), selectedIndex = 0))
     val uiState: State<LogUiState>
         get() = _uiState
 
@@ -39,17 +39,17 @@ class LogViewModel @Inject constructor(logDao: LogDao) : ViewModel() {
         val index = uiState.selectedIndex
         if (index != -1) {
             val logCmdItems = dao.queryLogCmdItems(startTimestamps[index])
-            var logText = ""
+            val logTextList = mutableListOf<String>()
             logCmdItems.forEach { logCmdEntity ->
-                logText += "${DateUtil.formatTimestamp(logCmdEntity.log.startTimestamp)}    ${logCmdEntity.log.tag}: ${logCmdEntity.log.msg}\n"
+                logTextList.add("${DateUtil.formatTimestamp(logCmdEntity.log.startTimestamp)}    ${logCmdEntity.log.tag}: ${logCmdEntity.log.msg}")
                 logCmdEntity.cmdList.forEach { cmdEntity ->
-                    logText += "${DateUtil.formatTimestamp(cmdEntity.timestamp)}    ${cmdEntity.type.name}: ${cmdEntity.msg}\n"
+                    logTextList.add("${DateUtil.formatTimestamp(cmdEntity.timestamp)}    ${cmdEntity.type.name}: ${cmdEntity.msg}")
                 }
-                logText += "\n"
+                logTextList.add("")
             }
-            _uiState.value = uiState.copy(logText = logText)
+            _uiState.value = uiState.copy(logTextList = logTextList)
         } else {
-            _uiState.value = uiState.copy(logText = "")
+            _uiState.value = uiState.copy(logTextList = listOf())
         }
     }
 

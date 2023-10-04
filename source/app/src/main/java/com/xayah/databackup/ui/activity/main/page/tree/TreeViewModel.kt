@@ -24,7 +24,7 @@ enum class TreeType {
 }
 
 data class TreeUiState(
-    val treeText: String,
+    val treeTextList: List<String>,
     val typeList: List<TreeType>,
     val selectedIndex: Int,
 )
@@ -33,7 +33,7 @@ data class TreeUiState(
 class TreeViewModel @Inject constructor() : ViewModel() {
     private val _uiState = mutableStateOf(
         TreeUiState(
-            treeText = "",
+            treeTextList = listOf(),
             typeList = listOf(TreeType.Simplify, TreeType.Integral),
             selectedIndex = 0
         )
@@ -41,16 +41,16 @@ class TreeViewModel @Inject constructor() : ViewModel() {
     val uiState: State<TreeUiState>
         get() = _uiState
 
-    private suspend fun loadTree(context: Context) = withIOContext {
+    private suspend fun loadTree(context: Context): List<String> = withIOContext {
         val uiState by uiState
         when (uiState.typeList[uiState.selectedIndex]) {
-            TreeType.Simplify -> PreparationUtil.tree(path = context.readBackupSavePath(), exclude = PathUtil.getExcludeDirs())
-            TreeType.Integral -> PreparationUtil.tree(path = context.readBackupSavePath())
+            TreeType.Simplify -> PreparationUtil.tree(path = context.readBackupSavePath(), exclude = PathUtil.getExcludeDirs()).split("\n")
+            TreeType.Integral -> PreparationUtil.tree(path = context.readBackupSavePath()).split("\n")
         }
     }
 
     suspend fun setTreeText(context: Context) {
-        _uiState.value = uiState.value.copy(treeText = loadTree(context))
+        _uiState.value = uiState.value.copy(treeTextList = loadTree(context))
     }
 
     suspend fun setTreeType(context: Context, type: TreeType) {

@@ -27,6 +27,7 @@ import com.xayah.databackup.ui.component.TreeTopBar
 import com.xayah.databackup.ui.component.openFileOpDialog
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.PathUtil
+import com.xayah.databackup.util.command.toLineString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -70,7 +71,7 @@ sealed class MainUiState(
             val scope = rememberCoroutineScope()
             val dialogSlot = LocalSlotScope.current!!.dialogSlot
             val uiState by viewModel.uiState
-            val logText = uiState.logText
+            val logText = uiState.logTextList.toLineString()
             val selectedIndex = uiState.selectedIndex
             ExtendedFloatingActionButton(
                 onClick = {
