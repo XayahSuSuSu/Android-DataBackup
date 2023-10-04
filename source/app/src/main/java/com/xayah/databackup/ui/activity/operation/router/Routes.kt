@@ -12,4 +12,7 @@ sealed class OperationRoutes(val route: String) {
     object PackageRestoreManifest : OperationRoutes(route = "operation_package_restore_manifest")
     object PackageRestoreProcessing : OperationRoutes(route = "operation_package_restore_processing")
     object PackageRestoreCompletion : OperationRoutes(route = "operation_package_restore_completion")
+
+    object MediaBackup : OperationRoutes(route = "operation_media_backup")
+    object MediaRestore : OperationRoutes(route = "operation_media_restore")
 }

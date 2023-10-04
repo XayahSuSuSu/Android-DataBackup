@@ -5,15 +5,10 @@ import com.xayah.databackup.ui.activity.main.router.MainRoutes
 object ConstantUtil {
     const val DefaultPathParent = "/storage/emulated/0"
     const val DefaultPathChild = "DataBackup"
+    const val DefaultPath = "${DefaultPathParent}/${DefaultPathChild}"
 
-    const val DefaultBackupParent = "/storage/emulated/0"
-    const val DefaultBackupChild = "DataBackup"
-    const val DefaultBackupSavePath = "${DefaultBackupParent}/${DefaultBackupChild}"
     const val DefaultBackupUserId = 0
 
-    const val DefaultRestoreParent = "/storage/emulated/0"
-    const val DefaultRestoreChild = "DataBackup"
-    const val DefaultRestoreSavePath = "${DefaultRestoreParent}/${DefaultRestoreChild}"
     const val DefaultRestoreUserId = 0
 
     val SupportedExternalStorageFormat = listOf(
@@ -33,4 +28,11 @@ object ConstantUtil {
     )
 
     const val ClipDataLabel = "DataBackupClipData"
+
+    val DefaultMediaList = listOf(
+        Pair("Pictures","/storage/emulated/0/Pictures"),
+        Pair("Music","/storage/emulated/0/Music"),
+        Pair("DCIM","/storage/emulated/0/DCIM"),
+        Pair("Download","/storage/emulated/0/Download"),
+    )
 }

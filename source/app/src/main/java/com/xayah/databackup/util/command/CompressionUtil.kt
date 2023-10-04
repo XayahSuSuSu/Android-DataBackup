@@ -4,6 +4,7 @@ import android.content.Context
 import com.xayah.databackup.util.CompressionType
 import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.LogUtil
+import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.executeWithLog
 import com.xayah.databackup.util.command.CommonUtil.outString
@@ -13,7 +14,55 @@ import com.xayah.librootservice.service.RemoteRootService
 fun List<String>.toSpaceString() = joinToString(separator = " ")
 
 object CompressionUtil {
-    suspend fun compress(
+    private suspend fun compress(
+        logUtil: LogUtil,
+        logId: Long,
+        compatibleMode: Boolean,
+        compressionType: CompressionType,
+        originPathPara: String,
+        archivePath: String,
+        excludeParaList: List<String>,
+    ): Pair<Boolean, String> {
+        var isSuccess = true
+        val outList = mutableListOf<String>()
+
+        val cmd = if (compatibleMode)
+            "- -C $originPathPara ${if (compressionType == CompressionType.TAR) "" else "| ${compressionType.compressPara}"} > $archivePath"
+        else
+            "$archivePath -C $originPathPara ${if (compressionType == CompressionType.TAR) "" else "-I $QUOTE${compressionType.compressPara}$QUOTE"}"
+
+        // Compress data dir.
+        logUtil.executeWithLog(logId, "tar --totals ${excludeParaList.toSpaceString()} -cpf $cmd").also { result ->
+            if (result.isSuccess.not()) isSuccess = false
+            outList.add(result.outString())
+        }
+
+        return Pair(isSuccess, outList.toLineString().trim())
+    }
+
+    private suspend fun decompress(
+        logUtil: LogUtil,
+        logId: Long,
+        compressionType: CompressionType,
+        originPath: String,
+        archivePath: String,
+        cleanRestoringPara: String,
+        excludeParaList: List<String>,
+    ): Pair<Boolean, String> {
+        var isSuccess = true
+        val outList = mutableListOf<String>()
+
+        val cmd = "$archivePath -C $originPath ${compressionType.decompressPara}"
+        // Decompress the archive.
+        logUtil.executeWithLog(logId, "tar --totals ${excludeParaList.toSpaceString()} $cleanRestoringPara -xmpf $cmd").also { result ->
+            if (result.isSuccess.not()) isSuccess = false
+            outList.add(result.outString())
+        }
+
+        return Pair(isSuccess, outList.toLineString().trim())
+    }
+
+    suspend fun compressPackageData(
         logUtil: LogUtil,
         logId: Long,
         compatibleMode: Boolean,
@@ -23,8 +72,6 @@ object CompressionUtil {
         packageName: String,
         dataType: DataType,
     ): Pair<Boolean, String> {
-        var isSuccess = true
-        val outList = mutableListOf<String>()
         val excludeParaList = mutableListOf<String>()
         val originPath = dataType.origin(userId)
         val originPathPara = "$QUOTE$originPath$QUOTE $QUOTE$packageName$QUOTE"
@@ -49,24 +96,43 @@ object CompressionUtil {
             }
 
             else -> {
-                return Pair(false, outList.toLineString().trim())
+                return Pair(false, "")
             }
         }
-        val cmd = if (compatibleMode)
-            "- -C $originPathPara ${if (compressionType == CompressionType.TAR) "" else "| ${compressionType.compressPara}"} > $archivePath"
-        else
-            "$archivePath -C $originPathPara ${if (compressionType == CompressionType.TAR) "" else "-I $QUOTE${compressionType.compressPara}$QUOTE"}"
 
-        // Compress data dir.
-        logUtil.executeWithLog(logId, "tar --totals ${excludeParaList.toSpaceString()} -cpf $cmd").also { result ->
-            if (result.isSuccess.not()) isSuccess = false
-            outList.add(result.outString())
-        }
-
-        return Pair(isSuccess, outList.toLineString().trim())
+        return compress(
+            logUtil = logUtil,
+            logId = logId,
+            compatibleMode = compatibleMode,
+            compressionType = compressionType,
+            originPathPara = originPathPara,
+            archivePath = archivePath,
+            excludeParaList = excludeParaList
+        )
     }
 
-    suspend fun compress(
+    suspend fun compressMediaData(
+        logUtil: LogUtil,
+        logId: Long,
+        compatibleMode: Boolean,
+        compressionType: CompressionType,
+        originPath: String,
+        archivePath: String,
+    ): Pair<Boolean, String> {
+        val originPathPara = "$QUOTE${PathUtil.getParentPath(originPath)}$QUOTE $QUOTE${PathUtil.getFileName(originPath)}$QUOTE"
+
+        return compress(
+            logUtil = logUtil,
+            logId = logId,
+            compatibleMode = compatibleMode,
+            compressionType = compressionType,
+            originPathPara = originPathPara,
+            archivePath = archivePath,
+            excludeParaList = listOf()
+        )
+    }
+
+    suspend fun compressPackageConfig(
         logUtil: LogUtil,
         logId: Long,
         compatibleMode: Boolean,
@@ -99,7 +165,7 @@ object CompressionUtil {
         return Pair(isSuccess, outList.toLineString().trim())
     }
 
-    suspend fun decompress(
+    suspend fun decompressPackageData(
         logUtil: LogUtil,
         logId: Long,
         context: Context,
@@ -109,8 +175,6 @@ object CompressionUtil {
         packageName: String,
         dataType: DataType,
     ): Pair<Boolean, String> {
-        var isSuccess = true
-        val outList = mutableListOf<String>()
         val excludeParaList = mutableListOf<String>()
         val cleanRestoringPara = if (context.readCleanRestoring()) "--recursive-unlink" else ""
         val originPath = dataType.origin(userId)
@@ -131,19 +195,40 @@ object CompressionUtil {
             }
 
             else -> {
-                return Pair(false, outList.toLineString().trim())
+                return Pair(false, "")
             }
         }
-        val cmd = "$archivePath -C $originPath ${compressionType.decompressPara}"
 
+        return decompress(
+            logUtil = logUtil,
+            logId = logId,
+            compressionType = compressionType,
+            originPath = originPath,
+            archivePath = archivePath,
+            cleanRestoringPara = cleanRestoringPara,
+            excludeParaList = excludeParaList
+        )
+    }
 
-        // Decompress the archive.
-        logUtil.executeWithLog(logId, "tar --totals ${excludeParaList.toSpaceString()} $cleanRestoringPara -xmpf $cmd").also { result ->
-            if (result.isSuccess.not()) isSuccess = false
-            outList.add(result.outString())
-        }
+    suspend fun decompressMediaData(
+        logUtil: LogUtil,
+        logId: Long,
+        context: Context,
+        compressionType: CompressionType,
+        originPath: String,
+        archivePath: String,
+    ): Pair<Boolean, String> {
+        val cleanRestoringPara = if (context.readCleanRestoring()) "--recursive-unlink" else ""
 
-        return Pair(isSuccess, outList.toLineString().trim())
+        return decompress(
+            logUtil = logUtil,
+            logId = logId,
+            compressionType = compressionType,
+            originPath = originPath,
+            archivePath = archivePath,
+            cleanRestoringPara = cleanRestoringPara,
+            excludeParaList = listOf()
+        )
     }
 
     suspend fun test(

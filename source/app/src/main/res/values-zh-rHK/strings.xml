@@ -113,6 +113,7 @@
     <string name="supported_format">支持的格式</string>
     <string name="add">添加</string>
     <string name="custom_storage">自訂存儲</string>
-    <string name="select_a_dir">選擇一個目錄</string>
+    <string name="select_target_directory">選擇目標目錄</string>
     <string name="confirm_delete">確定要刪除嗎？</string>
+    <string name="backup_dir_as_media_error">無法添加備份目錄作為媒體資料</string>
 </resources>

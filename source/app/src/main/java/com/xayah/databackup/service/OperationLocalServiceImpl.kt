@@ -4,6 +4,10 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import com.xayah.databackup.data.MediaBackupOperationEntity
+import com.xayah.databackup.data.MediaDao
+import com.xayah.databackup.data.MediaRestoreEntity
+import com.xayah.databackup.data.MediaRestoreOperationEntity
 import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupEntireDao
@@ -18,8 +22,10 @@ import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
-import com.xayah.databackup.util.command.OperationBackupUtil
-import com.xayah.databackup.util.command.OperationRestoreUtil
+import com.xayah.databackup.util.command.MediumBackupUtil
+import com.xayah.databackup.util.command.MediumRestoreUtil
+import com.xayah.databackup.util.command.PackagesBackupUtil
+import com.xayah.databackup.util.command.PackagesRestoreUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.iconPath
 import com.xayah.databackup.util.readBackupItself
@@ -70,6 +76,9 @@ class OperationLocalServiceImpl : Service() {
     @Inject
     lateinit var gsonUtil: GsonUtil
 
+    @Inject
+    lateinit var mediaDao: MediaDao
+
     suspend fun backupPackagesPreparation(): BackupPreparation = withIOContext {
         mutex.withLock {
             val logTag = "Packages backup preparation"
@@ -93,7 +102,7 @@ class OperationLocalServiceImpl : Service() {
             val logTag = "Packages backup"
             val context = applicationContext
             val remoteRootService = RemoteRootService(context)
-            val operationBackupUtil = OperationBackupUtil(context, timestamp, logUtil, remoteRootService, packageBackupOperationDao, gsonUtil)
+            val packagesBackupUtil = PackagesBackupUtil(context, timestamp, logUtil, remoteRootService, packageBackupOperationDao, gsonUtil)
 
             logUtil.log(logTag, "Started.")
             val packages = packageBackupEntireDao.queryActiveTotalPackages()
@@ -104,7 +113,7 @@ class OperationLocalServiceImpl : Service() {
                 logUtil.log(logTag, "Current package: $packageName")
                 logUtil.log(logTag, "isApkSelected: $isApkSelected")
                 logUtil.log(logTag, "isDataSelected: $isDataSelected")
-                remoteRootService.mkdirs(operationBackupUtil.getPackageItemSavePath(packageName))
+                remoteRootService.mkdirs(packagesBackupUtil.getPackageItemSavePath(packageName))
 
                 val packageBackupOperation =
                     PackageBackupOperation(
@@ -118,12 +127,12 @@ class OperationLocalServiceImpl : Service() {
                     }
 
                 if (isApkSelected) {
-                    operationBackupUtil.backupApk(packageBackupOperation, packageName)
+                    packagesBackupUtil.backupApk(packageBackupOperation, packageName)
                 } else {
                     packageBackupOperation.apkState = OperationState.SKIP
                 }
                 if (isDataSelected) {
-                    operationBackupUtil.apply {
+                    packagesBackupUtil.apply {
                         backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER)
                         backupData(packageBackupOperation, packageName, DataType.PACKAGE_USER_DE)
                         backupData(packageBackupOperation, packageName, DataType.PACKAGE_DATA)
@@ -167,7 +176,7 @@ class OperationLocalServiceImpl : Service() {
                     packageRestoreEntireDao.upsert(restoreEntire)
 
                     // Save config
-                    operationBackupUtil.backupConfig(restoreEntire, DataType.PACKAGE_CONFIG)
+                    packagesBackupUtil.backupConfig(restoreEntire, DataType.PACKAGE_CONFIG)
 
                     // Reset selected items if enabled.
                     if (context.readResetBackupList()) {
@@ -254,7 +263,7 @@ class OperationLocalServiceImpl : Service() {
             val logTag = "Packages restore"
             val context = applicationContext
             val remoteRootService = RemoteRootService(context)
-            val operationRestoreUtil = OperationRestoreUtil(context, logUtil, remoteRootService, packageRestoreOperationDao)
+            val packagesRestoreUtil = PackagesRestoreUtil(context, logUtil, remoteRootService, packageRestoreOperationDao)
 
             logUtil.log(logTag, "Started.")
             val packages = packageRestoreEntireDao.queryActiveTotalPackages()
@@ -280,12 +289,12 @@ class OperationLocalServiceImpl : Service() {
                     }
 
                 if (isApkSelected) {
-                    operationRestoreUtil.restoreApk(packageRestoreOperation, packageName, packageTimestamp, compressionType)
+                    packagesRestoreUtil.restoreApk(packageRestoreOperation, packageName, packageTimestamp, compressionType)
                 } else {
-                    operationRestoreUtil.queryInstalled(packageRestoreOperation, packageName)
+                    packagesRestoreUtil.queryInstalled(packageRestoreOperation, packageName)
                 }
                 if (isDataSelected) {
-                    operationRestoreUtil.apply {
+                    packagesRestoreUtil.apply {
                         restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_USER)
                         restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_USER_DE)
                         restoreData(packageRestoreOperation, packageName, packageTimestamp, compressionType, DataType.PACKAGE_DATA)
@@ -323,4 +332,121 @@ class OperationLocalServiceImpl : Service() {
             remoteRootService.destroyService()
         }
     }
+
+    suspend fun backupMedium(timestamp: Long) = withIOContext {
+        mutex.withLock {
+            val logTag = "Media backup"
+            val context = applicationContext
+            val remoteRootService = RemoteRootService(context)
+            val mediumBackupUtil = MediumBackupUtil(context, timestamp, logUtil, remoteRootService, mediaDao, gsonUtil)
+
+            logUtil.log(logTag, "Started.")
+            val medium = mediaDao.queryBackupSelected()
+            medium.forEach { current ->
+                val name = current.name
+                val path = current.path
+                logUtil.log(logTag, "Current media: ${name}: $path")
+                remoteRootService.mkdirs(mediumBackupUtil.getMediaItemSavePath(name))
+
+                val mediaBackupOperationEntity = MediaBackupOperationEntity(
+                    id = 0,
+                    timestamp = timestamp,
+                    startTimestamp = DateUtil.getTimestamp(),
+                    endTimestamp = 0,
+                    path = path,
+                    name = name,
+                    opLog = "",
+                    opState = OperationState.IDLE,
+                    state = false,
+                ).also { entity ->
+                    entity.id = mediaDao.upsertBackupOp(entity)
+                }
+
+                mediumBackupUtil.backupMedia(mediaBackupOperationEntity)
+
+                // Update package state and end time.
+                if (mediaBackupOperationEntity.isSucceed) {
+                    logUtil.log(logTag, "Backup succeed.")
+                } else {
+                    logUtil.log(logTag, "Backup failed.")
+                }
+                mediaBackupOperationEntity.state = mediaBackupOperationEntity.isSucceed
+                mediaBackupOperationEntity.endTimestamp = DateUtil.getTimestamp()
+                mediaDao.upsertBackupOp(mediaBackupOperationEntity)
+
+                // Insert restore config into database.
+                if (mediaBackupOperationEntity.isSucceed) {
+                    val restoreEntire = MediaRestoreEntity(
+                        id = 0,
+                        timestamp = timestamp,
+                        path = path,
+                        name = name,
+                        sizeBytes = 0,
+                        selected = true,
+                    )
+                    mediaDao.upsertRestore(restoreEntire)
+
+                    // Save config
+                    mediumBackupUtil.backupConfig(restoreEntire, DataType.MEDIA_CONFIG)
+
+                    // Reset selected items if enabled.
+                    if (context.readResetBackupList()) {
+                        current.selected = false
+                        mediaDao.upsertBackup(current)
+                    }
+                }
+            }
+
+            context.saveLastBackupTime(timestamp)
+            remoteRootService.destroyService()
+        }
+    }
+
+    suspend fun restoreMedium(timestamp: Long) = withIOContext {
+        mutex.withLock {
+            val logTag = "Media restore"
+            val context = applicationContext
+            val remoteRootService = RemoteRootService(context)
+            val mediumRestoreUtil = MediumRestoreUtil(context, logUtil, remoteRootService, mediaDao)
+
+            logUtil.log(logTag, "Started.")
+            val medium = mediaDao.queryRestoreSelected(timestamp)
+            medium.forEach { current ->
+                val name = current.name
+                val path = current.path
+                logUtil.log(logTag, "Current media: ${name}: $path")
+
+                val mediaRestoreOperationEntity = MediaRestoreOperationEntity(
+                    id = 0,
+                    entityId = current.id,
+                    timestamp = timestamp,
+                    startTimestamp = DateUtil.getTimestamp(),
+                    endTimestamp = 0,
+                    path = path,
+                    name = name,
+                    opLog = "",
+                    opState = OperationState.IDLE,
+                    state = false,
+                ).also { entity ->
+                    entity.id = mediaDao.upsertRestoreOp(entity)
+                }
+
+                mediumRestoreUtil.restoreMedia(entity = mediaRestoreOperationEntity)
+
+                // Update package state and end time.
+                if (mediaRestoreOperationEntity.isSucceed) {
+                    logUtil.log(logTag, "Restoring succeed.")
+                } else {
+                    logUtil.log(logTag, "Restoring failed.")
+                }
+                mediaRestoreOperationEntity.state = mediaRestoreOperationEntity.isSucceed
+                mediaRestoreOperationEntity.endTimestamp = DateUtil.getTimestamp()
+                mediaDao.upsertRestoreOp(mediaRestoreOperationEntity)
+            }
+
+            context.saveLastRestoringTime(timestamp)
+            remoteRootService.destroyService()
+        }
+    }
+
 }

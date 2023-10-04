@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -409,5 +410,24 @@ fun DirectoryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String) {
                 (context as ComponentActivity).finish()
             }
         },
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun MediaListTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String, actionsVisible: Boolean, onAddClick: (() -> Unit)?) {
+    val context = LocalContext.current
+    CenterAlignedTopAppBar(
+        title = { TopBarTitle(text = title) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            ArrowBackButton {
+                (context as ComponentActivity).finish()
+            }
+        },
+        actions = {
+            if (actionsVisible)
+                IconButton(onClick = { onAddClick?.invoke() }) { Icon(imageVector = Icons.Rounded.Add, contentDescription = null) }
+        }
     )
 }

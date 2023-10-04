@@ -12,6 +12,7 @@ interface IRemoteRootService {
     boolean deleteRecursively(String path);
     List<String> listFilePaths(String path);
     ParcelFileDescriptor readText(String path);
+    long calculateSize(String path);
 
     ParcelFileDescriptor getInstalledPackagesAsUser(int flags, int userId);
     List<String> getPackageSourceDir(String packageName, int userId);

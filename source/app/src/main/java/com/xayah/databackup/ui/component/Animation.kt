@@ -1,9 +1,19 @@
 package com.xayah.databackup.ui.component
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.Dp
@@ -11,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.xayah.databackup.ui.token.AnimationTokens
 
 @Composable
+@SuppressLint("UnusedTransitionTargetStateParameter")
 fun <T> emphasizedOffset(targetState: T): State<Dp> {
     val transition = updateTransition(targetState, label = AnimationTokens.EmphasizedOffsetLabel)
     return transition.animateDp(transitionSpec = {
@@ -31,4 +42,33 @@ fun <T> emphasizedOffset(targetState: T): State<Dp> {
             0.dp at 300 with FastOutSlowInEasing
         }
     }, label = AnimationTokens.EmphasizedOffsetLabel, targetValueByState = { _ -> 0.dp })
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun AnimatedText(
+    targetState: String,
+    content: @Composable() AnimatedVisibilityScope.(targetState: String) -> Unit,
+) {
+    AnimatedContent(
+        targetState = targetState,
+        transitionSpec = {
+            // Compare the incoming number with the previous number.
+            if (targetState > initialState) {
+                // If the target number is larger, it slides up and fades in
+                // while the initial (smaller) number slides up and fades out.
+                slideInVertically { height -> height } + fadeIn() with slideOutVertically { height -> -height } + fadeOut()
+            } else {
+                // If the target number is smaller, it slides down and fades in
+                // while the initial number slides down and fades out.
+                slideInVertically { height -> -height } + fadeIn() with slideOutVertically { height -> height } + fadeOut()
+            }.using(
+                // Disable clipping since the faded slide-in/out should
+                // be displayed out of bounds.
+                SizeTransform(clip = false)
+            )
+        },
+        label = AnimationTokens.AnimatedTextLabel,
+        content = content
+    )
 }

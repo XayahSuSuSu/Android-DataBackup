@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -148,7 +149,7 @@ private suspend fun DialogState.openDeleteDialog(
 ) {
     openLoading(
         title = context.getString(R.string.prompt),
-        icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
+        icon = Icons.Rounded.Delete,
         onLoading = {
             viewModel.delete(selectedPackages)
             val remoteRootService = RemoteRootService(context)

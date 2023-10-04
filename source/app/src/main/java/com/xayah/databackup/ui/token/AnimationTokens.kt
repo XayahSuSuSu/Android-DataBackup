@@ -5,4 +5,5 @@ object AnimationTokens {
     const val EmphasizedOffsetLabel = "EmphasizedOffset"
     const val AnimateFloatAsStateLabel = "AnimateFloatAsState"
     const val TweenDuration = 1000
+    const val AnimatedTextLabel = "AnimatedText"
 }

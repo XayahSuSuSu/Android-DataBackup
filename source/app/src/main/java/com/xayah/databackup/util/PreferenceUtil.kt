@@ -45,7 +45,8 @@ enum class DataType(val type: String) {
     PACKAGE_OBB("obb"),
     PACKAGE_MEDIA("media"),            // /data/media/$user_id/Android/media
     PACKAGE_CONFIG("config"),          // Json file for reloading
-    MEDIA_MEDIA("media");
+    MEDIA_MEDIA("media"),
+    MEDIA_CONFIG("config");
 
     fun origin(userId: Int): String = when (this) {
         PACKAGE_USER -> PathUtil.getPackageUserPath(userId)
@@ -288,8 +289,7 @@ fun Context.saveBackupSavePath(path: String) {
  * @see [saveBackupSavePath]
  */
 fun Context.readBackupSavePath(): String {
-    return readPreferencesString("backup_save_path", ConstantUtil.DefaultBackupSavePath)
-        ?: ConstantUtil.DefaultBackupSavePath
+    return readPreferencesString("backup_save_path", ConstantUtil.DefaultPath) ?: ConstantUtil.DefaultPath
 }
 
 /**
@@ -319,8 +319,7 @@ fun Context.saveRestoreSavePath(path: String) {
  * @see [saveRestoreSavePath]
  */
 fun Context.readRestoreSavePath(): String {
-    return readPreferencesString("restore_save_path", ConstantUtil.DefaultRestoreSavePath)
-        ?: ConstantUtil.DefaultRestoreSavePath
+    return readPreferencesString("restore_save_path", ConstantUtil.DefaultPath) ?: ConstantUtil.DefaultPath
 }
 
 fun Context.saveIconSaveTime(timestamp: Long) {

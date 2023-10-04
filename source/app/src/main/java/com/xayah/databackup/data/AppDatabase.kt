@@ -16,6 +16,10 @@ import androidx.room.TypeConverters
         PackageRestoreEntire::class,
         PackageRestoreOperation::class,
         DirectoryEntity::class,
+        MediaBackupEntity::class,
+        MediaRestoreEntity::class,
+        MediaBackupOperationEntity::class,
+        MediaRestoreOperationEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2)
@@ -29,4 +33,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun packageRestoreEntireDao(): PackageRestoreEntireDao
     abstract fun packageRestoreOperationDao(): PackageRestoreOperationDao
     abstract fun directoryDao(): DirectoryDao
+    abstract fun mediaDao(): MediaDao
 }

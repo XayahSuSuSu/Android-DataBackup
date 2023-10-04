@@ -108,8 +108,11 @@ fun PageBackup() {
                     {
                         IntentUtil.toOperationActivity(context = context, route = OperationRoutes.PackageBackup)
                     },
-                    {},
-                    {})
+                    {
+                        IntentUtil.toOperationActivity(context = context, route = OperationRoutes.MediaBackup)
+                    },
+                    {}
+                )
                 VerticalGrid(
                     columns = 2,
                     count = items.size,

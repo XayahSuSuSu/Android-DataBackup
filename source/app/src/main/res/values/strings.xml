@@ -118,6 +118,7 @@
     <string name="supported_format">Supported format</string>
     <string name="add">Add</string>
     <string name="custom_storage">Custom storage</string>
-    <string name="select_a_dir">Select a directory</string>
+    <string name="select_target_directory">Select target directory</string>
     <string name="confirm_delete">Sure to delete?</string>
+    <string name="backup_dir_as_media_error">Cannot add backup directory as media</string>
 </resources>

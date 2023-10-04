@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.component
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -47,6 +48,29 @@ fun Serial(modifier: Modifier = Modifier, serial: String, enabled: Boolean = tru
                 text = serial,
                 color = if (enabled) ColorScheme.surface() else ColorScheme.surface().copy(alpha = SerialTokens.DisabledAlpha)
             )
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun AnimatedSerial(modifier: Modifier = Modifier, serial: String, enabled: Boolean = true) {
+    Surface(
+        shape = CircleShape,
+        modifier = modifier.height(SerialTokens.CircleSize),
+        color = if (enabled) ColorScheme.onSurfaceVariant() else ColorScheme.onSurfaceVariant().copy(alpha = SerialTokens.DisabledAlpha)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            AnimatedText(targetState = serial) {
+                TitleSmallBoldText(
+                    modifier = Modifier.paddingHorizontal(SerialTokens.PaddingHorizontal),
+                    text = serial,
+                    color = if (enabled) ColorScheme.surface() else ColorScheme.surface().copy(alpha = SerialTokens.DisabledAlpha)
+                )
+            }
         }
     }
 }

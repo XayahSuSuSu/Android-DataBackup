@@ -1,11 +1,15 @@
 package com.xayah.databackup.ui.component
 
+import android.content.Context
 import android.graphics.BitmapFactory
+import android.widget.Toast
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -20,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -28,6 +33,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,25 +45,38 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.core.graphics.drawable.toDrawable
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.xayah.databackup.R
 import com.xayah.databackup.data.DirectoryEntity
+import com.xayah.databackup.data.MediaBackupWithOpEntity
+import com.xayah.databackup.data.MediaRestoreEntity
+import com.xayah.databackup.data.MediaRestoreWithOpEntity
 import com.xayah.databackup.data.OperationMask
+import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupEntire
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.data.StorageType
 import com.xayah.databackup.ui.activity.directory.page.DirectoryViewModel
+import com.xayah.databackup.ui.activity.operation.page.media.backup.MediaBackupListViewModel
+import com.xayah.databackup.ui.activity.operation.page.media.backup.OpType
+import com.xayah.databackup.ui.activity.operation.page.media.restore.MediaRestoreListViewModel
 import com.xayah.databackup.ui.component.material3.Card
 import com.xayah.databackup.ui.component.material3.outlinedCardBorder
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.ListItemTokens
+import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.PathUtil
+import com.xayah.databackup.util.command.MediumRestoreUtil
+import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.librootservice.util.ExceptionUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.withIOContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.ListViewModel as BackupListViewModel
@@ -417,4 +436,337 @@ fun ListItemDirectory(
             }
         }
     }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun ListItemMedia(
+    modifier: Modifier = Modifier,
+    name: String,
+    path: String,
+    state: Boolean,
+    mediaOpLog: String,
+    isProcessing: Boolean,
+    selectedInList: Boolean,
+    mediaOpProcessing: Boolean,
+    mediaOpDone: Boolean,
+    onCardClick: () -> Unit,
+    onCardLongClick: () -> Unit,
+    menuPlaceholder: @Composable (BoxScope.() -> Unit),
+    chipGroup: @Composable (RowScope.() -> Unit),
+) {
+    val haptic = LocalHapticFeedback.current
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        onClick = {
+            if (isProcessing.not()) {
+                onCardClick()
+            }
+        },
+        onLongClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            if (isProcessing.not()) {
+                onCardLongClick()
+            }
+        },
+        border = if (selectedInList) outlinedCardBorder(lineColor = ColorScheme.primary()) else null,
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingMedium)) {
+            Row(
+                modifier = Modifier
+                    .paddingTop(ListItemTokens.PaddingMedium)
+                    .paddingHorizontal(ListItemTokens.PaddingMedium),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingSmall)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    TitleMediumBoldText(text = name)
+                    LabelSmallText(text = path)
+                }
+                if (selectedInList) Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = null,
+                    modifier = Modifier.align(Alignment.Top),
+                    tint = ColorScheme.primary(),
+                )
+                if (mediaOpProcessing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(ListItemTokens.OpIndicatorSize),
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .paddingHorizontal(ListItemTokens.PaddingMedium),
+            ) {
+                menuPlaceholder()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingSmall),
+                    content = {
+                        chipGroup()
+                        if (mediaOpDone) {
+                            AnimatedSerial(
+                                serial = if (state) stringResource(id = R.string.succeed) else stringResource(id = R.string.failed)
+                            )
+                        }
+                    }
+                )
+            }
+            if (mediaOpProcessing || mediaOpDone) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = ColorScheme.inverseOnSurface())
+                        .paddingHorizontal(ListItemTokens.PaddingMedium),
+                ) {
+                    Box(
+                        modifier
+                            .weight(1f)
+                            .paddingVertical(ListItemTokens.PaddingSmall),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        LabelSmallText(text = mediaOpLog)
+                    }
+                }
+            } else {
+                Spacer(modifier = Modifier.fillMaxWidth())
+            }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun ListItemMediaBackup(
+    modifier: Modifier = Modifier,
+    entity: MediaBackupWithOpEntity,
+) {
+    val context = LocalContext.current
+    val viewModel = hiltViewModel<MediaBackupListViewModel>()
+    val scope = rememberCoroutineScope()
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
+    val uiState by viewModel.uiState
+    val media = entity.media
+    val opList = entity.opList
+    val isProcessing = remember(uiState) { uiState.opType == OpType.PROCESSING }
+    var selectedInList by remember(entity, isProcessing) { mutableStateOf(media.selected && isProcessing.not()) }
+    val mediaOpIndex by remember(entity, uiState) { mutableIntStateOf(entity.opList.indexOfLast { it.timestamp == uiState.timestamp }) }
+    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].opState == OperationState.Processing) }
+    val mediaOpDone by remember(
+        entity,
+        mediaOpIndex
+    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].opState != OperationState.IDLE && opList[mediaOpIndex].opState != OperationState.Processing)) }
+    val mediaOpLog by remember(
+        entity,
+        mediaOpProcessing
+    ) { mutableStateOf(if (mediaOpProcessing || mediaOpDone) opList[mediaOpIndex].opLog else context.getString(R.string.idle)) }
+    var expanded by remember { mutableStateOf(false) }
+
+    ListItemMedia(
+        modifier = modifier,
+        name = media.name,
+        path = media.path,
+        state = if (mediaOpDone) opList[mediaOpIndex].state else false,
+        mediaOpLog = mediaOpLog,
+        isProcessing = isProcessing,
+        selectedInList = selectedInList,
+        mediaOpProcessing = mediaOpProcessing,
+        mediaOpDone = mediaOpDone,
+        onCardClick = {
+            scope.launch {
+                withIOContext {
+                    media.selected = media.selected.not()
+                    viewModel.upsertBackup(media)
+                    selectedInList = media.selected
+                }
+            }
+        },
+        onCardLongClick = {
+            expanded = true
+        },
+        menuPlaceholder = {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                val actions = remember(entity) {
+                    listOf(
+                        ActionMenuItem(
+                            title = context.getString(R.string.delete),
+                            icon = Icons.Rounded.Delete,
+                            enabled = ConstantUtil.DefaultMediaList.indexOfFirst { it.second == entity.media.path } == -1,
+                            onClick = {
+                                scope.launch {
+                                    withIOContext {
+                                        expanded = false
+                                        dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete)).also { (confirmed, _) ->
+                                            if (confirmed) {
+                                                viewModel.deleteBackup(entity.media)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.align(Alignment.BottomEnd))
+
+                ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
+            }
+        },
+        chipGroup = {
+            LaunchedEffect(null) {
+                viewModel.updateMediaSizeBytes(context, entity.media)
+            }
+            AnimatedSerial(serial = entity.media.sizeDisplay)
+        }
+    )
+}
+
+@ExperimentalMaterial3Api
+private suspend fun DialogState.openMediaRestoreDeleteDialog(
+    context: Context,
+    scope: CoroutineScope,
+    viewModel: MediaRestoreListViewModel,
+    entity: MediaRestoreEntity,
+) {
+    openLoading(
+        title = context.getString(R.string.prompt),
+        icon = Icons.Rounded.Delete,
+        onLoading = {
+            viewModel.deleteRestore(entity)
+            val remoteRootService = RemoteRootService(context)
+            ExceptionUtil.tryService(onFailed = { msg ->
+                scope.launch {
+                    withIOContext {
+                        Toast.makeText(
+                            context,
+                            "${context.getString(R.string.fetch_failed)}: $msg\n${context.getString(R.string.remote_service_err_info)}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }) {
+                val path = MediumRestoreUtil.getMediaItemSavePath(entity.name, entity.timestamp)
+                remoteRootService.deleteRecursively(path)
+            }
+            remoteRootService.destroyService()
+            viewModel.initialize()
+        },
+    )
+}
+
+@ExperimentalAnimationApi
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun ListItemMediaRestore(
+    modifier: Modifier = Modifier,
+    entity: MediaRestoreWithOpEntity,
+) {
+    val context = LocalContext.current
+    val viewModel = hiltViewModel<MediaRestoreListViewModel>()
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
+    val scope = rememberCoroutineScope()
+    val uiState by viewModel.uiState
+    val media = entity.media
+    val opList = entity.opList
+    val isProcessing = remember(uiState) { uiState.opType == OpType.PROCESSING }
+    var selectedInList by remember(entity, isProcessing) { mutableStateOf(media.selected && isProcessing.not()) }
+    val mediaOpIndex by remember(entity, uiState) { mutableIntStateOf(entity.opList.indexOfLast { it.timestamp == uiState.timestamp }) }
+    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].opState == OperationState.Processing) }
+    val mediaOpDone by remember(
+        entity,
+        mediaOpIndex
+    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].opState != OperationState.IDLE && opList[mediaOpIndex].opState != OperationState.Processing)) }
+    val mediaOpLog by remember(
+        entity,
+        mediaOpProcessing
+    ) { mutableStateOf(if (mediaOpProcessing || mediaOpDone) opList[mediaOpIndex].opLog else context.getString(R.string.idle)) }
+    var expanded by remember { mutableStateOf(false) }
+
+    ListItemMedia(
+        modifier = modifier,
+        name = media.name,
+        path = media.path,
+        state = if (mediaOpDone) opList[mediaOpIndex].state else false,
+        mediaOpLog = mediaOpLog,
+        isProcessing = isProcessing,
+        selectedInList = selectedInList,
+        mediaOpProcessing = mediaOpProcessing,
+        mediaOpDone = mediaOpDone,
+        onCardClick = {
+            scope.launch {
+                withIOContext {
+                    media.selected = media.selected.not()
+                    viewModel.upsertRestore(media)
+                    selectedInList = media.selected
+                }
+            }
+        },
+        onCardLongClick = {
+            expanded = true
+        },
+        menuPlaceholder = {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                val actions = remember(entity) {
+                    listOf(
+                        ActionMenuItem(
+                            title = context.getString(R.string.delete),
+                            icon = Icons.Rounded.Delete,
+                            enabled = true,
+                            onClick = {
+                                scope.launch {
+                                    withIOContext {
+                                        expanded = false
+                                        dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete_selected_restoring_items))
+                                            .also { (confirmed, _) ->
+                                                if (confirmed) {
+                                                    dialogSlot.openMediaRestoreDeleteDialog(
+                                                        context = context,
+                                                        scope = scope,
+                                                        viewModel = viewModel,
+                                                        entity = entity.media
+                                                    )
+                                                }
+                                            }
+                                    }
+                                }
+                            }
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.align(Alignment.BottomEnd))
+
+                ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
+            }
+        },
+        chipGroup = {
+            LaunchedEffect(null) {
+                viewModel.updateMediaSizeBytes(context, entity.media)
+            }
+            AnimatedSerial(serial = entity.media.sizeDisplay)
+        }
+    )
 }

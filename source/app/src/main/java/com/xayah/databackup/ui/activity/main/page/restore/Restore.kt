@@ -136,8 +136,8 @@ private suspend fun DialogState.openReloadDialog(context: Context, logUtil: LogU
 
                         logUtil.log(logTag, "Timestamp: $timestamp")
                         val tmpApkPath = PathUtil.getTmpApkPath(context = context, packageName = packageName)
-                        val tmpConfigPath = PathUtil.getTmpConfigPath(context = context, packageName = packageName, timestamp = timestamp)
-                        val tmpConfigFilePath = PathUtil.getTmpConfigFilePath(context = context, packageName = packageName, timestamp = timestamp)
+                        val tmpConfigPath = PathUtil.getTmpConfigPath(context = context, name = packageName, timestamp = timestamp)
+                        val tmpConfigFilePath = PathUtil.getTmpConfigFilePath(context = context, name = packageName, timestamp = timestamp)
                         remoteRootService.deleteRecursively(tmpApkPath)
                         remoteRootService.deleteRecursively(tmpConfigPath)
                         remoteRootService.mkdirs(tmpApkPath)
@@ -322,7 +322,9 @@ fun PageRestore() {
                     {
                         IntentUtil.toOperationActivity(context = context, route = OperationRoutes.PackageRestore)
                     },
-                    {},
+                    {
+                        IntentUtil.toOperationActivity(context = context, route = OperationRoutes.MediaRestore)
+                    },
                     {}
                 )
                 VerticalGrid(

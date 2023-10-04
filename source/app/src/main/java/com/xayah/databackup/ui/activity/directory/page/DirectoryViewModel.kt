@@ -165,7 +165,7 @@ class DirectoryViewModel @Inject constructor(private val directoryDao: Directory
 
     fun onAdd(context: ComponentActivity) {
         PickYouLauncher().apply {
-            setTitle(context.getString(R.string.select_a_dir))
+            setTitle(context.getString(R.string.select_target_directory))
             setType(PickerType.DIRECTORY)
             setLimitation(0)
             launch(context) { pathList ->

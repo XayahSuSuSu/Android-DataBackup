@@ -30,14 +30,15 @@ object PathUtil {
 
     fun getTmpApkPath(context: Context, packageName: String): String = "${context.filesPath()}/tmp/apks/$packageName"
 
-    fun getTmpConfigPath(context: Context, packageName: String, timestamp: Long): String = "${context.filesPath()}/tmp/config/$packageName/$timestamp"
-    fun getTmpConfigFilePath(context: Context, packageName: String, timestamp: Long): String =
-        "${getTmpConfigPath(context, packageName, timestamp)}/PackageRestoreEntire"
+    fun getTmpConfigPath(context: Context, name: String, timestamp: Long): String = "${context.filesPath()}/tmp/config/$name/$timestamp"
+    fun getTmpConfigFilePath(context: Context, name: String, timestamp: Long): String =
+        "${getTmpConfigPath(context, name, timestamp)}/PackageRestoreEntire"
 
     // Paths for backup save dir.
     fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
     private fun getBackupArchivesSavePath(): String = "${getBackupSavePath()}/archives"
     fun getBackupPackagesSavePath(): String = "${getBackupArchivesSavePath()}/packages"
+    fun getBackupMediumSavePath(): String = "${getBackupArchivesSavePath()}/medium"
     private fun getTreeSavePath(): String = "${getBackupSavePath()}/tree"
     fun getTreeSavePath(timestamp: Long): String = "${getTreeSavePath()}/tree_${timestamp}"
     fun getIconSavePath(): String = "${getBackupSavePath()}/icon"
@@ -47,8 +48,9 @@ object PathUtil {
 
     // Paths for restore save dir.
     private fun getRestoreSavePath(): String = DataBackupApplication.application.readRestoreSavePath()
-    private fun getRestoreArchivesSavePath(): String = "${getRestoreSavePath()}/archives"
+    fun getRestoreArchivesSavePath(): String = "${getRestoreSavePath()}/archives"
     fun getRestorePackagesSavePath(): String = "${getRestoreArchivesSavePath()}/packages"
+    fun getRestoreMediumSavePath(): String = "${getRestoreArchivesSavePath()}/medium"
     fun getRestoreIconSavePath(): String = "${getRestoreSavePath()}/icon"
 
     // Paths for processing.

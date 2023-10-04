@@ -9,6 +9,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.xayah.databackup.ui.activity.operation.page.media.backup.PageMediaBackupList
+import com.xayah.databackup.ui.activity.operation.page.media.restore.PageMediaRestoreList
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupCompletion
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupList
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.PackageBackupManifest
@@ -33,6 +35,14 @@ fun OperationNavHost(startDestination: String) {
     ) {
         packageBackupGraph()
         packageRestoreGraph()
+
+        composable(OperationRoutes.MediaBackup.route) {
+            PageMediaBackupList()
+        }
+
+        composable(OperationRoutes.MediaRestore.route) {
+            PageMediaRestoreList()
+        }
     }
 }
 

@@ -150,6 +150,8 @@ class RemoteRootService(private val context: Context) {
         return text
     }
 
+    suspend fun calculateSize(path: String): Long = getService().calculateSize(path)
+
     suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)
         val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
