@@ -167,6 +167,7 @@ private suspend fun DialogState.openDeleteDialog(
                 selectedPackages.forEach {
                     remoteRootService.deleteRecursively("${PathUtil.getRestorePackagesSavePath()}/${it.packageName}/${it.timestamp}")
                 }
+                remoteRootService.clearEmptyDirectoriesRecursively(PathUtil.getRestorePackagesSavePath())
             }
             remoteRootService.destroyService()
         },

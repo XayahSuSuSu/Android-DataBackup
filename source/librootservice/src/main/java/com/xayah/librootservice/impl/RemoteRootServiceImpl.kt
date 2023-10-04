@@ -159,6 +159,34 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         size.get()
     }
 
+    override fun clearEmptyDirectoriesRecursively(path: String) = synchronized(lock) {
+        tryOn {
+            Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
+                override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                    if (dir != null && attrs != null) {
+                        if (Files.isDirectory(dir) && Files.list(dir).count() == 0L) {
+                            // Empty dir
+                            Files.delete(dir)
+                        }
+                    }
+                    return FileVisitResult.CONTINUE
+                }
+
+                override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                    return FileVisitResult.CONTINUE
+                }
+
+                override fun visitFileFailed(file: Path?, exc: IOException?): FileVisitResult {
+                    return FileVisitResult.CONTINUE
+                }
+
+                override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
+                    return FileVisitResult.CONTINUE
+                }
+            })
+        }
+    }
+
     /**
      * AIDL limits transaction to 1M which means it may throw [android.os.TransactionTooLargeException]
      * when the package list is too large. So we just make it parcelable and write into tmp file to avoid that.

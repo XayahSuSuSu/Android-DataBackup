@@ -13,6 +13,7 @@ interface IRemoteRootService {
     List<String> listFilePaths(String path);
     ParcelFileDescriptor readText(String path);
     long calculateSize(String path);
+    void clearEmptyDirectoriesRecursively(String path);
 
     ParcelFileDescriptor getInstalledPackagesAsUser(int flags, int userId);
     List<String> getPackageSourceDir(String packageName, int userId);

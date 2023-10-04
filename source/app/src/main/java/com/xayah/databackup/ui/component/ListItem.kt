@@ -665,6 +665,7 @@ private suspend fun DialogState.openMediaRestoreDeleteDialog(
             }) {
                 val path = MediumRestoreUtil.getMediaItemSavePath(entity.name, entity.timestamp)
                 remoteRootService.deleteRecursively(path)
+                remoteRootService.clearEmptyDirectoriesRecursively(PathUtil.getRestoreMediumSavePath())
             }
             remoteRootService.destroyService()
             viewModel.initialize()
