@@ -27,33 +27,30 @@ android {
         }
     }
 
-    // __(API)_(feature)_(abi)___(version)
     flavorDimensions += listOf("abi", "feature")
     productFlavors {
         create("arm64-v8a") {
             dimension = "abi"
-            versionCode = 1000 + (android.defaultConfig.versionCode ?: 0)
+            versionCode = 4 + (android.defaultConfig.versionCode ?: 0)
         }
         create("armeabi-v7a") {
             dimension = "abi"
-            versionCode = 2000 + (android.defaultConfig.versionCode ?: 0)
+            versionCode = 3 + (android.defaultConfig.versionCode ?: 0)
         }
         create("x86") {
             dimension = "abi"
-            versionCode = 3000 + (android.defaultConfig.versionCode ?: 0)
+            versionCode = 2 + (android.defaultConfig.versionCode ?: 0)
         }
         create("x86_64") {
             dimension = "abi"
-            versionCode = 4000 + (android.defaultConfig.versionCode ?: 0)
+            versionCode = 1 + (android.defaultConfig.versionCode ?: 0)
         }
         create("foss") {
             dimension = "feature"
-            versionCode = 10000 + (android.defaultConfig.versionCode ?: 0)
             applicationIdSuffix = ".foss"
         }
         create("premium") {
             dimension = "feature"
-            versionCode = 20000 + (android.defaultConfig.versionCode ?: 0)
             applicationIdSuffix = ".premium"
         }
     }

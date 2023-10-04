@@ -3,8 +3,10 @@
 compileSdk = "34"
 minSdk = "28"
 targetSdk = "34"
-versionCode = "3400100"
-versionName = "1.1.0-alpha02"
+# __(API)_(feature)___(version)_(abi)
+# TODO: Feature bit is no longer useful, drop when next api releases
+versionCode = "3411010"
+versionName = "1.1.0-alpha03"
 compose-compiler = "1.4.3"
 
 # libraries
