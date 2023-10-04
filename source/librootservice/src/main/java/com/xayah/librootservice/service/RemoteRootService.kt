@@ -28,6 +28,12 @@ class RemoteRootService(private val context: Context) {
     private var mService: IRemoteRootService? = null
     private var mConnection: ServiceConnection? = null
     private var isFirstConnection = true
+    private val intent by lazy {
+        Intent().apply {
+            component = ComponentName(context.packageName, RemoteRootService::class.java.name)
+            addCategory(RootService.CATEGORY_DAEMON_MODE)
+        }
+    }
 
     class RemoteRootService : RootService() {
         override fun onBind(intent: Intent): IBinder = RemoteRootServiceImpl()
@@ -65,10 +71,6 @@ class RemoteRootService(private val context: Context) {
                     continuation.resumeWithException(RemoteException(msg))
                 }
             }
-            val intent = Intent().apply {
-                component = ComponentName(context.packageName, RemoteRootService::class.java.name)
-                addCategory(RootService.CATEGORY_DAEMON_MODE)
-            }
             RootService.bind(intent, mConnection!!)
         } else {
             mService
@@ -79,9 +81,13 @@ class RemoteRootService(private val context: Context) {
      * Destroy the service.
      */
     fun destroyService(killDaemon: Boolean = false) {
-        if (killDaemon)
-            if (mConnection != null)
+        if (killDaemon) {
+            if (mConnection != null) {
                 RootService.unbind(mConnection!!)
+            }
+            RootService.stopOrTask(intent)
+        }
+
         mConnection = null
         mService = null
     }
