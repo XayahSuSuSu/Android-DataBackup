@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.main.page.tree
 
 import android.content.Context
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.R
@@ -41,7 +42,7 @@ class TreeViewModel @Inject constructor() : ViewModel() {
         get() = _uiState
 
     private suspend fun loadTree(context: Context) = withIOContext {
-        val uiState = uiState.value
+        val uiState by uiState
         when (uiState.typeList[uiState.selectedIndex]) {
             TreeType.Simplify -> PreparationUtil.tree(path = context.readBackupSavePath(), exclude = PathUtil.getExcludeDirs())
             TreeType.Integral -> PreparationUtil.tree(path = context.readBackupSavePath())
@@ -54,7 +55,7 @@ class TreeViewModel @Inject constructor() : ViewModel() {
 
     suspend fun setTreeType(context: Context, type: TreeType) {
         withIOContext {
-            val uiState = uiState.value
+            val uiState by uiState
             val typeList = uiState.typeList
             _uiState.value = uiState.copy(selectedIndex = typeList.indexOf(type))
             setTreeText(context)

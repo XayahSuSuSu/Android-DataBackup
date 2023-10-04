@@ -122,7 +122,7 @@ fun TreeTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: TreeViewMode
         actions = {
             val scope = rememberCoroutineScope()
             var expanded by remember { mutableStateOf(false) }
-            val uiState = viewModel.uiState.value
+            val uiState by viewModel.uiState
             val typeList = uiState.typeList
             val typeStringList = uiState.typeList.map { it.ofString(context) }
             val selectedIndex = uiState.selectedIndex
@@ -157,7 +157,7 @@ fun TreeTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: TreeViewMode
 fun LogTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: LogViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val uiState = viewModel.uiState.value
+    val uiState by viewModel.uiState
     val dateList = uiState.startTimestamps.map { timestamp -> DateUtil.formatTimestamp(timestamp) }
     val selectedIndex = uiState.selectedIndex
     val navController = LocalSlotScope.current!!.navController

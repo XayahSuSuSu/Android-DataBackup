@@ -8,7 +8,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,27 +56,27 @@ class DialogState {
         confirmText: String? = null,
         dismissText: String? = null,
         onLoading: (suspend () -> Unit)? = null,
-        block: @Composable (MutableState<T>) -> Unit,
+        block: @Composable (T) -> Unit,
     ): Pair<Boolean, T> {
         return suspendCancellableCoroutine { continuation ->
             continuation.invokeOnCancellation { dismiss() }
             content = {
-                val uiState = remember { mutableStateOf(initialState) }
+                val uiState by remember { mutableStateOf(initialState) }
                 AlertDialog(
                     onDismissRequest = {
                         dismiss()
-                        continuation.resume(Pair(false, uiState.value))
+                        continuation.resume(Pair(false, uiState))
                     },
                     confirmButton = {
                         TextButton(text = confirmText ?: stringResource(id = R.string.confirm), onClick = {
                             dismiss()
-                            continuation.resume(Pair(true, uiState.value))
+                            continuation.resume(Pair(true, uiState))
                         })
                     },
                     dismissButton = {
                         TextButton(text = dismissText ?: stringResource(id = R.string.cancel), onClick = {
                             dismiss()
-                            continuation.resume(Pair(false, uiState.value))
+                            continuation.resume(Pair(false, uiState))
                         })
                     },
                     title = { Text(text = title) },

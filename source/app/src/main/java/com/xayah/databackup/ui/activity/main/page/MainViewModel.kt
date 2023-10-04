@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -68,7 +69,7 @@ sealed class MainUiState(
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
             val dialogSlot = LocalSlotScope.current!!.dialogSlot
-            val uiState = viewModel.uiState.value
+            val uiState by viewModel.uiState
             val logText = uiState.logText
             val selectedIndex = uiState.selectedIndex
             ExtendedFloatingActionButton(

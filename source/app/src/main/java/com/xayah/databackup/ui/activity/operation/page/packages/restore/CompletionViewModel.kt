@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.operation.page.packages.restore
 
 import android.app.Application
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.data.PackageRestoreOperationDao
@@ -35,7 +36,7 @@ class CompletionViewModel @Inject constructor(
         get() = _uiState
 
     suspend fun initializeUiState() {
-        val uiState = uiState.value
+        val uiState by uiState
         val dao = uiState.packageRestoreOperationDao
         val timestamp = dao.queryLastOperationTime()
         val startTimestamp = dao.queryFirstOperationStartTime(timestamp)

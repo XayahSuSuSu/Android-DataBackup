@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.main.page.log
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.data.LogDao
@@ -32,7 +33,7 @@ class LogViewModel @Inject constructor(logDao: LogDao) : ViewModel() {
     }
 
     private suspend fun setLogText() = withIOContext {
-        val uiState = uiState.value
+        val uiState by uiState
         val dao = uiState.logDao
         val startTimestamps = uiState.startTimestamps
         val index = uiState.selectedIndex
@@ -53,7 +54,7 @@ class LogViewModel @Inject constructor(logDao: LogDao) : ViewModel() {
     }
 
     suspend fun initializeUiState() = withIOContext {
-        val uiState = uiState.value
+        val uiState by uiState
         val dao = uiState.logDao
         val startTimestamps = dao.queryLogStartTimestamps()
         setStartTimestamps(startTimestamps)
@@ -61,7 +62,7 @@ class LogViewModel @Inject constructor(logDao: LogDao) : ViewModel() {
     }
 
     suspend fun deleteCurrentLog() = withIOContext {
-        val uiState = uiState.value
+        val uiState by uiState
         val selectedIndex = uiState.selectedIndex
         if (selectedIndex == -1) return@withIOContext
         val startTimestamp = uiState.startTimestamps[selectedIndex]

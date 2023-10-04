@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.xayah.databackup.ui.component.JetbrainsMonoLabelMediumText
 import com.xayah.databackup.ui.component.Loader
@@ -15,7 +16,7 @@ import com.xayah.databackup.ui.token.CommonTokens
 
 @Composable
 fun PageLog(viewModel: LogViewModel) {
-    val uiState = viewModel.uiState.value
+    val uiState by viewModel.uiState
     val logText = uiState.logText
 
     Loader(

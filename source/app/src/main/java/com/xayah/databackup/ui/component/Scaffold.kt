@@ -51,7 +51,7 @@ fun GuideScaffold(
     viewModel: GuideViewModel,
     content: @Composable () -> Unit
 ) {
-    val uiState = viewModel.uiState.value
+    val uiState by viewModel.uiState
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
@@ -73,9 +73,9 @@ fun GuideScaffold(
 @ExperimentalMaterial3Api
 @Composable
 fun MainScaffold(viewModel: MainViewModel, content: @Composable () -> Unit) {
-    val uiState = viewModel.uiState.value
+    val uiState by viewModel.uiState
     Scaffold(
-        modifier = if (uiState.scrollBehavior != null) Modifier.nestedScroll(uiState.scrollBehavior.nestedScrollConnection) else Modifier,
+        modifier = if (uiState.scrollBehavior != null) Modifier.nestedScroll(uiState.scrollBehavior!!.nestedScrollConnection) else Modifier,
         topBar = uiState.topBar,
         bottomBar = uiState.bottomBar ?: {},
         floatingActionButton = uiState.floatingActionButton,

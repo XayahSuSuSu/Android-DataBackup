@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -48,7 +49,7 @@ fun PackageRestoreCompletion() {
     val context = LocalContext.current
     val viewModel = hiltViewModel<CompletionViewModel>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val uiState = viewModel.uiState.value
+    val uiState by viewModel.uiState
     val relativeTime = uiState.relativeTime
     val succeedNum = uiState.succeedNum
     val failedNum = uiState.failedNum

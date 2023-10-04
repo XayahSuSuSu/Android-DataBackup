@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,8 +50,8 @@ fun Loader(modifier: Modifier, isLoading: Boolean, content: @Composable () -> Un
 fun <T> Loader(
     modifier: Modifier,
     onLoading: suspend () -> Unit = {},
-    uiState: MutableState<T>,
-    content: @Composable (MutableState<T>) -> Unit,
+    uiState: T,
+    content: @Composable (T) -> Unit,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     LaunchedEffect(null) {
