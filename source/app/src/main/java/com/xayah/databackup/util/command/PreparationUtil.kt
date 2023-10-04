@@ -1,5 +1,6 @@
 package com.xayah.databackup.util.command
 
+import android.content.Context
 import com.xayah.databackup.util.SymbolUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.outString
@@ -134,5 +135,10 @@ object PreparationUtil {
     suspend fun copyRecursivelyAndPreserve(path: String, targetPath: String): Pair<Boolean, String> {
         val exec = CommonUtil.execute("cp -rp $path $targetPath")
         return Pair(exec.isSuccess, exec.outString().trim())
+    }
+
+    suspend fun killDaemon(context: Context) {
+        // kill -9 $(ps -A | grep com.xayah.databackup.premium:root:daemon | awk 'NF>1{print $2}')
+        CommonUtil.execute("kill -9 ${SymbolUtil.USD}(ps -A | grep ${context.packageName}:root:daemon | awk 'NF>1{print ${SymbolUtil.USD}2}')")
     }
 }

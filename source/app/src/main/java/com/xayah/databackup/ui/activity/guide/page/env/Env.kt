@@ -28,6 +28,7 @@ import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.State
 import com.xayah.databackup.util.command.EnvUtil
+import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.saveAppVersionName
 import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
@@ -71,6 +72,9 @@ fun PageEnv(viewModel: GuideViewModel) {
                         val statesList = states.value.toMutableList()
                         statesList[0] = if (Shell.getShell().isRoot) State.Succeed else State.Failed
                         states.value = statesList.toList()
+
+                        // Kill daemon
+                        PreparationUtil.killDaemon(context)
                     }
                 }
         },
