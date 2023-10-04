@@ -17,9 +17,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 data class ProcessingUiState(
+    val mutex: Mutex,
     val timestamp: Long,
     var effectLaunched: Boolean,
     var effectFinished: Boolean,
@@ -40,6 +43,7 @@ class ProcessingViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = mutableStateOf(
         ProcessingUiState(
+            mutex = Mutex(),
             timestamp = DateUtil.getTimestamp(),
             effectLaunched = false,
             effectFinished = false,
@@ -53,19 +57,24 @@ class ProcessingViewModel @Inject constructor(
 
     fun restorePackages() {
         val uiState by uiState
-        if (uiState.effectLaunched.not())
-            viewModelScope.launch {
-                withIOContext {
-                    _uiState.value = uiState.copy(effectLaunched = true)
-                    val operationLocalService = OperationLocalService(context = context)
-                    operationLocalService.restorePackagesPreparation()
 
-                    _uiState.value = uiState.copy(effectState = ProcessingState.Processing)
-                    operationLocalService.restorePackages(timestamp = uiState.timestamp)
+        viewModelScope.launch {
+            uiState.mutex.withLock {
+                if (uiState.effectLaunched.not()) {
+                    withIOContext {
+                        _uiState.value = uiState.copy(effectLaunched = true)
 
-                    operationLocalService.destroyService()
-                    _uiState.value = uiState.copy(effectFinished = true)
+                        val operationLocalService = OperationLocalService(context = context)
+                        operationLocalService.restorePackagesPreparation()
+
+                        _uiState.value = uiState.copy(effectState = ProcessingState.Processing)
+                        operationLocalService.restorePackages(timestamp = uiState.timestamp)
+
+                        operationLocalService.destroyService()
+                        _uiState.value = uiState.copy(effectFinished = true)
+                    }
                 }
             }
+        }
     }
 }

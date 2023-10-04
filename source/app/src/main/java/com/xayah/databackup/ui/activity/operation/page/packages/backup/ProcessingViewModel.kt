@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.operation.page.packages.backup
 
 import android.app.Application
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 enum class ProcessingState {
@@ -24,6 +27,7 @@ enum class ProcessingState {
 }
 
 data class ProcessingUiState(
+    val mutex: Mutex,
     val timestamp: Long,
     var effectLaunched: Boolean,
     var effectFinished: Boolean,
@@ -44,6 +48,7 @@ class ProcessingViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = mutableStateOf(
         ProcessingUiState(
+            mutex = Mutex(),
             timestamp = DateUtil.getTimestamp(),
             effectLaunched = false,
             effectFinished = false,
@@ -56,23 +61,28 @@ class ProcessingViewModel @Inject constructor(
         get() = _uiState
 
     fun backupPackages() {
-        val uiState = uiState.value
-        if (_uiState.value.effectLaunched.not())
-            viewModelScope.launch {
-                withIOContext {
-                    _uiState.value = uiState.copy(effectLaunched = true)
-                    val operationLocalService = OperationLocalService(context = context)
-                    val preparation = operationLocalService.backupPackagesPreparation()
+        val uiState by uiState
 
-                    _uiState.value = uiState.copy(effectState = ProcessingState.Processing)
-                    operationLocalService.backupPackages(timestamp = uiState.timestamp)
+        viewModelScope.launch {
+            uiState.mutex.withLock {
+                if (uiState.effectLaunched.not()) {
+                    withIOContext {
+                        _uiState.value = uiState.copy(effectLaunched = true)
 
-                    _uiState.value = uiState.copy(effectState = ProcessingState.Waiting)
-                    operationLocalService.backupPackagesAfterwards(preparation)
+                        val operationLocalService = OperationLocalService(context = context)
+                        val preparation = operationLocalService.backupPackagesPreparation()
 
-                    operationLocalService.destroyService()
-                    _uiState.value = uiState.copy(effectFinished = true)
+                        _uiState.value = uiState.copy(effectState = ProcessingState.Processing)
+                        operationLocalService.backupPackages(timestamp = uiState.timestamp)
+
+                        _uiState.value = uiState.copy(effectState = ProcessingState.Waiting)
+                        operationLocalService.backupPackagesAfterwards(preparation)
+
+                        operationLocalService.destroyService()
+                        _uiState.value = uiState.copy(effectFinished = true)
+                    }
                 }
             }
+        }
     }
 }

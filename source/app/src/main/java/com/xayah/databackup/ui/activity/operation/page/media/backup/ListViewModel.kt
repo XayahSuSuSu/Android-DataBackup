@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,6 +28,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 enum class OpType {
@@ -35,6 +38,7 @@ enum class OpType {
 }
 
 data class MediaBackupListUiState(
+    val mutex: Mutex,
     val isLoading: Boolean,
     val opType: OpType,
     val timestamp: Long,
@@ -48,6 +52,7 @@ data class MediaBackupListUiState(
 class MediaBackupListViewModel @Inject constructor(private val mediaDao: MediaDao) : ViewModel() {
     private val _uiState = mutableStateOf(
         MediaBackupListUiState(
+            mutex = Mutex(),
             isLoading = true,
             opType = OpType.LIST,
             timestamp = DateUtil.getTimestamp(),
@@ -132,18 +137,24 @@ class MediaBackupListViewModel @Inject constructor(private val mediaDao: MediaDa
     }
 
     fun onProcessing() {
-        if (uiState.value.opType == OpType.LIST)
-            viewModelScope.launch {
-                withIOContext {
-                    updateTimestamp()
-                    setType(OpType.PROCESSING)
+        val uiState by uiState
 
-                    val operationLocalService = OperationLocalService(context = DataBackupApplication.application)
-                    operationLocalService.backupMedium(uiState.value.timestamp)
-                    operationLocalService.destroyService()
+        viewModelScope.launch {
+            uiState.mutex.withLock {
+                if (uiState.opType == OpType.LIST) {
+                    withIOContext {
+                        setType(OpType.PROCESSING)
 
-                    setType(OpType.LIST)
+                        updateTimestamp()
+
+                        val operationLocalService = OperationLocalService(context = DataBackupApplication.application)
+                        operationLocalService.backupMedium(uiState.timestamp)
+                        operationLocalService.destroyService()
+
+                        setType(OpType.LIST)
+                    }
                 }
             }
+        }
     }
 }

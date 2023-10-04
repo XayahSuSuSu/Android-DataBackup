@@ -18,9 +18,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 data class MediaRestoreListUiState(
+    val mutex: Mutex,
     val isLoading: Boolean,
     val opType: OpType,
     val timestamps: List<Long>,
@@ -37,6 +40,7 @@ data class MediaRestoreListUiState(
 class MediaRestoreListViewModel @Inject constructor(private val mediaDao: MediaDao) : ViewModel() {
     private val _uiState = mutableStateOf(
         MediaRestoreListUiState(
+            mutex = Mutex(),
             isLoading = false,
             opType = OpType.LIST,
             timestamps = listOf(),
@@ -85,17 +89,22 @@ class MediaRestoreListViewModel @Inject constructor(private val mediaDao: MediaD
     }
 
     fun onProcessing() {
-        if (uiState.value.opType == OpType.LIST)
-            viewModelScope.launch {
-                withIOContext {
-                    setType(OpType.PROCESSING)
+        val uiState by uiState
 
-                    val operationLocalService = OperationLocalService(context = DataBackupApplication.application)
-                    operationLocalService.restoreMedium(uiState.value.timestamp)
-                    operationLocalService.destroyService()
+        viewModelScope.launch {
+            uiState.mutex.withLock {
+                if (uiState.opType == OpType.LIST) {
+                    withIOContext {
+                        setType(OpType.PROCESSING)
 
-                    setType(OpType.LIST)
+                        val operationLocalService = OperationLocalService(context = DataBackupApplication.application)
+                        operationLocalService.restoreMedium(uiState.timestamp)
+                        operationLocalService.destroyService()
+
+                        setType(OpType.LIST)
+                    }
                 }
             }
+        }
     }
 }
