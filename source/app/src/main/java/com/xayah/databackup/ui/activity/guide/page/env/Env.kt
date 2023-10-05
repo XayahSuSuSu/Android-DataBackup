@@ -30,6 +30,7 @@ import com.xayah.databackup.ui.token.State
 import com.xayah.databackup.util.command.EnvUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.saveAppVersionName
+import com.xayah.librootservice.util.ExceptionUtil.tryOnScope
 import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -73,13 +74,15 @@ fun PageEnv(viewModel: GuideViewModel) {
         {
             if (states.value[0] != State.Succeed)
                 runAndValidate {
-                    withIOContext {
-                        val statesList = states.value.toMutableList()
-                        statesList[0] = if (Shell.getShell().isRoot) State.Succeed else State.Failed
-                        states.value = statesList.toList()
+                    tryOnScope {
+                        withIOContext {
+                            val statesList = states.value.toMutableList()
+                            statesList[0] = if (Shell.getShell().isRoot) State.Succeed else State.Failed
+                            states.value = statesList.toList()
 
-                        // Kill daemon
-                        PreparationUtil.killDaemon(context)
+                            // Kill daemon
+                            PreparationUtil.killDaemon(context)
+                        }
                     }
                 }
         },
