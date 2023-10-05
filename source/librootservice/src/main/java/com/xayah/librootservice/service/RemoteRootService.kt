@@ -19,6 +19,7 @@ import com.xayah.librootservice.impl.RemoteRootServiceImpl
 import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.parcelables.StatFsParcelable
 import com.xayah.librootservice.util.withMainContext
+import kotlinx.coroutines.isActive
 import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -44,7 +45,7 @@ class RemoteRootService(private val context: Context) {
             mConnection = object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName, service: IBinder) {
                     mService = IRemoteRootService.Stub.asInterface(service)
-                    continuation.resume(mService!!)
+                    if (continuation.context.isActive) continuation.resume(mService!!)
                 }
 
                 override fun onServiceDisconnected(name: ComponentName) {
@@ -52,7 +53,7 @@ class RemoteRootService(private val context: Context) {
                     mConnection = null
                     val msg = "Service disconnected."
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    continuation.resumeWithException(RemoteException(msg))
+                    if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                 }
 
                 override fun onBindingDied(name: ComponentName) {
@@ -60,7 +61,7 @@ class RemoteRootService(private val context: Context) {
                     mConnection = null
                     val msg = "Binding died."
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    continuation.resumeWithException(RemoteException(msg))
+                    if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                 }
 
                 override fun onNullBinding(name: ComponentName) {
@@ -68,7 +69,7 @@ class RemoteRootService(private val context: Context) {
                     mConnection = null
                     val msg = "Null binding."
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    continuation.resumeWithException(RemoteException(msg))
+                    if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                 }
             }
             RootService.bind(intent, mConnection!!)
