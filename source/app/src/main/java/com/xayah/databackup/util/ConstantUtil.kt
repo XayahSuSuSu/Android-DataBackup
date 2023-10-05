@@ -35,4 +35,6 @@ object ConstantUtil {
         Pair("DCIM","/storage/emulated/0/DCIM"),
         Pair("Download","/storage/emulated/0/Download"),
     )
+
+    val FlavorFeatureFoss = "foss"
 }

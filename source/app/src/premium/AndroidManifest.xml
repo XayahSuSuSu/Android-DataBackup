@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Update/Firebase -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application tools:ignore="MissingApplicationIcon">
         <!-- Workaround for CrashHandler -->
         <provider

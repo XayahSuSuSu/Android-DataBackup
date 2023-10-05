@@ -10,7 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
+import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.ui.activity.guide.router.GuideRoutes
+import com.xayah.databackup.util.ConstantUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -25,7 +27,10 @@ sealed class GuideUiState(
         icon = Icons.Rounded.AccountCircle,
         fabIcon = Icons.Rounded.ArrowForward,
         onFabClick = { navController ->
-            navController.navigate(GuideRoutes.Update.route)
+            if (BuildConfig.FLAVOR_feature == ConstantUtil.FlavorFeatureFoss)
+                navController.navigate(GuideRoutes.Env.route)
+            else
+                navController.navigate(GuideRoutes.Update.route)
         }
     )
 

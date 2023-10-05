@@ -6,8 +6,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.guide.page.env.envContents
+import com.xayah.databackup.ui.activity.guide.page.env.envSubtitles
+import com.xayah.databackup.ui.activity.guide.page.env.envTitles
 import com.xayah.databackup.ui.component.IntroCard
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingTop
@@ -16,24 +17,9 @@ import com.xayah.databackup.ui.token.CommonTokens
 @ExperimentalMaterial3Api
 @Composable
 fun PageIntro() {
-    val titles = listOf(
-        stringResource(id = R.string.start),
-        stringResource(id = R.string.network),
-        stringResource(id = R.string.application),
-        stringResource(id = R.string.storage)
-    )
-    val subtitles = listOf(
-        stringResource(id = R.string.start_subtitle),
-        stringResource(id = R.string.network_subtitle),
-        stringResource(id = R.string.application_subtitle),
-        stringResource(id = R.string.storage_subtitle)
-    )
-    val contents = listOf(
-        stringResource(id = R.string.start_desc),
-        stringResource(id = R.string.network_desc),
-        stringResource(id = R.string.application_desc),
-        stringResource(id = R.string.storage_desc)
-    )
+    val titles = envTitles()
+    val subtitles = envSubtitles()
+    val contents = envContents()
 
     LazyColumn(
         modifier = Modifier.paddingTop(CommonTokens.PaddingMedium),
