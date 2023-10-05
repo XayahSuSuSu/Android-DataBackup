@@ -31,9 +31,11 @@ interface MediaDao {
     @Query("SELECT * FROM MediaBackupEntity")
     fun queryAllBackupFlow(): Flow<List<MediaBackupWithOpEntity>>
 
-    @Transaction
     @Query("SELECT * FROM MediaBackupEntity")
     suspend fun queryAllBackup(): List<MediaBackupEntity>
+
+    @Query("SELECT * FROM MediaRestoreEntity")
+    suspend fun queryAllRestore(): List<MediaRestoreEntity>
 
     @Transaction
     @Query("SELECT * FROM MediaRestoreEntity WHERE timestamp = :timestamp")
@@ -59,4 +61,7 @@ interface MediaDao {
 
     @Delete(entity = MediaRestoreEntity::class)
     suspend fun deleteRestore(item: MediaRestoreEntity)
+
+    @Query("DELETE FROM MediaRestoreEntity")
+    suspend fun clearRestoreTable()
 }

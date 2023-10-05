@@ -415,6 +415,11 @@ class OperationLocalServiceImpl : Service() {
                 val name = current.name
                 val path = current.path
                 logUtil.log(logTag, "Current media: ${name}: $path")
+                if (path.isEmpty()) {
+                    mediaDao.upsertRestore(current.copy(selected = false))
+                    logUtil.log(logTag, "The target path is empty, skip.")
+                    return@forEach
+                }
 
                 val mediaRestoreOperationEntity = MediaRestoreOperationEntity(
                     id = 0,

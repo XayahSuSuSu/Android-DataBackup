@@ -121,4 +121,6 @@
     <string name="select_target_directory">Select target directory</string>
     <string name="confirm_delete">Sure to delete?</string>
     <string name="backup_dir_as_media_error">Cannot add backup directory as media</string>
+    <string name="media_target_path_missing">The target directory is missing, please set it manually</string>
+    <string name="media_set_path">Set path</string>
 </resources>

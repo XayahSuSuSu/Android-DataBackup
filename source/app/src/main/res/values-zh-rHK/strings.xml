@@ -116,4 +116,6 @@
     <string name="select_target_directory">選擇目標目錄</string>
     <string name="confirm_delete">確定要刪除嗎？</string>
     <string name="backup_dir_as_media_error">無法添加備份目錄作為媒體資料</string>
+    <string name="media_target_path_missing">目標目錄遺失，請手動設定</string>
+    <string name="media_set_path">設定路徑</string>
 </resources>

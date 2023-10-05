@@ -107,4 +107,14 @@ class MediaRestoreListViewModel @Inject constructor(private val mediaDao: MediaD
             }
         }
     }
+
+    fun setPath(pathString: String, media: MediaRestoreEntity) {
+        viewModelScope.launch {
+            withIOContext {
+                if (pathString.isNotEmpty()) {
+                    upsertRestore(media.copy(path = pathString))
+                }
+            }
+        }
+    }
 }

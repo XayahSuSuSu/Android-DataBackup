@@ -182,12 +182,13 @@ fun LabelMediumText(modifier: Modifier = Modifier, textAlign: TextAlign? = null,
 }
 
 @Composable
-fun LabelSmallText(modifier: Modifier = Modifier, textAlign: TextAlign? = null, text: String) {
+fun LabelSmallText(modifier: Modifier = Modifier, textAlign: TextAlign? = null, text: String, color: Color = Color.Unspecified) {
     Text(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.labelSmall,
         textAlign = textAlign,
+        color = color,
     )
 }
 

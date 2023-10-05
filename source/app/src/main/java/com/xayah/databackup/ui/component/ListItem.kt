@@ -3,6 +3,7 @@ package com.xayah.databackup.ui.component
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,6 +74,8 @@ import com.xayah.databackup.ui.token.ListItemTokens
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.MediumRestoreUtil
+import com.xayah.libpickyou.ui.PickYouLauncher
+import com.xayah.libpickyou.ui.activity.PickerType
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
@@ -446,6 +450,7 @@ fun ListItemMedia(
     modifier: Modifier = Modifier,
     name: String,
     path: String,
+    archivePath: String? = null,
     state: Boolean,
     mediaOpLog: String,
     isProcessing: Boolean,
@@ -458,6 +463,7 @@ fun ListItemMedia(
     chipGroup: @Composable (RowScope.() -> Unit),
 ) {
     val haptic = LocalHapticFeedback.current
+    val isPathMissing = path.isEmpty()
 
     Card(
         modifier = modifier
@@ -486,7 +492,14 @@ fun ListItemMedia(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     TitleMediumBoldText(text = name)
-                    LabelSmallText(text = path)
+                    if (isPathMissing) {
+                        archivePath?.apply {
+                            LabelSmallText(text = this)
+                        }
+                        LabelSmallText(text = stringResource(R.string.media_target_path_missing), color = ColorScheme.error())
+                    } else {
+                        LabelSmallText(text = path)
+                    }
                 }
                 if (selectedInList) Icon(
                     imageVector = Icons.Filled.CheckCircle,
@@ -688,6 +701,7 @@ fun ListItemMediaRestore(
     val uiState by viewModel.uiState
     val media = entity.media
     val opList = entity.opList
+    val isPathMissing = entity.media.path.isEmpty()
     val isProcessing = remember(uiState) { uiState.opType == OpType.PROCESSING }
     var selectedInList by remember(entity, isProcessing) { mutableStateOf(media.selected && isProcessing.not()) }
     val mediaOpIndex by remember(entity, uiState) { mutableIntStateOf(entity.opList.indexOfLast { it.timestamp == uiState.timestamp }) }
@@ -706,6 +720,7 @@ fun ListItemMediaRestore(
         modifier = modifier,
         name = media.name,
         path = media.path,
+        archivePath = media.archivePath,
         state = if (mediaOpDone) opList[mediaOpIndex].state else false,
         mediaOpLog = mediaOpLog,
         isProcessing = isProcessing,
@@ -713,11 +728,15 @@ fun ListItemMediaRestore(
         mediaOpProcessing = mediaOpProcessing,
         mediaOpDone = mediaOpDone,
         onCardClick = {
-            scope.launch {
-                withIOContext {
-                    media.selected = media.selected.not()
-                    viewModel.upsertRestore(media)
-                    selectedInList = media.selected
+            if (isPathMissing) {
+                Toast.makeText(context, context.getString(R.string.media_target_path_missing), Toast.LENGTH_SHORT).show()
+            } else {
+                scope.launch {
+                    withIOContext {
+                        media.selected = media.selected.not()
+                        viewModel.upsertRestore(media)
+                        selectedInList = media.selected
+                    }
                 }
             }
         },
@@ -732,6 +751,23 @@ fun ListItemMediaRestore(
             ) {
                 val actions = remember(entity) {
                     listOf(
+                        ActionMenuItem(
+                            title = context.getString(R.string.media_set_path),
+                            icon = Icons.Rounded.Settings,
+                            enabled = true,
+                            onClick = {
+                                PickYouLauncher().apply {
+                                    setTitle(context.getString(R.string.select_target_directory))
+                                    setType(PickerType.DIRECTORY)
+                                    setLimitation(1)
+                                    launch((context as ComponentActivity)) { pathList ->
+                                        pathList.forEach { pathString ->
+                                            viewModel.setPath(pathString = pathString, media = media)
+                                        }
+                                    }
+                                }
+                            }
+                        ),
                         ActionMenuItem(
                             title = context.getString(R.string.delete),
                             icon = Icons.Rounded.Delete,
