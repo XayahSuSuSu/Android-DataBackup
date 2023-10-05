@@ -352,6 +352,7 @@ fun ListItemDirectory(
     val haptic = LocalHapticFeedback.current
     val selected = entity.selected
     val enabled = entity.enabled
+    val progress = entity.availableBytes.toFloat() / entity.totalBytes
     val path = entity.path
     var expanded by remember { mutableStateOf(false) }
 
@@ -397,7 +398,7 @@ fun ListItemDirectory(
                             .weight(1f),
                         color = if (enabled) ColorScheme.primary() else ColorScheme.primary().copy(alpha = CommonTokens.DisabledAlpha),
                         trackColor = if (enabled) ColorScheme.inverseOnSurface() else ColorScheme.inverseOnSurface().copy(alpha = CommonTokens.DisabledAlpha),
-                        progress = entity.availableBytes.toFloat() / entity.totalBytes
+                        progress = if (progress.isNaN()) 0f else progress
                     )
                     Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
                         val actions = remember(entity) {
