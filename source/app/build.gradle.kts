@@ -37,11 +37,11 @@ android {
             dimension = "abi"
             versionCode = 3 + (android.defaultConfig.versionCode ?: 0)
         }
-        create("x86") {
+        create("x86_64") {
             dimension = "abi"
             versionCode = 2 + (android.defaultConfig.versionCode ?: 0)
         }
-        create("x86_64") {
+        create("x86") {
             dimension = "abi"
             versionCode = 1 + (android.defaultConfig.versionCode ?: 0)
         }
