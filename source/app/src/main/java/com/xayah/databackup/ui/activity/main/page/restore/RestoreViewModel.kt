@@ -176,16 +176,9 @@ class RestoreViewModel @Inject constructor(
                 } else {
                     packageRestoreEntire = PackageRestoreEntire(
                         packageName = packageName,
-                        label = "",
                         backupOpCode = operationCode,
-                        operationCode = OperationMask.None,
                         timestamp = timestamp,
-                        versionName = "",
-                        versionCode = 0,
-                        sizeBytes = 0,
-                        flags = 0,
                         compressionType = compressionType,
-                        active = false
                     )
                     packageInfo?.apply {
                         packageRestoreEntire.also { entity ->

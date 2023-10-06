@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "d3f23bd30cd9852b81069b15902d7a98",
+    "identityHash": "d6c02d9c8bd3733b731fc6b0d60f9240",
     "entities": [
       {
         "tableName": "LogEntity",
@@ -347,7 +347,7 @@
       },
       {
         "tableName": "PackageRestoreEntire",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `backupOpCode` INTEGER NOT NULL DEFAULT 0, `operationCode` INTEGER NOT NULL DEFAULT 0, `timestamp` INTEGER NOT NULL DEFAULT 0, `versionName` TEXT NOT NULL, `versionCode` INTEGER NOT NULL, `sizeBytes` INTEGER NOT NULL DEFAULT 0, `flags` INTEGER NOT NULL, `compressionType` TEXT NOT NULL, `active` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `backupOpCode` INTEGER NOT NULL DEFAULT 0, `operationCode` INTEGER NOT NULL DEFAULT 0, `timestamp` INTEGER NOT NULL DEFAULT 0, `versionName` TEXT NOT NULL, `versionCode` INTEGER NOT NULL, `sizeBytes` INTEGER NOT NULL DEFAULT 0, `installed` INTEGER NOT NULL DEFAULT 0, `flags` INTEGER NOT NULL, `compressionType` TEXT NOT NULL, `active` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -403,6 +403,13 @@
           {
             "fieldPath": "sizeBytes",
             "columnName": "sizeBytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "installed",
+            "columnName": "installed",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
@@ -943,7 +950,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd3f23bd30cd9852b81069b15902d7a98')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd6c02d9c8bd3733b731fc6b0d60f9240')"
     ]
   }
 }

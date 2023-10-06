@@ -299,9 +299,10 @@ fun ListItemPackageRestore(
     ) {
         if (packageInfo.versionName.isNotEmpty()) Serial(serial = packageInfo.versionName)
         LaunchedEffect(null) {
-            viewModel.updatePackageSizeBytes(context, packageInfo)
+            viewModel.updatePackage(context, packageInfo)
         }
         AnimatedSerial(serial = packageInfo.sizeDisplay)
+        AnimatedSerial(serial = if (packageInfo.installed) stringResource(id = R.string.installed) else stringResource(id = R.string.not_installed))
     }
 
     LaunchedEffect(null) {

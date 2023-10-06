@@ -165,14 +165,11 @@ class OperationLocalServiceImpl : Service() {
                         packageName = currentPackage.packageName,
                         label = currentPackage.label,
                         backupOpCode = currentPackage.operationCode,
-                        operationCode = OperationMask.None,
                         timestamp = timestamp,
                         versionName = currentPackage.versionName,
                         versionCode = currentPackage.versionCode,
-                        sizeBytes = 0,
                         flags = currentPackage.flags,
                         compressionType = context.readCompressionType(),
-                        active = false
                     )
                     packageRestoreEntireDao.upsert(restoreEntire)
 

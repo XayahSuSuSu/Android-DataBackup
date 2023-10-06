@@ -119,4 +119,5 @@
     <string name="media_target_path_missing">目标目录丢失，请手动设置</string>
     <string name="media_set_path">设置路径</string>
     <string name="update_available">有更新</string>
+    <string name="not_installed">未安装</string>
 </resources>

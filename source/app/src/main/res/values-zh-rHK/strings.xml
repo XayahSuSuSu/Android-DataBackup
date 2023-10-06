@@ -119,4 +119,5 @@
     <string name="media_target_path_missing">目標目錄遺失，請手動設定</string>
     <string name="media_set_path">設定路徑</string>
     <string name="update_available">有更新</string>
+    <string name="not_installed">未安裝</string>
 </resources>

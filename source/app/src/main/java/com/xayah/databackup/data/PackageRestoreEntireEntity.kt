@@ -18,16 +18,17 @@ import com.xayah.databackup.util.command.PackagesRestoreUtil
 data class PackageRestoreEntire(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     var packageName: String,
-    var label: String,
+    var label: String = "",
     @ColumnInfo(defaultValue = "0") var backupOpCode: Int, // Defined during the backup processing, limits the range of choices.
-    @ColumnInfo(defaultValue = "0") var operationCode: Int,
+    @ColumnInfo(defaultValue = "0") var operationCode: Int = OperationMask.None,
     @ColumnInfo(defaultValue = "0") var timestamp: Long,
-    var versionName: String,
-    var versionCode: Long,
-    @ColumnInfo(defaultValue = "0") var sizeBytes: Long,
-    var flags: Int,
+    var versionName: String = "",
+    var versionCode: Long = 0,
+    @ColumnInfo(defaultValue = "0") var sizeBytes: Long = 0,
+    @ColumnInfo(defaultValue = "0") var installed: Boolean = false,
+    var flags: Int = 0,
     var compressionType: CompressionType,
-    var active: Boolean,
+    var active: Boolean = false,
 ) {
     @Ignore
     @Transient

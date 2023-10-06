@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.data.PackageRestoreEntireDao
+import com.xayah.databackup.util.readRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -65,11 +66,12 @@ class ListViewModel @Inject constructor(
     /**
      * @see [com.xayah.databackup.ui.activity.operation.page.media.backup.MediaBackupListViewModel.updateMediaSizeBytes]
      */
-    suspend fun updatePackageSizeBytes(context: Context, entity: PackageRestoreEntire) = withIOContext {
+    suspend fun updatePackage(context: Context, entity: PackageRestoreEntire) = withIOContext {
         val remoteRootService = RemoteRootService(context)
         val sizeBytes = remoteRootService.calculateSize(entity.savePath)
-        if (entity.sizeBytes != sizeBytes) {
-            updatePackage(entity.copy(sizeBytes = sizeBytes))
+        val installed = remoteRootService.queryInstalled(entity.packageName, context.readRestoreUserId())
+        if (entity.sizeBytes != sizeBytes || entity.installed != installed) {
+            updatePackage(entity.copy(sizeBytes = sizeBytes, installed = installed))
         }
         remoteRootService.destroyService()
     }
