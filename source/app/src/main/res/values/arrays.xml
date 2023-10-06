@@ -22,5 +22,11 @@
     </string-array>
     <string-array name="restore_sort_type_items">
         <item>Alphabet</item>
+        <item>Data size</item>
+    </string-array>
+    <string-array name="restore_installation_type_items">
+        <item>Both</item>
+        <item>Installed</item>
+        <item>Not installed</item>
     </string-array>
 </resources>

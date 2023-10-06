@@ -81,10 +81,12 @@ import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.readRestoreFilterTypeIndex
 import com.xayah.databackup.util.readRestoreFlagTypeIndex
+import com.xayah.databackup.util.readRestoreInstallationTypeIndex
 import com.xayah.databackup.util.readRestoreSortState
 import com.xayah.databackup.util.readRestoreSortTypeIndex
 import com.xayah.databackup.util.saveRestoreFilterTypeIndex
 import com.xayah.databackup.util.saveRestoreFlagTypeIndex
+import com.xayah.databackup.util.saveRestoreInstallationTypeIndex
 import com.xayah.databackup.util.saveRestoreSortState
 import com.xayah.databackup.util.saveRestoreSortTypeIndex
 import com.xayah.librootservice.service.RemoteRootService
@@ -120,22 +122,51 @@ private fun sortByAlphabet(state: SortState): Comparator<PackageRestoreEntire> =
     }
 }
 
+private fun sortByDataSize(state: SortState): Comparator<PackageRestoreEntire> = when (state) {
+    SortState.ASCENDING -> {
+        compareBy { entity -> entity.sizeBytes }
+    }
+
+    SortState.DESCENDING -> {
+        compareByDescending { entity -> entity.sizeBytes }
+    }
+}
+
 private fun sort(index: Int, state: SortState): Comparator<PackageRestoreEntire> = when (index) {
+    1 -> sortByDataSize(state)
     else -> sortByAlphabet(state)
 }
 
-private fun filter(index: Int, isFlagType: Boolean): (PackageRestoreEntire) -> Boolean = { packageRestoreEntire ->
-    if (isFlagType.not()) {
-        when (index) {
-            1 -> packageRestoreEntire.operationCode != OperationMask.None
-            2 -> packageRestoreEntire.operationCode == OperationMask.None
-            else -> true
+private enum class FilterType {
+    Selection,
+    Flag,
+    Installation,
+}
+
+private fun filter(index: Int, type: FilterType): (PackageRestoreEntire) -> Boolean = { packageRestoreEntire ->
+    when (type) {
+        FilterType.Selection -> {
+            when (index) {
+                1 -> packageRestoreEntire.operationCode != OperationMask.None
+                2 -> packageRestoreEntire.operationCode == OperationMask.None
+                else -> true
+            }
         }
-    } else {
-        when (index) {
-            1 -> packageRestoreEntire.isSystemApp.not()
-            2 -> packageRestoreEntire.isSystemApp
-            else -> true
+
+        FilterType.Flag -> {
+            when (index) {
+                1 -> packageRestoreEntire.isSystemApp.not()
+                2 -> packageRestoreEntire.isSystemApp
+                else -> true
+            }
+        }
+
+        FilterType.Installation -> {
+            when (index) {
+                1 -> packageRestoreEntire.installed
+                2 -> packageRestoreEntire.installed.not()
+                else -> true
+            }
         }
     }
 }
@@ -188,8 +219,15 @@ fun PackageRestoreList() {
     val uiState by viewModel.uiState
     val packagesState by uiState.packages.collectAsState(initial = listOf())
     var packageSearchPredicate: (PackageRestoreEntire) -> Boolean by remember { mutableStateOf({ true }) }
-    var packageSelectionPredicate: (PackageRestoreEntire) -> Boolean by remember { mutableStateOf(filter(context.readRestoreFilterTypeIndex(), false)) }
-    var packageFlagTypePredicate: (PackageRestoreEntire) -> Boolean by remember { mutableStateOf(filter(context.readRestoreFlagTypeIndex(), true)) }
+    var packageSelectionPredicate: (PackageRestoreEntire) -> Boolean by remember {
+        mutableStateOf(filter(context.readRestoreFilterTypeIndex(), FilterType.Selection))
+    }
+    var packageInstallationPredicate: (PackageRestoreEntire) -> Boolean by remember {
+        mutableStateOf(filter(context.readRestoreInstallationTypeIndex(), FilterType.Installation))
+    }
+    var packageFlagTypePredicate: (PackageRestoreEntire) -> Boolean by remember {
+        mutableStateOf(filter(context.readRestoreFlagTypeIndex(), FilterType.Flag))
+    }
     var packageSortComparator: Comparator<in PackageRestoreEntire> by remember {
         mutableStateOf(
             sort(
@@ -198,9 +236,23 @@ fun PackageRestoreList() {
             )
         )
     }
-    val packages = remember(packagesState, packageSearchPredicate, packageSelectionPredicate, packageFlagTypePredicate, packageSortComparator) {
-        packagesState.filter(packageSearchPredicate).filter(packageSelectionPredicate).filter(packageFlagTypePredicate).sortedWith(packageSortComparator)
-    }
+    val packages =
+        remember(
+            packagesState,
+            packageSearchPredicate,
+            packageSelectionPredicate,
+            packageFlagTypePredicate,
+            packageInstallationPredicate,
+            packageSortComparator
+        ) {
+            packagesState.asSequence()
+                .filter(packageSearchPredicate)
+                .filter(packageSelectionPredicate)
+                .filter(packageFlagTypePredicate)
+                .filter(packageInstallationPredicate)
+                .sortedWith(packageSortComparator)
+                .toList()
+        }
     val selectedAPKs by uiState.selectedAPKs.collectAsState(initial = 0)
     val selectedData by uiState.selectedData.collectAsState(initial = 0)
     val selected = remember(selectedAPKs, selectedData) {
@@ -432,7 +484,18 @@ fun PackageRestoreList() {
                                         list = stringArrayResource(id = R.array.filter_type_items).toList(),
                                         onSelected = { index, _ ->
                                             context.saveRestoreFilterTypeIndex(index)
-                                            packageSelectionPredicate = filter(index, false)
+                                            packageSelectionPredicate = filter(index, FilterType.Selection)
+                                        },
+                                        onClick = deselectAll
+                                    )
+
+                                    ChipDropdownMenu(
+                                        leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_apk_install),
+                                        defaultSelectedIndex = remember { context.readRestoreInstallationTypeIndex() },
+                                        list = stringArrayResource(id = R.array.restore_installation_type_items).toList(),
+                                        onSelected = { index, _ ->
+                                            context.saveRestoreInstallationTypeIndex(index)
+                                            packageInstallationPredicate = filter(index, FilterType.Installation)
                                         },
                                         onClick = deselectAll
                                     )
@@ -443,7 +506,7 @@ fun PackageRestoreList() {
                                         list = stringArrayResource(id = R.array.flag_type_items).toList(),
                                         onSelected = { index, _ ->
                                             context.saveRestoreFlagTypeIndex(index)
-                                            packageFlagTypePredicate = filter(index, true)
+                                            packageFlagTypePredicate = filter(index, FilterType.Flag)
                                         },
                                         onClick = deselectAll
                                     )

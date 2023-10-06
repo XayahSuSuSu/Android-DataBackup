@@ -387,6 +387,14 @@ fun Context.readRestoreFilterTypeIndex(): Int {
     return readPreferencesInt("restore_filter_type_index", 0)
 }
 
+fun Context.saveRestoreInstallationTypeIndex(index: Int) {
+    savePreferences("restore_installation_type_index", index)
+}
+
+fun Context.readRestoreInstallationTypeIndex(): Int {
+    return readPreferencesInt("restore_installation_type_index", 0)
+}
+
 fun Context.saveRestoreFlagTypeIndex(index: Int) {
     savePreferences("restore_flag_type_index", index)
 }

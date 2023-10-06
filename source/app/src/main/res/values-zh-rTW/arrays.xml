@@ -22,5 +22,11 @@
     </string-array>
     <string-array name="restore_sort_type_items">
         <item>字母表序</item>
+        <item>數據大小</item>
+    </string-array>
+    <string-array name="restore_installation_type_items">
+        <item>全部</item>
+        <item>已安裝</item>
+        <item>未安裝</item>
     </string-array>
 </resources>
