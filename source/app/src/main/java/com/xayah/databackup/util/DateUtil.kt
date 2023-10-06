@@ -72,4 +72,10 @@ object DateUtil {
         val dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(date2), ZoneId.systemDefault())
         return abs(ChronoUnit.DAYS.between(dateTime2, dateTime1))
     }
+
+    fun getNumberOfHoursPassed(date1: Long, date2: Long): Long {
+        val dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(date1), ZoneId.systemDefault())
+        val dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(date2), ZoneId.systemDefault())
+        return abs(ChronoUnit.HOURS.between(dateTime2, dateTime1))
+    }
 }

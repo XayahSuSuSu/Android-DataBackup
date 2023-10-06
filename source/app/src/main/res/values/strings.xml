@@ -123,4 +123,5 @@
     <string name="backup_dir_as_media_error">Cannot add backup directory as media</string>
     <string name="media_target_path_missing">The target directory is missing, please set it manually</string>
     <string name="media_set_path">Set path</string>
+    <string name="update_available">Update available</string>
 </resources>

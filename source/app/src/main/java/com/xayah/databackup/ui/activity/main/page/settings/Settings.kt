@@ -1,10 +1,12 @@
 package com.xayah.databackup.ui.activity.main.page.settings
 
-import android.os.Build
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +15,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,11 +27,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.SettingsGridItem
-import com.xayah.databackup.ui.component.SettingsGridItemConfig
 import com.xayah.databackup.ui.component.SettingsModalDropdownMenu
 import com.xayah.databackup.ui.component.SettingsSwitch
 import com.xayah.databackup.ui.component.SettingsTitle
@@ -37,6 +40,7 @@ import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.CompressionType
+import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.readBackupItself
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCleanRestoring
@@ -72,32 +76,26 @@ private fun InfoCard() {
             .paddingHorizontal(CommonTokens.PaddingMedium)
     ) {
         val context = LocalContext.current
-        val items = remember {
-            listOf(
-                SettingsGridItemConfig(
-                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_apps),
-                    title = context.getString(R.string.version),
-                    content = BuildConfig.VERSION_NAME
-                ),
-                SettingsGridItemConfig(
-                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_star),
-                    title = context.getString(R.string.feature),
-                    content = BuildConfig.FLAVOR_feature
-                ),
-                SettingsGridItemConfig(
-                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_app_registration),
-                    title = context.getString(R.string.abi),
-                    content = BuildConfig.FLAVOR_abi
-                ),
-                SettingsGridItemConfig(
-                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_phone_android),
-                    title = context.getString(R.string.architecture),
-                    content = Build.SUPPORTED_ABIS.firstOrNull() ?: context.getString(R.string.loading_failed)
-                ),
-            )
+        val viewModel = hiltViewModel<SettingsViewModel>()
+        val uiState by viewModel.uiState
+        val items = uiState.infoCardItems
+
+        LaunchedEffect(null) {
+            if (BuildConfig.FLAVOR_feature == ConstantUtil.FlavorFeaturePremium)
+                viewModel.checkUpdate(context = context)
         }
+
         VerticalGrid(columns = 2, count = items.size) { index ->
-            SettingsGridItem(modifier = Modifier.padding(CommonTokens.PaddingMedium), config = items[index])
+            SettingsGridItem(
+                modifier = Modifier
+                    .padding(CommonTokens.PaddingMedium)
+                    .fillMaxSize()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { if (items[index].onClick != null) items[index].onClick!!.invoke() },
+                config = items[index]
+            )
         }
     }
 }

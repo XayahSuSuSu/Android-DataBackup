@@ -30,11 +30,13 @@ object ConstantUtil {
     const val ClipDataLabel = "DataBackupClipData"
 
     val DefaultMediaList = listOf(
-        Pair("Pictures","/storage/emulated/0/Pictures"),
-        Pair("Music","/storage/emulated/0/Music"),
-        Pair("DCIM","/storage/emulated/0/DCIM"),
-        Pair("Download","/storage/emulated/0/Download"),
+        Pair("Pictures", "/storage/emulated/0/Pictures"),
+        Pair("Music", "/storage/emulated/0/Music"),
+        Pair("DCIM", "/storage/emulated/0/DCIM"),
+        Pair("Download", "/storage/emulated/0/Download"),
     )
 
-    val FlavorFeatureFoss = "foss"
+    const val FlavorFeatureFoss = "foss"
+    const val FlavorFeaturePremium = "premium"
+    const val AppReleasePrefix = "App "
 }

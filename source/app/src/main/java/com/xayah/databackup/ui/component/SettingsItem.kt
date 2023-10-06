@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.MenuTokens
@@ -37,6 +38,8 @@ data class SettingsGridItemConfig(
     val icon: ImageVector,
     val title: String,
     val content: String,
+    val onWarning: Boolean = false,
+    val onClick: (() -> Unit)? = null,
 )
 
 @Composable
@@ -44,9 +47,13 @@ fun SettingsGridItem(modifier: Modifier = Modifier, config: SettingsGridItemConf
     Column(modifier = modifier) {
         Icon(imageVector = config.icon, contentDescription = null)
         CompositionLocalProvider(LocalContentColor provides ColorScheme.onSurfaceVariant()) {
-            LabelSmallText(modifier = Modifier.paddingTop(SettingsItemTokens.SettingsGridItemPadding), text = config.title)
+            LabelSmallText(
+                modifier = Modifier.paddingTop(SettingsItemTokens.SettingsGridItemPadding),
+                text = config.title,
+                color = if (config.onWarning) ColorScheme.error() else Color.Unspecified
+            )
         }
-        TitleMediumBoldText(text = config.content)
+        TitleMediumBoldText(text = config.content, color = if (config.onWarning) ColorScheme.error() else Color.Unspecified)
     }
 }
 

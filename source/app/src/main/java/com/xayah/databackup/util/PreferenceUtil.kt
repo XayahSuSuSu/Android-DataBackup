@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import android.content.Context
+import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageRestoreOperation
@@ -392,4 +393,28 @@ fun Context.saveRestoreFlagTypeIndex(index: Int) {
 
 fun Context.readRestoreFlagTypeIndex(): Int {
     return readPreferencesInt("restore_flag_type_index", 1)
+}
+
+fun Context.saveUpdateCheckTime(timestamp: Long) {
+    savePreferences("update_check_time", timestamp)
+}
+
+fun Context.readUpdateCheckTime(): Long {
+    return readPreferencesLong("update_check_time", 0)
+}
+
+fun Context.saveLatestVersionName(value: String) {
+    savePreferences("latest_version_name", value)
+}
+
+fun Context.readLatestVersionName(): String {
+    return readPreferencesString("latest_version_name", BuildConfig.VERSION_NAME) ?: BuildConfig.VERSION_NAME
+}
+
+fun Context.saveLatestVersionLink(value: String) {
+    savePreferences("latest_version_link", value)
+}
+
+fun Context.readLatestVersionLink(): String {
+    return readPreferencesString("latest_version_link", ServerUtil.LinkReleases) ?: ServerUtil.LinkReleases
 }

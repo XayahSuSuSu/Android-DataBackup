@@ -31,7 +31,8 @@ data class Asset(
 
 class ServerUtil @Inject constructor() {
     companion object {
-        private const val apiReleases = "https://api.github.com/repos/XayahSuSuSu/Android-DataBackup/releases"
+        const val ApiReleases = "https://api.github.com/repos/XayahSuSuSu/Android-DataBackup/releases"
+        const val LinkReleases = "https://github.com/XayahSuSuSu/Android-DataBackup/releases"
     }
 
     @Inject
@@ -45,7 +46,7 @@ class ServerUtil @Inject constructor() {
     suspend fun getReleases(onSucceed: (releases: List<Release>) -> Unit, onFailed: () -> Unit) {
         withIOContext {
             try {
-                val request = Request.Builder().url(apiReleases).build()
+                val request = Request.Builder().url(ApiReleases).build()
                 okHttpClient.newCall(request).execute().use { response ->
                     val list: List<Release> =
                         gson.fromJson(response.body!!.string(), object : TypeToken<List<Release>>() {})
