@@ -13,18 +13,17 @@ compose-compiler = "1.4.3"
 accompanist = "0.30.1"
 activity-compose = "1.7.2"
 appcompat = "1.6.1"
-compose-bom = "2023.06.01"
-compose-ui = "1.6.0-alpha02"
-core-ktx = "1.10.1"
+compose-bom = "2023.09.02"
+core-ktx = "1.12.0"
 core-splashscreen = "1.0.1"
 gson = "2.10.1"
 hilt-android = "2.44"
 hilt-android-compiler = "2.44"
 hilt-navigation-compose = "1.0.0"
-lifecycle-runtime-ktx = "2.6.1"
-navigation-compose = "2.6.0"
+lifecycle-runtime-ktx = "2.6.2"
+navigation-compose = "2.7.3"
 okhttp = "4.11.0"
-libsu = "5.0.5"
+libsu = "5.2.1"
 zip4j = "2.11.5"
 kotlinx-coroutines-core-jvm = "1.7.1"
 room = "2.5.2"
@@ -34,7 +33,7 @@ palette = "1.0.0"
 google-services = "4.4.0"
 firebase-crashlytics-gradle = "2.9.9"
 firebase-bom = "32.3.1"
-pickyou = "2.0.0"
+pickyou = "2.0.1"
 
 # plugins
 android-gradle-plugin = "8.1.2"
@@ -52,7 +51,7 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose-ui" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
