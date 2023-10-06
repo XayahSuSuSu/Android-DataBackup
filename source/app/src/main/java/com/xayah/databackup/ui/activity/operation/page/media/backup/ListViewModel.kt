@@ -62,9 +62,10 @@ class MediaBackupListViewModel @Inject constructor(private val mediaDao: MediaDa
     val uiState: State<MediaBackupListUiState>
         get() = _uiState
 
-    suspend fun queryAllBackup() = mediaDao.queryAllBackup()
+    private suspend fun queryAllBackup() = mediaDao.queryAllBackup()
     suspend fun upsertBackup(item: MediaBackupEntity) = mediaDao.upsertBackup(item)
     private suspend fun upsertBackup(items: List<MediaBackupEntityUpsert>) = mediaDao.upsertBackup(items)
+    suspend fun updateBackupSelected(selected: Boolean) = mediaDao.updateBackupSelected(selected)
     suspend fun deleteBackup(item: MediaBackupEntity) = mediaDao.deleteBackup(item)
 
     suspend fun initialize() {

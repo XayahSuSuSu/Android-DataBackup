@@ -56,6 +56,12 @@ interface MediaDao {
     @Query("SELECT COUNT(*) FROM MediaRestoreEntity WHERE selected = 1 AND timestamp = :timestamp")
     fun countRestoreSelected(timestamp: Long): Flow<Int>
 
+    @Query("UPDATE MediaBackupEntity SET selected = :selected")
+    suspend fun updateBackupSelected(selected: Boolean)
+
+    @Query("UPDATE MediaRestoreEntity SET selected = :selected")
+    suspend fun updateRestoreSelected(selected: Boolean)
+
     @Delete(entity = MediaBackupEntity::class)
     suspend fun deleteBackup(item: MediaBackupEntity)
 

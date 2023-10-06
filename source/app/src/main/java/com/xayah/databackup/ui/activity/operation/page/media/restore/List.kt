@@ -17,7 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -38,6 +41,7 @@ import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.DateUtil
+import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
@@ -54,6 +58,7 @@ fun PageMediaRestoreList() {
     val medium by uiState.medium.collectAsState(initial = listOf())
     val mediumDisplay = if (isProcessing) medium.filter { it.media.selected } else medium
     val selectedCount by uiState.selectedCount.collectAsState(initial = 0)
+    var allSelected by remember { mutableStateOf(false) }
 
     LaunchedEffect(null) {
         viewModel.initialize()
@@ -75,6 +80,14 @@ fun PageMediaRestoreList() {
         onFabClick = {
             viewModel.onProcessing()
         },
+        onCheckListPressed = {
+            scope.launch {
+                withIOContext {
+                    allSelected = allSelected.not()
+                    viewModel.updateRestoreSelected(allSelected)
+                }
+            }
+        },
         onAddClick = null
     ) {
         Loader(modifier = Modifier.fillMaxSize(), isLoading = uiState.isLoading) {
@@ -84,7 +97,7 @@ fun PageMediaRestoreList() {
             ) {
                 item {
                     Spacer(modifier = Modifier.height(CommonTokens.PaddingMedium))
-                    Row(
+                    if (isProcessing.not()) Row(
                         modifier = Modifier
                             .ignorePaddingHorizontal(CommonTokens.PaddingMedium)
                             .horizontalScroll(rememberScrollState())

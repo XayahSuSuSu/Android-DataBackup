@@ -53,6 +53,7 @@ class MediaRestoreListViewModel @Inject constructor(private val mediaDao: MediaD
 
     suspend fun upsertRestore(item: MediaRestoreEntity) = mediaDao.upsertRestore(item)
     private suspend fun queryTimestamps() = mediaDao.queryTimestamps()
+    suspend fun updateRestoreSelected(selected: Boolean) = mediaDao.updateRestoreSelected(selected)
     suspend fun deleteRestore(item: MediaRestoreEntity) = mediaDao.deleteRestore(item)
 
     private fun setType(type: OpType) = run { _uiState.value = uiState.value.copy(opType = type) }

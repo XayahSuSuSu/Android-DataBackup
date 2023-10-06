@@ -415,7 +415,13 @@ fun DirectoryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun MediaListTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String, actionsVisible: Boolean, onAddClick: (() -> Unit)?) {
+fun MediaListTopBar(
+    scrollBehavior: TopAppBarScrollBehavior?,
+    title: String,
+    actionsVisible: Boolean,
+    onCheckListPressed: (() -> Unit)?,
+    onAddClick: (() -> Unit)?,
+) {
     val context = LocalContext.current
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title) },
@@ -426,8 +432,10 @@ fun MediaListTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String, act
             }
         },
         actions = {
-            if (actionsVisible)
-                IconButton(onClick = { onAddClick?.invoke() }) { Icon(imageVector = Icons.Rounded.Add, contentDescription = null) }
+            if (actionsVisible) {
+                if (onCheckListPressed != null) CheckListButton(onClick = { onCheckListPressed.invoke() })
+                if (onAddClick != null) IconButton(onClick = { onAddClick.invoke() }) { Icon(imageVector = Icons.Rounded.Add, contentDescription = null) }
+            }
         }
     )
 }

@@ -162,6 +162,7 @@ fun MediaListScaffold(
     opType: OpType,
     onFabClick: () -> Unit,
     onAddClick: (() -> Unit)?,
+    onCheckListPressed: (() -> Unit)?,
     content: @Composable () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -169,7 +170,13 @@ fun MediaListScaffold(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            MediaListTopBar(scrollBehavior = scrollBehavior, title = title, actionsVisible = onAddClick != null && isProcessing.not(), onAddClick = onAddClick)
+            MediaListTopBar(
+                scrollBehavior = scrollBehavior,
+                title = title,
+                actionsVisible = isProcessing.not(),
+                onCheckListPressed = onCheckListPressed,
+                onAddClick = onAddClick
+            )
         },
         floatingActionButton = {
             AnimatedVisibility(visible = isProcessing.not(), enter = scaleIn(), exit = scaleOut()) {
