@@ -47,7 +47,19 @@ class SettingsViewModel @Inject constructor(
                 SettingsGridItemConfig(
                     icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_apps),
                     title = context.getString(R.string.version),
-                    content = BuildConfig.VERSION_NAME
+                    content = BuildConfig.VERSION_NAME,
+                    onClick = {
+                        ExceptionUtil.tryOn(
+                            block = {
+                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(context.readLatestVersionLink())).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                })
+                            },
+                            onException = {
+                                Toast.makeText(context, context.getString(R.string.no_browser), Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
                 ),
                 SettingsGridItemConfig(
                     icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_star),
@@ -76,22 +88,11 @@ class SettingsViewModel @Inject constructor(
 
     private fun compareVersionName(context: Context) {
         val latestVersionName = context.readLatestVersionName()
-        val latestVersionLink = context.readLatestVersionLink()
-        if (latestVersionName > BuildConfig.VERSION_NAME) {
+        if (latestVersionName != BuildConfig.VERSION_NAME) {
             val tmp = uiState.value.infoCardItems.toMutableList()
             tmp[0] = tmp[0].copy(
                 title = "${context.getString(R.string.version)} (${context.getString(R.string.update_available)})",
                 onWarning = true,
-                onClick = {
-                    ExceptionUtil.tryOn(
-                        block = {
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(latestVersionLink)))
-                        },
-                        onException = {
-                            Toast.makeText(context, context.getString(R.string.no_browser), Toast.LENGTH_SHORT).show()
-                        }
-                    )
-                }
             )
             setInfoCardItems(tmp.toList())
         }
