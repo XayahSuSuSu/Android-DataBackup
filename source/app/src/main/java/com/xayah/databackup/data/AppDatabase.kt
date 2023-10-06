@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(
-    version = 2,
+    version = 3,
     exportSchema = true,
     entities = [
         LogEntity::class,
@@ -22,7 +22,7 @@ import androidx.room.TypeConverters
         MediaRestoreOperationEntity::class,
     ],
     autoMigrations = [
-        AutoMigration(from = 1, to = 2)
+        AutoMigration(from = 2, to = 3)
     ]
 )
 @TypeConverters(StringListConverters::class)

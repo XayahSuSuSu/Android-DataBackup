@@ -242,6 +242,7 @@ fun ListItemPackageBackup(
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
@@ -297,6 +298,10 @@ fun ListItemPackageRestore(
         onCardLongClick = onSelectedChange
     ) {
         if (packageInfo.versionName.isNotEmpty()) Serial(serial = packageInfo.versionName)
+        LaunchedEffect(null) {
+            viewModel.updatePackageSizeBytes(context, packageInfo)
+        }
+        AnimatedSerial(serial = packageInfo.sizeDisplay)
     }
 
     LaunchedEffect(null) {

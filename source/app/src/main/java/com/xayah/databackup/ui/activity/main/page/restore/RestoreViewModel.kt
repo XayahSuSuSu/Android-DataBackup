@@ -182,6 +182,7 @@ class RestoreViewModel @Inject constructor(
                         timestamp = timestamp,
                         versionName = "",
                         versionCode = 0,
+                        sizeBytes = 0,
                         flags = 0,
                         compressionType = compressionType,
                         active = false

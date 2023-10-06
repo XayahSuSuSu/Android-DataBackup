@@ -169,6 +169,7 @@ class OperationLocalServiceImpl : Service() {
                         timestamp = timestamp,
                         versionName = currentPackage.versionName,
                         versionCode = currentPackage.versionCode,
+                        sizeBytes = 0,
                         flags = currentPackage.flags,
                         compressionType = context.readCompressionType(),
                         active = false

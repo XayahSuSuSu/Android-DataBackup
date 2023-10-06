@@ -8,6 +8,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.xayah.databackup.util.CompressionType
+import com.xayah.databackup.util.command.PackagesRestoreUtil
 
 /**
  * All fields are defined here.
@@ -23,6 +24,7 @@ data class PackageRestoreEntire(
     @ColumnInfo(defaultValue = "0") var timestamp: Long,
     var versionName: String,
     var versionCode: Long,
+    @ColumnInfo(defaultValue = "0") var sizeBytes: Long,
     var flags: Int,
     var compressionType: CompressionType,
     var active: Boolean,
@@ -33,6 +35,12 @@ data class PackageRestoreEntire(
 
     val isSystemApp: Boolean
         get() = (flags and ApplicationInfo.FLAG_SYSTEM) != 0
+
+    val savePath: String
+        get() = PackagesRestoreUtil.getPackageItemSavePath(packageName = packageName, timestamp = timestamp)
+
+    val sizeDisplay: String
+        get() = formatSize(sizeBytes.toDouble())
 }
 
 /**

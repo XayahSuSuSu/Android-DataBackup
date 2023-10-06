@@ -234,9 +234,12 @@ class PackagesRestoreUtil(
     private val packageRestoreOperationDao: PackageRestoreOperationDao,
 ) {
     private val userId = context.readRestoreUserId()
-    private val packageRestorePath = PathUtil.getRestorePackagesSavePath()
 
-    private fun getPackageItemSavePath(packageName: String, timestamp: Long): String = "${packageRestorePath}/${packageName}/$timestamp"
+    companion object {
+        private val packageRestorePath = PathUtil.getRestorePackagesSavePath()
+
+        fun getPackageItemSavePath(packageName: String, timestamp: Long): String = "${packageRestorePath}/${packageName}/$timestamp"
+    }
 
     suspend fun queryInstalled(entity: PackageRestoreOperation, packageName: String) {
         val logTag = "APK"

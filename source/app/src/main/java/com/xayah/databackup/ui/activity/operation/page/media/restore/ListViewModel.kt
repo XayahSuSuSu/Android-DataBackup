@@ -76,8 +76,7 @@ class MediaRestoreListViewModel @Inject constructor(private val mediaDao: MediaD
     }
 
     /**
-     * Clearly tinkering with the itinerary contained within the flow was a bad idea!
-     * @see <a href="https://issuetracker.google.com/issues/291640109#comment9">https://issuetracker.google.com/issues/291640109#comment9</a>
+     * @see [com.xayah.databackup.ui.activity.operation.page.media.backup.MediaBackupListViewModel.updateMediaSizeBytes]
      */
     suspend fun updateMediaSizeBytes(context: Context, media: MediaRestoreEntity) = withIOContext {
         val remoteRootService = RemoteRootService(context)
