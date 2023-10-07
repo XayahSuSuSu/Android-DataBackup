@@ -31,6 +31,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -317,15 +318,17 @@ fun ListItemPackageRestore(
 }
 
 @Composable
-fun ListItemManifest(icon: ImageVector, title: String, content: String, onButtonClick: () -> Unit) {
+fun ListItemManifestHorizontal(icon: ImageVector, title: String, content: String, onButtonClick: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         FilledIconButton(
             modifier = Modifier.size(ListItemTokens.ManifestIconButtonSize),
-            onClick = onButtonClick
+            onClick = onButtonClick,
+            colors = IconButtonDefaults.filledIconButtonColors(containerColor = ColorScheme.secondary()),
         ) {
             Icon(
                 modifier = Modifier.size(ListItemTokens.ManifestIconSize),
                 imageVector = icon,
+                tint = ColorScheme.onSecondary(),
                 contentDescription = null
             )
         }
@@ -338,6 +341,31 @@ fun ListItemManifest(icon: ImageVector, title: String, content: String, onButton
         ) {
             TitleMediumBoldText(text = title)
             HeadlineLargeBoldText(text = content)
+        }
+    }
+}
+
+@Composable
+fun ListItemManifestVertical(icon: ImageVector, title: String, content: String, onButtonClick: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        FilledIconButton(
+            modifier = Modifier.size(ListItemTokens.ManifestIconButtonSize),
+            onClick = onButtonClick,
+            colors = IconButtonDefaults.filledIconButtonColors(containerColor = ColorScheme.secondary()),
+        ) {
+            Icon(
+                modifier = Modifier.size(ListItemTokens.ManifestIconSize),
+                imageVector = icon,
+                tint = ColorScheme.onSecondary(),
+                contentDescription = null
+            )
+        }
+        Column(modifier = Modifier
+                .fillMaxWidth()
+                .paddingHorizontal(ListItemTokens.PaddingMedium),
+        ) {
+            TitleMediumBoldText(text = title)
+            LabelSmallText(text = content)
         }
     }
 }

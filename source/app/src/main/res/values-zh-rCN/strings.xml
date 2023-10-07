@@ -120,4 +120,5 @@
     <string name="media_set_path">设置路径</string>
     <string name="update_available">有更新</string>
     <string name="not_installed">未安装</string>
+    <string name="selected_both">两者均选</string>
 </resources>

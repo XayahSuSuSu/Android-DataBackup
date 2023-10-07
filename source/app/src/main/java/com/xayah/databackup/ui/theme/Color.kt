@@ -54,6 +54,9 @@ object ColorScheme {
         fun secondary() = MaterialTheme.colorScheme.secondary
 
         @Composable
+        fun onSecondary() = MaterialTheme.colorScheme.onSecondary
+
+        @Composable
         fun secondaryContainer() = MaterialTheme.colorScheme.secondaryContainer
 
         @Composable

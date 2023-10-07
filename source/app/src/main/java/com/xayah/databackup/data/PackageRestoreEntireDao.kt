@@ -39,6 +39,9 @@ interface PackageRestoreEntireDao {
     @Query("SELECT COUNT(*) FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
     fun countSelectedTotal(): Flow<Int>
 
+    @Query("SELECT COUNT(*) FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 3")
+    fun countSelectedBoth(): Flow<Int>
+
     @Query("SELECT COUNT(*) FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 2 OR operationCode = 3)")
     fun countSelectedAPKs(): Flow<Int>
 

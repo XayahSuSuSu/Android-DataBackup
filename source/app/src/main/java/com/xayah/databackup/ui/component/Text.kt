@@ -208,8 +208,8 @@ fun JetbrainsMonoLabelSmallText(modifier: Modifier = Modifier, text: String) {
 }
 
 @Composable
-fun TabText(text: String) {
-    Text(text = text, maxLines = 2, overflow = TextOverflow.Ellipsis)
+fun TabText(text: String, color: Color = Color.Unspecified) {
+    Text(text = text, maxLines = 2, color = color, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelLarge)
 }
 
 enum class EmojiString(val emoji: String) {

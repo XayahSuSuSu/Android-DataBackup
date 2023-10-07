@@ -25,8 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.surfaceColorAtElevation
@@ -53,6 +51,8 @@ import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
 import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.main.router.currentRoute
+import com.xayah.databackup.ui.component.material3.Tab
+import com.xayah.databackup.ui.component.material3.TabRow
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
@@ -357,14 +357,19 @@ fun ManifestTopBar(
         title = title,
         onArrowBackPressed = { navController.popBackStack() }
     ) { appBarContainerColor ->
-        TabRow(selectedTabIndex = selectedTabIndex,
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
             containerColor = appBarContainerColor,
-            divider = {}) {
+            indicator = { tabPositions ->
+                RoundedCornerIndicator(tabPositions = tabPositions, selectedTabIndex = selectedTabIndex, percent = 0.8f)
+            },
+            divider = {}
+        ) {
             titles.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = { onTabClick(index) },
-                    text = { TabText(text = title) }
+                    text = { TabText(text = title, color = if (selectedTabIndex == index) ColorScheme.onPrimary() else ColorScheme.primary()) }
                 )
             }
         }

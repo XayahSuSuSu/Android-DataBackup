@@ -16,6 +16,7 @@ data class ManifestUiState(
     val bothPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveBothPackages().distinctUntilChanged()
     val apkOnlyPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveAPKOnlyPackages().distinctUntilChanged()
     val dataOnlyPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveDataOnlyPackages().distinctUntilChanged()
+    val selectedBoth: Flow<Int> = packageBackupEntireDao.countSelectedBoth().distinctUntilChanged()
     val selectedAPKs: Flow<Int> = packageBackupEntireDao.countSelectedAPKs().distinctUntilChanged()
     val selectedData: Flow<Int> = packageBackupEntireDao.countSelectedData().distinctUntilChanged()
 }

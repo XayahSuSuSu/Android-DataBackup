@@ -34,10 +34,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.directory.router.DirectoryRoutes
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.GridItemPackage
-import com.xayah.databackup.ui.component.ListItemManifest
+import com.xayah.databackup.ui.component.ListItemManifestHorizontal
+import com.xayah.databackup.ui.component.ListItemManifestVertical
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.ManifestTopBar
 import com.xayah.databackup.ui.component.TopSpacer
@@ -46,6 +48,8 @@ import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.GridItemTokens
+import com.xayah.databackup.util.IntentUtil
+import com.xayah.databackup.util.readBackupSavePath
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -60,6 +64,7 @@ fun PackageBackupManifest() {
         listOf(context.getString(R.string.overlook), context.getString(R.string.both), context.getString(R.string.apk), context.getString(R.string.data))
     }
     val uiState by viewModel.uiState
+    val selectedBoth by uiState.selectedBoth.collectAsState(initial = 0)
     val selectedAPKs by uiState.selectedAPKs.collectAsState(initial = 0)
     val selectedData by uiState.selectedData.collectAsState(initial = 0)
     val bothPackages by uiState.bothPackages.collectAsState(initial = listOf())
@@ -102,22 +107,36 @@ fun PackageBackupManifest() {
                             // Overlook
                             0 -> {
                                 Column(
-                                    modifier = Modifier.paddingVertical(CommonTokens.PaddingMedium),
-                                    verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)
+                                    modifier = Modifier.paddingVertical(CommonTokens.PaddingLarge),
+                                    verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingLarge)
                                 ) {
-                                    ListItemManifest(
+                                    ListItemManifestHorizontal(
+                                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_checklist),
+                                        title = stringResource(R.string.selected_both),
+                                        content = selectedBoth.toString()
+                                    ) {
+                                        selectedTabIndex = 1
+                                    }
+                                    ListItemManifestHorizontal(
                                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_apps),
                                         title = stringResource(R.string.selected_apks),
-                                        content = selectedAPKs.toString()
+                                        content = (selectedAPKs - selectedBoth).toString()
                                     ) {
                                         selectedTabIndex = 2
                                     }
-                                    ListItemManifest(
+                                    ListItemManifestHorizontal(
                                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_database),
                                         title = stringResource(R.string.selected_data),
-                                        content = selectedData.toString()
+                                        content = (selectedData - selectedBoth).toString()
                                     ) {
                                         selectedTabIndex = 3
+                                    }
+                                    ListItemManifestVertical(
+                                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
+                                        title = stringResource(R.string.backup_dir),
+                                        content = remember { context.readBackupSavePath() }
+                                    ) {
+                                        IntentUtil.toDirectoryActivity(context = context, route = DirectoryRoutes.DirectoryBackup)
                                     }
                                 }
                             }
