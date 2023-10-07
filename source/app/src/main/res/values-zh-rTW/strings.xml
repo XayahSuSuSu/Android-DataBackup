@@ -121,4 +121,6 @@
     <string name="update_available">有更新</string>
     <string name="not_installed">未安裝</string>
     <string name="selected_both">兩者均選</string>
+    <string name="abi_validation">驗證ABI</string>
+    <string name="this_version_only_supports_but_your_device_is_please_install_version">此版本僅支援：%1$s，但您的裝置架構為%2$s。 請安裝%3$s版本。</string>
 </resources>

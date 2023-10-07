@@ -1,6 +1,7 @@
 package com.xayah.databackup.ui.activity.guide.page.env
 
 import android.content.Intent
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -18,11 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.guide.page.GuideUiState
 import com.xayah.databackup.ui.activity.guide.page.GuideViewModel
 import com.xayah.databackup.ui.activity.main.MainActivity
 import com.xayah.databackup.ui.component.EnvCard
+import com.xayah.databackup.ui.component.LocalSlotScope
+import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
@@ -40,6 +44,7 @@ import kotlinx.coroutines.sync.withLock
 @Composable
 fun PageEnv(viewModel: GuideViewModel) {
     val context = LocalContext.current
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
     val scope = rememberCoroutineScope()
     val mutex = remember {
         Mutex()
@@ -47,8 +52,9 @@ fun PageEnv(viewModel: GuideViewModel) {
     val contents = listOf(
         stringResource(id = R.string.grant_root_access),
         stringResource(id = R.string.release_prebuilt_binaries),
+        stringResource(id = R.string.abi_validation),
     )
-    val states = remember { mutableStateOf(listOf<State>(State.Loading, State.Loading)) }
+    val states = remember { mutableStateOf(listOf<State>(State.Loading, State.Loading, State.Loading)) }
     val runAndValidate: suspend (run: suspend () -> Unit) -> Unit = { run ->
         run()
         var allValidated = true
@@ -95,7 +101,32 @@ fun PageEnv(viewModel: GuideViewModel) {
                         states.value = statesList.toList()
                     }
                 }
-        }
+        },
+        {
+            if (states.value[2] != State.Succeed)
+                runAndValidate {
+                    withIOContext {
+                        val statesList = states.value.toMutableList()
+                        val buildABI = BuildConfig.FLAVOR_abi
+                        val deviceABI = Build.SUPPORTED_ABIS.firstOrNull().toString()
+                        if (buildABI == deviceABI) {
+                            statesList[2] = State.Succeed
+                        } else {
+                            statesList[2] = State.Failed
+                            dialogSlot.openConfirmDialog(
+                                context = context,
+                                text = context.getString(
+                                    R.string.this_version_only_supports_but_your_device_is_please_install_version,
+                                    buildABI,
+                                    deviceABI,
+                                    deviceABI
+                                )
+                            )
+                        }
+                        states.value = statesList.toList()
+                    }
+                }
+        },
     )
 
     LaunchedEffect(null) {

@@ -126,4 +126,6 @@
     <string name="update_available">Update available</string>
     <string name="not_installed">Not installed</string>
     <string name="selected_both">Selected both</string>
+    <string name="abi_validation">Validate ABI</string>
+    <string name="this_version_only_supports_but_your_device_is_please_install_version">This version only supports: %1$s, but your device is %2$s. Please install %3$s version.</string>
 </resources>
