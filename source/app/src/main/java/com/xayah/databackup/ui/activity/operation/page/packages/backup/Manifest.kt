@@ -131,10 +131,12 @@ fun PackageBackupManifest() {
                                     ) {
                                         selectedTabIndex = 3
                                     }
+
+                                    val backupSavePath by context.readBackupSavePath().collectAsState(initial = "")
                                     ListItemManifestVertical(
                                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
                                         title = stringResource(R.string.backup_dir),
-                                        content = remember { context.readBackupSavePath() }
+                                        content = backupSavePath
                                     ) {
                                         IntentUtil.toDirectoryActivity(context = context, route = DirectoryRoutes.DirectoryBackup)
                                     }

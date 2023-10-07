@@ -11,6 +11,7 @@ import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 enum class TreeType {
@@ -44,8 +45,8 @@ class TreeViewModel @Inject constructor() : ViewModel() {
     private suspend fun loadTree(context: Context): List<String> = withIOContext {
         val uiState by uiState
         when (uiState.typeList[uiState.selectedIndex]) {
-            TreeType.Simplify -> PreparationUtil.tree(path = context.readBackupSavePath(), exclude = PathUtil.getExcludeDirs()).split("\n")
-            TreeType.Integral -> PreparationUtil.tree(path = context.readBackupSavePath()).split("\n")
+            TreeType.Simplify -> PreparationUtil.tree(path = context.readBackupSavePath().first(), exclude = PathUtil.getExcludeDirs()).split("\n")
+            TreeType.Integral -> PreparationUtil.tree(path = context.readBackupSavePath().first()).split("\n")
         }
     }
 

@@ -3,6 +3,8 @@ package com.xayah.databackup.util
 import android.annotation.SuppressLint
 import android.content.Context
 import com.xayah.databackup.DataBackupApplication
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.nio.file.Paths
 import kotlin.io.path.pathString
 
@@ -35,7 +37,7 @@ object PathUtil {
         "${getTmpConfigPath(context, name, timestamp)}/PackageRestoreEntire"
 
     // Paths for backup save dir.
-    fun getBackupSavePath(): String = DataBackupApplication.application.readBackupSavePath()
+    fun getBackupSavePath(): String = runBlocking { DataBackupApplication.application.readBackupSavePath().first() }
     private fun getBackupArchivesSavePath(): String = "${getBackupSavePath()}/archives"
     fun getBackupPackagesSavePath(): String = "${getBackupArchivesSavePath()}/packages"
     fun getBackupMediumSavePath(): String = "${getBackupArchivesSavePath()}/medium"
@@ -47,7 +49,7 @@ object PathUtil {
     fun getLogSavePath(timestamp: Long): String = "${getLogSavePath()}/log_${timestamp}"
 
     // Paths for restore save dir.
-    private fun getRestoreSavePath(): String = DataBackupApplication.application.readRestoreSavePath()
+    private fun getRestoreSavePath(): String = runBlocking { DataBackupApplication.application.readRestoreSavePath().first() }
     fun getRestoreArchivesSavePath(): String = "${getRestoreSavePath()}/archives"
     fun getRestorePackagesSavePath(): String = "${getRestoreArchivesSavePath()}/packages"
     fun getRestoreMediumSavePath(): String = "${getRestoreArchivesSavePath()}/medium"

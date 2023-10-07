@@ -131,10 +131,12 @@ fun PackageRestoreManifest() {
                                     ) {
                                         selectedTabIndex = 3
                                     }
+
+                                    val restoreSavePath by context.readRestoreSavePath().collectAsState(initial = "")
                                     ListItemManifestVertical(
                                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
                                         title = stringResource(R.string.restore_dir),
-                                        content = remember { context.readRestoreSavePath() }
+                                        content = restoreSavePath
                                     ) {
                                         IntentUtil.toDirectoryActivity(context = context, route = DirectoryRoutes.DirectoryRestore)
                                     }

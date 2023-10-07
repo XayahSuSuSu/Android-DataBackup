@@ -27,6 +27,7 @@ import com.xayah.librootservice.util.withMainContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -81,7 +82,7 @@ class MediaBackupListViewModel @Inject constructor(private val mediaDao: MediaDa
 
     private fun renameDuplicateMedia(name: String): String {
         val nameList = name.split("_").toMutableList()
-        val index = nameList.last().toIntOrNull()
+        val index = nameList.first().toIntOrNull()
         if (index == null) {
             nameList.add("0")
         } else {
@@ -101,7 +102,7 @@ class MediaBackupListViewModel @Inject constructor(private val mediaDao: MediaDa
                         val customMediaList = mutableListOf<MediaBackupEntityUpsert>()
                         pathList.forEach { pathString ->
                             if (pathString.isNotEmpty() && ConstantUtil.DefaultMediaList.indexOfFirst { it.second == pathString } == -1) {
-                                if (pathString == context.readBackupSavePath()) {
+                                if (pathString == context.readBackupSavePath().first()) {
                                     withMainContext {
                                         Toast.makeText(context, context.getString(R.string.backup_dir_as_media_error), Toast.LENGTH_SHORT).show()
                                     }

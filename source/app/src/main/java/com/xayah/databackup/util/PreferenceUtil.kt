@@ -1,6 +1,11 @@
 package com.xayah.databackup.util
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
@@ -10,6 +15,7 @@ import com.xayah.databackup.ui.component.SortState
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
+import kotlinx.coroutines.flow.map
 
 private const val TAR_SUFFIX = "tar"
 private const val ZSTD_SUFFIX = "tar.zst"
@@ -280,20 +286,6 @@ fun Context.readBackupUserId(): Int {
 }
 
 /**
- * The final path for saving the backup.
- */
-fun Context.saveBackupSavePath(path: String) {
-    savePreferences("backup_save_path", path.trim())
-}
-
-/**
- * @see [saveBackupSavePath]
- */
-fun Context.readBackupSavePath(): String {
-    return readPreferencesString("backup_save_path", ConstantUtil.DefaultPath) ?: ConstantUtil.DefaultPath
-}
-
-/**
  * The target user while restoring.
  */
 fun Context.saveRestoreUserId(userId: Int) {
@@ -305,22 +297,6 @@ fun Context.saveRestoreUserId(userId: Int) {
  */
 fun Context.readRestoreUserId(): Int {
     return readPreferencesInt("restore_user_id", ConstantUtil.DefaultRestoreUserId)
-}
-
-/**
- * It defines restore source path, user can set it at [PageRestore].
- * Databases, icons, archives and other stuffs need to be reloaded
- * each time since the path is changed.
- */
-fun Context.saveRestoreSavePath(path: String) {
-    savePreferences("restore_save_path", path.trim())
-}
-
-/**
- * @see [saveRestoreSavePath]
- */
-fun Context.readRestoreSavePath(): String {
-    return readPreferencesString("restore_save_path", ConstantUtil.DefaultPath) ?: ConstantUtil.DefaultPath
 }
 
 fun Context.saveIconSaveTime(timestamp: Long) {
@@ -426,3 +402,46 @@ fun Context.saveLatestVersionLink(value: String) {
 fun Context.readLatestVersionLink(): String {
     return readPreferencesString("latest_version_link", ServerUtil.LinkReleases) ?: ServerUtil.LinkReleases
 }
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PreferenceName)
+fun Context.readStoreString(key: Preferences.Key<String>, defValue: String) = dataStore.data.map { preferences -> preferences[key] ?: defValue }
+fun Context.readStoreBoolean(key: Preferences.Key<Boolean>, defValue: Boolean) = dataStore.data.map { preferences -> preferences[key] ?: defValue }
+fun Context.readStoreInt(key: Preferences.Key<Int>, defValue: Int) = dataStore.data.map { preferences -> preferences[key] ?: defValue }
+fun Context.readStoreLong(key: Preferences.Key<Long>, defValue: Long) = dataStore.data.map { preferences -> preferences[key] ?: defValue }
+suspend fun Context.saveStoreString(key: Preferences.Key<String>, value: String) = dataStore.edit { settings -> settings[key] = value }
+suspend fun Context.saveStoreBoolean(key: Preferences.Key<Boolean>, value: Boolean) = dataStore.edit { settings -> settings[key] = value }
+suspend fun Context.saveStoreInt(key: Preferences.Key<Int>, value: Int) = dataStore.edit { settings -> settings[key] = value }
+suspend fun Context.saveStoreLong(key: Preferences.Key<Long>, value: Long) = dataStore.edit { settings -> settings[key] = value }
+
+// -----------------------------------------Keys-----------------------------------------
+val KeyBackupSavePath = stringPreferencesKey("backup_save_path")
+val KeyRestoreSavePath = stringPreferencesKey("restore_save_path")
+// --------------------------------------------------------------------------------------
+
+
+// -----------------------------------------Read-----------------------------------------
+/**
+ * The final path for saving the backup.
+ */
+fun Context.readBackupSavePath() = readStoreString(key = KeyBackupSavePath, defValue = ConstantUtil.DefaultPath)
+
+/**
+ * It defines restore source path, user can set it at [PageRestore].
+ * Databases, icons, archives and other stuffs need to be reloaded
+ * each time since the path is changed.
+ */
+fun Context.readRestoreSavePath() = readStoreString(key = KeyRestoreSavePath, defValue = ConstantUtil.DefaultPath)
+// --------------------------------------------------------------------------------------
+
+
+// -----------------------------------------Write-----------------------------------------
+/**
+ * @see [readBackupSavePath]
+ */
+suspend fun Context.saveBackupSavePath(value: String) = saveStoreString(key = KeyBackupSavePath, value = value.trim())
+
+/**
+ * @see [readRestoreSavePath]
+ */
+suspend fun Context.saveRestoreSavePath(value: String) = saveStoreString(key = KeyRestoreSavePath, value = value.trim())
+// ---------------------------------------------------------------------------------------
