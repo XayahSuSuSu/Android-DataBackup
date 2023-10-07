@@ -1,2 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="size">Tamaño</string>
+    <string name="decompress">Descomprimir</string>
+    <string name="progress">Progreso</string>
+    <string name="compress">Comprimir</string>
+    <string name="user">Usuario</string>
+    <string name="internal_storage">Almacenamiento interno</string>
+    <string name="ready">Listo</string>
+    <string name="release_prebuilt_binaries">Binarios preinstalados actuales</string>
+    <string name="unsupported_format">Formato incompatible</string>
+    <string name="symbol_question">\?</string>
+    <string name="symbol_exclamation">!</string>
+    <string name="success">Éxito</string>
+    <string name="restore_finished">Restauración finalizada</string>
+    <string name="restore">Restaurar</string>
+    <string name="finish">Finalizado</string>
+    <string name="restore_user">Usuario de la restauración</string>
+    <string name="start">Iniciar</string>
+    <string name="support">Soporte</string>
+    <string name="data">Datos</string>
+    <string name="selected">Seleccionado</string>
+    <string name="monet">Monet</string>
+    <string name="backup">Respaldo</string>
+    <string name="application">Aplicación</string>
+    <string name="cancel">Cancelar</string>
+    <string name="monet_title">Activa el motor Monet de Material You</string>
+    <string name="please_wait">Por favor espera</string>
+    <string name="backup_finished">Respaldo finalizado</string>
+    <string name="confirm">Confirmar</string>
+    <string name="media">Galería</string>
+    <string name="backup_itself_title">Al respaldar una aplicación, automáticamente almacenará su paquete de instalación en el directorio de respaldo</string>
+    <string name="error">Error</string>
+    <string name="compression_type_help">Selecciona el tipo de compresión para aplicaciones y datos, lo que afecta como respaldas y restaurar. Si no sabes para que es esta opción, no la cambies</string>
+    <string name="grant_root_access">Permitir acceso root</string>
+    <string name="backup_dir">Directorio de respaldo</string>
+    <string name="app_name_is_missing">Aplicación sin nombre</string>
+    <string name="settings">Ajustes</string>
+    <string name="fetch_failed">Búsqueda fallida</string>
+    <string name="tips">Consejos</string>
+    <string name="compression_type">Tipo de compresión</string>
+    <string name="backup_user">Usuario del respaldo</string>
+    <string name="app_name">DataBackup</string>
+    <string name="environment_detection">Detección de ambiente</string>
+    <string name="backup_itself">Respaldo propio</string>
+    <string name="speed">Velocidad</string>
+    <string name="latest">Más reciente</string>
+    <string name="failed">Fallido</string>
+</resources>
