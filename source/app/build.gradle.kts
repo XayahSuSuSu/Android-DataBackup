@@ -159,6 +159,9 @@ dependencies {
 
     // PickYou
     implementation(libs.pickyou)
+
+    // Preferences DataStore
+    implementation(libs.androidx.datastore.preferences)
 }
 
 kapt {
