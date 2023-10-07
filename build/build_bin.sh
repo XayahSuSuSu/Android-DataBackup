@@ -3,7 +3,7 @@
 # Tested on Ubuntu22.04.1(WSL2)
 
 # Config
-# $type: built-in, extend, all
+# $type: built-in, extension, all
 # $abis: all or abis(armeabi-v7a, arm64-v8a, x86, x86_64) split by `,`
 # `bash build_bin.sh $type $abis`
 # e.g. `bash build_bin.sh built-in x86,x86_64`
@@ -22,9 +22,9 @@ TAR_VERSION=1.35               # https://ftp.gnu.org/gnu/tar/?C=M;O=D
 COREUTLS_VERSION=9.4           # https://ftp.gnu.org/gnu/coreutils/?C=M;O=D
 TREE_VERSION=2.1.1             # https://mama.indstate.edu/users/ice/tree
 
-EXTEND_VERSION=1.1.1
-LIBFUSE_VERSION=3.12.0         # https://github.com/libfuse/libfuse/releases
-RCLONE_VERSION=1.61.1          # https://github.com/rclone/rclone/releases
+EXTENSION_VERSION=1.2
+LIBFUSE_VERSION=3.16.1         # https://github.com/libfuse/libfuse/releases
+RCLONE_VERSION=1.64.0          # https://github.com/rclone/rclone/releases
 
 ##################################################
 # Functions
@@ -291,13 +291,13 @@ build_tree() {
 }
 
 build_fusermount() {
-    if [ ! -f $LOCAL_PATH/fuse-$LIBFUSE_VERSION.tar.xz ]; then
-        wget https://github.com/libfuse/libfuse/releases/download/fuse-$LIBFUSE_VERSION/fuse-$LIBFUSE_VERSION.tar.xz
+    if [ ! -f $LOCAL_PATH/fuse-$LIBFUSE_VERSION.tar.gz ]; then
+        wget https://github.com/libfuse/libfuse/releases/download/fuse-$LIBFUSE_VERSION/fuse-$LIBFUSE_VERSION.tar.gz
     fi
     if [ -d $LOCAL_PATH/fuse-$LIBFUSE_VERSION ]; then
         rm -rf fuse-$LIBFUSE_VERSION
     fi
-    tar xf fuse-$LIBFUSE_VERSION.tar.xz
+    tar xf fuse-$LIBFUSE_VERSION.tar.gz
     cd fuse-$LIBFUSE_VERSION
     sed -i '/# Read build files from sub-directories/, $d' meson.build
     echo "subdir('util')" >> meson.build
@@ -393,7 +393,7 @@ build_built_in() {
     build_tree
 }
 
-build_extend() {
+build_extension() {
     build_fusermount
     build_rclone
 }
@@ -405,11 +405,11 @@ package_built_in() {
     zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df tar/bin/tar zstd/bin/zstd built_in/version tree/tree
 }
 
-package_extend() {
-    # Extend modules
-    mkdir -p extend
-    echo "$EXTEND_VERSION" > extend/version
-    zip -pj extend/$TARGET_ARCH fuse/bin/fusermount rclone/rclone extend/version
+package_extension() {
+    # Extension modules
+    mkdir -p extension
+    echo "$EXTENSION_VERSION" > extension/version
+    zip -pj extension/$TARGET_ARCH fuse/bin/fusermount rclone/rclone extension/version
 }
 
 build() {
@@ -418,12 +418,12 @@ build() {
     built-in)
         build_built_in
         ;;
-    extend)
-        build_extend
+    extension)
+        build_extension
         ;;
     *)
         build_built_in
-        build_extend
+        build_extension
         ;;
     esac
 }
@@ -434,12 +434,12 @@ package() {
     built-in)
         package_built_in
         ;;
-    extend)
-        package_extend
+    extension)
+        package_extension
         ;;
     *)
         package_built_in
-        package_extend
+        package_extension
         ;;
     esac
 }
