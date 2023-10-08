@@ -116,4 +116,12 @@
     <string name="supported_format">Desteklenen format</string>
     <string name="no_browser">Belki de açacak bir tarayıcı yoktur</string>
     <string name="add">Ekle</string>
+    <string name="abi_validation">ABI\'yi doğrulayın</string>
+    <string name="not_installed">Yüklü değil</string>
+    <string name="this_version_only_supports_but_your_device_is_please_install_version">Bu sürüm yalnızca destekler: 1$s, ancak cihazınız %2$s. Lütfen %3$s sürümünü yükleyin.</string>
+    <string name="media_target_path_missing">Hedef dizin eksik, lütfen manuel olarak ayarlayın</string>
+    <string name="update_available">Güncelleme mevcut</string>
+    <string name="media_set_path">Yolu ayarlayın</string>
+    <string name="backup_dir_as_media_error">Yedekleme dizini medya olarak eklenemiyor</string>
+    <string name="selected_both">Her ikisi de seçildi</string>
 </resources>
