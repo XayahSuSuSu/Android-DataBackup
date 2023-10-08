@@ -105,7 +105,7 @@
     <string name="compatible_mode">Uyumlu mod</string>
     <string name="compatible_mode_subtitle">.tar girişi için parametre yerine boru kullanın. \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Yürütülemiyor: Böyle bir dosya veya dizin yok\" dediği zaman değiştirin</string>
     <string name="installed">Kuruldu</string>
-    <string name="not_installed">Kurulamadı</string>
+    <string name="not_installed">Yüklü değil</string>
     <string name="retry">Tekrar</string>
     <string name="succeed">Tamamlandı</string>
     <string name="backup">Yedek</string>
