@@ -36,4 +36,5 @@
     <string name="environment_detection">Miljøoppdagelse</string>
     <string name="time">Tid</string>
     <string name="external_storage">Eksternlagring</string>
+    <string name="add">Legg til</string>
 </resources>
