@@ -13,6 +13,11 @@ import com.xayah.librootservice.service.RemoteRootService
 
 fun List<String>.toSpaceString() = joinToString(separator = " ")
 
+enum class DecompressionPara(val para: String) {
+    Default("-xmpf"),
+    Media("-xpf"),
+}
+
 object CompressionUtil {
     private suspend fun compress(
         logUtil: LogUtil,
@@ -48,13 +53,14 @@ object CompressionUtil {
         archivePath: String,
         cleanRestoringPara: String,
         excludeParaList: List<String>,
+        decompressionPara: DecompressionPara,
     ): Pair<Boolean, String> {
         var isSuccess = true
         val outList = mutableListOf<String>()
 
         val cmd = "$archivePath -C $originPath ${compressionType.decompressPara}"
         // Decompress the archive.
-        logUtil.executeWithLog(logId, "tar --totals ${excludeParaList.toSpaceString()} $cleanRestoringPara -xmpf $cmd").also { result ->
+        logUtil.executeWithLog(logId, "tar --totals ${excludeParaList.toSpaceString()} $cleanRestoringPara ${decompressionPara.para} $cmd").also { result ->
             if (result.isSuccess.not()) isSuccess = false
             outList.add(result.outString())
         }
@@ -206,7 +212,8 @@ object CompressionUtil {
             originPath = originPath,
             archivePath = archivePath,
             cleanRestoringPara = cleanRestoringPara,
-            excludeParaList = excludeParaList
+            excludeParaList = excludeParaList,
+            decompressionPara = DecompressionPara.Default
         )
     }
 
@@ -227,7 +234,8 @@ object CompressionUtil {
             originPath = originPath,
             archivePath = archivePath,
             cleanRestoringPara = cleanRestoringPara,
-            excludeParaList = listOf()
+            excludeParaList = listOf(),
+            decompressionPara = DecompressionPara.Media
         )
     }
 
