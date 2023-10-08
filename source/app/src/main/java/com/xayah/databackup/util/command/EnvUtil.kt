@@ -11,6 +11,8 @@ import androidx.core.graphics.drawable.toBitmap
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.binArchivePath
 import com.xayah.databackup.util.binPath
+import com.xayah.databackup.util.extensionArchivePath
+import com.xayah.databackup.util.extensionPath
 import com.xayah.databackup.util.filesPath
 import com.xayah.databackup.util.iconPath
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
@@ -92,6 +94,31 @@ object EnvUtil {
 
             // Remove binary archive
             binArchive.deleteRecursively()
+
+            return@withIOContext true
+        }
+    }
+
+    suspend fun releaseExtension(context: Context): Boolean {
+        return withIOContext {
+            val extension = File(context.extensionPath())
+            val extensionArchive = File(context.extensionArchivePath())
+
+            // Remove old extension files
+            extension.deleteRecursively()
+            extensionArchive.deleteRecursively()
+
+            // Release binaries
+            releaseAssets(context, "extension.zip", "extension.zip")
+            unzip(context.extensionArchivePath(), context.extensionPath())
+
+            // All binaries need full permissions
+            extension.listFiles()?.forEach { file ->
+                if (file.setPermissions().not()) return@withIOContext false
+            }
+
+            // Remove binary archive
+            extensionArchive.deleteRecursively()
 
             return@withIOContext true
         }

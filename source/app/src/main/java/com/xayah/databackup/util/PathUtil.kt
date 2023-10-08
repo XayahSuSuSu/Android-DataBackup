@@ -14,7 +14,9 @@ fun Context.binPath(): String = "${filesPath()}/bin"
 
 fun Context.binArchivePath(): String = "${filesPath()}/bin.zip"
 
-fun Context.extendPath(): String = "${filesPath()}/extend"
+fun Context.extensionPath(): String = "${filesPath()}/extension"
+
+fun Context.extensionArchivePath(): String = "${filesPath()}/extension.zip"
 
 fun Context.iconPath(): String = "${filesPath()}/icon"
 

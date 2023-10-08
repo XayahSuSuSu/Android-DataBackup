@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.util.SymbolUtil
 import com.xayah.databackup.util.binPath
-import com.xayah.databackup.util.extendPath
+import com.xayah.databackup.util.extensionPath
 import com.xayah.databackup.util.filesPath
 import com.xayah.databackup.util.readMonetEnabled
 import dagger.hilt.android.HiltAndroidApp
@@ -24,7 +24,7 @@ class DataBackupApplication : Application() {
                     shell.newJob()
                         .add("nsenter -t 1 -m su") // Switch to global namespace
                         .add("export PATH=${context.binPath()}:${SymbolUtil.USD}PATH")
-                        .add("export PATH=${context.extendPath()}:${SymbolUtil.USD}PATH")
+                        .add("export PATH=${context.extensionPath()}:${SymbolUtil.USD}PATH")
                         .add("export HOME=${context.filesPath()}")
                         .add("set -o pipefail") // Ensure that the exit code of each command is correct.
                         .exec()
