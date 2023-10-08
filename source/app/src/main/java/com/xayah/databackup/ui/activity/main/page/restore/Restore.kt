@@ -1,13 +1,16 @@
 package com.xayah.databackup.ui.activity.main.page.restore
 
 import android.content.Context
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AssistChip
@@ -33,6 +36,7 @@ import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.Module
 import com.xayah.databackup.ui.component.OverLookRestoreCard
 import com.xayah.databackup.ui.component.VerticalGrid
+import com.xayah.databackup.ui.component.ignorePaddingHorizontal
 import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingHorizontal
@@ -103,20 +107,27 @@ fun PageRestore() {
                         navController.navigate(MainRoutes.Log.route)
                     }
                 )
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    repeat(actions.size) { index ->
-                        CardActionButton(
-                            modifier = Modifier.weight(1f),
-                            text = actions[index],
-                            icon = icons[index],
-                            onClick = {
-                                scope.launch {
-                                    onClicks[index]()
+                Row(
+                    modifier = Modifier
+                        .ignorePaddingHorizontal(CommonTokens.PaddingMedium)
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                ) {
+                    Spacer(modifier = Modifier.width(CommonTokens.PaddingMedium))
+                    Row(horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingLarge)) {
+                        repeat(actions.size) { index ->
+                            CardActionButton(
+                                text = actions[index],
+                                icon = icons[index],
+                                onClick = {
+                                    scope.launch {
+                                        onClicks[index]()
+                                    }
                                 }
-                            }
-                        )
-                        if (index != actions.size - 1) Spacer(modifier = Modifier.weight(0.25f))
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.width(CommonTokens.PaddingMedium))
                 }
             }
         }

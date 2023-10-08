@@ -65,9 +65,7 @@ fun CardActionButton(modifier: Modifier = Modifier, text: String, icon: ImageVec
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(CardTokens.ContentPadding),
+            modifier = Modifier.padding(CardTokens.ContentPadding).paddingHorizontal(CardTokens.ContentPadding),
             verticalArrangement = Arrangement.spacedBy(ButtonTokens.CardActionButtonPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
