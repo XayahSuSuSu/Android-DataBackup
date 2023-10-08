@@ -55,7 +55,7 @@ data class MediaBackupOperationEntity(
     var timestamp: Long,
     var startTimestamp: Long,
     var endTimestamp: Long,
-    var path: String,
+    @ColumnInfo(index = true) var path: String,
     var name: String,
     var opLog: String,
     var opState: OperationState = OperationState.IDLE,

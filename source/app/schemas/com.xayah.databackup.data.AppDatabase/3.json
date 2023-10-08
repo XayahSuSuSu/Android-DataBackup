@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "d6c02d9c8bd3733b731fc6b0d60f9240",
+    "identityHash": "9ecc6c650bebd4737e8e399ac543592b",
     "entities": [
       {
         "tableName": "LogEntity",
@@ -835,7 +835,17 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_MediaBackupOperationEntity_path",
+            "unique": false,
+            "columnNames": [
+              "path"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_MediaBackupOperationEntity_path` ON `${TABLE_NAME}` (`path`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "MediaBackupEntity",
@@ -950,7 +960,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd6c02d9c8bd3733b731fc6b0d60f9240')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ecc6c650bebd4737e8e399ac543592b')"
     ]
   }
 }
