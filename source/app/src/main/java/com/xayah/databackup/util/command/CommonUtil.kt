@@ -29,20 +29,13 @@ object CommonUtil {
     }
 
     /**
-     * Execution functions encapsulated by Log
+     * Execution functions encapsulated by Log.
      */
-    suspend fun LogUtil.executeWithLog(logId: Long, cmd: String, viaSubShell: Boolean = false): Shell.Result = withIOContext {
+    suspend fun LogUtil.execute(logId: Long, cmd: String): Shell.Result = withIOContext {
         logCmd(logId, LogCmdType.SHELL_IN, cmd)
-        var subShell: Shell? = null
-        val job = if (viaSubShell) {
-            subShell = DataBackupApplication.getBuilder(context = DataBackupApplication.application).build()
-            subShell.newJob().to(mutableListOf(), mutableListOf()).add(cmd)
-        } else {
-            Shell.cmd(cmd)
-        }
-        job.exec().also { result ->
+        Shell.cmd(cmd).exec().also { result ->
             for (line in result.out) logCmd(logId, LogCmdType.SHELL_OUT, line)
-            if (result.code == 127 && viaSubShell.not()) {
+            if (result.code == 127) {
                 // If the code is 127, the shell may have been dead.
                 DataBackupApplication.Companion.EnvInitializer.initShell(
                     Shell.getShell(),
@@ -51,7 +44,18 @@ object CommonUtil {
                 logCmd(logId, LogCmdType.SHELL_OUT, "The shell may have been dead.")
             }
             logCmd(logId, LogCmdType.SHELL_CODE, result.code.toString())
-            subShell?.close()
+        }
+    }
+
+    /**
+     * Execution functions encapsulated by Log with given shell.
+     */
+    suspend fun LogUtil.execute(logId: Long, cmd: String, shell: Shell): Shell.Result = withIOContext {
+        logCmd(logId, LogCmdType.SHELL_IN, cmd)
+        val out = mutableListOf<String>()
+        shell.newJob().to(out).add(cmd).exec().also { result ->
+            for (line in out) logCmd(logId, LogCmdType.SHELL_OUT, line)
+            logCmd(logId, LogCmdType.SHELL_CODE, result.code.toString())
         }
     }
 

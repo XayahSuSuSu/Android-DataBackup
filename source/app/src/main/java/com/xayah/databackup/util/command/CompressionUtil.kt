@@ -6,7 +6,7 @@ import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
-import com.xayah.databackup.util.command.CommonUtil.executeWithLog
+import com.xayah.databackup.util.command.CommonUtil.execute
 import com.xayah.databackup.util.command.CommonUtil.outString
 import com.xayah.databackup.util.readCleanRestoring
 import com.xayah.librootservice.service.RemoteRootService
@@ -37,7 +37,7 @@ object CompressionUtil {
             "$archivePath -C $originPathPara ${if (compressionType == CompressionType.TAR) "" else "-I $QUOTE${compressionType.compressPara}$QUOTE"}"
 
         // Compress data dir.
-        logUtil.executeWithLog(logId, "tar --totals ${excludeParaList.toSpaceString()} -cpf $cmd").also { result ->
+        logUtil.execute(logId, "tar --totals ${excludeParaList.toSpaceString()} -cpf $cmd").also { result ->
             if (result.isSuccess.not()) isSuccess = false
             outList.add(result.outString())
         }
@@ -60,7 +60,7 @@ object CompressionUtil {
 
         val cmd = "$archivePath -C $originPath ${compressionType.decompressPara}"
         // Decompress the archive.
-        logUtil.executeWithLog(logId, "tar --totals ${excludeParaList.toSpaceString()} $cleanRestoringPara ${decompressionPara.para} $cmd").also { result ->
+        logUtil.execute(logId, "tar --totals ${excludeParaList.toSpaceString()} $cleanRestoringPara ${decompressionPara.para} $cmd").also { result ->
             if (result.isSuccess.not()) isSuccess = false
             outList.add(result.outString())
         }
@@ -155,15 +155,15 @@ object CompressionUtil {
             "$archivePath ./* ${if (compressionType == CompressionType.TAR) "" else "-I $QUOTE${compressionType.compressPara}$QUOTE"}"
 
         // Compress config dir.
-        logUtil.executeWithLog(logId, "cd $originPath").also { result ->
+        logUtil.execute(logId, "cd $originPath").also { result ->
             if (result.isSuccess.not()) isSuccess = false
             outList.add(result.outString())
         }
-        logUtil.executeWithLog(logId, "tar --totals -cpf $cmd").also { result ->
+        logUtil.execute(logId, "tar --totals -cpf $cmd").also { result ->
             if (result.isSuccess.not()) isSuccess = false
             outList.add(result.outString())
         }
-        logUtil.executeWithLog(logId, "cd /").also { result ->
+        logUtil.execute(logId, "cd /").also { result ->
             if (result.isSuccess.not()) isSuccess = false
             outList.add(result.outString())
         }
@@ -251,7 +251,7 @@ object CompressionUtil {
 
         val cmd = "$QUOTE$archivePath$QUOTE ${compressionType.decompressPara}"
         // Test the archive.
-        logUtil.executeWithLog(logId, "tar -t -f $cmd > /dev/null 2>&1").also { result ->
+        logUtil.execute(logId, "tar -t -f $cmd > /dev/null 2>&1").also { result ->
             if (result.isSuccess.not()) {
                 isSuccess = false
                 outList.add("$archivePath is broken, trying to delete it.")

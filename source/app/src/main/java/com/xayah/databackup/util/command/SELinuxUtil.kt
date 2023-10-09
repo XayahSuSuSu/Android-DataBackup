@@ -3,7 +3,7 @@ package com.xayah.databackup.util.command
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.SymbolUtil.USD
-import com.xayah.databackup.util.command.CommonUtil.executeWithLog
+import com.xayah.databackup.util.command.CommonUtil.execute
 import com.xayah.databackup.util.command.CommonUtil.outString
 
 class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
@@ -11,7 +11,7 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
         var isSuccess = true
         var out = ""
 
-        logUtil.executeWithLog(logId, "ls -Zd $QUOTE$path$QUOTE | awk 'NF>1{print ${USD}1}'").also { result ->
+        logUtil.execute(logId, "ls -Zd $QUOTE$path$QUOTE | awk 'NF>1{print ${USD}1}'").also { result ->
             if (result.isSuccess.not()) {
                 isSuccess = false
             }
@@ -28,21 +28,21 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
             isSuccess = false
             out += "Failed to get uid of $packageName."
         } else {
-            logUtil.executeWithLog(logId, "chown -hR $QUOTE$uid:$uid$QUOTE $QUOTE$path/$QUOTE").also { result ->
+            logUtil.execute(logId, "chown -hR $QUOTE$uid:$uid$QUOTE $QUOTE$path/$QUOTE").also { result ->
                 if (result.isSuccess.not()) {
                     isSuccess = false
                     out += result.outString() + "\n"
                 }
             }
             if (pathContext.isNotEmpty()) {
-                logUtil.executeWithLog(logId, "chcon -hR $QUOTE$pathContext$QUOTE $QUOTE$path/$QUOTE").also { result ->
+                logUtil.execute(logId, "chcon -hR $QUOTE$pathContext$QUOTE $QUOTE$path/$QUOTE").also { result ->
                     if (result.isSuccess.not()) {
                         isSuccess = false
                         out += result.outString() + "\n"
                     }
                 }
             } else {
-                logUtil.executeWithLog(
+                logUtil.execute(
                     logId,
                     "ls -Zd $QUOTE$path/../$QUOTE | awk 'NF>1{print ${USD}1}' | sed -e ${QUOTE}s/system_data_file/app_data_file/g$QUOTE"
                 ).also { result ->
@@ -50,7 +50,7 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
                         isSuccess = false
                         out += result.outString() + "\n"
                     } else {
-                        logUtil.executeWithLog(logId, "chcon -hR $QUOTE${result.outString()}$QUOTE $QUOTE$path/$QUOTE").also { innerResult ->
+                        logUtil.execute(logId, "chcon -hR $QUOTE${result.outString()}$QUOTE $QUOTE$path/$QUOTE").also { innerResult ->
                             if (innerResult.isSuccess.not()) {
                                 isSuccess = false
                                 out += innerResult.outString() + "\n"

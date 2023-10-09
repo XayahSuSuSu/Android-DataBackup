@@ -18,7 +18,7 @@ import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
-import com.xayah.databackup.util.command.CommonUtil.executeWithLog
+import com.xayah.databackup.util.command.CommonUtil.execute
 import com.xayah.databackup.util.command.CommonUtil.outString
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCompatibleMode
@@ -64,15 +64,15 @@ class PackagesBackupUtil(
         val sourceDirList = remoteRootService.getPackageSourceDir(packageName, userId)
         if (sourceDirList.isNotEmpty()) {
             val apkPath = PathUtil.getParentPath(sourceDirList[0])
-            logUtil.executeWithLog(logId, "cd $apkPath").also { result ->
+            logUtil.execute(logId, "cd $apkPath").also { result ->
                 if (result.isSuccess.not()) isSuccess = false
                 outList.add(result.outString())
             }
-            logUtil.executeWithLog(logId, "tar --totals -cpf $cmd").also { result ->
+            logUtil.execute(logId, "tar --totals -cpf $cmd").also { result ->
                 if (result.isSuccess.not()) isSuccess = false
                 outList.add(result.outString())
             }
-            logUtil.executeWithLog(logId, "cd /").also { result ->
+            logUtil.execute(logId, "cd /").also { result ->
                 if (result.isSuccess.not()) isSuccess = false
                 outList.add(result.outString())
             }
