@@ -100,7 +100,7 @@
     <string name="network">Мрежа</string>
     <string name="data_size">Размер на данни</string>
     <string name="setting_SELinux">Настройка на SELinux</string>
-    <string name="backing_up">Създаване на резервно копие</string>
+    <string name="backing_up">Създаване на резервно копие…</string>
     <string name="restoring">Възстановяване</string>
     <string name="read_icon_title">Четенето на пиктограмите изисква много памет, ако по време на възстановяването има сривове, махнете отметката</string>
     <string name="read_icon">Прочитане на пиктограма</string>
