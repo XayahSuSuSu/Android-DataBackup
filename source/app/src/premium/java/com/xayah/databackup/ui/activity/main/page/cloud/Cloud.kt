@@ -1,32 +1,16 @@
 package com.xayah.databackup.ui.activity.main.page.cloud
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.xayah.databackup.R
-import com.xayah.databackup.ui.component.EmojiString
-import com.xayah.databackup.ui.component.EmojiText
-import com.xayah.databackup.ui.component.TitleMediumBoldText
-import com.xayah.databackup.ui.component.paddingHorizontal
-import com.xayah.databackup.ui.theme.ColorScheme
-import com.xayah.databackup.ui.token.CommonTokens
+import androidx.navigation.NavHostController
+import com.xayah.databackup.ui.activity.main.page.cloud.router.CloudNavHost
 
+@ExperimentalFoundationApi
+@ExperimentalLayoutApi
+@ExperimentalMaterial3Api
 @Composable
-fun PageCloud() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(CommonTokens.PaddingMedium)) {
-            EmojiText(emoji = EmojiString.SPARKLING_HEART, size = CommonTokens.EmojiLargeSize)
-
-            TitleMediumBoldText(
-                modifier = Modifier.paddingHorizontal(CommonTokens.PaddingLarge),
-                text = "${stringResource(R.string.sooner_or_later)} 🎉",
-                color = ColorScheme.primary()
-            )
-        }
-    }
+fun PageCloud(cloudNavController: NavHostController) {
+    CloudNavHost(navController = cloudNavController)
 }

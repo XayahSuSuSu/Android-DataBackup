@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.component
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -212,4 +213,20 @@ fun MediaListScaffold(
             }
         }
     }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun FabScaffold(
+    floatingActionButton: @Composable () -> Unit,
+    floatingActionButtonPosition: FabPosition,
+    content: @Composable () -> Unit,
+) {
+    Scaffold(
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
+        content = {
+            content.invoke()
+        }
+    )
 }

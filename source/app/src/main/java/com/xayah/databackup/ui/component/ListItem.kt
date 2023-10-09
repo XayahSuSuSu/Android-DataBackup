@@ -51,6 +51,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.core.graphics.drawable.toDrawable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.xayah.databackup.R
@@ -64,6 +65,8 @@ import com.xayah.databackup.data.PackageBackupEntire
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.data.StorageType
 import com.xayah.databackup.ui.activity.directory.page.DirectoryViewModel
+import com.xayah.databackup.ui.activity.main.page.cloud.Account
+import com.xayah.databackup.ui.activity.main.page.cloud.AccountViewModel
 import com.xayah.databackup.ui.activity.operation.page.media.backup.MediaBackupListViewModel
 import com.xayah.databackup.ui.activity.operation.page.media.backup.OpType
 import com.xayah.databackup.ui.activity.operation.page.media.restore.MediaRestoreListViewModel
@@ -360,7 +363,8 @@ fun ListItemManifestVertical(icon: ImageVector, title: String, content: String, 
                 contentDescription = null
             )
         }
-        Column(modifier = Modifier
+        Column(
+            modifier = Modifier
                 .fillMaxWidth()
                 .paddingHorizontal(ListItemTokens.PaddingMedium),
         ) {
@@ -841,4 +845,91 @@ fun ListItemMediaRestore(
             AnimatedSerial(serial = entity.media.sizeDisplay)
         }
     )
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun ListItemCloudAccount(
+    modifier: Modifier = Modifier,
+    account: Account,
+    onCardClick: () -> Unit,
+    chipGroup: @Composable RowScope.() -> Unit,
+) {
+    val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
+    val viewModel = hiltViewModel<AccountViewModel>()
+    val dialogSlot = LocalSlotScope.current!!.dialogSlot
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        enabled = true,
+        onClick = onCardClick,
+        onLongClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            expanded = true
+        },
+        border = outlinedCardBorder(lineColor = ColorScheme.primary()),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(ListItemTokens.PaddingMedium)
+        ) {
+            Column {
+                Row {
+                    HeadlineMediumBoldText(text = account.name)
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+                BodySmallBoldText(text = account.config.url.ifEmpty { account.config.host })
+                Divider(modifier = Modifier.paddingVertical(ListItemTokens.PaddingSmall))
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .wrapContentSize(Alignment.Center)
+                    ) {
+                        val actions = remember(account) {
+                            listOf(
+                                ActionMenuItem(
+                                    title = context.getString(R.string.delete),
+                                    icon = Icons.Rounded.Delete,
+                                    enabled = true,
+                                    onClick = {
+                                        viewModel.viewModelScope.launch {
+                                            withIOContext {
+                                                expanded = false
+                                                dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete))
+                                                    .also { (confirmed, _) ->
+                                                        if (confirmed) {
+                                                            viewModel.delete(account)
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    }
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.align(Alignment.BottomEnd))
+
+                        ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingSmall),
+                        content = {
+                            chipGroup()
+                        }
+                    )
+                }
+            }
+        }
+    }
 }

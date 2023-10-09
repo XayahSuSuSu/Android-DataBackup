@@ -3,6 +3,7 @@ package com.xayah.databackup.ui.component
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,9 +41,12 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.State
 import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
+import com.xayah.databackup.util.readCloudAccountNum
 import com.xayah.databackup.util.readLastBackupTime
 import com.xayah.databackup.util.readLastRestoringTime
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun IntroCard(serial: Char, title: String, subtitle: String, content: String) {
@@ -207,6 +211,34 @@ fun OverLookRestoreCard() {
                 if (time == 0L) context.getString(R.string.none)
                 else DateUtil.getShortRelativeTimeSpanString(context, time, DateUtil.getTimestamp())
             })
+        }
+    }
+}
+
+@Composable
+fun OverLookCloudCard() {
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        colors = CardDefaults.cardColors(containerColor = ColorScheme.primaryContainer())
+    ) {
+        Column(modifier = Modifier.padding(CardTokens.ContentPadding)) {
+            Row(
+                modifier = Modifier.paddingBottom(CardTokens.ContentPadding),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    imageVector = ImageVector.vectorResource(R.drawable.logo_rclone),
+                    contentDescription = null,
+                    modifier = Modifier.paddingEnd(ButtonTokens.IconTextButtonPadding),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                LabelLargeExtraBoldText(text = stringResource(R.string.overlook))
+            }
+            BodySmallText(text = stringResource(id = R.string.account))
+            TitleLargeBoldText(text = remember { runBlocking { context.readCloudAccountNum().first().toString() } })
         }
     }
 }

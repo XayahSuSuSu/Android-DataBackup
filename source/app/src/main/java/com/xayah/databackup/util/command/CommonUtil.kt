@@ -31,11 +31,18 @@ object CommonUtil {
     /**
      * Execution functions encapsulated by Log
      */
-    suspend fun LogUtil.executeWithLog(logId: Long, cmd: String): Shell.Result = withIOContext {
+    suspend fun LogUtil.executeWithLog(logId: Long, cmd: String, viaSubShell: Boolean = false): Shell.Result = withIOContext {
         logCmd(logId, LogCmdType.SHELL_IN, cmd)
-        Shell.cmd(cmd).exec().also { result ->
+        var subShell: Shell? = null
+        val job = if (viaSubShell) {
+            subShell = DataBackupApplication.getBuilder(context = DataBackupApplication.application).build()
+            subShell.newJob().to(mutableListOf(), mutableListOf()).add(cmd)
+        } else {
+            Shell.cmd(cmd)
+        }
+        job.exec().also { result ->
             for (line in result.out) logCmd(logId, LogCmdType.SHELL_OUT, line)
-            if (result.code == 127) {
+            if (result.code == 127 && viaSubShell.not()) {
                 // If the code is 127, the shell may have been dead.
                 DataBackupApplication.Companion.EnvInitializer.initShell(
                     Shell.getShell(),
@@ -44,6 +51,7 @@ object CommonUtil {
                 logCmd(logId, LogCmdType.SHELL_OUT, "The shell may have been dead.")
             }
             logCmd(logId, LogCmdType.SHELL_CODE, result.code.toString())
+            subShell?.close()
         }
     }
 

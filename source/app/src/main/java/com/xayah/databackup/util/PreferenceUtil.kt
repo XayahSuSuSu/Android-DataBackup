@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.xayah.databackup.BuildConfig
@@ -416,6 +417,7 @@ suspend fun Context.saveStoreLong(key: Preferences.Key<Long>, value: Long) = dat
 // -----------------------------------------Keys-----------------------------------------
 val KeyBackupSavePath = stringPreferencesKey("backup_save_path")
 val KeyRestoreSavePath = stringPreferencesKey("restore_save_path")
+val KeyCloudAccountNum = intPreferencesKey("cloud_account_num")
 // --------------------------------------------------------------------------------------
 
 
@@ -431,6 +433,8 @@ fun Context.readBackupSavePath() = readStoreString(key = KeyBackupSavePath, defV
  * each time since the path is changed.
  */
 fun Context.readRestoreSavePath() = readStoreString(key = KeyRestoreSavePath, defValue = ConstantUtil.DefaultPath)
+
+fun Context.readCloudAccountNum() = readStoreInt(key = KeyCloudAccountNum, defValue = 0)
 // --------------------------------------------------------------------------------------
 
 
@@ -444,4 +448,6 @@ suspend fun Context.saveBackupSavePath(value: String) = saveStoreString(key = Ke
  * @see [readRestoreSavePath]
  */
 suspend fun Context.saveRestoreSavePath(value: String) = saveStoreString(key = KeyRestoreSavePath, value = value.trim())
+
+suspend fun Context.saveCloudAccountNum(value: Int) = saveStoreInt(key = KeyCloudAccountNum, value = value)
 // ---------------------------------------------------------------------------------------

@@ -36,6 +36,12 @@ class DataBackupApplication : Application() {
                 return true
             }
         }
+
+        fun getBuilder(context: Context) = Shell.Builder.create()
+            .setFlags(Shell.FLAG_MOUNT_MASTER or Shell.FLAG_REDIRECT_STDERR)
+            .setInitializers(EnvInitializer::class.java)
+            .setContext(context)
+            .setTimeout(3)
     }
 
     override fun attachBaseContext(context: Context) {
@@ -43,11 +49,7 @@ class DataBackupApplication : Application() {
         super.attachBaseContext(base)
         Shell.enableVerboseLogging = BuildConfig.ENABLE_VERBOSE
         Shell.setDefaultBuilder(
-            Shell.Builder.create()
-                .setFlags(Shell.FLAG_MOUNT_MASTER or Shell.FLAG_REDIRECT_STDERR)
-                .setInitializers(EnvInitializer::class.java)
-                .setContext(base)
-                .setTimeout(3)
+            getBuilder(base)
         )
     }
 

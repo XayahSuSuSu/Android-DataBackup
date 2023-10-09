@@ -46,7 +46,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.navigation.NavHostController
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.main.page.cloud.router.CloudRoutes
 import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
 import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
@@ -97,6 +99,30 @@ fun MainTopBar(scrollBehavior: TopAppBarScrollBehavior?) {
                     }
             }
         },
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun CloudTopBar(scrollBehavior: TopAppBarScrollBehavior?, cloudNavController: NavHostController) {
+    val context = LocalContext.current
+    val routes = ConstantUtil.MainBottomBarRoutes
+    val currentRoute = cloudNavController.currentRoute()
+
+    CenterAlignedTopAppBar(
+        title = { TopBarTitle(text = CloudRoutes.ofTitle(context, currentRoute)) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if (currentRoute != CloudRoutes.Main.route) {
+                Crossfade(targetState = currentRoute, label = AnimationTokens.CrossFadeLabel) { route ->
+                    if ((route in routes).not())
+                        ArrowBackButton {
+                            cloudNavController.popBackStack()
+                        }
+                }
+            }
+        },
+        actions = {}
     )
 }
 

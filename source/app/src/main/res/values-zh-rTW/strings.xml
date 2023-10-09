@@ -123,4 +123,11 @@
     <string name="selected_both">兩者均選</string>
     <string name="abi_validation">驗證ABI</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">此版本僅支援：%1$s，但您的裝置架構為%2$s。 請安裝%3$s版本。</string>
+    <string name="account">帳戶</string>
+    <string name="create_account">建立帳戶</string>
+    <string name="name">名稱</string>
+    <string name="url">地址</string>
+    <string name="username">使用者名稱</string>
+    <string name="password">密碼</string>
+    <string name="port">連接埠</string>
 </resources>
