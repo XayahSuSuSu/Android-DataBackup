@@ -1,5 +1,6 @@
 package com.xayah.databackup.ui.activity.main.router
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +43,7 @@ fun NavHostController.currentRoute(): String? {
     return navBackStackEntry?.destination?.route
 }
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
