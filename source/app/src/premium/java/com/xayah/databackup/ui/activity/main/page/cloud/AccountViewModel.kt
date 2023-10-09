@@ -12,6 +12,7 @@ import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.command.CloudUtil
 import com.xayah.databackup.util.saveCloudAccountNum
+import com.xayah.librootservice.util.ExceptionUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -74,7 +75,7 @@ class AccountViewModel @Inject constructor(logUtil: LogUtil, gsonUtil: GsonUtil)
             uiState.mutex.withLock {
                 val (_, json) = CloudUtil.Config.dump(uiState.logUtil)
                 val type = object : TypeToken<AccountMap>() {}.type
-                val map = uiState.gsonUtil.fromJson<AccountMap>(json, type)
+                val map = ExceptionUtil.tryOn(block = { uiState.gsonUtil.fromJson(json, type) }, onException = { AccountMap() })
                 DataBackupApplication.application.saveCloudAccountNum(map.size)
 
                 _uiState.value = uiState.copy(
