@@ -3,7 +3,7 @@
     <string name="application">Program</string>
     <string name="data">Data</string>
     <string name="restore_finished">Gjenoppretting fullført</string>
-    <string name="backup_dir">Sikkerhetskopieringsmappe</string>
+    <string name="backup_dir">Sikkerhetskopimappe</string>
     <string name="compression_type">Sammenpakkingstype</string>
     <string name="cancel">Avbryt</string>
     <string name="success">Vellykket</string>
@@ -11,7 +11,7 @@
     <string name="decompress">Pakk ut</string>
     <string name="environment_detection">Miljøoppdagelse</string>
     <string name="selected">Valgt</string>
-    <string name="backup_user">Sikkerhetskopier bruker</string>
+    <string name="backup_user">Sikkerhetskopieringsbruker</string>
     <string name="restore_user">Gjenopprett bruker</string>
     <string name="failed">Mislykket</string>
     <string name="grant_root_access">Innvilg rot-tilgang</string>
@@ -22,11 +22,11 @@
     <string name="user">Bruker</string>
     <string name="size">Størrelse</string>
     <string name="progress">Framdrift</string>
-    <string name="backup">Sikkerhetskopier</string>
+    <string name="backup">Sikkerhetskopi</string>
     <string name="confirm">Bekreft</string>
     <string name="backup_finished">Sikkerhetskopi utført</string>
     <string name="tips">Tips</string>
-    <string name="app_name">DataBackup</string>
+    <string name="app_name">DataSikkerhetskopi</string>
     <string name="restore">Gjenopprett</string>
     <string name="media">Media</string>
     <string name="error">Feil</string>
@@ -34,7 +34,7 @@
     <string name="app_name_is_missing">Programnavn mangler</string>
     <string name="not_selected">Ikke valgt</string>
     <string name="backup_icon">Sikkerhetskopi-ikon</string>
-    <string name="app_crashed">Programmet krasjet</string>
+    <string name="app_crashed">Programkrasj</string>
     <string name="select_restore_media">Velg gjenopprettingsmedia</string>
     <string name="none">Ingen</string>
     <string name="update_channel">Oppdateirngskanal</string>
@@ -68,7 +68,7 @@
     <string name="installed_app">Installert program</string>
     <string name="warning">Advarsel</string>
     <string name="type">Type</string>
-    <string name="compatible_mode">Komaptibelt modus</string>
+    <string name="compatible_mode">Kompabilitetsmodus</string>
     <string name="installed">Installert</string>
     <string name="not_installed">Ikke installert</string>
     <string name="retry">Prøv igjen</string>
@@ -78,4 +78,25 @@
     <string name="storage">Lagring</string>
     <string name="network">Nettverk</string>
     <string name="log">Logg</string>
+    <string name="clean_restoring">Fersk gjenoppretting</string>
+    <string name="restoring">Gjenoppretter …</string>
+    <string name="start_desc">All data generert av programmet brukes kun til sikkerhetskopiering/gjenoppretting, og lagres kun lokalt.</string>
+    <string name="release_prebuilt_binaries">Utgivelse av forhåndsbygde kjørbare filer</string>
+    <string name="storage_desc">Brukt for sikkerhetskopioppsett, erkiveringsskriving og lesing</string>
+    <string name="reset_backup_list">Tilbakestill sikkerhetskopieringsliste</string>
+    <string name="manifest">Manifest</string>
+    <string name="name">Navn</string>
+    <string name="monet">Monet</string>
+    <string name="network_desc">Brukt til å hente oppdateringsinfo, programanalyse</string>
+    <string name="application_desc">Henting av pakkeinfo, brukt til generering av sikkerhetskopieringsliste og innhenting av programdatastørrelse</string>
+    <string name="reset_restore_list">Tilbakestill gjenopprettingsliste</string>
+    <string name="loading_failed">Innlasting mislyktes</string>
+    <string name="start_subtitle">Du må lese og godta brukersamtykke og personvernspraksis først</string>
+    <string name="update_records">Oppdater oppføringer</string>
+    <string name="backing_up">Sikkerhetskopierer …</string>
+    <string name="fetch_failed">Kunne ikke hente</string>
+    <string name="loading">Laster inn …</string>
+    <string name="backup_dir_as_media_error">Kan ikke legge til sikkerhetskopimappe som media</string>
+    <string name="backup_itself">Selve sikkerhetskopien</string>
+    <string name="welcome_to_use">Velkomen</string>
 </resources>
