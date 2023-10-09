@@ -98,7 +98,7 @@ private object TypeConfigTokens {
         typeDisplay = "SMB / CIFS",
         type = "smb",
         textFields = listOf(
-            TextFieldConfigTokens.Url.copy(),
+            TextFieldConfigTokens.Host.copy(),
             TextFieldConfigTokens.Username.copy(),
             TextFieldConfigTokens.Password.copy(),
         )
