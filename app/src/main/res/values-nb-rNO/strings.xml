@@ -98,5 +98,5 @@
     <string name="loading">Laster inn …</string>
     <string name="backup_dir_as_media_error">Kan ikke legge til sikkerhetskopimappe som media</string>
     <string name="backup_itself">Selve sikkerhetskopien</string>
-    <string name="welcome_to_use">Velkomen</string>
+    <string name="welcome_to_use">Velkommen</string>
 </resources>
