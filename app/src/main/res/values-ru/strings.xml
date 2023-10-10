@@ -21,19 +21,19 @@
     <string name="backup_user">Пользователь бекапа</string>
     <string name="compression_type_help">Выберите тип сжатия приложений и данных, который влияет как на резервное копирование, так и на восстановление. Если вы не знаете, для чего нужен этот параметр, не меняйте его.</string>
     <string name="restore_user">Восстановление пользователя</string>
-    <string name="failed">Сбои</string>
+    <string name="failed">Сбой</string>
     <string name="grant_root_access">Предоставление root</string>
     <string name="release_prebuilt_binaries">Использование предустановленных бинарников</string>
     <string name="finish">Готово</string>
     <string name="welcome_to_use">Добро пожаловать</string>
-    <string name="start_subtitle">Согласно действующей политике, вам необходимо внимательно прочитать и согласиться со следующим Пользовательским соглашением и Политикой конфиденциальности, прежде чем вы начнете использовать это приложение.</string>
-    <string name="internal_storage">Внутренняя память</string>
+    <string name="start_subtitle">Согласно действующей политике, вам необходимо внимательно прочитать и согласиться со следующим Пользовательским соглашением и Политикой конфиденциальности, прежде чем вы начнете использовать это приложение</string>
+    <string name="internal_storage">Внутреннее хранилище</string>
     <string name="support">Поддержка</string>
     <string name="fetch_failed">Не удалось получить</string>
     <string name="latest">Последняя</string>
     <string name="unsupported_format">Неподдерживаемый формат</string>
     <string name="user">Пользователь</string>
-    <string name="media">Медиафайлы</string>
+    <string name="media">Медиа</string>
     <string name="speed">Скорость</string>
     <string name="size">Размер</string>
     <string name="progress">Прогресс</string>
@@ -74,7 +74,7 @@
     <string name="start_desc">Все данные, созданные этим приложением, используются только для резервного копирования/восстановления и хранятся только локально. Незаконная перепродажа строго запрещена</string>
     <string name="network">Сеть</string>
     <string name="network_desc">Используется только для получения информации об обновлении приложения, аналитика приложений</string>
-    <string name="application_desc">Получение всей информации об имени пакетов приложений устройства. Используется для создания списка бекапов и получения размера данных приложения.</string>
+    <string name="application_desc">Получение всей информации об имени пакетов приложений устройства. Используется для создания списка бекапов и получения размера данных приложений</string>
     <string name="storage">Хранилище</string>
     <string name="storage_desc">Используется для конфигурации резервного копирования, чтения и записи архива</string>
     <string name="data_size">Размер данных</string>
@@ -92,7 +92,7 @@
     <string name="restoring">Восстановление</string>
     <string name="read_icon">Чтение значков</string>
     <string name="read_icon_title">Для чтения значков требуется много памяти, если у вас возникают сбои при восстановлении, попробуйте отключить эту опцию.</string>
-    <string name="app_crashed">Сбой приложения</string>
+    <string name="app_crashed">Приложение вылетело</string>
     <string name="cancelling">Отмена</string>
     <string name="copy_grant_command">Копировать команду предоставления</string>
     <string name="card_app_subtitle">Бекап (восстановление) пользовательских или системных приложений</string>
@@ -132,10 +132,10 @@
     <string name="type">Тип</string>
     <string name="compatible_mode">Режим совместимости</string>
     <string name="compatible_mode_subtitle">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
-    <string name="installed">Installed</string>
-    <string name="not_installed">Not installed</string>
+    <string name="installed">Установленно</string>
+    <string name="not_installed">Не установленно</string>
     <string name="retry">Retry</string>
-    <string name="succeed">Succeed</string>
+    <string name="succeed">Успешно</string>
     <string name="telephony">Телефония</string>
     <string name="backed_up">Бекап</string>
     <string name="restored">Восстановлено</string>
@@ -169,12 +169,13 @@
     <string name="miui_service_sms_tips">Если вы используете MIUI, пожалуйста, предоставьте разрешение службы СМС вручную.</string>
     <string name="reset_backup_list">Сбросить список бекапов</string>
     <string name="reset_backup_list_title">Снять выделение после бекапа</string>
-    <string name="reset_restore_list">Сбросить список восстановления</string>
+    <string name="reset_restore_list">Сброс списка восстановления</string>
     <string name="reset_restore_list_title">Снять выделение после восстановления</string>
     <string name="unsuspend_suspended_apps">Разблокировать приостановленные приложения</string>
     <string name="unsuspend_suspended_apps_help">Если вы принудительно завершите это приложение во время создания бекапа, приложение обработки все еще может быть приостановлено. Нажмите здесь, чтобы возобновить</string>
-    <string name="log">Лог</string>
+    <string name="log">Log</string>
     <string name="click_to_clear">Нажать для очистки</string>
     <string name="keep_the_screen_on">Держать экран включенным</string>
     <string name="keep_the_screen_on_help">Держать устройство в активном состоянии во время обработки</string>
+    <string name="clean_restoring">\"Чистое\" восстановление</string>
 </resources>
