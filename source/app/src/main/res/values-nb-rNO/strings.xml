@@ -124,7 +124,7 @@
     <string name="word_return">Tilbake</string>
     <string name="backup_itself">Selve sikkerhetskopien</string>
     <string name="restart_failed">Kunne ikke starte på ny. Start programmet igjen manuelt.</string>
-    <string name="welcome_to_use">Velkomen</string>
+    <string name="welcome_to_use">Velkommen</string>
     <string name="save_directory_structure">Lagre mappestruktur</string>
     <string name="app_and_data">Program og data</string>
     <string name="compression_test">Sammenpakkingstest</string>
