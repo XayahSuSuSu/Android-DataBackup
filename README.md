@@ -16,7 +16,7 @@
 ## Features
 * :cyclone: **Multi-user Support**
 
-* :cloud: **Cloud**
+* :cloud: **Cloud** (Available on **premium**)
 
 * :sunglasses: **100% Data Integrity**
 
@@ -37,7 +37,9 @@
      alt="Get it on coolapk"
      height="80">](https://www.coolapk.com/apk/com.xayah.databackup)[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
      alt="Get it on IzzyOnDroid"
-     height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.xayah.databackup)
+     height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.xayah.databackup)[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/zh_Hans/packages/com.xayah.databackup.foss/)
 
 or get the APK from the [Releases](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest).
 

@@ -1,9 +1,12 @@
 <i>DataBackup</i> is based on <a href='https://github.com/YAWAsau/backup_script' target='_blank' rel='nofollow'>speed-backup</a>. It was born with the consent of the author.
 
-<i>DataBackup</i> is intended to back up and restore the data of your apps. It works on arm64-v8a, armeabi-v7a, x86 and x86_64 devices with Android 9 or higher with root access.
+<i>DataBackup</i> is intended to back up and restore the data of your apps.
+
+</b>Root access is needed.</b>
+
+It works on </b>arm64-v8a</b>(4 as suffix), </b>armeabi-v7a</b>(3 as suffix), </b>x86_64</b>(2 as suffix) and </b>x86</b>(1 as suffix) devices with Android 9 or higher.
 
 <br><b>Features include:</b>
-
 * <b>Multi-user Support</b>
 * <b>100% Data Integrity</b>
 * <b>Fast<b>
