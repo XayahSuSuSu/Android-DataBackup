@@ -5,10 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -22,7 +27,9 @@ import com.xayah.databackup.ui.activity.main.page.cloud.router.CloudRoutes
 import com.xayah.databackup.ui.component.CardActionButton
 import com.xayah.databackup.ui.component.Module
 import com.xayah.databackup.ui.component.OverLookCloudCard
+import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.component.ignorePaddingHorizontal
+import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
@@ -78,6 +85,41 @@ fun PageMain(navController: NavHostController) {
                     Spacer(modifier = Modifier.width(CommonTokens.PaddingMedium))
                 }
             }
+        }
+
+        item {
+            Module(title = stringResource(R.string.activities)) {
+                val items = listOf(
+                    stringResource(R.string.mount),
+                )
+                val icons = listOf(
+                    ImageVector.vectorResource(R.drawable.ic_rounded_install_desktop),
+                )
+                val onClicks = listOf(
+                    {
+                        navController.navigate(CloudRoutes.Mount.route)
+                    },
+                )
+                VerticalGrid(
+                    columns = 2,
+                    count = items.size,
+                    horizontalArrangement = Arrangement.spacedBy(CommonTokens.PaddingLarge)
+                ) { index ->
+                    AssistChip(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = onClicks[index],
+                        label = { Text(items[index]) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = icons[index],
+                                contentDescription = null,
+                                modifier = Modifier.size(AssistChipDefaults.IconSize)
+                            )
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.paddingBottom(CommonTokens.PaddingMedium))
         }
     }
 }

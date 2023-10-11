@@ -4,7 +4,6 @@ import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.SymbolUtil.USD
 import com.xayah.databackup.util.command.CommonUtil.execute
-import com.xayah.databackup.util.command.CommonUtil.outString
 
 class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
     suspend fun getContext(path: String): Pair<Boolean, String> {
@@ -15,7 +14,7 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
             if (result.isSuccess.not()) {
                 isSuccess = false
             }
-            out += result.outString() + "\n"
+            out += result.outString + "\n"
         }
         return Pair(isSuccess, out.trim())
     }
@@ -31,14 +30,14 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
             logUtil.execute(logId, "chown -hR $QUOTE$uid:$uid$QUOTE $QUOTE$path/$QUOTE").also { result ->
                 if (result.isSuccess.not()) {
                     isSuccess = false
-                    out += result.outString() + "\n"
+                    out += result.outString + "\n"
                 }
             }
             if (pathContext.isNotEmpty()) {
                 logUtil.execute(logId, "chcon -hR $QUOTE$pathContext$QUOTE $QUOTE$path/$QUOTE").also { result ->
                     if (result.isSuccess.not()) {
                         isSuccess = false
-                        out += result.outString() + "\n"
+                        out += result.outString + "\n"
                     }
                 }
             } else {
@@ -48,12 +47,12 @@ class SELinuxUtil(private val logId: Long, private val logUtil: LogUtil) {
                 ).also { result ->
                     if (result.isSuccess.not()) {
                         isSuccess = false
-                        out += result.outString() + "\n"
+                        out += result.outString + "\n"
                     } else {
-                        logUtil.execute(logId, "chcon -hR $QUOTE${result.outString()}$QUOTE $QUOTE$path/$QUOTE").also { innerResult ->
+                        logUtil.execute(logId, "chcon -hR $QUOTE${result.outString}$QUOTE $QUOTE$path/$QUOTE").also { innerResult ->
                             if (innerResult.isSuccess.not()) {
                                 isSuccess = false
-                                out += innerResult.outString() + "\n"
+                                out += innerResult.outString + "\n"
                             }
                         }
                     }

@@ -135,4 +135,11 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="port">Port</string>
+    <string name="mount">Mount</string>
+    <string name="set_remote">Set remote</string>
+    <string name="set_local">Set local</string>
+    <string name="unmount">Unmount</string>
+    <string name="mounted">Mounted</string>
+    <string name="info_set_remote_or_local">Please set the remote path or local path</string>
+    <string name="unmount_all">Unmount all</string>
 </resources>

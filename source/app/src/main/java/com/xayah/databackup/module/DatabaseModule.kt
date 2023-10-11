@@ -3,6 +3,7 @@ package com.xayah.databackup.module
 import android.content.Context
 import androidx.room.Room
 import com.xayah.databackup.data.AppDatabase
+import com.xayah.databackup.data.CloudDao
 import com.xayah.databackup.data.DirectoryDao
 import com.xayah.databackup.data.LogDao
 import com.xayah.databackup.data.MediaDao
@@ -52,4 +53,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideMediaDao(database: AppDatabase): MediaDao = database.mediaDao()
+
+    @Provides
+    @Singleton
+    fun provideCloudDao(database: AppDatabase): CloudDao = database.cloudDao()
 }

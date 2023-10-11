@@ -10,15 +10,32 @@ import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.librootservice.util.withIOContext
 
+data class ShellResult(
+    var code: Int,
+    var out: List<String>,
+) {
+    val isSuccess: Boolean
+        get() = code == 0
+
+    val outString: String
+        get() = out.joinToString(separator = "\n")
+
+}
+
 object CommonUtil {
     fun Context.copyToClipboard(content: String) {
         val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboardManager.setPrimaryClip(ClipData.newPlainText(ConstantUtil.ClipDataLabel, content))
     }
 
-    suspend fun execute(cmd: String): Shell.Result = withIOContext {
+    suspend fun execute(cmd: String): ShellResult = withIOContext {
+        val shellResult = ShellResult(code = -1, out = listOf())
+
         Shell.cmd(cmd).exec().also { result ->
-            if (result.code == 127) {
+            shellResult.code = result.code
+            shellResult.out = result.out
+
+            if (shellResult.code == 127) {
                 // If the code is 127, the shell may have been dead.
                 DataBackupApplication.Companion.EnvInitializer.initShell(
                     Shell.getShell(),
@@ -26,16 +43,22 @@ object CommonUtil {
                 )
             }
         }
+        shellResult
     }
 
     /**
      * Execution functions encapsulated by Log.
      */
-    suspend fun LogUtil.execute(logId: Long, cmd: String): Shell.Result = withIOContext {
+    suspend fun LogUtil.execute(logId: Long, cmd: String): ShellResult = withIOContext {
+        val shellResult = ShellResult(code = -1, out = listOf())
+
         logCmd(logId, LogCmdType.SHELL_IN, cmd)
         Shell.cmd(cmd).exec().also { result ->
-            for (line in result.out) logCmd(logId, LogCmdType.SHELL_OUT, line)
-            if (result.code == 127) {
+            shellResult.code = result.code
+            shellResult.out = result.out
+
+            for (line in shellResult.out) logCmd(logId, LogCmdType.SHELL_OUT, line)
+            if (shellResult.code == 127) {
                 // If the code is 127, the shell may have been dead.
                 DataBackupApplication.Companion.EnvInitializer.initShell(
                     Shell.getShell(),
@@ -43,23 +66,29 @@ object CommonUtil {
                 )
                 logCmd(logId, LogCmdType.SHELL_OUT, "The shell may have been dead.")
             }
-            logCmd(logId, LogCmdType.SHELL_CODE, result.code.toString())
+            logCmd(logId, LogCmdType.SHELL_CODE, shellResult.code.toString())
         }
+        shellResult
     }
 
     /**
      * Execution functions encapsulated by Log with given shell.
      */
-    suspend fun LogUtil.execute(logId: Long, cmd: String, shell: Shell): Shell.Result = withIOContext {
+    suspend fun LogUtil.execute(logId: Long, cmd: String, shell: Shell): ShellResult = withIOContext {
+        val shellResult = ShellResult(code = -1, out = listOf())
+
         logCmd(logId, LogCmdType.SHELL_IN, cmd)
-        val out = mutableListOf<String>()
-        shell.newJob().to(out).add(cmd).exec().also { result ->
-            for (line in out) logCmd(logId, LogCmdType.SHELL_OUT, line)
+        val outList = mutableListOf<String>()
+
+        shell.newJob().to(outList, outList).add(cmd).exec().also { result ->
+            shellResult.code = result.code
             logCmd(logId, LogCmdType.SHELL_CODE, result.code.toString())
         }
-    }
+        shellResult.out = outList
+        shellResult.out.forEach { line ->
+            logCmd(logId, LogCmdType.SHELL_OUT, line)
+        }
 
-    fun Shell.Result.outString(): String {
-        return out.joinToString(separator = "\n")
+        shellResult
     }
 }

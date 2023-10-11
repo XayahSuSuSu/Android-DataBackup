@@ -6,7 +6,6 @@ import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.execute
-import com.xayah.databackup.util.command.CommonUtil.outString
 
 class InstallationUtil(private val logId: Long, private val logUtil: LogUtil) {
     suspend fun decompress(archivePath: String, tmpApkPath: String, compressionType: CompressionType): Pair<Boolean, String> {
@@ -16,7 +15,7 @@ class InstallationUtil(private val logId: Long, private val logUtil: LogUtil) {
             .also { result ->
                 if (result.isSuccess.not()) {
                     isSuccess = false
-                    out += result.outString() + "\n"
+                    out += result.outString + "\n"
                 }
             }
         return Pair(isSuccess, out.trim())
@@ -30,14 +29,14 @@ class InstallationUtil(private val logId: Long, private val logUtil: LogUtil) {
             logUtil.execute(logId, "pm install --user $QUOTE$userId$QUOTE -r -t $QUOTE$apkPath$QUOTE").also { result ->
                 if (result.isSuccess.not()) {
                     isSuccess = false
-                    out += result.outString() + "\n"
+                    out += result.outString + "\n"
                 }
             }
         } else {
             logUtil.execute(logId, "pm install -i com.android.vending --user $QUOTE$userId$QUOTE -r -t $QUOTE$apkPath$QUOTE").also { result ->
                 if (result.isSuccess.not()) {
                     isSuccess = false
-                    out += result.outString() + "\n"
+                    out += result.outString + "\n"
                 }
             }
         }
@@ -51,13 +50,13 @@ class InstallationUtil(private val logId: Long, private val logUtil: LogUtil) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             logUtil.execute(logId, "pm install-create --user $QUOTE$userId$QUOTE -t | grep -E -o '[0-9]+'").also { result ->
                 if (result.isSuccess.not()) isSuccess = false
-                session = result.outString() + "\n"
+                session = result.outString + "\n"
 
             }
         } else {
             logUtil.execute(logId, "pm install-create -i com.android.vending --user $QUOTE$userId$QUOTE -t | grep -E -o '[0-9]+'").also { result ->
                 if (result.isSuccess.not()) isSuccess = false
-                session = result.outString() + "\n"
+                session = result.outString + "\n"
             }
         }
         return Pair(isSuccess, session.trim())
@@ -71,7 +70,7 @@ class InstallationUtil(private val logId: Long, private val logUtil: LogUtil) {
             .also { result ->
                 if (result.isSuccess.not()) {
                     isSuccess = false
-                    out += result.outString() + "\n"
+                    out += result.outString + "\n"
                 }
             }
         return Pair(isSuccess, out.trim())
@@ -84,7 +83,7 @@ class InstallationUtil(private val logId: Long, private val logUtil: LogUtil) {
         logUtil.execute(logId, "pm install-commit $QUOTE$session$QUOTE").also { result ->
             if (result.isSuccess.not()) {
                 isSuccess = false
-                out += result.outString() + "\n"
+                out += result.outString + "\n"
             }
         }
         return Pair(isSuccess, out.trim())

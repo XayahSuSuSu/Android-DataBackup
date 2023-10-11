@@ -7,7 +7,6 @@ import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.execute
-import com.xayah.databackup.util.command.CommonUtil.outString
 import com.xayah.databackup.util.readCleanRestoring
 import com.xayah.librootservice.service.RemoteRootService
 
@@ -39,7 +38,7 @@ object CompressionUtil {
         // Compress data dir.
         logUtil.execute(logId, "tar --totals ${excludeParaList.toSpaceString()} -cpf $cmd").also { result ->
             if (result.isSuccess.not()) isSuccess = false
-            outList.add(result.outString())
+            outList.add(result.outString)
         }
 
         return Pair(isSuccess, outList.toLineString().trim())
@@ -62,7 +61,7 @@ object CompressionUtil {
         // Decompress the archive.
         logUtil.execute(logId, "tar --totals ${excludeParaList.toSpaceString()} $cleanRestoringPara ${decompressionPara.para} $cmd").also { result ->
             if (result.isSuccess.not()) isSuccess = false
-            outList.add(result.outString())
+            outList.add(result.outString)
         }
 
         return Pair(isSuccess, outList.toLineString().trim())
@@ -157,15 +156,15 @@ object CompressionUtil {
         // Compress config dir.
         logUtil.execute(logId, "cd $originPath").also { result ->
             if (result.isSuccess.not()) isSuccess = false
-            outList.add(result.outString())
+            outList.add(result.outString)
         }
         logUtil.execute(logId, "tar --totals -cpf $cmd").also { result ->
             if (result.isSuccess.not()) isSuccess = false
-            outList.add(result.outString())
+            outList.add(result.outString)
         }
         logUtil.execute(logId, "cd /").also { result ->
             if (result.isSuccess.not()) isSuccess = false
-            outList.add(result.outString())
+            outList.add(result.outString)
         }
 
         return Pair(isSuccess, outList.toLineString().trim())

@@ -130,4 +130,11 @@
     <string name="username">使用者名稱</string>
     <string name="password">密碼</string>
     <string name="port">連接埠</string>
+    <string name="mount">掛載</string>
+    <string name="set_remote">設定遠端</string>
+    <string name="set_local">設定本地</string>
+    <string name="unmount">取消掛載</string>
+    <string name="mounted">已掛載</string>
+    <string name="info_set_remote_or_local">請設定遠端路徑或本機路徑</string>
+    <string name="unmount_all">取消掛載全部</string>
 </resources>

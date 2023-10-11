@@ -130,4 +130,11 @@
     <string name="username">用户名</string>
     <string name="password">密码</string>
     <string name="port">端口</string>
+    <string name="mount">挂载</string>
+    <string name="set_remote">设置远程</string>
+    <string name="set_local">设置本地</string>
+    <string name="unmount">取消挂载</string>
+    <string name="mounted">已挂载</string>
+    <string name="info_set_remote_or_local">请设置远程路径或本地路径</string>
+    <string name="unmount_all">取消挂载全部</string>
 </resources>

@@ -42,30 +42,28 @@ data class CreateAccountUiState(
     val typeIndex: Int,
 )
 
-private object TextFieldConfigTokens {
-    private val context = DataBackupApplication.application
-
-    val Url = TextFieldConfig(
+private class TextFieldConfigTokens(context: Context) {
+    val tokenUrl = TextFieldConfig(
         key = "url",
         placeholder = context.getString(R.string.url),
         leadingIcon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_link),
     )
-    val Username = TextFieldConfig(
+    val tokenUsername = TextFieldConfig(
         key = "user",
         placeholder = context.getString(R.string.username),
         leadingIcon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_person),
     )
-    val Password = TextFieldConfig(
+    val tokenPassword = TextFieldConfig(
         key = "pass",
         placeholder = context.getString(R.string.password),
         leadingIcon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_key),
     )
-    val Host = TextFieldConfig(
+    val tokenHost = TextFieldConfig(
         key = "host",
         placeholder = context.getString(R.string.url),
         leadingIcon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_link),
     )
-    val Port = TextFieldConfig(
+    val tokenPort = TextFieldConfig(
         key = "port",
         value = mutableStateOf("21"),
         placeholder = context.getString(R.string.port),
@@ -73,35 +71,44 @@ private object TextFieldConfigTokens {
     )
 }
 
-private object TypeConfigTokens {
-    val FTP = TypeConfig(
+private class TypeConfigTokens {
+    val tokenFTP = TypeConfig(
         typeDisplay = "FTP",
         type = "ftp",
-        textFields = listOf(
-            TextFieldConfigTokens.Host.copy(),
-            TextFieldConfigTokens.Port.copy(),
-            TextFieldConfigTokens.Username.copy(),
-            TextFieldConfigTokens.Password.copy(),
-        )
+        textFields = run {
+            val token = TextFieldConfigTokens(DataBackupApplication.application)
+            listOf(
+                token.tokenHost,
+                token.tokenPort,
+                token.tokenUsername,
+                token.tokenPassword,
+            )
+        }
     )
-    val WebDAV = TypeConfig(
+    val tokenWebDAV = TypeConfig(
         typeDisplay = "WebDAV",
         type = "webdav",
         fixedArgs = listOf("vendor=other"),
-        textFields = listOf(
-            TextFieldConfigTokens.Url.copy(),
-            TextFieldConfigTokens.Username.copy(),
-            TextFieldConfigTokens.Password.copy(),
-        )
+        textFields = run {
+            val token = TextFieldConfigTokens(DataBackupApplication.application)
+            listOf(
+                token.tokenUrl,
+                token.tokenUsername,
+                token.tokenPassword,
+            )
+        }
     )
-    val SMB = TypeConfig(
+    val tokenSMB = TypeConfig(
         typeDisplay = "SMB / CIFS",
         type = "smb",
-        textFields = listOf(
-            TextFieldConfigTokens.Host.copy(),
-            TextFieldConfigTokens.Username.copy(),
-            TextFieldConfigTokens.Password.copy(),
-        )
+        textFields = run {
+            val token = TextFieldConfigTokens(DataBackupApplication.application)
+            listOf(
+                token.tokenHost,
+                token.tokenUsername,
+                token.tokenPassword,
+            )
+        }
     )
 }
 
@@ -110,11 +117,14 @@ class CreateAccountViewModel @Inject constructor(logUtil: LogUtil) : ViewModel()
     private val _uiState = mutableStateOf(
         CreateAccountUiState(
             logUtil = logUtil,
-            typeList = listOf(
-                TypeConfigTokens.FTP.copy(),
-                TypeConfigTokens.WebDAV.copy(),
-                TypeConfigTokens.SMB.copy(),
-            ),
+            typeList = run {
+                val token = TypeConfigTokens()
+                listOf(
+                    token.tokenFTP,
+                    token.tokenWebDAV,
+                    token.tokenSMB,
+                )
+            },
             typeIndex = 0,
         )
     )
@@ -125,13 +135,16 @@ class CreateAccountViewModel @Inject constructor(logUtil: LogUtil) : ViewModel()
         _uiState.value = uiState.value.copy(typeIndex = typeIndex)
     }
 
-    fun resetTypeList() {
+    private fun resetTypeList() {
         _uiState.value = uiState.value.copy(
-            typeList = listOf(
-                TypeConfigTokens.FTP.copy(),
-                TypeConfigTokens.WebDAV.copy(),
-                TypeConfigTokens.SMB.copy(),
-            )
+            typeList = run {
+                val token = TypeConfigTokens()
+                listOf(
+                    token.tokenFTP,
+                    token.tokenWebDAV,
+                    token.tokenSMB,
+                )
+            }
         )
     }
 

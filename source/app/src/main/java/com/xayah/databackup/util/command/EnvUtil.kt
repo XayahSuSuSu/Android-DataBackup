@@ -115,6 +115,8 @@ object EnvUtil {
             // All binaries need full permissions
             extension.listFiles()?.forEach { file ->
                 if (file.setPermissions().not()) return@withIOContext false
+                // Rename fusermount to fusermount3 for rclone
+                if (file.name == "fusermount") file.renameTo(File(file.parent, "fusermount3"))
             }
 
             // Remove binary archive

@@ -33,10 +33,9 @@ object PathUtil {
     fun getExcludeDirs(): List<String> = listOf("tree", "icon", "databases", "log")
 
     fun getTmpApkPath(context: Context, packageName: String): String = "${context.filesPath()}/tmp/apks/$packageName"
-
     fun getTmpConfigPath(context: Context, name: String, timestamp: Long): String = "${context.filesPath()}/tmp/config/$name/$timestamp"
-    fun getTmpConfigFilePath(context: Context, name: String, timestamp: Long): String =
-        "${getTmpConfigPath(context, name, timestamp)}/PackageRestoreEntire"
+    fun getTmpConfigFilePath(context: Context, name: String, timestamp: Long): String = "${getTmpConfigPath(context, name, timestamp)}/PackageRestoreEntire"
+    fun getTmpMountPath(context: Context, name: String): String = "${context.filesPath()}/tmp/mount/$name"
 
     // Paths for backup save dir.
     fun getBackupSavePath(): String = runBlocking { DataBackupApplication.application.readBackupSavePath().first() }

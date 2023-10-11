@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,7 +24,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.cloud.router.CloudRoutes
-import com.xayah.databackup.ui.component.AnimatedSerial
 import com.xayah.databackup.ui.component.FabScaffold
 import com.xayah.databackup.ui.component.ListItemCloudAccount
 import com.xayah.databackup.ui.component.Loader
@@ -40,11 +40,12 @@ import com.xayah.databackup.ui.token.CommonTokens
 fun PageAccount(navController: NavHostController) {
     val viewModel = hiltViewModel<AccountViewModel>()
     val uiState by viewModel.uiState
-    val accounts = uiState.accounts
+    val cloudEntities by uiState.cloudEntities.collectAsState(initial = listOf())
 
     LaunchedEffect(null) {
         viewModel.initialize()
     }
+
     FabScaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(
@@ -67,14 +68,13 @@ fun PageAccount(navController: NavHostController) {
                     Spacer(modifier = Modifier.paddingTop(CommonTokens.PaddingMedium))
                 }
 
-                items(items = accounts) { item ->
+                items(items = cloudEntities) { item ->
                     ListItemCloudAccount(
-                        account = item,
+                        entity = item,
                         onCardClick = {},
                         chipGroup = {
-                            if (item.config.type.isNotEmpty()) Serial(serial = item.config.type)
-                            if (item.config.vendor.isNotEmpty()) Serial(serial = item.config.vendor)
-                            AnimatedSerial(serial = item.config.sizeDisplay)
+                            if (item.account.type.isNotEmpty()) Serial(serial = item.account.type)
+                            if (item.account.vendor.isNotEmpty()) Serial(serial = item.account.vendor)
                         }
                     )
                 }

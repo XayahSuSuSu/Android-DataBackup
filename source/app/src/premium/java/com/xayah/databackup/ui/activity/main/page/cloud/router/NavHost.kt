@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import com.xayah.databackup.ui.activity.main.page.cloud.PageAccount
 import com.xayah.databackup.ui.activity.main.page.cloud.PageCreateAccount
 import com.xayah.databackup.ui.activity.main.page.cloud.PageMain
+import com.xayah.databackup.ui.activity.main.page.cloud.PageMount
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -30,6 +31,9 @@ fun CloudNavHost(navController: NavHostController) {
         }
         composable(CloudRoutes.CreateAccount.route) {
             PageCreateAccount(navController)
+        }
+        composable(CloudRoutes.Mount.route) {
+            PageMount(navController)
         }
     }
 }

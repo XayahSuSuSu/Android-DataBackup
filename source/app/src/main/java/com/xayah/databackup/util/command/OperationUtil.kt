@@ -19,7 +19,6 @@ import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.CommonUtil.execute
-import com.xayah.databackup.util.command.CommonUtil.outString
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCompatibleMode
 import com.xayah.databackup.util.readCompressionTest
@@ -66,15 +65,15 @@ class PackagesBackupUtil(
             val apkPath = PathUtil.getParentPath(sourceDirList[0])
             logUtil.execute(logId, "cd $apkPath").also { result ->
                 if (result.isSuccess.not()) isSuccess = false
-                outList.add(result.outString())
+                outList.add(result.outString)
             }
             logUtil.execute(logId, "tar --totals -cpf $cmd").also { result ->
                 if (result.isSuccess.not()) isSuccess = false
-                outList.add(result.outString())
+                outList.add(result.outString)
             }
             logUtil.execute(logId, "cd /").also { result ->
                 if (result.isSuccess.not()) isSuccess = false
-                outList.add(result.outString())
+                outList.add(result.outString)
             }
         } else {
             // Failed.
