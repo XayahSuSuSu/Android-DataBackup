@@ -33,7 +33,7 @@ palette = "1.0.0"
 google-services = "4.4.0"
 firebase-crashlytics-gradle = "2.9.9"
 firebase-bom = "32.3.1"
-pickyou = "2.0.2"
+pickyou = "2.0.3"
 datastore-preferences = "1.0.0"
 
 # plugins
