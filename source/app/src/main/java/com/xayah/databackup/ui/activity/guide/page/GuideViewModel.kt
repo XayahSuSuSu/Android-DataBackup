@@ -1,7 +1,6 @@
 package com.xayah.databackup.ui.activity.guide.page
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Notifications
@@ -10,9 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.ui.activity.guide.router.GuideRoutes
-import com.xayah.databackup.util.ConstantUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -22,18 +19,6 @@ sealed class GuideUiState(
     val fabIcon: ImageVector,
     val onFabClick: (navController: NavHostController) -> Unit,
 ) {
-    class Intro(title: String = "") : GuideUiState(
-        title = title,
-        icon = Icons.Rounded.AccountCircle,
-        fabIcon = Icons.Rounded.ArrowForward,
-        onFabClick = { navController ->
-            if (BuildConfig.FLAVOR_feature == ConstantUtil.FlavorFeatureFoss)
-                navController.navigate(GuideRoutes.Env.route)
-            else
-                navController.navigate(GuideRoutes.Update.route)
-        }
-    )
-
     class Update(title: String = "") : GuideUiState(
         title = title,
         icon = Icons.Rounded.Notifications,
@@ -58,7 +43,7 @@ sealed class GuideUiState(
 
 @HiltViewModel
 class GuideViewModel @Inject constructor() : ViewModel() {
-    private val _uiState = mutableStateOf<GuideUiState>(GuideUiState.Intro())
+    private val _uiState = mutableStateOf<GuideUiState>(Intro())
     val uiState: State<GuideUiState>
         get() = _uiState
 

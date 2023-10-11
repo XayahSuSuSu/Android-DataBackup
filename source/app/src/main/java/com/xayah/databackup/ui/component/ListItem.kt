@@ -24,7 +24,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,15 +49,11 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.core.graphics.drawable.toDrawable
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.xayah.databackup.R
-import com.xayah.databackup.data.CloudAccountEntity
-import com.xayah.databackup.data.CloudMountEntity
 import com.xayah.databackup.data.DirectoryEntity
 import com.xayah.databackup.data.MediaBackupWithOpEntity
 import com.xayah.databackup.data.MediaRestoreEntity
@@ -69,8 +64,6 @@ import com.xayah.databackup.data.PackageBackupEntire
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.data.StorageType
 import com.xayah.databackup.ui.activity.directory.page.DirectoryViewModel
-import com.xayah.databackup.ui.activity.main.page.cloud.AccountViewModel
-import com.xayah.databackup.ui.activity.main.page.cloud.MountViewModel
 import com.xayah.databackup.ui.activity.operation.page.media.backup.MediaBackupListViewModel
 import com.xayah.databackup.ui.activity.operation.page.media.backup.OpType
 import com.xayah.databackup.ui.activity.operation.page.media.restore.MediaRestoreListViewModel
@@ -579,6 +572,8 @@ fun ListItemMedia(
                     }
                 )
             }
+
+            // TODO: java.lang.IllegalArgumentException: Can't represent a size of xxx in Constraints
             if (mediaOpProcessing || mediaOpDone) {
                 Row(
                     modifier = Modifier
@@ -849,218 +844,4 @@ fun ListItemMediaRestore(
             AnimatedSerial(serial = entity.media.sizeDisplay)
         }
     )
-}
-
-@ExperimentalFoundationApi
-@ExperimentalMaterial3Api
-@Composable
-fun ListItemCloudAccount(
-    modifier: Modifier = Modifier,
-    entity: CloudAccountEntity,
-    onCardClick: () -> Unit,
-    chipGroup: @Composable RowScope.() -> Unit,
-) {
-    val context = LocalContext.current
-    val haptic = LocalHapticFeedback.current
-    val viewModel = hiltViewModel<AccountViewModel>()
-    val dialogSlot = LocalSlotScope.current!!.dialogSlot
-    var expanded by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        enabled = true,
-        onClick = onCardClick,
-        onLongClick = {
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            expanded = true
-        },
-        border = outlinedCardBorder(lineColor = ColorScheme.primary()),
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(ListItemTokens.PaddingMedium)
-        ) {
-            Column {
-                Row {
-                    HeadlineMediumBoldText(text = entity.name)
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                BodySmallBoldText(text = entity.account.url.ifEmpty { entity.account.host })
-                Divider(modifier = Modifier.paddingVertical(ListItemTokens.PaddingSmall))
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .wrapContentSize(Alignment.Center)
-                    ) {
-                        val actions = remember(entity) {
-                            listOf(
-                                ActionMenuItem(
-                                    title = context.getString(R.string.delete),
-                                    icon = Icons.Rounded.Delete,
-                                    enabled = true,
-                                    onClick = {
-                                        viewModel.viewModelScope.launch {
-                                            withIOContext {
-                                                expanded = false
-                                                dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete))
-                                                    .also { (confirmed, _) ->
-                                                        if (confirmed) {
-                                                            viewModel.delete(entity)
-                                                        }
-                                                    }
-                                            }
-                                        }
-                                    }
-                                )
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.align(Alignment.BottomEnd))
-
-                        ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingSmall),
-                        content = {
-                            chipGroup()
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@ExperimentalFoundationApi
-@ExperimentalMaterial3Api
-@Composable
-fun ListItemCloudMount(
-    modifier: Modifier = Modifier,
-    entity: CloudMountEntity,
-    onCardClick: () -> Unit,
-    chipGroup: @Composable RowScope.() -> Unit,
-) {
-    val context = LocalContext.current
-    val viewModel = hiltViewModel<MountViewModel>()
-    val haptic = LocalHapticFeedback.current
-    var expanded by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        enabled = true,
-        onClick = onCardClick,
-        onLongClick = {
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            expanded = true
-        },
-        border = outlinedCardBorder(lineColor = ColorScheme.primary()),
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(ListItemTokens.PaddingMedium)
-        ) {
-            Column {
-                Row {
-                    HeadlineMediumBoldText(text = entity.name)
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                BodySmallBoldText(text = entity.mount.remote)
-                Divider(modifier = Modifier.paddingVertical(ListItemTokens.PaddingSmall))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingSmall)) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowForward,
-                        contentDescription = null
-                    )
-                    BodySmallBoldText(text = entity.mount.local)
-                }
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .wrapContentSize(Alignment.Center)
-                    ) {
-                        val actions = remember(entity) {
-                            listOf(
-                                ActionMenuItem(
-                                    title = context.getString(R.string.set_remote),
-                                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_cloud),
-                                    enabled = true,
-                                    onClick = {
-                                        viewModel.viewModelScope.launch {
-                                            withIOContext {
-                                                expanded = false
-                                                viewModel.setRemote((context as ComponentActivity), entity)
-                                            }
-                                        }
-                                    }
-                                ),
-                                ActionMenuItem(
-                                    title = context.getString(R.string.set_local),
-                                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_phone_android),
-                                    enabled = true,
-                                    onClick = {
-                                        viewModel.viewModelScope.launch {
-                                            withIOContext {
-                                                expanded = false
-                                                viewModel.setLocal((context as ComponentActivity), entity)
-                                            }
-                                        }
-                                    }
-                                ),
-                                ActionMenuItem(
-                                    title = context.getString(R.string.mount),
-                                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_install_desktop),
-                                    enabled = true,
-                                    onClick = {
-                                        viewModel.viewModelScope.launch {
-                                            withIOContext {
-                                                expanded = false
-                                                viewModel.mount(entity)
-                                            }
-                                        }
-                                    }
-                                ),
-                                ActionMenuItem(
-                                    title = context.getString(R.string.unmount),
-                                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_power_settings_new),
-                                    enabled = true,
-                                    onClick = {
-                                        viewModel.viewModelScope.launch {
-                                            withIOContext {
-                                                expanded = false
-                                                viewModel.unmount(entity)
-                                            }
-                                        }
-                                    }
-                                )
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.align(Alignment.BottomEnd))
-
-                        ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingSmall),
-                        content = {
-                            chipGroup()
-                        }
-                    )
-                }
-            }
-        }
-    }
 }

@@ -13,11 +13,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.xayah.databackup.ui.activity.main.page.MainUiState
 import com.xayah.databackup.ui.activity.main.page.MainViewModel
 import com.xayah.databackup.ui.activity.main.page.backup.PageBackup
-import com.xayah.databackup.ui.activity.main.page.cloud.PageCloud
 import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
 import com.xayah.databackup.ui.activity.main.page.log.PageLog
 import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
@@ -68,12 +66,7 @@ fun MainNavHost(navController: NavHostController, viewModel: MainViewModel) {
             PageRestore()
         }
         composable(MainRoutes.Cloud.route) {
-            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-            val cloudNavController = rememberNavController()
-            LaunchedEffect(null) {
-                viewModel.toUiState(MainUiState.Cloud(scrollBehavior, cloudNavController))
-            }
-            PageCloud(cloudNavController = cloudNavController)
+            ComposablePageCloud(viewModel = viewModel)
         }
         composable(MainRoutes.Settings.route) {
             val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()

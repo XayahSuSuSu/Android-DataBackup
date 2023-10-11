@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.SettingsGridItem
@@ -40,7 +39,6 @@ import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.CompressionType
-import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.readBackupItself
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCleanRestoring
@@ -81,8 +79,7 @@ private fun InfoCard() {
         val items = uiState.infoCardItems
 
         LaunchedEffect(null) {
-            if (BuildConfig.FLAVOR_feature == ConstantUtil.FlavorFeaturePremium)
-                viewModel.checkUpdate(context = context)
+            initialize(context, viewModel)
         }
 
         VerticalGrid(columns = 2, count = items.size) { index ->

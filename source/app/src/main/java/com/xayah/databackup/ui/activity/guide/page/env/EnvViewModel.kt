@@ -18,9 +18,8 @@ import com.xayah.databackup.ui.activity.guide.page.GuideViewModel
 import com.xayah.databackup.ui.activity.main.MainActivity
 import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.openConfirmDialog
-import com.xayah.databackup.util.ConstantUtil
-import com.xayah.databackup.util.command.EnvUtil
 import com.xayah.databackup.util.command.PreparationUtil
+import com.xayah.databackup.util.command.releaseBin
 import com.xayah.databackup.util.saveAppVersionName
 import com.xayah.librootservice.util.ExceptionUtil
 import com.xayah.librootservice.util.withIOContext
@@ -72,13 +71,8 @@ class EnvViewModel @Inject constructor(@ApplicationContext context: Context) : V
                             ExceptionUtil.tryOnScope {
                                 withIOContext {
                                     var isSucceed = true
-                                    EnvUtil.releaseBin(context).also {
+                                    releaseBin(context).also {
                                         if (it.not()) isSucceed = false
-                                    }
-                                    if (BuildConfig.FLAVOR_feature == ConstantUtil.FlavorFeaturePremium) {
-                                        EnvUtil.releaseExtension(context).also {
-                                            if (it.not()) isSucceed = false
-                                        }
                                     }
 
                                     setState(index = 1, state = if (isSucceed) TokenState.Succeed else TokenState.Failed)

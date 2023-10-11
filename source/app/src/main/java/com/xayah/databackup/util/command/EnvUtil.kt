@@ -11,8 +11,6 @@ import androidx.core.graphics.drawable.toBitmap
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.binArchivePath
 import com.xayah.databackup.util.binPath
-import com.xayah.databackup.util.extensionArchivePath
-import com.xayah.databackup.util.extensionPath
 import com.xayah.databackup.util.filesPath
 import com.xayah.databackup.util.iconPath
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
@@ -23,7 +21,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 object EnvUtil {
-    private suspend fun releaseAssets(context: Context, path: String, name: String) {
+    suspend fun releaseAssets(context: Context, path: String, name: String) {
         withIOContext {
             tryOn {
                 val assets = File(context.filesPath(), name)
@@ -45,7 +43,7 @@ object EnvUtil {
     /**
      * Unzip and return file headers.
      */
-    private fun unzip(path: String, out: String): List<String> {
+    fun unzip(path: String, out: String): List<String> {
         var headers = listOf<String>()
         tryOn {
             val zip = ZipFile(path)
@@ -56,7 +54,7 @@ object EnvUtil {
     }
 
     @SuppressLint("SetWorldWritable", "SetWorldReadable")
-    private fun File.setPermissions(): Boolean {
+    fun File.setPermissions(): Boolean {
         if (setExecutable(true, false).not()) return false
         if (setWritable(true, false).not()) return false
         if (setReadable(true, false).not()) return false
@@ -74,7 +72,7 @@ object EnvUtil {
         return packageManager.getPackageInfoCompat(packageName).versionName
     }
 
-    suspend fun releaseBin(context: Context): Boolean {
+    suspend fun releaseBase(context: Context): Boolean {
         return withIOContext {
             val bin = File(context.binPath())
             val binArchive = File(context.binArchivePath())
@@ -94,33 +92,6 @@ object EnvUtil {
 
             // Remove binary archive
             binArchive.deleteRecursively()
-
-            return@withIOContext true
-        }
-    }
-
-    suspend fun releaseExtension(context: Context): Boolean {
-        return withIOContext {
-            val extension = File(context.extensionPath())
-            val extensionArchive = File(context.extensionArchivePath())
-
-            // Remove old extension files
-            extension.deleteRecursively()
-            extensionArchive.deleteRecursively()
-
-            // Release binaries
-            releaseAssets(context, "extension.zip", "extension.zip")
-            unzip(context.extensionArchivePath(), context.extensionPath())
-
-            // All binaries need full permissions
-            extension.listFiles()?.forEach { file ->
-                if (file.setPermissions().not()) return@withIOContext false
-                // Rename fusermount to fusermount3 for rclone
-                if (file.name == "fusermount") file.renameTo(File(file.parent, "fusermount3"))
-            }
-
-            // Remove binary archive
-            extensionArchive.deleteRecursively()
 
             return@withIOContext true
         }

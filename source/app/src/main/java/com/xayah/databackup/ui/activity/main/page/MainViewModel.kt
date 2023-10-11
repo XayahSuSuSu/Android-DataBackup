@@ -16,11 +16,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
 import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
-import com.xayah.databackup.ui.component.CloudTopBar
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.LogTopBar
 import com.xayah.databackup.ui.component.MainBottomBar
@@ -46,16 +44,6 @@ sealed class MainUiState(
         scrollBehavior = scrollBehavior,
         topBar = {
             MainTopBar(scrollBehavior = scrollBehavior)
-        },
-        bottomBar = {
-            MainBottomBar()
-        }
-    )
-
-    class Cloud(scrollBehavior: TopAppBarScrollBehavior?, cloudNavController: NavHostController) : MainUiState(
-        scrollBehavior = scrollBehavior,
-        topBar = {
-            CloudTopBar(scrollBehavior = scrollBehavior, cloudNavController = cloudNavController)
         },
         bottomBar = {
             MainBottomBar()

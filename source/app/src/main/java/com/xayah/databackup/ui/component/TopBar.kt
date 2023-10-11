@@ -46,9 +46,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.navigation.NavHostController
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.main.page.cloud.router.CloudRoutes
 import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
 import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
@@ -99,30 +97,6 @@ fun MainTopBar(scrollBehavior: TopAppBarScrollBehavior?) {
                     }
             }
         },
-    )
-}
-
-@ExperimentalMaterial3Api
-@Composable
-fun CloudTopBar(scrollBehavior: TopAppBarScrollBehavior?, cloudNavController: NavHostController) {
-    val context = LocalContext.current
-    val routes = ConstantUtil.MainBottomBarRoutes
-    val currentRoute = cloudNavController.currentRoute()
-
-    CenterAlignedTopAppBar(
-        title = { TopBarTitle(text = CloudRoutes.ofTitle(context, currentRoute)) },
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            if (currentRoute != CloudRoutes.Main.route) {
-                Crossfade(targetState = currentRoute, label = AnimationTokens.CrossFadeLabel) { route ->
-                    if ((route in routes).not())
-                        ArrowBackButton {
-                            cloudNavController.popBackStack()
-                        }
-                }
-            }
-        },
-        actions = {}
     )
 }
 
@@ -260,7 +234,6 @@ fun ListSelectionModeTopBar(
     onCheckListPressed: () -> Unit,
     chipContent: @Composable RowScope.() -> Unit,
 ) {
-    val navController = LocalSlotScope.current!!.navController
     CustomTopAppBar(scrollBehavior) { _ ->
         Box(
             modifier = Modifier
@@ -341,7 +314,7 @@ internal fun CustomTopAppBar(scrollBehavior: TopAppBarScrollBehavior, content: @
                 // clip after padding so we don't show the title over the inset area
                 .clipToBounds()
         ) {
-            content(appBarContainerColor = appBarContainerColor)
+            content(appBarContainerColor)
         }
     }
 }
@@ -364,7 +337,7 @@ internal fun ColumnExtendedTopAppBar(
             ArrowBackButton(onClick = onArrowBackPressed)
             TopBarTitle(modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, text = title)
         }
-        content(appBarContainerColor = appBarContainerColor)
+        content(appBarContainerColor)
     }
 }
 
@@ -410,21 +383,6 @@ fun ProcessingTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String, onA
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             ArrowBackButton(onClick = onArrowBackPressed)
-        },
-    )
-}
-
-@ExperimentalMaterial3Api
-@Composable
-fun CompletionTopBar(scrollBehavior: TopAppBarScrollBehavior, title: String) {
-    val context = LocalContext.current
-    CenterAlignedTopAppBar(
-        title = { TopBarTitle(text = title) },
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            ArrowBackButton {
-                (context as ComponentActivity).finish()
-            }
         },
     )
 }

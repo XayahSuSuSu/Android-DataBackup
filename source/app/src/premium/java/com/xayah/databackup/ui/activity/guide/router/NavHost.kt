@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.guide.page.GuideUiState
 import com.xayah.databackup.ui.activity.guide.page.GuideViewModel
+import com.xayah.databackup.ui.activity.guide.page.Intro
 import com.xayah.databackup.ui.activity.guide.page.env.PageEnv
 import com.xayah.databackup.ui.activity.guide.page.intro.PageIntro
 import com.xayah.databackup.ui.activity.guide.page.update.PageUpdate
@@ -24,7 +25,7 @@ fun GuideNavHost(navController: NavHostController, viewModel: GuideViewModel) {
     ) {
         composable(GuideRoutes.Intro.route) {
             LaunchedEffect(null) {
-                viewModel.toUiState(GuideUiState.Intro(context.getString(R.string.welcome_to_use)))
+                viewModel.toUiState(Intro(context.getString(R.string.welcome_to_use)))
             }
             PageIntro()
         }
