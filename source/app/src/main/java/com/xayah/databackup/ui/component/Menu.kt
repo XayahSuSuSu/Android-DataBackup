@@ -388,6 +388,7 @@ fun ChipDropdownMenu(
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
     defaultSelectedIndex: Int = 0,
+    enabled: Boolean = true,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
     onClick: () -> Unit,
@@ -400,6 +401,7 @@ fun ChipDropdownMenu(
                 onClick()
                 if (list.isNotEmpty()) expanded = true
             },
+            enabled = enabled,
             label = { Text(text = label ?: list[selectedIndex]) },
             leadingIcon = if (leadingIcon != null) {
                 {

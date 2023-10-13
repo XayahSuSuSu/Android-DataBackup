@@ -137,4 +137,6 @@
     <string name="mounted">已掛載</string>
     <string name="info_set_remote_or_local">請設定遠端路徑或本機路徑</string>
     <string name="unmount_all">取消掛載全部</string>
+    <string name="edit">編輯</string>
+    <string name="modify">修改</string>
 </resources>

@@ -137,4 +137,6 @@
     <string name="mounted">已挂载</string>
     <string name="info_set_remote_or_local">请设置远程路径或本地路径</string>
     <string name="unmount_all">取消挂载全部</string>
+    <string name="edit">编辑</string>
+    <string name="modify">修改</string>
 </resources>

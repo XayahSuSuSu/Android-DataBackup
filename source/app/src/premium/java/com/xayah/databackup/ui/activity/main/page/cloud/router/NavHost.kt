@@ -8,8 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.xayah.databackup.ui.activity.main.page.cloud.PageAccount
-import com.xayah.databackup.ui.activity.main.page.cloud.PageCreateAccount
+import com.xayah.databackup.ui.activity.main.page.cloud.PageAccountDetail
 import com.xayah.databackup.ui.activity.main.page.cloud.PageMain
 import com.xayah.databackup.ui.activity.main.page.cloud.PageMount
 
@@ -29,8 +30,12 @@ fun CloudNavHost(navController: NavHostController) {
         composable(CloudRoutes.Account.route) {
             PageAccount(navController)
         }
-        composable(CloudRoutes.CreateAccount.route) {
-            PageCreateAccount(navController)
+        composable(
+            route = "${CloudRoutes.AccountDetail.route}?$AccountDetailArg={$AccountDetailArg}",
+            arguments = listOf(navArgument(AccountDetailArg) { nullable = true })
+        ) { backStackEntry ->
+            val entityName = backStackEntry.arguments?.getString(AccountDetailArg)
+            PageAccountDetail(navController, entityName)
         }
         composable(CloudRoutes.Mount.route) {
             PageMount(navController)

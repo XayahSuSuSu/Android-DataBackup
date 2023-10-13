@@ -50,7 +50,7 @@ fun PageAccount(navController: NavHostController) {
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    navController.navigate(CloudRoutes.CreateAccount.route)
+                    navController.navigate(CloudRoutes.AccountDetail.route)
                 },
                 expanded = true,
                 icon = { Icon(imageVector = Icons.Rounded.Add, contentDescription = null) },
@@ -71,6 +71,7 @@ fun PageAccount(navController: NavHostController) {
                 items(items = cloudEntities) { item ->
                     ListItemCloudAccount(
                         entity = item,
+                        navController = navController,
                         onCardClick = {},
                         chipGroup = {
                             if (item.account.type.isNotEmpty()) Serial(serial = item.account.type)

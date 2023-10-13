@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -39,14 +40,19 @@ import com.xayah.librootservice.util.withMainContext
 import kotlinx.coroutines.launch
 
 @Composable
-fun PageCreateAccount(navController: NavHostController) {
-    val viewModel = hiltViewModel<CreateAccountViewModel>()
+fun PageAccountDetail(navController: NavHostController, entityName: String?) {
+    val viewModel = hiltViewModel<AccountDetailViewModel>()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dialogSlot = LocalSlotScope.current!!.dialogSlot
     val uiState by viewModel.uiState
     val current = uiState.typeList[uiState.typeIndex]
     val currentTextFields = current.textFields
+    val editMode = uiState.mode == AccountDetailMode.Edit
+
+    LaunchedEffect(entityName) {
+        viewModel.initialize(context, entityName)
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -67,6 +73,7 @@ fun PageCreateAccount(navController: NavHostController) {
                 ChipDropdownMenu(
                     leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_deployed_code),
                     defaultSelectedIndex = uiState.typeIndex,
+                    enabled = editMode.not(),
                     list = uiState.typeList.map { it.typeDisplay },
                     onSelected = { index, _ ->
                         viewModel.setTypeIndex(index)
@@ -87,6 +94,7 @@ fun PageCreateAccount(navController: NavHostController) {
                     .offset(x = emphasizedOffset),
                 value = text,
                 placeholder = stringResource(R.string.name),
+                enabled = editMode.not(),
                 leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_badge),
             ) {
                 text = it
@@ -103,6 +111,7 @@ fun PageCreateAccount(navController: NavHostController) {
                     .offset(x = emphasizedOffset),
                 value = text,
                 placeholder = config.placeholder,
+                enabled = true,
                 leadingIcon = config.leadingIcon,
             ) {
                 text = it
@@ -116,7 +125,7 @@ fun PageCreateAccount(navController: NavHostController) {
                     .paddingBottom(CommonTokens.PaddingMedium),
                 horizontalArrangement = Arrangement.End
             ) {
-                CommonButton(text = stringResource(R.string.confirm)) {
+                CommonButton(text = stringResource(if (editMode) R.string.modify else R.string.confirm)) {
                     scope.launch {
                         withIOContext {
                             val name by current.name

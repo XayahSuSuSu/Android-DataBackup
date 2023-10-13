@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,16 +35,20 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.data.CloudAccountEntity
 import com.xayah.databackup.data.CloudMountEntity
 import com.xayah.databackup.ui.activity.main.page.cloud.AccountViewModel
 import com.xayah.databackup.ui.activity.main.page.cloud.MountViewModel
+import com.xayah.databackup.ui.activity.main.page.cloud.router.CloudRoutes
+import com.xayah.databackup.ui.activity.main.page.cloud.router.AccountDetailArg
 import com.xayah.databackup.ui.component.material3.Card
 import com.xayah.databackup.ui.component.material3.outlinedCardBorder
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.ListItemTokens
 import com.xayah.librootservice.util.withIOContext
+import com.xayah.librootservice.util.withMainContext
 import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
@@ -52,6 +57,7 @@ import kotlinx.coroutines.launch
 fun ListItemCloudAccount(
     modifier: Modifier = Modifier,
     entity: CloudAccountEntity,
+    navController: NavHostController,
     onCardClick: () -> Unit,
     chipGroup: @Composable RowScope.() -> Unit,
 ) {
@@ -93,6 +99,21 @@ fun ListItemCloudAccount(
                     ) {
                         val actions = remember(entity) {
                             listOf(
+                                ActionMenuItem(
+                                    title = context.getString(R.string.edit),
+                                    icon = Icons.Rounded.Edit,
+                                    enabled = true,
+                                    onClick = {
+                                        viewModel.viewModelScope.launch {
+                                            withIOContext {
+                                                expanded = false
+                                                withMainContext {
+                                                    navController.navigate("${CloudRoutes.AccountDetail.route}?$AccountDetailArg=${entity.name}")
+                                                }
+                                            }
+                                        }
+                                    }
+                                ),
                                 ActionMenuItem(
                                     title = context.getString(R.string.delete),
                                     icon = Icons.Rounded.Delete,

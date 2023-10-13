@@ -142,4 +142,6 @@
     <string name="mounted">Mounted</string>
     <string name="info_set_remote_or_local">Please set the remote path or local path</string>
     <string name="unmount_all">Unmount all</string>
+    <string name="edit">Edit</string>
+    <string name="modify">Modify</string>
 </resources>
