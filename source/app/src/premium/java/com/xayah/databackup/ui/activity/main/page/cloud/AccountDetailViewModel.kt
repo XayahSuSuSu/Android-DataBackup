@@ -1,12 +1,14 @@
 package com.xayah.databackup.ui.activity.main.page.cloud
 
 import android.content.Context
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.R
@@ -28,6 +30,7 @@ data class TextFieldConfig(
     val emphasizedState: MutableState<Boolean> = mutableStateOf(false),
     val key: String,
     val value: MutableState<String> = mutableStateOf(""),
+    val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     val placeholder: String,
     val leadingIcon: ImageVector,
 )
@@ -59,6 +62,7 @@ private object TextFieldConfigTokens {
     fun getPassword(context: Context, value: String?) = TextFieldConfig(
         key = "pass",
         value = mutableStateOf(value ?: ""),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         placeholder = context.getString(R.string.password),
         leadingIcon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_key),
     )
@@ -73,6 +77,7 @@ private object TextFieldConfigTokens {
     fun getPort(context: Context, value: String?) = TextFieldConfig(
         key = "port",
         value = mutableStateOf(value ?: "21"),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         placeholder = context.getString(R.string.port),
         leadingIcon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_lan),
     )
@@ -195,7 +200,7 @@ class AccountDetailViewModel @Inject constructor(@ApplicationContext context: Co
         }
     }
 
-    suspend fun create(context: Context, dialogState: DialogState, onSuccess: suspend () -> Unit) {
+    suspend fun update(context: Context, dialogState: DialogState, onSuccess: suspend () -> Unit) {
         val uiState by uiState
         val current = uiState.typeList[uiState.typeIndex]
         val name by current.name

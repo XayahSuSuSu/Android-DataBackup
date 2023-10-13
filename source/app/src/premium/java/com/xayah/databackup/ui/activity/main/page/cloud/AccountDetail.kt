@@ -22,13 +22,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.ChipDropdownMenu
+import com.xayah.databackup.ui.component.CleanablePasswordTextField
+import com.xayah.databackup.ui.component.CleanableTextField
 import com.xayah.databackup.ui.component.CommonButton
 import com.xayah.databackup.ui.component.LocalSlotScope
-import com.xayah.databackup.ui.component.RoundedTextField
 import com.xayah.databackup.ui.component.emphasizedOffset
 import com.xayah.databackup.ui.component.ignorePaddingHorizontal
 import com.xayah.databackup.ui.component.material3.spacedByWithFooter
@@ -88,7 +90,7 @@ fun PageAccountDetail(navController: NavHostController, entityName: String?) {
             val emphasizedState by current.nameEmphasizedState
             val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)
 
-            RoundedTextField(
+            CleanableTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(x = emphasizedOffset),
@@ -96,6 +98,9 @@ fun PageAccountDetail(navController: NavHostController, entityName: String?) {
                 placeholder = stringResource(R.string.name),
                 enabled = editMode.not(),
                 leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_badge),
+                onCleanClick = {
+                    text = ""
+                },
             ) {
                 text = it
             }
@@ -105,16 +110,43 @@ fun PageAccountDetail(navController: NavHostController, entityName: String?) {
             var text by config.value
             val emphasizedState by config.emphasizedState
             val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)
-            RoundedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(x = emphasizedOffset),
-                value = text,
-                placeholder = config.placeholder,
-                enabled = true,
-                leadingIcon = config.leadingIcon,
-            ) {
-                text = it
+
+            when (config.keyboardOptions.keyboardType) {
+                KeyboardType.Password -> {
+                    CleanablePasswordTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .offset(x = emphasizedOffset),
+                        value = text,
+                        placeholder = config.placeholder,
+                        enabled = true,
+                        leadingIcon = config.leadingIcon,
+                        keyboardOptions = config.keyboardOptions,
+                        onCleanClick = {
+                            text = ""
+                        },
+                    ) {
+                        text = it
+                    }
+                }
+
+                else -> {
+                    CleanableTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .offset(x = emphasizedOffset),
+                        value = text,
+                        placeholder = config.placeholder,
+                        enabled = true,
+                        leadingIcon = config.leadingIcon,
+                        keyboardOptions = config.keyboardOptions,
+                        onCleanClick = {
+                            text = ""
+                        },
+                    ) {
+                        text = it
+                    }
+                }
             }
         }
 
@@ -137,10 +169,15 @@ fun PageAccountDetail(navController: NavHostController, entityName: String?) {
                                     if (it.value.value.isEmpty()) {
                                         it.emphasizedState.value = it.emphasizedState.value.not()
                                         allFilled = false
+                                    } else if (it.keyboardOptions.keyboardType == KeyboardType.Number) {
+                                        if (it.value.value.toLongOrNull() == null) {
+                                            it.emphasizedState.value = it.emphasizedState.value.not()
+                                            allFilled = false
+                                        }
                                     }
                                 }
                                 if (allFilled) {
-                                    viewModel.create(context = context, dialogState = dialogSlot) {
+                                    viewModel.update(context = context, dialogState = dialogSlot) {
                                         withMainContext {
                                             navController.popBackStack()
                                         }
