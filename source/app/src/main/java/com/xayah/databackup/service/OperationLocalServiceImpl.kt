@@ -1,6 +1,7 @@
 package com.xayah.databackup.service
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
@@ -78,6 +79,28 @@ class OperationLocalServiceImpl : Service() {
 
     @Inject
     lateinit var mediaDao: MediaDao
+
+    private suspend fun backupItself(context: Context, remoteRootService: RemoteRootService, logTag: String) {
+        if (context.readBackupItself()) {
+            val outPath = PathUtil.getBackupSavePath()
+            val userId = context.readBackupUserId()
+            val sourceDirList = remoteRootService.getPackageSourceDir(packageName, userId)
+            if (sourceDirList.isNotEmpty()) {
+                val apkPath = PathUtil.getParentPath(sourceDirList[0])
+                val path = "${apkPath}/base.apk"
+                val targetPath = "${outPath}/DataBackup.apk"
+                remoteRootService.copyTo(path = path, targetPath = targetPath, overwrite = true).also { result ->
+                    if (result.not()) {
+                        logUtil.log(logTag, "Failed to copy $path to $targetPath.")
+                    } else {
+                        logUtil.log(logTag, "Copied from $path to $targetPath.")
+                    }
+                }
+            } else {
+                logUtil.log(logTag, "Failed to get apk path of $packageName.")
+            }
+        }
+    }
 
     suspend fun backupPackagesPreparation(): BackupPreparation = withIOContext {
         mutex.withLock {
@@ -211,25 +234,7 @@ class OperationLocalServiceImpl : Service() {
             }
 
             // Backup itself if enabled.
-            if (context.readBackupItself()) {
-                val outPath = PathUtil.getBackupSavePath()
-                val userId = context.readBackupUserId()
-                val sourceDirList = remoteRootService.getPackageSourceDir(packageName, userId)
-                if (sourceDirList.isNotEmpty()) {
-                    val apkPath = PathUtil.getParentPath(sourceDirList[0])
-                    val path = "${apkPath}/base.apk"
-                    val targetPath = "${outPath}/DataBackup.apk"
-                    remoteRootService.copyTo(path = path, targetPath = targetPath, overwrite = true).also { result ->
-                        if (result.not()) {
-                            logUtil.log(logTag, "Failed to copy $path to $targetPath.")
-                        } else {
-                            logUtil.log(logTag, "Copied from $path to $targetPath.")
-                        }
-                    }
-                } else {
-                    logUtil.log(logTag, "Failed to get apk path of $packageName.")
-                }
-            }
+            backupItself(context, remoteRootService, logTag)
 
             // Backup icons.
             val iconPath = context.iconPath()
@@ -394,6 +399,9 @@ class OperationLocalServiceImpl : Service() {
                     }
                 }
             }
+
+            // Backup itself if enabled.
+            backupItself(context, remoteRootService, logTag)
 
             context.saveLastBackupTime(timestamp)
             remoteRootService.destroyService()
