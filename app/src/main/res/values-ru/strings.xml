@@ -178,4 +178,13 @@
     <string name="keep_the_screen_on">Держать экран включенным</string>
     <string name="keep_the_screen_on_help">Держать устройство в активном состоянии во время обработки</string>
     <string name="clean_restoring">\"Чистое\" восстановление</string>
+    <string name="not_exists">Не существует</string>
+    <string name="added">Добавлено</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="failed_to_connect_rootservice">Не удалось подключить RootService</string>
+    <string name="others">Другие</string>
+    <string name="add_list">Добавить список</string>
+    <string name="clean_restoring_help">Очистить адресный каталог перед восстановлением</string>
+    <string name="exclude_cache">Исключить кэш</string>
+    <string name="separated_by_newlines">Отдельные новые строки</string>
 </resources>
