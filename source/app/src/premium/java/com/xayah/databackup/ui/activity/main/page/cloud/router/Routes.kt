@@ -14,10 +14,10 @@ sealed class CloudRoutes(val route: String) {
     companion object {
         fun ofTitle(context: Context, route: String?): String {
             return when (route?.split("?")?.firstOrNull()) {
-                Main.route -> context.resources.getStringArray(R.array.bottom_bar_items)[2]
+                Main.route -> context.getString(R.string.cloud)
                 Account.route, AccountDetail.route -> context.getString(R.string.account)
                 Mount.route -> context.getString(R.string.mount)
-                else -> context.resources.getStringArray(R.array.bottom_bar_items)[2]
+                else -> context.getString(R.string.cloud)
             }
         }
     }

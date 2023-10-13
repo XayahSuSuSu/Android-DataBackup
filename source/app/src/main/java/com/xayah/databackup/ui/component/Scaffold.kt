@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
@@ -201,7 +200,7 @@ fun MediaListScaffold(
                             contentDescription = null
                         )
                     },
-                    text = { Text(text = "${stringArrayResource(id = R.array.filter_type_items)[1]}: $selectedCount") },
+                    text = { Text(text = "${stringResource(id = R.string.selected)}: $selectedCount") },
                 )
             }
         },

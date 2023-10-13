@@ -320,7 +320,7 @@ fun PackageBackupList() {
                     var allDataSelected by remember { mutableStateOf(false) }
                     ListSelectionModeTopBar(
                         scrollBehavior = scrollBehavior,
-                        title = "${stringArrayResource(id = R.array.filter_type_items)[1]}: $selectedCount",
+                        title = "${stringResource(id = R.string.selected)}: $selectedCount",
                         onArrowBackPressed = {
                             scope.launch {
                                 withIOContext {

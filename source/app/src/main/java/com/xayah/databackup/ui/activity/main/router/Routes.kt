@@ -14,12 +14,12 @@ sealed class MainRoutes(val route: String) {
     companion object {
         fun ofTitle(context: Context, route: String?): String {
             return when (route) {
-                Backup.route -> context.resources.getStringArray(R.array.bottom_bar_items)[0]
-                Restore.route -> context.resources.getStringArray(R.array.bottom_bar_items)[1]
+                Backup.route -> context.getString(R.string.backup)
+                Restore.route -> context.getString(R.string.restore)
                 Tree.route -> context.getString(R.string.directory_structure)
                 Log.route -> context.getString(R.string.log)
-                Cloud.route -> context.resources.getStringArray(R.array.bottom_bar_items)[2]
-                Settings.route -> context.resources.getStringArray(R.array.bottom_bar_items)[3]
+                Cloud.route -> context.getString(R.string.cloud)
+                Settings.route -> context.getString(R.string.settings)
                 else -> context.getString(R.string.app_name)
             }
         }
