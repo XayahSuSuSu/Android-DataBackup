@@ -71,7 +71,7 @@
     <string name="backup_test_title">Автоматическое тестирование бекапа в процессе создания</string>
     <string name="testing">Тестирование</string>
     <string name="check_package_usage_stats_permission">Разрешение на статистику использования пакетов</string>
-    <string name="start_desc">Все данные, созданные этим приложением, используются только для резервного копирования/восстановления и хранятся только локально. Незаконная перепродажа строго запрещена</string>
+    <string name="start_desc">Все данные, созданные этим приложением, используются только для резервного копирования/восстановления и хранятся только локально.</string>
     <string name="network">Сеть</string>
     <string name="network_desc">Используется только для получения информации об обновлении приложения, аналитика приложений</string>
     <string name="application_desc">Получение всей информации об имени пакетов приложений устройства. Используется для создания списка бекапов и получения размера данных приложений</string>
@@ -88,7 +88,7 @@
     <string name="loading_failed">Сбой загрузки</string>
     <string name="update_records">Список изменений</string>
     <string name="path_permission_error">Ошибка разрешений, следующие пути требуют правильных разрешений.</string>
-    <string name="backing_up">Создание бекапа</string>
+    <string name="backing_up">Бекап…</string>
     <string name="restoring">Восстановление</string>
     <string name="read_icon">Чтение значков</string>
     <string name="read_icon_title">Для чтения значков требуется много памяти, если у вас возникают сбои при восстановлении, попробуйте отключить эту опцию.</string>
