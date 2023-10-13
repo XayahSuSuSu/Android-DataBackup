@@ -144,4 +144,13 @@
     <string name="unmount_all">Unmount all</string>
     <string name="edit">Edit</string>
     <string name="modify">Modify</string>
+    <string name="cloud">Cloud</string>
+    <string name="settings">Settings</string>
+    <string name="alphabet">Alphabet</string>
+    <string name="installation_time">Installation time</string>
+    <string name="data_size">Data size</string>
+    <string name="selected">Selected</string>
+    <string name="not_selected">Not selected</string>
+    <string name="third_party">Third party</string>
+    <string name="system">System</string>
 </resources>

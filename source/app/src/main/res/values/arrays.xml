@@ -1,32 +1,32 @@
 <resources>
     <string-array name="bottom_bar_items">
-        <item>Backup</item>
-        <item>Restore</item>
-        <item>Cloud</item>
-        <item>Settings</item>
+        <item>@string/backup</item>
+        <item>@string/restore</item>
+        <item>@string/cloud</item>
+        <item>@string/settings</item>
     </string-array>
     <string-array name="backup_sort_type_items">
-        <item>Alphabet</item>
-        <item>Install time</item>
-        <item>Data size</item>
+        <item>@string/alphabet</item>
+        <item>@string/installation_time</item>
+        <item>@string/data_size</item>
     </string-array>
     <string-array name="filter_type_items">
-        <item>None</item>
-        <item>Selected</item>
-        <item>Not selected</item>
+        <item>@string/none</item>
+        <item>@string/selected</item>
+        <item>@string/not_selected</item>
     </string-array>
     <string-array name="flag_type_items">
-        <item>Both</item>
-        <item>Third party</item>
-        <item>System</item>
+        <item>@string/both</item>
+        <item>@string/third_party</item>
+        <item>@string/system</item>
     </string-array>
     <string-array name="restore_sort_type_items">
-        <item>Alphabet</item>
-        <item>Data size</item>
+        <item>@string/alphabet</item>
+        <item>@string/data_size</item>
     </string-array>
     <string-array name="restore_installation_type_items">
-        <item>Both</item>
-        <item>Installed</item>
-        <item>Not installed</item>
+        <item>@string/both</item>
+        <item>@string/installed</item>
+        <item>@string/not_installed</item>
     </string-array>
 </resources>
