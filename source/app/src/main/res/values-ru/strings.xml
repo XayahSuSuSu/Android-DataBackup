@@ -8,14 +8,14 @@
     <string name="restore_user_desc">Целевой пользователь при загрузке списка восстановления или восстановлении</string>
     <string name="select_target_directory">Выбор целевой папки</string>
     <string name="prompt">Уведомление</string>
-    <string name="both">Оба</string>
+    <string name="both">Все</string>
     <string name="password">Пароль</string>
     <string name="user">Пользователь</string>
-    <string name="activities">Активити</string>
+    <string name="activities">Действия</string>
     <string name="not_exist">Не существует</string>
     <string name="last_backup">Последний бекап</string>
-    <string name="confirm_reload">Вы уверены что хотите перезагрузить\?</string>
-    <string name="start_desc">Все данные, созданные этим приложением, используются только для резервного копирования/восстановления и хранятся только локально. Незаконная перепродажа строго запрещена</string>
+    <string name="confirm_reload">Перезагрузить\?</string>
+    <string name="start_desc">Все данные, созданные этим приложением, используются только для резервного копирования/восстановления и хранятся только локально.</string>
     <string name="internal_storage">Внутреннее хранилище</string>
     <string name="overlook">Обзор</string>
     <string name="backup_user_desc">Целевой пользователь при загрузке списка бекапов или при создании бекапа</string>
@@ -31,7 +31,7 @@
     <string name="simplify">Упрощенно</string>
     <string name="not_installed">Не установленно</string>
     <string name="reset_backup_list">Сбросить список бекапов</string>
-    <string name="this_version_only_supports_but_your_device_is_please_install_version">Эта версия поддерживает только: %1$s, но ваше устройство %2$s. Пожалуйста, установите %3$s версию.</string>
+    <string name="this_version_only_supports_but_your_device_is_please_install_version">Поддерживается только версия %1$s, на вашем устройстве установлена %2$s. Пожалуйста, установите %3$s или выше.</string>
     <string name="directory">Папки</string>
     <string name="restore">Восстановление</string>
     <string name="copy">Копировать</string>
@@ -39,7 +39,7 @@
     <string name="search_bar_hint">Поиск имени пакета…</string>
     <string name="none">Ни одного</string>
     <string name="export">Экспорт</string>
-    <string name="confirm_delete">Удаление. Вы уверены\?</string>
+    <string name="confirm_delete">Удалить\?</string>
     <string name="restore_completed">Восстановление завершено</string>
     <string name="media_target_path_missing">Целевая папка отсутствует, пожалуйста, установите ее вручную</string>
     <string name="port">Порт</string>
@@ -58,7 +58,7 @@
     <string name="data">Данные</string>
     <string name="version">Версия</string>
     <string name="databases_reload_failed">Не удалось перезагрузить базы данных</string>
-    <string name="backup_itself_desc">Автоматически копировать apk DataBackup в папку бекапов при создании бекапа</string>
+    <string name="backup_itself_desc">Копировать apk DataBackup в папку бекапов при создании бекапа</string>
     <string name="monet">Monet</string>
     <string name="account">Аккаунт</string>
     <string name="clean_restoring_desc">Очистка целевой папки перед восстановлением</string>
@@ -70,8 +70,8 @@
     <string name="apk">APK</string>
     <string name="backup">Бекап</string>
     <string name="network">Сеть</string>
-    <string name="processing_exit_confirmation">Вы уверены что хотите выйти\? Это прервет операцию.</string>
-    <string name="monet_desc">Monet движок темы Материал You</string>
+    <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
+    <string name="monet_desc">Движок темы Материал You</string>
     <string name="application">Приложения</string>
     <string name="updating">Обновление</string>
     <string name="application_desc">Получение всей информации об имени пакетов приложений устройства. Используется для создания списка бекапов и получения размера данных приложений</string>
@@ -96,16 +96,16 @@
     <string name="update_records">Список изменений</string>
     <string name="backup_completed">Бекап завершен</string>
     <string name="backup_dir">Папка бекапов</string>
-    <string name="backing_up">Бекап</string>
+    <string name="backing_up">Бекап…</string>
     <string name="backup_list">Список бекапов</string>
-    <string name="compression_type_desc">Алгоритм сжатия, который влияет как на резервное копирование, так и на восстановление. Если вы не знаете, для чего нужна эта опция, не меняйте ее.</string>
+    <string name="compression_type_desc">Влияет как на создание бекапа, так и на восстановление. Настройку рекомендуется изменять только опытными пользователям.</string>
     <string name="remote_service_err_info">Попробуйте перезапустить устройство или переустановить Magisk</string>
     <string name="fetch_failed">Не удалось получить</string>
     <string name="directory_structure">Структура папки</string>
     <string name="loading">Загрузка</string>
     <string name="integral">Интегрально</string>
     <string name="reset_restore_list_desc">Снять выделение после восстановления</string>
-    <string name="wait_for_remaining_data_processing">Пожалуйста, дождитесь обработки оставшихся данных🦖</string>
+    <string name="wait_for_remaining_data_processing">Обработка оставшихся данных…</string>
     <string name="not_exist_and_skip">Не существует, пропуск</string>
     <string name="app_crashed">Приложение вылетело</string>
     <string name="compression_type">Тип сжатия</string>
@@ -115,7 +115,7 @@
     <string name="no_browser">Возможно, нет браузера, чтобы открыть</string>
     <string name="environment_detection">Обнаружение окружающей среды</string>
     <string name="succeed">Успешно</string>
-    <string name="compression_test_desc">Немедленная проверка целостности архива после сжатия</string>
+    <string name="compression_test_desc">Проверка целостности архива после создания</string>
     <string name="add">Добавить</string>
     <string name="word_return">Обратно</string>
     <string name="backup_itself">Бекап DataBackup</string>
@@ -129,4 +129,11 @@
     <string name="failed">Сбой</string>
     <string name="selected_both">Выбрано оба</string>
     <string name="restore_dir">Восстановление папки</string>
+    <string name="set_remote">Облачная настройка</string>
+    <string name="mount">Монтирование</string>
+    <string name="set_local">Настройка локального хранилища</string>
+    <string name="unmount">Размонтировать</string>
+    <string name="info_set_remote_or_local">Укажите локальный или облачный путь</string>
+    <string name="mounted">Смонтировано</string>
+    <string name="unmount_all">Размонтировать все</string>
 </resources>
