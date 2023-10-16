@@ -64,10 +64,14 @@ fun PageEnv(guideViewModel: GuideViewModel) {
                 state = item.state,
                 onClick = {
                     viewModel.viewModelScope.launch {
-                        uiState.mutex.withLock {
-                            if (uiState.allValidated.not()) {
-                                item.onClick.invoke(context, guideViewModel, dialogSlot)
+                        if (uiState.processing.not()) {
+                            viewModel.setProcessing(true)
+                            uiState.mutex.withLock {
+                                if (uiState.allValidated.not()) {
+                                    item.onClick.invoke(context, guideViewModel, dialogSlot)
+                                }
                             }
+                            viewModel.setProcessing(false)
                         }
                     }
                 })

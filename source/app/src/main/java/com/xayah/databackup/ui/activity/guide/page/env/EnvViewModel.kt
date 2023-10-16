@@ -39,6 +39,7 @@ data class EnvUiState(
     val mutex: Mutex,
     val envItems: List<EnvItem>,
     val allValidated: Boolean,
+    var processing: Boolean,
 )
 
 @HiltViewModel
@@ -110,11 +111,17 @@ class EnvViewModel @Inject constructor(@ApplicationContext context: Context) : V
                     }
                 )
             ),
-            allValidated = false
+            allValidated = false,
+            processing = false,
         )
     )
     val uiState: State<EnvUiState>
         get() = _uiState
+
+    fun setProcessing(processing: Boolean) {
+        val uiState by uiState
+        _uiState.value = uiState.copy(processing = processing)
+    }
 
     private fun setState(index: Int, state: TokenState) {
         val uiState by uiState
