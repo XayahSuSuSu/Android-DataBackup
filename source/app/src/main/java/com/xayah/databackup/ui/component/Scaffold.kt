@@ -51,7 +51,7 @@ import com.xayah.databackup.ui.token.CommonTokens
 fun GuideScaffold(
     navController: NavHostController,
     viewModel: GuideViewModel,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val uiState by viewModel.uiState
     Scaffold(

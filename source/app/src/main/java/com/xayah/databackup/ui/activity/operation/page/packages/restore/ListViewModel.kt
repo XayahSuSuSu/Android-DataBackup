@@ -43,16 +43,16 @@ class ListViewModel @Inject constructor(
         _uiState.value = uiState.value.copy(timestamps = timestamps)
     }
 
-     suspend fun setSelectedIndex(index: Int) {
-         val uiState by uiState
-         _uiState.value = uiState.copy(selectedIndex = index)
+    suspend fun setSelectedIndex(index: Int) {
+        val uiState by uiState
+        _uiState.value = uiState.copy(selectedIndex = index)
 
-         val dao = uiState.packageRestoreEntireDao
-         val timestamp = uiState.timestamp
-         // Inactivate all packages then activate displayed ones.
-         dao.updateActive(active = false)
-         dao.updateActive(timestamp = timestamp, active = true)
-     }
+        val dao = uiState.packageRestoreEntireDao
+        val timestamp = uiState.timestamp
+        // Inactivate all packages then activate displayed ones.
+        dao.updateActive(active = false)
+        dao.updateActive(timestamp = timestamp, active = true)
+    }
 
     suspend fun initializeUiState() = withIOContext {
         val uiState by uiState

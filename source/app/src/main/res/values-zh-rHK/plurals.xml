@@ -1,5 +1,5 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="num_seconds_ago"  formatted="false">
+    <plurals name="num_seconds_ago" formatted="false">
         <item quantity="other"><xliff:g id="count">%d</xliff:g> 秒</item>
     </plurals>
     <plurals name="num_minutes_ago" formatted="false">

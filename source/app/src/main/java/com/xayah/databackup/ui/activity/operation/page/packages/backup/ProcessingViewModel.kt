@@ -44,7 +44,7 @@ data class ProcessingUiState(
 class ProcessingViewModel @Inject constructor(
     val context: Application,
     packageBackupEntireDao: PackageBackupEntireDao,
-    packageBackupOperationDao: PackageBackupOperationDao
+    packageBackupOperationDao: PackageBackupOperationDao,
 ) : ViewModel() {
     private val _uiState = mutableStateOf(
         ProcessingUiState(

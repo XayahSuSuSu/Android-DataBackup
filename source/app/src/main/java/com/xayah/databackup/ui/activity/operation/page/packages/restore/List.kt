@@ -374,18 +374,19 @@ fun PackageRestoreList() {
                         DeleteChip {
                             scope.launch {
                                 withIOContext {
-                                    dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete_selected_restoring_items)).also { (confirmed, _) ->
-                                        if (confirmed) {
-                                            dialogSlot.openDeleteDialog(
-                                                context = context,
-                                                scope = scope,
-                                                viewModel = viewModel,
-                                                selectedPackages = packages.filter { it.selected.value }
-                                            )
-                                            deselectAll()
-                                            viewModel.initializeUiState()
+                                    dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_delete_selected_restoring_items))
+                                        .also { (confirmed, _) ->
+                                            if (confirmed) {
+                                                dialogSlot.openDeleteDialog(
+                                                    context = context,
+                                                    scope = scope,
+                                                    viewModel = viewModel,
+                                                    selectedPackages = packages.filter { it.selected.value }
+                                                )
+                                                deselectAll()
+                                                viewModel.initializeUiState()
+                                            }
                                         }
-                                    }
                                 }
                             }
                         }

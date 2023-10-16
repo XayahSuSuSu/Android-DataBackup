@@ -12,15 +12,28 @@ import com.xayah.librootservice.util.withIOContext
 
 data class ShellResult(
     var code: Int,
+    var input: List<String>,
     var out: List<String>,
 ) {
     val isSuccess: Boolean
         get() = code == 0
 
-    val outString: String
-        get() = out.joinToString(separator = "\n")
+    val inputString: String
+        get() = input.toSpaceString()
 
+    val outString: String
+        get() = out.toLineString()
+
+    suspend fun logCmd(logUtil: LogUtil, logId: Long) {
+        logUtil.logCmd(logId, LogCmdType.SHELL_IN, inputString)
+        out.forEach { line ->
+            logUtil.logCmd(logId, LogCmdType.SHELL_OUT, line)
+        }
+        logUtil.logCmd(logId, LogCmdType.SHELL_CODE, code.toString())
+    }
 }
+
+fun List<String>.trim() = filter { it.isNotEmpty() }
 
 object CommonUtil {
     fun Context.copyToClipboard(content: String) {
@@ -29,7 +42,7 @@ object CommonUtil {
     }
 
     suspend fun execute(cmd: String): ShellResult = withIOContext {
-        val shellResult = ShellResult(code = -1, out = listOf())
+        val shellResult = ShellResult(code = -1, input = cmd.split(" "), out = listOf())
 
         Shell.cmd(cmd).exec().also { result ->
             shellResult.code = result.code
@@ -46,11 +59,29 @@ object CommonUtil {
         shellResult
     }
 
+    suspend fun execute(vararg args: String): ShellResult = withIOContext {
+        val shellResult = ShellResult(code = -1, input = args.toList().trim(), out = listOf())
+
+        Shell.cmd(shellResult.inputString).exec().also { result ->
+            shellResult.code = result.code
+            shellResult.out = result.out
+
+            if (shellResult.code in intArrayOf(126, 127)) {
+                // If the code is 127, the shell may have been dead.
+                DataBackupApplication.Companion.EnvInitializer.initShell(
+                    Shell.getShell(),
+                    DataBackupApplication.application
+                )
+            }
+        }
+        shellResult
+    }
+
     /**
      * Execution functions encapsulated by Log.
      */
     suspend fun LogUtil.execute(logId: Long, cmd: String): ShellResult = withIOContext {
-        val shellResult = ShellResult(code = -1, out = listOf())
+        val shellResult = ShellResult(code = -1, input = cmd.split(" "), out = listOf())
 
         logCmd(logId, LogCmdType.SHELL_IN, cmd)
         Shell.cmd(cmd).exec().also { result ->
@@ -75,7 +106,7 @@ object CommonUtil {
      * Execution functions encapsulated by Log with given shell.
      */
     suspend fun LogUtil.execute(logId: Long, cmd: String, shell: Shell): ShellResult = withIOContext {
-        val shellResult = ShellResult(code = -1, out = listOf())
+        val shellResult = ShellResult(code = -1, input = cmd.split(" "), out = listOf())
 
         logCmd(logId, LogCmdType.SHELL_IN, cmd)
         val outList = mutableListOf<String>()

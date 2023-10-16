@@ -17,7 +17,7 @@ import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.EnvUtil
-import com.xayah.databackup.util.command.InstallationUtil
+import com.xayah.databackup.util.command.Tar
 import com.xayah.databackup.util.iconPath
 import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.service.RemoteRootService
@@ -55,7 +55,6 @@ class RestoreViewModel @Inject constructor(
 
     private suspend fun reloadPackages(context: Context, logTag: String, logId: Long, remoteRootService: RemoteRootService) {
         val packageManager = context.packageManager
-        val installationUtil = InstallationUtil(logId, logUtil)
         val pathList = remoteRootService.walkFileTree(PathUtil.getRestorePackagesSavePath())
         val typedPathList = mutableListOf<TypedPath>()
 
@@ -125,11 +124,9 @@ class RestoreViewModel @Inject constructor(
                                     val type = CompressionType.suffixOf(archivePath.extension)
                                     if (type != null) {
                                         compressionType = type
-                                        installationUtil.decompress(
-                                            archivePath = archivePath.pathString,
-                                            tmpApkPath = tmpApkPath,
-                                            compressionType = type
-                                        )
+                                        Tar.decompress(src = archivePath.pathString, dst = tmpApkPath, extra = type.decompressPara).also { result ->
+                                            result.logCmd(logUtil = logUtil, logId = logId)
+                                        }
                                         remoteRootService.listFilePaths(tmpApkPath).also { pathList ->
                                             if (pathList.isNotEmpty()) {
                                                 packageInfo = remoteRootService.getPackageArchiveInfo(pathList.first())
@@ -145,11 +142,9 @@ class RestoreViewModel @Inject constructor(
                                     val type = CompressionType.suffixOf(archivePath.extension)
                                     if (type != null) {
                                         compressionType = type
-                                        installationUtil.decompress(
-                                            archivePath = archivePath.pathString,
-                                            tmpApkPath = tmpConfigPath,
-                                            compressionType = type
-                                        )
+                                        Tar.decompress(src = archivePath.pathString, dst = tmpConfigPath, extra = type.decompressPara).also { result ->
+                                            result.logCmd(logUtil = logUtil, logId = logId)
+                                        }
                                     } else {
                                         logUtil.log(logTag, "Failed to parse compression type: ${archivePath.extension}")
                                     }
@@ -201,7 +196,6 @@ class RestoreViewModel @Inject constructor(
     }
 
     private suspend fun reloadMedium(context: Context, logTag: String, logId: Long, remoteRootService: RemoteRootService) {
-        val installationUtil = InstallationUtil(logId, logUtil)
         val pathList = remoteRootService.walkFileTree(PathUtil.getRestoreMediumSavePath())
         val typedPathList = mutableListOf<TypedPath>()
 
@@ -269,11 +263,9 @@ class RestoreViewModel @Inject constructor(
                                 DataType.PACKAGE_CONFIG.type -> {
                                     val type = CompressionType.suffixOf(archivePath.extension)
                                     if (type != null) {
-                                        installationUtil.decompress(
-                                            archivePath = archivePath.pathString,
-                                            tmpApkPath = tmpConfigPath,
-                                            compressionType = type
-                                        )
+                                        Tar.decompress(src = archivePath.pathString, dst = tmpConfigPath, extra = type.decompressPara).also { result ->
+                                            result.logCmd(logUtil = logUtil, logId = logId)
+                                        }
                                     } else {
                                         logUtil.log(logTag, "Failed to parse compression type: ${archivePath.extension}")
                                     }

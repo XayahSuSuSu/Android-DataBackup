@@ -15,68 +15,69 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 object ColorScheme {
-        @Composable
-        fun surface() = MaterialTheme.colorScheme.surface
-        @Composable
-        fun onSurfaceVariant() = MaterialTheme.colorScheme.onSurfaceVariant
+    @Composable
+    fun surface() = MaterialTheme.colorScheme.surface
 
-        @Composable
-        fun surfaceVariant() = MaterialTheme.colorScheme.surfaceVariant
+    @Composable
+    fun onSurfaceVariant() = MaterialTheme.colorScheme.onSurfaceVariant
 
-        @Composable
-        fun error() = MaterialTheme.colorScheme.error
+    @Composable
+    fun surfaceVariant() = MaterialTheme.colorScheme.surfaceVariant
 
-        @Composable
-        fun errorContainer() = MaterialTheme.colorScheme.errorContainer
+    @Composable
+    fun error() = MaterialTheme.colorScheme.error
 
-        @Composable
-        fun green() = colorResource(id = R.color.green)
+    @Composable
+    fun errorContainer() = MaterialTheme.colorScheme.errorContainer
 
-        @Composable
-        fun greenContainer() = colorResource(id = R.color.greenContainer)
+    @Composable
+    fun green() = colorResource(id = R.color.green)
 
-        @Composable
-        fun yellow() = colorResource(id = R.color.yellow)
+    @Composable
+    fun greenContainer() = colorResource(id = R.color.greenContainer)
 
-        @Composable
-        fun primary() = MaterialTheme.colorScheme.primary
+    @Composable
+    fun yellow() = colorResource(id = R.color.yellow)
 
-        @Composable
-        fun onPrimary() = MaterialTheme.colorScheme.onPrimary
+    @Composable
+    fun primary() = MaterialTheme.colorScheme.primary
 
-        @Composable
-        fun primaryContainer() = MaterialTheme.colorScheme.primaryContainer
+    @Composable
+    fun onPrimary() = MaterialTheme.colorScheme.onPrimary
 
-        @Composable
-        fun inversePrimary() = MaterialTheme.colorScheme.inversePrimary
+    @Composable
+    fun primaryContainer() = MaterialTheme.colorScheme.primaryContainer
 
-        @Composable
-        fun secondary() = MaterialTheme.colorScheme.secondary
+    @Composable
+    fun inversePrimary() = MaterialTheme.colorScheme.inversePrimary
 
-        @Composable
-        fun onSecondary() = MaterialTheme.colorScheme.onSecondary
+    @Composable
+    fun secondary() = MaterialTheme.colorScheme.secondary
 
-        @Composable
-        fun secondaryContainer() = MaterialTheme.colorScheme.secondaryContainer
+    @Composable
+    fun onSecondary() = MaterialTheme.colorScheme.onSecondary
 
-        @Composable
-        fun onSecondaryContainer() = MaterialTheme.colorScheme.onSecondaryContainer
+    @Composable
+    fun secondaryContainer() = MaterialTheme.colorScheme.secondaryContainer
 
-        @Composable
-        fun tertiary() = MaterialTheme.colorScheme.tertiary
+    @Composable
+    fun onSecondaryContainer() = MaterialTheme.colorScheme.onSecondaryContainer
 
-        @Composable
-        fun onTertiary() = MaterialTheme.colorScheme.onTertiary
+    @Composable
+    fun tertiary() = MaterialTheme.colorScheme.tertiary
 
-        @Composable
-        fun tertiaryContainer() = MaterialTheme.colorScheme.tertiaryContainer
+    @Composable
+    fun onTertiary() = MaterialTheme.colorScheme.onTertiary
 
-        @Composable
-        fun inverseOnSurface() = MaterialTheme.colorScheme.inverseOnSurface
+    @Composable
+    fun tertiaryContainer() = MaterialTheme.colorScheme.tertiaryContainer
 
-        @Composable
-        fun outline() = MaterialTheme.colorScheme.outline
+    @Composable
+    fun inverseOnSurface() = MaterialTheme.colorScheme.inverseOnSurface
 
-        @Composable
-        fun background() = MaterialTheme.colorScheme.background
+    @Composable
+    fun outline() = MaterialTheme.colorScheme.outline
+
+    @Composable
+    fun background() = MaterialTheme.colorScheme.background
 }

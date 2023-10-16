@@ -20,7 +20,7 @@ import androidx.room.TypeConverters
         MediaRestoreEntity::class,
         MediaBackupOperationEntity::class,
         MediaRestoreOperationEntity::class,
-        CloudEntity::class,
+        CloudEntity::class, // Only used for premium build, but reserved in foss.
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -36,5 +36,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun packageRestoreOperationDao(): PackageRestoreOperationDao
     abstract fun directoryDao(): DirectoryDao
     abstract fun mediaDao(): MediaDao
-    abstract fun cloudDao(): CloudDao
+    abstract fun cloudDao(): CloudDao // Only used for premium build, but reserved in foss.
 }

@@ -34,7 +34,7 @@ internal val LightColorScheme = lightColorScheme(
 @Composable
 fun DataBackupTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
     // Dynamic color is available on Android 12+

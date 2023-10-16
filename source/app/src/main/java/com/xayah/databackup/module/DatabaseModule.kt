@@ -54,6 +54,9 @@ object DatabaseModule {
     @Singleton
     fun provideMediaDao(database: AppDatabase): MediaDao = database.mediaDao()
 
+    /**
+     * Only used for premium build, but reserved in foss.
+     */
     @Provides
     @Singleton
     fun provideCloudDao(database: AppDatabase): CloudDao = database.cloudDao()

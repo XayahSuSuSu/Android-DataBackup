@@ -108,7 +108,7 @@ fun WaverImage(
     duration: Int = 2000,
     @FloatRange(from = 0.0, to = 1.0) progress: Float,
     @FloatRange(from = 0.0, to = 1.0) amplitudeRatio: Float = 0.1f,
-    sourceBitmap: Bitmap?
+    sourceBitmap: Bitmap?,
 ) {
     with(LocalDensity.current) {
         Box(
@@ -181,7 +181,7 @@ fun WaverImage(
     duration: Int = 2000,
     @FloatRange(from = 0.0, to = 1.0) progress: Float,
     @FloatRange(from = 0.0, to = 1.0) amplitudeRatio: Float = 0.1f,
-    sourceBitmap: Bitmap?
+    sourceBitmap: Bitmap?,
 ) {
     WaverImage(width = size, height = size, duration = duration, progress = progress, amplitudeRatio = amplitudeRatio, sourceBitmap = sourceBitmap)
 }

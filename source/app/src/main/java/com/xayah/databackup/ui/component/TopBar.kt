@@ -263,7 +263,7 @@ fun MaterialColorScheme.applyTonalElevation(backgroundColor: Color, elevation: D
 
 @Composable
 internal fun containerColor(
-    containerColor: Color, scrolledContainerColor: Color, colorTransitionFraction: Float
+    containerColor: Color, scrolledContainerColor: Color, colorTransitionFraction: Float,
 ): Color {
     return lerp(
         containerColor,

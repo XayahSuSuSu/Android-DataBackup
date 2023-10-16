@@ -8,7 +8,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.xayah.databackup.util.CompressionType
-import com.xayah.databackup.util.command.PackagesRestoreUtil
+import com.xayah.databackup.util.PathUtil
 
 /**
  * All fields are defined here.
@@ -38,7 +38,7 @@ data class PackageRestoreEntire(
         get() = (flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
     val savePath: String
-        get() = PackagesRestoreUtil.getPackageItemSavePath(packageName = packageName, timestamp = timestamp)
+        get() = "${PathUtil.getRestorePackagesSavePath()}/${packageName}/$timestamp"
 
     val sizeDisplay: String
         get() = formatSize(sizeBytes.toDouble())

@@ -1,6 +1,9 @@
 package com.xayah.databackup.util.command
 
 import android.content.Context
+import androidx.annotation.StringRes
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.R
 import com.xayah.databackup.data.MediaBackupOperationEntity
 import com.xayah.databackup.data.MediaDao
@@ -18,576 +21,897 @@ import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
-import com.xayah.databackup.util.command.CommonUtil.execute
+import com.xayah.databackup.util.iconPath
+import com.xayah.databackup.util.readBackupItself
 import com.xayah.databackup.util.readBackupUserId
+import com.xayah.databackup.util.readCleanRestoring
 import com.xayah.databackup.util.readCompatibleMode
-import com.xayah.databackup.util.readCompressionTest
 import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 fun List<String>.toLineString() = joinToString(separator = "\n")
 
-class PackagesBackupUtil(
-    private val context: Context,
-    private val timestamp: Long,
-    private val logUtil: LogUtil,
-    private val remoteRootService: RemoteRootService,
-    private val packageBackupOperationDao: PackageBackupOperationDao,
-    private val gsonUtil: GsonUtil,
-) {
-    private val userId = context.readBackupUserId()
-    private val compressionType = context.readCompressionType()
-    private val compatibleMode = context.readCompatibleMode()
-    private val packageSavePath = PathUtil.getBackupPackagesSavePath()
-
-    fun getPackageItemSavePath(packageName: String): String = "${packageSavePath}/${packageName}/$timestamp"
-
-    suspend fun backupApk(entity: PackageBackupOperation, packageName: String) {
-        // Set processing state
-        entity.apkLog = context.getString(R.string.backing_up)
-        entity.apkState = OperationState.Processing
-        packageBackupOperationDao.upsert(entity)
-
-        val logTag = "APK"
-        val logId = logUtil.log(logTag, "Start backing up...")
-        val archivePath = "${getPackageItemSavePath(packageName)}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
-        val cmd = if (compatibleMode)
-            "- ./*.apk ${if (compressionType == CompressionType.TAR) "" else "| ${compressionType.compressPara}"} > $archivePath"
-        else
-            "$archivePath ./*.apk ${if (compressionType == CompressionType.TAR) "" else "-I $QUOTE${compressionType.compressPara}$QUOTE"}"
-        var isSuccess = true
-        val outList = mutableListOf<String>()
-
-        // Get the path of apk.
-        val sourceDirList = remoteRootService.getPackageSourceDir(packageName, userId)
+suspend fun backupItself(context: Context, rootService: RemoteRootService, logUtil: LogUtil, logTag: String, packageName: String) {
+    if (context.readBackupItself()) {
+        val outPath = PathUtil.getBackupSavePath()
+        val userId = context.readBackupUserId()
+        val sourceDirList = rootService.getPackageSourceDir(packageName, userId)
         if (sourceDirList.isNotEmpty()) {
             val apkPath = PathUtil.getParentPath(sourceDirList[0])
-            logUtil.execute(logId, "cd $apkPath").also { result ->
-                if (result.isSuccess.not()) isSuccess = false
-                outList.add(result.outString)
-            }
-            logUtil.execute(logId, "tar --totals -cpf $cmd").also { result ->
-                if (result.isSuccess.not()) isSuccess = false
-                outList.add(result.outString)
-            }
-            logUtil.execute(logId, "cd /").also { result ->
-                if (result.isSuccess.not()) isSuccess = false
-                outList.add(result.outString)
-            }
-        } else {
-            // Failed.
-            isSuccess = false
-            val msg = "Failed to get apk path of $packageName."
-            outList.add(msg)
-            logUtil.log(logTag, msg)
-        }
-
-        // Test the archive if enabled.
-        if (context.readCompressionTest()) {
-            CompressionUtil.test(
-                logUtil = logUtil,
-                logId = logId,
-                compressionType = compressionType,
-                archivePath = archivePath,
-                remoteRootService = remoteRootService
-            ).also { (succeed, out) ->
-                if (succeed.not()) {
-                    isSuccess = false
-                    outList.add(out)
-                    logUtil.log(logTag, out)
+            val path = "${apkPath}/base.apk"
+            val targetPath = "${outPath}/DataBackup.apk"
+            rootService.copyTo(path = path, targetPath = targetPath, overwrite = true).also { result ->
+                if (result.not()) {
+                    logUtil.log(logTag, "Failed to copy $path to $targetPath.")
                 } else {
-                    logUtil.log(logTag, "$archivePath is tested well.")
+                    logUtil.log(logTag, "Copied from $path to $targetPath.")
                 }
             }
+        } else {
+            logUtil.log(logTag, "Failed to get apk path of $packageName.")
+        }
+    }
+}
+
+@AssistedFactory
+interface IPackagesBackupUtilFactory {
+    fun createBackupUtil(entity: PackageBackupOperation): PackagesBackupUtil
+}
+
+class PackagesBackupUtil @AssistedInject constructor(
+    @ApplicationContext val context: Context,
+    @Assisted private val entity: PackageBackupOperation,
+) {
+    @Inject
+    lateinit var rootService: RemoteRootService
+
+    @Inject
+    lateinit var opDao: PackageBackupOperationDao
+
+    @Inject
+    lateinit var logUtil: LogUtil
+
+    @Inject
+    lateinit var gsonUtil: GsonUtil
+
+    private val packageName = entity.packageName
+    private val timestamp = entity.timestamp
+    private val usePipe = context.readCompatibleMode()
+    private val compressionType = context.readCompressionType()
+    private val userId = context.readBackupUserId()
+    private val packageSavePath = PathUtil.getBackupPackagesSavePath()
+
+    private fun getString(@StringRes resId: Int) = context.getString(resId)
+
+    private val timestampPath = "${packageSavePath}/${packageName}/$timestamp"
+
+    suspend fun mkdirs() = rootService.mkdirs(timestampPath)
+
+    private fun getArchivePath(type: DataType) =
+        "${timestampPath}/${type.type}.${compressionType.suffix}"
+
+    /**
+     * Get the path of apk.
+     */
+    private suspend fun getPackageSourceDir(): String = rootService.getPackageSourceDir(packageName, userId).let { list ->
+        if (list.isNotEmpty()) {
+            PathUtil.getParentPath(list[0])
+        } else {
+            // Failed.
+            ""
+        }
+    }
+
+    private suspend fun onPackageSourceEmpty(logTag: String, isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        val msg = "Failed to get apk path of $packageName."
+        isSuccess.value = false
+        entityLog.add(msg)
+        logUtil.log(logTag, msg)
+    }
+
+    private suspend fun compressAlso(result: ShellResult, logId: Long) {
+        result.logCmd(logUtil = logUtil, logId = logId)
+    }
+
+    private suspend fun compressAlso(result: ShellResult, logId: Long, isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        compressAlso(result = result, logId = logId)
+        if (result.isSuccess.not()) {
+            isSuccess.value = false
+        }
+        entityLog.add(result.outString)
+    }
+
+    private suspend fun testAlso(
+        result: ShellResult,
+        logTag: String,
+        logId: Long,
+        archivePath: String,
+        onFailed: ((msg: String) -> Unit)? = null,
+    ) {
+        result.logCmd(logUtil = logUtil, logId = logId)
+
+        if (result.isSuccess.not()) {
+            val msg = "$archivePath is broken, trying to delete it."
+            onFailed?.invoke(msg)
+            logUtil.log(logTag, msg)
+            // Delete the archive if test failed.
+            rootService.deleteRecursively(archivePath)
+        } else {
+            logUtil.log(logTag, "$archivePath is tested well.")
+        }
+    }
+
+    private suspend fun testAlso(
+        result: ShellResult,
+        logTag: String,
+        logId: Long,
+        archivePath: String,
+        isSuccess: MutableState<Boolean>,
+        entityLog: MutableList<String>,
+    ) {
+        testAlso(result, logTag, logId, archivePath) { msg ->
+            isSuccess.value = false
+            entityLog.add(msg)
+        }
+    }
+
+    private suspend fun dataExistsAlso(logTag: String, exists: Boolean, type: DataType, src: String): Boolean = if (exists.not()) {
+        if (type == DataType.PACKAGE_USER) {
+            val msg = "${context.getString(R.string.not_exist)}: $src"
+            type.setEntityLog(entity, msg)
+            type.setEntityState(entity, OperationState.ERROR)
+            logUtil.log(logTag, msg)
+        } else {
+            val msg = "${context.getString(R.string.not_exist_and_skip)}: $src"
+            type.setEntityLog(entity, msg)
+            type.setEntityState(entity, OperationState.SKIP)
+            logUtil.log(logTag, msg)
+        }
+        opDao.upsert(entity)
+        false
+    } else {
+        true
+    }
+
+    /**
+     * Set processing state
+     */
+    private suspend fun DataType.setStartState() {
+        setEntityLog(entity, getString(R.string.backing_up))
+        setEntityState(entity, OperationState.Processing)
+        opDao.upsert(entity)
+    }
+
+    /**
+     * Set processing state
+     */
+    private suspend fun DataType.setDataStartState(logTag: String): Boolean = if (entity.userState == OperationState.ERROR) {
+        val msg = "${context.getString(R.string.failed_and_terminated)}: ${DataType.PACKAGE_USER.type.uppercase()}"
+        setEntityLog(entity, msg)
+        setEntityState(entity, OperationState.ERROR)
+        logUtil.log(logTag, msg)
+        opDao.upsert(entity)
+        false
+    } else {
+        setStartState()
+        true
+    }
+
+
+    private suspend fun DataType.setEndState(isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        setEntityLog(entity, entityLog.trim().toLineString().trim())
+        setEntityState(entity, if (isSuccess.value) OperationState.DONE else OperationState.ERROR)
+        opDao.upsert(entity)
+    }
+
+    suspend fun backupApk() {
+        val isSuccess = mutableStateOf(true)
+        val entityLog = mutableListOf<String>()
+        val logTag = "APK"
+        val logId = logUtil.log(logTag, "Start backing up...")
+        val type = DataType.PACKAGE_APK.also { it.setStartState() }
+
+        val archivePath = getArchivePath(type)
+        val cur = getPackageSourceDir()
+        if (cur.isEmpty()) {
+            onPackageSourceEmpty(logTag, isSuccess, entityLog)
+        } else {
+            Tar.compressInCur(usePipe = usePipe, cur = cur, src = "./*.apk", dst = archivePath, extra = compressionType.compressPara)
+                .also { result -> compressAlso(result, logId, isSuccess, entityLog) }
+            Tar.test(src = archivePath, extra = compressionType.decompressPara)
+                .also { result -> testAlso(result, logTag, logId, archivePath, isSuccess, entityLog) }
         }
 
-        entity.apkLog = outList.toLineString().trim()
-        entity.apkState = if (isSuccess) OperationState.DONE else OperationState.ERROR
-        packageBackupOperationDao.upsert(entity)
+        type.setEndState(isSuccess, entityLog)
     }
 
     /**
      * Package data: USER, USER_DE, DATA, OBB, MEDIA
      */
-    suspend fun backupData(entity: PackageBackupOperation, packageName: String, dataType: DataType) {
-        val logTag = dataType.type.uppercase()
-
-        // Set processing state
-        if (entity.userState == OperationState.ERROR) {
-            val msg = "${context.getString(R.string.failed_and_terminated)}: ${DataType.PACKAGE_USER.type.uppercase()}"
-            dataType.updateEntityLog(entity, msg)
-            dataType.updateEntityState(entity, OperationState.ERROR)
-            logUtil.log(logTag, msg)
-            packageBackupOperationDao.upsert(entity)
-            return
-        } else {
-            dataType.updateEntityLog(entity, context.getString(R.string.backing_up))
-            dataType.updateEntityState(entity, OperationState.Processing)
-            packageBackupOperationDao.upsert(entity)
-        }
-
+    suspend fun backupData(type: DataType) {
+        val isSuccess = mutableStateOf(true)
+        val entityLog = mutableListOf<String>()
+        val logTag = type.type.uppercase()
         val logId = logUtil.log(logTag, "Start backing up...")
-        val archivePath = "${getPackageItemSavePath(packageName)}/${dataType.type}.${compressionType.suffix}"
-        val originPath = dataType.origin(userId)
-        var isSuccess = true
-        val outList = mutableListOf<String>()
+        type.also { if (it.setDataStartState(logTag).not()) return }
+
+        val archivePath = getArchivePath(type)
+        val srcDir = type.origin(userId)
 
         // Check the existence of origin path.
-        "$originPath/$packageName".also { path ->
-            val originPathExists = remoteRootService.exists(path)
-            if (originPathExists.not()) {
-                if (dataType == DataType.PACKAGE_USER) {
-                    val msg = "${context.getString(R.string.not_exist)}: $path"
-                    dataType.updateEntityLog(entity, msg)
-                    dataType.updateEntityState(entity, OperationState.ERROR)
-                    logUtil.log(logTag, msg)
-                } else {
-                    val msg = "${context.getString(R.string.not_exist_and_skip)}: $path"
-                    dataType.updateEntityLog(entity, msg)
-                    dataType.updateEntityState(entity, OperationState.SKIP)
-                    logUtil.log(logTag, msg)
-                }
-                packageBackupOperationDao.upsert(entity)
-                return
+        val src = "$srcDir/$packageName"
+        rootService.exists(src).also { if (dataExistsAlso(logTag, it, type, src).not()) return }
+
+        // Generate exclusion items.
+        val exclusionList = mutableListOf<String>()
+        when (type) {
+            DataType.PACKAGE_USER, DataType.PACKAGE_USER_DE -> {
+                // Exclude cache
+                val folders = listOf(".ota", "cache", "lib", "code_cache", "no_backup")
+                exclusionList.addAll(folders.map { "$QUOTE$packageName/$it$QUOTE" })
             }
+
+            DataType.PACKAGE_DATA, DataType.PACKAGE_OBB, DataType.PACKAGE_MEDIA -> {
+                // Exclude cache
+                val folders = listOf("cache")
+                exclusionList.addAll(folders.map { "$QUOTE$packageName/$it$QUOTE" })
+                // Exclude Backup_*
+                exclusionList.add("${QUOTE}Backup_$QUOTE*")
+            }
+
+            else -> {}
         }
 
-        // Compress the dir.
-        CompressionUtil.compressPackageData(logUtil, logId, compatibleMode, userId, compressionType, archivePath, packageName, dataType)
-            .also { (succeed, out) ->
-                if (succeed.not()) isSuccess = false
-                outList.add(out)
-                logUtil.log(logTag, out)
-            }
+        // Compress and test.
+        Tar.compress(
+            usePipe = usePipe,
+            exclusionList = exclusionList,
+            srcDir = srcDir,
+            src = packageName,
+            dst = archivePath,
+            extra = compressionType.compressPara
+        )
+            .also { result -> compressAlso(result, logId, isSuccess, entityLog) }
+        Tar.test(src = archivePath, extra = compressionType.decompressPara)
+            .also { result -> testAlso(result, logTag, logId, archivePath, isSuccess, entityLog) }
 
-        // Test the archive if enabled.
-        if (context.readCompressionTest()) {
-            CompressionUtil.test(
-                logUtil = logUtil,
-                logId = logId,
-                compressionType = compressionType,
-                archivePath = archivePath,
-                remoteRootService = remoteRootService
-            ).also { (succeed, out) ->
-                if (succeed.not()) {
-                    isSuccess = false
-                    outList.add(out)
-                    logUtil.log(logTag, out)
-                } else {
-                    logUtil.log(logTag, "$archivePath is tested well.")
-                }
-            }
-        }
-
-        dataType.updateEntityLog(entity, outList.toLineString().trim())
-        dataType.updateEntityState(entity, if (isSuccess) OperationState.DONE else OperationState.ERROR)
-        packageBackupOperationDao.upsert(entity)
+        type.setEndState(isSuccess, entityLog)
     }
 
-    suspend fun backupConfig(entity: PackageRestoreEntire, dataType: DataType) {
+    suspend fun backupConfig(entity: PackageRestoreEntire) {
         val logTag = "Config"
         val logId = logUtil.log(logTag, "Start backing up...")
-        val packageName = entity.packageName
-        val archivePath = "${getPackageItemSavePath(packageName)}/${dataType.type}.${compressionType.suffix}"
-        val outList = mutableListOf<String>()
 
+        // Create tmp config
         val tmpConfigPath = PathUtil.getTmpConfigPath(context = context, name = packageName, timestamp = entity.timestamp)
         val tmpConfigFilePath = PathUtil.getTmpConfigFilePath(context = context, name = packageName, timestamp = entity.timestamp)
-        remoteRootService.deleteRecursively(tmpConfigPath)
-        remoteRootService.mkdirs(tmpConfigPath)
+        rootService.deleteRecursively(tmpConfigPath)
+        rootService.mkdirs(tmpConfigPath)
+        rootService.writeText(text = gsonUtil.toJson(entity), path = tmpConfigFilePath, context = context)
 
-        remoteRootService.writeText(text = gsonUtil.toJson(entity), path = tmpConfigFilePath, context = context)
-        // Compress the dir.
-        CompressionUtil.compressPackageConfig(logUtil, logId, compatibleMode, compressionType, archivePath, tmpConfigPath).also { (_, out) ->
-            outList.add(out)
-            logUtil.log(logTag, out)
-        }
+        // Compress tmp config and test.
+        val archivePath = getArchivePath(DataType.PACKAGE_CONFIG)
+        Tar.compressInCur(usePipe = usePipe, cur = tmpConfigPath, src = "./*", dst = archivePath, extra = compressionType.compressPara)
+            .also { result -> compressAlso(result, logId) }
+        Tar.test(src = archivePath, extra = compressionType.decompressPara)
+            .also { result -> testAlso(result, logTag, logId, archivePath) }
 
-        remoteRootService.deleteRecursively(tmpConfigPath)
-
-        // Test the archive if enabled.
-        if (context.readCompressionTest()) {
-            CompressionUtil.test(
-                logUtil = logUtil,
-                logId = logId,
-                compressionType = compressionType,
-                archivePath = archivePath,
-                remoteRootService = remoteRootService
-            ).also { (succeed, out) ->
-                if (succeed.not()) {
-                    outList.add(out)
-                    logUtil.log(logTag, out)
-                } else {
-                    logUtil.log(logTag, "$archivePath is tested well.")
-                }
-            }
-        }
+        // Clean up
+        rootService.deleteRecursively(tmpConfigPath)
     }
 }
 
-class PackagesRestoreUtil(
-    private val context: Context,
-    private val logUtil: LogUtil,
-    private val remoteRootService: RemoteRootService,
-    private val packageRestoreOperationDao: PackageRestoreOperationDao,
+@AssistedFactory
+interface IPackagesBackupAfterwardsUtilFactory {
+    fun createBackupAfterwardsUtil(logTag: String): PackagesBackupAfterwardsUtil
+}
+
+class PackagesBackupAfterwardsUtil @AssistedInject constructor(
+    @ApplicationContext val context: Context,
+    @Assisted private val logTag: String,
 ) {
-    private val userId = context.readRestoreUserId()
+    @Inject
+    lateinit var rootService: RemoteRootService
 
-    companion object {
-        private val packageRestorePath = PathUtil.getRestorePackagesSavePath()
+    @Inject
+    lateinit var logUtil: LogUtil
 
-        fun getPackageItemSavePath(packageName: String, timestamp: Long): String = "${packageRestorePath}/${packageName}/$timestamp"
+    suspend fun backupIcons() {
+        val iconPath = context.iconPath()
+        val iconSavePath = PathUtil.getIconSavePath()
+        rootService.copyRecursively(path = iconPath, targetPath = iconSavePath, overwrite = true)
+        logUtil.log(logTag, "Copied from $iconPath to $iconSavePath.")
     }
 
-    suspend fun queryInstalled(entity: PackageRestoreOperation, packageName: String) {
-        val logTag = "APK"
-        var isSuccess = true
-        val outList = mutableListOf<String>()
+    suspend fun createNoMedia() {
+        val noMediaSavePath = PathUtil.getIconNoMediaSavePath()
+        rootService.createNewFile(path = noMediaSavePath)
+        logUtil.log(logTag, "Created $noMediaSavePath.")
+    }
+}
 
-        // Check the installation.
-        if (remoteRootService.queryInstalled(packageName, userId).not()) {
-            isSuccess = false
+@AssistedFactory
+interface IPackagesRestoreUtilFactory {
+    fun createPackagesRestoreUtil(timestamp: Long, entity: PackageRestoreOperation, compressionType: CompressionType): PackagesRestoreUtil
+}
+
+class PackagesRestoreUtil @AssistedInject constructor(
+    @ApplicationContext val context: Context,
+    @Assisted private val timestamp: Long,
+    @Assisted private val entity: PackageRestoreOperation,
+    @Assisted private val compressionType: CompressionType,
+) {
+    @Inject
+    lateinit var rootService: RemoteRootService
+
+    @Inject
+    lateinit var opDao: PackageRestoreOperationDao
+
+    @Inject
+    lateinit var logUtil: LogUtil
+
+    private val packageName = entity.packageName
+    private val userId = context.readRestoreUserId()
+    private val packageRestorePath = PathUtil.getRestorePackagesSavePath()
+
+    private fun getString(@StringRes resId: Int) = context.getString(resId)
+
+    private val timestampPath = "${packageRestorePath}/${packageName}/$timestamp"
+
+    private fun getArchivePath(type: DataType) =
+        "${timestampPath}/${type.type}.${compressionType.suffix}"
+
+    private suspend fun decompressAlso(result: ShellResult, logId: Long, isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        result.logCmd(logUtil = logUtil, logId = logId)
+        if (result.isSuccess.not()) {
+            isSuccess.value = false
+        }
+        entityLog.add(result.outString)
+    }
+
+    private suspend fun Boolean.queryInstalledAlso(logTag: String, isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        if (this) {
+            entityLog.add(getString(R.string.installed))
+        } else {
+            isSuccess.value = false
             val msg = "Not installed: $packageName."
-            outList.add(msg)
+            entityLog.add(msg)
             logUtil.log(logTag, msg)
         }
-
-        entity.apkLog = if (isSuccess) context.getString(R.string.installed) else outList.toLineString().trim()
-        entity.apkState = if (isSuccess) OperationState.DONE else OperationState.ERROR
-        packageRestoreOperationDao.upsert(entity)
     }
 
-    suspend fun restoreApk(entity: PackageRestoreOperation, packageName: String, timestamp: Long, compressionType: CompressionType) {
-        // Set processing state
-        entity.apkLog = context.getString(R.string.restoring)
-        entity.apkState = OperationState.Processing
-        packageRestoreOperationDao.upsert(entity)
-
-        val logTag = "APK"
-        val logId = logUtil.log(logTag, "Start restoring...")
-        val archivePath = "${getPackageItemSavePath(packageName = packageName, timestamp = timestamp)}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
-
-        // Return if the archive doesn't exist.
-        remoteRootService.exists(archivePath).also { exists ->
-            if (exists.not()) {
-                val msg = "${context.getString(R.string.not_exist)}: $archivePath"
-                entity.apkLog = msg
-                entity.apkState = OperationState.ERROR
-                logUtil.log(logTag, msg)
-                packageRestoreOperationDao.upsert(entity)
-                return
-            }
+    private suspend fun archiveExistsAlso(logTag: String, exists: Boolean, type: DataType, src: String): Boolean = if (exists.not()) {
+        if (type == DataType.PACKAGE_APK) {
+            val msg = "${context.getString(R.string.not_exist)}: $src"
+            type.setEntityLog(entity, msg)
+            type.setEntityState(entity, OperationState.ERROR)
+            logUtil.log(logTag, msg)
+        } else {
+            val msg = "${context.getString(R.string.not_exist_and_skip)}: $src"
+            type.setEntityLog(entity, msg)
+            type.setEntityState(entity, OperationState.SKIP)
+            logUtil.log(logTag, msg)
         }
+        opDao.upsert(entity)
+        false
+    } else {
+        true
+    }
 
-        var isSuccess = true
-        val outList = mutableListOf<String>()
-        val installationUtil = InstallationUtil(logId, logUtil)
-
-        // Decompress apk archive
-        val tmpApkPath = PathUtil.getTmpApkPath(context = context, packageName = packageName)
-        remoteRootService.deleteRecursively(tmpApkPath)
-        remoteRootService.mkdirs(tmpApkPath)
-        installationUtil.decompress(archivePath = archivePath, tmpApkPath = tmpApkPath, compressionType = compressionType).also { (succeed, out) ->
-            if (succeed.not()) isSuccess = false
-            outList.add(out)
-            logUtil.log(logTag, out)
-        }
-
-        // Install apks
-        val apksPath = remoteRootService.listFilePaths(tmpApkPath)
+    private suspend fun installApks(
+        logTag: String,
+        tmpApkPath: String,
+        apksPath: List<String>,
+        isSuccess: MutableState<Boolean>,
+        entityLog: MutableList<String>,
+    ) {
         when (apksPath.size) {
             0 -> {
-                isSuccess = false
+                isSuccess.value = false
                 val msg = "$tmpApkPath is empty."
-                outList.add(msg)
+                entityLog.add(msg)
                 logUtil.log(logTag, msg)
-                return
             }
 
             1 -> {
-                installationUtil.pmInstall(userId, apksPath[0]).also { (succeed, out) ->
-                    if (succeed.not()) isSuccess = false
-                    outList.add(out)
-                    logUtil.log(logTag, out)
+                Pm.install(userId, apksPath.first()).also { result ->
+                    if (result.isSuccess.not()) isSuccess.value = false
+                    val msg = result.outString
+                    entityLog.add(msg)
+                    logUtil.log(logTag, msg)
                 }
             }
 
             else -> {
                 var pmSession: String
-                installationUtil.pmInstallCreate(userId).also { (succeed, session) ->
-                    if (succeed.not()) {
-                        isSuccess = false
+                Pm.Install.create(userId).also { result ->
+                    if (result.isSuccess.not()) {
+                        isSuccess.value = false
                         val msg = "Failed to get install session."
-                        outList.add(msg)
+                        entityLog.add(msg)
                         logUtil.log(logTag, msg)
                         return
+                    } else {
+                        pmSession = result.outString
+                        val msg = "Install session: $pmSession."
+                        entityLog.add(msg)
+                        logUtil.log(logTag, msg)
                     }
-                    pmSession = session
-                    val msg = "Install session: $session."
-                    outList.add(msg)
-                    logUtil.log(logTag, msg)
                 }
 
-                for (apkPath in apksPath) {
-                    installationUtil.pmInstallWrite(pmSession, apkPath).also { (succeed, out) ->
-                        if (succeed.not()) {
-                            isSuccess = false
-                            outList.add(out)
-                            logUtil.log(logTag, out)
-                            return
+                apksPath.forEach { apkPath ->
+                    Pm.Install.write(pmSession, PathUtil.getFileName(apkPath), apkPath).also { result ->
+                        if (result.isSuccess.not()) {
+                            isSuccess.value = false
+                            val msg = result.outString
+                            entityLog.add(msg)
+                            logUtil.log(logTag, msg)
                         }
                     }
                 }
-                installationUtil.pmInstallCommit(pmSession).also { (succeed, out) ->
-                    if (succeed.not())
-                        isSuccess = false
-                    outList.add(out)
-                    logUtil.log(logTag, out)
+
+                Pm.Install.commit(pmSession).also { result ->
+                    if (result.isSuccess.not()) {
+                        isSuccess.value = false
+                    }
+                    val msg = result.outString
+                    entityLog.add(msg)
+                    logUtil.log(logTag, msg)
                 }
             }
         }
+    }
 
-        remoteRootService.deleteRecursively(tmpApkPath)
+    /**
+     * Set processing state
+     */
+    private suspend fun DataType.setStartState() {
+        setEntityLog(entity, getString(R.string.restoring))
+        setEntityState(entity, OperationState.Processing)
+        opDao.upsert(entity)
+    }
+
+    /**
+     * Set processing state
+     */
+    private suspend fun DataType.setDataStartState(logTag: String): Boolean = if (entity.userState == OperationState.ERROR) {
+        val msg = "${context.getString(R.string.failed_and_terminated)}: ${DataType.PACKAGE_APK.type.uppercase()}"
+        setEntityLog(entity, msg)
+        setEntityState(entity, OperationState.ERROR)
+        logUtil.log(logTag, msg)
+        opDao.upsert(entity)
+        false
+    } else {
+        setStartState()
+        true
+    }
+
+    private suspend fun DataType.setEndState(isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        setEntityLog(entity, entityLog.trim().toLineString().trim())
+        setEntityState(entity, if (isSuccess.value) OperationState.DONE else OperationState.ERROR)
+        opDao.upsert(entity)
+    }
+
+    private suspend fun queryInstalledInternal(isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) = run {
+        val logTag = "APK"
+
+        // Check the installation.
+        rootService.queryInstalled(packageName, userId).also {
+            it.queryInstalledAlso(logTag, isSuccess, entityLog)
+        }
+    }
+
+    suspend fun queryInstalled() {
+        val isSuccess = mutableStateOf(true)
+        val entityLog = mutableListOf<String>()
+        val type = DataType.PACKAGE_APK
+        queryInstalledInternal(isSuccess, entityLog)
+        type.setEndState(isSuccess, entityLog)
+    }
+
+    suspend fun restoreApk() {
+        val isSuccess = mutableStateOf(true)
+        val entityLog = mutableListOf<String>()
+        val logTag = "APK"
+        val logId = logUtil.log(logTag, "Start restoring...")
+        val type = DataType.PACKAGE_APK.also { it.setStartState() }
+
+        val archivePath = getArchivePath(type)
+
+        // Return if the archive doesn't exist.
+        rootService.exists(archivePath).also { if (archiveExistsAlso(logTag, it, type, archivePath).not()) return }
+
+        // Decompress apk archive
+        val tmpApkPath = PathUtil.getTmpApkPath(context = context, packageName = packageName)
+        rootService.deleteRecursively(tmpApkPath)
+        rootService.mkdirs(tmpApkPath)
+        Tar.decompress(src = archivePath, dst = tmpApkPath, extra = compressionType.decompressPara)
+            .also { result -> decompressAlso(result, logId, isSuccess, entityLog) }
+
+        // Install apks
+        rootService.listFilePaths(tmpApkPath).also { apksPath ->
+            installApks(logTag = logTag, tmpApkPath = tmpApkPath, apksPath = apksPath, isSuccess = isSuccess, entityLog = entityLog)
+        }
+        rootService.deleteRecursively(tmpApkPath)
 
         // Check the installation again.
-        if (remoteRootService.queryInstalled(packageName, userId).not()) {
-            isSuccess = false
-            val msg = "Not installed: $packageName."
-            outList.add(msg)
-            logUtil.log(logTag, msg)
-        }
+        queryInstalledInternal(isSuccess = isSuccess, entityLog = entityLog)
 
-        entity.apkLog = if (isSuccess) context.getString(R.string.succeed) else outList.toLineString().trim()
-        entity.apkState = if (isSuccess) OperationState.DONE else OperationState.ERROR
-        packageRestoreOperationDao.upsert(entity)
+        type.setEndState(isSuccess, entityLog)
+    }
+
+    private suspend fun restoreContext(
+        logTag: String,
+        logId: Long,
+        context: String,
+        path: String,
+        uid: Int,
+        isSuccess: MutableState<Boolean>,
+        entityLog: MutableList<String>,
+    ) {
+        if (uid == -1) {
+            isSuccess.value = false
+            val msg = "Failed to get uid of $packageName."
+            entityLog.add(msg)
+            logUtil.log(logTag, msg)
+        } else {
+            SELinux.chown(uid = uid, path = path).also { result ->
+                result.logCmd(logUtil = logUtil, logId = logId)
+                if (result.isSuccess.not()) {
+                    isSuccess.value = false
+                    entityLog.add(result.outString)
+                }
+            }
+            if (context.isNotEmpty()) {
+                SELinux.chcon(context = context, path = path).also { result ->
+                    result.logCmd(logUtil = logUtil, logId = logId)
+                    if (result.isSuccess.not()) {
+                        isSuccess.value = false
+                        entityLog.add(result.outString)
+                    }
+                }
+            } else {
+                val parentContext: String
+                SELinux.getContext(PathUtil.getParentPath(path)).also { result ->
+                    result.logCmd(logUtil = logUtil, logId = logId)
+                    parentContext = if (result.isSuccess) result.outString.replace("system_data_file", "app_data_file") else ""
+                }
+                if (parentContext.isNotEmpty()) {
+                    SELinux.chcon(context = parentContext, path = path).also { result ->
+                        result.logCmd(logUtil = logUtil, logId = logId)
+                        if (result.isSuccess.not()) {
+                            isSuccess.value = false
+                            entityLog.add(result.outString)
+                        }
+                    }
+                } else {
+                    isSuccess.value = false
+                    val msg = "Failed to restore context: $path"
+                    entityLog.add(msg)
+                    logUtil.log(logTag, msg)
+                }
+            }
+        }
     }
 
     /**
      * Package data: USER, USER_DE, DATA, OBB, MEDIA
      */
-    suspend fun restoreData(entity: PackageRestoreOperation, packageName: String, timestamp: Long, compressionType: CompressionType, dataType: DataType) {
-        val logTag = dataType.type.uppercase()
-
-        // Set processing state
-        if (entity.apkState == OperationState.ERROR) {
-            val msg = "${context.getString(R.string.failed_and_terminated)}: ${DataType.PACKAGE_APK.type.uppercase()}"
-            dataType.updateEntityLog(entity, msg)
-            dataType.updateEntityState(entity, OperationState.ERROR)
-            logUtil.log(logTag, msg)
-            packageRestoreOperationDao.upsert(entity)
-            return
-        } else {
-            dataType.updateEntityLog(entity, context.getString(R.string.restoring))
-            dataType.updateEntityState(entity, OperationState.Processing)
-            packageRestoreOperationDao.upsert(entity)
-        }
-
+    suspend fun restoreData(type: DataType) {
+        val isSuccess = mutableStateOf(true)
+        val entityLog = mutableListOf<String>()
+        val logTag = type.type.uppercase()
         val logId = logUtil.log(logTag, "Start restoring...")
-        val originPath = "${dataType.origin(userId)}/$packageName"
-        val archivePath = "${getPackageItemSavePath(packageName = packageName, timestamp = timestamp)}/${dataType.type}.${compressionType.suffix}"
-        val uid = remoteRootService.getPackageUid(packageName, userId)
-        var isSuccess = true
-        val outList = mutableListOf<String>()
-        val seLinuxUtil = SELinuxUtil(logId, logUtil)
-        val pathContext: String
+        type.also { if (it.setDataStartState(logTag).not()) return }
+
+        val archivePath = getArchivePath(type)
+        val dstDir = "${type.origin(userId)}/$packageName"
+        val uid = rootService.getPackageUid(packageName, userId)
 
         // Return if the archive doesn't exist.
-        remoteRootService.exists(archivePath).also { exists ->
-            if (exists.not()) {
-                val msg = "${context.getString(R.string.not_exist_and_skip)}: $archivePath"
-                dataType.updateEntityLog(entity, msg)
-                dataType.updateEntityState(entity, OperationState.SKIP)
-                logUtil.log(logTag, msg)
-                packageRestoreOperationDao.upsert(entity)
-                return
+        rootService.exists(archivePath).also { if (archiveExistsAlso(logTag, it, type, archivePath).not()) return }
+
+        // Generate exclusion items.
+        val exclusionList = mutableListOf<String>()
+        when (type) {
+            DataType.PACKAGE_USER, DataType.PACKAGE_USER_DE, DataType.PACKAGE_DATA, DataType.PACKAGE_OBB, DataType.PACKAGE_MEDIA -> {
+                // Exclude cache
+                val folders = listOf(".ota", "cache", "lib", "code_cache", "no_backup")
+                exclusionList.addAll(folders.map { "$QUOTE$packageName/$it$QUOTE" })
+                if (type == DataType.PACKAGE_DATA || type == DataType.PACKAGE_OBB || type == DataType.PACKAGE_MEDIA) {
+                    // Exclude Backup_*
+                    exclusionList.add("${QUOTE}Backup_$QUOTE*")
+                }
+
             }
+
+            else -> {}
         }
 
         // Get the SELinux context of the path.
-        seLinuxUtil.getContext(originPath).also { (isSuccess, context) ->
-            pathContext = if (isSuccess) context else ""
-        }
-        // Decompress the archive.
-        CompressionUtil.decompressPackageData(logUtil, logId, context, userId, compressionType, archivePath, packageName, dataType).also { (succeed, out) ->
-            if (succeed.not()) isSuccess = false
-            outList.add(out)
-            logUtil.log(logTag, out)
-        }
-        // Restore the SELinux context of the path.
-        seLinuxUtil.restoreContext(originPath, pathContext, packageName, uid).also { (succeed, out) ->
-            if (succeed.not()) isSuccess = false
-            outList.add(out)
-            logUtil.log(logTag, out)
+        val pathContext: String
+        SELinux.getContext(dstDir).also { result ->
+            pathContext = if (result.isSuccess) result.outString else ""
         }
 
-        dataType.updateEntityLog(entity, outList.toLineString().trim())
-        dataType.updateEntityState(entity, if (isSuccess) OperationState.DONE else OperationState.ERROR)
-        packageRestoreOperationDao.upsert(entity)
+        // Decompress the archive.
+        Tar.decompress(
+            exclusionList = exclusionList,
+            clear = if (context.readCleanRestoring()) "--recursive-unlink" else "",
+            m = true,
+            src = archivePath,
+            dst = type.origin(userId),
+            extra = compressionType.decompressPara
+        )
+            .also { result -> decompressAlso(result, logId, isSuccess, entityLog) }
+
+        // Restore the SELinux context of the path.
+        restoreContext(logTag = logTag, logId = logId, context = pathContext, path = dstDir, uid = uid, isSuccess = isSuccess, entityLog = entityLog)
+
+        type.setEndState(isSuccess, entityLog)
     }
 }
 
-class MediumBackupUtil(
-    private val context: Context,
-    private val timestamp: Long,
-    private val logUtil: LogUtil,
-    private val remoteRootService: RemoteRootService,
-    private val mediaDao: MediaDao,
-    private val gsonUtil: GsonUtil,
+@AssistedFactory
+interface IMediumBackupUtilFactory {
+    fun createMediumBackupUtil(entity: MediaBackupOperationEntity): MediumBackupUtil
+}
+
+class MediumBackupUtil @AssistedInject constructor(
+    @ApplicationContext val context: Context,
+    @Assisted private val entity: MediaBackupOperationEntity,
 ) {
-    // Medium use tar is enough.
-    private val compressionType = CompressionType.TAR
-    private val compatibleMode = context.readCompatibleMode()
+    @Inject
+    lateinit var rootService: RemoteRootService
+
+    @Inject
+    lateinit var opDao: MediaDao
+
+    @Inject
+    lateinit var logUtil: LogUtil
+
+    @Inject
+    lateinit var gsonUtil: GsonUtil
+
+    private val name = entity.name
+    private val path = entity.path
+    private val timestamp = entity.timestamp
+    private val compressionType = CompressionType.TAR // Medium use tar is enough.
+    private val type = DataType.MEDIA_MEDIA
+    private val configType = DataType.MEDIA_CONFIG
+    private val usePipe = context.readCompatibleMode()
     private val mediumSavePath = PathUtil.getBackupMediumSavePath()
 
-    fun getMediaItemSavePath(name: String): String = "${mediumSavePath}/${name}/$timestamp"
+    private fun getString(@StringRes resId: Int) = context.getString(resId)
 
-    suspend fun backupMedia(entity: MediaBackupOperationEntity) {
-        // Set processing state
-        entity.opLog = context.getString(R.string.backing_up)
-        entity.opState = OperationState.Processing
-        mediaDao.upsertBackupOp(entity)
+    private val timestampPath = "${mediumSavePath}/${name}/$timestamp"
 
-        val logTag = "Media"
-        val logId = logUtil.log(logTag, "Start backing up...")
-        val path = entity.path
-        val name = entity.name
-        val archivePath = "${getMediaItemSavePath(name)}/${DataType.MEDIA_MEDIA.type}.${compressionType.suffix}"
-        var isSuccess = true
-        val outList = mutableListOf<String>()
+    suspend fun mkdirs() = rootService.mkdirs(timestampPath)
 
-        // Check the existence of origin path.
-        val originPathExists = remoteRootService.exists(path)
-        if (originPathExists.not()) {
-            val msg = "${context.getString(R.string.not_exist)}: $path"
-            entity.opLog = msg
-            entity.opState = OperationState.ERROR
-            mediaDao.upsertBackupOp(entity)
-            logUtil.log(logTag, msg)
-            return
-        }
+    private fun getArchivePath() =
+        "${timestampPath}/${type.type}.${compressionType.suffix}"
 
-        // Compress the dir.
-        CompressionUtil.compressMediaData(logUtil, logId, compatibleMode, compressionType, path, archivePath)
-            .also { (succeed, out) ->
-                if (succeed.not()) isSuccess = false
-                outList.add(out)
-                logUtil.log(logTag, out)
-            }
+    private fun getConfigArchivePath() =
+        "${timestampPath}/${configType.type}.${compressionType.suffix}"
 
-        // Test the archive if enabled.
-        if (context.readCompressionTest()) {
-            CompressionUtil.test(
-                logUtil = logUtil,
-                logId = logId,
-                compressionType = compressionType,
-                archivePath = archivePath,
-                remoteRootService = remoteRootService
-            ).also { (succeed, out) ->
-                if (succeed.not()) {
-                    isSuccess = false
-                    outList.add(out)
-                    logUtil.log(logTag, out)
-                } else {
-                    logUtil.log(logTag, "$archivePath is tested well.")
-                }
-            }
-        }
-
-        entity.opLog = outList.toLineString().trim()
-        entity.opState = if (isSuccess) OperationState.DONE else OperationState.ERROR
-        mediaDao.upsertBackupOp(entity)
+    private suspend fun compressAlso(result: ShellResult, logId: Long) {
+        result.logCmd(logUtil = logUtil, logId = logId)
     }
 
-    suspend fun backupConfig(entity: MediaRestoreEntity, dataType: DataType) {
+    private suspend fun compressAlso(result: ShellResult, logId: Long, isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        compressAlso(result = result, logId = logId)
+        if (result.isSuccess.not()) {
+            isSuccess.value = false
+        }
+        entityLog.add(result.outString)
+    }
+
+    private suspend fun testAlso(
+        result: ShellResult,
+        logTag: String,
+        logId: Long,
+        archivePath: String,
+        onFailed: ((msg: String) -> Unit)? = null,
+    ) {
+        result.logCmd(logUtil = logUtil, logId = logId)
+
+        if (result.isSuccess.not()) {
+            val msg = "$archivePath is broken, trying to delete it."
+            onFailed?.invoke(msg)
+            logUtil.log(logTag, msg)
+            // Delete the archive if test failed.
+            rootService.deleteRecursively(archivePath)
+        } else {
+            logUtil.log(logTag, "$archivePath is tested well.")
+        }
+    }
+
+    private suspend fun testAlso(
+        result: ShellResult,
+        logTag: String,
+        logId: Long,
+        archivePath: String,
+        isSuccess: MutableState<Boolean>,
+        entityLog: MutableList<String>,
+    ) {
+        testAlso(result, logTag, logId, archivePath) { msg ->
+            isSuccess.value = false
+            entityLog.add(msg)
+        }
+    }
+
+    private suspend fun archiveExistsAlso(logTag: String, exists: Boolean, src: String): Boolean = if (exists.not()) {
+        val msg = "${context.getString(R.string.not_exist)}: $src"
+        type.setEntityLog(entity, msg)
+        type.setEntityState(entity, OperationState.ERROR)
+        logUtil.log(logTag, msg)
+        opDao.upsertBackupOp(entity)
+        false
+    } else {
+        true
+    }
+
+    /**
+     * Set processing state
+     */
+    private suspend fun DataType.setStartState() {
+        setEntityLog(entity, getString(R.string.backing_up))
+        setEntityState(entity, OperationState.Processing)
+        opDao.upsertBackupOp(entity)
+    }
+
+    private suspend fun DataType.setEndState(isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        setEntityLog(entity, entityLog.trim().toLineString().trim())
+        setEntityState(entity, if (isSuccess.value) OperationState.DONE else OperationState.ERROR)
+        opDao.upsertBackupOp(entity)
+    }
+
+    suspend fun backupMedia() {
+        val isSuccess = mutableStateOf(true)
+        val entityLog = mutableListOf<String>()
+        val logTag = "Media"
+        val logId = logUtil.log(logTag, "Start backing up...")
+        val type = type.also { it.setStartState() }
+
+        val archivePath = getArchivePath()
+
+        // Check the existence of origin path.
+        rootService.exists(path).also { if (archiveExistsAlso(logTag, it, path).not()) return }
+
+        // Compress and test.
+        Tar.compress(
+            usePipe = usePipe,
+            exclusionList = listOf(),
+            srcDir = PathUtil.getParentPath(path),
+            src = PathUtil.getFileName(path),
+            dst = archivePath,
+            extra = compressionType.compressPara
+        )
+            .also { result -> compressAlso(result, logId, isSuccess, entityLog) }
+        Tar.test(src = archivePath, extra = compressionType.decompressPara)
+            .also { result -> testAlso(result, logTag, logId, archivePath, isSuccess, entityLog) }
+
+        type.setEndState(isSuccess, entityLog)
+    }
+
+    suspend fun backupConfig(entity: MediaRestoreEntity) {
         val logTag = "Config"
         val logId = logUtil.log(logTag, "Start backing up...")
-        val name = entity.name
-        val archivePath = "${getMediaItemSavePath(name)}/${dataType.type}.${compressionType.suffix}"
-        val outList = mutableListOf<String>()
 
+        // Create tmp config
         val tmpConfigPath = PathUtil.getTmpConfigPath(context = context, name = name, timestamp = entity.timestamp)
         val tmpConfigFilePath = PathUtil.getTmpConfigFilePath(context = context, name = name, timestamp = entity.timestamp)
-        remoteRootService.deleteRecursively(tmpConfigPath)
-        remoteRootService.mkdirs(tmpConfigPath)
+        rootService.deleteRecursively(tmpConfigPath)
+        rootService.mkdirs(tmpConfigPath)
+        rootService.writeText(text = gsonUtil.toJson(entity), path = tmpConfigFilePath, context = context)
 
-        remoteRootService.writeText(text = gsonUtil.toJson(entity), path = tmpConfigFilePath, context = context)
-        // Compress the dir.
-        CompressionUtil.compressPackageConfig(logUtil, logId, compatibleMode, compressionType, archivePath, tmpConfigPath).also { (_, out) ->
-            outList.add(out)
-            logUtil.log(logTag, out)
-        }
+        // Compress tmp config and test.
+        val archivePath = getConfigArchivePath()
+        Tar.compressInCur(usePipe = usePipe, cur = tmpConfigPath, src = "./*", dst = archivePath, extra = compressionType.compressPara)
+            .also { result -> compressAlso(result, logId) }
+        Tar.test(src = archivePath, extra = compressionType.decompressPara)
+            .also { result -> testAlso(result, logTag, logId, archivePath) }
 
-        remoteRootService.deleteRecursively(tmpConfigPath)
-
-        // Test the archive if enabled.
-        if (context.readCompressionTest()) {
-            CompressionUtil.test(
-                logUtil = logUtil,
-                logId = logId,
-                compressionType = compressionType,
-                archivePath = archivePath,
-                remoteRootService = remoteRootService
-            ).also { (succeed, out) ->
-                if (succeed.not()) {
-                    outList.add(out)
-                    logUtil.log(logTag, out)
-                } else {
-                    logUtil.log(logTag, "$archivePath is tested well.")
-                }
-            }
-        }
+        // Clean up
+        rootService.deleteRecursively(tmpConfigPath)
     }
 }
 
-class MediumRestoreUtil(
-    private val context: Context,
-    private val logUtil: LogUtil,
-    private val remoteRootService: RemoteRootService,
-    private val mediaDao: MediaDao,
-) {
-    companion object {
-        // Medium use tar is enough.
-        val compressionType = CompressionType.TAR
-        private val mediumSavePath = PathUtil.getRestoreMediumSavePath()
+@AssistedFactory
+interface IMediumRestoreUtilFactory {
+    fun createMediumRestoreUtil(entity: MediaRestoreOperationEntity): MediumRestoreUtil
+}
 
-        fun getMediaItemSavePath(name: String, timestamp: Long): String = "${mediumSavePath}/${name}/$timestamp"
+class MediumRestoreUtil @AssistedInject constructor(
+    @ApplicationContext val context: Context,
+    @Assisted private val entity: MediaRestoreOperationEntity,
+) {
+    @Inject
+    lateinit var rootService: RemoteRootService
+
+    @Inject
+    lateinit var opDao: MediaDao
+
+    @Inject
+    lateinit var logUtil: LogUtil
+
+    private val name = entity.name
+    private val path = entity.path
+    private val timestamp = entity.timestamp
+    private val compressionType = CompressionType.TAR // Medium use tar is enough.
+    private val type = DataType.MEDIA_MEDIA
+    private val mediumSavePath = PathUtil.getRestoreMediumSavePath()
+
+    private fun getString(@StringRes resId: Int) = context.getString(resId)
+
+    private val timestampPath = "${mediumSavePath}/${name}/$timestamp"
+
+    private fun getArchivePath() =
+        "${timestampPath}/${type.type}.${compressionType.suffix}"
+
+    private suspend fun decompressAlso(result: ShellResult, logId: Long, isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        result.logCmd(logUtil = logUtil, logId = logId)
+        if (result.isSuccess.not()) {
+            isSuccess.value = false
+        }
+        entityLog.add(result.outString)
     }
 
-    suspend fun restoreMedia(entity: MediaRestoreOperationEntity) {
-        // Set processing state
-        entity.opLog = context.getString(R.string.restoring)
-        entity.opState = OperationState.Processing
-        mediaDao.upsertRestoreOp(entity)
+    private suspend fun archiveExistsAlso(logTag: String, exists: Boolean, src: String): Boolean = if (exists.not()) {
+        val msg = "${context.getString(R.string.not_exist)}: $src"
+        type.setEntityLog(entity, msg)
+        type.setEntityState(entity, OperationState.ERROR)
+        logUtil.log(logTag, msg)
+        opDao.upsertRestoreOp(entity)
+        false
+    } else {
+        true
+    }
 
+    /**
+     * Set processing state
+     */
+    private suspend fun DataType.setStartState() {
+        setEntityLog(entity, getString(R.string.restoring))
+        setEntityState(entity, OperationState.Processing)
+        opDao.upsertRestoreOp(entity)
+    }
+
+    private suspend fun DataType.setEndState(isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {
+        setEntityLog(entity, entityLog.trim().toLineString().trim())
+        setEntityState(entity, if (isSuccess.value) OperationState.DONE else OperationState.ERROR)
+        opDao.upsertRestoreOp(entity)
+    }
+
+    suspend fun restoreMedia() {
+        val isSuccess = mutableStateOf(true)
+        val entityLog = mutableListOf<String>()
         val logTag = "Media"
         val logId = logUtil.log(logTag, "Start restoring...")
-        val path = entity.path
-        val archivePath = entity.archivePath
-        var isSuccess = true
-        val outList = mutableListOf<String>()
+        val type = type.also { it.setStartState() }
+
+        val archivePath = getArchivePath()
 
         // Return if the archive doesn't exist.
-        remoteRootService.exists(archivePath).also { exists ->
-            if (exists.not()) {
-                val msg = "${context.getString(R.string.not_exist_and_skip)}: $archivePath"
-                entity.opLog = msg
-                entity.opState = OperationState.ERROR
-                logUtil.log(logTag, msg)
-                mediaDao.upsertRestoreOp(entity)
-                return
-            }
-        }
+        rootService.exists(archivePath).also { if (archiveExistsAlso(logTag, it, archivePath).not()) return }
 
         // Decompress the archive.
-        CompressionUtil.decompressMediaData(logUtil, logId, context, compressionType, PathUtil.getParentPath(path), archivePath).also { (succeed, out) ->
-            if (succeed.not()) isSuccess = false
-            outList.add(out)
-            logUtil.log(logTag, out)
-        }
+        Tar.decompress(
+            exclusionList = listOf(),
+            clear = if (context.readCleanRestoring()) "--recursive-unlink" else "",
+            m = false,
+            src = archivePath,
+            dst = PathUtil.getParentPath(path),
+            extra = compressionType.decompressPara
+        )
+            .also { result -> decompressAlso(result, logId, isSuccess, entityLog) }
 
-        entity.opLog = outList.toLineString().trim()
-        entity.opState = if (isSuccess) OperationState.DONE else OperationState.ERROR
-        mediaDao.upsertRestoreOp(entity)
+        type.setEndState(isSuccess, entityLog)
     }
 }

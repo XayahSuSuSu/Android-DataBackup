@@ -2,7 +2,6 @@ package com.xayah.databackup.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -65,7 +64,9 @@ fun CardActionButton(modifier: Modifier = Modifier, text: String, icon: ImageVec
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.padding(CardTokens.ContentPadding).paddingHorizontal(CardTokens.ContentPadding),
+            modifier = Modifier
+                .padding(CardTokens.ContentPadding)
+                .paddingHorizontal(CardTokens.ContentPadding),
             verticalArrangement = Arrangement.spacedBy(ButtonTokens.CardActionButtonPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

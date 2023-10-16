@@ -16,7 +16,7 @@ fun VerticalGrid(
     count: Int,
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    content: @Composable() (Int) -> Unit
+    content: @Composable() (Int) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = verticalArrangement) {
         val rows = ceil(count.toFloat() / columns).toInt()

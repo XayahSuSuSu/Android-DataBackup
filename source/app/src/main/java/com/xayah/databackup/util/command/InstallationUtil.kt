@@ -1,91 +1,75 @@
 package com.xayah.databackup.util.command
 
 import android.os.Build
-import com.xayah.databackup.util.CompressionType
-import com.xayah.databackup.util.LogUtil
-import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
-import com.xayah.databackup.util.command.CommonUtil.execute
 
-class InstallationUtil(private val logId: Long, private val logUtil: LogUtil) {
-    suspend fun decompress(archivePath: String, tmpApkPath: String, compressionType: CompressionType): Pair<Boolean, String> {
-        var isSuccess = true
-        var out = ""
-        logUtil.execute(logId, "tar --totals ${compressionType.decompressPara} -xmpf $QUOTE$archivePath$QUOTE -C $QUOTE$tmpApkPath$QUOTE")
-            .also { result ->
-                if (result.isSuccess.not()) {
-                    isSuccess = false
-                    out += result.outString + "\n"
-                }
-            }
-        return Pair(isSuccess, out.trim())
+object Pm {
+    suspend fun execute(vararg args: String): ShellResult = CommonUtil.execute("pm", *args)
+    suspend fun install(userId: Int, src: String): ShellResult = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        // pm install --user "$userId" -r -t "$src"
+        execute(
+            "install",
+            "--user",
+            "$QUOTE$userId$QUOTE",
+            "-r",
+            "-t",
+            "$QUOTE$src$QUOTE",
+        )
+    } else {
+        // pm install -i com.android.vending --user "$userId" -r -t "$src"
+        execute(
+            "install",
+            "-i",
+            "com.android.vending",
+            "--user",
+            "$QUOTE$userId$QUOTE",
+            "-r",
+            "-t",
+            "$QUOTE$src$QUOTE",
+        )
     }
 
-    suspend fun pmInstall(userId: Int, apkPath: String): Pair<Boolean, String> {
-        var isSuccess = true
-        var out = ""
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            logUtil.execute(logId, "pm install --user $QUOTE$userId$QUOTE -r -t $QUOTE$apkPath$QUOTE").also { result ->
-                if (result.isSuccess.not()) {
-                    isSuccess = false
-                    out += result.outString + "\n"
-                }
-            }
+    object Install {
+        suspend fun create(userId: Int): ShellResult = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // pm install-create --user "$userId" -t | grep -E -o '[0-9]+'
+            execute(
+                "install-create",
+                "--user",
+                "$QUOTE$userId$QUOTE",
+                "-t",
+                "|",
+                "grep -E -o '[0-9]+'",
+            )
         } else {
-            logUtil.execute(logId, "pm install -i com.android.vending --user $QUOTE$userId$QUOTE -r -t $QUOTE$apkPath$QUOTE").also { result ->
-                if (result.isSuccess.not()) {
-                    isSuccess = false
-                    out += result.outString + "\n"
-                }
-            }
+            // pm install-create -i com.android.vending --user "$userId" -t | grep -E -o '[0-9]+'
+            execute(
+                "install-create",
+                "-i",
+                "com.android.vending",
+                "--user",
+                "$QUOTE$userId$QUOTE",
+                "-t",
+                "|",
+                "grep -E -o '[0-9]+'",
+            )
         }
-        return Pair(isSuccess, out.trim())
-    }
 
-    suspend fun pmInstallCreate(userId: Int): Pair<Boolean, String> {
-        var isSuccess = true
-        var session = ""
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            logUtil.execute(logId, "pm install-create --user $QUOTE$userId$QUOTE -t | grep -E -o '[0-9]+'").also { result ->
-                if (result.isSuccess.not()) isSuccess = false
-                session = result.outString + "\n"
-
-            }
-        } else {
-            logUtil.execute(logId, "pm install-create -i com.android.vending --user $QUOTE$userId$QUOTE -t | grep -E -o '[0-9]+'").also { result ->
-                if (result.isSuccess.not()) isSuccess = false
-                session = result.outString + "\n"
-            }
+        suspend fun write(session: String, srcName: String, src: String): ShellResult = run {
+            // pm install-write "$session" "$srcDir" "$src"
+            execute(
+                "install-write",
+                "$QUOTE$session$QUOTE",
+                "$QUOTE$srcName$QUOTE",
+                "$QUOTE$src$QUOTE",
+            )
         }
-        return Pair(isSuccess, session.trim())
-    }
 
-    suspend fun pmInstallWrite(session: String, apkPath: String): Pair<Boolean, String> {
-        var isSuccess = true
-        var out = ""
-
-        logUtil.execute(logId, "pm install-write $QUOTE$session$QUOTE $QUOTE${PathUtil.getFileName(apkPath)}$QUOTE $QUOTE${apkPath}$QUOTE")
-            .also { result ->
-                if (result.isSuccess.not()) {
-                    isSuccess = false
-                    out += result.outString + "\n"
-                }
-            }
-        return Pair(isSuccess, out.trim())
-    }
-
-    suspend fun pmInstallCommit(session: String): Pair<Boolean, String> {
-        var isSuccess = true
-        var out = ""
-
-        logUtil.execute(logId, "pm install-commit $QUOTE$session$QUOTE").also { result ->
-            if (result.isSuccess.not()) {
-                isSuccess = false
-                out += result.outString + "\n"
-            }
+        suspend fun commit(session: String): ShellResult = run {
+            // pm install-commit "$session"
+            execute(
+                "install-commit",
+                "$QUOTE$session$QUOTE",
+            )
         }
-        return Pair(isSuccess, out.trim())
     }
 }

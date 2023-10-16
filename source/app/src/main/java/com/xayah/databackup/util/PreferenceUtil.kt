@@ -8,12 +8,13 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.xayah.databackup.BuildConfig
+import com.xayah.databackup.data.MediaBackupOperationEntity
+import com.xayah.databackup.data.MediaRestoreOperationEntity
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageRestoreOperation
 import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
 import com.xayah.databackup.ui.component.SortState
-import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import kotlinx.coroutines.flow.map
@@ -24,8 +25,8 @@ private const val LZ4_SUFFIX = "tar.lz4"
 
 enum class CompressionType(val type: String, val suffix: String, val compressPara: String, val decompressPara: String) {
     TAR("tar", TAR_SUFFIX, "", ""),
-    ZSTD("zstd", ZSTD_SUFFIX, "zstd -r -T0 --ultra -1 -q --priority=rt", "-I ${QUOTE}zstd${QUOTE}"),
-    LZ4("lz4", LZ4_SUFFIX, "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4", "-I ${QUOTE}zstd${QUOTE}");
+    ZSTD("zstd", ZSTD_SUFFIX, "zstd -r -T0 --ultra -1 -q --priority=rt", "zstd"),
+    LZ4("lz4", LZ4_SUFFIX, "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4", "zstd");
 
     companion object {
         fun of(name: String?): CompressionType = tryOn(
@@ -65,8 +66,9 @@ enum class DataType(val type: String) {
         else -> ""
     }
 
-    fun updateEntityLog(entity: PackageBackupOperation, msg: String) {
+    fun setEntityLog(entity: PackageBackupOperation, msg: String) {
         when (this) {
+            PACKAGE_APK -> entity.apkLog = msg
             PACKAGE_USER -> entity.userLog = msg
             PACKAGE_USER_DE -> entity.userDeLog = msg
             PACKAGE_DATA -> entity.dataLog = msg
@@ -76,8 +78,9 @@ enum class DataType(val type: String) {
         }
     }
 
-    fun updateEntityLog(entity: PackageRestoreOperation, msg: String) {
+    fun setEntityLog(entity: PackageRestoreOperation, msg: String) {
         when (this) {
+            PACKAGE_APK -> entity.apkLog = msg
             PACKAGE_USER -> entity.userLog = msg
             PACKAGE_USER_DE -> entity.userDeLog = msg
             PACKAGE_DATA -> entity.dataLog = msg
@@ -87,8 +90,23 @@ enum class DataType(val type: String) {
         }
     }
 
-    fun updateEntityState(entity: PackageBackupOperation, state: OperationState) {
+    fun setEntityLog(entity: MediaBackupOperationEntity, msg: String) {
         when (this) {
+            MEDIA_MEDIA -> entity.opLog = msg
+            else -> {}
+        }
+    }
+
+    fun setEntityLog(entity: MediaRestoreOperationEntity, msg: String) {
+        when (this) {
+            MEDIA_MEDIA -> entity.opLog = msg
+            else -> {}
+        }
+    }
+
+    fun setEntityState(entity: PackageBackupOperation, state: OperationState) {
+        when (this) {
+            PACKAGE_APK -> entity.apkState = state
             PACKAGE_USER -> entity.userState = state
             PACKAGE_USER_DE -> entity.userDeState = state
             PACKAGE_DATA -> entity.dataState = state
@@ -98,13 +116,28 @@ enum class DataType(val type: String) {
         }
     }
 
-    fun updateEntityState(entity: PackageRestoreOperation, state: OperationState) {
+    fun setEntityState(entity: PackageRestoreOperation, state: OperationState) {
         when (this) {
+            PACKAGE_APK -> entity.apkState = state
             PACKAGE_USER -> entity.userState = state
             PACKAGE_USER_DE -> entity.userDeState = state
             PACKAGE_DATA -> entity.dataState = state
             PACKAGE_OBB -> entity.obbState = state
             PACKAGE_MEDIA -> entity.mediaState = state
+            else -> {}
+        }
+    }
+
+    fun setEntityState(entity: MediaBackupOperationEntity, state: OperationState) {
+        when (this) {
+            MEDIA_MEDIA -> entity.opState = state
+            else -> {}
+        }
+    }
+
+    fun setEntityState(entity: MediaRestoreOperationEntity, state: OperationState) {
+        when (this) {
+            MEDIA_MEDIA -> entity.opState = state
             else -> {}
         }
     }

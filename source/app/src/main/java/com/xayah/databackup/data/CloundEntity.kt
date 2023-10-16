@@ -7,6 +7,9 @@ import androidx.room.PrimaryKey
 import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.R
 
+/**
+ * Only used for premium build, but reserved in foss.
+ */
 
 enum class AccountConfigSizeBytes(val value: Long) {
     Loading(-255L),

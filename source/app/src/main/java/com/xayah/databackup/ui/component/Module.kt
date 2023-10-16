@@ -3,7 +3,6 @@ package com.xayah.databackup.ui.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import com.xayah.databackup.ui.component.TitleMediumBoldText
 import com.xayah.databackup.ui.token.ModuleTokens
 
 @Composable

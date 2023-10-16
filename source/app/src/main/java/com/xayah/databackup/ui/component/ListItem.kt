@@ -74,7 +74,6 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.ListItemTokens
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.PathUtil
-import com.xayah.databackup.util.command.MediumRestoreUtil
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.activity.PickerType
 import com.xayah.librootservice.service.RemoteRootService
@@ -714,7 +713,7 @@ private suspend fun DialogState.openMediaRestoreDeleteDialog(
                     }
                 }
             }) {
-                val path = MediumRestoreUtil.getMediaItemSavePath(entity.name, entity.timestamp)
+                val path = entity.archivePath
                 remoteRootService.deleteRecursively(path)
                 remoteRootService.clearEmptyDirectoriesRecursively(PathUtil.getRestoreMediumSavePath())
             }

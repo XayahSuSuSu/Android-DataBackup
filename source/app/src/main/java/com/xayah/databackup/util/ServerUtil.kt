@@ -17,7 +17,7 @@ data class Release(
     @SerializedName("html_url") val url: String = "",
     @SerializedName("name") val name: String = "",
     @SerializedName("assets") val assets: List<Asset> = listOf(),
-    @SerializedName("body") val body: String = ""
+    @SerializedName("body") val body: String = "",
 ) {
     val content get() = body.replace(Regex("[*`]"), "")
 }
@@ -26,7 +26,7 @@ data class Release(
  * GitHub Api Asset Entity
  */
 data class Asset(
-    @SerializedName("browser_download_url") val url: String = ""
+    @SerializedName("browser_download_url") val url: String = "",
 )
 
 class ServerUtil @Inject constructor() {

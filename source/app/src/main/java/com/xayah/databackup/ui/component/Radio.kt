@@ -29,7 +29,7 @@ fun <T> RadioButtonGroup(
     itemVerticalArrangement: Arrangement.Vertical = Arrangement.Top,
     onItemClick: (item: T) -> Unit,
     onItemEnabled: (item: T) -> Boolean,
-    content: @Composable (item: T) -> Unit
+    content: @Composable (item: T) -> Unit,
 ) {
     var selected by remember { mutableStateOf(defSelected) }
     LaunchedEffect(null) {

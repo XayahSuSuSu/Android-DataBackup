@@ -6,8 +6,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.xayah.databackup.util.CompressionType
 import com.xayah.databackup.util.DataType
-import com.xayah.databackup.util.command.MediumRestoreUtil
+import com.xayah.databackup.util.PathUtil
 
 @Entity
 data class MediaBackupEntity(
@@ -36,7 +37,7 @@ data class MediaRestoreEntity(
     var selected: Boolean,
 ) {
     val archivePath: String
-        get() = "${MediumRestoreUtil.getMediaItemSavePath(name, timestamp)}/${DataType.MEDIA_MEDIA.type}.${MediumRestoreUtil.compressionType.suffix}"
+        get() = "${PathUtil.getRestoreMediumSavePath()}/${name}/$timestamp/${DataType.MEDIA_MEDIA.type}.${CompressionType.TAR.suffix}"
 
     val sizeDisplay: String
         get() = formatSize(sizeBytes.toDouble())
@@ -89,7 +90,7 @@ data class MediaRestoreOperationEntity(
     var state: Boolean = false,
 ) {
     val archivePath: String
-        get() = "${MediumRestoreUtil.getMediaItemSavePath(name, timestamp)}/${DataType.MEDIA_MEDIA.type}.${MediumRestoreUtil.compressionType.suffix}"
+        get() = "${PathUtil.getRestoreMediumSavePath()}/${name}/$timestamp/${DataType.MEDIA_MEDIA.type}.${CompressionType.TAR.suffix}"
 
     val isSucceed: Boolean
         get() {
