@@ -161,33 +161,40 @@ class RestoreViewModel @Inject constructor(
                     )
                 }
 
-                // Check config first
-                val packageRestoreEntire: PackageRestoreEntire
-                if (remoteRootService.exists(tmpConfigFilePath)) {
-                    // Directly read from config
-                    val json = remoteRootService.readText(tmpConfigFilePath)
-                    val type = object : TypeToken<PackageRestoreEntire>() {}.type
-                    packageRestoreEntire = gsonUtil.fromJson(json, type)
-                } else {
-                    packageRestoreEntire = PackageRestoreEntire(
-                        packageName = packageName,
-                        backupOpCode = operationCode,
-                        timestamp = timestamp,
-                        compressionType = compressionType,
-                    )
-                    packageInfo?.apply {
-                        packageRestoreEntire.also { entity ->
-                            entity.label = applicationInfo.loadLabel(packageManager).toString()
-                            entity.versionName = versionName ?: ""
-                            entity.versionCode = longVersionCode
-                            entity.flags = applicationInfo.flags
+                tryOnScope(
+                    block = {
+                        // Check config first
+                        val packageRestoreEntire: PackageRestoreEntire
+                        if (remoteRootService.exists(tmpConfigFilePath)) {
+                            // Directly read from config
+                            val json = remoteRootService.readText(tmpConfigFilePath)
+                            val type = object : TypeToken<PackageRestoreEntire>() {}.type
+                            packageRestoreEntire = gsonUtil.fromJson(json, type)
+                        } else {
+                            packageRestoreEntire = PackageRestoreEntire(
+                                packageName = packageName,
+                                backupOpCode = operationCode,
+                                timestamp = timestamp,
+                                compressionType = compressionType,
+                            )
+                            packageInfo?.apply {
+                                packageRestoreEntire.also { entity ->
+                                    entity.label = applicationInfo.loadLabel(packageManager).toString()
+                                    entity.versionName = versionName ?: ""
+                                    entity.versionCode = longVersionCode
+                                    entity.flags = applicationInfo.flags
+                                }
+                                val icon = applicationInfo.loadIcon(packageManager)
+                                EnvUtil.saveIcon(context, packageName, icon)
+                                logUtil.log(logTag, "Icon saved")
+                            }
                         }
-                        val icon = applicationInfo.loadIcon(packageManager)
-                        EnvUtil.saveIcon(context, packageName, icon)
-                        logUtil.log(logTag, "Icon saved")
+                        packageRestoreEntireDao.upsert(packageRestoreEntire)
+                    },
+                    onException = {
+                        logUtil.log(logTag, "Failed: ${it.message}")
                     }
-                }
-                packageRestoreEntireDao.upsert(packageRestoreEntire)
+                )
 
                 remoteRootService.deleteRecursively(tmpApkPath)
                 remoteRootService.deleteRecursively(tmpConfigPath)
