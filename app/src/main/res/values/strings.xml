@@ -200,8 +200,8 @@
     </plurals>
     <!-- Abbreviated message to express that something occurred some number of hours in the past (e.g., 5 hours ago). -->
     <plurals name="num_hours_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> hour</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> hours</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> giờ</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> giờ</item>
     </plurals>
     <!-- Abbreviated message to express that something occurred some number of days in the past (e.g., 5 days ago). -->
     <plurals name="num_days_ago">
