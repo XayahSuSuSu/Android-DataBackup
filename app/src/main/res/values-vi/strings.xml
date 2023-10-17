@@ -160,4 +160,12 @@
     <plurals name="num_days_ago">
         <item quantity="other"><xliff:g id="count">%d</xliff:g> ngày</item>
     </plurals>
+    <string name="symbol_question">\?</string>
+    <string name="symbol_exclamation">!</string>
+    <string name="manifest">Biểu thị</string>
+    <string name="monet">Monet</string>
+    <string name="app_name">DataBackup</string>
+    <string name="environment_detection">Phát hiện môi trường</string>
+    <string name="check_package_usage_stats_permission">Check package usage stats permission</string>
+    <string name="setting_SELinux">Cài đặt SELinux</string>
 </resources>
