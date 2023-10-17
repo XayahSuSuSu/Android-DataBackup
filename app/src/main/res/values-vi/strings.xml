@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="size">Kích cỡ</string>
     <string name="click_to_clear">Nhấn vào đây để xóa</string>
     <string name="decompress">Giải nén</string>
@@ -157,4 +157,7 @@
     <string name="call_log_permission">Quyền truy cập lịch sử cuộc gọi</string>
     <string name="latest">Mới nhất</string>
     <string name="failed">Thất bại</string>
+    <plurals name="num_days_ago">
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> ngày</item>
+    </plurals>
 </resources>
