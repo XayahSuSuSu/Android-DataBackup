@@ -46,4 +46,18 @@
     <string name="speed">Velocidad</string>
     <string name="latest">Más reciente</string>
     <string name="failed">Fallido</string>
+    <string name="auto_fix_multi_user_context_title">Corrección automática del contexto multiusuario, sin necesidad de reiniciar las aplicaciones multiusuario restauradas</string>
+    <string name="auto_fix_multi_user_context">Corrección del contexto</string>
+    <string name="create">Cree</string>
+    <string name="repeat_to_add">¡Repetir para añadir!</string>
+    <string name="all">Todo</string>
+    <string name="backup_icon">Icono de la copia de seguridad</string>
+    <string name="installing">Instalando</string>
+    <string name="backup_icon_title">Icono de la copia de seguridad para hacer una copia de seguridad de las aplicaciones, se utiliza para mostrar al restaurar</string>
+    <string name="confirm_exit">¿Seguro que quieres dejarlo\?</string>
+    <string name="not_selected">No seleccionados</string>
+    <string name="alphabet">Alfabético</string>
+    <string name="install_time">Tiempo de instalación</string>
+    <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar las siguientes Condiciones de uso y Política de privacidad antes de empezar a utilizar esta aplicación</string>
+    <string name="welcome_to_use">Bienvenido</string>
 </resources>
