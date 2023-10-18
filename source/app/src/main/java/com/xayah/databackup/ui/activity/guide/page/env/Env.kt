@@ -42,9 +42,12 @@ fun PageEnv(guideViewModel: GuideViewModel) {
                 onFabClick = { _ ->
                     viewModel.viewModelScope.launch {
                         uiState.mutex.withLock {
-                            if (uiState.allValidated.not()) {
-                                for (i in envItems) {
-                                    i.onClick.invoke(context, guideViewModel, dialogSlot)
+                            if (uiState.processing.not()) {
+                                viewModel.setProcessing(true)
+                                if (uiState.allValidated.not()) {
+                                    for (i in envItems) {
+                                        i.onClick.invoke(context, guideViewModel, dialogSlot)
+                                    }
                                 }
                             }
                         }
@@ -64,9 +67,9 @@ fun PageEnv(guideViewModel: GuideViewModel) {
                 state = item.state,
                 onClick = {
                     viewModel.viewModelScope.launch {
-                        if (uiState.processing.not()) {
-                            viewModel.setProcessing(true)
-                            uiState.mutex.withLock {
+                        uiState.mutex.withLock {
+                            if (uiState.processing.not()) {
+                                viewModel.setProcessing(true)
                                 if (uiState.allValidated.not()) {
                                     item.onClick.invoke(context, guideViewModel, dialogSlot)
                                 }
