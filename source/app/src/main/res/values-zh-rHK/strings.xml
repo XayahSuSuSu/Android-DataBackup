@@ -153,4 +153,5 @@
     <string name="set_as_main_account">設定為主帳戶</string>
     <string name="please_set_up_main_account">請設定主帳戶</string>
     <string name="cloud_server_disconnected">雲端伺服器已斷開連接</string>
+    <string name="please_set_up_backup_dir">請設定備份目錄</string>
 </resources>

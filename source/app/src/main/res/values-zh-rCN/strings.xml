@@ -153,4 +153,5 @@
     <string name="set_as_main_account">设置为主账户</string>
     <string name="please_set_up_main_account">请设置主账户</string>
     <string name="cloud_server_disconnected">云端服务器已断开连接</string>
+    <string name="please_set_up_backup_dir">请设置备份目录</string>
 </resources>

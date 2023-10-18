@@ -15,7 +15,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.cloud.setRemotePath
 import com.xayah.databackup.ui.component.ListItemManifestVertical
-import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.command.Rclone
 import com.xayah.databackup.util.readCloudActiveName
 import com.xayah.libpickyou.ui.PickYouLauncher
@@ -52,14 +51,27 @@ fun OverlookExtensionItems() {
     }
 }
 
-suspend fun manifestOnFabClickExtension(context: Context, logUtil: LogUtil, onSuccess: suspend () -> Unit) {
+suspend fun manifestOnFabClickExtension(context: Context, uiState: ManifestUiState, onSuccess: suspend () -> Unit) {
+    val logUtil = uiState.logUtil
     val logId = logUtil.log("Cloud", "Test server.")
     val name = context.readCloudActiveName().first().toString()
+    val baseEntity = uiState.cloudDao.queryBaseByNameFlow(name).first()
+    val backupSavePath = baseEntity?.backupSavePath ?: ""
+
     Rclone.mkdir(dst = "$name:DataBackupCloudTmpTest", dryRun = true).also { result ->
         result.logCmd(logUtil, logId)
-        if (result.isSuccess) onSuccess()
-        else withMainContext {
-            Toast.makeText(context, context.getString(R.string.cloud_server_disconnected), Toast.LENGTH_SHORT).show()
+        if (result.isSuccess) {
+            if (backupSavePath.isNotEmpty()) {
+                onSuccess()
+            } else {
+                withMainContext {
+                    Toast.makeText(context, context.getString(R.string.please_set_up_backup_dir), Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            withMainContext {
+                Toast.makeText(context, context.getString(R.string.cloud_server_disconnected), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

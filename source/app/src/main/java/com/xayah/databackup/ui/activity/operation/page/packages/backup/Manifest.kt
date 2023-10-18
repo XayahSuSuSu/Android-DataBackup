@@ -97,7 +97,7 @@ fun PackageBackupManifest() {
                         scope.launch {
                             if (cloudMode) {
                                 withIOContext {
-                                    manifestOnFabClickExtension(context, uiState.logUtil) {
+                                    manifestOnFabClickExtension(context, uiState) {
                                         withMainContext {
                                             navController.navigateAndPopAllStack(OperationRoutes.PackageBackupProcessing.route)
                                         }

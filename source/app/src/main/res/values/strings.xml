@@ -158,4 +158,5 @@
     <string name="set_as_main_account">Set as main account</string>
     <string name="please_set_up_main_account">Please set up main account</string>
     <string name="cloud_server_disconnected">Cloud server disconnected</string>
+    <string name="please_set_up_backup_dir">Please set up backup directory</string>
 </resources>
