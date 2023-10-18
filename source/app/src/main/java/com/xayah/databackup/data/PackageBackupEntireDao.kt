@@ -2,6 +2,7 @@ package com.xayah.databackup.data
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -26,19 +27,23 @@ interface PackageBackupEntireDao {
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1")
     fun queryActivePackages(): Flow<List<PackageBackupEntire>>
 
-    @Query("SELECT packageName, label FROM PackageBackupEntire WHERE packageName = :packageName LIMIT 1")
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * FROM PackageBackupEntire WHERE packageName = :packageName LIMIT 1")
     suspend fun queryManifestPackage(packageName: String): PackageBackupManifest
 
     @Query("SELECT packageName, label, operationCode, versionName, versionCode, flags FROM PackageBackupEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
     suspend fun queryActiveTotalPackages(): List<PackageBackupOp>
 
-    @Query("SELECT packageName, label FROM PackageBackupEntire WHERE active = 1 AND operationCode = 3")
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 3")
     fun queryActiveBothPackages(): Flow<List<PackageBackupManifest>>
 
-    @Query("SELECT packageName, label FROM PackageBackupEntire WHERE active = 1 AND operationCode = 2")
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 2")
     fun queryActiveAPKOnlyPackages(): Flow<List<PackageBackupManifest>>
 
-    @Query("SELECT packageName, label FROM PackageBackupEntire WHERE active = 1 AND operationCode = 1")
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND operationCode = 1")
     fun queryActiveDataOnlyPackages(): Flow<List<PackageBackupManifest>>
 
     @Query("SELECT COUNT(*) FROM PackageBackupEntire WHERE active = 1")

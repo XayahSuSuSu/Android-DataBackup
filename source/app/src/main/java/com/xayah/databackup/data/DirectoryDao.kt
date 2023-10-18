@@ -23,6 +23,9 @@ interface DirectoryDao {
     @Query("SELECT * FROM DirectoryEntity WHERE directoryType = :type AND selected = 1 LIMIT 1")
     suspend fun querySelectedByDirectoryType(type: DirectoryType): DirectoryEntity?
 
+    @Query("SELECT * FROM DirectoryEntity WHERE directoryType = :type AND selected = 1 LIMIT 1")
+    fun querySelectedByDirectoryTypeFlow(type: DirectoryType): Flow<DirectoryEntity?>
+
     @Query("SELECT id FROM DirectoryEntity WHERE parent = :parent AND child = :child AND directoryType = :type LIMIT 1")
     suspend fun queryId(parent: String, child: String, type: DirectoryType): Long
 

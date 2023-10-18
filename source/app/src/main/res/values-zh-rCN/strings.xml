@@ -154,4 +154,6 @@
     <string name="please_set_up_main_account">请设置主账户</string>
     <string name="cloud_server_disconnected">云端服务器已断开连接</string>
     <string name="please_set_up_backup_dir">请设置备份目录</string>
+    <string name="original_data_size">数据大小（原始）</string>
+    <string name="available_space">可用空间</string>
 </resources>

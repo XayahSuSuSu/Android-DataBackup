@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.DataUsage
+import androidx.compose.material.icons.rounded.InsertChartOutlined
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -152,10 +154,22 @@ fun PackageBackupManifest() {
                                     ) {
                                         selectedTabIndex = 3
                                     }
+                                    val totalSizeDisplay by uiState.totalSizeDisplay.collectAsState(initial = "")
+                                    ListItemManifestVertical(
+                                        icon = Icons.Rounded.InsertChartOutlined,
+                                        title = stringResource(R.string.original_data_size),
+                                        content = totalSizeDisplay
+                                    ) {}
 
                                     if (cloudMode) {
                                         OverlookExtensionItems()
                                     } else {
+                                        val availableBytesDisplay by uiState.availableBytesDisplay.collectAsState(initial = "")
+                                        ListItemManifestVertical(
+                                            icon = Icons.Rounded.DataUsage,
+                                            title = stringResource(R.string.available_space),
+                                            content = availableBytesDisplay
+                                        ) {}
                                         val backupSavePath by context.readBackupSavePath().collectAsState(initial = "")
                                         ListItemManifestVertical(
                                             icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),

@@ -118,6 +118,7 @@ data class PackageBackupActivate(
 data class PackageBackupManifest(
     @PrimaryKey var packageName: String,
     var label: String,
+    @Embedded var storageStats: StorageStats,
 )
 
 /**
