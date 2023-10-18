@@ -5,7 +5,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.data.PackageBackupEntireDao
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageBackupOperationDao
@@ -15,9 +14,7 @@ import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 enum class ProcessingState {
@@ -60,29 +57,39 @@ class ProcessingViewModel @Inject constructor(
     val uiState: State<ProcessingUiState>
         get() = _uiState
 
-    fun backupPackages() {
+    fun setEffectLaunched(value: Boolean) {
         val uiState by uiState
 
-        viewModelScope.launch {
-            uiState.mutex.withLock {
-                if (uiState.effectLaunched.not()) {
-                    withIOContext {
-                        _uiState.value = uiState.copy(effectLaunched = true)
+        _uiState.value = uiState.copy(effectLaunched = value)
+    }
 
-                        val operationLocalService = OperationLocalService(context = context)
-                        val preparation = operationLocalService.backupPackagesPreparation()
+    fun setEffectState(state: ProcessingState) {
+        val uiState by uiState
 
-                        _uiState.value = uiState.copy(effectState = ProcessingState.Processing)
-                        operationLocalService.backupPackages(timestamp = uiState.timestamp)
+        _uiState.value = uiState.copy(effectState = state)
+    }
 
-                        _uiState.value = uiState.copy(effectState = ProcessingState.Waiting)
-                        operationLocalService.backupPackagesAfterwards(preparation)
+    fun setEffectFinished() {
+        val uiState by uiState
 
-                        operationLocalService.destroyService()
-                        _uiState.value = uiState.copy(effectFinished = true)
-                    }
-                }
-            }
+        _uiState.value = uiState.copy(effectFinished = true)
+    }
+
+    suspend fun backupPackages() {
+        val uiState by uiState
+
+        withIOContext {
+            val operationLocalService = OperationLocalService(context = context)
+            val preparation = operationLocalService.backupPackagesPreparation()
+
+            setEffectState(ProcessingState.Processing)
+            operationLocalService.backupPackages(timestamp = uiState.timestamp)
+
+            setEffectState(ProcessingState.Waiting)
+            operationLocalService.backupPackagesAfterwards(preparation)
+
+            operationLocalService.destroyService()
+            setEffectFinished()
         }
     }
 }

@@ -26,32 +26,37 @@ object PathUtil {
 
     fun getFileName(path: String): String = Paths.get(path).fileName.pathString
 
+    private fun getRelativePath(path: String, parentPath: String): String = path.replaceFirst("${parentPath}/", "")
+
     // Paths for internal usage.
     fun getIconPath(context: Context, packageName: String): String = "${context.iconPath()}/${packageName}.png"
 
     // Exclude dirs while running `tree` command.
     fun getExcludeDirs(): List<String> = listOf("tree", "icon", "databases", "log")
 
+    private fun getTmpBackupSavePath(): String = "/data/local/tmp/DataBackupTmpSavePath"
     fun getTmpApkPath(context: Context, packageName: String): String = "${context.filesPath()}/tmp/apks/$packageName"
     fun getTmpConfigPath(context: Context, name: String, timestamp: Long): String = "${context.filesPath()}/tmp/config/$name/$timestamp"
     fun getTmpConfigFilePath(context: Context, name: String, timestamp: Long): String = "${getTmpConfigPath(context, name, timestamp)}/PackageRestoreEntire"
     fun getTmpMountPath(context: Context, name: String): String = "${context.filesPath()}/tmp/mount/$name"
 
     // Paths for backup save dir.
-    fun getBackupSavePath(): String = runBlocking { DataBackupApplication.application.readBackupSavePath().first() }
-    private fun getBackupArchivesSavePath(): String = "${getBackupSavePath()}/archives"
-    fun getBackupPackagesSavePath(): String = "${getBackupArchivesSavePath()}/packages"
-    fun getBackupMediumSavePath(): String = "${getBackupArchivesSavePath()}/medium"
-    private fun getTreeSavePath(): String = "${getBackupSavePath()}/tree"
+    fun getBackupSavePath(cloudMode: Boolean): String =
+        runBlocking { if (cloudMode) getTmpBackupSavePath() else DataBackupApplication.application.readBackupSavePath().first() }
+
+    fun getRelativeBackupSavePath(path: String, cloudMode: Boolean): String = getRelativePath(path, getBackupSavePath(cloudMode))
+    private fun getBackupArchivesSavePath(cloudMode: Boolean): String = "${getBackupSavePath(cloudMode)}/archives"
+    fun getBackupPackagesSavePath(cloudMode: Boolean = false): String = "${getBackupArchivesSavePath(cloudMode)}/packages"
+    fun getBackupMediumSavePath(cloudMode: Boolean = false): String = "${getBackupArchivesSavePath(cloudMode)}/medium"
+    private fun getTreeSavePath(): String = "${getBackupSavePath(false)}/tree"
     fun getTreeSavePath(timestamp: Long): String = "${getTreeSavePath()}/tree_${timestamp}"
-    fun getIconSavePath(): String = "${getBackupSavePath()}/icon"
-    fun getIconNoMediaSavePath(): String = "${getIconSavePath()}/.nomedia"
-    private fun getLogSavePath(): String = "${getBackupSavePath()}/log"
+    fun getConfigsSavePath(cloudMode: Boolean = false): String = "${getBackupSavePath(cloudMode)}/configs"
+    private fun getLogSavePath(): String = "${getBackupSavePath(false)}/log"
     fun getLogSavePath(timestamp: Long): String = "${getLogSavePath()}/log_${timestamp}"
 
     // Paths for restore save dir.
     private fun getRestoreSavePath(): String = runBlocking { DataBackupApplication.application.readRestoreSavePath().first() }
-    fun getRestoreArchivesSavePath(): String = "${getRestoreSavePath()}/archives"
+    private fun getRestoreArchivesSavePath(): String = "${getRestoreSavePath()}/archives"
     fun getRestorePackagesSavePath(): String = "${getRestoreArchivesSavePath()}/packages"
     fun getRestoreMediumSavePath(): String = "${getRestoreArchivesSavePath()}/medium"
     fun getRestoreIconSavePath(): String = "${getRestoreSavePath()}/icon"

@@ -153,4 +153,74 @@ object CloudUtil {
 
         Pair(isSuccess, outList.toLineString().trim())
     }
+
+    suspend fun mkdir(logUtil: LogUtil, remote: String): Pair<Boolean, String> = withIOContext {
+        val logId = logUtil.log(LogTag, "$remote: Create.")
+        var isSuccess = true
+        val outList = mutableListOf<String>()
+
+        val shell = DataBackupApplication.getBuilder(context = DataBackupApplication.application).build()
+        logUtil.execute(logId, "rclone mkdir $remote", shell).also { result ->
+            if (result.isSuccess.not()) isSuccess = false
+            outList.add(result.outString)
+        }
+        withContext(Dispatchers.IO) {
+            shell.close()
+        }
+
+        Pair(isSuccess, outList.toLineString().trim())
+    }
+
+    suspend fun copy(logUtil: LogUtil, src: String, dst: String): Pair<Boolean, String> = withIOContext {
+        val logId = logUtil.log(LogTag, "Rclone: CopyTo $src $dst.")
+        var isSuccess = true
+        val outList = mutableListOf<String>()
+
+        val shell = DataBackupApplication.getBuilder(context = DataBackupApplication.application).build()
+        logUtil.execute(logId, "rclone copy -P --stats-one-line $src $dst", shell).also { result ->
+            if (result.isSuccess.not()) isSuccess = false
+            outList.add(result.outString)
+        }
+        withContext(Dispatchers.IO) {
+            shell.close()
+        }
+
+        Pair(isSuccess, outList.toLineString().trim())
+    }
+}
+
+object Rclone {
+    private suspend fun execute(vararg args: String): ShellResult = CommonUtil.execute("rclone", *args)
+
+    suspend fun mount(src: String, dst: String): ShellResult = run {
+        // rclone mount "$src" "$dst" --daemon --allow-non-empty --allow-other --vfs-cache-mode off --allow-other
+        execute(
+            "mount",
+            "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
+            "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
+            "--daemon",
+            "--allow-non-empty",
+            "--allow-other",
+            "--vfs-cache-mode off",
+            "--allow-other",
+        )
+    }
+
+    suspend fun unmount(dst: String): ShellResult = run {
+        // umount -f "$dst"
+        CommonUtil.execute(
+            "umount",
+            "-f",
+            "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
+        )
+    }
+
+    suspend fun mkdir(dst: String, dryRun: Boolean = false): ShellResult = run {
+        // umount -f "$dst"
+        execute(
+            "mkdir",
+            "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
+            if (dryRun) "--dry-run" else ""
+        )
+    }
 }

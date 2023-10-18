@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "3900f90e4c786a125ab0900737769fda",
+    "identityHash": "ad0794e9f060ba2182367bd04df8bb29",
     "entities": [
       {
         "tableName": "LogEntity",
@@ -958,7 +958,7 @@
       },
       {
         "tableName": "CloudEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `active` INTEGER NOT NULL DEFAULT 0, `type` TEXT NOT NULL DEFAULT '', `host` TEXT NOT NULL DEFAULT '', `port` INTEGER NOT NULL DEFAULT -1, `url` TEXT NOT NULL DEFAULT '', `user` TEXT NOT NULL DEFAULT '', `pass` TEXT NOT NULL DEFAULT '', `vendor` TEXT NOT NULL DEFAULT '', `sizeBytes` INTEGER NOT NULL DEFAULT -255, `mounted` INTEGER NOT NULL DEFAULT 0, `remote` TEXT NOT NULL DEFAULT '', `local` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `active` INTEGER NOT NULL DEFAULT 0, `type` TEXT NOT NULL DEFAULT '', `host` TEXT NOT NULL DEFAULT '', `port` INTEGER NOT NULL DEFAULT -1, `url` TEXT NOT NULL DEFAULT '', `user` TEXT NOT NULL DEFAULT '', `pass` TEXT NOT NULL DEFAULT '', `vendor` TEXT NOT NULL DEFAULT '', `sizeBytes` INTEGER NOT NULL DEFAULT -255, `backupSavePath` TEXT NOT NULL DEFAULT '', `mounted` INTEGER NOT NULL DEFAULT 0, `remote` TEXT NOT NULL DEFAULT '', `local` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`name`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -1030,6 +1030,13 @@
             "defaultValue": "-255"
           },
           {
+            "fieldPath": "account.backupSavePath",
+            "columnName": "backupSavePath",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
             "fieldPath": "mount.mounted",
             "columnName": "mounted",
             "affinity": "INTEGER",
@@ -1064,7 +1071,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3900f90e4c786a125ab0900737769fda')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ad0794e9f060ba2182367bd04df8bb29')"
     ]
   }
 }

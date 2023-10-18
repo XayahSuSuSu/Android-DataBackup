@@ -15,12 +15,14 @@ import com.xayah.databackup.data.CloudMountEntity
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.CloudUtil
+import com.xayah.databackup.util.command.Rclone
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.activity.PickerType
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
 import com.xayah.librootservice.util.withMainContext
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -28,6 +30,47 @@ import javax.inject.Inject
 
 fun List<String>.toPathString() = joinToString(separator = "/")
 fun String.toPathList() = split("/")
+
+suspend fun PickYouLauncher.setRemotePath(
+    context: ComponentActivity,
+    rootService: RemoteRootService,
+    name: String,
+    scope: CoroutineScope,
+    onPath: suspend (path: String) -> Unit,
+) {
+    withIOContext {
+        rootService.mkdirs(PathUtil.getTmpMountPath(context, name))
+        Rclone.mount("$name:", PathUtil.getTmpMountPath(context, name))
+    }
+
+    withMainContext {
+        setTitle(context.getString(R.string.select_target_directory))
+        setType(PickerType.DIRECTORY)
+        setLimitation(1)
+        val mountPath = PathUtil.getTmpMountPath(context, name)
+        val pathSplitList = mountPath.toPathList()
+        val pathSize = pathSplitList.size
+        setDefaultPath(PathUtil.getParentPath(mountPath))
+        setPathPrefixHiddenNum(pathSize - 2)
+        launch(context) { pathList ->
+            scope.launch {
+                withIOContext {
+                    pathList.firstOrNull()?.also { pathString ->
+                        val pathSplit = pathString.toPathList().toMutableList()
+                        // Remove "mount/${name}"
+                        repeat(2) {
+                            pathSplit.removeFirst()
+                        }
+                        onPath(pathSplit.toPathString())
+                    }
+                    Rclone.unmount(mountPath)
+                    rootService.deleteRecursively(mountPath)
+                    rootService.destroyService()
+                }
+            }
+        }
+    }
+}
 
 data class MountUiState(
     val cloudDao: CloudDao,
@@ -97,41 +140,10 @@ class MountViewModel @Inject constructor(cloudDao: CloudDao, logUtil: LogUtil) :
             unmount(entity)
         }
 
-        withIOContext {
-            remoteRootService.mkdirs(PathUtil.getTmpMountPath(context, entity.name))
-            CloudUtil.mount(logUtil = uiState.logUtil, remote = "${entity.name}:", destination = PathUtil.getTmpMountPath(context, entity.name), "--read-only")
-        }
-
-        withMainContext {
-            PickYouLauncher().apply {
-                setTitle(context.getString(R.string.select_target_directory))
-                setType(PickerType.DIRECTORY)
-                setLimitation(1)
-                val mountPath = PathUtil.getTmpMountPath(context, entity.name)
-                val pathSplitList = mountPath.toPathList()
-                val pathSize = pathSplitList.size
-                setDefaultPath(PathUtil.getParentPath(mountPath))
-                setPathPrefixHiddenNum(pathSize - 2)
-                launch(context) { pathList ->
-                    viewModelScope.launch {
-                        withIOContext {
-                            pathList.firstOrNull()?.also { pathString ->
-                                val pathSplit = pathString.toPathList().toMutableList()
-                                // Remove "mount/${name}"
-                                repeat(2) {
-                                    pathSplit.removeFirst()
-                                }
-                                // Add "${name}:"
-                                val finalPath = "${entity.name}:${pathSplit.toPathString()}"
-                                uiState.cloudDao.upsertMount(entity.copy(mount = entity.mount.copy(remote = finalPath)))
-                            }
-                            CloudUtil.unmount(logUtil = uiState.logUtil, name = entity.name, destination = mountPath)
-                            remoteRootService.deleteRecursively(mountPath)
-                            remoteRootService.destroyService()
-                        }
-                    }
-                }
-            }
+        PickYouLauncher().setRemotePath(context = context, rootService = remoteRootService, name = entity.name, scope = viewModelScope) {
+            // Add "${name}:"
+            val finalPath = "${entity.name}:${it}"
+            uiState.cloudDao.upsertMount(entity.copy(mount = entity.mount.copy(remote = finalPath)))
         }
     }
 

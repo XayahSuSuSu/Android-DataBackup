@@ -153,4 +153,9 @@
     <string name="not_selected">Not selected</string>
     <string name="third_party">Third party</string>
     <string name="system">System</string>
+    <string name="uploading">Uploading</string>
+    <string name="main_account">Main account</string>
+    <string name="set_as_main_account">Set as main account</string>
+    <string name="please_set_up_main_account">Please set up main account</string>
+    <string name="cloud_server_disconnected">Cloud server disconnected</string>
 </resources>

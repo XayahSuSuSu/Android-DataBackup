@@ -451,6 +451,7 @@ suspend fun Context.saveStoreLong(key: Preferences.Key<Long>, value: Long) = dat
 val KeyBackupSavePath = stringPreferencesKey("backup_save_path")
 val KeyRestoreSavePath = stringPreferencesKey("restore_save_path")
 val KeyCloudAccountNum = intPreferencesKey("cloud_account_num")
+val KeyCloudActiveName = stringPreferencesKey("cloud_active_name")
 // --------------------------------------------------------------------------------------
 
 
@@ -467,7 +468,7 @@ fun Context.readBackupSavePath() = readStoreString(key = KeyBackupSavePath, defV
  */
 fun Context.readRestoreSavePath() = readStoreString(key = KeyRestoreSavePath, defValue = ConstantUtil.DefaultPath)
 
-fun Context.readCloudAccountNum() = readStoreInt(key = KeyCloudAccountNum, defValue = 0)
+fun Context.readCloudActiveName() = readStoreString(key = KeyCloudActiveName, defValue = "")
 // --------------------------------------------------------------------------------------
 
 
@@ -482,5 +483,5 @@ suspend fun Context.saveBackupSavePath(value: String) = saveStoreString(key = Ke
  */
 suspend fun Context.saveRestoreSavePath(value: String) = saveStoreString(key = KeyRestoreSavePath, value = value.trim())
 
-suspend fun Context.saveCloudAccountNum(value: Int) = saveStoreInt(key = KeyCloudAccountNum, value = value)
+suspend fun Context.saveCloudActiveName(value: String) = saveStoreString(key = KeyCloudActiveName, value = value.trim())
 // ---------------------------------------------------------------------------------------

@@ -47,6 +47,7 @@ import com.xayah.databackup.ui.component.material3.Card
 import com.xayah.databackup.ui.component.material3.outlinedCardBorder
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.ListItemTokens
+import com.xayah.databackup.util.saveCloudActiveName
 import com.xayah.librootservice.util.withIOContext
 import com.xayah.librootservice.util.withMainContext
 import kotlinx.coroutines.launch
@@ -99,6 +100,19 @@ fun ListItemCloudAccount(
                     ) {
                         val actions = remember(entity) {
                             listOf(
+                                ActionMenuItem(
+                                    title = context.getString(R.string.set_as_main_account),
+                                    icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_favorite),
+                                    enabled = true,
+                                    onClick = {
+                                        viewModel.viewModelScope.launch {
+                                            withIOContext {
+                                                expanded = false
+                                                context.saveCloudActiveName(entity.name)
+                                            }
+                                        }
+                                    }
+                                ),
                                 ActionMenuItem(
                                     title = context.getString(R.string.edit),
                                     icon = Icons.Rounded.Edit,

@@ -148,4 +148,9 @@
     <string name="not_selected">未選取</string>
     <string name="third_party">第三方</string>
     <string name="system">系統</string>
+    <string name="uploading">上傳中</string>
+    <string name="main_account">主帳戶</string>
+    <string name="set_as_main_account">設定為主帳戶</string>
+    <string name="please_set_up_main_account">請設定主帳戶</string>
+    <string name="cloud_server_disconnected">雲端伺服器已斷開連接</string>
 </resources>

@@ -40,10 +40,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.R
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
+import com.xayah.databackup.ui.activity.operation.LocalCloudMode
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.BodySmallBoldText
 import com.xayah.databackup.ui.component.DialogState
@@ -65,6 +67,7 @@ import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 
 suspend fun confirmExit(dialogSlot: DialogState, context: Context) {
@@ -80,6 +83,7 @@ fun PackageBackupProcessing() {
     val viewModel = hiltViewModel<ProcessingViewModel>()
     val navController = LocalSlotScope.current!!.navController
     val dialogSlot = LocalSlotScope.current!!.dialogSlot
+    val cloudMode = LocalCloudMode.current
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
@@ -202,7 +206,18 @@ fun PackageBackupProcessing() {
                 Loader(
                     modifier = Modifier.fillMaxSize(),
                     onLoading = {
-                        viewModel.backupPackages()
+                        viewModel.viewModelScope.launch {
+                            if (uiState.effectLaunched.not()) {
+                                viewModel.setEffectLaunched(true)
+                                uiState.mutex.withLock {
+                                    if (cloudMode) {
+                                        viewModel.backupPackagesExtension()
+                                    } else {
+                                        viewModel.backupPackages()
+                                    }
+                                }
+                            }
+                        }
                     },
                     content = {
                         Column(

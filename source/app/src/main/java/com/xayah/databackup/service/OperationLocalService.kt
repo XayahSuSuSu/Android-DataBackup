@@ -84,10 +84,12 @@ class OperationLocalService(private val context: Context) {
     }
 
     suspend fun backupPackagesPreparation(): BackupPreparation = getService().backupPackagesPreparation()
-    suspend fun backupPackages(timestamp: Long) = getService().backupPackages(timestamp)
-    suspend fun backupPackagesAfterwards(preparation: BackupPreparation) = getService().backupPackagesAfterwards(preparation)
+    suspend fun backupPackages(timestamp: Long, cloudMode: Boolean = false) = getService().backupPackages(timestamp, cloudMode)
+    suspend fun backupPackagesAfterwards(preparation: BackupPreparation, cloudMode: Boolean = false) =
+        getService().backupPackagesAfterwards(preparation, cloudMode)
+
     suspend fun restorePackagesPreparation() = getService().restorePackagesPreparation()
     suspend fun restorePackages(timestamp: Long) = getService().restorePackages(timestamp)
-    suspend fun backupMedium(timestamp: Long) = getService().backupMedium(timestamp)
+    suspend fun backupMedium(timestamp: Long, cloudMode: Boolean = false) = getService().backupMedium(timestamp, cloudMode)
     suspend fun restoreMedium(timestamp: Long) = getService().restoreMedium(timestamp)
 }

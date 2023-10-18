@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 enum class OperationState {
     IDLE,
     Processing,
+    Uploading,
     SKIP,
     DONE,
     ERROR,

@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.R
+import com.xayah.databackup.data.CloudDao
 import com.xayah.databackup.data.MediaBackupOperationEntity
 import com.xayah.databackup.data.MediaDao
 import com.xayah.databackup.data.MediaRestoreEntity
@@ -21,7 +22,7 @@ import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
-import com.xayah.databackup.util.iconPath
+import com.xayah.databackup.util.filesPath
 import com.xayah.databackup.util.readBackupItself
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCleanRestoring
@@ -37,36 +38,61 @@ import javax.inject.Inject
 
 fun List<String>.toLineString() = joinToString(separator = "\n")
 
-suspend fun backupItself(context: Context, rootService: RemoteRootService, logUtil: LogUtil, logTag: String, packageName: String) {
-    if (context.readBackupItself()) {
-        val outPath = PathUtil.getBackupSavePath()
-        val userId = context.readBackupUserId()
-        val sourceDirList = rootService.getPackageSourceDir(packageName, userId)
-        if (sourceDirList.isNotEmpty()) {
-            val apkPath = PathUtil.getParentPath(sourceDirList[0])
-            val path = "${apkPath}/base.apk"
-            val targetPath = "${outPath}/DataBackup.apk"
-            rootService.copyTo(path = path, targetPath = targetPath, overwrite = true).also { result ->
-                if (result.not()) {
-                    logUtil.log(logTag, "Failed to copy $path to $targetPath.")
-                } else {
-                    logUtil.log(logTag, "Copied from $path to $targetPath.")
+@AssistedFactory
+interface IAdditionUtilFactory {
+    fun createAdditionUtil(cloudMode: Boolean, logTag: String): AdditionUtil
+}
+
+class AdditionUtil @AssistedInject constructor(
+    @ApplicationContext val context: Context,
+    @Assisted val cloudMode: Boolean,
+    @Assisted private val logTag: String,
+) {
+    @Inject
+    lateinit var rootService: RemoteRootService
+
+    @Inject
+    lateinit var logUtil: LogUtil
+
+    @Inject
+    lateinit var cloudDao: CloudDao
+
+    suspend fun backupItself(packageName: String) {
+        if (context.readBackupItself()) {
+            val outPath = PathUtil.getBackupSavePath(cloudMode)
+            val userId = context.readBackupUserId()
+            val sourceDirList = rootService.getPackageSourceDir(packageName, userId)
+            if (sourceDirList.isNotEmpty()) {
+                val apkPath = PathUtil.getParentPath(sourceDirList[0])
+                val path = "${apkPath}/base.apk"
+                val targetPath = "${outPath}/DataBackup.apk"
+                rootService.copyTo(path = path, targetPath = targetPath, overwrite = true).also { result ->
+                    if (result.not()) {
+                        logUtil.log(logTag, "Failed to copy $path to $targetPath.")
+                    } else {
+                        logUtil.log(logTag, "Copied from $path to $targetPath.")
+                    }
                 }
+
+                if (cloudMode) {
+                    backupItselfExtension(targetPath)
+                }
+            } else {
+                logUtil.log(logTag, "Failed to get apk path of $packageName.")
             }
-        } else {
-            logUtil.log(logTag, "Failed to get apk path of $packageName.")
         }
     }
 }
 
 @AssistedFactory
 interface IPackagesBackupUtilFactory {
-    fun createBackupUtil(entity: PackageBackupOperation): PackagesBackupUtil
+    fun createBackupUtil(cloudMode: Boolean, entity: PackageBackupOperation): PackagesBackupUtil
 }
 
 class PackagesBackupUtil @AssistedInject constructor(
     @ApplicationContext val context: Context,
-    @Assisted private val entity: PackageBackupOperation,
+    @Assisted val cloudMode: Boolean,
+    @Assisted val entity: PackageBackupOperation,
 ) {
     @Inject
     lateinit var rootService: RemoteRootService
@@ -80,18 +106,29 @@ class PackagesBackupUtil @AssistedInject constructor(
     @Inject
     lateinit var gsonUtil: GsonUtil
 
+    @Inject
+    lateinit var cloudDao: CloudDao
+
     private val packageName = entity.packageName
     private val timestamp = entity.timestamp
     private val usePipe = context.readCompatibleMode()
     private val compressionType = context.readCompressionType()
     private val userId = context.readBackupUserId()
-    private val packageSavePath = PathUtil.getBackupPackagesSavePath()
+    private val packageSavePath = PathUtil.getBackupPackagesSavePath(cloudMode)
+    val timestampPath = "${packageSavePath}/${packageName}/$timestamp"
+    private val configsPath = PathUtil.getConfigsSavePath(cloudMode)
+    val dirs = listOf(timestampPath, configsPath)
 
-    private fun getString(@StringRes resId: Int) = context.getString(resId)
+    fun getString(@StringRes resId: Int) = context.getString(resId)
 
-    private val timestampPath = "${packageSavePath}/${packageName}/$timestamp"
 
-    suspend fun mkdirs() = rootService.mkdirs(timestampPath)
+    suspend fun mkdirs() = run {
+        dirs.forEach {
+            rootService.mkdirs(it)
+        }
+
+        if (cloudMode) mkdirsExtension()
+    }
 
     private fun getArchivePath(type: DataType) =
         "${timestampPath}/${type.type}.${compressionType.suffix}"
@@ -228,6 +265,8 @@ class PackagesBackupUtil @AssistedInject constructor(
                 .also { result -> testAlso(result, logTag, logId, archivePath, isSuccess, entityLog) }
         }
 
+        if (cloudMode) backupArchiveExtension(targetPath = archivePath, type = type, isSuccess = isSuccess, entityLog = entityLog)
+
         type.setEndState(isSuccess, entityLog)
     }
 
@@ -281,6 +320,8 @@ class PackagesBackupUtil @AssistedInject constructor(
         Tar.test(src = archivePath, extra = compressionType.decompressPara)
             .also { result -> testAlso(result, logTag, logId, archivePath, isSuccess, entityLog) }
 
+        if (cloudMode) backupArchiveExtension(targetPath = archivePath, type = type, isSuccess = isSuccess, entityLog = entityLog)
+
         type.setEndState(isSuccess, entityLog)
     }
 
@@ -302,6 +343,8 @@ class PackagesBackupUtil @AssistedInject constructor(
         Tar.test(src = archivePath, extra = compressionType.decompressPara)
             .also { result -> testAlso(result, logTag, logId, archivePath) }
 
+        if (cloudMode) backupArchiveExtension(targetPath = archivePath)
+
         // Clean up
         rootService.deleteRecursively(tmpConfigPath)
     }
@@ -309,11 +352,12 @@ class PackagesBackupUtil @AssistedInject constructor(
 
 @AssistedFactory
 interface IPackagesBackupAfterwardsUtilFactory {
-    fun createBackupAfterwardsUtil(logTag: String): PackagesBackupAfterwardsUtil
+    fun createBackupAfterwardsUtil(cloudMode: Boolean, logTag: String): PackagesBackupAfterwardsUtil
 }
 
 class PackagesBackupAfterwardsUtil @AssistedInject constructor(
     @ApplicationContext val context: Context,
+    @Assisted val cloudMode: Boolean,
     @Assisted private val logTag: String,
 ) {
     @Inject
@@ -322,17 +366,41 @@ class PackagesBackupAfterwardsUtil @AssistedInject constructor(
     @Inject
     lateinit var logUtil: LogUtil
 
-    suspend fun backupIcons() {
-        val iconPath = context.iconPath()
-        val iconSavePath = PathUtil.getIconSavePath()
-        rootService.copyRecursively(path = iconPath, targetPath = iconSavePath, overwrite = true)
-        logUtil.log(logTag, "Copied from $iconPath to $iconSavePath.")
+    @Inject
+    lateinit var cloudDao: CloudDao
+
+    private val usePipe = context.readCompatibleMode()
+    private val compressionType = CompressionType.TAR // Configs use tar is enough.
+
+    val configsPath = PathUtil.getConfigsSavePath(cloudMode)
+
+    private fun getArchivePath(name: String) =
+        "${configsPath}/${name}.${compressionType.suffix}"
+
+    private suspend fun logAlso(result: ShellResult, logId: Long) {
+        result.logCmd(logUtil = logUtil, logId = logId)
     }
 
-    suspend fun createNoMedia() {
-        val noMediaSavePath = PathUtil.getIconNoMediaSavePath()
-        rootService.createNewFile(path = noMediaSavePath)
-        logUtil.log(logTag, "Created $noMediaSavePath.")
+    suspend fun backupIcons() {
+        val logId = logUtil.log(logTag, "Start backing up icons...")
+
+        val name = "icon"
+        val archivePath = getArchivePath(name)
+
+        // Compress and test.
+        Tar.compress(
+            usePipe = usePipe,
+            exclusionList = listOf(),
+            srcDir = context.filesPath(),
+            src = name,
+            dst = archivePath,
+            extra = compressionType.compressPara
+        )
+            .also { result -> logAlso(result, logId) }
+        Tar.test(src = archivePath, extra = compressionType.decompressPara)
+            .also { result -> logAlso(result, logId) }
+
+        if (cloudMode) backupArchiveExtension(targetPath = archivePath)
     }
 }
 

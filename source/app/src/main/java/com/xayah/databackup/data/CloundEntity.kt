@@ -49,6 +49,7 @@ data class CloudMountEntity(
 @Entity
 data class CloudEntity(
     @PrimaryKey var name: String,
+    @ColumnInfo(defaultValue = "") val backupSavePath: String,
     @Embedded val account: AccountConfig,
     @Embedded val mount: MountConfig,
     @ColumnInfo(defaultValue = "0") var active: Boolean,
@@ -60,3 +61,8 @@ data class CloudEntity(
             else -> formatSize(account.sizeBytes.toDouble())
         }
 }
+
+data class CloudBaseEntity(
+    @PrimaryKey var name: String,
+    val backupSavePath: String,
+)

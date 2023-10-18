@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -36,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.directory.router.DirectoryRoutes
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
+import com.xayah.databackup.ui.activity.operation.LocalCloudMode
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.GridItemPackage
 import com.xayah.databackup.ui.component.ListItemManifestHorizontal
@@ -50,6 +52,9 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.GridItemTokens
 import com.xayah.databackup.util.IntentUtil
 import com.xayah.databackup.util.readBackupSavePath
+import com.xayah.librootservice.util.withIOContext
+import com.xayah.librootservice.util.withMainContext
+import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -57,7 +62,9 @@ import com.xayah.databackup.util.readBackupSavePath
 fun PackageBackupManifest() {
     val context = LocalContext.current
     val viewModel = hiltViewModel<ManifestViewModel>()
+    val scope = rememberCoroutineScope()
     val navController = LocalSlotScope.current!!.navController
+    val cloudMode = LocalCloudMode.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val titles = remember {
@@ -87,7 +94,21 @@ fun PackageBackupManifest() {
                 FloatingActionButton(
                     modifier = Modifier.padding(CommonTokens.PaddingMedium),
                     onClick = {
-                        navController.navigateAndPopAllStack(OperationRoutes.PackageBackupProcessing.route)
+                        scope.launch {
+                            if (cloudMode) {
+                                withIOContext {
+                                    manifestOnFabClickExtension(context, uiState.logUtil) {
+                                        withMainContext {
+                                            navController.navigateAndPopAllStack(OperationRoutes.PackageBackupProcessing.route)
+                                        }
+                                    }
+                                }
+                            } else {
+                                withMainContext {
+                                    navController.navigateAndPopAllStack(OperationRoutes.PackageBackupProcessing.route)
+                                }
+                            }
+                        }
                     },
                     content = {
                         Icon(imageVector = Icons.Rounded.ArrowForward, contentDescription = null)
@@ -132,13 +153,17 @@ fun PackageBackupManifest() {
                                         selectedTabIndex = 3
                                     }
 
-                                    val backupSavePath by context.readBackupSavePath().collectAsState(initial = "")
-                                    ListItemManifestVertical(
-                                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
-                                        title = stringResource(R.string.backup_dir),
-                                        content = backupSavePath
-                                    ) {
-                                        IntentUtil.toDirectoryActivity(context = context, route = DirectoryRoutes.DirectoryBackup)
+                                    if (cloudMode) {
+                                        OverlookExtensionItems()
+                                    } else {
+                                        val backupSavePath by context.readBackupSavePath().collectAsState(initial = "")
+                                        ListItemManifestVertical(
+                                            icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
+                                            title = stringResource(R.string.backup_dir),
+                                            content = backupSavePath
+                                        ) {
+                                            IntentUtil.toDirectoryActivity(context = context, route = DirectoryRoutes.DirectoryBackup)
+                                        }
                                     }
                                 }
                             }

@@ -41,7 +41,7 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.ui.token.State
 import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
-import com.xayah.databackup.util.readCloudAccountNum
+import com.xayah.databackup.util.readCloudActiveName
 import com.xayah.databackup.util.readLastBackupTime
 import com.xayah.databackup.util.readLastRestoringTime
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
@@ -237,8 +237,12 @@ fun OverLookCloudCard() {
                 Spacer(modifier = Modifier.weight(1f))
                 LabelLargeExtraBoldText(text = stringResource(R.string.overlook))
             }
-            BodySmallText(text = stringResource(id = R.string.account))
-            TitleLargeBoldText(text = remember { runBlocking { context.readCloudAccountNum().first().toString() } })
+            BodySmallText(text = stringResource(id = R.string.main_account))
+            TitleLargeBoldText(text = remember {
+                runBlocking {
+                    context.readCloudActiveName().first().toString().ifEmpty { context.getString(R.string.none) }
+                }
+            })
         }
     }
 }
@@ -266,6 +270,10 @@ private fun getActionIcon(state: OperationState): ImageVector = when (state) {
         ImageVector.vectorResource(R.drawable.ic_rounded_pending_circle)
     }
 
+    OperationState.Uploading -> {
+        ImageVector.vectorResource(R.drawable.ic_rounded_arrow_circle_up)
+    }
+
     OperationState.DONE -> {
         ImageVector.vectorResource(R.drawable.ic_rounded_check_circle)
     }
@@ -285,7 +293,7 @@ private fun getActionColor(state: OperationState): Color = when (state) {
         ColorScheme.primary()
     }
 
-    OperationState.Processing -> {
+    OperationState.Processing, OperationState.Uploading -> {
         ColorScheme.yellow()
     }
 

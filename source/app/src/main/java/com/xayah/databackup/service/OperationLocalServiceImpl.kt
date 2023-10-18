@@ -21,13 +21,13 @@ import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
+import com.xayah.databackup.util.command.IAdditionUtilFactory
 import com.xayah.databackup.util.command.IMediumBackupUtilFactory
 import com.xayah.databackup.util.command.IMediumRestoreUtilFactory
 import com.xayah.databackup.util.command.IPackagesBackupAfterwardsUtilFactory
 import com.xayah.databackup.util.command.IPackagesBackupUtilFactory
 import com.xayah.databackup.util.command.IPackagesRestoreUtilFactory
 import com.xayah.databackup.util.command.PreparationUtil
-import com.xayah.databackup.util.command.backupItself
 import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readResetBackupList
 import com.xayah.databackup.util.readResetRestoreList
@@ -95,6 +95,9 @@ class OperationLocalServiceImpl : Service() {
     @Inject
     lateinit var mediumRestoreUtilFactory: IMediumRestoreUtilFactory
 
+    @Inject
+    lateinit var additionUtilFactory: IAdditionUtilFactory
+
     suspend fun backupPackagesPreparation(): BackupPreparation = withIOContext {
         mutex.withLock {
             val logTag = "Packages backup preparation"
@@ -113,7 +116,7 @@ class OperationLocalServiceImpl : Service() {
         }
     }
 
-    suspend fun backupPackages(timestamp: Long) = withIOContext {
+    suspend fun backupPackages(timestamp: Long, cloudMode: Boolean) = withIOContext {
         mutex.withLock {
             val logTag = "Packages backup"
             val context = applicationContext
@@ -139,7 +142,7 @@ class OperationLocalServiceImpl : Service() {
                 /**
                  * All I/O related ops are in [com.xayah.databackup.util.command.PackagesBackupUtil].
                  */
-                val packagesUtil = packagesBackupUtilFactory.createBackupUtil(entity = packageBackupOperation)
+                val packagesUtil = packagesBackupUtilFactory.createBackupUtil(cloudMode = cloudMode, entity = packageBackupOperation)
                 packagesUtil.mkdirs()
                 if (isApkSelected) {
                     packagesUtil.backupApk()
@@ -202,7 +205,7 @@ class OperationLocalServiceImpl : Service() {
         }
     }
 
-    suspend fun backupPackagesAfterwards(preparation: BackupPreparation) = withIOContext {
+    suspend fun backupPackagesAfterwards(preparation: BackupPreparation, cloudMode: Boolean) = withIOContext {
         mutex.withLock {
             val logTag = "Packages backup afterwards"
             logUtil.log(logTag, "Started.")
@@ -210,7 +213,7 @@ class OperationLocalServiceImpl : Service() {
             /**
              * All I/O related ops are in [com.xayah.databackup.util.command.PackagesBackupAfterwardsUtil].
              */
-            val packagesUtil = packagesBackupAfterwardsUtilFactory.createBackupAfterwardsUtil(logTag = logTag)
+            val packagesUtil = packagesBackupAfterwardsUtilFactory.createBackupAfterwardsUtil(logTag = logTag, cloudMode = cloudMode)
 
             // Restore keyboard and services.
             if (preparation.keyboard.isNotEmpty()) {
@@ -227,13 +230,11 @@ class OperationLocalServiceImpl : Service() {
             }
 
             // Backup itself if enabled.
-            backupItself(context = applicationContext, rootService = rootService, logUtil = logUtil, logTag = logTag, packageName = packageName)
+            val additionUtil = additionUtilFactory.createAdditionUtil(cloudMode = cloudMode, logTag = logTag)
+            additionUtil.backupItself(packageName = packageName)
 
             // Backup icons.
             packagesUtil.backupIcons()
-
-            // Create .nomedia
-            packagesUtil.createNoMedia()
         }
     }
 
@@ -326,7 +327,7 @@ class OperationLocalServiceImpl : Service() {
         }
     }
 
-    suspend fun backupMedium(timestamp: Long) = withIOContext {
+    suspend fun backupMedium(timestamp: Long, cloudMode: Boolean) = withIOContext {
         mutex.withLock {
             val logTag = "Media backup"
             val context = applicationContext
@@ -395,7 +396,8 @@ class OperationLocalServiceImpl : Service() {
             }
 
             // Backup itself if enabled.
-            backupItself(context = applicationContext, rootService = rootService, logUtil = logUtil, logTag = logTag, packageName = packageName)
+            val additionUtil = additionUtilFactory.createAdditionUtil(cloudMode = cloudMode, logTag = logTag)
+            additionUtil.backupItself(packageName = packageName)
 
             context.saveLastBackupTime(timestamp)
         }

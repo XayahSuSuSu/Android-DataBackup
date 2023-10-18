@@ -9,10 +9,12 @@ import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 
 object IntentUtil {
     const val ExtraRoute = "ExtraRoute"
+    const val CloudMode = "CloudMode"
 
-    fun toOperationActivity(context: Context, route: OperationRoutes) {
+    fun toOperationActivity(context: Context, route: OperationRoutes, cloudMode: Boolean = false) {
         context.startActivity(Intent(context, OperationActivity::class.java).also { intent ->
             intent.putExtra(ExtraRoute, route.route)
+            intent.putExtra(CloudMode, cloudMode)
         })
     }
 

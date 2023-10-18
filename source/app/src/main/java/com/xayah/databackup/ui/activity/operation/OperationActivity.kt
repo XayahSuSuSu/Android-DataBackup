@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.core.view.WindowCompat
 import com.xayah.databackup.ui.activity.main.router.currentRoute
 import com.xayah.databackup.ui.activity.operation.router.OperationNavHost
@@ -20,6 +22,8 @@ import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.IntentUtil
 import com.xayah.databackup.util.readKeepScreenOn
 import dagger.hilt.android.AndroidEntryPoint
+
+val LocalCloudMode: ProvidableCompositionLocal<Boolean> = staticCompositionLocalOf { false }
 
 @AndroidEntryPoint
 class OperationActivity : ComponentActivity() {
@@ -32,6 +36,7 @@ class OperationActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val route = intent.getStringExtra(IntentUtil.ExtraRoute) ?: OperationRoutes.PackageBackup.route
+        val cloudMode = intent.getBooleanExtra(IntentUtil.CloudMode, false)
         setContent {
             DataBackupTheme {
                 val slotScope = rememberSlotScope()
@@ -49,7 +54,7 @@ class OperationActivity : ComponentActivity() {
                     }
                 }
 
-                CompositionLocalProvider(LocalSlotScope provides slotScope) {
+                CompositionLocalProvider(LocalSlotScope provides slotScope, LocalCloudMode provides cloudMode) {
                     OperationNavHost(route)
                 }
             }

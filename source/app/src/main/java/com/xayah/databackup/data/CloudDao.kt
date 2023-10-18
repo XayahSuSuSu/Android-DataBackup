@@ -18,6 +18,9 @@ interface CloudDao {
     suspend fun upsertMount(items: List<CloudMountEntity>)
 
     @Upsert(entity = CloudEntity::class)
+    suspend fun upsertBase(item: CloudBaseEntity)
+
+    @Upsert(entity = CloudEntity::class)
     suspend fun upsertAccount(items: List<CloudAccountEntity>)
 
     @Query("SELECT * FROM CloudEntity WHERE active = 1")
@@ -25,6 +28,15 @@ interface CloudDao {
 
     @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
     suspend fun queryAccountByName(name: String): CloudAccountEntity?
+
+    @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
+    suspend fun queryMountByName(name: String): CloudMountEntity?
+
+    @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
+    fun queryBaseByName(name: String): CloudBaseEntity?
+
+    @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
+    fun queryBaseByNameFlow(name: String): Flow<CloudBaseEntity?>
 
     @Query("SELECT * FROM CloudEntity WHERE active = 1")
     fun queryMountFlow(): Flow<List<CloudMountEntity>>

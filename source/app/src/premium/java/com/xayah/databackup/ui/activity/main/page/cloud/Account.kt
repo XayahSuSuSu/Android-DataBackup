@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -32,15 +33,18 @@ import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingTop
 import com.xayah.databackup.ui.token.CommonTokens
+import com.xayah.databackup.util.readCloudActiveName
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @Composable
 fun PageAccount(navController: NavHostController) {
+    val context = LocalContext.current
     val viewModel = hiltViewModel<AccountViewModel>()
     val uiState by viewModel.uiState
     val cloudEntities by uiState.cloudEntities.collectAsState(initial = listOf())
+    val activeName by context.readCloudActiveName().collectAsState(initial = "")
 
     LaunchedEffect(null) {
         viewModel.initialize()
@@ -74,6 +78,7 @@ fun PageAccount(navController: NavHostController) {
                         navController = navController,
                         onCardClick = {},
                         chipGroup = {
+                            if (item.name == activeName) Serial(serial = stringResource(id = R.string.main_account))
                             if (item.account.type.isNotEmpty()) Serial(serial = item.account.type)
                             if (item.account.vendor.isNotEmpty()) Serial(serial = item.account.vendor)
                         }
