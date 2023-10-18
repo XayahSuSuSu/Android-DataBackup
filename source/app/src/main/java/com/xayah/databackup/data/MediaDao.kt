@@ -34,12 +34,9 @@ interface MediaDao {
     @Query("SELECT * FROM MediaBackupEntity")
     suspend fun queryAllBackup(): List<MediaBackupEntity>
 
-    @Query("SELECT * FROM MediaRestoreEntity")
-    suspend fun queryAllRestore(): List<MediaRestoreEntity>
-
     @Transaction
-    @Query("SELECT * FROM MediaRestoreEntity WHERE timestamp = :timestamp")
-    fun queryAllRestoreFlow(timestamp: Long): Flow<List<MediaRestoreWithOpEntity>>
+    @Query("SELECT * FROM MediaRestoreEntity WHERE timestamp = :timestamp AND savePath = :savePath")
+    fun queryAllRestoreFlow(timestamp: Long, savePath: String): Flow<List<MediaRestoreWithOpEntity>>
 
     @Query("SELECT * FROM MediaBackupEntity WHERE selected = 1")
     suspend fun queryBackupSelected(): List<MediaBackupEntity>
@@ -47,14 +44,14 @@ interface MediaDao {
     @Query("SELECT * FROM MediaRestoreEntity WHERE selected = 1 AND timestamp = :timestamp")
     suspend fun queryRestoreSelected(timestamp: Long): List<MediaRestoreEntity>
 
-    @Query("SELECT DISTINCT timestamp FROM MediaRestoreEntity")
-    suspend fun queryTimestamps(): List<Long>
+    @Query("SELECT DISTINCT timestamp FROM MediaRestoreEntity WHERE savePath = :savePath")
+    suspend fun queryTimestamps(savePath: String): List<Long>
 
     @Query("SELECT COUNT(*) FROM MediaBackupEntity WHERE selected = 1")
     fun countBackupSelected(): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM MediaRestoreEntity WHERE selected = 1 AND timestamp = :timestamp")
-    fun countRestoreSelected(timestamp: Long): Flow<Int>
+    @Query("SELECT COUNT(*) FROM MediaRestoreEntity WHERE selected = 1 AND timestamp = :timestamp AND savePath = :savePath")
+    fun countRestoreSelected(timestamp: Long, savePath: String): Flow<Int>
 
     @Query("UPDATE MediaBackupEntity SET selected = :selected")
     suspend fun updateBackupSelected(selected: Boolean)

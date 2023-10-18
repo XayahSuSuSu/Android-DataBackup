@@ -176,6 +176,7 @@ class RestoreViewModel @Inject constructor(
                                 backupOpCode = operationCode,
                                 timestamp = timestamp,
                                 compressionType = compressionType,
+                                savePath = "",
                             )
                             packageInfo?.apply {
                                 packageRestoreEntire.also { entity ->
@@ -189,6 +190,7 @@ class RestoreViewModel @Inject constructor(
                                 logUtil.log(logTag, "Icon saved")
                             }
                         }
+                        packageRestoreEntire.savePath = PathUtil.getRestoreSavePath()
                         packageRestoreEntireDao.upsert(packageRestoreEntire)
                     },
                     onException = {
@@ -301,8 +303,10 @@ class RestoreViewModel @Inject constructor(
                         name = name,
                         sizeBytes = timestamp,
                         selected = false,
+                        savePath = ""
                     )
                 }
+                mediaRestoreEntity.savePath = PathUtil.getRestoreSavePath()
                 mediaDao.upsertRestore(mediaRestoreEntity)
 
                 remoteRootService.deleteRecursively(tmpConfigPath)

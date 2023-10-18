@@ -55,7 +55,7 @@ object PathUtil {
     fun getLogSavePath(timestamp: Long): String = "${getLogSavePath()}/log_${timestamp}"
 
     // Paths for restore save dir.
-    private fun getRestoreSavePath(): String = runBlocking { DataBackupApplication.application.readRestoreSavePath().first() }
+    fun getRestoreSavePath(): String = runBlocking { DataBackupApplication.application.readRestoreSavePath().first() }
     private fun getRestoreArchivesSavePath(): String = "${getRestoreSavePath()}/archives"
     fun getRestorePackagesSavePath(): String = "${getRestoreArchivesSavePath()}/packages"
     fun getRestoreMediumSavePath(): String = "${getRestoreArchivesSavePath()}/medium"

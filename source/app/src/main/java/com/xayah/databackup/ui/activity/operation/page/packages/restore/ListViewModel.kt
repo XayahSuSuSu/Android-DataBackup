@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.data.PackageRestoreEntire
 import com.xayah.databackup.data.PackageRestoreEntireDao
+import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.readRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
@@ -51,14 +52,14 @@ class ListViewModel @Inject constructor(
         val timestamp = uiState.timestamp
         // Inactivate all packages then activate displayed ones.
         dao.updateActive(active = false)
-        dao.updateActive(timestamp = timestamp, active = true)
+        dao.updateActive(active = true, timestamp = timestamp, savePath = PathUtil.getRestoreSavePath())
     }
 
     suspend fun initializeUiState() = withIOContext {
         val uiState by uiState
         val dao = uiState.packageRestoreEntireDao
 
-        val timestamps = dao.queryTimestamps()
+        val timestamps = dao.queryTimestamps(PathUtil.getRestoreSavePath())
         setTimestamps(timestamps)
         setSelectedIndex(timestamps.lastIndex)
     }
@@ -68,7 +69,7 @@ class ListViewModel @Inject constructor(
      */
     suspend fun updatePackage(context: Context, entity: PackageRestoreEntire) = withIOContext {
         val remoteRootService = RemoteRootService(context)
-        val sizeBytes = remoteRootService.calculateSize(entity.savePath)
+        val sizeBytes = remoteRootService.calculateSize(entity.timestampPath)
         val installed = remoteRootService.queryInstalled(entity.packageName, context.readRestoreUserId())
         if (entity.sizeBytes != sizeBytes || entity.installed != installed) {
             updatePackage(entity.copy(sizeBytes = sizeBytes, installed = installed))

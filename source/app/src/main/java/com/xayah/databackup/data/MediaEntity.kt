@@ -35,6 +35,7 @@ data class MediaRestoreEntity(
     var name: String,
     var sizeBytes: Long,
     var selected: Boolean,
+    @ColumnInfo(defaultValue = "") var savePath: String,
 ) {
     val archivePath: String
         get() = "${PathUtil.getRestoreMediumSavePath()}/${name}/$timestamp/${DataType.MEDIA_MEDIA.type}.${CompressionType.TAR.suffix}"
@@ -89,9 +90,6 @@ data class MediaRestoreOperationEntity(
     var opState: OperationState = OperationState.IDLE,
     var state: Boolean = false,
 ) {
-    val archivePath: String
-        get() = "${PathUtil.getRestoreMediumSavePath()}/${name}/$timestamp/${DataType.MEDIA_MEDIA.type}.${CompressionType.TAR.suffix}"
-
     val isSucceed: Boolean
         get() {
             if (opState == OperationState.ERROR) return false

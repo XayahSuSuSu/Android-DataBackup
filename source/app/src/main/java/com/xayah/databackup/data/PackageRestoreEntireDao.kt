@@ -18,10 +18,10 @@ interface PackageRestoreEntireDao {
     @Upsert(entity = PackageRestoreEntire::class)
     suspend fun upsert(items: List<PackageRestoreEntire>)
 
-    @Query("SELECT DISTINCT timestamp FROM PackageRestoreEntire")
-    suspend fun queryTimestamps(): List<Long>
+    @Query("SELECT DISTINCT timestamp FROM PackageRestoreEntire WHERE savePath = :savePath")
+    suspend fun queryTimestamps(savePath: String): List<Long>
 
-    @Query("SELECT * FROM PackageRestoreEntire WHERE timestamp = :timestamp")
+    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND timestamp = :timestamp")
     fun queryPackages(timestamp: Long): Flow<List<PackageRestoreEntire>>
 
     @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
@@ -51,8 +51,8 @@ interface PackageRestoreEntireDao {
     @Query("UPDATE PackageRestoreEntire SET active = :active")
     suspend fun updateActive(active: Boolean)
 
-    @Query("UPDATE PackageRestoreEntire SET active = :active WHERE timestamp = :timestamp")
-    suspend fun updateActive(timestamp: Long, active: Boolean)
+    @Query("UPDATE PackageRestoreEntire SET active = :active WHERE timestamp = :timestamp AND savePath = :savePath")
+    suspend fun updateActive(active: Boolean, timestamp: Long, savePath: String)
 
     @Delete(entity = PackageRestoreEntire::class)
     suspend fun delete(items: List<PackageRestoreEntire>)

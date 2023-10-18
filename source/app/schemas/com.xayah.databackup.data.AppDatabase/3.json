@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "ad0794e9f060ba2182367bd04df8bb29",
+    "identityHash": "6d680c1614269652436021f6bd609c3e",
     "entities": [
       {
         "tableName": "LogEntity",
@@ -347,7 +347,7 @@
       },
       {
         "tableName": "PackageRestoreEntire",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `backupOpCode` INTEGER NOT NULL DEFAULT 0, `operationCode` INTEGER NOT NULL DEFAULT 0, `timestamp` INTEGER NOT NULL DEFAULT 0, `versionName` TEXT NOT NULL, `versionCode` INTEGER NOT NULL, `sizeBytes` INTEGER NOT NULL DEFAULT 0, `installed` INTEGER NOT NULL DEFAULT 0, `flags` INTEGER NOT NULL, `compressionType` TEXT NOT NULL, `active` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `backupOpCode` INTEGER NOT NULL DEFAULT 0, `operationCode` INTEGER NOT NULL DEFAULT 0, `timestamp` INTEGER NOT NULL DEFAULT 0, `versionName` TEXT NOT NULL, `versionCode` INTEGER NOT NULL, `sizeBytes` INTEGER NOT NULL DEFAULT 0, `installed` INTEGER NOT NULL DEFAULT 0, `flags` INTEGER NOT NULL, `compressionType` TEXT NOT NULL, `active` INTEGER NOT NULL, `savePath` TEXT NOT NULL DEFAULT '')",
         "fields": [
           {
             "fieldPath": "id",
@@ -431,6 +431,13 @@
             "columnName": "active",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "savePath",
+            "columnName": "savePath",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
           }
         ],
         "primaryKey": {
@@ -722,7 +729,7 @@
       },
       {
         "tableName": "MediaRestoreEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `name` TEXT NOT NULL, `sizeBytes` INTEGER NOT NULL, `selected` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `name` TEXT NOT NULL, `sizeBytes` INTEGER NOT NULL, `selected` INTEGER NOT NULL, `savePath` TEXT NOT NULL DEFAULT '')",
         "fields": [
           {
             "fieldPath": "id",
@@ -759,6 +766,13 @@
             "columnName": "selected",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "savePath",
+            "columnName": "savePath",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
           }
         ],
         "primaryKey": {
@@ -958,13 +972,20 @@
       },
       {
         "tableName": "CloudEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `active` INTEGER NOT NULL DEFAULT 0, `type` TEXT NOT NULL DEFAULT '', `host` TEXT NOT NULL DEFAULT '', `port` INTEGER NOT NULL DEFAULT -1, `url` TEXT NOT NULL DEFAULT '', `user` TEXT NOT NULL DEFAULT '', `pass` TEXT NOT NULL DEFAULT '', `vendor` TEXT NOT NULL DEFAULT '', `sizeBytes` INTEGER NOT NULL DEFAULT -255, `backupSavePath` TEXT NOT NULL DEFAULT '', `mounted` INTEGER NOT NULL DEFAULT 0, `remote` TEXT NOT NULL DEFAULT '', `local` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `backupSavePath` TEXT NOT NULL DEFAULT '', `active` INTEGER NOT NULL DEFAULT 0, `type` TEXT NOT NULL DEFAULT '', `host` TEXT NOT NULL DEFAULT '', `port` INTEGER NOT NULL DEFAULT -1, `url` TEXT NOT NULL DEFAULT '', `user` TEXT NOT NULL DEFAULT '', `pass` TEXT NOT NULL DEFAULT '', `vendor` TEXT NOT NULL DEFAULT '', `sizeBytes` INTEGER NOT NULL DEFAULT -255, `mounted` INTEGER NOT NULL DEFAULT 0, `remote` TEXT NOT NULL DEFAULT '', `local` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`name`))",
         "fields": [
           {
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "backupSavePath",
+            "columnName": "backupSavePath",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
           },
           {
             "fieldPath": "active",
@@ -1030,13 +1051,6 @@
             "defaultValue": "-255"
           },
           {
-            "fieldPath": "account.backupSavePath",
-            "columnName": "backupSavePath",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
-          },
-          {
             "fieldPath": "mount.mounted",
             "columnName": "mounted",
             "affinity": "INTEGER",
@@ -1071,7 +1085,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ad0794e9f060ba2182367bd04df8bb29')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d680c1614269652436021f6bd609c3e')"
     ]
   }
 }

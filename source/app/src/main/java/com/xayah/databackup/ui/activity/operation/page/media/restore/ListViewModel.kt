@@ -12,6 +12,7 @@ import com.xayah.databackup.data.MediaRestoreEntity
 import com.xayah.databackup.data.MediaRestoreWithOpEntity
 import com.xayah.databackup.service.OperationLocalService
 import com.xayah.databackup.ui.activity.operation.page.media.backup.OpType
+import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,11 +30,12 @@ data class MediaRestoreListUiState(
     val timestamps: List<Long>,
     val selectedIndex: Int,
     val mediaDao: MediaDao,
+    val restoreSavePath: String,
 ) {
     val timestamp: Long
         get() = timestamps.getOrElse(selectedIndex) { 0 }
-    val medium: Flow<List<MediaRestoreWithOpEntity>> = mediaDao.queryAllRestoreFlow(timestamp).distinctUntilChanged()
-    val selectedCount: Flow<Int> = mediaDao.countRestoreSelected(timestamp).distinctUntilChanged()
+    val medium: Flow<List<MediaRestoreWithOpEntity>> = mediaDao.queryAllRestoreFlow(timestamp, restoreSavePath).distinctUntilChanged()
+    val selectedCount: Flow<Int> = mediaDao.countRestoreSelected(timestamp, restoreSavePath).distinctUntilChanged()
 }
 
 @HiltViewModel
@@ -45,14 +47,15 @@ class MediaRestoreListViewModel @Inject constructor(private val mediaDao: MediaD
             opType = OpType.LIST,
             timestamps = listOf(),
             selectedIndex = 0,
-            mediaDao = mediaDao
+            mediaDao = mediaDao,
+            restoreSavePath = PathUtil.getRestoreSavePath()
         )
     )
     val uiState: State<MediaRestoreListUiState>
         get() = _uiState
 
     suspend fun upsertRestore(item: MediaRestoreEntity) = mediaDao.upsertRestore(item)
-    private suspend fun queryTimestamps() = mediaDao.queryTimestamps()
+    private suspend fun queryTimestamps() = mediaDao.queryTimestamps(uiState.value.restoreSavePath)
     suspend fun updateRestoreSelected(selected: Boolean) = mediaDao.updateRestoreSelected(selected)
     suspend fun deleteRestore(item: MediaRestoreEntity) = mediaDao.deleteRestore(item)
 

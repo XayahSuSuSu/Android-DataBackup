@@ -21,6 +21,7 @@ import com.xayah.databackup.util.DataType
 import com.xayah.databackup.util.DateUtil
 import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
+import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.IAdditionUtilFactory
 import com.xayah.databackup.util.command.IMediumBackupUtilFactory
 import com.xayah.databackup.util.command.IMediumRestoreUtilFactory
@@ -187,6 +188,7 @@ class OperationLocalServiceImpl : Service() {
                         versionCode = currentPackage.versionCode,
                         flags = currentPackage.flags,
                         compressionType = context.readCompressionType(),
+                        savePath = if (cloudMode) "" else PathUtil.getBackupSavePath(false),
                     )
                     packageRestoreEntireDao.upsert(restoreEntire)
 
@@ -384,6 +386,7 @@ class OperationLocalServiceImpl : Service() {
                         name = name,
                         sizeBytes = 0,
                         selected = true,
+                        savePath = if (cloudMode) "" else PathUtil.getBackupSavePath(false),
                     )
                     mediaDao.upsertRestore(restoreEntire)
 

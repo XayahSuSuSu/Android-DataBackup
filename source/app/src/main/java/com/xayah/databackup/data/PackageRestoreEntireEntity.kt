@@ -29,6 +29,7 @@ data class PackageRestoreEntire(
     var flags: Int = 0,
     var compressionType: CompressionType,
     var active: Boolean = false,
+    @ColumnInfo(defaultValue = "") var savePath: String,
 ) {
     @Ignore
     @Transient
@@ -37,7 +38,7 @@ data class PackageRestoreEntire(
     val isSystemApp: Boolean
         get() = (flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
-    val savePath: String
+    val timestampPath: String
         get() = "${PathUtil.getRestorePackagesSavePath()}/${packageName}/$timestamp"
 
     val sizeDisplay: String
