@@ -235,6 +235,9 @@ class OperationLocalServiceImpl : Service() {
 
             // Backup icons.
             packagesUtil.backupIcons()
+
+            // Clear up
+            packagesUtil.clearUp()
         }
     }
 

@@ -9,3 +9,4 @@ fun PackagesBackupUtil.mkdirsExtension() {}
 fun PackagesBackupUtil.backupArchiveExtension(targetPath: String, type: DataType, isSuccess: MutableState<Boolean>, entityLog: MutableList<String>) {}
 fun PackagesBackupUtil.backupArchiveExtension(targetPath: String) {}
 fun PackagesBackupAfterwardsUtil.backupArchiveExtension(targetPath: String) {}
+fun PackagesBackupAfterwardsUtil.clearUpExtension() {}

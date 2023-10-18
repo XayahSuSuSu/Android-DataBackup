@@ -402,6 +402,10 @@ class PackagesBackupAfterwardsUtil @AssistedInject constructor(
 
         if (cloudMode) backupArchiveExtension(targetPath = archivePath)
     }
+
+    suspend fun clearUp() {
+        if (cloudMode) clearUpExtension()
+    }
 }
 
 @AssistedFactory

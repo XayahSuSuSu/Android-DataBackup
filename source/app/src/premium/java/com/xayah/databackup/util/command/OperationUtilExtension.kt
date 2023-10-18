@@ -67,3 +67,7 @@ suspend fun PackagesBackupAfterwardsUtil.backupArchiveExtension(targetPath: Stri
         rootService.deleteRecursively(targetPath)
     }
 }
+
+suspend fun PackagesBackupAfterwardsUtil.clearUpExtension() {
+    rootService.deleteRecursively(PathUtil.getBackupSavePath(cloudMode))
+}
