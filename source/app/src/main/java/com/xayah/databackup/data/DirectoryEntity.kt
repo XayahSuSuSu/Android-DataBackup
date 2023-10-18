@@ -34,8 +34,8 @@ data class DirectoryEntity(
     val path: String
         get() = "${parent}/${child}"
 
-    val availableBytesDisplay: String
-        get() = formatSize(availableBytes.toDouble())
+    val usedBytesDisplay: String
+        get() = formatSize((totalBytes - availableBytes).toDouble())
 
     val totalBytesDisplay: String
         get() = formatSize(totalBytes.toDouble())

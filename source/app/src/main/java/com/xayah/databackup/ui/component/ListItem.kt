@@ -386,7 +386,7 @@ fun ListItemDirectory(
     val haptic = LocalHapticFeedback.current
     val selected = entity.selected
     val enabled = entity.enabled
-    val progress = entity.availableBytes.toFloat() / entity.totalBytes
+    val progress = 1 - entity.availableBytes.toFloat() / entity.totalBytes
     val path = entity.path
     var expanded by remember { mutableStateOf(false) }
 
@@ -458,7 +458,7 @@ fun ListItemDirectory(
                             )
                         }
 
-                        LabelSmallText(text = "${entity.availableBytesDisplay} / ${entity.totalBytesDisplay}")
+                        LabelSmallText(text = "${entity.usedBytesDisplay} / ${entity.totalBytesDisplay}")
 
                         ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
                     }
