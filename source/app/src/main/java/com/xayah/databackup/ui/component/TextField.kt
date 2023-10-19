@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,7 @@ fun RoundedTextField(
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions,
+    prefix: String?,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -55,7 +57,12 @@ fun RoundedTextField(
             unfocusedContainerColor = ColorScheme.surfaceVariant(),
             disabledContainerColor = ColorScheme.surfaceVariant(),
             errorContainerColor = ColorScheme.surfaceVariant(),
-        )
+        ),
+        prefix = if (prefix != null) {
+            { Text(prefix) }
+        } else {
+            null
+        },
     )
 }
 
@@ -67,6 +74,7 @@ fun CleanableTextField(
     enabled: Boolean,
     leadingIcon: ImageVector? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    prefix: String?,
     onCleanClick: () -> Unit,
     onValueChange: (String) -> Unit,
 ) {
@@ -105,6 +113,7 @@ fun CleanableTextField(
             null
         },
         keyboardOptions = keyboardOptions,
+        prefix = prefix,
         onValueChange = onValueChange
     )
 }
@@ -117,6 +126,7 @@ fun CleanablePasswordTextField(
     enabled: Boolean,
     leadingIcon: ImageVector? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    prefix: String?,
     onCleanClick: () -> Unit,
     onValueChange: (String) -> Unit,
 ) {
@@ -162,6 +172,7 @@ fun CleanablePasswordTextField(
             null
         },
         keyboardOptions = keyboardOptions,
+        prefix = prefix,
         onValueChange = onValueChange
     )
 }

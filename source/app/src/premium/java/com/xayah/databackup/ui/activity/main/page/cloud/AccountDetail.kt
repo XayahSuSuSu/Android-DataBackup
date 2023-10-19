@@ -98,6 +98,7 @@ fun PageAccountDetail(navController: NavHostController, entityName: String?) {
                 placeholder = stringResource(R.string.name),
                 enabled = editMode.not(),
                 leadingIcon = ImageVector.vectorResource(R.drawable.ic_rounded_badge),
+                prefix = null,
                 onCleanClick = {
                     text = ""
                 },
@@ -122,6 +123,7 @@ fun PageAccountDetail(navController: NavHostController, entityName: String?) {
                         enabled = true,
                         leadingIcon = config.leadingIcon,
                         keyboardOptions = config.keyboardOptions,
+                        prefix = config.prefix,
                         onCleanClick = {
                             text = ""
                         },
@@ -140,6 +142,7 @@ fun PageAccountDetail(navController: NavHostController, entityName: String?) {
                         enabled = true,
                         leadingIcon = config.leadingIcon,
                         keyboardOptions = config.keyboardOptions,
+                        prefix = config.prefix,
                         onCleanClick = {
                             text = ""
                         },

@@ -33,6 +33,7 @@ data class TextFieldConfig(
     val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     val placeholder: String,
     val leadingIcon: ImageVector,
+    val prefix: String? = null,
 )
 
 data class TypeConfig(
@@ -67,10 +68,11 @@ private object TextFieldConfigTokens {
         leadingIcon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_key),
     )
 
-    fun getHost(context: Context, value: String?) = TextFieldConfig(
+    fun getHost(context: Context, value: String?, prefix: String?) = TextFieldConfig(
         key = "host",
         value = mutableStateOf(value ?: ""),
         placeholder = context.getString(R.string.url),
+        prefix = prefix,
         leadingIcon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_link),
     )
 
@@ -90,7 +92,7 @@ private object TypeConfigTokens {
         type = "ftp",
         textFields = run {
             listOf(
-                TextFieldConfigTokens.getHost(context, account?.account?.host),
+                TextFieldConfigTokens.getHost(context, account?.account?.host, "ftp://"),
                 TextFieldConfigTokens.getPort(context, account?.account?.port?.toString()),
                 TextFieldConfigTokens.getUsername(context, account?.account?.user),
                 TextFieldConfigTokens.getPassword(context, account?.account?.pass),
@@ -118,7 +120,7 @@ private object TypeConfigTokens {
         type = "smb",
         textFields = run {
             listOf(
-                TextFieldConfigTokens.getHost(context, account?.account?.host),
+                TextFieldConfigTokens.getHost(context, account?.account?.host,"smb://"),
                 TextFieldConfigTokens.getUsername(context, account?.account?.user),
                 TextFieldConfigTokens.getPassword(context, account?.account?.pass),
             )
