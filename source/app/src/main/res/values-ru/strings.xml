@@ -149,4 +149,12 @@
     <string name="settings">Настройки</string>
     <string name="app_name">DataBackup</string>
     <string name="system">Системные</string>
+    <string name="please_set_up_main_account">Настройте основной аккаунт</string>
+    <string name="uploading">Загрузка</string>
+    <string name="cloud_server_disconnected">Облачный сервер отключен</string>
+    <string name="main_account">Основной аккаунт</string>
+    <string name="original_data_size">Размер данных (оригинальный)</string>
+    <string name="available_space">Доступное пространство</string>
+    <string name="set_as_main_account">Установить основным аккаунтом</string>
+    <string name="please_set_up_backup_dir">Установите папку бекапов</string>
 </resources>
