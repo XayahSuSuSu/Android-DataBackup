@@ -4,7 +4,7 @@
     <string name="backup">Бекап</string>
     <string name="restore">Відновлення</string>
     <string name="error">Помилка</string>
-    <string name="application">Застосунок</string>
+    <string name="application">Додаток</string>
     <string name="data">Дані</string>
     <string name="confirm">Підтвердити</string>
     <string name="backup_finished">Бекап завершено</string>
@@ -21,12 +21,12 @@
     <string name="backup_user">Користувач бекапу</string>
     <string name="compression_type_help">Виберіть тип стиснення додатків та даних, який впливає як на створення, так і на відновлення бекапу. Якщо ви не знаєте, навіщо потрібен цей параметр, не змінюйте його</string>
     <string name="restore_user">Відновлення користувача</string>
-    <string name="failed">Не вийшло</string>
+    <string name="failed">Невдача</string>
     <string name="grant_root_access">Надання root-доступу</string>
     <string name="release_prebuilt_binaries">Застосування передвстановлених бінарників</string>
     <string name="finish">Готово</string>
     <string name="welcome_to_use">Ласкаво просимо</string>
-    <string name="start_subtitle">Згідно з діючою політикою, вам необхідно уважно прочитати і погодитися з наступною Угодою користувача та Політикою конфіденційності, перш ніж ви почнете використовувати цей застосунок</string>
+    <string name="start_subtitle">Згідно з діючою політикою, вам необхідно уважно прочитати і погодитися з наступною Угодою користувача та Політикою конфіденційності, перш ніж ви почнете використовувати цей додаток</string>
     <string name="internal_storage">Внутрішня память</string>
     <string name="support">Підтримка</string>
     <string name="fetch_failed">Не вдалось отримати</string>
@@ -66,15 +66,15 @@
     <string name="cover_desc">Перезапис існуючих бекап файлів під час кожного створення бекапу, або пропуск створення бекапу, якщо немає змін, щоб у будь-якому випадку існувала лише одна копія ваших даних</string>
     <string name="by_time">За часом</string>
     <string name="by_time_desc">Кожен бекап вважається новою повною резервною копією та розділений відповідно до часу створення бекапу, тому ваші дані можуть існувати в кількох копіях</string>
-    <string name="name">Імя</string>
+    <string name="name">Ім’я</string>
     <string name="backup_test">Тестування бекапу</string>
     <string name="backup_test_title">Автоматичне тестування бекапу при створенні</string>
     <string name="testing">Тестування</string>
     <string name="check_package_usage_stats_permission">Перевірка дозволу на статистику використання пакетів</string>
-    <string name="start_desc">Всі дані, що створюються цим застосунком, використовуються лише для резервного копіювання/відновлення і зберігаються лише локально.</string>
+    <string name="start_desc">Всі дані, що створюються цим додатком, використовуються лише для резервного копіювання/відновлення і зберігаються лише локально.</string>
     <string name="network">Мережа</string>
     <string name="network_desc">Використовується для отримання інформації про оновлення програми, збору аналітики</string>
-    <string name="application_desc">Отримання всієї інформації про ім\'я пакетів застосунків пристрою. Використовується для створення списку бекапів і отримання розміру даних застосунок</string>
+    <string name="application_desc">Отримання інформації про пакет програм. Використовується для створення списку бекапів і отримання розміру даних</string>
     <string name="storage">Сховище</string>
     <string name="storage_desc">Використовується для резервного копіювання конфігурації, читання та запису архіву</string>
     <string name="data_size">Розмір даних</string>
@@ -109,7 +109,7 @@
     <string name="select_backup_media">Виберіть медіафайли для бекапу</string>
     <string name="select_restore_app">Виберіть додатки для відновлення</string>
     <string name="select_restore_media">Виберіть медіфайли для відновлення</string>
-    <string name="backup_dir_as_media_error">Неможливо додати каталог бекапу як носій</string>
+    <string name="backup_dir_as_media_error">Не вдається додати каталог бекапів як носій</string>
     <string name="add">Додати</string>
     <string name="select_all">Вибрати всі</string>
     <string name="none">Жодного</string>
@@ -167,9 +167,9 @@
     <string name="telephony_permissions">Права доступу до телефонії</string>
     <string name="sms_permission">Права доступу до СМС</string>
     <string name="monet_title">Увімкнути монет тему Material You</string>
-    <string name="reset_backup_list">Скинути список бекапів</string>
+    <string name="reset_backup_list">Перезапустити список бекапу</string>
     <string name="reset_backup_list_title">Зняти виділення після створення бекапу</string>
-    <string name="reset_restore_list">Скинути список відновлення</string>
+    <string name="reset_restore_list">Перезапустити список відновлення</string>
     <string name="reset_restore_list_title">Зняти виділення після відновлення</string>
     <string name="unsuspend_suspended_apps">Відновлення призупинених програм</string>
     <string name="unsuspend_suspended_apps_help">Якщо ви примусово закриєте цей додаток під час створення бекапу, програму для обробки може бути призупинено. Натисніть тут, щоб відновити</string>
@@ -183,4 +183,5 @@
     <string name="duplicate">Дублікат</string>
     <string name="separated_by_newlines">Розділені новими рядками</string>
     <string name="add_list">Додати список</string>
+    <string name="clean_restoring">Чисте відновлення</string>
 </resources>
