@@ -303,6 +303,10 @@ fun PackageBackupList() {
                 updatingText = "${context.getString(R.string.updating)} (${index + 1}/${activatePackagesEndIndex + 1})"
             }
             viewModel.updatePackages(newPackages)
+
+            // Inactivate itself
+            viewModel.inactivatePackage(context.packageName)
+
             state = state.setState(ListState.Done)
             updatingText = null
             remoteRootService.destroyService()

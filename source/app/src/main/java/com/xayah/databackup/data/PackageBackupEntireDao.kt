@@ -63,4 +63,7 @@ interface PackageBackupEntireDao {
 
     @Query("UPDATE PackageBackupEntire SET active = :active")
     suspend fun updateActive(active: Boolean)
+
+    @Query("UPDATE PackageBackupEntire SET active = :active WHERE packageName = :packageName")
+    suspend fun updateActive(active: Boolean,packageName: String)
 }
