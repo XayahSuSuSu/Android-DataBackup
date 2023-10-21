@@ -18,6 +18,8 @@ import com.xayah.databackup.ui.activity.main.page.MainViewModel
 import com.xayah.databackup.ui.activity.main.page.backup.PageBackup
 import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
 import com.xayah.databackup.ui.activity.main.page.log.PageLog
+import com.xayah.databackup.ui.activity.main.page.reload.PageReload
+import com.xayah.databackup.ui.activity.main.page.reload.ReloadViewModel
 import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
 import com.xayah.databackup.ui.activity.main.page.settings.PageSettings
 import com.xayah.databackup.ui.activity.main.page.tree.PageTree
@@ -92,6 +94,15 @@ fun MainNavHost(navController: NavHostController, viewModel: MainViewModel) {
                 viewModel.toUiState(MainUiState.Log(scrollBehavior = scrollBehavior, viewModel = logViewModel))
             }
             PageLog(viewModel = logViewModel)
+        }
+        composable(MainRoutes.Reload.route) {
+            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+            val reloadViewModel = hiltViewModel<ReloadViewModel>()
+
+            LaunchedEffect(null) {
+                viewModel.toUiState(MainUiState.Reload(scrollBehavior = scrollBehavior, viewModel = reloadViewModel))
+            }
+            PageReload(viewModel = reloadViewModel)
         }
     }
 }

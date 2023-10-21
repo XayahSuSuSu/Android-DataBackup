@@ -844,3 +844,49 @@ fun ListItemMediaRestore(
         }
     )
 }
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun ListItemReload(modifier: Modifier = Modifier, title: String, subtitle: String, chipGroup: @Composable (RowScope.() -> Unit)) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        onClick = {},
+        onLongClick = {},
+        border = null,
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingMedium)) {
+            Row(
+                modifier = Modifier
+                    .paddingTop(ListItemTokens.PaddingMedium)
+                    .paddingHorizontal(ListItemTokens.PaddingMedium),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingSmall)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    TitleMediumBoldText(text = title)
+                    LabelSmallText(text = subtitle)
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .paddingHorizontal(ListItemTokens.PaddingMedium),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(ListItemTokens.PaddingSmall),
+                    content = {
+                        chipGroup()
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.fillMaxWidth())
+        }
+    }
+}

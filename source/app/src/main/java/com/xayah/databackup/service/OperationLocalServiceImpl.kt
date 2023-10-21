@@ -23,6 +23,7 @@ import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.IAdditionUtilFactory
+import com.xayah.databackup.util.command.IMediumBackupAfterwardsUtilFactory
 import com.xayah.databackup.util.command.IMediumBackupUtilFactory
 import com.xayah.databackup.util.command.IMediumRestoreUtilFactory
 import com.xayah.databackup.util.command.IPackagesBackupAfterwardsUtilFactory
@@ -98,6 +99,9 @@ class OperationLocalServiceImpl : Service() {
 
     @Inject
     lateinit var additionUtilFactory: IAdditionUtilFactory
+
+    @Inject
+    lateinit var mediumBackupAfterwardsUtilFactory: IMediumBackupAfterwardsUtilFactory
 
     suspend fun backupPackagesPreparation(): BackupPreparation = withIOContext {
         mutex.withLock {
@@ -407,6 +411,20 @@ class OperationLocalServiceImpl : Service() {
             additionUtil.backupItself(packageName = packageName)
 
             context.saveLastBackupTime(timestamp)
+        }
+    }
+
+    suspend fun backupMediumAfterwards(cloudMode: Boolean) = withIOContext {
+        mutex.withLock {
+            val logTag = "Medium backup afterwards"
+            logUtil.log(logTag, "Started.")
+
+            /**
+             * All I/O related ops are in [com.xayah.databackup.util.command.PackagesBackupAfterwardsUtil].
+             */
+            val packagesUtil = mediumBackupAfterwardsUtilFactory.createMediumBackupAfterwardsUtil(logTag = logTag, cloudMode = cloudMode)
+
+            packagesUtil.backupConfigs()
         }
     }
 

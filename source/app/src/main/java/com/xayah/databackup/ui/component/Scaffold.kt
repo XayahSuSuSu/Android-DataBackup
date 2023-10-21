@@ -245,3 +245,21 @@ fun SnackbarScaffold(
         }
     )
 }
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun FabSnackbarScaffold(
+    floatingActionButton: @Composable () -> Unit,
+    floatingActionButtonPosition: FabPosition,
+    snackbarHostState: SnackbarHostState,
+    content: @Composable () -> Unit,
+) {
+    Scaffold(
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        content = {
+            content.invoke()
+        }
+    )
+}

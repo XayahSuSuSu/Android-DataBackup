@@ -27,6 +27,9 @@ interface PackageRestoreEntireDao {
     @Query("SELECT * FROM PackageRestoreEntire")
     suspend fun queryAll(): List<PackageRestoreEntire>
 
+    @Query("SELECT * FROM PackageRestoreEntire")
+    fun queryAllFlow(): Flow<List<PackageRestoreEntire>>
+
     @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
     fun queryActiveTotalPackages(): List<PackageRestoreEntire>
 

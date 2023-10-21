@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
+import com.xayah.databackup.ui.activity.main.page.reload.ReloadViewModel
 import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.main.router.currentRoute
@@ -207,6 +208,28 @@ fun LogTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: LogViewModel)
                 )
             }
         }
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun ReloadTopBar(scrollBehavior: TopAppBarScrollBehavior?, viewModel: ReloadViewModel) {
+    val context = LocalContext.current
+    val navController = LocalSlotScope.current!!.navController
+    val routes = ConstantUtil.MainBottomBarRoutes
+    val currentRoute = navController.currentRoute()
+
+    CenterAlignedTopAppBar(
+        title = { TopBarTitle(text = MainRoutes.ofTitle(context, currentRoute)) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            Crossfade(targetState = currentRoute, label = AnimationTokens.CrossFadeLabel) { route ->
+                if ((route in routes).not())
+                    ArrowBackButton {
+                        navController.popBackStack()
+                    }
+            }
+        },
     )
 }
 

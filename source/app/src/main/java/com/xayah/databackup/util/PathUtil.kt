@@ -40,7 +40,7 @@ object PathUtil {
     fun getTmpConfigFilePath(context: Context, name: String, timestamp: Long): String = "${getTmpConfigPath(context, name, timestamp)}/PackageRestoreEntire"
     fun getTmpMountPath(context: Context, name: String): String = "${context.filesPath()}/tmp/mount/$name"
     fun getTmpConfigsPath(context: Context): String = "${context.filesPath()}/tmp/configs"
-    fun getTmpConfigsFilePath(context: Context): String = "${getTmpConfigsPath(context)}/PackageRestoreEntire"
+    fun getTmpConfigsFilePath(config: String, context: Context): String = "${getTmpConfigsPath(context)}/${config}"
 
 
     // Paths for backup save dir.
@@ -63,6 +63,7 @@ object PathUtil {
     fun getRestorePackagesSavePath(): String = "${getRestoreArchivesSavePath()}/packages"
     fun getRestoreMediumSavePath(): String = "${getRestoreArchivesSavePath()}/medium"
     fun getRestoreIconSavePath(): String = "${getRestoreSavePath()}/icon"
+    fun getRestoreConfigsSavePath(): String = "${getRestoreSavePath()}/configs"
 
     // Paths for processing.
     fun getPackageUserPath(userId: Int): String = "/data/user/${userId}"

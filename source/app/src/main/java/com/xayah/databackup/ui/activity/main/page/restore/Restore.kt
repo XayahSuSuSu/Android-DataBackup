@@ -1,6 +1,5 @@
 package com.xayah.databackup.ui.activity.main.page.restore
 
-import android.content.Context
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -25,19 +24,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.directory.router.DirectoryRoutes
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.CardActionButton
-import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.Module
 import com.xayah.databackup.ui.component.OverLookRestoreCard
 import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.component.ignorePaddingHorizontal
-import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.ui.component.paddingBottom
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingTop
@@ -45,25 +41,12 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.databackup.util.IntentUtil
 import kotlinx.coroutines.launch
 
-@ExperimentalMaterial3Api
-private suspend fun DialogState.openReloadDialog(viewModel: RestoreViewModel, context: Context) {
-    openLoading(
-        title = context.getString(R.string.prompt),
-        icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_folder_open),
-        onLoading = {
-            viewModel.reload(context = context)
-        },
-    )
-}
-
 @ExperimentalLayoutApi
 @ExperimentalMaterial3Api
 @Composable
 fun PageRestore() {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val viewModel = hiltViewModel<RestoreViewModel>()
-    val dialogSlot = LocalSlotScope.current!!.dialogSlot
     val navController = LocalSlotScope.current!!.navController
 
     LazyColumn(
@@ -91,11 +74,7 @@ fun PageRestore() {
                 )
                 val onClicks = listOf<suspend () -> Unit>(
                     {
-                        dialogSlot.openConfirmDialog(context, context.getString(R.string.confirm_reload)).also { (confirmed, _) ->
-                            if (confirmed) {
-                                dialogSlot.openReloadDialog(viewModel = viewModel, context = context)
-                            }
-                        }
+                        navController.navigate(MainRoutes.Reload.route)
                     },
                     {
                         IntentUtil.toDirectoryActivity(context = context, route = DirectoryRoutes.DirectoryRestore)

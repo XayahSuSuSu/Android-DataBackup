@@ -156,4 +156,6 @@
     <string name="please_set_up_backup_dir">请设置备份目录</string>
     <string name="original_data_size">数据大小（原始）</string>
     <string name="available_space">可用空间</string>
+    <string name="speed_mode">极速模式</string>
+    <string name="recursive_mode">递归模式</string>
 </resources>

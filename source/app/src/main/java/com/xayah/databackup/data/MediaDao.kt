@@ -38,6 +38,9 @@ interface MediaDao {
     @Query("SELECT * FROM MediaRestoreEntity WHERE timestamp = :timestamp AND savePath = :savePath")
     fun queryAllRestoreFlow(timestamp: Long, savePath: String): Flow<List<MediaRestoreWithOpEntity>>
 
+    @Query("SELECT * FROM MediaRestoreEntity")
+    suspend fun queryAllRestore(): List<MediaRestoreEntity>
+
     @Query("SELECT * FROM MediaBackupEntity WHERE selected = 1")
     suspend fun queryBackupSelected(): List<MediaBackupEntity>
 

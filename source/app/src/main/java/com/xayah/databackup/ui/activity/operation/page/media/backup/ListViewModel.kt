@@ -151,6 +151,7 @@ class MediaBackupListViewModel @Inject constructor(private val mediaDao: MediaDa
 
                         val operationLocalService = OperationLocalService(context = DataBackupApplication.application)
                         operationLocalService.backupMedium(uiState.timestamp)
+                        operationLocalService.backupMediumAfterwards()
                         operationLocalService.destroyService()
 
                         setType(OpType.LIST)

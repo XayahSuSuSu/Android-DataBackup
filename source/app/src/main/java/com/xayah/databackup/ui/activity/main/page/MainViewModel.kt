@@ -18,11 +18,13 @@ import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.log.LogViewModel
+import com.xayah.databackup.ui.activity.main.page.reload.ReloadViewModel
 import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 import com.xayah.databackup.ui.component.LocalSlotScope
 import com.xayah.databackup.ui.component.LogTopBar
 import com.xayah.databackup.ui.component.MainBottomBar
 import com.xayah.databackup.ui.component.MainTopBar
+import com.xayah.databackup.ui.component.ReloadTopBar
 import com.xayah.databackup.ui.component.TreeTopBar
 import com.xayah.databackup.ui.component.openFileOpDialog
 import com.xayah.databackup.util.DateUtil
@@ -99,6 +101,16 @@ sealed class MainUiState(
             )
         },
         floatingActionButtonPosition = FabPosition.Center
+    )
+
+    class Reload(scrollBehavior: TopAppBarScrollBehavior?, viewModel: ReloadViewModel) : MainUiState(
+        scrollBehavior = scrollBehavior,
+        topBar = {
+            ReloadTopBar(scrollBehavior = scrollBehavior, viewModel = viewModel)
+        },
+        bottomBar = {
+            MainBottomBar()
+        }
     )
 }
 

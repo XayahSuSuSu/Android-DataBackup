@@ -1,15 +1,18 @@
 package com.xayah.databackup.util.command
 
 import android.content.Context
+import android.content.pm.PackageInfo
 import androidx.annotation.StringRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.reflect.TypeToken
 import com.xayah.databackup.R
 import com.xayah.databackup.data.CloudDao
 import com.xayah.databackup.data.MediaBackupOperationEntity
 import com.xayah.databackup.data.MediaDao
 import com.xayah.databackup.data.MediaRestoreEntity
 import com.xayah.databackup.data.MediaRestoreOperationEntity
+import com.xayah.databackup.data.OperationMask
 import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageBackupOperationDao
@@ -30,7 +33,10 @@ import com.xayah.databackup.util.readCleanRestoring
 import com.xayah.databackup.util.readCompatibleMode
 import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readRestoreUserId
+import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.librootservice.util.ExceptionUtil
+import com.xayah.librootservice.util.withIOContext
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -376,6 +382,9 @@ class PackagesBackupAfterwardsUtil @AssistedInject constructor(
     @Inject
     lateinit var packageRestoreEntireDao: PackageRestoreEntireDao
 
+    @Inject
+    lateinit var configsUtil: ConfigsUtil
+
     private val usePipe = context.readCompatibleMode()
     private val compressionType = CompressionType.TAR // Configs use tar is enough.
 
@@ -384,54 +393,18 @@ class PackagesBackupAfterwardsUtil @AssistedInject constructor(
     private fun getArchivePath(name: String) =
         "${configsPath}/${name}.${compressionType.suffix}"
 
-    private suspend fun logAlso(result: ShellResult, logId: Long) {
-        result.logCmd(logUtil = logUtil, logId = logId)
-    }
-
     suspend fun backupIcons() {
-        val logId = logUtil.log(logTag, "Start backing up icons...")
-
-        val name = "icon"
-        val archivePath = getArchivePath(name)
-
-        // Compress and test.
-        Tar.compress(
-            usePipe = usePipe,
-            exclusionList = listOf(),
-            srcDir = context.filesPath(),
-            src = name,
-            dst = archivePath,
-            extra = compressionType.compressPara
-        )
-            .also { result -> logAlso(result, logId) }
-        Tar.test(src = archivePath, extra = compressionType.decompressPara)
-            .also { result -> logAlso(result, logId) }
+        val archivePath = getArchivePath("icon")
+        configsUtil.backupIcons(archivePath, usePipe)
 
         if (cloudMode) backupArchiveExtension(targetPath = archivePath)
     }
 
     suspend fun backupConfigs() {
-        val logId = logUtil.log(logTag, "Start backing up configs...")
-
-        // Create tmp config
-        val tmpConfigPath = PathUtil.getTmpConfigsPath(context = context)
-        val tmpConfigFilePath = PathUtil.getTmpConfigsFilePath(context = context)
-        rootService.deleteRecursively(tmpConfigPath)
-        rootService.mkdirs(tmpConfigPath)
-        rootService.writeText(text = gsonUtil.toJson(packageRestoreEntireDao.queryAll()), path = tmpConfigFilePath, context = context)
-
-        // Compress tmp config and test.
-        val name = "configs"
-        val archivePath = getArchivePath(name)
-        Tar.compressInCur(usePipe = usePipe, cur = tmpConfigPath, src = "./*", dst = archivePath, extra = compressionType.compressPara)
-            .also { result -> logAlso(result, logId) }
-        Tar.test(src = archivePath, extra = compressionType.decompressPara)
-            .also { result -> logAlso(result, logId) }
+        val archivePath = getArchivePath("configs")
+        configsUtil.backupConfigs(archivePath, "PackageRestoreEntire", usePipe, gsonUtil.toJson(packageRestoreEntireDao.queryAll()))
 
         if (cloudMode) backupArchiveExtension(targetPath = archivePath)
-
-        // Clean up
-        rootService.deleteRecursively(tmpConfigPath)
     }
 
     suspend fun clearUp() {
@@ -927,6 +900,45 @@ class MediumBackupUtil @AssistedInject constructor(
 }
 
 @AssistedFactory
+interface IMediumBackupAfterwardsUtilFactory {
+    fun createMediumBackupAfterwardsUtil(cloudMode: Boolean, logTag: String): MediumBackupAfterwardsUtil
+}
+
+class MediumBackupAfterwardsUtil @AssistedInject constructor(
+    @ApplicationContext val context: Context,
+    @Assisted val cloudMode: Boolean,
+    @Assisted private val logTag: String,
+) {
+    @Inject
+    lateinit var logUtil: LogUtil
+
+    @Inject
+    lateinit var cloudDao: CloudDao
+
+    @Inject
+    lateinit var gsonUtil: GsonUtil
+
+    @Inject
+    lateinit var mediaDao: MediaDao
+
+    @Inject
+    lateinit var configsUtil: ConfigsUtil
+
+    private val usePipe = context.readCompatibleMode()
+    private val compressionType = CompressionType.TAR // Configs use tar is enough.
+
+    val configsPath = PathUtil.getConfigsSavePath(cloudMode)
+
+    private fun getArchivePath(name: String) =
+        "${configsPath}/${name}.${compressionType.suffix}"
+
+    suspend fun backupConfigs() {
+        val archivePath = getArchivePath("configs")
+        configsUtil.backupConfigs(archivePath, "MediaRestoreEntity", usePipe, gsonUtil.toJson(mediaDao.queryAllRestore()))
+    }
+}
+
+@AssistedFactory
 interface IMediumRestoreUtilFactory {
     fun createMediumRestoreUtil(entity: MediaRestoreOperationEntity): MediumRestoreUtil
 }
@@ -1016,5 +1028,409 @@ class MediumRestoreUtil @AssistedInject constructor(
             .also { result -> decompressAlso(result, logId, isSuccess, entityLog) }
 
         type.setEndState(isSuccess, entityLog)
+    }
+}
+
+class ConfigsUtil @Inject constructor(
+    @ApplicationContext val context: Context,
+) {
+    @Inject
+    lateinit var rootService: RemoteRootService
+
+    @Inject
+    lateinit var logUtil: LogUtil
+
+    @Inject
+    lateinit var gsonUtil: GsonUtil
+
+    @Inject
+    lateinit var packageRestoreEntireDao: PackageRestoreEntireDao
+
+    @Inject
+    lateinit var mediaDao: MediaDao
+
+    private val logTag = "ConfigsUtil"
+    private val compressionType = CompressionType.TAR // Configs use tar is enough.
+
+    private data class TypedTimestamp(
+        val timestamp: Long,
+        val archivePathList: MutableList<PathParcelable>,
+    )
+
+    private data class TypedPath(
+        val name: String,
+        val typedTimestampList: MutableList<TypedTimestamp>,
+    )
+
+    private suspend fun logAlso(result: ShellResult, logId: Long) {
+        result.logCmd(logUtil = logUtil, logId = logId)
+    }
+
+    suspend fun backupIcons(archivePath: String, usePipe: Boolean) {
+        val logId = logUtil.log(logTag, "Start backing up icons...")
+
+        // Compress and test.
+        Tar.compress(
+            usePipe = usePipe,
+            exclusionList = listOf(),
+            srcDir = context.filesPath(),
+            src = "icon",
+            dst = archivePath,
+            extra = compressionType.compressPara
+        )
+            .also { result -> logAlso(result, logId) }
+        Tar.test(src = archivePath, extra = compressionType.decompressPara)
+            .also { result -> logAlso(result, logId) }
+    }
+
+    suspend fun backupConfigs(archivePath: String, configName: String, usePipe: Boolean, text: String) {
+        val logId = logUtil.log(logTag, "Start backing up configs...")
+
+        // Create tmp config
+        val tmpConfigsPath = PathUtil.getTmpConfigsPath(context = context)
+        val tmpConfigsFilePath = PathUtil.getTmpConfigsFilePath(context = context, config = configName)
+        rootService.deleteRecursively(tmpConfigsPath)
+        rootService.mkdirs(tmpConfigsPath)
+
+        Tar.decompress(src = archivePath, dst = tmpConfigsPath, extra = compressionType.decompressPara).also { result ->
+            result.logCmd(logUtil = logUtil, logId = logId)
+        }
+        rootService.writeText(text = text, path = tmpConfigsFilePath, context = context)
+
+        // Compress tmp config and test.
+        Tar.compressInCur(usePipe = usePipe, cur = tmpConfigsPath, src = "./*", dst = archivePath, extra = compressionType.compressPara)
+            .also { result -> logAlso(result, logId) }
+        Tar.test(src = archivePath, extra = compressionType.decompressPara)
+            .also { result -> logAlso(result, logId) }
+
+        // Clean up
+        rootService.deleteRecursively(tmpConfigsPath)
+    }
+
+    suspend fun restoreIcons(archivePath: String) {
+        val logId = logUtil.log(logTag, "Start restoring icons...")
+
+        Tar.decompress(src = archivePath, dst = context.filesPath(), extra = compressionType.decompressPara)
+            .also { result -> logAlso(result, logId) }
+    }
+
+    suspend fun dumpConfigs(archivePath: String) = withIOContext {
+        val logId = logUtil.log(logTag, "Start dump icons...")
+        var packageList: List<PackageRestoreEntire> = listOf()
+        var mediaList: List<MediaRestoreEntity> = listOf()
+
+        val tmpConfigsPath = PathUtil.getTmpConfigsPath(context = context)
+        val tmpConfigsPackageFilePath = PathUtil.getTmpConfigsFilePath(context = context, config = "PackageRestoreEntire")
+        val tmpConfigsMediaFilePath = PathUtil.getTmpConfigsFilePath(context = context, config = "MediaRestoreEntity")
+        rootService.deleteRecursively(tmpConfigsPath)
+        rootService.mkdirs(tmpConfigsPath)
+
+        Tar.decompress(src = archivePath, dst = tmpConfigsPath, extra = compressionType.decompressPara).also { result ->
+            result.logCmd(logUtil = logUtil, logId = logId)
+        }
+
+        ExceptionUtil.tryOnScope(
+            block = {
+                if (rootService.exists(tmpConfigsPackageFilePath)) {
+                    // Directly read from configs
+                    val json = rootService.readText(tmpConfigsPackageFilePath)
+                    val type = object : TypeToken<List<PackageRestoreEntire>>() {}.type
+                    packageList = gsonUtil.fromJson(json, type)
+                } else {
+                    logUtil.log(logTag, "No configs found.")
+                }
+                if (rootService.exists(tmpConfigsMediaFilePath)) {
+                    // Directly read from configs
+                    val json = rootService.readText(tmpConfigsMediaFilePath)
+                    val type = object : TypeToken<List<MediaRestoreEntity>>() {}.type
+                    mediaList = gsonUtil.fromJson(json, type)
+                } else {
+                    logUtil.log(logTag, "No configs found.")
+                }
+            },
+            onException = {
+                logUtil.log(logTag, "Failed: ${it.message}")
+            }
+        )
+        rootService.deleteRecursively(tmpConfigsPath)
+        packageList to mediaList
+    }
+
+    suspend fun dumpPackageConfigsRecursively(src: String): List<PackageRestoreEntire> = withIOContext {
+        val logId = logUtil.log(logTag, "Start dump package configs...")
+        val list: MutableList<PackageRestoreEntire> = mutableListOf()
+
+        val packageManager = context.packageManager
+        val pathList = rootService.walkFileTree(src)
+        val typedPathList = mutableListOf<TypedPath>()
+
+        logUtil.log(logTag, "Classify the paths: $src, count: ${pathList.size}")
+        // Classify the paths
+        pathList.forEach { path ->
+            logUtil.log(logTag, "Classify: ${path.pathString}")
+            ExceptionUtil.tryOnScope(
+                block = {
+                    val pathListSize = path.pathList.size
+                    val packageName = path.pathList[pathListSize - 3]
+                    val timestamp = path.pathList[pathListSize - 2].toLong()
+                    val typedPathListIndex = typedPathList.indexOfLast { it.name == packageName }
+                    if (typedPathListIndex == -1) {
+                        val typedTimestamp = TypedTimestamp(timestamp = timestamp, archivePathList = mutableListOf(path))
+                        typedPathList.add(TypedPath(name = packageName, typedTimestampList = mutableListOf(typedTimestamp)))
+                    } else {
+                        val typedTimestampList = typedPathList[typedPathListIndex].typedTimestampList
+                        val typedTimestampIndex = typedTimestampList.indexOfLast { it.timestamp == timestamp }
+                        if (typedTimestampIndex == -1) {
+                            val typedTimestamp = TypedTimestamp(timestamp = timestamp, archivePathList = mutableListOf(path))
+                            typedPathList[typedPathListIndex].typedTimestampList.add(typedTimestamp)
+                        } else {
+                            typedPathList[typedPathListIndex].typedTimestampList[typedTimestampIndex].archivePathList.add(path)
+                        }
+                    }
+                },
+                onException = {
+                    logUtil.log(logTag, "Failed: ${it.message}")
+                }
+            )
+        }
+
+        logUtil.log(logTag, "Reload the archives, count: ${typedPathList.size}")
+        typedPathList.forEach { typedPath ->
+            // For each package
+            val packageName = typedPath.name
+            logUtil.log(logTag, "Package: $packageName")
+
+            typedPath.typedTimestampList.forEach { typedTimestamp ->
+                // For each timestamp
+                var packageInfo: PackageInfo? = null
+                val timestamp = typedTimestamp.timestamp
+                val archivePathList = typedTimestamp.archivePathList
+                var compressionType: CompressionType = CompressionType.ZSTD
+                var operationCode = OperationMask.None
+
+                logUtil.log(logTag, "Timestamp: $timestamp")
+                val tmpApkPath = PathUtil.getTmpApkPath(context = context, packageName = packageName)
+                val tmpConfigPath = PathUtil.getTmpConfigPath(context = context, name = packageName, timestamp = timestamp)
+                val tmpConfigFilePath = PathUtil.getTmpConfigFilePath(context = context, name = packageName, timestamp = timestamp)
+                rootService.deleteRecursively(tmpApkPath)
+                rootService.deleteRecursively(tmpConfigPath)
+                rootService.mkdirs(tmpApkPath)
+                rootService.mkdirs(tmpConfigPath)
+
+                archivePathList.forEach { archivePath ->
+                    // For each archive
+                    logUtil.log(logTag, "Archive: ${archivePath.pathString}")
+                    ExceptionUtil.tryOnScope(
+                        block = {
+                            when (archivePath.nameWithoutExtension) {
+                                DataType.PACKAGE_APK.type -> {
+                                    val type = CompressionType.suffixOf(archivePath.extension)
+                                    if (type != null) {
+                                        compressionType = type
+                                        Tar.decompress(src = archivePath.pathString, dst = tmpApkPath, extra = type.decompressPara).also { result ->
+                                            result.logCmd(logUtil = logUtil, logId = logId)
+                                        }
+                                        rootService.listFilePaths(tmpApkPath).also { pathList ->
+                                            if (pathList.isNotEmpty()) {
+                                                packageInfo = rootService.getPackageArchiveInfo(pathList.first())
+                                                operationCode = operationCode or OperationMask.Apk
+                                            }
+                                        }
+                                    } else {
+                                        logUtil.log(logTag, "Failed to parse compression type: ${archivePath.extension}")
+                                    }
+                                }
+
+                                DataType.PACKAGE_CONFIG.type -> {
+                                    val type = CompressionType.suffixOf(archivePath.extension)
+                                    if (type != null) {
+                                        compressionType = type
+                                        Tar.decompress(src = archivePath.pathString, dst = tmpConfigPath, extra = type.decompressPara).also { result ->
+                                            result.logCmd(logUtil = logUtil, logId = logId)
+                                        }
+                                    } else {
+                                        logUtil.log(logTag, "Failed to parse compression type: ${archivePath.extension}")
+                                    }
+                                }
+
+                                DataType.PACKAGE_USER.type -> {
+                                    operationCode = operationCode or OperationMask.Data
+                                }
+                            }
+                        },
+                        onException = {
+                            logUtil.log(logTag, "Failed: ${it.message}")
+                        }
+                    )
+                }
+
+                ExceptionUtil.tryOnScope(
+                    block = {
+                        // Check config first
+                        val packageRestoreEntire: PackageRestoreEntire
+                        if (rootService.exists(tmpConfigFilePath)) {
+                            // Directly read from config
+                            val json = rootService.readText(tmpConfigFilePath)
+                            val type = object : TypeToken<PackageRestoreEntire>() {}.type
+                            packageRestoreEntire = gsonUtil.fromJson(json, type)
+                        } else {
+                            packageRestoreEntire = PackageRestoreEntire(
+                                packageName = packageName,
+                                backupOpCode = operationCode,
+                                timestamp = timestamp,
+                                compressionType = compressionType,
+                                savePath = "",
+                            )
+                            packageInfo?.apply {
+                                packageRestoreEntire.also { entity ->
+                                    entity.label = applicationInfo.loadLabel(packageManager).toString()
+                                    entity.versionName = versionName ?: ""
+                                    entity.versionCode = longVersionCode
+                                    entity.flags = applicationInfo.flags
+                                }
+                                val icon = applicationInfo.loadIcon(packageManager)
+                                EnvUtil.saveIcon(context, packageName, icon)
+                                logUtil.log(logTag, "Icon saved")
+                            }
+                        }
+                        packageRestoreEntire.savePath = PathUtil.getRestoreSavePath()
+                        list.add(packageRestoreEntire)
+                    },
+                    onException = {
+                        logUtil.log(logTag, "Failed: ${it.message}")
+                    }
+                )
+
+                rootService.deleteRecursively(tmpApkPath)
+                rootService.deleteRecursively(tmpConfigPath)
+            }
+        }
+
+        list
+    }
+
+    suspend fun dumpMediaConfigsRecursively(src: String): List<MediaRestoreEntity> = withIOContext {
+        val logId = logUtil.log(logTag, "Start dump media configs...")
+        val list: MutableList<MediaRestoreEntity> = mutableListOf()
+
+        val pathList = rootService.walkFileTree(src)
+        val typedPathList = mutableListOf<TypedPath>()
+
+        logUtil.log(logTag, "Classify the paths: $src, count: ${pathList.size}")
+        // Classify the paths
+        pathList.forEach { path ->
+            logUtil.log(logTag, "Classify: ${path.pathString}")
+            ExceptionUtil.tryOnScope(
+                block = {
+                    val pathListSize = path.pathList.size
+                    val name = path.pathList[pathListSize - 3]
+                    val timestamp = path.pathList[pathListSize - 2].toLong()
+                    val typedPathListIndex = typedPathList.indexOfLast { it.name == name }
+                    if (typedPathListIndex == -1) {
+                        val typedTimestamp =
+                            TypedTimestamp(timestamp = timestamp, archivePathList = mutableListOf(path))
+                        typedPathList.add(TypedPath(name = name, typedTimestampList = mutableListOf(typedTimestamp)))
+                    } else {
+                        val typedTimestampList = typedPathList[typedPathListIndex].typedTimestampList
+                        val typedTimestampIndex = typedTimestampList.indexOfLast { it.timestamp == timestamp }
+                        if (typedTimestampIndex == -1) {
+                            val typedTimestamp =
+                                TypedTimestamp(timestamp = timestamp, archivePathList = mutableListOf(path))
+                            typedPathList[typedPathListIndex].typedTimestampList.add(typedTimestamp)
+                        } else {
+                            typedPathList[typedPathListIndex].typedTimestampList[typedTimestampIndex].archivePathList.add(path)
+                        }
+                    }
+                },
+                onException = {
+                    logUtil.log(logTag, "Failed: ${it.message}")
+                }
+            )
+        }
+
+        logUtil.log(logTag, "Reload the archives, count: ${typedPathList.size}")
+        typedPathList.forEach { typedPath ->
+            // For each media
+            val name = typedPath.name
+            logUtil.log(logTag, "Media: $name")
+
+            typedPath.typedTimestampList.forEach timestamp@{ typedTimestamp ->
+                // For each timestamp
+                val timestamp = typedTimestamp.timestamp
+                val archivePathList = typedTimestamp.archivePathList
+                var mediaExists = false
+
+                logUtil.log(logTag, "Timestamp: $timestamp")
+                val tmpConfigPath = PathUtil.getTmpConfigPath(context = context, name = name, timestamp = timestamp)
+                val tmpConfigFilePath = PathUtil.getTmpConfigFilePath(context = context, name = name, timestamp = timestamp)
+                rootService.deleteRecursively(tmpConfigPath)
+                rootService.mkdirs(tmpConfigPath)
+
+                archivePathList.forEach { archivePath ->
+                    // For each archive
+                    logUtil.log(logTag, "Archive: ${archivePath.pathString}")
+                    ExceptionUtil.tryOnScope(
+                        block = {
+                            when (archivePath.nameWithoutExtension) {
+                                DataType.MEDIA_MEDIA.type -> {
+                                    mediaExists = true
+                                }
+
+                                DataType.PACKAGE_CONFIG.type -> {
+                                    val type = CompressionType.suffixOf(archivePath.extension)
+                                    if (type != null) {
+                                        Tar.decompress(src = archivePath.pathString, dst = tmpConfigPath, extra = type.decompressPara).also { result ->
+                                            result.logCmd(logUtil = logUtil, logId = logId)
+                                        }
+                                    } else {
+                                        logUtil.log(logTag, "Failed to parse compression type: ${archivePath.extension}")
+                                    }
+                                }
+                            }
+                        },
+                        onException = {
+                            logUtil.log(logTag, "Failed: ${it.message}")
+                        }
+                    )
+                }
+
+                // If the media archive doesn't exist, continue for the next one.
+                if (mediaExists.not()) return@timestamp
+
+                // Check config first
+                val mediaRestoreEntity = if (rootService.exists(tmpConfigFilePath)) {
+                    // Directly read from config
+                    val json = rootService.readText(tmpConfigFilePath)
+                    val type = object : TypeToken<MediaRestoreEntity>() {}.type
+                    gsonUtil.fromJson(json, type)
+                } else {
+                    MediaRestoreEntity(
+                        timestamp = timestamp,
+                        path = "",
+                        name = name,
+                        sizeBytes = timestamp,
+                        selected = false,
+                        savePath = ""
+                    )
+                }
+                mediaRestoreEntity.savePath = PathUtil.getRestoreSavePath()
+                list.add(mediaRestoreEntity)
+
+                rootService.deleteRecursively(tmpConfigPath)
+            }
+        }
+
+        list
+    }
+
+    suspend fun restoreConfigs(packages: List<PackageRestoreEntire>, medium: List<MediaRestoreEntity>) = withIOContext {
+        // Clear table first
+        logUtil.log(logTag, "Clear the table")
+        packageRestoreEntireDao.clearTable()
+        mediaDao.clearRestoreTable()
+        logUtil.log(logTag, "Restore the package configs, count: ${packages.size}")
+        logUtil.log(logTag, "Restore the medium configs, count: ${medium.size}")
+        packageRestoreEntireDao.upsert(packages)
+        mediaDao.upsertRestore(medium)
     }
 }

@@ -91,5 +91,6 @@ class OperationLocalService(private val context: Context) {
     suspend fun restorePackagesPreparation() = getService().restorePackagesPreparation()
     suspend fun restorePackages(timestamp: Long) = getService().restorePackages(timestamp)
     suspend fun backupMedium(timestamp: Long, cloudMode: Boolean = false) = getService().backupMedium(timestamp, cloudMode)
+    suspend fun backupMediumAfterwards(cloudMode: Boolean = false) = getService().backupMediumAfterwards(cloudMode)
     suspend fun restoreMedium(timestamp: Long) = getService().restoreMedium(timestamp)
 }
