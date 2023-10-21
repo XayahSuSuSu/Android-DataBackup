@@ -14,6 +14,7 @@ import com.xayah.databackup.data.OperationState
 import com.xayah.databackup.data.PackageBackupOperation
 import com.xayah.databackup.data.PackageBackupOperationDao
 import com.xayah.databackup.data.PackageRestoreEntire
+import com.xayah.databackup.data.PackageRestoreEntireDao
 import com.xayah.databackup.data.PackageRestoreOperation
 import com.xayah.databackup.data.PackageRestoreOperationDao
 import com.xayah.databackup.util.CompressionType
@@ -369,6 +370,12 @@ class PackagesBackupAfterwardsUtil @AssistedInject constructor(
     @Inject
     lateinit var cloudDao: CloudDao
 
+    @Inject
+    lateinit var gsonUtil: GsonUtil
+
+    @Inject
+    lateinit var packageRestoreEntireDao: PackageRestoreEntireDao
+
     private val usePipe = context.readCompatibleMode()
     private val compressionType = CompressionType.TAR // Configs use tar is enough.
 
@@ -401,6 +408,30 @@ class PackagesBackupAfterwardsUtil @AssistedInject constructor(
             .also { result -> logAlso(result, logId) }
 
         if (cloudMode) backupArchiveExtension(targetPath = archivePath)
+    }
+
+    suspend fun backupConfigs() {
+        val logId = logUtil.log(logTag, "Start backing up configs...")
+
+        // Create tmp config
+        val tmpConfigPath = PathUtil.getTmpConfigsPath(context = context)
+        val tmpConfigFilePath = PathUtil.getTmpConfigsFilePath(context = context)
+        rootService.deleteRecursively(tmpConfigPath)
+        rootService.mkdirs(tmpConfigPath)
+        rootService.writeText(text = gsonUtil.toJson(packageRestoreEntireDao.queryAll()), path = tmpConfigFilePath, context = context)
+
+        // Compress tmp config and test.
+        val name = "configs"
+        val archivePath = getArchivePath(name)
+        Tar.compressInCur(usePipe = usePipe, cur = tmpConfigPath, src = "./*", dst = archivePath, extra = compressionType.compressPara)
+            .also { result -> logAlso(result, logId) }
+        Tar.test(src = archivePath, extra = compressionType.decompressPara)
+            .also { result -> logAlso(result, logId) }
+
+        if (cloudMode) backupArchiveExtension(targetPath = archivePath)
+
+        // Clean up
+        rootService.deleteRecursively(tmpConfigPath)
     }
 
     suspend fun clearUp() {

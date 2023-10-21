@@ -235,8 +235,9 @@ class OperationLocalServiceImpl : Service() {
             val additionUtil = additionUtilFactory.createAdditionUtil(cloudMode = cloudMode, logTag = logTag)
             additionUtil.backupItself(packageName = packageName)
 
-            // Backup icons.
+            // Backup others.
             packagesUtil.backupIcons()
+            packagesUtil.backupConfigs()
 
             // Clear up
             packagesUtil.clearUp()

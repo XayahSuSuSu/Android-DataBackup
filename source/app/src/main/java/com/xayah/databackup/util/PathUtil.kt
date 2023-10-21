@@ -39,6 +39,9 @@ object PathUtil {
     fun getTmpConfigPath(context: Context, name: String, timestamp: Long): String = "${context.filesPath()}/tmp/config/$name/$timestamp"
     fun getTmpConfigFilePath(context: Context, name: String, timestamp: Long): String = "${getTmpConfigPath(context, name, timestamp)}/PackageRestoreEntire"
     fun getTmpMountPath(context: Context, name: String): String = "${context.filesPath()}/tmp/mount/$name"
+    fun getTmpConfigsPath(context: Context): String = "${context.filesPath()}/tmp/configs"
+    fun getTmpConfigsFilePath(context: Context): String = "${getTmpConfigsPath(context)}/PackageRestoreEntire"
+
 
     // Paths for backup save dir.
     fun getBackupSavePath(cloudMode: Boolean): String =
