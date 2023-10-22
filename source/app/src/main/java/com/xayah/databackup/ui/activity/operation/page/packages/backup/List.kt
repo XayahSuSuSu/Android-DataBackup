@@ -244,7 +244,10 @@ fun PackageBackupList() {
                     )
                 }
             }) {
-                installedPackages = remoteRootService.getInstalledPackagesAsUser(0, userId)
+                installedPackages = remoteRootService.getInstalledPackagesAsUser(0, userId).filter {
+                    // Filter itself
+                    it.packageName != context.packageName
+                }
             }
             val activePackages = mutableListOf<PackageBackupActivate>()
             installedPackages.forEach { packageInfo ->
@@ -303,10 +306,6 @@ fun PackageBackupList() {
                 updatingText = "${context.getString(R.string.updating)} (${index + 1}/${activatePackagesEndIndex + 1})"
             }
             viewModel.updatePackages(newPackages)
-
-            // Inactivate itself
-            viewModel.inactivatePackage(context.packageName)
-
             state = state.setState(ListState.Done)
             updatingText = null
             remoteRootService.destroyService()
