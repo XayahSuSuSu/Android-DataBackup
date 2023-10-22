@@ -18,6 +18,7 @@ import com.xayah.librootservice.IRemoteRootService
 import com.xayah.librootservice.impl.RemoteRootServiceImpl
 import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.parcelables.StatFsParcelable
+import com.xayah.librootservice.util.ExceptionUtil.tryOnScope
 import com.xayah.librootservice.util.withMainContext
 import kotlinx.coroutines.isActive
 import java.io.File
@@ -94,23 +95,35 @@ class RemoteRootService(private val context: Context) {
     }
 
     private suspend fun getService(): IRemoteRootService {
-        return withMainContext {
-            if (mService == null) {
-                val msg = "Service is null."
-                if (isFirstConnection)
-                    isFirstConnection = false
-                else
+        return tryOnScope(
+            block = {
+                withMainContext {
+                    if (mService == null) {
+                        val msg = "Service is null."
+                        if (isFirstConnection)
+                            isFirstConnection = false
+                        else
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        bindService()
+                    } else if (mService!!.asBinder().isBinderAlive.not()) {
+                        mService = null
+                        val msg = "Service is dead."
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        bindService()
+                    } else {
+                        mService!!
+                    }
+                }
+            },
+            onException = {
+                withMainContext {
+                    mService = null
+                    val msg = it.message
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                bindService()
-            } else if (mService!!.asBinder().isBinderAlive.not()) {
-                mService = null
-                val msg = "Service is dead."
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                bindService()
-            } else {
-                mService!!
+                    bindService()
+                }
             }
-        }
+        )
     }
 
     suspend fun testService(): IRemoteRootService = getService()
