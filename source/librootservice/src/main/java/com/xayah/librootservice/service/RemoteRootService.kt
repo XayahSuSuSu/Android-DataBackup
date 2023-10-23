@@ -156,8 +156,7 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun listFilePaths(path: String): List<String> = getService().listFilePaths(path)
 
-    suspend fun readText(path: String): String {
-        val pfd = getService().readText(path)
+    private fun readFromParcel(pfd: ParcelFileDescriptor, onRead: (Parcel) -> Unit) {
         val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
         val bytes = stream.readBytes()
         val parcel = Parcel.obtain()
@@ -165,9 +164,18 @@ class RemoteRootService(private val context: Context) {
         parcel.unmarshall(bytes, 0, bytes.size)
         parcel.setDataPosition(0)
 
-        val text = parcel.readString() ?: ""
+        onRead(parcel)
+
         parcel.recycle()
-        return text
+    }
+
+    suspend fun readText(path: String): String {
+        val pfd = getService().readText(path)
+        var text: String? = null
+        readFromParcel(pfd) {
+            text = it.readString()
+        }
+        return text ?: ""
     }
 
     suspend fun calculateSize(path: String): Long = getService().calculateSize(path)
@@ -176,16 +184,10 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)
-        val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
-        val bytes = stream.readBytes()
-        val parcel = Parcel.obtain()
-
-        parcel.unmarshall(bytes, 0, bytes.size)
-        parcel.setDataPosition(0)
-
         val packages = mutableListOf<PackageInfo>()
-        parcel.readTypedList(packages, PackageInfo.CREATOR)
-        parcel.recycle()
+        readFromParcel(pfd) {
+            it.readTypedList(packages, PackageInfo.CREATOR)
+        }
         return packages
     }
 
@@ -203,16 +205,10 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun walkFileTree(path: String): List<PathParcelable> {
         val pfd = getService().walkFileTree(path)
-        val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
-        val bytes = stream.readBytes()
-        val parcel = Parcel.obtain()
-
-        parcel.unmarshall(bytes, 0, bytes.size)
-        parcel.setDataPosition(0)
-
         val list = mutableListOf<PathParcelable>()
-        parcel.readTypedList(list, PathParcelable.CREATOR)
-        parcel.recycle()
+        readFromParcel(pfd) {
+            it.readTypedList(list, PathParcelable.CREATOR)
+        }
         return list
     }
 

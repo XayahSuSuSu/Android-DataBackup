@@ -17,6 +17,7 @@ import android.os.UserHandle
 import android.os.UserHandleHidden
 import android.os.UserManager
 import android.os.UserManagerHidden
+import com.topjohnwu.superuser.ShellUtils
 import com.xayah.libhiddenapi.HiddenApiBypassUtil
 import com.xayah.librootservice.IRemoteRootService
 import com.xayah.librootservice.parcelables.PathParcelable
@@ -53,6 +54,25 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private fun getUserManager(): UserManager = UserManagerHidden.get(systemContext)
 
     init {
+        /**
+         * If [ParcelTmpFilePath] has incorrect SELinux context, the transaction will get failed:
+         * Fatal Exception: android.os.DeadObjectException: Transaction failed on small parcel; remote process probably died, but this could also be caused by running out of binder buffe
+         * Correct SELinux context should be: u:object_r:shell_data_file:s0
+         *
+         * If [ParcelTmpFilePath] doesn't exist, the transaction will failed:
+         * pfd must not be null
+         */
+        ShellUtils.fastCmd(
+            """
+            mkdir "$ParcelTmpFilePath/"
+            """.trimIndent()
+        )
+        ShellUtils.fastCmd(
+            """
+            chcon -hR "u:object_r:shell_data_file:s0" "$ParcelTmpFilePath/"
+            """.trimIndent()
+        )
+
         HiddenApiBypassUtil.addHiddenApiExemptions("")
         systemContext = getSystemContext()
         storageStatsManager = getStorageStatsManager()
