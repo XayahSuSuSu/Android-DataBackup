@@ -3,8 +3,8 @@ package com.xayah.databackup.util
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.xayah.databackup.BuildConfig
@@ -450,8 +450,8 @@ suspend fun Context.saveStoreLong(key: Preferences.Key<Long>, value: Long) = dat
 // -----------------------------------------Keys-----------------------------------------
 val KeyBackupSavePath = stringPreferencesKey("backup_save_path")
 val KeyRestoreSavePath = stringPreferencesKey("restore_save_path")
-val KeyCloudAccountNum = intPreferencesKey("cloud_account_num")
 val KeyCloudActiveName = stringPreferencesKey("cloud_active_name")
+val KeyFollowSymlinks = booleanPreferencesKey("follow_symlinks")
 // --------------------------------------------------------------------------------------
 
 
@@ -469,6 +469,7 @@ fun Context.readBackupSavePath() = readStoreString(key = KeyBackupSavePath, defV
 fun Context.readRestoreSavePath() = readStoreString(key = KeyRestoreSavePath, defValue = ConstantUtil.DefaultPath)
 
 fun Context.readCloudActiveName() = readStoreString(key = KeyCloudActiveName, defValue = "")
+fun Context.readFollowSymlinks() = readStoreBoolean(key = KeyFollowSymlinks, defValue = false)
 // --------------------------------------------------------------------------------------
 
 
@@ -484,4 +485,5 @@ suspend fun Context.saveBackupSavePath(value: String) = saveStoreString(key = Ke
 suspend fun Context.saveRestoreSavePath(value: String) = saveStoreString(key = KeyRestoreSavePath, value = value.trim())
 
 suspend fun Context.saveCloudActiveName(value: String) = saveStoreString(key = KeyCloudActiveName, value = value.trim())
+suspend fun Context.saveFollowSymlinks(value: Boolean) = saveStoreBoolean(key = KeyFollowSymlinks, value = value)
 // ---------------------------------------------------------------------------------------

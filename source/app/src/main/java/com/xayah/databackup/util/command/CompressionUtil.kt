@@ -61,43 +61,47 @@ object Tar {
         return result
     }
 
-    suspend fun compress(usePipe: Boolean, exclusionList: List<String>, srcDir: String, src: String, dst: String, extra: String): ShellResult = run {
-        val exclusion = exclusionList.trim().map { "--exclude=$it" }.toSpaceString()
-        if (usePipe) {
-            if (extra.isEmpty()) {
-                // tar --totals "$exclusion" -cpf - -C "$srcDir" "$src" > "$dst"
-                execute(
-                    "--totals",
-                    exclusion,
-                    "-cpf",
-                    "-",
-                    "-C",
-                    "$QUOTE$srcDir$QUOTE",
-                    "$QUOTE$src$QUOTE",
-                    ">",
-                    "$QUOTE$dst$QUOTE",
-                )
-            } else {
-                // tar --totals "$exclusion" -cpf - -C "$srcDir" "$src" | $extra > "$dst"
-                execute(
-                    "--totals",
-                    exclusion,
-                    "-cpf",
-                    "-",
-                    "-C",
-                    "$QUOTE$srcDir$QUOTE",
-                    "$QUOTE$src$QUOTE",
-                    "| $extra",
-                    ">",
-                    "$QUOTE$dst$QUOTE",
-                )
-            }
+    suspend fun compress(usePipe: Boolean, exclusionList: List<String>, h: String, srcDir: String, src: String, dst: String, extra: String): ShellResult =
+        run {
+            val exclusion = exclusionList.trim().map { "--exclude=$it" }.toSpaceString()
+            if (usePipe) {
+                if (extra.isEmpty()) {
+                    // tar --totals "$exclusion" $h -cpf - -C "$srcDir" "$src" > "$dst"
+                    execute(
+                        "--totals",
+                        exclusion,
+                        h,
+                        "-cpf",
+                        "-",
+                        "-C",
+                        "$QUOTE$srcDir$QUOTE",
+                        "$QUOTE$src$QUOTE",
+                        ">",
+                        "$QUOTE$dst$QUOTE",
+                    )
+                } else {
+                    // tar --totals "$exclusion" $h -cpf - -C "$srcDir" "$src" | $extra > "$dst"
+                    execute(
+                        "--totals",
+                        exclusion,
+                        h,
+                        "-cpf",
+                        "-",
+                        "-C",
+                        "$QUOTE$srcDir$QUOTE",
+                        "$QUOTE$src$QUOTE",
+                        "| $extra",
+                        ">",
+                        "$QUOTE$dst$QUOTE",
+                    )
+                }
         } else {
             if (extra.isEmpty()) {
-                // tar --totals "$exclusion" -cpf "$dst" -C "$srcDir" "$src"
+                // tar --totals "$exclusion" $h -cpf "$dst" -C "$srcDir" "$src"
                 execute(
                     "--totals",
                     exclusion,
+                    h,
                     "-cpf",
                     "$QUOTE$dst$QUOTE",
                     "-C",
@@ -105,10 +109,11 @@ object Tar {
                     "$QUOTE$src$QUOTE",
                 )
             } else {
-                // tar --totals "$exclusion" -cpf "$dst" -C "$srcDir" "$src" -I "$extra"
+                // tar --totals "$exclusion" $h -cpf "$dst" -C "$srcDir" "$src" -I "$extra"
                 execute(
                     "--totals",
                     exclusion,
+                    h,
                     "-cpf",
                     "$QUOTE$dst$QUOTE",
                     "-C",

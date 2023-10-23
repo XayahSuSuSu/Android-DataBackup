@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedCard
@@ -45,6 +47,7 @@ import com.xayah.databackup.util.readCleanRestoring
 import com.xayah.databackup.util.readCompatibleMode
 import com.xayah.databackup.util.readCompressionTest
 import com.xayah.databackup.util.readCompressionType
+import com.xayah.databackup.util.readFollowSymlinks
 import com.xayah.databackup.util.readKeepScreenOn
 import com.xayah.databackup.util.readMonetEnabled
 import com.xayah.databackup.util.readResetBackupList
@@ -56,6 +59,7 @@ import com.xayah.databackup.util.saveCleanRestoring
 import com.xayah.databackup.util.saveCompatibleMode
 import com.xayah.databackup.util.saveCompressionTest
 import com.xayah.databackup.util.saveCompressionType
+import com.xayah.databackup.util.saveFollowSymlinks
 import com.xayah.databackup.util.saveKeepScreenOn
 import com.xayah.databackup.util.saveMonetEnabled
 import com.xayah.databackup.util.saveResetBackupList
@@ -63,8 +67,11 @@ import com.xayah.databackup.util.saveResetRestoreList
 import com.xayah.databackup.util.saveRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil.tryService
+import com.xayah.librootservice.util.withIOContext
 import com.xayah.librootservice.util.withMainContext
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Composable
 private fun InfoCard() {
@@ -219,6 +226,7 @@ private fun UserSettings() {
 @Composable
 private fun BackupSettings() {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     SettingsSwitch(
         icon = ImageVector.vectorResource(R.drawable.ic_rounded_join_inner),
         title = stringResource(R.string.backup_itself),
@@ -250,6 +258,18 @@ private fun BackupSettings() {
         content = stringResource(R.string.compatible_mode_desc)
     ) {
         context.saveCompatibleMode(it)
+    }
+    SettingsSwitch(
+        icon = Icons.Rounded.Link,
+        title = stringResource(R.string.follow_symlinks),
+        defaultValue = remember { runBlocking { context.readFollowSymlinks().first() } },
+        content = stringResource(R.string.follow_symlinks_desc)
+    ) {
+        scope.launch {
+            withIOContext {
+                context.saveFollowSymlinks(it)
+            }
+        }
     }
 }
 

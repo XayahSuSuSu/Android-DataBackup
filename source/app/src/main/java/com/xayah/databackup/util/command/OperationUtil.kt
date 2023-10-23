@@ -32,6 +32,7 @@ import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCleanRestoring
 import com.xayah.databackup.util.readCompatibleMode
 import com.xayah.databackup.util.readCompressionType
+import com.xayah.databackup.util.readFollowSymlinks
 import com.xayah.databackup.util.readRestoreUserId
 import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.service.RemoteRootService
@@ -41,6 +42,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 fun List<String>.toLineString() = joinToString(separator = "\n")
@@ -318,6 +321,7 @@ class PackagesBackupUtil @AssistedInject constructor(
         Tar.compress(
             usePipe = usePipe,
             exclusionList = exclusionList,
+            h = if (runBlocking { context.readFollowSymlinks().first() }) "-h" else "",
             srcDir = srcDir,
             src = packageName,
             dst = archivePath,
@@ -864,6 +868,7 @@ class MediumBackupUtil @AssistedInject constructor(
         Tar.compress(
             usePipe = usePipe,
             exclusionList = listOf(),
+            h = if (runBlocking { context.readFollowSymlinks().first() }) "-h" else "",
             srcDir = PathUtil.getParentPath(path),
             src = PathUtil.getFileName(path),
             dst = archivePath,
@@ -1073,6 +1078,7 @@ class ConfigsUtil @Inject constructor(
         Tar.compress(
             usePipe = usePipe,
             exclusionList = listOf(),
+            h = "",
             srcDir = context.filesPath(),
             src = "icon",
             dst = archivePath,

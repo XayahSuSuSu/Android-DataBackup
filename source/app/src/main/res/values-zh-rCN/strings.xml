@@ -158,4 +158,6 @@
     <string name="available_space">可用空间</string>
     <string name="speed_mode">极速模式</string>
     <string name="recursive_mode">递归模式</string>
+    <string name="follow_symlinks">跟随符号链接</string>
+    <string name="follow_symlinks_desc">将符号链接替换为其指向的文件</string>
 </resources>

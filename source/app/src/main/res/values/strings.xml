@@ -163,4 +163,6 @@
     <string name="available_space">Available space</string>
     <string name="speed_mode">Speed mode</string>
     <string name="recursive_mode">Recursive mode</string>
+    <string name="follow_symlinks">Follow symlinks</string>
+    <string name="follow_symlinks_desc">Archive and dump the files they point to</string>
 </resources>
