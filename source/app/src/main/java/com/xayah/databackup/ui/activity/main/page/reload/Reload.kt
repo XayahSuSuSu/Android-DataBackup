@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
@@ -108,11 +107,11 @@ fun PageReload(viewModel: ReloadViewModel) {
                     }
                 }
             } else {
-                items(items = packages, key = { it.packageName }) {
-                    ListItemReload(title = it.label, subtitle = it.packageName) {
-                        if (OperationMask.isApkSelected(it.backupOpCode))
+                items(count = packages.size, key = { it }) {
+                    ListItemReload(title = packages[it].label, subtitle = packages[it].packageName) {
+                        if (OperationMask.isApkSelected(packages[it].backupOpCode))
                             Serial(serial = stringResource(id = R.string.apk))
-                        if (OperationMask.isDataSelected(it.backupOpCode))
+                        if (OperationMask.isDataSelected(packages[it].backupOpCode))
                             Serial(serial = stringResource(id = R.string.data))
                     }
                 }
@@ -129,8 +128,8 @@ fun PageReload(viewModel: ReloadViewModel) {
                     }
                 }
             } else {
-                items(items = medium, key = { it.id }) {
-                    ListItemReload(title = it.name, subtitle = it.path) {
+                items(count = medium.size, key = { it }) {
+                    ListItemReload(title = medium[it].name, subtitle = medium[it].path) {
                         Serial(serial = stringResource(id = R.string.data))
                     }
                 }
