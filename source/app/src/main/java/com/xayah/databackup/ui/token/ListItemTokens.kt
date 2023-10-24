@@ -8,5 +8,6 @@ object ListItemTokens {
     val PaddingMedium = 16.dp
     val ManifestIconButtonSize = 48.dp
     val ManifestIconSize = 28.dp
+    val ManifestItemPadding = 12.dp
     val OpIndicatorSize = 24.dp
 }

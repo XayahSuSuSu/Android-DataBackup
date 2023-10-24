@@ -318,7 +318,7 @@ fun ListItemPackageRestore(
 
 @Composable
 fun ListItemManifestHorizontal(icon: ImageVector, title: String, content: String, onButtonClick: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = Modifier.paddingVertical(ListItemTokens.ManifestItemPadding), verticalAlignment = Alignment.CenterVertically) {
         FilledIconButton(
             modifier = Modifier.size(ListItemTokens.ManifestIconButtonSize),
             onClick = onButtonClick,
@@ -346,7 +346,7 @@ fun ListItemManifestHorizontal(icon: ImageVector, title: String, content: String
 
 @Composable
 fun ListItemManifestVertical(icon: ImageVector, title: String, content: String, onButtonClick: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = Modifier.paddingVertical(ListItemTokens.ManifestItemPadding), verticalAlignment = Alignment.CenterVertically) {
         FilledIconButton(
             modifier = Modifier.size(ListItemTokens.ManifestIconButtonSize),
             onClick = onButtonClick,

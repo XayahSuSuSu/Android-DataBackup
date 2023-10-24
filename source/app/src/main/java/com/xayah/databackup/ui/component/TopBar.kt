@@ -52,8 +52,6 @@ import com.xayah.databackup.ui.activity.main.page.reload.ReloadViewModel
 import com.xayah.databackup.ui.activity.main.page.tree.TreeViewModel
 import com.xayah.databackup.ui.activity.main.router.MainRoutes
 import com.xayah.databackup.ui.activity.main.router.currentRoute
-import com.xayah.databackup.ui.component.material3.Tab
-import com.xayah.databackup.ui.component.material3.TabRow
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
@@ -369,33 +367,13 @@ internal fun ColumnExtendedTopAppBar(
 fun ManifestTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     title: String,
-    selectedTabIndex: Int,
-    onTabClick: (index: Int) -> Unit,
-    titles: List<String>,
 ) {
     val navController = LocalSlotScope.current!!.navController
     ColumnExtendedTopAppBar(
         scrollBehavior = scrollBehavior,
         title = title,
         onArrowBackPressed = { navController.popBackStack() }
-    ) { appBarContainerColor ->
-        TabRow(
-            selectedTabIndex = selectedTabIndex,
-            containerColor = appBarContainerColor,
-            indicator = { tabPositions ->
-                RoundedCornerIndicator(tabPositions = tabPositions, selectedTabIndex = selectedTabIndex, percent = 0.8f)
-            },
-            divider = {}
-        ) {
-            titles.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = { onTabClick(index) },
-                    text = { TabText(text = title, color = if (selectedTabIndex == index) ColorScheme.onPrimary() else ColorScheme.primary()) }
-                )
-            }
-        }
-    }
+    )
 }
 
 @ExperimentalMaterial3Api

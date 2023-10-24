@@ -7,4 +7,5 @@ object TopBarTokens {
     val OnScrollContainerElevation = 3.0.dp
     val VerticalPadding = 8.dp
     val HorizontalPadding = 4.dp
+    val PaddingMedium = CommonTokens.PaddingMedium
 }
