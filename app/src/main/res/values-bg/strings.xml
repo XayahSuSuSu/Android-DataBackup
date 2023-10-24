@@ -132,4 +132,12 @@
     <string name="test_subtitle">Запознаване с новостите</string>
     <string name="current">Текущо издание</string>
     <string name="monet">Monet</string>
+    <string name="not_exists">Не съществува</string>
+    <string name="not_installed">Не инсталирано</string>
+    <string name="added">Добавено</string>
+    <string name="installed">Инсталирано</string>
+    <string name="others">Други</string>
+    <string name="add_list">Добавяне на списък</string>
+    <string name="log">Дневник</string>
+    <string name="succeed">Успешно</string>
 </resources>
