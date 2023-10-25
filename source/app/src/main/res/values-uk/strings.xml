@@ -155,4 +155,8 @@
     <string name="backup_itself">Бекап DataBackup</string>
     <string name="compression_test">Перевірка стиснення</string>
     <string name="selected_both">Вибрано обидва</string>
+    <string name="follow_symlinks">Дотримуючись символічних посилань</string>
+    <string name="follow_symlinks_desc">Архівувати файли, на які вони вказують</string>
+    <string name="speed_mode">Швидкісний режим</string>
+    <string name="recursive_mode">Рекурсивний режим</string>
 </resources>
