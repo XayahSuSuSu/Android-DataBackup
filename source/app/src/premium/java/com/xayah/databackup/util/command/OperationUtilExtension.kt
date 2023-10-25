@@ -2,10 +2,12 @@ package com.xayah.databackup.util.command
 
 import androidx.compose.runtime.MutableState
 import com.xayah.databackup.R
-import com.xayah.databackup.data.OperationState
-import com.xayah.databackup.util.DataType
+import com.xayah.core.database.model.OperationState
+import com.xayah.core.model.DataType
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.readCloudActiveName
+import com.xayah.databackup.util.setEntityLog
+import com.xayah.databackup.util.setEntityState
 import kotlinx.coroutines.flow.first
 
 suspend fun AdditionUtil.backupItselfExtension(targetPath: String) {

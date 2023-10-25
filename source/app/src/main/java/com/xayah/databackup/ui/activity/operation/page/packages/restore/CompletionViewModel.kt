@@ -5,8 +5,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.xayah.databackup.data.PackageRestoreOperationDao
-import com.xayah.databackup.util.DateUtil
+import com.xayah.core.database.dao.PackageRestoreOperationDao
+import com.xayah.core.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

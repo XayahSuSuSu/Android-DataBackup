@@ -42,8 +42,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.R
-import com.xayah.databackup.data.OperationState
-import com.xayah.databackup.data.PackageBackupOperation
+import com.xayah.core.database.model.OperationState
+import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
 import com.xayah.databackup.ui.activity.operation.LocalCloudMode
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
@@ -62,7 +62,7 @@ import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
-import com.xayah.databackup.util.DataType
+import com.xayah.core.model.DataType
 import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.withIOContext

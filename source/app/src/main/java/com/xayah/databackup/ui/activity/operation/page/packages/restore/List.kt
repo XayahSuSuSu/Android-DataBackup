@@ -54,8 +54,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
-import com.xayah.databackup.data.OperationMask
-import com.xayah.databackup.data.PackageRestoreEntire
+import com.xayah.core.database.model.OperationMask
+import com.xayah.core.database.model.PackageRestoreEntire
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.ListState
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.ApkChip
@@ -77,7 +77,7 @@ import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
-import com.xayah.databackup.util.DateUtil
+import com.xayah.core.util.DateUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.readRestoreFilterTypeIndex
 import com.xayah.databackup.util.readRestoreFlagTypeIndex

@@ -4,8 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.xayah.databackup.data.LogDao
-import com.xayah.databackup.util.DateUtil
+import com.xayah.core.database.dao.LogDao
+import com.xayah.core.util.DateUtil
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

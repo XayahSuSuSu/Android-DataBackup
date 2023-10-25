@@ -1,8 +1,9 @@
 package com.xayah.databackup.util.command
 
+import com.xayah.core.model.ShellResult
+import com.xayah.core.util.toSpaceString
+import com.xayah.core.util.trim
 import com.xayah.databackup.util.SymbolUtil.QUOTE
-
-fun List<String>.toSpaceString() = joinToString(separator = " ")
 
 object Tar {
     suspend fun execute(vararg args: String): ShellResult = CommonUtil.execute("tar", *args)

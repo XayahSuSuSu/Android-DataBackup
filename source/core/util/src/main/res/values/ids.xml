@@ -1,0 +1,6 @@
+<resources>
+    <item name="num_seconds_ago" type="plurals"/>
+    <item name="num_minutes_ago" type="plurals"/>
+    <item name="num_hours_ago" type="plurals"/>
+    <item name="num_days_ago" type="plurals"/>
+</resources>

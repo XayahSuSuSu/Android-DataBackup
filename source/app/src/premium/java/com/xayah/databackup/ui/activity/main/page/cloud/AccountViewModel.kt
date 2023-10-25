@@ -5,10 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.gson.reflect.TypeToken
-import com.xayah.databackup.data.AccountMap
-import com.xayah.databackup.data.CloudAccountEntity
-import com.xayah.databackup.data.CloudDao
-import com.xayah.databackup.util.GsonUtil
+import com.xayah.core.database.model.AccountMap
+import com.xayah.core.database.model.CloudAccountEntity
+import com.xayah.core.database.dao.CloudDao
+import com.xayah.core.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.command.CloudUtil
 import com.xayah.librootservice.util.ExceptionUtil

@@ -1,9 +1,12 @@
 package com.xayah.databackup.util.command
 
 import com.google.gson.reflect.TypeToken
+import com.xayah.core.model.ShellResult
 import com.xayah.databackup.DataBackupApplication
-import com.xayah.databackup.data.AccountConfigSizeBytes
-import com.xayah.databackup.util.GsonUtil
+import com.xayah.core.database.model.AccountConfigSizeBytes
+import com.xayah.core.util.GsonUtil
+import com.xayah.core.util.toLineString
+import com.xayah.core.util.toSpaceString
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.SymbolUtil
 import com.xayah.databackup.util.command.CommonUtil.execute

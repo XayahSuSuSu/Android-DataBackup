@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kapt)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.ksp)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
@@ -122,6 +121,12 @@ dependencies {
     // Hidden api
     implementation(project(":libhiddenapi"))
 
+    // Core
+    implementation(project(":core:common"))
+    implementation(project(":core:model"))
+    implementation(project(":core:database"))
+    implementation(project(":core:util"))
+
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.drawablepainter)
@@ -149,11 +154,6 @@ dependencies {
     // zip4j
     implementation(libs.zip4j)
 
-    // Room
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-
     // Coil
     implementation(libs.coil.compose)
 
@@ -174,8 +174,4 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
 }

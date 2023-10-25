@@ -5,8 +5,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.xayah.databackup.data.PackageRestoreEntire
-import com.xayah.databackup.data.PackageRestoreEntireDao
+import com.xayah.core.database.model.PackageRestoreEntire
+import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.readRestoreUserId
 import com.xayah.librootservice.service.RemoteRootService
@@ -69,7 +69,8 @@ class ListViewModel @Inject constructor(
      */
     suspend fun updatePackage(context: Context, entity: PackageRestoreEntire) = withIOContext {
         val remoteRootService = RemoteRootService(context)
-        val sizeBytes = remoteRootService.calculateSize(entity.timestampPath)
+        val timestampPath = "${PathUtil.getRestorePackagesSavePath()}/${entity.packageName}/${entity.timestamp}"
+        val sizeBytes = remoteRootService.calculateSize(timestampPath)
         val installed = remoteRootService.queryInstalled(entity.packageName, context.readRestoreUserId())
         if (entity.sizeBytes != sizeBytes || entity.installed != installed) {
             updatePackage(entity.copy(sizeBytes = sizeBytes, installed = installed))

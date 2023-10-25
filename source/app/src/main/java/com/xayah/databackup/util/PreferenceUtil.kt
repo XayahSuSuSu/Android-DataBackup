@@ -7,155 +7,134 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataType
+import com.xayah.core.model.LZ4_SUFFIX
+import com.xayah.core.model.TAR_SUFFIX
+import com.xayah.core.model.ZSTD_SUFFIX
 import com.xayah.databackup.BuildConfig
-import com.xayah.databackup.data.MediaBackupOperationEntity
-import com.xayah.databackup.data.MediaRestoreOperationEntity
-import com.xayah.databackup.data.OperationState
-import com.xayah.databackup.data.PackageBackupOperation
-import com.xayah.databackup.data.PackageRestoreOperation
+import com.xayah.core.database.model.MediaBackupOperationEntity
+import com.xayah.core.database.model.MediaRestoreOperationEntity
+import com.xayah.core.database.model.OperationState
+import com.xayah.core.database.model.PackageBackupOperation
+import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
 import com.xayah.databackup.ui.component.SortState
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import kotlinx.coroutines.flow.map
 
-private const val TAR_SUFFIX = "tar"
-private const val ZSTD_SUFFIX = "tar.zst"
-private const val LZ4_SUFFIX = "tar.lz4"
-
-enum class CompressionType(val type: String, val suffix: String, val compressPara: String, val decompressPara: String) {
-    TAR("tar", TAR_SUFFIX, "", ""),
-    ZSTD("zstd", ZSTD_SUFFIX, "zstd -r -T0 --ultra -1 -q --priority=rt", "zstd"),
-    LZ4("lz4", LZ4_SUFFIX, "zstd -r -T0 --ultra -1 -q --priority=rt --format=lz4", "zstd");
-
-    companion object {
-        fun of(name: String?): CompressionType = tryOn(
-            block = {
-                CompressionType.valueOf(name!!.uppercase())
-            },
-            onException = {
-                ZSTD
-            })
-
-        fun suffixOf(suffix: String): CompressionType? = when (suffix) {
-            TAR_SUFFIX -> TAR
-            ZSTD_SUFFIX -> ZSTD
-            LZ4_SUFFIX -> LZ4
-            else -> null
-        }
-    }
-}
-
-enum class DataType(val type: String) {
-    PACKAGE_APK("apk"),
-    PACKAGE_USER("user"),
-    PACKAGE_USER_DE("user_de"),
-    PACKAGE_DATA("data"),
-    PACKAGE_OBB("obb"),
-    PACKAGE_MEDIA("media"),            // /data/media/$user_id/Android/media
-    PACKAGE_CONFIG("config"),          // Json file for reloading
-    MEDIA_MEDIA("media"),
-    MEDIA_CONFIG("config");
-
-    fun origin(userId: Int): String = when (this) {
-        PACKAGE_USER -> PathUtil.getPackageUserPath(userId)
-        PACKAGE_USER_DE -> PathUtil.getPackageUserDePath(userId)
-        PACKAGE_DATA -> PathUtil.getPackageDataPath(userId)
-        PACKAGE_OBB -> PathUtil.getPackageObbPath(userId)
-        PACKAGE_MEDIA -> PathUtil.getPackageMediaPath(userId)
-        else -> ""
-    }
-
-    fun setEntityLog(entity: PackageBackupOperation, msg: String) {
-        when (this) {
-            PACKAGE_APK -> entity.apkLog = msg
-            PACKAGE_USER -> entity.userLog = msg
-            PACKAGE_USER_DE -> entity.userDeLog = msg
-            PACKAGE_DATA -> entity.dataLog = msg
-            PACKAGE_OBB -> entity.obbLog = msg
-            PACKAGE_MEDIA -> entity.mediaLog = msg
-            else -> {}
-        }
-    }
-
-    fun setEntityLog(entity: PackageRestoreOperation, msg: String) {
-        when (this) {
-            PACKAGE_APK -> entity.apkLog = msg
-            PACKAGE_USER -> entity.userLog = msg
-            PACKAGE_USER_DE -> entity.userDeLog = msg
-            PACKAGE_DATA -> entity.dataLog = msg
-            PACKAGE_OBB -> entity.obbLog = msg
-            PACKAGE_MEDIA -> entity.mediaLog = msg
-            else -> {}
-        }
-    }
-
-    fun setEntityLog(entity: MediaBackupOperationEntity, msg: String) {
-        when (this) {
-            MEDIA_MEDIA -> entity.opLog = msg
-            else -> {}
-        }
-    }
-
-    fun setEntityLog(entity: MediaRestoreOperationEntity, msg: String) {
-        when (this) {
-            MEDIA_MEDIA -> entity.opLog = msg
-            else -> {}
-        }
-    }
-
-    fun setEntityState(entity: PackageBackupOperation, state: OperationState) {
-        when (this) {
-            PACKAGE_APK -> entity.apkState = state
-            PACKAGE_USER -> entity.userState = state
-            PACKAGE_USER_DE -> entity.userDeState = state
-            PACKAGE_DATA -> entity.dataState = state
-            PACKAGE_OBB -> entity.obbState = state
-            PACKAGE_MEDIA -> entity.mediaState = state
-            else -> {}
-        }
-    }
-
-    fun setEntityState(entity: PackageRestoreOperation, state: OperationState) {
-        when (this) {
-            PACKAGE_APK -> entity.apkState = state
-            PACKAGE_USER -> entity.userState = state
-            PACKAGE_USER_DE -> entity.userDeState = state
-            PACKAGE_DATA -> entity.dataState = state
-            PACKAGE_OBB -> entity.obbState = state
-            PACKAGE_MEDIA -> entity.mediaState = state
-            else -> {}
-        }
-    }
-
-    fun setEntityState(entity: MediaBackupOperationEntity, state: OperationState) {
-        when (this) {
-            MEDIA_MEDIA -> entity.opState = state
-            else -> {}
-        }
-    }
-
-    fun setEntityState(entity: MediaRestoreOperationEntity, state: OperationState) {
-        when (this) {
-            MEDIA_MEDIA -> entity.opState = state
-            else -> {}
-        }
-    }
-
-    companion object {
-        fun of(name: String): DataType {
-            return tryOn(
-                block = {
-                    DataType.valueOf(name.uppercase())
-                },
-                onException = {
-                    PACKAGE_USER
-                })
-        }
-    }
-}
-
 const val PreferenceName = "settings"
+
+fun CompressionType.Companion.of(name: String?): CompressionType = tryOn(
+    block = {
+        CompressionType.valueOf(name!!.uppercase())
+    },
+    onException = {
+        CompressionType.ZSTD
+    })
+
+fun CompressionType.Companion.suffixOf(suffix: String): CompressionType? = when (suffix) {
+    TAR_SUFFIX -> CompressionType.TAR
+    ZSTD_SUFFIX -> CompressionType.ZSTD
+    LZ4_SUFFIX -> CompressionType.LZ4
+    else -> null
+}
+
+fun DataType.Companion.of(name: String): DataType {
+    return tryOn(
+        block = {
+            DataType.valueOf(name.uppercase())
+        },
+        onException = {
+            DataType.PACKAGE_USER
+        })
+}
+
+fun DataType.origin(userId: Int): String = when (this) {
+    DataType.PACKAGE_USER -> PathUtil.getPackageUserPath(userId)
+    DataType.PACKAGE_USER_DE -> PathUtil.getPackageUserDePath(userId)
+    DataType.PACKAGE_DATA -> PathUtil.getPackageDataPath(userId)
+    DataType.PACKAGE_OBB -> PathUtil.getPackageObbPath(userId)
+    DataType.PACKAGE_MEDIA -> PathUtil.getPackageMediaPath(userId)
+    else -> ""
+}
+
+fun DataType.setEntityLog(entity: PackageBackupOperation, msg: String) {
+    when (this) {
+        DataType.PACKAGE_APK -> entity.apkLog = msg
+        DataType.PACKAGE_USER -> entity.userLog = msg
+        DataType.PACKAGE_USER_DE -> entity.userDeLog = msg
+        DataType.PACKAGE_DATA -> entity.dataLog = msg
+        DataType.PACKAGE_OBB -> entity.obbLog = msg
+        DataType.PACKAGE_MEDIA -> entity.mediaLog = msg
+        else -> {}
+    }
+}
+
+fun DataType.setEntityLog(entity: PackageRestoreOperation, msg: String) {
+    when (this) {
+        DataType.PACKAGE_APK -> entity.apkLog = msg
+        DataType.PACKAGE_USER -> entity.userLog = msg
+        DataType.PACKAGE_USER_DE -> entity.userDeLog = msg
+        DataType.PACKAGE_DATA -> entity.dataLog = msg
+        DataType.PACKAGE_OBB -> entity.obbLog = msg
+        DataType.PACKAGE_MEDIA -> entity.mediaLog = msg
+        else -> {}
+    }
+}
+
+fun DataType.setEntityLog(entity: MediaBackupOperationEntity, msg: String) {
+    when (this) {
+        DataType.MEDIA_MEDIA -> entity.opLog = msg
+        else -> {}
+    }
+}
+
+fun DataType.setEntityLog(entity: MediaRestoreOperationEntity, msg: String) {
+    when (this) {
+        DataType.MEDIA_MEDIA -> entity.opLog = msg
+        else -> {}
+    }
+}
+
+fun DataType.setEntityState(entity: PackageBackupOperation, state: OperationState) {
+    when (this) {
+        DataType.PACKAGE_APK -> entity.apkState = state
+        DataType.PACKAGE_USER -> entity.userState = state
+        DataType.PACKAGE_USER_DE -> entity.userDeState = state
+        DataType.PACKAGE_DATA -> entity.dataState = state
+        DataType.PACKAGE_OBB -> entity.obbState = state
+        DataType.PACKAGE_MEDIA -> entity.mediaState = state
+        else -> {}
+    }
+}
+
+fun DataType.setEntityState(entity: PackageRestoreOperation, state: OperationState) {
+    when (this) {
+        DataType.PACKAGE_APK -> entity.apkState = state
+        DataType.PACKAGE_USER -> entity.userState = state
+        DataType.PACKAGE_USER_DE -> entity.userDeState = state
+        DataType.PACKAGE_DATA -> entity.dataState = state
+        DataType.PACKAGE_OBB -> entity.obbState = state
+        DataType.PACKAGE_MEDIA -> entity.mediaState = state
+        else -> {}
+    }
+}
+
+fun DataType.setEntityState(entity: MediaBackupOperationEntity, state: OperationState) {
+    when (this) {
+        DataType.MEDIA_MEDIA -> entity.opState = state
+        else -> {}
+    }
+}
+
+fun DataType.setEntityState(entity: MediaRestoreOperationEntity, state: OperationState) {
+    when (this) {
+        DataType.MEDIA_MEDIA -> entity.opState = state
+        else -> {}
+    }
+}
 
 private fun Context.savePreferences(key: String, value: String) {
     getSharedPreferences(PreferenceName, Context.MODE_PRIVATE).edit().apply {

@@ -10,8 +10,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.R
-import com.xayah.databackup.data.CloudDao
-import com.xayah.databackup.data.CloudMountEntity
+import com.xayah.core.database.dao.CloudDao
+import com.xayah.core.database.model.CloudMountEntity
+import com.xayah.core.util.toPathList
+import com.xayah.core.util.toPathString
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.CloudUtil
@@ -27,9 +29,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-fun List<String>.toPathString() = joinToString(separator = "/")
-fun String.toPathList() = split("/")
 
 suspend fun PickYouLauncher.setRemotePath(
     context: ComponentActivity,

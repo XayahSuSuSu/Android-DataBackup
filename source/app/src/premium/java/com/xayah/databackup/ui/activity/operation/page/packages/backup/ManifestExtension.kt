@@ -16,6 +16,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.cloud.setRemotePath
 import com.xayah.databackup.ui.component.ListItemManifestVertical
 import com.xayah.databackup.util.command.Rclone
+import com.xayah.databackup.util.command.logCmd
 import com.xayah.databackup.util.readCloudActiveName
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.librootservice.service.RemoteRootService

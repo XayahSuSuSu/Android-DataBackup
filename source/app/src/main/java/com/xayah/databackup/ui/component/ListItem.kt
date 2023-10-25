@@ -53,16 +53,18 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.xayah.core.database.model.DirectoryEntity
+import com.xayah.core.database.model.MediaBackupWithOpEntity
+import com.xayah.core.database.model.MediaRestoreEntity
+import com.xayah.core.database.model.MediaRestoreWithOpEntity
+import com.xayah.core.database.model.OperationMask
+import com.xayah.core.database.model.OperationState
+import com.xayah.core.database.model.PackageBackupEntire
+import com.xayah.core.database.model.PackageRestoreEntire
+import com.xayah.core.database.model.StorageType
+import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataType
 import com.xayah.databackup.R
-import com.xayah.databackup.data.DirectoryEntity
-import com.xayah.databackup.data.MediaBackupWithOpEntity
-import com.xayah.databackup.data.MediaRestoreEntity
-import com.xayah.databackup.data.MediaRestoreWithOpEntity
-import com.xayah.databackup.data.OperationMask
-import com.xayah.databackup.data.OperationState
-import com.xayah.databackup.data.PackageBackupEntire
-import com.xayah.databackup.data.PackageRestoreEntire
-import com.xayah.databackup.data.StorageType
 import com.xayah.databackup.ui.activity.directory.page.DirectoryViewModel
 import com.xayah.databackup.ui.activity.operation.page.media.backup.MediaBackupListViewModel
 import com.xayah.databackup.ui.activity.operation.page.media.backup.OpType
@@ -713,7 +715,8 @@ private suspend fun DialogState.openMediaRestoreDeleteDialog(
                     }
                 }
             }) {
-                val path = entity.archivePath
+                val path =
+                    "${PathUtil.getRestoreMediumSavePath()}/${entity.name}/${entity.timestamp}/${DataType.MEDIA_MEDIA.type}.${CompressionType.TAR.suffix}"
                 remoteRootService.deleteRecursively(path)
                 remoteRootService.clearEmptyDirectoriesRecursively(PathUtil.getRestoreMediumSavePath())
             }
@@ -752,12 +755,15 @@ fun ListItemMediaRestore(
         mediaOpProcessing
     ) { mutableStateOf(if (mediaOpProcessing || mediaOpDone) opList[mediaOpIndex].opLog else context.getString(R.string.idle)) }
     var expanded by remember { mutableStateOf(false) }
+    val archivePath = remember {
+        "${PathUtil.getRestoreMediumSavePath()}/${media.name}/${media.timestamp}/${DataType.MEDIA_MEDIA.type}.${CompressionType.TAR.suffix}"
+    }
 
     ListItemMedia(
         modifier = modifier,
         name = media.name,
         path = media.path,
-        archivePath = media.archivePath,
+        archivePath = archivePath,
         state = if (mediaOpDone) opList[mediaOpIndex].state else false,
         mediaOpLog = mediaOpLog,
         isProcessing = isProcessing,

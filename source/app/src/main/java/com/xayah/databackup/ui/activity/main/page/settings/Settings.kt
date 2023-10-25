@@ -40,7 +40,8 @@ import com.xayah.databackup.ui.component.VerticalGrid
 import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.CommonTokens
-import com.xayah.databackup.util.CompressionType
+import com.xayah.core.model.CompressionType
+import com.xayah.databackup.util.of
 import com.xayah.databackup.util.readBackupItself
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCleanRestoring

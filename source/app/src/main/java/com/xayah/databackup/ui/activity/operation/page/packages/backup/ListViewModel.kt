@@ -3,10 +3,10 @@ package com.xayah.databackup.ui.activity.operation.page.packages.backup
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.xayah.databackup.data.PackageBackupActivate
-import com.xayah.databackup.data.PackageBackupEntire
-import com.xayah.databackup.data.PackageBackupEntireDao
-import com.xayah.databackup.data.PackageBackupUpdate
+import com.xayah.core.database.model.PackageBackupActivate
+import com.xayah.core.database.model.PackageBackupEntire
+import com.xayah.core.database.dao.PackageBackupEntireDao
+import com.xayah.core.database.model.PackageBackupUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

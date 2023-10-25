@@ -9,10 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.R
-import com.xayah.databackup.data.MediaRestoreEntity
-import com.xayah.databackup.data.PackageRestoreEntire
-import com.xayah.databackup.data.PackageRestoreEntireDao
-import com.xayah.databackup.util.CompressionType
+import com.xayah.core.database.model.MediaRestoreEntity
+import com.xayah.core.database.model.PackageRestoreEntire
+import com.xayah.core.database.dao.PackageRestoreEntireDao
+import com.xayah.core.model.CompressionType
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.ConfigsUtil
 import com.xayah.librootservice.util.withIOContext

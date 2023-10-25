@@ -6,27 +6,31 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.reflect.TypeToken
+import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataType
+import com.xayah.core.model.ShellResult
 import com.xayah.databackup.R
-import com.xayah.databackup.data.CloudDao
-import com.xayah.databackup.data.MediaBackupOperationEntity
-import com.xayah.databackup.data.MediaDao
-import com.xayah.databackup.data.MediaRestoreEntity
-import com.xayah.databackup.data.MediaRestoreOperationEntity
-import com.xayah.databackup.data.OperationMask
-import com.xayah.databackup.data.OperationState
-import com.xayah.databackup.data.PackageBackupOperation
-import com.xayah.databackup.data.PackageBackupOperationDao
-import com.xayah.databackup.data.PackageRestoreEntire
-import com.xayah.databackup.data.PackageRestoreEntireDao
-import com.xayah.databackup.data.PackageRestoreOperation
-import com.xayah.databackup.data.PackageRestoreOperationDao
-import com.xayah.databackup.util.CompressionType
-import com.xayah.databackup.util.DataType
-import com.xayah.databackup.util.GsonUtil
+import com.xayah.core.database.dao.CloudDao
+import com.xayah.core.database.model.MediaBackupOperationEntity
+import com.xayah.core.database.dao.MediaDao
+import com.xayah.core.database.model.MediaRestoreEntity
+import com.xayah.core.database.model.MediaRestoreOperationEntity
+import com.xayah.core.database.model.OperationMask
+import com.xayah.core.database.model.OperationState
+import com.xayah.core.database.model.PackageBackupOperation
+import com.xayah.core.database.dao.PackageBackupOperationDao
+import com.xayah.core.database.model.PackageRestoreEntire
+import com.xayah.core.database.dao.PackageRestoreEntireDao
+import com.xayah.core.database.model.PackageRestoreOperation
+import com.xayah.core.database.dao.PackageRestoreOperationDao
+import com.xayah.core.util.GsonUtil
+import com.xayah.core.util.toLineString
+import com.xayah.core.util.trim
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.filesPath
+import com.xayah.databackup.util.origin
 import com.xayah.databackup.util.readBackupItself
 import com.xayah.databackup.util.readBackupUserId
 import com.xayah.databackup.util.readCleanRestoring
@@ -34,6 +38,9 @@ import com.xayah.databackup.util.readCompatibleMode
 import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readFollowSymlinks
 import com.xayah.databackup.util.readRestoreUserId
+import com.xayah.databackup.util.setEntityLog
+import com.xayah.databackup.util.setEntityState
+import com.xayah.databackup.util.suffixOf
 import com.xayah.librootservice.parcelables.PathParcelable
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.ExceptionUtil
@@ -45,8 +52,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
-
-fun List<String>.toLineString() = joinToString(separator = "\n")
 
 @AssistedFactory
 interface IAdditionUtilFactory {

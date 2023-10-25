@@ -7,7 +7,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.xayah.databackup.R
-import com.xayah.databackup.data.DirectoryType
+import com.xayah.core.database.model.DirectoryType
 import com.xayah.databackup.ui.activity.directory.page.PageDirectory
 import com.xayah.databackup.ui.component.LocalSlotScope
 

@@ -1,6 +1,7 @@
 package com.xayah.databackup.util.command
 
 import android.os.Build
+import com.xayah.core.model.ShellResult
 import com.xayah.databackup.util.SymbolUtil.QUOTE
 
 object Pm {

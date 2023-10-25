@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.xayah.databackup.R
-import com.xayah.databackup.data.OperationMask
+import com.xayah.core.database.model.OperationMask
 import com.xayah.databackup.ui.component.FabSnackbarScaffold
 import com.xayah.databackup.ui.component.ListItemReload
 import com.xayah.databackup.ui.component.Serial

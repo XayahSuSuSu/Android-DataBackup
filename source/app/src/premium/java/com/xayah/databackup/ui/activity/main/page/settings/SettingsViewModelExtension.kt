@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.util.ConstantUtil
-import com.xayah.databackup.util.DateUtil
+import com.xayah.core.util.DateUtil
 import com.xayah.databackup.util.readLatestVersionName
 import com.xayah.databackup.util.readUpdateCheckTime
 import com.xayah.databackup.util.saveLatestVersionLink

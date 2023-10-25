@@ -6,7 +6,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.databackup.BuildConfig
-import com.xayah.databackup.util.command.toLineString
+import com.xayah.core.util.toLineString
 import com.xayah.librootservice.util.ExceptionUtil
 import java.io.PrintWriter
 import java.io.StringWriter

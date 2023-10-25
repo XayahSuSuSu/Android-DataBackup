@@ -37,8 +37,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
-import com.xayah.databackup.data.CloudAccountEntity
-import com.xayah.databackup.data.CloudMountEntity
+import com.xayah.core.database.model.CloudAccountEntity
+import com.xayah.core.database.model.CloudMountEntity
 import com.xayah.databackup.ui.activity.main.page.cloud.AccountViewModel
 import com.xayah.databackup.ui.activity.main.page.cloud.MountViewModel
 import com.xayah.databackup.ui.activity.main.page.cloud.router.AccountDetailArg

@@ -4,36 +4,21 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import com.topjohnwu.superuser.Shell
+import com.xayah.core.model.ShellResult
 import com.xayah.databackup.DataBackupApplication
-import com.xayah.databackup.data.LogCmdType
+import com.xayah.core.database.model.LogCmdType
+import com.xayah.core.util.trim
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.librootservice.util.withIOContext
 
-data class ShellResult(
-    var code: Int,
-    var input: List<String>,
-    var out: List<String>,
-) {
-    val isSuccess: Boolean
-        get() = code == 0
-
-    val inputString: String
-        get() = input.toSpaceString()
-
-    val outString: String
-        get() = out.toLineString()
-
-    suspend fun logCmd(logUtil: LogUtil, logId: Long) {
-        logUtil.logCmd(logId, LogCmdType.SHELL_IN, inputString)
-        out.forEach { line ->
-            logUtil.logCmd(logId, LogCmdType.SHELL_OUT, line)
-        }
-        logUtil.logCmd(logId, LogCmdType.SHELL_CODE, code.toString())
+suspend fun ShellResult.logCmd(logUtil: LogUtil, logId: Long) {
+    logUtil.logCmd(logId, LogCmdType.SHELL_IN, inputString)
+    out.forEach { line ->
+        logUtil.logCmd(logId, LogCmdType.SHELL_OUT, line)
     }
+    logUtil.logCmd(logId, LogCmdType.SHELL_CODE, code.toString())
 }
-
-fun List<String>.trim() = filter { it.isNotEmpty() }
 
 object CommonUtil {
     fun Context.copyToClipboard(content: String) {

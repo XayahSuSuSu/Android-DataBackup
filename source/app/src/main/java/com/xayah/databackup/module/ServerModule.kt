@@ -1,5 +1,6 @@
 package com.xayah.databackup.module
 
+import com.xayah.core.util.module.GitHub
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -3,8 +3,8 @@ package com.xayah.databackup.ui.activity.operation.page.packages.restore
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.xayah.databackup.data.PackageRestoreEntireDao
-import com.xayah.databackup.data.PackageRestoreManifest
+import com.xayah.core.database.dao.PackageRestoreEntireDao
+import com.xayah.core.database.model.PackageRestoreManifest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

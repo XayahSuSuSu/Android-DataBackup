@@ -7,9 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.DataBackupApplication
-import com.xayah.databackup.data.MediaDao
-import com.xayah.databackup.data.MediaRestoreEntity
-import com.xayah.databackup.data.MediaRestoreWithOpEntity
+import com.xayah.core.database.dao.MediaDao
+import com.xayah.core.database.model.MediaRestoreEntity
+import com.xayah.core.database.model.MediaRestoreWithOpEntity
+import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataType
 import com.xayah.databackup.service.OperationLocalService
 import com.xayah.databackup.ui.activity.operation.page.media.backup.OpType
 import com.xayah.databackup.util.PathUtil
@@ -84,7 +86,8 @@ class MediaRestoreListViewModel @Inject constructor(private val mediaDao: MediaD
      */
     suspend fun updateMediaSizeBytes(context: Context, media: MediaRestoreEntity) = withIOContext {
         val remoteRootService = RemoteRootService(context)
-        val sizeBytes = remoteRootService.calculateSize(media.archivePath)
+        val archivePath = "${PathUtil.getRestoreMediumSavePath()}/${media.name}/${media.timestamp}/${DataType.MEDIA_MEDIA.type}.${CompressionType.TAR.suffix}"
+        val sizeBytes = remoteRootService.calculateSize(archivePath)
         if (media.sizeBytes != sizeBytes) {
             upsertRestore(media.copy(sizeBytes = sizeBytes))
         }

@@ -12,14 +12,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.R
-import com.xayah.databackup.data.CloudAccountEntity
-import com.xayah.databackup.data.CloudDao
+import com.xayah.core.database.model.CloudAccountEntity
+import com.xayah.core.database.dao.CloudDao
 import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.SymbolUtil
 import com.xayah.databackup.util.command.CloudUtil
-import com.xayah.databackup.util.command.toSpaceString
+import com.xayah.core.util.toSpaceString
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
