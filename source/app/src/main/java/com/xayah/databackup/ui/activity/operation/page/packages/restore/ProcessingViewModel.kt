@@ -7,11 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.core.database.dao.PackageRestoreEntireDao
-import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.core.database.dao.PackageRestoreOperationDao
+import com.xayah.core.database.model.PackageRestoreOperation
+import com.xayah.core.util.DateUtil
 import com.xayah.databackup.service.OperationLocalService
 import com.xayah.databackup.ui.activity.operation.page.packages.backup.ProcessingState
-import com.xayah.core.util.DateUtil
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -64,7 +64,7 @@ class ProcessingViewModel @Inject constructor(
                     withIOContext {
                         _uiState.value = uiState.copy(effectLaunched = true)
 
-                        val operationLocalService = OperationLocalService(context = context)
+                        val operationLocalService = OperationLocalService(context = context, cloudMode = false)
                         operationLocalService.restorePackagesPreparation()
 
                         _uiState.value = uiState.copy(effectState = ProcessingState.Processing)

@@ -107,7 +107,7 @@ fun PageReload(viewModel: ReloadViewModel) {
                     }
                 }
             } else {
-                items(count = packages.size, key = { it }) {
+                items(count = packages.size, key = { "package: $it" }) {
                     ListItemReload(title = packages[it].label, subtitle = packages[it].packageName) {
                         if (OperationMask.isApkSelected(packages[it].backupOpCode))
                             Serial(serial = stringResource(id = R.string.apk))
@@ -128,7 +128,7 @@ fun PageReload(viewModel: ReloadViewModel) {
                     }
                 }
             } else {
-                items(count = medium.size, key = { it }) {
+                items(count = medium.size, key = { "medium: $it" }) {
                     ListItemReload(title = medium[it].name, subtitle = medium[it].path) {
                         Serial(serial = stringResource(id = R.string.data))
                     }

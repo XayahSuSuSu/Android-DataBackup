@@ -2,6 +2,8 @@ package com.xayah.librootservice.parcelables
 
 import android.os.Parcel
 import android.os.Parcelable
+import java.nio.file.Paths
+import kotlin.io.path.pathString
 
 class PathParcelable() : Parcelable {
     var pathList: List<String> = listOf()
@@ -9,11 +11,12 @@ class PathParcelable() : Parcelable {
     var nameWithoutExtension: String = ""
     var extension: String = ""
 
-    constructor(pathList: List<String>, pathString: String, nameWithoutExtension: String, extension: String) : this() {
-        this.pathList = pathList
+    constructor(pathString: String) : this() {
+        val path = Paths.get(pathString)
+        this.pathList = pathString.split("/")
         this.pathString = pathString
-        this.nameWithoutExtension = nameWithoutExtension
-        this.extension = extension
+        this.nameWithoutExtension = path.fileName.pathString.split(".").first()
+        this.extension = path.fileName.pathString.replace("${nameWithoutExtension}.", "")
     }
 
     constructor(parcel: Parcel) : this() {

@@ -33,7 +33,6 @@ import java.nio.file.Paths
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.atomic.AtomicLong
-import kotlin.io.path.name
 import kotlin.io.path.pathString
 
 internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
@@ -301,11 +300,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
                         override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
                             if (file != null && attrs != null) {
-                                val pathList = file.pathString.split("/")
-                                val pathString = file.pathString
-                                val nameWithoutExtension = file.name.split(".").first()
-                                val extension = file.name.replace("${nameWithoutExtension}.", "")
-                                pathParcelableList.add(PathParcelable(pathList, pathString, nameWithoutExtension, extension))
+                                pathParcelableList.add(PathParcelable(file.pathString))
                             }
                             return FileVisitResult.CONTINUE
                         }

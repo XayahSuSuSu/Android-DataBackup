@@ -6,10 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xayah.core.database.dao.PackageBackupEntireDao
-import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.core.database.dao.PackageBackupOperationDao
-import com.xayah.databackup.service.OperationLocalService
+import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.core.util.DateUtil
+import com.xayah.databackup.service.OperationLocalService
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -79,7 +79,7 @@ class ProcessingViewModel @Inject constructor(
         val uiState by uiState
 
         withIOContext {
-            val operationLocalService = OperationLocalService(context = context)
+            val operationLocalService = OperationLocalService(context = context, cloudMode = false)
             val preparation = operationLocalService.backupPackagesPreparation()
 
             setEffectState(ProcessingState.Processing)

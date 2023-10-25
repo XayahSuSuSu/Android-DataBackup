@@ -16,7 +16,7 @@ data class BackupPreparation(
     val services: String,
 )
 
-class OperationLocalService(private val context: Context) {
+class OperationLocalService(private val context: Context, private val cloudMode: Boolean) {
     private var mBinder: IBinder? = null
     private var mService: OperationLocalServiceImpl? = null
     private var mConnection: ServiceConnection? = null
@@ -84,13 +84,12 @@ class OperationLocalService(private val context: Context) {
     }
 
     suspend fun backupPackagesPreparation(): BackupPreparation = getService().backupPackagesPreparation()
-    suspend fun backupPackages(timestamp: Long, cloudMode: Boolean = false) = getService().backupPackages(timestamp, cloudMode)
-    suspend fun backupPackagesAfterwards(preparation: BackupPreparation, cloudMode: Boolean = false) =
-        getService().backupPackagesAfterwards(preparation, cloudMode)
+    suspend fun backupPackages(timestamp: Long) = getService().backupPackages(timestamp, cloudMode)
+    suspend fun backupPackagesAfterwards(preparation: BackupPreparation) = getService().backupPackagesAfterwards(preparation, cloudMode)
 
     suspend fun restorePackagesPreparation() = getService().restorePackagesPreparation()
     suspend fun restorePackages(timestamp: Long) = getService().restorePackages(timestamp)
-    suspend fun backupMedium(timestamp: Long, cloudMode: Boolean = false) = getService().backupMedium(timestamp, cloudMode)
-    suspend fun backupMediumAfterwards(cloudMode: Boolean = false) = getService().backupMediumAfterwards(cloudMode)
+    suspend fun backupMedium(timestamp: Long) = getService().backupMedium(timestamp, cloudMode)
+    suspend fun backupMediumAfterwards() = getService().backupMediumAfterwards(cloudMode)
     suspend fun restoreMedium(timestamp: Long) = getService().restoreMedium(timestamp)
 }

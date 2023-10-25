@@ -8,14 +8,14 @@ suspend fun ProcessingViewModel.backupPackagesExtension() {
     val uiState by uiState
 
     withIOContext {
-        val operationLocalService = OperationLocalService(context = context)
+        val operationLocalService = OperationLocalService(context = context, cloudMode = true)
         val preparation = operationLocalService.backupPackagesPreparation()
 
         setEffectState(ProcessingState.Processing)
-        operationLocalService.backupPackages(timestamp = uiState.timestamp, cloudMode = true)
+        operationLocalService.backupPackages(timestamp = uiState.timestamp)
 
         setEffectState(ProcessingState.Waiting)
-        operationLocalService.backupPackagesAfterwards(preparation = preparation, cloudMode = true)
+        operationLocalService.backupPackagesAfterwards(preparation = preparation)
 
         operationLocalService.destroyService()
         setEffectFinished()

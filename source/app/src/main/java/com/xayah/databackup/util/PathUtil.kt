@@ -35,6 +35,7 @@ object PathUtil {
     fun getExcludeDirs(): List<String> = listOf("tree", "icon", "databases", "log")
 
     private fun getTmpBackupSavePath(): String = "/data/local/tmp/DataBackupTmpSavePath"
+    fun getTmpFetchPath(): String = "${DataBackupApplication.application.filesPath()}/tmp/fetch"
     fun getTmpApkPath(context: Context, packageName: String): String = "${context.filesPath()}/tmp/apks/$packageName"
     fun getTmpConfigPath(context: Context, name: String, timestamp: Long): String = "${context.filesPath()}/tmp/config/$name/$timestamp"
     fun getTmpConfigFilePath(context: Context, name: String, timestamp: Long): String = "${getTmpConfigPath(context, name, timestamp)}/PackageRestoreEntire"
@@ -58,7 +59,9 @@ object PathUtil {
     fun getLogSavePath(timestamp: Long): String = "${getLogSavePath()}/log_${timestamp}"
 
     // Paths for restore save dir.
-    fun getRestoreSavePath(): String = runBlocking { DataBackupApplication.application.readRestoreSavePath().first() }
+    fun getRestoreSavePath(cloudMode: Boolean = false): String =
+        runBlocking { if (cloudMode) getTmpBackupSavePath() else DataBackupApplication.application.readRestoreSavePath().first() }
+
     private fun getRestoreArchivesSavePath(): String = "${getRestoreSavePath()}/archives"
     fun getRestorePackagesSavePath(): String = "${getRestoreArchivesSavePath()}/packages"
     fun getRestoreMediumSavePath(): String = "${getRestoreArchivesSavePath()}/medium"

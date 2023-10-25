@@ -1,12 +1,12 @@
 package com.xayah.databackup.util.command
 
 import com.google.gson.reflect.TypeToken
-import com.xayah.core.model.ShellResult
-import com.xayah.databackup.DataBackupApplication
 import com.xayah.core.database.model.AccountConfigSizeBytes
+import com.xayah.core.model.ShellResult
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.toLineString
 import com.xayah.core.util.toSpaceString
+import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.SymbolUtil
 import com.xayah.databackup.util.command.CommonUtil.execute
@@ -224,6 +224,25 @@ object Rclone {
             "mkdir",
             "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
             if (dryRun) "--dry-run" else ""
+        )
+    }
+
+    suspend fun copy(src: String, dst: String): ShellResult = run {
+        // rclone copy "$src" "$dst"
+        execute(
+            "copy",
+            "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
+            "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
+        )
+    }
+
+    suspend fun lsf(src: String): ShellResult = run {
+        // rclone lsf -R --files-only "$src"
+        execute(
+            "lsf",
+            "-R",
+            "--files-only",
+            "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
         )
     }
 }

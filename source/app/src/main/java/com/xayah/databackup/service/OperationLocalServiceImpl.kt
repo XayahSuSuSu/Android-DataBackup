@@ -4,19 +4,19 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.xayah.core.database.model.MediaBackupOperationEntity
 import com.xayah.core.database.dao.MediaDao
+import com.xayah.core.database.dao.PackageBackupEntireDao
+import com.xayah.core.database.dao.PackageBackupOperationDao
+import com.xayah.core.database.dao.PackageRestoreEntireDao
+import com.xayah.core.database.dao.PackageRestoreOperationDao
+import com.xayah.core.database.model.MediaBackupOperationEntity
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.OperationState
-import com.xayah.core.database.dao.PackageBackupEntireDao
 import com.xayah.core.database.model.PackageBackupOperation
-import com.xayah.core.database.dao.PackageBackupOperationDao
 import com.xayah.core.database.model.PackageRestoreEntire
-import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.model.PackageRestoreOperation
-import com.xayah.core.database.dao.PackageRestoreOperationDao
 import com.xayah.core.model.DataType
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.GsonUtil
@@ -30,6 +30,7 @@ import com.xayah.databackup.util.command.IPackagesBackupAfterwardsUtilFactory
 import com.xayah.databackup.util.command.IPackagesBackupUtilFactory
 import com.xayah.databackup.util.command.IPackagesRestoreUtilFactory
 import com.xayah.databackup.util.command.PreparationUtil
+import com.xayah.databackup.util.command.getSavePath
 import com.xayah.databackup.util.readCompressionType
 import com.xayah.databackup.util.readResetBackupList
 import com.xayah.databackup.util.readResetRestoreList
@@ -192,7 +193,7 @@ class OperationLocalServiceImpl : Service() {
                         versionCode = currentPackage.versionCode,
                         flags = currentPackage.flags,
                         compressionType = context.readCompressionType(),
-                        savePath = if (cloudMode) "" else PathUtil.getBackupSavePath(false),
+                        savePath = if (cloudMode) packagesUtil.getSavePath() else PathUtil.getBackupSavePath(false),
                     )
                     packageRestoreEntireDao.upsert(restoreEntire)
 

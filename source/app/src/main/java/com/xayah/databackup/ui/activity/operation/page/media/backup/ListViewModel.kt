@@ -8,15 +8,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.DataBackupApplication
-import com.xayah.databackup.R
+import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.model.MediaBackupEntity
 import com.xayah.core.database.model.MediaBackupEntityUpsert
 import com.xayah.core.database.model.MediaBackupWithOpEntity
-import com.xayah.core.database.dao.MediaDao
+import com.xayah.core.util.DateUtil
+import com.xayah.databackup.DataBackupApplication
+import com.xayah.databackup.R
 import com.xayah.databackup.service.OperationLocalService
 import com.xayah.databackup.util.ConstantUtil
-import com.xayah.core.util.DateUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.readBackupSavePath
 import com.xayah.libpickyou.ui.PickYouLauncher
@@ -149,7 +149,7 @@ class MediaBackupListViewModel @Inject constructor(private val mediaDao: MediaDa
 
                         updateTimestamp()
 
-                        val operationLocalService = OperationLocalService(context = DataBackupApplication.application)
+                        val operationLocalService = OperationLocalService(context = DataBackupApplication.application, cloudMode = false)
                         operationLocalService.backupMedium(uiState.timestamp)
                         operationLocalService.backupMediumAfterwards()
                         operationLocalService.destroyService()

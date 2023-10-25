@@ -6,26 +6,26 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.reflect.TypeToken
-import com.xayah.core.model.CompressionType
-import com.xayah.core.model.DataType
-import com.xayah.core.model.ShellResult
-import com.xayah.databackup.R
 import com.xayah.core.database.dao.CloudDao
-import com.xayah.core.database.model.MediaBackupOperationEntity
 import com.xayah.core.database.dao.MediaDao
+import com.xayah.core.database.dao.PackageBackupOperationDao
+import com.xayah.core.database.dao.PackageRestoreEntireDao
+import com.xayah.core.database.dao.PackageRestoreOperationDao
+import com.xayah.core.database.model.MediaBackupOperationEntity
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.OperationState
 import com.xayah.core.database.model.PackageBackupOperation
-import com.xayah.core.database.dao.PackageBackupOperationDao
 import com.xayah.core.database.model.PackageRestoreEntire
-import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.model.PackageRestoreOperation
-import com.xayah.core.database.dao.PackageRestoreOperationDao
+import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataType
+import com.xayah.core.model.ShellResult
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.toLineString
 import com.xayah.core.util.trim
+import com.xayah.databackup.R
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.SymbolUtil.QUOTE
@@ -373,6 +373,7 @@ interface IPackagesBackupAfterwardsUtilFactory {
 
 class PackagesBackupAfterwardsUtil @AssistedInject constructor(
     @ApplicationContext val context: Context,
+    configsUtilFactory: ConfigsUtil.IConfigsUtilFactory,
     @Assisted val cloudMode: Boolean,
     @Assisted private val logTag: String,
 ) {
@@ -391,8 +392,7 @@ class PackagesBackupAfterwardsUtil @AssistedInject constructor(
     @Inject
     lateinit var packageRestoreEntireDao: PackageRestoreEntireDao
 
-    @Inject
-    lateinit var configsUtil: ConfigsUtil
+    val configsUtil: ConfigsUtil = configsUtilFactory.create(cloudMode)
 
     private val usePipe = context.readCompatibleMode()
     private val compressionType = CompressionType.TAR // Configs use tar is enough.
@@ -916,6 +916,7 @@ interface IMediumBackupAfterwardsUtilFactory {
 
 class MediumBackupAfterwardsUtil @AssistedInject constructor(
     @ApplicationContext val context: Context,
+    configsUtilFactory: ConfigsUtil.IConfigsUtilFactory,
     @Assisted val cloudMode: Boolean,
     @Assisted private val logTag: String,
 ) {
@@ -931,8 +932,7 @@ class MediumBackupAfterwardsUtil @AssistedInject constructor(
     @Inject
     lateinit var mediaDao: MediaDao
 
-    @Inject
-    lateinit var configsUtil: ConfigsUtil
+    val configsUtil: ConfigsUtil = configsUtilFactory.create(cloudMode)
 
     private val usePipe = context.readCompatibleMode()
     private val compressionType = CompressionType.TAR // Configs use tar is enough.
@@ -1041,9 +1041,15 @@ class MediumRestoreUtil @AssistedInject constructor(
     }
 }
 
-class ConfigsUtil @Inject constructor(
+class ConfigsUtil @AssistedInject constructor(
     @ApplicationContext val context: Context,
+    @Assisted val cloudMode: Boolean,
 ) {
+    @AssistedFactory
+    interface IConfigsUtilFactory {
+        fun create(cloudMode: Boolean): ConfigsUtil
+    }
+
     @Inject
     lateinit var rootService: RemoteRootService
 
@@ -1058,6 +1064,9 @@ class ConfigsUtil @Inject constructor(
 
     @Inject
     lateinit var mediaDao: MediaDao
+
+    @Inject
+    lateinit var extensionUtil: ExtensionUtil
 
     private val logTag = "ConfigsUtil"
     private val compressionType = CompressionType.TAR // Configs use tar is enough.
@@ -1118,17 +1127,23 @@ class ConfigsUtil @Inject constructor(
         rootService.deleteRecursively(tmpConfigsPath)
     }
 
-    suspend fun restoreIcons(archivePath: String) {
+    suspend fun restoreIcons() {
+        val fileName = "icon.${CompressionType.TAR.suffix}"
+        val archivePath = if (cloudMode) extensionUtil.fetchTmp("configs/$fileName") else "${PathUtil.getRestoreConfigsSavePath()}/$fileName"
+
         val logId = logUtil.log(logTag, "Start restoring icons...")
 
         Tar.decompress(src = archivePath, dst = context.filesPath(), extra = compressionType.decompressPara)
             .also { result -> logAlso(result, logId) }
     }
 
-    suspend fun dumpConfigs(archivePath: String) = withIOContext {
-        val logId = logUtil.log(logTag, "Start dump icons...")
+    suspend fun dumpConfigs() = withIOContext {
+        val logId = logUtil.log(logTag, "Start dump configs...")
         var packageList: List<PackageRestoreEntire> = listOf()
         var mediaList: List<MediaRestoreEntity> = listOf()
+
+        val fileName = "configs.${CompressionType.TAR.suffix}"
+        val archivePath = if (cloudMode) extensionUtil.fetchTmp("configs/$fileName") else "${PathUtil.getRestoreConfigsSavePath()}/$fileName"
 
         val tmpConfigsPath = PathUtil.getTmpConfigsPath(context = context)
         val tmpConfigsPackageFilePath = PathUtil.getTmpConfigsFilePath(context = context, config = "PackageRestoreEntire")
@@ -1167,15 +1182,16 @@ class ConfigsUtil @Inject constructor(
         packageList to mediaList
     }
 
-    suspend fun dumpPackageConfigsRecursively(src: String): List<PackageRestoreEntire> = withIOContext {
+    suspend fun dumpPackageConfigsRecursively(): List<PackageRestoreEntire> = withIOContext {
         val logId = logUtil.log(logTag, "Start dump package configs...")
         val list: MutableList<PackageRestoreEntire> = mutableListOf()
 
         val packageManager = context.packageManager
-        val pathList = rootService.walkFileTree(src)
+        val pathList = if (cloudMode) extensionUtil.walkFileTree("archives/packages") else rootService.walkFileTree(PathUtil.getRestorePackagesSavePath())
+
         val typedPathList = mutableListOf<TypedPath>()
 
-        logUtil.log(logTag, "Classify the paths: $src, count: ${pathList.size}")
+        logUtil.log(logTag, "Classify the paths: Count: ${pathList.size}")
         // Classify the paths
         pathList.forEach { path ->
             logUtil.log(logTag, "Classify: ${path.pathString}")
@@ -1238,7 +1254,9 @@ class ConfigsUtil @Inject constructor(
                                     val type = CompressionType.suffixOf(archivePath.extension)
                                     if (type != null) {
                                         compressionType = type
-                                        Tar.decompress(src = archivePath.pathString, dst = tmpApkPath, extra = type.decompressPara).also { result ->
+                                        val filePath =
+                                            if (cloudMode) extensionUtil.fetchTmp("archives/packages/${archivePath.pathString}") else archivePath.pathString
+                                        Tar.decompress(src = filePath, dst = tmpApkPath, extra = type.decompressPara).also { result ->
                                             result.logCmd(logUtil = logUtil, logId = logId)
                                         }
                                         rootService.listFilePaths(tmpApkPath).also { pathList ->
@@ -1256,7 +1274,9 @@ class ConfigsUtil @Inject constructor(
                                     val type = CompressionType.suffixOf(archivePath.extension)
                                     if (type != null) {
                                         compressionType = type
-                                        Tar.decompress(src = archivePath.pathString, dst = tmpConfigPath, extra = type.decompressPara).also { result ->
+                                        val filePath =
+                                            if (cloudMode) extensionUtil.fetchTmp("archives/packages/${archivePath.pathString}") else archivePath.pathString
+                                        Tar.decompress(src = filePath, dst = tmpConfigPath, extra = type.decompressPara).also { result ->
                                             result.logCmd(logUtil = logUtil, logId = logId)
                                         }
                                     } else {
@@ -1304,7 +1324,7 @@ class ConfigsUtil @Inject constructor(
                                 logUtil.log(logTag, "Icon saved")
                             }
                         }
-                        packageRestoreEntire.savePath = PathUtil.getRestoreSavePath()
+                        packageRestoreEntire.savePath = if (cloudMode) extensionUtil.getSavePath() else PathUtil.getRestoreSavePath()
                         list.add(packageRestoreEntire)
                     },
                     onException = {
@@ -1320,14 +1340,15 @@ class ConfigsUtil @Inject constructor(
         list
     }
 
-    suspend fun dumpMediaConfigsRecursively(src: String): List<MediaRestoreEntity> = withIOContext {
+    suspend fun dumpMediaConfigsRecursively(): List<MediaRestoreEntity> = withIOContext {
         val logId = logUtil.log(logTag, "Start dump media configs...")
         val list: MutableList<MediaRestoreEntity> = mutableListOf()
 
-        val pathList = rootService.walkFileTree(src)
+        val pathList = if (cloudMode) extensionUtil.walkFileTree("archives/medium") else rootService.walkFileTree(PathUtil.getRestoreMediumSavePath())
+
         val typedPathList = mutableListOf<TypedPath>()
 
-        logUtil.log(logTag, "Classify the paths: $src, count: ${pathList.size}")
+        logUtil.log(logTag, "Classify the paths: Count: ${pathList.size}")
         // Classify the paths
         pathList.forEach { path ->
             logUtil.log(logTag, "Classify: ${path.pathString}")
@@ -1390,7 +1411,9 @@ class ConfigsUtil @Inject constructor(
                                 DataType.PACKAGE_CONFIG.type -> {
                                     val type = CompressionType.suffixOf(archivePath.extension)
                                     if (type != null) {
-                                        Tar.decompress(src = archivePath.pathString, dst = tmpConfigPath, extra = type.decompressPara).also { result ->
+                                        val filePath =
+                                            if (cloudMode) extensionUtil.fetchTmp("archives/medium/${archivePath.pathString}") else archivePath.pathString
+                                        Tar.decompress(src = filePath, dst = tmpConfigPath, extra = type.decompressPara).also { result ->
                                             result.logCmd(logUtil = logUtil, logId = logId)
                                         }
                                     } else {

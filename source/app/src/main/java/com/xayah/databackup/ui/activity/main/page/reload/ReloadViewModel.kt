@@ -6,14 +6,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.R
+import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.PackageRestoreEntire
-import com.xayah.core.database.dao.PackageRestoreEntireDao
-import com.xayah.core.model.CompressionType
-import com.xayah.databackup.util.PathUtil
+import com.xayah.databackup.R
+import com.xayah.databackup.ui.activity.main.page.cloud.router.ReloadArg
 import com.xayah.databackup.util.command.ConfigsUtil
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,10 +24,8 @@ import javax.inject.Inject
 data class ReloadUiState(
     val isLoading: Boolean,
     val packageRestoreEntireDao: PackageRestoreEntireDao,
+    val configsUtil: ConfigsUtil,
     val snackbarHostState: SnackbarHostState,
-    val packagesDir: String,
-    val mediumDir: String,
-    val configsDir: String,
     val selectedIndex: Int,
     val options: List<String>,
     val packages: List<PackageRestoreEntire>,
@@ -37,17 +35,16 @@ data class ReloadUiState(
 @HiltViewModel
 class ReloadViewModel @Inject constructor(
     @ApplicationContext context: Context,
-    private val configsUtil: ConfigsUtil,
+    configsUtilFactory: ConfigsUtil.IConfigsUtilFactory,
     packageRestoreEntireDao: PackageRestoreEntireDao,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _uiState = mutableStateOf(
         ReloadUiState(
             isLoading = false,
             packageRestoreEntireDao = packageRestoreEntireDao,
+            configsUtil = configsUtilFactory.create(cloudMode = savedStateHandle.get<Boolean>(ReloadArg) ?: false),
             snackbarHostState = SnackbarHostState(),
-            packagesDir = PathUtil.getRestorePackagesSavePath(),
-            mediumDir = PathUtil.getRestoreMediumSavePath(),
-            configsDir = PathUtil.getRestoreConfigsSavePath(),
             selectedIndex = 0,
             options = listOf(context.getString(R.string.speed_mode), context.getString(R.string.recursive_mode)),
             packages = listOf(),
@@ -84,7 +81,7 @@ class ReloadViewModel @Inject constructor(
                         0 -> {
                             setPackages(listOf())
                             setMedium(listOf())
-                            val (packages, medium) = configsUtil.dumpConfigs("${uiState.configsDir}/configs.${CompressionType.TAR.suffix}")
+                            val (packages, medium) = uiState.configsUtil.dumpConfigs()
                             setPackages(packages)
                             setMedium(medium)
                         }
@@ -92,8 +89,8 @@ class ReloadViewModel @Inject constructor(
                         1 -> {
                             setPackages(listOf())
                             setMedium(listOf())
-                            val packages = configsUtil.dumpPackageConfigsRecursively(uiState.packagesDir)
-                            val medium = configsUtil.dumpMediaConfigsRecursively(uiState.mediumDir)
+                            val packages = uiState.configsUtil.dumpPackageConfigsRecursively()
+                            val medium = uiState.configsUtil.dumpMediaConfigsRecursively()
                             setPackages(packages)
                             setMedium(medium)
                         }
@@ -108,8 +105,8 @@ class ReloadViewModel @Inject constructor(
     suspend fun reloading(context: Context) {
         withIOContext {
             val uiState by uiState
-            configsUtil.restoreIcons("${uiState.configsDir}/icon.${CompressionType.TAR.suffix}")
-            configsUtil.restoreConfigs(uiState.packages, uiState.medium)
+            uiState.configsUtil.restoreIcons()
+            uiState.configsUtil.restoreConfigs(uiState.packages, uiState.medium)
             uiState.snackbarHostState.showSnackbar(
                 message = context.getString(R.string.succeed),
                 duration = SnackbarDuration.Short

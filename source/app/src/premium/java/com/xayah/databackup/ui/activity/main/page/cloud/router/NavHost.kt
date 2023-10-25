@@ -5,7 +5,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -13,6 +15,8 @@ import com.xayah.databackup.ui.activity.main.page.cloud.PageAccount
 import com.xayah.databackup.ui.activity.main.page.cloud.PageAccountDetail
 import com.xayah.databackup.ui.activity.main.page.cloud.PageMain
 import com.xayah.databackup.ui.activity.main.page.cloud.PageMount
+import com.xayah.databackup.ui.activity.main.page.reload.PageReload
+import com.xayah.databackup.ui.activity.main.page.reload.ReloadViewModel
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -39,6 +43,16 @@ fun CloudNavHost(navController: NavHostController) {
         }
         composable(CloudRoutes.Mount.route) {
             PageMount(navController)
+        }
+
+        composable(
+            route = "${CloudRoutes.Reload.route}?$ReloadArg={$ReloadArg}",
+            arguments = listOf(navArgument(ReloadArg) {
+                type = NavType.BoolType
+            })
+        ) {
+            val reloadViewModel = hiltViewModel<ReloadViewModel>()
+            PageReload(viewModel = reloadViewModel)
         }
     }
 }

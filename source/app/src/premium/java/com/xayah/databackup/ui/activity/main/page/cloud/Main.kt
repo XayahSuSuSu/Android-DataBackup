@@ -29,6 +29,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.page.cloud.router.CloudRoutes
+import com.xayah.databackup.ui.activity.main.page.cloud.router.ReloadArg
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
 import com.xayah.databackup.ui.component.CardActionButton
 import com.xayah.databackup.ui.component.Module
@@ -67,10 +68,12 @@ fun PageMain(navController: NavHostController) {
                     val actions = listOf(
                         context.getString(R.string.account),
                         context.getString(R.string.mount),
+                        stringResource(R.string.reload),
                     )
                     val icons = listOf(
                         ImageVector.vectorResource(R.drawable.ic_rounded_badge),
                         ImageVector.vectorResource(R.drawable.ic_rounded_install_desktop),
+                        ImageVector.vectorResource(R.drawable.ic_rounded_folder_open),
                     )
                     val onClicks = listOf<suspend () -> Unit>(
                         {
@@ -78,6 +81,9 @@ fun PageMain(navController: NavHostController) {
                         },
                         {
                             navController.navigate(CloudRoutes.Mount.route)
+                        },
+                        {
+                            navController.navigate("${CloudRoutes.Reload.route}?$ReloadArg=true")
                         },
                     )
                     Row(
