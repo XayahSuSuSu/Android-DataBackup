@@ -157,4 +157,8 @@
     <string name="available_space">Доступное пространство</string>
     <string name="set_as_main_account">Установить основным аккаунтом</string>
     <string name="please_set_up_backup_dir">Установите папку бекапов</string>
+    <string name="follow_symlinks">Следуя символическим ссылкам</string>
+    <string name="follow_symlinks_desc">Архивировать файлы, на которые они указывают</string>
+    <string name="speed_mode">Скоростной режим</string>
+    <string name="recursive_mode">Рекурсивный режим</string>
 </resources>
