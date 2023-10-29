@@ -123,9 +123,16 @@ dependencies {
 
     // Core
     implementation(project(":core:common"))
+    implementation(project(":core:ui"))
     implementation(project(":core:model"))
     implementation(project(":core:database"))
+    implementation(project(":core:data"))
+    implementation(project(":core:datastore"))
     implementation(project(":core:util"))
+
+    // Feature
+    "fossImplementation"(project(":feature:home:foss"))
+    "premiumImplementation"(project(":feature:home:premium"))
 
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)
