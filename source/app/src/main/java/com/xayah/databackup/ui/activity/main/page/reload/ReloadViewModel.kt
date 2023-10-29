@@ -13,7 +13,6 @@ import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.PackageRestoreEntire
 import com.xayah.databackup.R
-import com.xayah.databackup.ui.activity.main.page.cloud.router.ReloadArg
 import com.xayah.databackup.util.command.ConfigsUtil
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,7 +42,7 @@ class ReloadViewModel @Inject constructor(
         ReloadUiState(
             isLoading = false,
             packageRestoreEntireDao = packageRestoreEntireDao,
-            configsUtil = configsUtilFactory.create(cloudMode = savedStateHandle.get<Boolean>(ReloadArg) ?: false),
+            configsUtil = configsUtilFactory.create(cloudMode = savedStateHandle.get<Boolean>("cloudMode") ?: false),
             snackbarHostState = SnackbarHostState(),
             selectedIndex = 0,
             options = listOf(context.getString(R.string.speed_mode), context.getString(R.string.recursive_mode)),
