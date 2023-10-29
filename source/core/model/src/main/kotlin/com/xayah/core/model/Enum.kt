@@ -25,3 +25,16 @@ enum class DataType(val type: String) {
 
     companion object
 }
+
+enum class OpType {
+    BACKUP,
+    RESTORE;
+
+    companion object
+}
+
+enum class StorageType {
+    INTERNAL,
+    EXTERNAL,
+    CUSTOM,
+}

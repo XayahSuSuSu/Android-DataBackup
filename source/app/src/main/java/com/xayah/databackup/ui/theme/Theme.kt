@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -17,7 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.xayah.databackup.DataBackupApplication
+import com.xayah.core.datastore.readMonet
 
 internal val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -38,7 +39,7 @@ fun DataBackupTheme(
 ) {
     val context = LocalContext.current
     // Dynamic color is available on Android 12+
-    val dynamicColor by DataBackupApplication.monetEnabled
+    val dynamicColor by context.readMonet().collectAsState(initial = true)
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)

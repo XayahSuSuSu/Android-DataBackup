@@ -28,7 +28,7 @@ import com.xayah.core.util.trim
 import com.xayah.databackup.R
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
-import com.xayah.databackup.util.SymbolUtil.QUOTE
+import com.xayah.core.util.SymbolUtil.QUOTE
 import com.xayah.databackup.util.filesPath
 import com.xayah.databackup.util.origin
 import com.xayah.databackup.util.readBackupItself

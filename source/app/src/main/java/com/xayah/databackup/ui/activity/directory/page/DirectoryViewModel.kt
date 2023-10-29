@@ -9,9 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.R
 import com.xayah.core.database.dao.DirectoryDao
 import com.xayah.core.database.model.DirectoryEntity
-import com.xayah.core.database.model.DirectoryType
+import com.xayah.core.model.OpType
 import com.xayah.core.database.model.DirectoryUpsertEntity
-import com.xayah.core.database.model.StorageType
+import com.xayah.core.model.StorageType
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.core.util.toSpaceString
@@ -34,7 +34,7 @@ import kotlin.io.path.pathString
 
 data class DirectoryUiState(
     val isLoading: Boolean,
-    val directoryType: DirectoryType,
+    val opType: OpType,
     val directoryDao: DirectoryDao,
 ) {
     val directories: Flow<List<DirectoryEntity>> = directoryDao.queryActiveDirectoriesFlow().distinctUntilChanged()
@@ -42,18 +42,18 @@ data class DirectoryUiState(
 
 @HiltViewModel
 class DirectoryViewModel @Inject constructor(private val directoryDao: DirectoryDao) : ViewModel() {
-    private val _uiState = mutableStateOf(DirectoryUiState(isLoading = true, directoryType = DirectoryType.BACKUP, directoryDao = directoryDao))
+    private val _uiState = mutableStateOf(DirectoryUiState(isLoading = true, opType = OpType.BACKUP, directoryDao = directoryDao))
     val uiState: State<DirectoryUiState>
         get() = _uiState
 
-    private suspend fun queryId(parent: String, child: String, type: DirectoryType) = directoryDao.queryId(parent, child, type)
+    private suspend fun queryId(parent: String, child: String, type: OpType) = directoryDao.queryId(parent, child, type)
     private suspend fun inactivateDirectories() = directoryDao.updateActive(active = false)
-    private suspend fun activateDirectories() = directoryDao.updateActive(type = uiState.value.directoryType, excludeType = StorageType.EXTERNAL, active = true)
-    private suspend fun querySelectedByDirectoryType() = directoryDao.querySelectedByDirectoryType(type = uiState.value.directoryType)
-    suspend fun select(context: Context, path: String, type: DirectoryType, id: Long) = run {
-        when (uiState.value.directoryType) {
-            DirectoryType.BACKUP -> context.saveBackupSavePath(path)
-            DirectoryType.RESTORE -> context.saveRestoreSavePath(path)
+    private suspend fun activateDirectories() = directoryDao.updateActive(type = uiState.value.opType, excludeType = StorageType.EXTERNAL, active = true)
+    private suspend fun querySelectedByDirectoryType() = directoryDao.querySelectedByDirectoryType(type = uiState.value.opType)
+    suspend fun select(context: Context, path: String, type: OpType, id: Long) = run {
+        when (uiState.value.opType) {
+            OpType.BACKUP -> context.saveBackupSavePath(path)
+            OpType.RESTORE -> context.saveRestoreSavePath(path)
         }
 
         directoryDao.select(type, id)
@@ -63,10 +63,10 @@ class DirectoryViewModel @Inject constructor(private val directoryDao: Directory
         select(
             context = context,
             path = "${ConstantUtil.DefaultPathParent}/${ConstantUtil.DefaultPathChild}",
-            type = uiState.value.directoryType,
-            id = when (uiState.value.directoryType) {
-                DirectoryType.BACKUP -> 1
-                DirectoryType.RESTORE -> 2
+            type = uiState.value.opType,
+            id = when (uiState.value.opType) {
+                OpType.BACKUP -> 1
+                OpType.RESTORE -> 2
             }
         )
     }
@@ -76,10 +76,10 @@ class DirectoryViewModel @Inject constructor(private val directoryDao: Directory
     private suspend fun upsert(item: DirectoryEntity) = directoryDao.upsert(item)
     suspend fun delete(item: DirectoryEntity) = directoryDao.delete(item)
 
-    suspend fun initialize(context: Context, directoryType: DirectoryType) {
+    suspend fun initialize(context: Context, opType: OpType) {
         withIOContext {
             // Set directory type
-            _uiState.value = uiState.value.copy(directoryType = directoryType)
+            _uiState.value = uiState.value.copy(opType = opType)
 
             // Inactivate all directories
             inactivateDirectories()
@@ -91,11 +91,11 @@ class DirectoryViewModel @Inject constructor(private val directoryDao: Directory
                 title = context.getString(R.string.internal_storage),
                 parent = ConstantUtil.DefaultPathParent,
                 child = ConstantUtil.DefaultPathChild,
-                directoryType = DirectoryType.BACKUP,
+                opType = OpType.BACKUP,
                 storageType = StorageType.INTERNAL,
             )
             internalDirs.add(internalDirectory)
-            internalDirs.add(internalDirectory.copy(id = 2, directoryType = DirectoryType.RESTORE))
+            internalDirs.add(internalDirectory.copy(id = 2, opType = OpType.RESTORE))
             upsert(internalDirs)
 
             // External storage
@@ -107,11 +107,11 @@ class DirectoryViewModel @Inject constructor(private val directoryDao: Directory
                     val child = ConstantUtil.DefaultPathChild
                     externalDirs.add(
                         DirectoryUpsertEntity(
-                            id = queryId(parent = storageItem, child = child, directoryType),
+                            id = queryId(parent = storageItem, child = child, opType),
                             title = context.getString(R.string.external_storage),
                             parent = storageItem,
                             child = child,
-                            directoryType = directoryType,
+                            opType = opType,
                             storageType = StorageType.EXTERNAL,
                             active = true,
                         )
@@ -180,11 +180,11 @@ class DirectoryViewModel @Inject constructor(private val directoryDao: Directory
 
                                 // Custom storage
                                 val dir = DirectoryUpsertEntity(
-                                    id = queryId(parent = parent, child = child, type = uiState.value.directoryType),
+                                    id = queryId(parent = parent, child = child, type = uiState.value.opType),
                                     title = context.getString(R.string.custom_storage),
                                     parent = parent,
                                     child = child,
-                                    directoryType = uiState.value.directoryType,
+                                    opType = uiState.value.opType,
                                     storageType = StorageType.CUSTOM,
                                 )
                                 customDirList.add(dir)
@@ -192,7 +192,7 @@ class DirectoryViewModel @Inject constructor(private val directoryDao: Directory
                         }
 
                         upsert(customDirList)
-                        initialize(context, uiState.value.directoryType)
+                        initialize(context, uiState.value.opType)
                     }
                 }
             }

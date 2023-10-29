@@ -61,7 +61,7 @@ import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.OperationState
 import com.xayah.core.database.model.PackageBackupEntire
 import com.xayah.core.database.model.PackageRestoreEntire
-import com.xayah.core.database.model.StorageType
+import com.xayah.core.model.StorageType
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.databackup.R

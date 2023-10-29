@@ -1,0 +1,7 @@
+<resources>
+    <item name="internal_storage" type="string"/>
+    <item name="external_storage" type="string"/>
+    <item name="unsupported_format" type="string"/>
+    <item name="supported_format" type="string"/>
+    <item name="custom_storage" type="string"/>
+</resources>

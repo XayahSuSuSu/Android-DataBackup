@@ -1,4 +1,4 @@
-package com.xayah.databackup.module
+package com.xayah.core.data.module
 
 import android.content.Context
 import com.xayah.librootservice.service.RemoteRootService

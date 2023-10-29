@@ -133,6 +133,7 @@ dependencies {
     // Feature
     "fossImplementation"(project(":feature:home:foss"))
     "premiumImplementation"(project(":feature:home:premium"))
+    implementation(project(":feature:directory"))
 
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)

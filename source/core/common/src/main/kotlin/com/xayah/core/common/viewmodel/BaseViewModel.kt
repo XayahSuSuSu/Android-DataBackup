@@ -18,14 +18,14 @@ interface UiEffect
 
 interface IBaseViewModel<S : UiState, I : UiIntent, E : UiEffect> {
 
-    fun onEvent(state: S, intent: I)
+    suspend fun onEvent(state: S, intent: I)
 }
 
 abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(state: S) : IBaseViewModel<S, I, E>, ViewModel() {
     private val intentChannel = Channel<I>(Channel.UNLIMITED)
 
     private val _uiState = MutableStateFlow(state)
-    private val uiState: StateFlow<S> = _uiState.asStateFlow()
+    val uiState: StateFlow<S> = _uiState.asStateFlow()
 
     init {
         withIOContext {

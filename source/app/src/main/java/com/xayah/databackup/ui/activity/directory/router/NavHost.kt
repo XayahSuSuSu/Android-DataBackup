@@ -7,7 +7,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.xayah.databackup.R
-import com.xayah.core.database.model.DirectoryType
+import com.xayah.core.model.OpType
 import com.xayah.databackup.ui.activity.directory.page.PageDirectory
 import com.xayah.databackup.ui.component.LocalSlotScope
 
@@ -22,10 +22,10 @@ fun DirectoryNavHost(startDestination: String) {
         startDestination = startDestination,
     ) {
         composable(DirectoryRoutes.DirectoryBackup.route) {
-            PageDirectory(title = stringResource(id = R.string.backup_dir), directoryType = DirectoryType.BACKUP)
+            PageDirectory(title = stringResource(id = R.string.backup_dir), opType = OpType.BACKUP)
         }
         composable(DirectoryRoutes.DirectoryRestore.route) {
-            PageDirectory(title = stringResource(id = R.string.restore_dir), directoryType = DirectoryType.RESTORE)
+            PageDirectory(title = stringResource(id = R.string.restore_dir), opType = OpType.RESTORE)
         }
     }
 }

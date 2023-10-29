@@ -3,17 +3,8 @@ package com.xayah.core.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
-enum class DirectoryType {
-    BACKUP,
-    RESTORE,
-}
-
-enum class StorageType {
-    INTERNAL,
-    EXTERNAL,
-    CUSTOM,
-}
+import com.xayah.core.model.OpType
+import com.xayah.core.model.StorageType
 
 @Entity
 data class DirectoryEntity(
@@ -25,7 +16,7 @@ data class DirectoryEntity(
     @ColumnInfo(defaultValue = "") var error: String,
     @ColumnInfo(defaultValue = "0") var availableBytes: Long,
     @ColumnInfo(defaultValue = "0") var totalBytes: Long,
-    @ColumnInfo(defaultValue = "BACKUP") var directoryType: DirectoryType,
+    @ColumnInfo(defaultValue = "BACKUP") var opType: OpType,
     @ColumnInfo(defaultValue = "INTERNAL") var storageType: StorageType,
     @ColumnInfo(defaultValue = "0") var selected: Boolean,
     @ColumnInfo(defaultValue = "1") var enabled: Boolean,
@@ -47,7 +38,7 @@ data class DirectoryUpsertEntity(
     var title: String,
     var parent: String,
     var child: String,
-    var directoryType: DirectoryType,
+    var opType: OpType,
     var storageType: StorageType,
     var active: Boolean = false,
 ) {

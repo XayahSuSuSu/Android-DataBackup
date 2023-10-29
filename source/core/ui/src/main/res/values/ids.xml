@@ -1,0 +1,4 @@
+<resources>
+    <item name="word_return" type="string"/>
+    <item name="confirm" type="string"/>
+</resources>

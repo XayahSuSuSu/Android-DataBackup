@@ -17,4 +17,3 @@ data class ShellResult(
     val outString: String
         get() = out.toLineString()
 }
-

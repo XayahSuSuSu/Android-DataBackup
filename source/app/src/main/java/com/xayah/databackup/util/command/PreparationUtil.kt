@@ -1,8 +1,8 @@
 package com.xayah.databackup.util.command
 
 import android.content.Context
-import com.xayah.databackup.util.SymbolUtil
-import com.xayah.databackup.util.SymbolUtil.QUOTE
+import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.SymbolUtil.QUOTE
 
 object PreparationUtil {
     suspend fun listExternalStorage(): List<String> {

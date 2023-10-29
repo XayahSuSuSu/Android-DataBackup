@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xayah.core.database.dao.CloudDao
 import com.xayah.core.database.dao.DirectoryDao
-import com.xayah.core.database.model.DirectoryType
+import com.xayah.core.model.OpType
 import com.xayah.core.database.dao.PackageBackupEntireDao
 import com.xayah.core.database.model.PackageBackupManifest
 import com.xayah.core.database.model.formatSize
@@ -24,7 +24,7 @@ data class ManifestUiState(
     val cloudDao: CloudDao,
     val logUtil: LogUtil,
     val rootService: RemoteRootService,
-    val directoryType: DirectoryType,
+    val opType: OpType,
     val directoryDao: DirectoryDao,
 ) {
     val bothPackages: Flow<List<PackageBackupManifest>> = packageBackupEntireDao.queryActiveBothPackages().distinctUntilChanged()
@@ -40,7 +40,7 @@ data class ManifestUiState(
         data.forEach { total += it.storageStats.dataBytes }
         formatSize(total)
     }
-    val availableBytesDisplay: Flow<String> = directoryDao.querySelectedByDirectoryTypeFlow(directoryType).map {
+    val availableBytesDisplay: Flow<String> = directoryDao.querySelectedByDirectoryTypeFlow(opType).map {
         val availableBytes =
             rootService.readStatFs(it?.parent ?: PathUtil.getParentPath(PathUtil.getBackupSavePath(false))).availableBytes.toDouble()
         formatSize(availableBytes)
@@ -62,7 +62,7 @@ class ManifestViewModel @Inject constructor(
                 cloudDao = cloudDao,
                 logUtil = logUtil,
                 rootService = rootService,
-                directoryType = DirectoryType.BACKUP,
+                opType = OpType.BACKUP,
                 directoryDao = directoryDao
             )
         )

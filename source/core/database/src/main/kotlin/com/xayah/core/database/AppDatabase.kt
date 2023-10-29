@@ -45,7 +45,7 @@ import com.xayah.core.database.util.StringListConverters
     ],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 2, to = 3, spec = DatabaseMigrations.Schema2to3::class),
     ]
 )
 @TypeConverters(StringListConverters::class)

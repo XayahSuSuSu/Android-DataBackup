@@ -16,7 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.xayah.core.database.model.DirectoryType
+import com.xayah.core.model.OpType
 import com.xayah.databackup.ui.component.DirectoryScaffold
 import com.xayah.databackup.ui.component.ListItemDirectory
 import com.xayah.databackup.ui.component.Loader
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
-fun PageDirectory(title: String, directoryType: DirectoryType) {
+fun PageDirectory(title: String, opType: OpType) {
     val context = LocalContext.current
     val viewModel = hiltViewModel<DirectoryViewModel>()
     val scope = rememberCoroutineScope()
@@ -39,7 +39,7 @@ fun PageDirectory(title: String, directoryType: DirectoryType) {
     val directories by uiState.directories.collectAsState(initial = listOf())
 
     LaunchedEffect(null) {
-        viewModel.initialize(context = context, directoryType = directoryType)
+        viewModel.initialize(context = context, opType = opType)
     }
 
     DirectoryScaffold(
@@ -63,7 +63,7 @@ fun PageDirectory(title: String, directoryType: DirectoryType) {
                         onCardClick = {
                             scope.launch {
                                 withIOContext {
-                                    viewModel.select(context = context, path = item.path, type = directoryType, id = item.id)
+                                    viewModel.select(context = context, path = item.path, type = opType, id = item.id)
                                 }
                             }
                         },

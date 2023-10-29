@@ -17,7 +17,7 @@ import com.xayah.core.database.dao.CloudDao
 import com.xayah.databackup.ui.component.DialogState
 import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.util.LogUtil
-import com.xayah.databackup.util.SymbolUtil
+import com.xayah.core.util.SymbolUtil
 import com.xayah.databackup.util.command.CloudUtil
 import com.xayah.core.util.toSpaceString
 import com.xayah.librootservice.util.withIOContext

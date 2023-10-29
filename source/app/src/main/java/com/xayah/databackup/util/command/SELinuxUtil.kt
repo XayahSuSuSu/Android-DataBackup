@@ -1,8 +1,8 @@
 package com.xayah.databackup.util.command
 
 import com.xayah.core.model.ShellResult
-import com.xayah.databackup.util.SymbolUtil.QUOTE
-import com.xayah.databackup.util.SymbolUtil.USD
+import com.xayah.core.util.SymbolUtil.QUOTE
+import com.xayah.core.util.SymbolUtil.USD
 import com.xayah.databackup.util.command.CommonUtil.execute
 
 object SELinux {

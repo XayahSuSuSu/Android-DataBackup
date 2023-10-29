@@ -1,4 +1,4 @@
-package com.xayah.databackup.util
+package com.xayah.core.util
 
 object SymbolUtil {
     const val USD = '$'

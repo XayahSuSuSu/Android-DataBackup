@@ -8,7 +8,7 @@ import com.xayah.core.util.toLineString
 import com.xayah.core.util.toSpaceString
 import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.util.LogUtil
-import com.xayah.databackup.util.SymbolUtil
+import com.xayah.core.util.SymbolUtil
 import com.xayah.databackup.util.command.CommonUtil.execute
 import com.xayah.librootservice.util.withIOContext
 import kotlinx.coroutines.Dispatchers
