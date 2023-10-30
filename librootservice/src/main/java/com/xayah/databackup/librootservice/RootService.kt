@@ -12,6 +12,7 @@ import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.librootservice.parcelables.StatFsParcelable
 import com.xayah.databackup.librootservice.service.RemoteRootServiceImpl
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.util.concurrent.CountDownLatch
@@ -61,7 +62,12 @@ class RootService {
 
     private fun getService(): IRemoteRootService {
         if (mService == null) {
-            throw RemoteException("RootService is null.")
+            runBlocking { bindService("com.xayah.databackup") {} }
+        } else if (mService!!.asBinder().isBinderAlive.not()) {
+            mService = null
+            runBlocking { bindService("com.xayah.databackup") {} }
+        } else {
+            mService!!
         }
         return mService!!
     }
