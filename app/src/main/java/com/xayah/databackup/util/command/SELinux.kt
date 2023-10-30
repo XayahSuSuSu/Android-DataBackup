@@ -31,12 +31,6 @@ class SELinux {
                         if (this.isSuccess.not()) isSuccess = false
                         out += this.out.joinToLineString + "\n"
                     }
-                    if (dataType == DataType.USER || dataType == DataType.USER_DE || dataType == DataType.APP_MEDIA) {
-                        Command.execute("restorecon -RFD $QUOTE$path/$QUOTE").apply {
-                            if (this.isSuccess.not()) isSuccess = false
-                            out += this.out.joinToLineString + "\n"
-                        }
-                    }
                     if (supportFixContext) {
                         if (context.isNotEmpty()) {
                             Command.execute("chcon -hR $QUOTE$context$QUOTE $QUOTE$path/$QUOTE").apply {
