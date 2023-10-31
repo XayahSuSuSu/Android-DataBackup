@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace 'com.xayah.databackup'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.xayah.databackup"
         minSdk 28
-        targetSdk 33
+        targetSdk 34
         versionCode 98
         versionName "1.0.1-alpha02"
 
