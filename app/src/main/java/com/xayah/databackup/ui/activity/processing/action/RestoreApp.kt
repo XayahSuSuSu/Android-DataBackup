@@ -6,18 +6,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.graphics.drawable.toDrawable
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.CompressionType
+import com.xayah.databackup.data.DataType
+import com.xayah.databackup.data.LoadingState
+import com.xayah.databackup.data.ProcessError
+import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.onInfoUpdate
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.GsonUtil
+import com.xayah.databackup.util.Logcat
+import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.command.SELinux
+import com.xayah.databackup.util.readCompressionType
+import com.xayah.databackup.util.readIsReadIcon
+import com.xayah.databackup.util.readIsResetRestoreList
+import com.xayah.databackup.util.readRestoreUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, globalObject: GlobalObject, retry: Boolean = false) {
     if (viewModel.isFirst.value) {
@@ -30,11 +43,13 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
             val progress = viewModel.progress
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
-            val objectList = viewModel.objectList.value.apply {
-                clear()
-                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
-                    ProcessObjectItem(type = it)
-                })
+            val objectList = withContext(Dispatchers.Main) {
+                viewModel.objectList.value.apply {
+                    clear()
+                    addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
+                        ProcessObjectItem(type = it)
+                    })
+                }
             }
             val allDone = viewModel.allDone
 

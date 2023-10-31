@@ -16,6 +16,7 @@ import com.xayah.databackup.util.command.Command
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, globalObject: GlobalObject, retry: Boolean = false) {
     if (viewModel.isFirst.value) {
@@ -28,9 +29,11 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
             val progress = viewModel.progress
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
-            val objectList = viewModel.objectList.value.apply {
-                clear()
-                add(ProcessObjectItem(type = DataType.DATA))
+            val objectList = withContext(Dispatchers.Main){
+                viewModel.objectList.value.apply {
+                    clear()
+                    add(ProcessObjectItem(type = DataType.DATA))
+                }
             }
             val allDone = viewModel.allDone
 
