@@ -27,7 +27,6 @@ class SettingsViewModel : ViewModel() {
     }
 
     // 恢复相关设置项
-    val supportAutoFixMultiUserContext by lazy { mutableStateOf(false) }
     val restoreSwitchItems by lazy {
         MutableStateFlow(SnapshotStateList<SwitchItem>())
     }

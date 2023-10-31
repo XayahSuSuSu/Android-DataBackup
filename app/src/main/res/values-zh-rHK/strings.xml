@@ -47,8 +47,6 @@
     <string name="monet_title">啟用 Material You 的莫奈主題引擎</string>
     <string name="backup_itself">備份自身</string>
     <string name="backup_itself_title">備份應用時自動備份自身安裝包至備份目錄下</string>
-    <string name="auto_fix_multi_user_context">Context修復</string>
-    <string name="auto_fix_multi_user_context_title">自動修復多用戶Context，免重啟使用恢復後的多用戶應用</string>
     <string name="create">創建</string>
     <string name="repeat_to_add">重複添加!</string>
     <string name="installing">安裝中</string>

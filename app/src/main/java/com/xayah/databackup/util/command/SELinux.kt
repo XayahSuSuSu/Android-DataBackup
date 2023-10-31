@@ -1,6 +1,5 @@
 package com.xayah.databackup.util.command
 
-import com.xayah.databackup.data.DataType
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.util.joinToLineString
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +19,7 @@ class SELinux {
             return Pair(exec.isSuccess, if (exec.isSuccess) exec.out.joinToLineString.trim() else "")
         }
 
-        suspend fun setOwnerAndContext(dataType: DataType, packageName: String, path: String, userId: String, supportFixContext: Boolean, context: String): Pair<Boolean, String> {
+        suspend fun setOwnerAndContext(packageName: String, path: String, userId: String, context: String): Pair<Boolean, String> {
             var isSuccess = true
             var out = ""
 
@@ -31,14 +30,14 @@ class SELinux {
                         if (this.isSuccess.not()) isSuccess = false
                         out += this.out.joinToLineString + "\n"
                     }
-                    if (supportFixContext) {
-                        if (context.isNotEmpty()) {
-                            Command.execute("chcon -hR $QUOTE$context$QUOTE $QUOTE$path/$QUOTE").apply {
-                                if (this.isSuccess.not()) isSuccess = false
-                                out += this.out.joinToLineString + "\n"
-                            }
-                        } else {
-                            Command.execute("ls -Zd $QUOTE$path/../$QUOTE | awk 'NF>1{print ${USD}1}' | sed -e ${QUOTE}s/system_data_file/app_data_file/g$QUOTE; ls -Zd $QUOTE$path/../$QUOTE > /dev/null 2>&1").apply {
+                    if (context.isNotEmpty()) {
+                        Command.execute("chcon -hR $QUOTE$context$QUOTE $QUOTE$path/$QUOTE").apply {
+                            if (this.isSuccess.not()) isSuccess = false
+                            out += this.out.joinToLineString + "\n"
+                        }
+                    } else {
+                        Command.execute("ls -Zd $QUOTE$path/../$QUOTE | awk 'NF>1{print ${USD}1}' | sed -e ${QUOTE}s/system_data_file/app_data_file/g$QUOTE; ls -Zd $QUOTE$path/../$QUOTE > /dev/null 2>&1")
+                            .apply {
                                 if (this.isSuccess.not()) {
                                     isSuccess = false
                                     out += this.out.joinToLineString + "\n"
@@ -49,7 +48,6 @@ class SELinux {
                                     out += this.out.joinToLineString + "\n"
                                 }
                             }
-                        }
                     }
                 } else {
                     isSuccess = false

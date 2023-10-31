@@ -13,8 +13,6 @@
     <string name="compress">Nén</string>
     <string name="restoring">Khôi phục</string>
     <string name="filter">Bộ lọc</string>
-    <string name="auto_fix_multi_user_context_title">Tự động sửa ngữ cảnh nhiều người dùng, không cần khởi động lại để khôi phục các ứng dụng nhiều người dùng</string>
-    <string name="auto_fix_multi_user_context">Sửa ngữ cảnh</string>
     <string name="warning">Cảnh báo</string>
     <string name="selected_app">Ứng dụng đã chọn</string>
     <string name="user">Người dùng</string>

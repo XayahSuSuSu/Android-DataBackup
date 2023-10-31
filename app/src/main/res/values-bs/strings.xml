@@ -6,8 +6,6 @@
     <string name="progress">Napredak</string>
     <string name="compress">Kompresija</string>
     <string name="filter">Filtriraj</string>
-    <string name="auto_fix_multi_user_context_title">Automatsko popravljanje konteksta za više korisnika, nije potrebno ponovno pokretanje za vraćene višekorisničke aplikacije</string>
-    <string name="auto_fix_multi_user_context">Ispravka konteksta</string>
     <string name="start_desc">Svi podaci koje generira ova aplikacija koriste se samo za sigurnosno kopiranje/obnovu pohranjuju se samo lokalno.</string>
     <string name="internal_storage">Interna memorija</string>
     <string name="ready">Spremno</string>

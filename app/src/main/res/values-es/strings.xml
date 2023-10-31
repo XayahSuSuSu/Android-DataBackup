@@ -46,8 +46,6 @@
     <string name="speed">Velocidad</string>
     <string name="latest">Más reciente</string>
     <string name="failed">Fallido</string>
-    <string name="auto_fix_multi_user_context_title">Corrección automática del contexto multiusuario, sin necesidad de reiniciar las aplicaciones multiusuario restauradas</string>
-    <string name="auto_fix_multi_user_context">Corrección del contexto</string>
     <string name="create">Cree</string>
     <string name="repeat_to_add">¡Repetir para añadir!</string>
     <string name="all">Todo</string>

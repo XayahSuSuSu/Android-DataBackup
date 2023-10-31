@@ -85,8 +85,6 @@
     <string name="please_wait">Изчакайте</string>
     <string name="installing">Инсталиране</string>
     <string name="confirm_exit">Потвърждавате ли изход\?</string>
-    <string name="auto_fix_multi_user_context">Поправка на контекста</string>
-    <string name="auto_fix_multi_user_context_title">Автоматично поправя многопотребителски контекст без необходимост от рестарт при възстановяване на многопотребителски приложения</string>
     <string name="not_selected">Не е избрано</string>
     <string name="all">Всичко</string>
     <string name="backup_icon">Пиктограма на резервно копие</string>

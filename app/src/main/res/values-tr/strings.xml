@@ -38,8 +38,6 @@
     <string name="settings">Ayarlar</string>
     <string name="monet">İzlenimcilik</string>
     <string name="backup_itself">Kendini yedekleme</string>
-    <string name="auto_fix_multi_user_context">Bağlam düzeltmesi</string>
-    <string name="auto_fix_multi_user_context_title">Çok kullanıcılı bağlamı otomatik düzeltin,geri yüklenen çok kullanıcılı uygulamalar için yeniden başlatma gerekmez</string>
     <string name="create">Oluştur</string>
     <string name="repeat_to_add">Eklemek için tekrarlayın!</string>
     <string name="installing">Kuruluyor</string>

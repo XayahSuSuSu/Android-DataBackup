@@ -47,8 +47,6 @@
     <string name="monet">Монет</string>
     <string name="backup_itself">Бекап DataBackup</string>
     <string name="backup_itself_title">Під час створення бекапа DataBackup автоматично створює резервну копію власного інсталяційного пакета до каталогу бекапів</string>
-    <string name="auto_fix_multi_user_context">Виправлення контексту</string>
-    <string name="auto_fix_multi_user_context_title">Автоматичне виправлення багатокористувацького контексту, перезавантаження відновлених багатокористувацьких програм не потрібне</string>
     <string name="create">Створити</string>
     <string name="repeat_to_add">Повторити, щоб додати!</string>
     <string name="installing">Установка</string>

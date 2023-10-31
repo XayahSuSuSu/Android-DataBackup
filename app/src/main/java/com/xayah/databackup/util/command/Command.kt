@@ -56,7 +56,6 @@ import com.xayah.databackup.util.GlobalString
 import com.xayah.databackup.util.GsonUtil
 import com.xayah.databackup.util.Logcat
 import com.xayah.databackup.util.Path
-import com.xayah.databackup.util.readAutoFixMultiUserContext
 import com.xayah.databackup.util.readBackupStrategy
 import com.xayah.databackup.util.readBackupUser
 import com.xayah.databackup.util.readBlackListMapPath
@@ -726,11 +725,9 @@ class Command {
             val tag = "# Set owner and SELinux #"
             updateState(ProcessSettingSELinux, null)
             val (setOwnerAndSELinuxSuccess, out) = SELinux.setOwnerAndContext(
-                dataType,
                 packageName,
                 path,
                 userId,
-                App.globalContext.readAutoFixMultiUserContext(),
                 context
             )
             if (setOwnerAndSELinuxSuccess.not()) {

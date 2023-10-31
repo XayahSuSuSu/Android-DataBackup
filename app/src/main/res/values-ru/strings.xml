@@ -47,8 +47,6 @@
     <string name="monet">Monet</string>
     <string name="backup_itself">Бекап DataBackup</string>
     <string name="backup_itself_title">При создании бекапа DataBackup автоматически создает резервную копию собственного установочного пакета в папке бекапов.</string>
-    <string name="auto_fix_multi_user_context">Исправление контекста</string>
-    <string name="auto_fix_multi_user_context_title">Автоматическое исправление многопользовательского контекста. Не требуется перезапуск для восстановления многопользовательских приложений.</string>
     <string name="create">Создать</string>
     <string name="repeat_to_add">Повторить, чтобы добавить!</string>
     <string name="installing">Установка</string>
