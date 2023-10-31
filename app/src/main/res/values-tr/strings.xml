@@ -163,8 +163,6 @@
         <item quantity="one"><xliff:g id="count">%d</xliff:g> gün</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> günler</item>
     </plurals>
-    <string name="unsuspend_suspended_apps">Askıya alınan uygulamaları kaldırın</string>
-    <string name="unsuspend_suspended_apps_help">Yedekleme sırasında bu uygulamayı sonlandırmaya zorlarsanız, işleme uygulaması hala askıda olabilir, devam etmek için buraya tıklayın</string>
     <string name="log">Kayıt günlüğü</string>
     <string name="click_to_clear">Temizlemek için tıklayın</string>
     <string name="keep_the_screen_on">Ekran açık kalsın</string>

@@ -16,9 +16,6 @@ class SettingsViewModel : ViewModel() {
     // 应用相关设置项
     val newestVersion by lazy { mutableStateOf("") }
     val newestVersionLink by lazy { mutableStateOf("") }
-    val suspendedPackages by lazy {
-        MutableStateFlow(SnapshotStateList<PackageInfo>())
-    }
     val logSize by lazy { MutableStateFlow(formatSize(0.0)) }
 
     // 备份相关设置项

@@ -150,8 +150,6 @@
     <string name="reset_backup_list_title">備份完成後取消勾選所選項</string>
     <string name="reset_restore_list">重置恢復列表</string>
     <string name="reset_restore_list_title">恢復完成後取消勾選所選項</string>
-    <string name="unsuspend_suspended_apps">恢復已暫停的應用</string>
-    <string name="unsuspend_suspended_apps_help">如果您在備份過程中強制殺死本應用，可能會導致被備份應用仍處於暫停狀態，單擊此處恢復</string>
     <string name="log">日誌</string>
     <string name="click_to_clear">單擊此處清理</string>
     <string name="keep_the_screen_on">保持屏幕常亮</string>

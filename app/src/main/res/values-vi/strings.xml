@@ -67,7 +67,6 @@
     <string name="card_media_subtitle">Sao lưu (Khôi phục) tệp phương tiện hoặc thư mục tùy chỉnh</string>
     <string name="restore_user">Khôi phục người dùng</string>
     <string name="blacklist">Danh sách đen</string>
-    <string name="unsuspend_suspended_apps_help">Nếu bạn bị tắt ứng dụng trong quá trình sao lưu, ứng dụng được sao lưu có thể bị tạm dừng, hãy nhấp vào đây để tiếp tục</string>
     <string name="delete">Xóa</string>
     <string name="duplicate">Nhân bản</string>
     <string name="start">Bắt đầu</string>
@@ -105,7 +104,6 @@
     <string name="please_wait">Vui lòng đợi</string>
     <string name="add_list">Thêm danh sách</string>
     <string name="log">Nhật kí</string>
-    <string name="unsuspend_suspended_apps">Bỏ tạm dừng ứng dụng bị treo</string>
     <string name="loading_failed">Tải không thành công</string>
     <string name="path_permission_error">Lỗi quyền, các đường dẫn sau yêu cầu quyền chính xác</string>
     <string name="select_backup_app">Chọn ứng dụng sao lưu</string>

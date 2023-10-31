@@ -169,8 +169,6 @@
     <string name="reset_backup_list_title">Зняти виділення після створення бекапу</string>
     <string name="reset_restore_list">Перезапустити список відновлення</string>
     <string name="reset_restore_list_title">Зняти виділення після відновлення</string>
-    <string name="unsuspend_suspended_apps">Відновлення призупинених програм</string>
-    <string name="unsuspend_suspended_apps_help">Якщо ви примусово закриєте цей додаток під час створення бекапу, програму для обробки може бути призупинено. Натисніть тут, щоб відновити</string>
     <string name="log">Лог</string>
     <string name="click_to_clear">Натисніть тут, щоб очистити</string>
     <string name="keep_the_screen_on">Тримати екран увімкненим</string>

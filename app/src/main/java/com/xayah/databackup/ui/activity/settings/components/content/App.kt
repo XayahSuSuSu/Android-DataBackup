@@ -32,20 +32,11 @@ import kotlinx.coroutines.launch
 
 suspend fun onAppInitialize(viewModel: SettingsViewModel, context: Context) {
     getReleases(viewModel, context)
-    getSuspendedPackages(viewModel)
     getLogSize(viewModel)
 }
 
 fun getLogSize(viewModel: SettingsViewModel) {
     viewModel.logSize.value = formatSize(RootService.getInstance().countSize(Path.getLogPath()).toDouble())
-}
-
-fun getSuspendedPackages(viewModel: SettingsViewModel) {
-    // Get suspended packages
-    viewModel.suspendedPackages.value.clear()
-    viewModel.suspendedPackages.value.addAll(
-        RootService.getInstance().getSuspendedPackages()
-    )
 }
 
 suspend fun getReleases(viewModel: SettingsViewModel, context: Context) {
@@ -120,25 +111,6 @@ fun LazyListScope.appItems(
             },
             onConfirm = { value ->
                 context.saveCompressionType(value)
-            }
-        )
-    }
-    item {
-        val suspendedPackages = viewModel.suspendedPackages.collectAsState()
-
-        Clickable(
-            title = stringResource(id = R.string.unsuspend_suspended_apps),
-            subtitle = stringResource(id = R.string.unsuspend_suspended_apps_help),
-            icon = ImageVector.vectorResource(id = R.drawable.ic_round_hourglass_disabled),
-            content = suspendedPackages.value.size.toString(),
-            onClick = {
-                val suspendedPackageNames = suspendedPackages.value.map { it.packageName }
-                context.makeActionToast(
-                    RootService.getInstance().setPackagesSuspended(suspendedPackageNames.toTypedArray(), false)
-                )
-                scope.launch {
-                    getSuspendedPackages(viewModel)
-                }
             }
         )
     }
