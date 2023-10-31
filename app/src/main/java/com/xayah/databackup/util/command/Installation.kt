@@ -54,7 +54,7 @@ class Installation {
                 }
             }
             Command.execute("tar --totals $input -xmpf $QUOTE$apkPath$QUOTE -C $QUOTE$apkDir$QUOTE").apply {
-                if (this.isSuccess.not()) onSuccess(false)
+                if (Compression.isCompressionSucceed(this).not()) onSuccess(false)
                 onLog(this.out.joinToLineString + "\n")
             }
             return RootService.getInstance().listFilesPath(apkDir)

@@ -1,5 +1,6 @@
 package com.xayah.databackup.util.command
 
+import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.data.CompressionType
 import com.xayah.databackup.data.DataType
@@ -35,11 +36,13 @@ class Compression {
             return "$dataPath/$MEDIA_PATH_FILE_NAME"
         }
 
+        fun isCompressionSucceed(result: Shell.Result) = result.code in intArrayOf(0, 1)
+
         suspend fun compressAPK(
             compressionType: CompressionType,
             apkPath: String,
             outPut: String,
-            compatibleMode: Boolean
+            compatibleMode: Boolean,
         ): Pair<Boolean, String> {
             var isSuccess = true
             var out = ""
@@ -60,7 +63,7 @@ class Compression {
                 else
                     "$target ./*.apk ${if (compressionType == CompressionType.TAR) "" else "-I $QUOTE$type$QUOTE"}"
                 val exec = Command.execute("tar --totals -cpf $cmd")
-                if (exec.isSuccess.not()) isSuccess = false
+                if (isCompressionSucceed(exec).not()) isSuccess = false
                 out += exec.out.joinToLineString + "\n"
                 // Cd back
                 Command.execute("cd /").apply {
@@ -157,7 +160,7 @@ class Compression {
                 if (dataType == DataType.MEDIA) {
                     RootService.getInstance().deleteRecursively(getMediaPathFilePath(dataPath))
                 }
-                if (exec.isSuccess.not()) isSuccess = false
+                if (isCompressionSucceed(exec).not()) isSuccess = false
                 out = exec.out.joinToLineString
             }
             return Pair(isSuccess, out.trim())
@@ -192,7 +195,7 @@ class Compression {
                         // Get the media path
                         Command.execute("tar -xpf $QUOTE$inputPath$QUOTE -C $QUOTE$tmpDir$QUOTE --wildcards --no-anchored $QUOTE$MEDIA_PATH_FILE_NAME$QUOTE ${if (compressionType == CompressionType.TAR) "" else "-I ${QUOTE}zstd$QUOTE"}")
                             .apply {
-                                if (this.isSuccess.not()) {
+                                if (isCompressionSucceed(this).not()) {
                                     isSuccess = false
                                     out = "Failed to extract $MEDIA_PATH_FILE_NAME from this archive: $inputPath."
                                     return@runOnIO
@@ -229,7 +232,7 @@ class Compression {
                     RootService.getInstance().deleteRecursively(getMediaPathFilePath(mediaPath))
                     RootService.getInstance().deleteRecursively(tmpDir)
                 }
-                if (exec.isSuccess.not()) isSuccess = false
+                if (isCompressionSucceed(exec).not()) isSuccess = false
                 out = exec.out.joinToLineString
             }
             return Pair(isSuccess, out.trim())
