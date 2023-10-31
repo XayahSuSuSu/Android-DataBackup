@@ -24,6 +24,6 @@ android {
 dependencies {
     implementation project(path: ':libhiddenapi')
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3"
     implementation "com.github.topjohnwu.libsu:service:$libsu_version"
 }
