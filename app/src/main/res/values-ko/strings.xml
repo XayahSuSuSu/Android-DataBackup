@@ -28,4 +28,39 @@
         <item quantity="other"><xliff:g id="count">%d</xliff:g>일</item>
     </plurals>
     <string name="switch_to_system_app_warning">대부분의 시스템 앱은 백업하지 않는 것을 권장합니다. 시스템 앱을 복원할 경우 기기를 켜지 못할 수 있습니다.</string>
+    <string name="size">크기</string>
+    <string name="decompress">압축 해제</string>
+    <string name="storage">저장소</string>
+    <string name="compress">압축</string>
+    <string name="filter">필터</string>
+    <string name="user">사용자</string>
+    <string name="start_desc">이 앱에서 생성한 모든 데이터는 백업 및 복원에만 사용되며, 로컬 저장소에만 저장됩니다.</string>
+    <string name="compressing">압축 중</string>
+    <string name="decompressing">압축 해제 중</string>
+    <string name="symbol_question">\?</string>
+    <string name="backup_icon">아이콘 백업</string>
+    <string name="backup_test">백업 테스트</string>
+    <string name="storage_desc">백업 설정 및 압축 파일을 읽고 쓰는 데 사용합니다.</string>
+    <string name="backup_strategy">백업 방식</string>
+    <string name="symbol_exclamation">!</string>
+    <string name="backup_icon_title">앱을 백업할 때 아이콘을 포함합니다. 앱을 복원할 때 아이콘을 볼 수 있습니다.</string>
+    <string name="success">성공</string>
+    <string name="restore_finished">복원 완료</string>
+    <string name="data_size">데이터 크기</string>
+    <string name="start">시작</string>
+    <string name="network_desc">앱 업데이트 정보 및 앱 분석 정보를 가져오는 데 사용합니다.</string>
+    <string name="install_time">설치 시간</string>
+    <string name="application_desc">백업 목록을 생성하고 애플리케이션 데이터 크기를 가져오는 데 사용합니다.</string>
+    <string name="start_subtitle">관련 규정에 따라, 이 애플리케이션을 사용하기 전에 사용자 약관 및 개인 정보 보호 정책을 면밀히 읽고 동의해야 합니다.</string>
+    <string name="backup_finished">백업 완료</string>
+    <string name="media">미디어</string>
+    <string name="finished">완료</string>
+    <string name="sort">정렬</string>
+    <string name="grant_root_access">루트 권한 허용</string>
+    <string name="update_records">업데이트 기록</string>
+    <string name="by_time_desc">백업을 할 때마다 새로이 전체 백업을 실행하여, 백업한 시간에 따라 정렬됩니다. 같은 앱의 데이터가 여럿 존재할 수 있습니다.</string>
+    <string name="environment_detection">사용 환경 확인</string>
+    <string name="speed">속도</string>
+    <string name="backup_test_title">백업하는 중에 백업 파일을 자동으로 테스트합니다.</string>
+    <string name="setting_SELinux">SELinux 설정 중</string>
 </resources>
