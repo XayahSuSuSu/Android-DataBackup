@@ -87,7 +87,7 @@
     <string name="install_time">Thời gian cài đặt</string>
     <string name="stable_subtitle">Ổn định và đáng tin cậy</string>
     <string name="backup">Sao lưu</string>
-    <string name="others">Những người</string>
+    <string name="others">Những người khác</string>
     <string name="network">Mạng</string>
     <string name="testing">Kiểm tra</string>
     <string name="delete_selected">Xóa đã chọn</string>
@@ -164,4 +164,8 @@
     <string name="environment_detection">Phát hiện môi trường</string>
     <string name="check_package_usage_stats_permission">Check package usage stats permission</string>
     <string name="setting_SELinux">Cài đặt SELinux</string>
+    <string name="copy_grant_command">Sao chép lệnh cấp</string>
+    <string name="compatible_mode_subtitle">Sử dụng đường ống thay vì tham số cho đầu vào của tar. Chuyển nó khi nó báo \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Không thể thực thi: Không có tệp hoặc thư mục như vậy\"</string>
+    <string name="backup_storage_method">Phương pháp lưu trữ dự phòng</string>
+    <string name="separated_by_newlines">Được phân tách bằng dòng mới</string>
 </resources>
