@@ -99,4 +99,6 @@
     <string name="backup_dir_as_media_error">Kan ikke legge til sikkerhetskopimappe som media</string>
     <string name="backup_itself">Selve sikkerhetskopien</string>
     <string name="welcome_to_use">Velkommen</string>
+    <string name="data_size">Datastørrelse</string>
+    <string name="alphabet">Alfabet</string>
 </resources>
