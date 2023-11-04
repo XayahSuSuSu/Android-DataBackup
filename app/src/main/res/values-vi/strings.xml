@@ -162,7 +162,7 @@
     <string name="monet">Monet</string>
     <string name="app_name">DataBackup</string>
     <string name="environment_detection">Phát hiện môi trường</string>
-    <string name="check_package_usage_stats_permission">Check package usage stats permission</string>
+    <string name="check_package_usage_stats_permission">Kiểm tra quyền thống kê sử dụng gói</string>
     <string name="setting_SELinux">Cài đặt SELinux</string>
     <string name="copy_grant_command">Sao chép lệnh cấp</string>
     <string name="compatible_mode_subtitle">Sử dụng đường ống thay vì tham số cho đầu vào của tar. Chuyển nó khi nó báo \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Không thể thực thi: Không có tệp hoặc thư mục như vậy\"</string>
