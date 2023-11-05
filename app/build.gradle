@@ -14,8 +14,8 @@ android {
         applicationId "com.xayah.databackup"
         minSdk 28
         targetSdk 34
-        versionCode 100
-        versionName "1.0.1-alpha04"
+        versionCode 101
+        versionName "1.0.1-alpha05"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
