@@ -29,13 +29,11 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
             val loadingState = viewModel.loadingState
             val progress = viewModel.progress
             val topBarTitle = viewModel.topBarTitle
-            val taskList = viewModel.taskList.value
-            val objectList = viewModel.objectList.value.apply {
-                clear()
-                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
-                    ProcessObjectItem(type = it)
-                })
+            val taskList = viewModel.taskList.value.toMutableList()
+            val objectList = listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
+                ProcessObjectItem(type = it)
             }
+            viewModel.emitObjectList(objectList)
             val allDone = viewModel.allDone
 
             // Check global map
@@ -69,6 +67,7 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                                 }
                             }
                         })
+                viewModel.emitTaskList(taskList)
             } else {
                 Logcat.getInstance().actionLogAddLine(tag, "Retrying.")
             }
@@ -98,9 +97,11 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                         subtitle.value = GlobalString.pleaseWait
                     }
                 }
+                viewModel.emitObjectList(objectList)
 
                 // Enter processing state
                 i.taskState.value = TaskState.Processing
+                viewModel.emitTaskList(taskList)
                 val appInfoRestore = globalObject.appInfoRestoreMap.value[i.packageName]!!
 
                 // Scroll to processing task
@@ -154,15 +155,18 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                         objectList[5].visible.value = true
                     }
                 }
+                viewModel.emitObjectList(objectList)
                 for ((jIndex, j) in objectList.withIndex()) {
                     if (viewModel.isCancel.value) break
                     if (j.visible.value) {
                         j.state.value = TaskState.Processing
+                        viewModel.emitObjectList(objectList)
                         when (j.type) {
                             DataType.APK -> {
                                 isSuccess = Command.installAPK(compressionType, apkPath, packageName, userId, appInfoRestore.versionCode.toString())
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }
 
                                 // If the app isn't installed, the restoring can't move on
@@ -179,12 +183,14 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                                 Command.decompress(compressionType, DataType.USER, userPath, packageName, Path.getUserPath(userId))
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                                 Command.setOwnerAndSELinux(DataType.USER, packageName, "${Path.getUserPath(userId)}/${packageName}", userId, contextSELinux)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -195,12 +201,14 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                                 Command.decompress(compressionType, DataType.USER_DE, userDePath, packageName, Path.getUserDePath(userId))
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                                 Command.setOwnerAndSELinux(DataType.USER_DE, packageName, "${Path.getUserDePath(userId)}/${packageName}", userId, contextSELinux)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -211,12 +219,14 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                                 Command.decompress(compressionType, DataType.DATA, dataPath, packageName, Path.getDataPath(userId))
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                                 Command.setOwnerAndSELinux(DataType.DATA, packageName, "${Path.getDataPath(userId)}/${packageName}", userId, contextSELinux)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -227,12 +237,14 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                                 Command.decompress(compressionType, DataType.OBB, obbPath, packageName, Path.getObbPath(userId))
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                                 Command.setOwnerAndSELinux(DataType.OBB, packageName, "${Path.getObbPath(userId)}/${packageName}", userId, contextSELinux)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -243,12 +255,14 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                                 Command.decompress(compressionType, DataType.APP_MEDIA, appMediaPath, packageName, Path.getAPPMediaPath(userId))
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
                                 Command.setOwnerAndSELinux(DataType.APP_MEDIA, packageName, "${Path.getAPPMediaPath(userId)}/${packageName}", userId, contextSELinux)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -283,6 +297,7 @@ fun onRestoreAppProcessing(viewModel: ProcessingViewModel, context: Context, glo
                     }
                     this.objectList = list.toList()
                 }
+                viewModel.emitTaskList(taskList)
 
                 progress.value += 1
                 topBarTitle.value = "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"

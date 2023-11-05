@@ -4,14 +4,27 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.BackupStrategy
+import com.xayah.databackup.data.CompressionType
+import com.xayah.databackup.data.DataType
+import com.xayah.databackup.data.LoadingState
+import com.xayah.databackup.data.MediaInfoDetailBase
+import com.xayah.databackup.data.MediaInfoRestore
+import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.onInfoUpdate
-import com.xayah.databackup.util.*
+import com.xayah.databackup.util.GlobalObject
+import com.xayah.databackup.util.GlobalString
+import com.xayah.databackup.util.GsonUtil
+import com.xayah.databackup.util.Logcat
+import com.xayah.databackup.util.Path
 import com.xayah.databackup.util.command.Command
+import com.xayah.databackup.util.readBackupStrategy
+import com.xayah.databackup.util.readCompatibleMode
+import com.xayah.databackup.util.readIsResetBackupList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,11 +39,9 @@ fun onBackupMediaProcessing(viewModel: ProcessingViewModel, context: Context, gl
             val loadingState = viewModel.loadingState
             val progress = viewModel.progress
             val topBarTitle = viewModel.topBarTitle
-            val taskList = viewModel.taskList.value
-            val objectList = viewModel.objectList.value.apply {
-                clear()
-                add(ProcessObjectItem(type = DataType.DATA))
-            }
+            val taskList = viewModel.taskList.value.toMutableList()
+            val objectList = listOf(ProcessObjectItem(type = DataType.DATA))
+            viewModel.emitObjectList(objectList)
             val allDone = viewModel.allDone
 
             // Check global map
@@ -57,6 +68,7 @@ fun onBackupMediaProcessing(viewModel: ProcessingViewModel, context: Context, gl
                                 objectList = listOf()
                             )
                         })
+                viewModel.emitTaskList(taskList)
             } else {
                 Logcat.getInstance().actionLogAddLine(tag, "Retrying.")
             }
@@ -83,9 +95,11 @@ fun onBackupMediaProcessing(viewModel: ProcessingViewModel, context: Context, gl
                     visible.value = false
                     subtitle.value = GlobalString.pleaseWait
                 }
+                viewModel.emitObjectList(objectList)
 
                 // Enter processing state
                 i.taskState.value = TaskState.Processing
+                viewModel.emitTaskList(taskList)
                 val mediaInfoBackup = globalObject.mediaInfoBackupMap.value[i.appName]!!
 
                 // Scroll to processing task
@@ -105,16 +119,19 @@ fun onBackupMediaProcessing(viewModel: ProcessingViewModel, context: Context, gl
 
                 if (i.selectData) {
                     objectList[0].visible.value = true
+                    viewModel.emitObjectList(objectList)
                 }
                 for (j in objectList) {
                     if (viewModel.isCancel.value) break
                     if (j.visible.value) {
                         j.state.value = TaskState.Processing
+                        viewModel.emitObjectList(objectList)
                         when (j.type) {
                             DataType.DATA -> {
                                 Command.compress(CompressionType.TAR, DataType.MEDIA, i.appName, outPutPath, i.packageName, mediaInfoBackup.backupDetail.size, compatibleMode)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
+                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false

@@ -9,7 +9,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,7 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.databackup.R
-import com.xayah.databackup.data.*
+import com.xayah.databackup.data.LoadingState
+import com.xayah.databackup.data.ProcessCompressing
+import com.xayah.databackup.data.ProcessDecompressing
+import com.xayah.databackup.data.ProcessError
+import com.xayah.databackup.data.ProcessFinished
+import com.xayah.databackup.data.ProcessInstallingApk
+import com.xayah.databackup.data.ProcessSettingSELinux
+import com.xayah.databackup.data.ProcessShowTotal
+import com.xayah.databackup.data.ProcessSkip
+import com.xayah.databackup.data.ProcessTesting
+import com.xayah.databackup.data.TaskState
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.components.LoadingView
 import com.xayah.databackup.ui.components.Scaffold
@@ -179,8 +193,7 @@ fun ProcessingScaffold(
                                     taskState = taskList[it].taskState.value,
                                     clickable = allDone.currentState,
                                     onClick = {
-                                        objectList.clear()
-                                        objectList.addAll(taskList[it].objectList)
+                                        viewModel.emitObjectList(taskList[it].objectList)
                                     }
                                 )
                             }
