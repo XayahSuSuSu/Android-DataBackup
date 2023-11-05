@@ -4,37 +4,18 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.AppInfoDetailRestore
-import com.xayah.databackup.data.AppInfoRestore
-import com.xayah.databackup.data.BackupStrategy
-import com.xayah.databackup.data.CompressionType
-import com.xayah.databackup.data.DataType
-import com.xayah.databackup.data.LoadingState
-import com.xayah.databackup.data.TaskState
+import com.xayah.databackup.data.*
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.onInfoUpdate
-import com.xayah.databackup.util.GlobalObject
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.GsonUtil
-import com.xayah.databackup.util.Logcat
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.command.Preparation
-import com.xayah.databackup.util.readBackupSavePath
-import com.xayah.databackup.util.readBackupStrategy
-import com.xayah.databackup.util.readBackupUser
-import com.xayah.databackup.util.readCompatibleMode
-import com.xayah.databackup.util.readCompressionType
-import com.xayah.databackup.util.readIsBackupIcon
-import com.xayah.databackup.util.readIsBackupItself
-import com.xayah.databackup.util.readIsResetBackupList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, globalObject: GlobalObject, retry: Boolean = false) {
     if (viewModel.isFirst.value) {
@@ -47,13 +28,11 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
             val progress = viewModel.progress
             val topBarTitle = viewModel.topBarTitle
             val taskList = viewModel.taskList.value
-            val objectList = withContext(Dispatchers.Main) {
-                viewModel.objectList.value.apply {
-                    clear()
-                    addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
-                        ProcessObjectItem(type = it)
-                    })
-                }
+            val objectList = viewModel.objectList.value.apply {
+                clear()
+                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
+                    ProcessObjectItem(type = it)
+                })
             }
             val allDone = viewModel.allDone
 
@@ -68,20 +47,18 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
 
             if (retry.not()) {
                 // Add processing tasks
-                withContext(Dispatchers.Main) {
-                    taskList.addAll(globalObject.appInfoBackupMap.value.values.toList()
-                        .filter { it.isOnThisDevice && (it.selectApp.value || it.selectData.value) }
-                        .map {
-                            ProcessingTask(
-                                appName = it.detailBase.appName,
-                                packageName = it.detailBase.packageName,
-                                appIcon = it.detailBase.appIcon,
-                                selectApp = it.selectApp.value,
-                                selectData = it.selectData.value,
-                                objectList = listOf()
-                            )
-                        })
-                }
+                taskList.addAll(globalObject.appInfoBackupMap.value.values.toList()
+                    .filter { it.isOnThisDevice && (it.selectApp.value || it.selectData.value) }
+                    .map {
+                        ProcessingTask(
+                            appName = it.detailBase.appName,
+                            packageName = it.detailBase.packageName,
+                            appIcon = it.detailBase.appIcon,
+                            selectApp = it.selectApp.value,
+                            selectData = it.selectData.value,
+                            objectList = listOf()
+                        )
+                    })
             } else {
                 Logcat.getInstance().actionLogAddLine(tag, "Retrying.")
             }

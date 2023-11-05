@@ -12,10 +12,7 @@ import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.util.GlobalString
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 class ProcessingViewModel : ViewModel() {
     var listType = TypeBackupApp
@@ -39,25 +36,21 @@ class ProcessingViewModel : ViewModel() {
     val isCancel = MutableStateFlow(false)
 
     fun refreshTaskList() {
-        runBlocking {
-            withContext(Dispatchers.Main){
-                objectList.value.clear()
-                when (filter.value) {
-                    ProcessingTaskFilter.None -> {
-                        for (i in taskList.value) {
-                            i.visible.value = true
-                        }
-                    }
-                    ProcessingTaskFilter.Succeed -> {
-                        for (i in taskList.value) {
-                            i.visible.value = i.taskState.value == TaskState.Success
-                        }
-                    }
-                    ProcessingTaskFilter.Failed -> {
-                        for (i in taskList.value) {
-                            i.visible.value = i.taskState.value != TaskState.Success
-                        }
-                    }
+        objectList.value.clear()
+        when (filter.value) {
+            ProcessingTaskFilter.None -> {
+                for (i in taskList.value) {
+                    i.visible.value = true
+                }
+            }
+            ProcessingTaskFilter.Succeed -> {
+                for (i in taskList.value) {
+                    i.visible.value = i.taskState.value == TaskState.Success
+                }
+            }
+            ProcessingTaskFilter.Failed -> {
+                for (i in taskList.value) {
+                    i.visible.value = i.taskState.value != TaskState.Success
                 }
             }
         }
