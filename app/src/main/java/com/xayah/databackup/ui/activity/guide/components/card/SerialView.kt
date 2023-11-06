@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.guide.components.card
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -39,6 +40,7 @@ fun SerialWord(modifier: Modifier = Modifier, serial: String) {
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 fun SerialText(
     modifier: Modifier = Modifier,
@@ -93,21 +95,25 @@ fun SerialIcon(modifier: Modifier = Modifier, icon: ImageVector) {
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 fun SerialVersion(serial: String) {
     SerialText(serial = serial, surfaceColor = MaterialTheme.colorScheme.error, textColor = MaterialTheme.colorScheme.onError)
 }
 
+@ExperimentalMaterial3Api
 @Composable
 fun SerialSize(serial: String) {
     SerialText(serial = serial, surfaceColor = MaterialTheme.colorScheme.tertiary, textColor = MaterialTheme.colorScheme.onTertiary)
 }
 
+@ExperimentalMaterial3Api
 @Composable
 fun SerialDate(serial: String, onClick: () -> Unit = {}) {
     SerialText(serial = serial, surfaceColor = MaterialTheme.colorScheme.secondary, textColor = MaterialTheme.colorScheme.onSecondary, onClick = onClick)
 }
 
+@ExperimentalMaterial3Api
 @Composable
 fun SerialInstalled() {
     SerialText(serial = stringResource(R.string.installed), surfaceColor = colorResource(id = R.color.green))

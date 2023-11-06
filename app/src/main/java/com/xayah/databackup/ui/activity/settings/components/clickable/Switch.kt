@@ -37,10 +37,10 @@ fun Switch(
                     onCheckedChange(isChecked.value)
                 }
             },
-        headlineContent = {
+        headlineText = {
             TitleMediumText(text = title)
         },
-        supportingContent = {
+        supportingText = {
             BodySmallText(text = subtitle)
         },
         trailingContent = {

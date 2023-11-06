@@ -32,10 +32,10 @@ fun IconButtonClickable(
         modifier = Modifier
             .clip(RoundedCornerShape(mediumPadding))
             .clickable { onClick() },
-        headlineContent = {
+        headlineText = {
             TitleMediumText(text = title)
         },
-        supportingContent = {
+        supportingText = {
             BodySmallText(text = subtitle)
         },
         trailingContent = {
