@@ -27,9 +27,11 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
             val loadingState = viewModel.loadingState
             val progress = viewModel.progress
             val topBarTitle = viewModel.topBarTitle
-            val taskList = viewModel.taskList.value.toMutableList()
-            val objectList = listOf(ProcessObjectItem(type = DataType.DATA))
-            viewModel.emitObjectList(objectList)
+            val taskList = viewModel.taskList.value
+            val objectList = viewModel.objectList.value.apply {
+                clear()
+                add(ProcessObjectItem(type = DataType.DATA))
+            }
             val allDone = viewModel.allDone
 
             // Check global map
@@ -53,7 +55,6 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
                                 objectList = listOf()
                             )
                         })
-                viewModel.emitTaskList(taskList)
             } else {
                 Logcat.getInstance().actionLogAddLine(tag, "Retrying.")
             }
@@ -74,7 +75,6 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
                     visible.value = false
                     subtitle.value = GlobalString.pleaseWait
                 }
-                viewModel.emitObjectList(objectList)
 
                 // Enter processing state
                 i.taskState.value = TaskState.Processing
@@ -97,20 +97,17 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
 
                 if (i.selectData) {
                     objectList[0].visible.value = true
-                    viewModel.emitObjectList(objectList)
                 }
                 for (j in objectList) {
                     if (viewModel.isCancel.value) break
                     if (j.visible.value) {
                         j.state.value = TaskState.Processing
-                        viewModel.emitObjectList(objectList)
                         when (j.type) {
                             DataType.DATA -> {
                                 val inputPath = "${inPath}/${i.appName}.tar"
                                 Command.decompress(CompressionType.TAR, DataType.MEDIA, inputPath, i.appName, i.packageName.replace("/${i.appName}", ""))
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
-                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) isSuccess = false
                                 }
@@ -146,7 +143,6 @@ fun onRestoreMediaProcessing(viewModel: ProcessingViewModel, context: Context, g
                     }
                     this.objectList = list.toList()
                 }
-                viewModel.emitTaskList(taskList)
 
                 progress.value += 1
                 topBarTitle.value = "${context.getString(R.string.restoring)}(${progress.value}/${taskList.size})"

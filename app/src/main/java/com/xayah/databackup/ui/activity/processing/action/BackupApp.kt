@@ -4,33 +4,15 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.AppInfoDetailRestore
-import com.xayah.databackup.data.AppInfoRestore
-import com.xayah.databackup.data.BackupStrategy
-import com.xayah.databackup.data.CompressionType
-import com.xayah.databackup.data.DataType
-import com.xayah.databackup.data.LoadingState
-import com.xayah.databackup.data.TaskState
+import com.xayah.databackup.data.*
 import com.xayah.databackup.librootservice.RootService
 import com.xayah.databackup.ui.activity.processing.ProcessingViewModel
 import com.xayah.databackup.ui.activity.processing.components.ProcessObjectItem
 import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.ui.activity.processing.components.onInfoUpdate
-import com.xayah.databackup.util.GlobalObject
-import com.xayah.databackup.util.GlobalString
-import com.xayah.databackup.util.GsonUtil
-import com.xayah.databackup.util.Logcat
-import com.xayah.databackup.util.Path
+import com.xayah.databackup.util.*
 import com.xayah.databackup.util.command.Command
 import com.xayah.databackup.util.command.Preparation
-import com.xayah.databackup.util.readBackupSavePath
-import com.xayah.databackup.util.readBackupStrategy
-import com.xayah.databackup.util.readBackupUser
-import com.xayah.databackup.util.readCompatibleMode
-import com.xayah.databackup.util.readCompressionType
-import com.xayah.databackup.util.readIsBackupIcon
-import com.xayah.databackup.util.readIsBackupItself
-import com.xayah.databackup.util.readIsResetBackupList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,11 +27,13 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
             val loadingState = viewModel.loadingState
             val progress = viewModel.progress
             val topBarTitle = viewModel.topBarTitle
-            val taskList = viewModel.taskList.value.toMutableList()
-            val objectList = listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
-                ProcessObjectItem(type = it)
+            val taskList = viewModel.taskList.value
+            val objectList = viewModel.objectList.value.apply {
+                clear()
+                addAll(listOf(DataType.APK, DataType.USER, DataType.USER_DE, DataType.DATA, DataType.OBB, DataType.APP_MEDIA).map {
+                    ProcessObjectItem(type = it)
+                })
             }
-            viewModel.emitObjectList(objectList)
             val allDone = viewModel.allDone
 
             // Check global map
@@ -75,7 +59,6 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                             objectList = listOf()
                         )
                     })
-                viewModel.emitTaskList(taskList)
             } else {
                 Logcat.getInstance().actionLogAddLine(tag, "Retrying.")
             }
@@ -125,11 +108,9 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                         subtitle.value = GlobalString.pleaseWait
                     }
                 }
-                viewModel.emitObjectList(objectList)
 
                 // Enter processing state
                 i.taskState.value = TaskState.Processing
-                viewModel.emitTaskList(taskList)
                 val appInfoBackup = globalObject.appInfoBackupMap.value[i.packageName]!!
 
                 // Scroll to processing task
@@ -182,7 +163,6 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                         objectList[5].visible.value = true
                     }
                 }
-                viewModel.emitObjectList(objectList)
 
                 // Kill the app
                 Preparation.killPackage(packageName)
@@ -190,13 +170,11 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                     if (viewModel.isCancel.value) break
                     if (j.visible.value) {
                         j.state.value = TaskState.Processing
-                        viewModel.emitObjectList(objectList)
                         when (j.type) {
                             DataType.APK -> {
                                 Command.compressAPK(compressionType, packageName, outPutPath, userId, appInfoBackup.detailBackup.appSize, compatibleMode)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
-                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
@@ -215,7 +193,6 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                                 Command.compress(compressionType, DataType.USER, packageName, outPutPath, Path.getUserPath(), appInfoBackup.detailBackup.userSize, compatibleMode)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
-                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
@@ -229,7 +206,6 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                                 Command.compress(compressionType, DataType.USER_DE, packageName, outPutPath, Path.getUserDePath(), appInfoBackup.detailBackup.userDeSize, compatibleMode)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
-                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
@@ -243,7 +219,6 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                                 Command.compress(compressionType, DataType.DATA, packageName, outPutPath, Path.getDataPath(), appInfoBackup.detailBackup.dataSize, compatibleMode)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
-                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
@@ -257,7 +232,6 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                                 Command.compress(compressionType, DataType.OBB, packageName, outPutPath, Path.getObbPath(), appInfoBackup.detailBackup.obbSize, compatibleMode)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
-                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
@@ -271,7 +245,6 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                                 Command.compress(compressionType, DataType.APP_MEDIA, packageName, outPutPath, Path.getAPPMediaPath(), appInfoBackup.detailBackup.mediaSize, compatibleMode)
                                 { type, line ->
                                     onInfoUpdate(type, line ?: "", j)
-                                    viewModel.emitObjectList(objectList)
                                 }.apply {
                                     if (!this) {
                                         isSuccess = false
@@ -351,7 +324,6 @@ fun onBackupAppProcessing(viewModel: ProcessingViewModel, context: Context, glob
                     }
                     this.objectList = list.toList()
                 }
-                viewModel.emitTaskList(taskList)
 
                 progress.value += 1
                 topBarTitle.value = "${context.getString(R.string.backing_up)}(${progress.value}/${taskList.size})"

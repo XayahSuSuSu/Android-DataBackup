@@ -2,6 +2,7 @@ package com.xayah.databackup.ui.activity.processing
 
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.xayah.databackup.data.LoadingState
 import com.xayah.databackup.data.ProcessingTaskFilter
@@ -12,7 +13,6 @@ import com.xayah.databackup.ui.activity.processing.components.ProcessingTask
 import com.xayah.databackup.util.GlobalString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class ProcessingViewModel : ViewModel() {
     var listType = TypeBackupApp
@@ -27,47 +27,33 @@ class ProcessingViewModel : ViewModel() {
     val progress = MutableStateFlow(0)
 
     // 备份对象列表
-    private val _objectList = MutableStateFlow(listOf<ProcessObjectItem>())
-    val objectList = _objectList.asStateFlow()
-
-    fun emitObjectList(list: List<ProcessObjectItem>) {
-        _objectList.value = list
-    }
+    val objectList = MutableStateFlow(SnapshotStateList<ProcessObjectItem>())
 
     // 任务列表
-    private val _taskList = MutableStateFlow(listOf<ProcessingTask>())
-    val taskList = _taskList.asStateFlow()
-
-    fun emitTaskList(list: List<ProcessingTask>) {
-        _taskList.value = list
-    }
-
+    val taskList = MutableStateFlow(SnapshotStateList<ProcessingTask>())
     val allDone by lazy { MutableTransitionState(false) }
     val isFirst = MutableStateFlow(true)
     val isCancel = MutableStateFlow(false)
 
     fun refreshTaskList() {
-        emitObjectList(listOf())
-        val taskList = taskList.value.toMutableList()
+        objectList.value.clear()
         when (filter.value) {
             ProcessingTaskFilter.None -> {
-                for (i in taskList) {
+                for (i in taskList.value) {
                     i.visible.value = true
                 }
             }
-
             ProcessingTaskFilter.Succeed -> {
-                for (i in taskList) {
+                for (i in taskList.value) {
                     i.visible.value = i.taskState.value == TaskState.Success
                 }
             }
             ProcessingTaskFilter.Failed -> {
-                for (i in taskList) {
+                for (i in taskList.value) {
                     i.visible.value = i.taskState.value != TaskState.Success
                 }
             }
         }
-        emitTaskList(taskList)
     }
 
     // 过滤
