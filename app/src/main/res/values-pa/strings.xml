@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="restore_finished">ਰੀਸਟੋਰ ਪੂਰਾ ਹੋਇਆ</string>
+    <string name="restore">ਰੀਸਟੋਰ ਕਰੋ</string>
+    <string name="data">ਡੇਟਾ</string>
+    <string name="backup">ਬੈਕਅੱਪ ਕਰੋ</string>
+    <string name="application">ਐਪ</string>
+    <string name="backup_finished">ਬੈਕਅੱਪ ਪੂਰਾ ਹੋਇਆ</string>
+    <string name="confirm">ਪੁਸ਼ਟੀ ਕਰੋ</string>
+    <string name="error">ਤਰੁੱਟੀ</string>
+    <string name="backup_dir">ਬੈਕਅੱਪ ਡਾਇਰੈਕਟਰੀ</string>
+    <string name="app_name">ਡੇਟਾਬੈਕਅੱਪ</string>
+</resources>
