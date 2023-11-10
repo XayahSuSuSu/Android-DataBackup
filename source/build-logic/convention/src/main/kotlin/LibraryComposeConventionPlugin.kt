@@ -24,6 +24,7 @@ class LibraryComposeConventionPlugin : Plugin<Project> {
                     add("implementation", catalogLibs.findLibrary("androidx.core.ktx").get())
                     add("implementation", catalogLibs.findLibrary("androidx.appcompat").get())
                     add("implementation", catalogLibs.findLibrary("androidx.lifecycle.runtime.ktx").get())
+                    add("implementation", catalogLibs.findLibrary("androidx.lifecycle.runtime.compose").get())
                     add("implementation", catalogLibs.findLibrary("androidx.activity.compose").get())
                     add("implementation", platform(catalogLibs.findLibrary("androidx-compose-bom").get()))
                     add("implementation", catalogLibs.findLibrary("androidx.compose.ui").get())

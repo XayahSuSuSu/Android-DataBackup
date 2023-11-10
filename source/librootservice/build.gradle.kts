@@ -32,4 +32,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core.jvm)
     implementation(libs.libsu.service)
     implementation(project(":libhiddenapi"))
+
+    implementation(project(":core:util"))
 }

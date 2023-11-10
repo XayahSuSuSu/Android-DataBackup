@@ -11,6 +11,9 @@ interface PackageBackupOperationDao {
     @Upsert(entity = PackageBackupOperation::class)
     suspend fun upsert(item: PackageBackupOperation): Long
 
+    @Query("SELECT * FROM PackageBackupOperation WHERE timestamp = :timestamp ORDER BY id DESC")
+    fun queryOperationsFlow(timestamp: Long): Flow<List<PackageBackupOperation>>
+
     @Query("SELECT timestamp FROM PackageBackupOperation ORDER BY id DESC LIMIT 1")
     suspend fun queryLastOperationTime(): Long
 
@@ -26,9 +29,9 @@ interface PackageBackupOperationDao {
     @Query("SELECT COUNT(*) FROM PackageBackupOperation WHERE timestamp = :timestamp AND endTimestamp != 0")
     fun countByTimestamp(timestamp: Long): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM PackageBackupOperation WHERE timestamp = :timestamp AND packageState = 1")
+    @Query("SELECT COUNT(*) FROM PackageBackupOperation WHERE timestamp = :timestamp AND packageState = 'DONE'")
     suspend fun countSucceedByTimestamp(timestamp: Long): Int
 
-    @Query("SELECT COUNT(*) FROM PackageBackupOperation WHERE timestamp = :timestamp AND packageState = 0")
+    @Query("SELECT COUNT(*) FROM PackageBackupOperation WHERE timestamp = :timestamp AND packageState = 'ERROR'")
     suspend fun countFailedByTimestamp(timestamp: Long): Int
 }

@@ -20,7 +20,7 @@ gson = "2.10.1"
 hilt-android = "2.44"
 hilt-android-compiler = "2.44"
 hilt-navigation-compose = "1.0.0"
-lifecycle-runtime-ktx = "2.6.2"
+lifecycle = "2.6.2"
 navigation-compose = "2.7.3"
 okhttp = "4.11.0"
 libsu = "5.2.1"
@@ -35,6 +35,7 @@ firebase-crashlytics-gradle = "2.9.9"
 firebase-bom = "32.3.1"
 pickyou = "2.0.3"
 datastore-preferences = "1.0.0"
+serialization-protobuf = "1.6.0"
 
 # plugins
 android-gradle-plugin = "8.1.2"
@@ -52,7 +53,8 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
-androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -80,6 +82,7 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 pickyou = { module = "com.github.XayahSuSuSu:AndroidModule-PickYou", version.ref = "pickyou" }
+serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization-protobuf" }
 
 # Dependencies of the included build-logic
 android-build-logic = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
@@ -90,6 +93,7 @@ ksp-build-logic = { group = "com.google.devtools.ksp", name = "com.google.devtoo
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 com-android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-kotlin" }
@@ -98,3 +102,4 @@ library-common = { id = "library.common", version = "unspecified" }
 library-hilt = { id = "library.hilt", version = "unspecified" }
 library-room = { id = "library.room", version = "unspecified" }
 library-compose = { id = "library.compose", version = "unspecified" }
+library-protobuf = { id = "library.protobuf", version = "unspecified" }

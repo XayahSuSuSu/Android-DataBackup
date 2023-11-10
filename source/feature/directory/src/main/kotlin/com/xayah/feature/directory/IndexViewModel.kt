@@ -16,7 +16,6 @@ import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.activity.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -42,7 +41,7 @@ class IndexViewModel @Inject constructor(
 ) : BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(
     IndexUiState(
         type = OpType.of(args.get<String>(MainRoutes.ArgOpType)),
-        directories = directoryRepository.directories.distinctUntilChanged()
+        directories = directoryRepository.directories
     )
 ) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
@@ -65,7 +64,7 @@ class IndexViewModel @Inject constructor(
                         setType(PickerType.DIRECTORY)
                         setLimitation(0)
                         launch(context) { pathList ->
-                            withIOContext {
+                            launchOnIO {
                                 directoryRepository.addDir(state.type, pathList)
                                 emitIntent(IndexUiIntent.Update)
                             }

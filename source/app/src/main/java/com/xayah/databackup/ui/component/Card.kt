@@ -33,7 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.xayah.databackup.R
-import com.xayah.core.database.model.OperationState
+import com.xayah.core.model.OperationState
 import com.xayah.databackup.ui.theme.ColorScheme
 import com.xayah.databackup.ui.token.ButtonTokens
 import com.xayah.databackup.ui.token.CardTokens
@@ -266,11 +266,11 @@ private fun getActionIcon(state: OperationState): ImageVector = when (state) {
         ImageVector.vectorResource(R.drawable.ic_rounded_not_started_circle)
     }
 
-    OperationState.Processing -> {
+    OperationState.PROCESSING -> {
         ImageVector.vectorResource(R.drawable.ic_rounded_pending_circle)
     }
 
-    OperationState.Uploading -> {
+    OperationState.UPLOADING -> {
         ImageVector.vectorResource(R.drawable.ic_rounded_arrow_circle_up)
     }
 
@@ -293,7 +293,7 @@ private fun getActionColor(state: OperationState): Color = when (state) {
         ColorScheme.primary()
     }
 
-    OperationState.Processing, OperationState.Uploading -> {
+    OperationState.PROCESSING, OperationState.UPLOADING -> {
         ColorScheme.yellow()
     }
 

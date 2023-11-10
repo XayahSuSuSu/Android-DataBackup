@@ -4,8 +4,8 @@ import com.google.gson.reflect.TypeToken
 import com.xayah.core.database.model.AccountConfigSizeBytes
 import com.xayah.core.model.ShellResult
 import com.xayah.core.util.GsonUtil
-import com.xayah.core.util.toLineString
-import com.xayah.core.util.toSpaceString
+import com.xayah.core.common.util.toLineString
+import com.xayah.core.common.util.toSpaceString
 import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.util.LogUtil
 import com.xayah.core.util.SymbolUtil

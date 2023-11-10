@@ -32,6 +32,12 @@ interface PackageBackupEntireDao {
     @Query("SELECT * FROM PackageBackupEntire WHERE active = 1")
     fun queryActivePackages(): Flow<List<PackageBackupEntire>>
 
+    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
+    fun querySelectedPackagesFlow(): Flow<List<PackageBackupEntire>>
+
+    @Query("SELECT * FROM PackageBackupEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
+    suspend fun querySelectedPackages(): List<PackageBackupEntire>
+
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM PackageBackupEntire WHERE packageName = :packageName LIMIT 1")
     suspend fun queryManifestPackage(packageName: String): PackageBackupManifest
@@ -68,4 +74,10 @@ interface PackageBackupEntireDao {
 
     @Query("UPDATE PackageBackupEntire SET active = :active")
     suspend fun updateActive(active: Boolean)
+
+    @Query("UPDATE PackageBackupEntire SET operationCode = (operationCode & :mask) WHERE packageName in (:packageNames)")
+    suspend fun andOpCodeByMask(mask: Int, packageNames: List<String>)
+
+    @Query("UPDATE PackageBackupEntire SET operationCode = (operationCode | :mask) WHERE packageName in (:packageNames)")
+    suspend fun orOpCodeByMask(mask: Int, packageNames: List<String>)
 }

@@ -4,4 +4,6 @@
     <item name="unsupported_format" type="string"/>
     <item name="supported_format" type="string"/>
     <item name="custom_storage" type="string"/>
+    <item name="updating" type="string"/>
+    <item name="backup_list" type="string"/>
 </resources>

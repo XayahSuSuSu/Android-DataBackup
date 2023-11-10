@@ -19,6 +19,7 @@ import com.xayah.databackup.ui.component.rememberSlotScope
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.feature.directory.PageDirectory
 import com.xayah.feature.home.HomeGraph
+import com.xayah.feature.task.packages.local.backup.TaskPackagesBackupGraph
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -46,6 +47,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(route = MainRoutes.Directory.route) {
                                 PageDirectory()
+                            }
+                            composable(route = MainRoutes.TaskPackages.route) {
+                                TaskPackagesBackupGraph()
                             }
                         }
                     }

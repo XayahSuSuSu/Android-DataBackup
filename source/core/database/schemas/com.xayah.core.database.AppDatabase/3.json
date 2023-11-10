@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "53f8badb460db76354c7b2c73adba21b",
+    "identityHash": "c1c7865312db2df905f08d2b417238c6",
     "entities": [
       {
         "tableName": "LogEntity",
@@ -210,7 +210,7 @@
       },
       {
         "tableName": "PackageBackupOperation",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL DEFAULT 0, `startTimestamp` INTEGER NOT NULL DEFAULT 0, `endTimestamp` INTEGER NOT NULL DEFAULT 0, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `packageState` INTEGER NOT NULL, `apkLog` TEXT NOT NULL, `apkState` TEXT NOT NULL DEFAULT 'IDLE', `userLog` TEXT NOT NULL, `userState` TEXT NOT NULL DEFAULT 'IDLE', `userDeLog` TEXT NOT NULL, `userDeState` TEXT NOT NULL DEFAULT 'IDLE', `dataLog` TEXT NOT NULL, `dataState` TEXT NOT NULL DEFAULT 'IDLE', `obbLog` TEXT NOT NULL, `obbState` TEXT NOT NULL DEFAULT 'IDLE', `mediaLog` TEXT NOT NULL, `mediaState` TEXT NOT NULL DEFAULT 'IDLE')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL DEFAULT 0, `startTimestamp` INTEGER NOT NULL DEFAULT 0, `endTimestamp` INTEGER NOT NULL DEFAULT 0, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `packageState` TEXT NOT NULL DEFAULT 'IDLE', `apk_bytes` INTEGER NOT NULL DEFAULT 0, `apk_log` TEXT NOT NULL DEFAULT '', `apk_state` TEXT NOT NULL DEFAULT 'IDLE', `user_bytes` INTEGER NOT NULL DEFAULT 0, `user_log` TEXT NOT NULL DEFAULT '', `user_state` TEXT NOT NULL DEFAULT 'IDLE', `userDe_bytes` INTEGER NOT NULL DEFAULT 0, `userDe_log` TEXT NOT NULL DEFAULT '', `userDe_state` TEXT NOT NULL DEFAULT 'IDLE', `data_bytes` INTEGER NOT NULL DEFAULT 0, `data_log` TEXT NOT NULL DEFAULT '', `data_state` TEXT NOT NULL DEFAULT 'IDLE', `obb_bytes` INTEGER NOT NULL DEFAULT 0, `obb_log` TEXT NOT NULL DEFAULT '', `obb_state` TEXT NOT NULL DEFAULT 'IDLE', `media_bytes` INTEGER NOT NULL DEFAULT 0, `media_log` TEXT NOT NULL DEFAULT '', `media_state` TEXT NOT NULL DEFAULT 'IDLE')",
         "fields": [
           {
             "fieldPath": "id",
@@ -254,83 +254,132 @@
           {
             "fieldPath": "packageState",
             "columnName": "packageState",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
+          },
+          {
+            "fieldPath": "apkOp.bytes",
+            "columnName": "apk_bytes",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "apkLog",
-            "columnName": "apkLog",
+            "fieldPath": "apkOp.log",
+            "columnName": "apk_log",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "''"
           },
           {
-            "fieldPath": "apkState",
-            "columnName": "apkState",
+            "fieldPath": "apkOp.state",
+            "columnName": "apk_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "userLog",
-            "columnName": "userLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "userOp.bytes",
+            "columnName": "user_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "userState",
-            "columnName": "userState",
+            "fieldPath": "userOp.log",
+            "columnName": "user_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "userOp.state",
+            "columnName": "user_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "userDeLog",
-            "columnName": "userDeLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "userDeOp.bytes",
+            "columnName": "userDe_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "userDeState",
-            "columnName": "userDeState",
+            "fieldPath": "userDeOp.log",
+            "columnName": "userDe_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "userDeOp.state",
+            "columnName": "userDe_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "dataLog",
-            "columnName": "dataLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "dataOp.bytes",
+            "columnName": "data_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "dataState",
-            "columnName": "dataState",
+            "fieldPath": "dataOp.log",
+            "columnName": "data_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "dataOp.state",
+            "columnName": "data_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "obbLog",
-            "columnName": "obbLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "obbOp.bytes",
+            "columnName": "obb_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "obbState",
-            "columnName": "obbState",
+            "fieldPath": "obbOp.log",
+            "columnName": "obb_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "obbOp.state",
+            "columnName": "obb_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "mediaLog",
-            "columnName": "mediaLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "mediaOp.bytes",
+            "columnName": "media_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "mediaState",
-            "columnName": "mediaState",
+            "fieldPath": "mediaOp.log",
+            "columnName": "media_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "mediaOp.state",
+            "columnName": "media_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
@@ -451,7 +500,7 @@
       },
       {
         "tableName": "PackageRestoreOperation",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL DEFAULT 0, `startTimestamp` INTEGER NOT NULL DEFAULT 0, `endTimestamp` INTEGER NOT NULL DEFAULT 0, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `packageState` INTEGER NOT NULL, `apkLog` TEXT NOT NULL, `apkState` TEXT NOT NULL DEFAULT 'IDLE', `userLog` TEXT NOT NULL, `userState` TEXT NOT NULL DEFAULT 'IDLE', `userDeLog` TEXT NOT NULL, `userDeState` TEXT NOT NULL DEFAULT 'IDLE', `dataLog` TEXT NOT NULL, `dataState` TEXT NOT NULL DEFAULT 'IDLE', `obbLog` TEXT NOT NULL, `obbState` TEXT NOT NULL DEFAULT 'IDLE', `mediaLog` TEXT NOT NULL, `mediaState` TEXT NOT NULL DEFAULT 'IDLE')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL DEFAULT 0, `startTimestamp` INTEGER NOT NULL DEFAULT 0, `endTimestamp` INTEGER NOT NULL DEFAULT 0, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `packageState` INTEGER NOT NULL, `apk_bytes` INTEGER NOT NULL DEFAULT 0, `apk_log` TEXT NOT NULL DEFAULT '', `apk_state` TEXT NOT NULL DEFAULT 'IDLE', `user_bytes` INTEGER NOT NULL DEFAULT 0, `user_log` TEXT NOT NULL DEFAULT '', `user_state` TEXT NOT NULL DEFAULT 'IDLE', `userDe_bytes` INTEGER NOT NULL DEFAULT 0, `userDe_log` TEXT NOT NULL DEFAULT '', `userDe_state` TEXT NOT NULL DEFAULT 'IDLE', `data_bytes` INTEGER NOT NULL DEFAULT 0, `data_log` TEXT NOT NULL DEFAULT '', `data_state` TEXT NOT NULL DEFAULT 'IDLE', `obb_bytes` INTEGER NOT NULL DEFAULT 0, `obb_log` TEXT NOT NULL DEFAULT '', `obb_state` TEXT NOT NULL DEFAULT 'IDLE', `media_bytes` INTEGER NOT NULL DEFAULT 0, `media_log` TEXT NOT NULL DEFAULT '', `media_state` TEXT NOT NULL DEFAULT 'IDLE')",
         "fields": [
           {
             "fieldPath": "id",
@@ -499,79 +548,127 @@
             "notNull": true
           },
           {
-            "fieldPath": "apkLog",
-            "columnName": "apkLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "apkOp.bytes",
+            "columnName": "apk_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "apkState",
-            "columnName": "apkState",
+            "fieldPath": "apkOp.log",
+            "columnName": "apk_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "apkOp.state",
+            "columnName": "apk_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "userLog",
-            "columnName": "userLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "userOp.bytes",
+            "columnName": "user_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "userState",
-            "columnName": "userState",
+            "fieldPath": "userOp.log",
+            "columnName": "user_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "userOp.state",
+            "columnName": "user_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "userDeLog",
-            "columnName": "userDeLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "userDeOp.bytes",
+            "columnName": "userDe_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "userDeState",
-            "columnName": "userDeState",
+            "fieldPath": "userDeOp.log",
+            "columnName": "userDe_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "userDeOp.state",
+            "columnName": "userDe_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "dataLog",
-            "columnName": "dataLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "dataOp.bytes",
+            "columnName": "data_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "dataState",
-            "columnName": "dataState",
+            "fieldPath": "dataOp.log",
+            "columnName": "data_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "dataOp.state",
+            "columnName": "data_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "obbLog",
-            "columnName": "obbLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "obbOp.bytes",
+            "columnName": "obb_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "obbState",
-            "columnName": "obbState",
+            "fieldPath": "obbOp.log",
+            "columnName": "obb_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "obbOp.state",
+            "columnName": "obb_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "mediaLog",
-            "columnName": "mediaLog",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "mediaOp.bytes",
+            "columnName": "media_bytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "mediaState",
-            "columnName": "mediaState",
+            "fieldPath": "mediaOp.log",
+            "columnName": "media_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "mediaOp.state",
+            "columnName": "media_state",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "'IDLE'"
@@ -1080,12 +1177,80 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "TaskEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timestamp` INTEGER NOT NULL, `opType` TEXT NOT NULL, `taskType` TEXT NOT NULL, `startTimestamp` INTEGER NOT NULL, `endTimestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `rawBytes` REAL NOT NULL, `availableBytes` REAL NOT NULL, `totalBytes` REAL NOT NULL, PRIMARY KEY(`timestamp`))",
+        "fields": [
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "opType",
+            "columnName": "opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskType",
+            "columnName": "taskType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTimestamp",
+            "columnName": "startTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endTimestamp",
+            "columnName": "endTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "path",
+            "columnName": "path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rawBytes",
+            "columnName": "rawBytes",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "availableBytes",
+            "columnName": "availableBytes",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalBytes",
+            "columnName": "totalBytes",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "timestamp"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '53f8badb460db76354c7b2c73adba21b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1c7865312db2df905f08d2b417238c6')"
     ]
   }
 }

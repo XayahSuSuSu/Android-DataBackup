@@ -41,9 +41,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.R
-import com.xayah.core.database.model.OperationState
 import com.xayah.core.database.model.PackageBackupOperation
+import com.xayah.core.model.DataType
+import com.xayah.core.model.OperationState
+import com.xayah.databackup.R
 import com.xayah.databackup.ui.activity.main.router.navigateAndPopAllStack
 import com.xayah.databackup.ui.activity.operation.LocalCloudMode
 import com.xayah.databackup.ui.activity.operation.router.OperationRoutes
@@ -62,7 +63,6 @@ import com.xayah.databackup.ui.component.paddingHorizontal
 import com.xayah.databackup.ui.component.paddingVertical
 import com.xayah.databackup.ui.token.AnimationTokens
 import com.xayah.databackup.ui.token.CommonTokens
-import com.xayah.core.model.DataType
 import com.xayah.databackup.util.PathUtil
 import com.xayah.librootservice.util.ExceptionUtil.tryOn
 import com.xayah.librootservice.util.withIOContext
@@ -115,38 +115,38 @@ fun PackageBackupProcessing() {
         listOf(
             OperationCardConfig(
                 type = DataType.PACKAGE_APK,
-                content = if (latestPackage?.apkLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.apkLog,
-                state = if (latestPackage?.apkState == null) OperationState.IDLE else latestPackage!!.apkState,
+                content = if (latestPackage?.apkOp?.log.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.apkOp.log,
+                state = if (latestPackage?.apkOp?.state == null) OperationState.IDLE else latestPackage!!.apkOp.state,
                 icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_android)
             ),
             OperationCardConfig(
                 type = DataType.PACKAGE_USER,
-                content = if (latestPackage?.userLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.userLog,
-                state = if (latestPackage?.userState == null) OperationState.IDLE else latestPackage!!.userState,
+                content = if (latestPackage?.userOp?.log.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.userOp.log,
+                state = if (latestPackage?.userOp?.state == null) OperationState.IDLE else latestPackage!!.userOp.state,
                 icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_person)
             ),
             OperationCardConfig(
                 type = DataType.PACKAGE_USER_DE,
-                content = if (latestPackage?.userDeLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.userDeLog,
-                state = if (latestPackage?.userDeState == null) OperationState.IDLE else latestPackage!!.userDeState,
+                content = if (latestPackage?.userDeOp?.log.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.userDeOp.log,
+                state = if (latestPackage?.userDeOp?.state == null) OperationState.IDLE else latestPackage!!.userDeOp.state,
                 icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_manage_accounts)
             ),
             OperationCardConfig(
                 type = DataType.PACKAGE_DATA,
-                content = if (latestPackage?.dataLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.dataLog,
-                state = if (latestPackage?.dataState == null) OperationState.IDLE else latestPackage!!.dataState,
+                content = if (latestPackage?.dataOp?.log.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.dataOp.log,
+                state = if (latestPackage?.dataOp?.state == null) OperationState.IDLE else latestPackage!!.dataOp.state,
                 icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_database)
             ),
             OperationCardConfig(
                 type = DataType.PACKAGE_OBB,
-                content = if (latestPackage?.obbLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.obbLog,
-                state = if (latestPackage?.obbState == null) OperationState.IDLE else latestPackage!!.obbState,
+                content = if (latestPackage?.obbOp?.log.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.obbOp.log,
+                state = if (latestPackage?.obbOp?.state == null) OperationState.IDLE else latestPackage!!.obbOp.state,
                 icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_stadia_controller)
             ),
             OperationCardConfig(
                 type = DataType.PACKAGE_MEDIA,
-                content = if (latestPackage?.mediaLog.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.mediaLog,
-                state = if (latestPackage?.mediaState == null) OperationState.IDLE else latestPackage!!.mediaState,
+                content = if (latestPackage?.mediaOp?.log.isNullOrEmpty()) context.getString(R.string.idle) else latestPackage!!.mediaOp.log,
+                state = if (latestPackage?.mediaOp?.state == null) OperationState.IDLE else latestPackage!!.mediaOp.state,
                 icon = ImageVector.vectorResource(context.theme, context.resources, R.drawable.ic_rounded_image)
             )
         )

@@ -10,7 +10,9 @@ android {
 
 dependencies {
     // Core
+    implementation(project(":core:common"))
     implementation(project(":core:model"))
+    implementation(project(":core:util"))
 
     // Compose Navigation
     implementation(libs.androidx.navigation.compose)

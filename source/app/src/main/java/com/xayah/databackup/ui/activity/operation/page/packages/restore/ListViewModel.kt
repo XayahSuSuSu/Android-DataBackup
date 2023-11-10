@@ -23,7 +23,7 @@ data class ListUiState(
 ) {
     val timestamp: Long = timestamps.getOrElse(selectedIndex) { 0 }
     val packages: Flow<List<PackageRestoreEntire>> =
-        packageRestoreEntireDao.queryPackages(timestamp).distinctUntilChanged()
+        packageRestoreEntireDao.queryPackagesFlow(timestamp).distinctUntilChanged()
     val selectedAPKs: Flow<Int> = packageRestoreEntireDao.countSelectedAPKs().distinctUntilChanged()
     val selectedData: Flow<Int> = packageRestoreEntireDao.countSelectedData().distinctUntilChanged()
 }

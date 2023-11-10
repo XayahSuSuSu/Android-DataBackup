@@ -8,6 +8,10 @@ android {
 }
 
 dependencies {
+    // Core
+    implementation(project(":core:common"))
+    implementation(project(":core:datastore"))
+
     // Gson
     implementation(libs.gson)
 

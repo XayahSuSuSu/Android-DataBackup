@@ -8,5 +8,5 @@ android {
 
 dependencies {
     // Core
-    implementation(project(":core:util"))
+    implementation(project(":core:common"))
 }

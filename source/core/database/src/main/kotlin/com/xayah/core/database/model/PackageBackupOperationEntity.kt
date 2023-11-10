@@ -1,17 +1,10 @@
 package com.xayah.core.database.model
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
-enum class OperationState {
-    IDLE,
-    Processing,
-    Uploading,
-    SKIP,
-    DONE,
-    ERROR,
-}
+import com.xayah.core.model.OperationState
 
 /**
  * Operation table of package backup.
@@ -24,42 +17,36 @@ data class PackageBackupOperation(
     @ColumnInfo(defaultValue = "0") var endTimestamp: Long,
     var packageName: String,
     var label: String,
-    var packageState: Boolean = false,
-    var apkLog: String = "",
-    @ColumnInfo(defaultValue = "IDLE") var apkState: OperationState = OperationState.IDLE,
-    var userLog: String = "",
-    @ColumnInfo(defaultValue = "IDLE") var userState: OperationState = OperationState.IDLE,
-    var userDeLog: String = "",
-    @ColumnInfo(defaultValue = "IDLE") var userDeState: OperationState = OperationState.IDLE,
-    var dataLog: String = "",
-    @ColumnInfo(defaultValue = "IDLE") var dataState: OperationState = OperationState.IDLE,
-    var obbLog: String = "",
-    @ColumnInfo(defaultValue = "IDLE") var obbState: OperationState = OperationState.IDLE,
-    var mediaLog: String = "",
-    @ColumnInfo(defaultValue = "IDLE") var mediaState: OperationState = OperationState.IDLE,
+    @ColumnInfo(defaultValue = "IDLE") var packageState: OperationState = OperationState.IDLE,
+    @Embedded(prefix = "apk_") val apkOp: Operation = Operation(),
+    @Embedded(prefix = "user_") val userOp: Operation = Operation(),
+    @Embedded(prefix = "userDe_") val userDeOp: Operation = Operation(),
+    @Embedded(prefix = "data_") val dataOp: Operation = Operation(),
+    @Embedded(prefix = "obb_") val obbOp: Operation = Operation(),
+    @Embedded(prefix = "media_") val mediaOp: Operation = Operation(),
 ) {
-    private fun isFinished(state: OperationState) = state != OperationState.IDLE && state != OperationState.Processing
+    private fun isFinished(state: OperationState) = state != OperationState.IDLE && state != OperationState.PROCESSING && state != OperationState.UPLOADING
 
     val isSucceed: Boolean
         get() {
-            if (apkState == OperationState.ERROR) return false
-            if (userState == OperationState.ERROR) return false
-            if (userDeState == OperationState.ERROR) return false
-            if (dataState == OperationState.ERROR) return false
-            if (obbState == OperationState.ERROR) return false
-            if (mediaState == OperationState.ERROR) return false
+            if (apkOp.state == OperationState.ERROR) return false
+            if (userOp.state == OperationState.ERROR) return false
+            if (userDeOp.state == OperationState.ERROR) return false
+            if (dataOp.state == OperationState.ERROR) return false
+            if (obbOp.state == OperationState.ERROR) return false
+            if (mediaOp.state == OperationState.ERROR) return false
             return true
         }
 
     val progress: Float
         get() {
             var count = 0
-            if (isFinished(apkState)) count++
-            if (isFinished(userState)) count++
-            if (isFinished(userDeState)) count++
-            if (isFinished(dataState)) count++
-            if (isFinished(obbState)) count++
-            if (isFinished(mediaState)) count++
+            if (isFinished(apkOp.state)) count++
+            if (isFinished(userOp.state)) count++
+            if (isFinished(userDeOp.state)) count++
+            if (isFinished(dataOp.state)) count++
+            if (isFinished(obbOp.state)) count++
+            if (isFinished(mediaOp.state)) count++
             return count.toFloat() / 6
         }
 }

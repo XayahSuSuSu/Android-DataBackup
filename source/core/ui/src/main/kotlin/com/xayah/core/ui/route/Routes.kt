@@ -13,4 +13,6 @@ sealed class MainRoutes(val route: String) {
         val routeBackup = "main_directory/${OpType.BACKUP.name}"
         val routeRestore = "main_directory/${OpType.RESTORE.name}"
     }
+
+    object TaskPackages : MainRoutes(route = "main_task_packages")
 }

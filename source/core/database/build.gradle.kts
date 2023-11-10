@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.library.common)
     alias(libs.plugins.library.hilt)
     alias(libs.plugins.library.room)
+    alias(libs.plugins.library.protobuf)
 }
 
 android {

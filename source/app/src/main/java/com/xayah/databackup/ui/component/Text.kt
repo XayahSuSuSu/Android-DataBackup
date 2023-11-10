@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import com.xayah.core.model.EmojiString
 import com.xayah.databackup.ui.theme.JetbrainsMonoFamily
 import com.xayah.databackup.ui.token.CommonTokens
 
@@ -210,14 +211,6 @@ fun JetbrainsMonoLabelSmallText(modifier: Modifier = Modifier, text: String) {
 @Composable
 fun TabText(text: String, color: Color = Color.Unspecified) {
     Text(text = text, maxLines = 2, color = color, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelLarge)
-}
-
-enum class EmojiString(val emoji: String) {
-    PARTY_POPPER("🎉"),
-    ALARM_CLOCK("⏰"),
-    SPARKLING_HEART("💖"),
-    BROKEN_HEART("💔"),
-    SWEAT_DROPLETS("💦"),
 }
 
 @Composable

@@ -151,7 +151,33 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         pfd
     }
 
-    override fun calculateSize(path: String): Long  = synchronized(lock) {
+    override fun readBytes(path: String): ParcelFileDescriptor =
+        synchronized(lock) {
+            val parcel = Parcel.obtain()
+            parcel.setDataPosition(0)
+
+            val bytes = tryOn(
+                block = {
+                    File(path).readBytes()
+                },
+                onException = {
+                    ByteArray(0)
+                }
+            )
+            parcel.writeInt(bytes.size)
+            parcel.writeByteArray(bytes)
+
+            val tmp = File(ParcelTmpFilePath, ParcelTmpFileName)
+            tmp.createNewFile()
+            tmp.writeBytes(parcel.marshall())
+            val pfd = ParcelFileDescriptor.open(tmp, ParcelFileDescriptor.MODE_READ_WRITE)
+            tmp.deleteRecursively()
+
+            parcel.recycle()
+            pfd
+        }
+
+    override fun calculateSize(path: String): Long = synchronized(lock) {
         val size = AtomicLong(0)
         tryOn {
             Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {

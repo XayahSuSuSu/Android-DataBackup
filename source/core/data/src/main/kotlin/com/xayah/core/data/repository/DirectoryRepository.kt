@@ -1,17 +1,19 @@
 package com.xayah.core.data.repository
 
 import android.content.Context
+import com.xayah.core.common.util.toSpaceString
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.DirectoryDao
 import com.xayah.core.database.model.DirectoryEntity
 import com.xayah.core.database.model.DirectoryUpsertEntity
+import com.xayah.core.datastore.ConstantUtil
+import com.xayah.core.datastore.saveBackupSaveParentPath
 import com.xayah.core.datastore.saveBackupSavePath
+import com.xayah.core.datastore.saveRestoreSaveParentPath
 import com.xayah.core.datastore.saveRestoreSavePath
 import com.xayah.core.model.OpType
 import com.xayah.core.model.StorageType
-import com.xayah.core.util.ConstantUtil
 import com.xayah.core.util.command.PreparationUtil
-import com.xayah.core.util.toSpaceString
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,6 +32,7 @@ class DirectoryRepository @Inject constructor(
 
     private suspend fun resetDir(type: OpType) = selectDir(
         type = type,
+        parent = ConstantUtil.DefaultPathParent,
         path = ConstantUtil.DefaultPath,
         id = when (type) {
             OpType.BACKUP -> 1
@@ -67,13 +70,20 @@ class DirectoryRepository @Inject constructor(
     }
 
     suspend fun selectDir(type: OpType, entity: DirectoryEntity) = run {
-        selectDir(type, entity.path, entity.id)
+        selectDir(type, entity.parent, entity.path, entity.id)
     }
 
-    private suspend fun selectDir(type: OpType, path: String, id: Long) = run {
+    private suspend fun selectDir(type: OpType, parent: String, path: String, id: Long) = run {
         when (type) {
-            OpType.BACKUP -> context.saveBackupSavePath(path)
-            OpType.RESTORE -> context.saveRestoreSavePath(path)
+            OpType.BACKUP -> {
+                context.saveBackupSaveParentPath(parent)
+                context.saveBackupSavePath(path)
+            }
+
+            OpType.RESTORE -> {
+                context.saveRestoreSaveParentPath(parent)
+                context.saveRestoreSavePath(path)
+            }
         }
         directoryDao.select(type = type, id = id)
     }

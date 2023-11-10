@@ -14,6 +14,7 @@ import android.os.RemoteException
 import android.os.UserHandle
 import android.widget.Toast
 import com.topjohnwu.superuser.ipc.RootService
+import com.xayah.core.util.PathUtil
 import com.xayah.librootservice.IRemoteRootService
 import com.xayah.librootservice.impl.RemoteRootServiceImpl
 import com.xayah.librootservice.parcelables.PathParcelable
@@ -147,6 +148,16 @@ class RemoteRootService(private val context: Context) {
         return state
     }
 
+    suspend fun writeBytes(bytes: ByteArray, dst: String): Boolean {
+        var isSuccess = true
+        val tmpFilePath = "${context.cacheDir.path}/tmp"
+        val tmpFile = File(tmpFilePath)
+        tmpFile.writeBytes(bytes)
+        getService().mkdirs(PathUtil.getParentPath(dst))
+        isSuccess = isSuccess and getService().copyTo(tmpFilePath, dst, true)
+        tmpFile.deleteRecursively()
+        return isSuccess
+    }
 
     suspend fun exists(path: String): Boolean = getService().exists(path)
 
@@ -176,6 +187,16 @@ class RemoteRootService(private val context: Context) {
             text = it.readString()
         }
         return text ?: ""
+    }
+
+    suspend fun readBytes(dst: String): ByteArray {
+        val pfd = getService().readBytes(dst)
+        var bytes = ByteArray(0)
+        readFromParcel(pfd) {
+            bytes = ByteArray(it.readInt())
+            it.readByteArray(bytes)
+        }
+        return bytes
     }
 
     suspend fun calculateSize(path: String): Long = getService().calculateSize(path)

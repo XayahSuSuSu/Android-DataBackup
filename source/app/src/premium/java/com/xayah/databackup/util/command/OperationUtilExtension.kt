@@ -3,8 +3,8 @@ package com.xayah.databackup.util.command
 import android.content.Context
 import androidx.compose.runtime.MutableState
 import com.xayah.core.database.dao.CloudDao
-import com.xayah.core.database.model.OperationState
 import com.xayah.core.model.DataType
+import com.xayah.core.model.OperationState
 import com.xayah.databackup.R
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
@@ -28,7 +28,7 @@ suspend fun AdditionUtil.backupItselfExtension(targetPath: String) {
 
 private suspend fun PackagesBackupUtil.setUploadingState(type: DataType) {
     type.setEntityLog(entity, getString(R.string.uploading))
-    type.setEntityState(entity, OperationState.Uploading)
+    type.setEntityState(entity, OperationState.UPLOADING)
     opDao.upsert(entity)
 }
 

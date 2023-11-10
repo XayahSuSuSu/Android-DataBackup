@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.xayah.core.model.OperationState
 
 @Entity
 data class MediaBackupEntity(

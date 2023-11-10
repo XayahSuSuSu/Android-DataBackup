@@ -1,4 +1,6 @@
 <resources>
     <item name="word_return" type="string"/>
     <item name="confirm" type="string"/>
+    <item name="cancel" type="string"/>
+    <item name="prompt" type="string"/>
 </resources>

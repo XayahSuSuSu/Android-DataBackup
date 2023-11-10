@@ -1,4 +1,4 @@
-package com.xayah.core.util
+package com.xayah.core.datastore
 
 object ConstantUtil {
     const val DefaultPathParent = "/storage/emulated/0"

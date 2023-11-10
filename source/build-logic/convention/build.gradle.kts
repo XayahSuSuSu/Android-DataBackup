@@ -42,5 +42,9 @@ gradlePlugin {
             id = "library.compose"
             implementationClass = "LibraryComposeConventionPlugin"
         }
+        register("libraryProtobuf") {
+            id = "library.protobuf"
+            implementationClass = "LibraryProtobufConventionPlugin"
+        }
     }
 }

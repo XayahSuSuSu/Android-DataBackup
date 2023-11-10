@@ -16,4 +16,5 @@ plugins {
     alias(libs.plugins.com.android.library) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.gms.google.services) apply false
+    alias(libs.plugins.serialization) apply false
 }

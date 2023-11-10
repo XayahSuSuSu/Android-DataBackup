@@ -1,8 +1,8 @@
 package com.xayah.databackup.util.command
 
 import com.xayah.core.model.ShellResult
-import com.xayah.core.util.toSpaceString
-import com.xayah.core.util.trim
+import com.xayah.core.common.util.toSpaceString
+import com.xayah.core.common.util.trim
 import com.xayah.core.util.SymbolUtil.QUOTE
 
 object Tar {

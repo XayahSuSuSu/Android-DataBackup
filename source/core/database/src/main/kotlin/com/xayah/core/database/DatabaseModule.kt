@@ -10,6 +10,7 @@ import com.xayah.core.database.dao.PackageBackupEntireDao
 import com.xayah.core.database.dao.PackageBackupOperationDao
 import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.dao.PackageRestoreOperationDao
+import com.xayah.core.database.dao.TaskDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,4 +60,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideCloudDao(database: AppDatabase): CloudDao = database.cloudDao()
+
+    @Provides
+    @Singleton
+    fun provideTaskDao(database: AppDatabase): TaskDao = database.taskDao()
 }

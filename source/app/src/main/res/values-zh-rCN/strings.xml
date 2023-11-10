@@ -160,4 +160,9 @@
     <string name="recursive_mode">递归模式</string>
     <string name="follow_symlinks">跟随符号链接</string>
     <string name="follow_symlinks_desc">将符号链接替换为其指向的文件</string>
+    <string name="batching_select">批量选择</string>
+    <string name="remain">剩余</string>
+    <string name="apk_only">仅安装包</string>
+    <string name="data_only">仅数据</string>
+    <string name="processing">处理中</string>
 </resources>

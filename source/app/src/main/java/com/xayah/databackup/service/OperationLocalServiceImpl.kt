@@ -13,11 +13,11 @@ import com.xayah.core.database.model.MediaBackupOperationEntity
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.OperationMask
-import com.xayah.core.database.model.OperationState
 import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.core.database.model.PackageRestoreEntire
 import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.core.model.DataType
+import com.xayah.core.model.OperationState
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.GsonUtil
 import com.xayah.databackup.util.LogUtil
@@ -142,7 +142,8 @@ class OperationLocalServiceImpl : Service() {
                     timestamp = timestamp,
                     startTimestamp = DateUtil.getTimestamp(),
                     endTimestamp = 0,
-                    label = currentPackage.label
+                    label = currentPackage.label,
+                    packageState = OperationState.PROCESSING,
                 ).also { entity -> entity.id = packageBackupOperationDao.upsert(entity) }
 
                 /**
@@ -153,7 +154,7 @@ class OperationLocalServiceImpl : Service() {
                 if (isApkSelected) {
                     packagesUtil.backupApk()
                 } else {
-                    packageBackupOperation.apkState = OperationState.SKIP
+                    packageBackupOperation.apkOp.state = OperationState.SKIP
                 }
                 if (isDataSelected) {
                     packagesUtil.backupData(DataType.PACKAGE_USER)
@@ -164,11 +165,11 @@ class OperationLocalServiceImpl : Service() {
 
                 } else {
                     packageBackupOperation.apply {
-                        userState = OperationState.SKIP
-                        userDeState = OperationState.SKIP
-                        dataState = OperationState.SKIP
-                        obbState = OperationState.SKIP
-                        mediaState = OperationState.SKIP
+                        userOp.state = OperationState.SKIP
+                        userDeOp.state = OperationState.SKIP
+                        dataOp.state = OperationState.SKIP
+                        obbOp.state = OperationState.SKIP
+                        mediaOp.state = OperationState.SKIP
                     }
                 }
 
@@ -178,7 +179,7 @@ class OperationLocalServiceImpl : Service() {
                 } else {
                     logUtil.log(logTag, "Backup failed.")
                 }
-                packageBackupOperation.packageState = packageBackupOperation.isSucceed
+                packageBackupOperation.packageState = if (packageBackupOperation.isSucceed) OperationState.DONE else OperationState.ERROR
                 packageBackupOperation.endTimestamp = DateUtil.getTimestamp()
                 packageBackupOperationDao.upsert(packageBackupOperation)
 
@@ -309,11 +310,11 @@ class OperationLocalServiceImpl : Service() {
                     packagesUtil.restoreData(DataType.PACKAGE_MEDIA)
                 } else {
                     packageRestoreOperation.apply {
-                        userState = OperationState.SKIP
-                        userDeState = OperationState.SKIP
-                        dataState = OperationState.SKIP
-                        obbState = OperationState.SKIP
-                        mediaState = OperationState.SKIP
+                        userOp.state = OperationState.SKIP
+                        userDeOp.state = OperationState.SKIP
+                        dataOp.state = OperationState.SKIP
+                        obbOp.state = OperationState.SKIP
+                        mediaOp.state = OperationState.SKIP
                     }
                 }
 

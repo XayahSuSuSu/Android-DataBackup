@@ -24,7 +24,10 @@ interface PackageRestoreEntireDao {
     suspend fun queryTimestamps(savePath: String): List<Long>
 
     @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND timestamp = :timestamp")
-    fun queryPackages(timestamp: Long): Flow<List<PackageRestoreEntire>>
+    fun queryPackagesFlow(timestamp: Long): Flow<List<PackageRestoreEntire>>
+
+    @Query("SELECT * FROM PackageRestoreEntire WHERE timestamp = :timestamp")
+    suspend fun queryPackages(timestamp: Long): List<PackageRestoreEntire>
 
     @Query("SELECT * FROM PackageRestoreEntire")
     suspend fun queryAll(): List<PackageRestoreEntire>

@@ -10,5 +10,13 @@ val LocalNavController: ProvidableCompositionLocal<NavHostController?> = staticC
 
 fun NavHostController.navigateAndPopBackStack(route: String) = navigate(route) { popBackStack() }
 
+fun NavHostController.navigateAndPopAllStack(route: String) {
+    navigate(route) {
+        repeat(currentBackStack.value.size - 1) {
+            popBackStack()
+        }
+    }
+}
+
 @Composable
 fun NavHostController.currentRoute() = currentBackStackEntryAsState().value?.destination?.route

@@ -3,9 +3,11 @@ package com.xayah.core.ui.component
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.compositeOver
@@ -71,3 +73,7 @@ fun Modifier.limitMaxDisplay(itemHeightPx: Int, maxDisplay: Int? = null, scrollS
     }
 }
 
+fun Modifier.emphasize(state: Boolean) = composed {
+    val offset by emphasizedOffset(targetState = state)
+    offset(x = offset)
+}

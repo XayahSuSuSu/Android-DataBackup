@@ -78,7 +78,7 @@ fun PageBackup() {
                             MapItem(StringResourceToken.fromString(""), flow { }),
                         ),
                         onClick = {
-                            viewModel.emitIntent(IndexUiIntent.ToList)
+                            navController.navigate(MainRoutes.TaskPackages.route)
                         }
                     ),
                     ActivityCardItem(

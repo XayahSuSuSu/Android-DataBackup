@@ -58,7 +58,7 @@ import com.xayah.core.database.model.MediaBackupWithOpEntity
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.MediaRestoreWithOpEntity
 import com.xayah.core.database.model.OperationMask
-import com.xayah.core.database.model.OperationState
+import com.xayah.core.model.OperationState
 import com.xayah.core.database.model.PackageBackupEntire
 import com.xayah.core.database.model.PackageRestoreEntire
 import com.xayah.core.model.StorageType
@@ -616,11 +616,11 @@ fun ListItemMediaBackup(
     val isProcessing = remember(uiState) { uiState.opType == OpType.PROCESSING }
     var selectedInList by remember(entity, isProcessing) { mutableStateOf(media.selected && isProcessing.not()) }
     val mediaOpIndex by remember(entity, uiState) { mutableIntStateOf(entity.opList.indexOfLast { it.timestamp == uiState.timestamp }) }
-    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].opState == OperationState.Processing) }
+    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].opState == OperationState.PROCESSING) }
     val mediaOpDone by remember(
         entity,
         mediaOpIndex
-    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].opState != OperationState.IDLE && opList[mediaOpIndex].opState != OperationState.Processing)) }
+    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].opState != OperationState.IDLE && opList[mediaOpIndex].opState != OperationState.PROCESSING)) }
     val mediaOpLog by remember(
         entity,
         mediaOpProcessing
@@ -745,11 +745,11 @@ fun ListItemMediaRestore(
     val isProcessing = remember(uiState) { uiState.opType == OpType.PROCESSING }
     var selectedInList by remember(entity, isProcessing) { mutableStateOf(media.selected && isProcessing.not()) }
     val mediaOpIndex by remember(entity, uiState) { mutableIntStateOf(entity.opList.indexOfLast { it.timestamp == uiState.timestamp }) }
-    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].opState == OperationState.Processing) }
+    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].opState == OperationState.PROCESSING) }
     val mediaOpDone by remember(
         entity,
         mediaOpIndex
-    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].opState != OperationState.IDLE && opList[mediaOpIndex].opState != OperationState.Processing)) }
+    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].opState != OperationState.IDLE && opList[mediaOpIndex].opState != OperationState.PROCESSING)) }
     val mediaOpLog by remember(
         entity,
         mediaOpProcessing

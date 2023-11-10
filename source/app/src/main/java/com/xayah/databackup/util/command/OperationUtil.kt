@@ -15,7 +15,7 @@ import com.xayah.core.database.model.MediaBackupOperationEntity
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.OperationMask
-import com.xayah.core.database.model.OperationState
+import com.xayah.core.model.OperationState
 import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.core.database.model.PackageRestoreEntire
 import com.xayah.core.database.model.PackageRestoreOperation
@@ -23,8 +23,8 @@ import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.ShellResult
 import com.xayah.core.util.GsonUtil
-import com.xayah.core.util.toLineString
-import com.xayah.core.util.trim
+import com.xayah.core.common.util.toLineString
+import com.xayah.core.common.util.trim
 import com.xayah.databackup.R
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
@@ -236,14 +236,14 @@ class PackagesBackupUtil @AssistedInject constructor(
      */
     private suspend fun DataType.setStartState() {
         setEntityLog(entity, getString(R.string.backing_up))
-        setEntityState(entity, OperationState.Processing)
+        setEntityState(entity, OperationState.PROCESSING)
         opDao.upsert(entity)
     }
 
     /**
      * Set processing state
      */
-    private suspend fun DataType.setDataStartState(logTag: String): Boolean = if (entity.userState == OperationState.ERROR) {
+    private suspend fun DataType.setDataStartState(logTag: String): Boolean = if (entity.userOp.state == OperationState.ERROR) {
         val msg = "${context.getString(R.string.failed_and_terminated)}: ${DataType.PACKAGE_USER.type.uppercase()}"
         setEntityLog(entity, msg)
         setEntityState(entity, OperationState.ERROR)
@@ -558,14 +558,14 @@ class PackagesRestoreUtil @AssistedInject constructor(
      */
     private suspend fun DataType.setStartState() {
         setEntityLog(entity, getString(R.string.restoring))
-        setEntityState(entity, OperationState.Processing)
+        setEntityState(entity, OperationState.PROCESSING)
         opDao.upsert(entity)
     }
 
     /**
      * Set processing state
      */
-    private suspend fun DataType.setDataStartState(logTag: String): Boolean = if (entity.userState == OperationState.ERROR) {
+    private suspend fun DataType.setDataStartState(logTag: String): Boolean = if (entity.userOp.state == OperationState.ERROR) {
         val msg = "${context.getString(R.string.failed_and_terminated)}: ${DataType.PACKAGE_APK.type.uppercase()}"
         setEntityLog(entity, msg)
         setEntityState(entity, OperationState.ERROR)
@@ -847,7 +847,7 @@ class MediumBackupUtil @AssistedInject constructor(
      */
     private suspend fun DataType.setStartState() {
         setEntityLog(entity, getString(R.string.backing_up))
-        setEntityState(entity, OperationState.Processing)
+        setEntityState(entity, OperationState.PROCESSING)
         opDao.upsertBackupOp(entity)
     }
 
@@ -1004,7 +1004,7 @@ class MediumRestoreUtil @AssistedInject constructor(
      */
     private suspend fun DataType.setStartState() {
         setEntityLog(entity, getString(R.string.restoring))
-        setEntityState(entity, OperationState.Processing)
+        setEntityState(entity, OperationState.PROCESSING)
         opDao.upsertRestoreOp(entity)
     }
 

@@ -10,14 +10,15 @@ import com.xayah.core.ui.util.value
 
 @ExperimentalMaterial3Api
 @Composable
-fun SecondaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: StringResourceToken) {
+fun SecondaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: StringResourceToken, onBackClick: (() -> Unit)? = null) {
     val navController = LocalNavController.current!!
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title.value) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             ArrowBackButton {
-                navController.popBackStack()
+                if (onBackClick != null) onBackClick.invoke()
+                else navController.popBackStack()
             }
         },
     )

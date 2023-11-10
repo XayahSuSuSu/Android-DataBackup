@@ -7,7 +7,7 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.core.model.ShellResult
 import com.xayah.databackup.DataBackupApplication
 import com.xayah.core.database.model.LogCmdType
-import com.xayah.core.util.trim
+import com.xayah.core.common.util.trim
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.LogUtil
 import com.xayah.librootservice.util.withIOContext

@@ -12,6 +12,7 @@ interface IRemoteRootService {
     boolean deleteRecursively(String path);
     List<String> listFilePaths(String path);
     ParcelFileDescriptor readText(String path);
+    ParcelFileDescriptor readBytes(String path);
     long calculateSize(String path);
     void clearEmptyDirectoriesRecursively(String path);
 

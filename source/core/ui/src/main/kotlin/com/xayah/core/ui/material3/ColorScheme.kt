@@ -31,6 +31,7 @@ import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 @Composable
 internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     return when (value) {
+        ColorSchemeKeyTokens.Transparent -> Color.Transparent
         ColorSchemeKeyTokens.LocalContent -> LocalContentColor.current
         ColorSchemeKeyTokens.Unspecified -> Color.Unspecified
         ColorSchemeKeyTokens.Background -> background

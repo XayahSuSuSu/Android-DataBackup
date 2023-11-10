@@ -33,8 +33,45 @@ enum class OpType {
     companion object
 }
 
+enum class TaskType {
+    PACKAGE,
+    MEDIA;
+
+    companion object
+}
+
 enum class StorageType {
     INTERNAL,
     EXTERNAL,
     CUSTOM,
+}
+
+enum class SortType {
+    ASCENDING,
+    DESCENDING;
+
+    companion object
+}
+
+enum class OperationState {
+    IDLE,
+    PROCESSING,
+    UPLOADING,
+    SKIP,
+    DONE,
+    ERROR
+}
+
+enum class ProcessingState {
+    Idle,
+    Processing,
+    DONE,
+}
+
+enum class EmojiString(val emoji: String) {
+    PARTY_POPPER("🎉"),
+    ALARM_CLOCK("⏰"),
+    SPARKLING_HEART("💖"),
+    BROKEN_HEART("💔"),
+    SWEAT_DROPLETS("💦"),
 }

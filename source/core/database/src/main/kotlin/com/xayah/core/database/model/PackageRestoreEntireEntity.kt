@@ -8,11 +8,14 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.xayah.core.model.CompressionType
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * All fields are defined here.
  *
  */
+@Serializable
 @Entity
 data class PackageRestoreEntire(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,

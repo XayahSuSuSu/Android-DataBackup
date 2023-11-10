@@ -35,7 +35,7 @@ import com.xayah.core.ui.component.Card
 import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.HeadlineMediumText
 import com.xayah.core.ui.component.LabelSmallText
-import com.xayah.core.ui.component.LinearProgressIndicator
+import com.xayah.core.ui.component.AnimatedLinearProgressIndicator
 import com.xayah.core.ui.component.ModalActionDropdownMenu
 import com.xayah.core.ui.component.outlinedCardBorder
 import com.xayah.core.ui.component.paddingBottom
@@ -155,7 +155,7 @@ fun DirectoryCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
                 ) {
-                    LinearProgressIndicator(
+                    AnimatedLinearProgressIndicator(
                         modifier = Modifier
                             .clip(CircleShape)
                             .weight(1f)

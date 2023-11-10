@@ -36,7 +36,7 @@ import com.xayah.databackup.ui.token.CommonTokens
 import com.xayah.core.util.DateUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.CommonUtil.copyToClipboard
-import com.xayah.core.util.toLineString
+import com.xayah.core.common.util.toLineString
 import kotlinx.coroutines.launch
 
 @Composable

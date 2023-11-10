@@ -77,6 +77,12 @@ data class PackageBackupEntire(
     @Ignore
     var selected: MutableState<Boolean> = mutableStateOf(false)
 
+    val apkSelected: Boolean
+        get() = operationCode and OperationMask.Apk == OperationMask.Apk
+
+    val dataSelected: Boolean
+        get() = operationCode and OperationMask.Data == OperationMask.Data
+
     val sizeBytes: Double
         get() = (storageStats.appBytes + storageStats.dataBytes).toDouble()
 

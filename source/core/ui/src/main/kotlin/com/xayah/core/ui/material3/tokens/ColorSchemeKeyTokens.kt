@@ -17,6 +17,7 @@
 package com.xayah.core.ui.material3.tokens
 
 enum class ColorSchemeKeyTokens {
+    Transparent,
     LocalContent,
     Unspecified,
     Background,

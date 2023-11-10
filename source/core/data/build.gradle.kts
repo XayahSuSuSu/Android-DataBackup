@@ -9,10 +9,12 @@ android {
 
 dependencies {
     // Core
+    implementation(project(":core:common"))
     implementation(project(":core:database"))
     implementation(project(":core:util"))
     implementation(project(":core:model"))
     implementation(project(":core:datastore"))
+    implementation(project(":core:ui"))
 
     // RootService
     implementation(project(":librootservice"))

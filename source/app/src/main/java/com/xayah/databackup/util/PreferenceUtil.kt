@@ -7,17 +7,17 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.xayah.core.database.model.MediaBackupOperationEntity
+import com.xayah.core.database.model.MediaRestoreOperationEntity
+import com.xayah.core.database.model.PackageBackupOperation
+import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.LZ4_SUFFIX
+import com.xayah.core.model.OperationState
 import com.xayah.core.model.TAR_SUFFIX
 import com.xayah.core.model.ZSTD_SUFFIX
 import com.xayah.databackup.BuildConfig
-import com.xayah.core.database.model.MediaBackupOperationEntity
-import com.xayah.core.database.model.MediaRestoreOperationEntity
-import com.xayah.core.database.model.OperationState
-import com.xayah.core.database.model.PackageBackupOperation
-import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
 import com.xayah.databackup.ui.component.SortState
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
@@ -62,24 +62,24 @@ fun DataType.origin(userId: Int): String = when (this) {
 
 fun DataType.setEntityLog(entity: PackageBackupOperation, msg: String) {
     when (this) {
-        DataType.PACKAGE_APK -> entity.apkLog = msg
-        DataType.PACKAGE_USER -> entity.userLog = msg
-        DataType.PACKAGE_USER_DE -> entity.userDeLog = msg
-        DataType.PACKAGE_DATA -> entity.dataLog = msg
-        DataType.PACKAGE_OBB -> entity.obbLog = msg
-        DataType.PACKAGE_MEDIA -> entity.mediaLog = msg
+        DataType.PACKAGE_APK -> entity.apkOp.log = msg
+        DataType.PACKAGE_USER -> entity.userOp.log = msg
+        DataType.PACKAGE_USER_DE -> entity.userDeOp.log = msg
+        DataType.PACKAGE_DATA -> entity.dataOp.log = msg
+        DataType.PACKAGE_OBB -> entity.obbOp.log = msg
+        DataType.PACKAGE_MEDIA -> entity.mediaOp.log = msg
         else -> {}
     }
 }
 
 fun DataType.setEntityLog(entity: PackageRestoreOperation, msg: String) {
     when (this) {
-        DataType.PACKAGE_APK -> entity.apkLog = msg
-        DataType.PACKAGE_USER -> entity.userLog = msg
-        DataType.PACKAGE_USER_DE -> entity.userDeLog = msg
-        DataType.PACKAGE_DATA -> entity.dataLog = msg
-        DataType.PACKAGE_OBB -> entity.obbLog = msg
-        DataType.PACKAGE_MEDIA -> entity.mediaLog = msg
+        DataType.PACKAGE_APK -> entity.apkOp.log = msg
+        DataType.PACKAGE_USER -> entity.userOp.log = msg
+        DataType.PACKAGE_USER_DE -> entity.userDeOp.log = msg
+        DataType.PACKAGE_DATA -> entity.dataOp.log = msg
+        DataType.PACKAGE_OBB -> entity.obbOp.log = msg
+        DataType.PACKAGE_MEDIA -> entity.mediaOp.log = msg
         else -> {}
     }
 }
@@ -100,24 +100,24 @@ fun DataType.setEntityLog(entity: MediaRestoreOperationEntity, msg: String) {
 
 fun DataType.setEntityState(entity: PackageBackupOperation, state: OperationState) {
     when (this) {
-        DataType.PACKAGE_APK -> entity.apkState = state
-        DataType.PACKAGE_USER -> entity.userState = state
-        DataType.PACKAGE_USER_DE -> entity.userDeState = state
-        DataType.PACKAGE_DATA -> entity.dataState = state
-        DataType.PACKAGE_OBB -> entity.obbState = state
-        DataType.PACKAGE_MEDIA -> entity.mediaState = state
+        DataType.PACKAGE_APK -> entity.apkOp.state = state
+        DataType.PACKAGE_USER -> entity.userOp.state = state
+        DataType.PACKAGE_USER_DE -> entity.userDeOp.state = state
+        DataType.PACKAGE_DATA -> entity.dataOp.state = state
+        DataType.PACKAGE_OBB -> entity.obbOp.state = state
+        DataType.PACKAGE_MEDIA -> entity.mediaOp.state = state
         else -> {}
     }
 }
 
 fun DataType.setEntityState(entity: PackageRestoreOperation, state: OperationState) {
     when (this) {
-        DataType.PACKAGE_APK -> entity.apkState = state
-        DataType.PACKAGE_USER -> entity.userState = state
-        DataType.PACKAGE_USER_DE -> entity.userDeState = state
-        DataType.PACKAGE_DATA -> entity.dataState = state
-        DataType.PACKAGE_OBB -> entity.obbState = state
-        DataType.PACKAGE_MEDIA -> entity.mediaState = state
+        DataType.PACKAGE_APK -> entity.apkOp.state = state
+        DataType.PACKAGE_USER -> entity.userOp.state = state
+        DataType.PACKAGE_USER_DE -> entity.userDeOp.state = state
+        DataType.PACKAGE_DATA -> entity.dataOp.state = state
+        DataType.PACKAGE_OBB -> entity.obbOp.state = state
+        DataType.PACKAGE_MEDIA -> entity.mediaOp.state = state
         else -> {}
     }
 }

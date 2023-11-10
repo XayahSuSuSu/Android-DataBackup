@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.BottomSpacer
-import com.xayah.databackup.ui.component.EmojiString
+import com.xayah.core.model.EmojiString
 import com.xayah.databackup.ui.component.EmojiText
 import com.xayah.databackup.ui.component.GridItemCompletion
 import com.xayah.databackup.ui.component.GridItemCompletionConfig
