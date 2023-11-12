@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "c1c7865312db2df905f08d2b417238c6",
+    "identityHash": "e599924aa7710af7c4552fcc76e2f5ad",
     "entities": [
       {
         "tableName": "LogEntity",
@@ -500,7 +500,7 @@
       },
       {
         "tableName": "PackageRestoreOperation",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL DEFAULT 0, `startTimestamp` INTEGER NOT NULL DEFAULT 0, `endTimestamp` INTEGER NOT NULL DEFAULT 0, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `packageState` INTEGER NOT NULL, `apk_bytes` INTEGER NOT NULL DEFAULT 0, `apk_log` TEXT NOT NULL DEFAULT '', `apk_state` TEXT NOT NULL DEFAULT 'IDLE', `user_bytes` INTEGER NOT NULL DEFAULT 0, `user_log` TEXT NOT NULL DEFAULT '', `user_state` TEXT NOT NULL DEFAULT 'IDLE', `userDe_bytes` INTEGER NOT NULL DEFAULT 0, `userDe_log` TEXT NOT NULL DEFAULT '', `userDe_state` TEXT NOT NULL DEFAULT 'IDLE', `data_bytes` INTEGER NOT NULL DEFAULT 0, `data_log` TEXT NOT NULL DEFAULT '', `data_state` TEXT NOT NULL DEFAULT 'IDLE', `obb_bytes` INTEGER NOT NULL DEFAULT 0, `obb_log` TEXT NOT NULL DEFAULT '', `obb_state` TEXT NOT NULL DEFAULT 'IDLE', `media_bytes` INTEGER NOT NULL DEFAULT 0, `media_log` TEXT NOT NULL DEFAULT '', `media_state` TEXT NOT NULL DEFAULT 'IDLE')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL DEFAULT 0, `startTimestamp` INTEGER NOT NULL DEFAULT 0, `endTimestamp` INTEGER NOT NULL DEFAULT 0, `packageName` TEXT NOT NULL, `label` TEXT NOT NULL, `packageState` TEXT NOT NULL DEFAULT 'IDLE', `apk_bytes` INTEGER NOT NULL DEFAULT 0, `apk_log` TEXT NOT NULL DEFAULT '', `apk_state` TEXT NOT NULL DEFAULT 'IDLE', `user_bytes` INTEGER NOT NULL DEFAULT 0, `user_log` TEXT NOT NULL DEFAULT '', `user_state` TEXT NOT NULL DEFAULT 'IDLE', `userDe_bytes` INTEGER NOT NULL DEFAULT 0, `userDe_log` TEXT NOT NULL DEFAULT '', `userDe_state` TEXT NOT NULL DEFAULT 'IDLE', `data_bytes` INTEGER NOT NULL DEFAULT 0, `data_log` TEXT NOT NULL DEFAULT '', `data_state` TEXT NOT NULL DEFAULT 'IDLE', `obb_bytes` INTEGER NOT NULL DEFAULT 0, `obb_log` TEXT NOT NULL DEFAULT '', `obb_state` TEXT NOT NULL DEFAULT 'IDLE', `media_bytes` INTEGER NOT NULL DEFAULT 0, `media_log` TEXT NOT NULL DEFAULT '', `media_state` TEXT NOT NULL DEFAULT 'IDLE')",
         "fields": [
           {
             "fieldPath": "id",
@@ -544,8 +544,9 @@
           {
             "fieldPath": "packageState",
             "columnName": "packageState",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
           },
           {
             "fieldPath": "apkOp.bytes",
@@ -1250,7 +1251,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1c7865312db2df905f08d2b417238c6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e599924aa7710af7c4552fcc76e2f5ad')"
     ]
   }
 }

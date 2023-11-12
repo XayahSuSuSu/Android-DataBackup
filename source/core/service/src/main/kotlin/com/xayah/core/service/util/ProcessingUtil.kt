@@ -2,15 +2,19 @@ package com.xayah.core.service.util
 
 import android.content.Context
 import com.xayah.core.datastore.readBackupUserId
+import com.xayah.core.datastore.readCleanRestoring
 import com.xayah.core.datastore.readCompatibleMode
 import com.xayah.core.datastore.readCompressionType
 import com.xayah.core.datastore.readFollowSymlinks
+import com.xayah.core.datastore.readRestoreUserId
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.util.ConfigsPackageRestoreName
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.command.Pm
+import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.model.ShellResult
@@ -223,4 +227,186 @@ class PackagesBackupUtil @Inject constructor(
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
+}
+
+class PackagesRestoreUtil @Inject constructor(
+    @ApplicationContext val context: Context,
+) {
+    private val userId = runBlocking { context.readRestoreUserId().first() }
+
+    @Inject
+    lateinit var rootService: RemoteRootService
+
+    @Inject
+    lateinit var pathUtil: PathUtil
+
+    fun getApkSrc(srcDir: String, compressionType: CompressionType) = "${srcDir}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
+
+    suspend fun restoreApk(packageName: String, srcDir: String, compressionType: CompressionType): ShellResult = run {
+        val src = getApkSrc(srcDir = srcDir, compressionType = compressionType)
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+
+        // Return if the archive doesn't exist.
+        if (rootService.exists(src)) {
+            // Decompress apk archive
+            val tmpApkPath = pathUtil.getTmpApkPath(packageName = packageName)
+            rootService.deleteRecursively(tmpApkPath)
+            rootService.mkdirs(tmpApkPath)
+            Tar.decompress(src = src, dst = tmpApkPath, extra = compressionType.decompressPara)
+                .also { result ->
+                    isSuccess = result.isSuccess
+                    out.addAll(result.out)
+                }
+
+            // Install apks
+            rootService.listFilePaths(tmpApkPath).also { apksPath ->
+                when (apksPath.size) {
+                    0 -> {
+                        isSuccess = false
+                        out.add("$tmpApkPath is empty.")
+                    }
+
+                    1 -> {
+                        Pm.install(userId = userId, src = apksPath.first()).also { result ->
+                            isSuccess = isSuccess and result.isSuccess
+                            out.addAll(result.out)
+                        }
+                    }
+
+                    else -> {
+                        var pmSession = ""
+                        Pm.Install.create(userId = userId).also { result ->
+                            if (result.isSuccess) pmSession = result.outString
+                        }
+                        if (pmSession.isNotEmpty()) {
+                            out.add("Install session: $pmSession.")
+
+                        } else {
+                            isSuccess = false
+                            out.add("Failed to get install session.")
+                        }
+
+                        apksPath.forEach { apkPath ->
+                            Pm.Install.write(session = pmSession, srcName = PathUtil.getFileName(apkPath), src = apkPath).also { result ->
+                                isSuccess = isSuccess and result.isSuccess
+                                out.addAll(result.out)
+                            }
+                        }
+
+                        Pm.Install.commit(pmSession).also { result ->
+                            isSuccess = isSuccess and result.isSuccess
+                            out.addAll(result.out)
+                        }
+                    }
+                }
+            }
+            rootService.deleteRecursively(tmpApkPath)
+
+            // Check the installation again.
+            rootService.queryInstalled(packageName = packageName, userId = userId).also {
+                if (it.not()) {
+                    isSuccess = false
+                    val msg = "Not installed: $packageName."
+                }
+            }
+        } else {
+            isSuccess = false
+            out.add("Not exist: $src")
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    private fun getDataDstDir(dataType: DataType) = dataType.srcDir(userId)
+    private fun getDataDst(dataType: DataType, packageName: String) = "${getDataDstDir(dataType)}/$packageName"
+    fun getDataSrc(srcDir: String, dataType: DataType, compressionType: CompressionType) = "${srcDir}/${dataType.type}.${compressionType.suffix}"
+
+    /**
+     * Package data: USER, USER_DE, DATA, OBB, MEDIA
+     */
+    suspend fun restoreData(packageName: String, dataType: DataType, srcDir: String, compressionType: CompressionType): ShellResult = run {
+        val src = getDataSrc(srcDir = srcDir, dataType = dataType, compressionType = compressionType)
+        val dst = getDataDst(dataType = dataType, packageName = packageName)
+        val dstDir = getDataDstDir(dataType = dataType)
+        val uid = rootService.getPackageUid(packageName = packageName, userId = userId)
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+
+        // Return if the archive doesn't exist.
+        if (rootService.exists(src)) {
+            // Generate exclusion items.
+            val exclusionList = mutableListOf<String>()
+            when (dataType) {
+                DataType.PACKAGE_USER, DataType.PACKAGE_USER_DE, DataType.PACKAGE_DATA, DataType.PACKAGE_OBB, DataType.PACKAGE_MEDIA -> {
+                    // Exclude cache
+                    val folders = listOf(".ota", "cache", "lib", "code_cache", "no_backup")
+                    exclusionList.addAll(folders.map { "${SymbolUtil.QUOTE}$packageName/$it${SymbolUtil.QUOTE}" })
+                    if (dataType == DataType.PACKAGE_DATA || dataType == DataType.PACKAGE_OBB || dataType == DataType.PACKAGE_MEDIA) {
+                        // Exclude Backup_*
+                        exclusionList.add("${SymbolUtil.QUOTE}Backup_${SymbolUtil.QUOTE}*")
+                    }
+
+                }
+
+                else -> {}
+            }
+
+            // Get the SELinux context of the path.
+            val pathContext: String
+            SELinux.getContext(path = dst).also { result ->
+                pathContext = if (result.isSuccess) result.outString else ""
+            }
+
+            // Decompress the archive.
+            Tar.decompress(
+                exclusionList = exclusionList,
+                clear = if (context.readCleanRestoring().first()) "--recursive-unlink" else "",
+                m = true,
+                src = src,
+                dst = dstDir,
+                extra = compressionType.decompressPara
+            ).also { result ->
+                isSuccess = result.isSuccess
+                out.addAll(result.out)
+            }
+
+            // Restore SELinux context.
+            if (uid != -1) {
+                SELinux.chown(uid = uid, path = dst).also { result ->
+                    isSuccess = result.isSuccess
+                    out.addAll(result.out)
+                }
+                if (pathContext.isNotEmpty()) {
+                    SELinux.chcon(context = pathContext, path = dst).also { result ->
+                        isSuccess = result.isSuccess
+                        out.addAll(result.out)
+                    }
+                } else {
+                    val parentContext: String
+                    SELinux.getContext(dstDir).also { result ->
+                        parentContext = if (result.isSuccess) result.outString.replace("system_data_file", "app_data_file") else ""
+                    }
+                    if (parentContext.isNotEmpty()) {
+                        SELinux.chcon(context = parentContext, path = dst).also { result ->
+                            isSuccess = result.isSuccess
+                            out.addAll(result.out)
+                        }
+                    } else {
+                        isSuccess = false
+                        out.add("Failed to restore context: $dst")
+                    }
+                }
+            } else {
+                isSuccess = false
+                out.add("Failed to get uid of $packageName.")
+            }
+        } else {
+            out.add("Not exist and skip: $src")
+            return@run ShellResult(code = -2, input = listOf(), out = out)
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
 }

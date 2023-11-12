@@ -47,6 +47,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.xayah.core.database.model.PackageBackupEntire
 import com.xayah.core.database.model.PackageBackupOperation
+import com.xayah.core.database.model.PackageRestoreEntire
+import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.core.database.model.formatSize
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
@@ -130,6 +132,50 @@ fun PackageCard(
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
+fun PackageCard(
+    modifier: Modifier = Modifier,
+    enabled: Boolean,
+    cardSelected: Boolean,
+    packageRestore: PackageRestoreEntire,
+    onApkSelected: () -> Unit,
+    onDataSelected: () -> Unit,
+    onCardClick: () -> Unit,
+    onCardLongClick: () -> Unit,
+    chipGroup: @Composable RowScope.() -> Unit,
+) {
+    val context = LocalContext.current
+    var icon by remember { mutableStateOf<Any?>(null) }
+
+    LaunchedEffect(packageRestore.packageName) {
+        // Read icon from cached internal dir.
+        withIOContext {
+            icon = BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageRestore.packageName)}")
+        }
+    }
+
+    PackageCard(
+        modifier = modifier,
+        enabled = enabled,
+        shimmering = false,
+        label = packageRestore.label,
+        packageName = packageRestore.packageName,
+        icon = icon,
+        cardSelected = cardSelected,
+        apkSelected = packageRestore.apkSelected,
+        dataSelected = packageRestore.dataSelected,
+        apkChipEnabled = packageRestore.apkExists,
+        dataChipEnabled = packageRestore.dataExists,
+        onApkSelected = onApkSelected,
+        onDataSelected = onDataSelected,
+        onCardClick = onCardClick,
+        onCardLongClick = onCardLongClick,
+        chipGroup = chipGroup,
+    )
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
 fun PackageCardShimmer(
     modifier: Modifier = Modifier,
 ) {
@@ -157,6 +203,7 @@ private fun Modifier.packageCardShimmer(visible: Boolean) = shimmer(visible, 0.5
 @Composable
 fun PackageCard(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     shimmering: Boolean,
     label: String,
     packageName: String,
@@ -164,6 +211,8 @@ fun PackageCard(
     cardSelected: Boolean,
     apkSelected: Boolean,
     dataSelected: Boolean,
+    apkChipEnabled: Boolean = true,
+    dataChipEnabled: Boolean = true,
     onApkSelected: () -> Unit,
     onDataSelected: () -> Unit,
     onCardClick: () -> Unit,
@@ -177,7 +226,7 @@ fun PackageCard(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        enabled = true,
+        enabled = enabled,
         onClick = onCardClick,
         onLongClick = {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -253,8 +302,18 @@ fun PackageCard(
                             )
                         }
                     } else {
-                        OpChip(selected = apkSelected, label = StringResourceToken.fromStringId(R.string.apk), onClick = onApkSelected)
-                        OpChip(selected = dataSelected, label = StringResourceToken.fromStringId(R.string.data), onClick = onDataSelected)
+                        OpChip(
+                            enabled = enabled && apkChipEnabled,
+                            selected = apkSelected,
+                            label = StringResourceToken.fromStringId(R.string.apk),
+                            onClick = onApkSelected
+                        )
+                        OpChip(
+                            enabled = enabled && dataChipEnabled,
+                            selected = dataSelected,
+                            label = StringResourceToken.fromStringId(R.string.data),
+                            onClick = onDataSelected
+                        )
                     }
 
                     Spacer(modifier = Modifier.size(PaddingTokens.Level0))
@@ -495,6 +554,108 @@ fun ProcessingCard(
 @Composable
 fun ProcessingCard(
     modifier: Modifier = Modifier,
+    packageRestoreOp: PackageRestoreOperation,
+    onCardClick: () -> Unit,
+    onCardLongClick: () -> Unit,
+) {
+    val context = LocalContext.current
+    var icon by remember { mutableStateOf<Any?>(null) }
+    var msg by remember { mutableStateOf("") }
+
+    LaunchedEffect(packageRestoreOp.packageName) {
+        // Read icon from cached internal dir.
+        withIOContext {
+            icon = BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageRestoreOp.packageName)}")
+        }
+    }
+
+    ProcessingCard(
+        modifier = modifier,
+        label = packageRestoreOp.label,
+        packageName = packageRestoreOp.packageName,
+        icon = icon,
+        showStateIcon = true,
+        isProcessing = packageRestoreOp.packageState == OperationState.PROCESSING,
+        isSucceed = packageRestoreOp.isSucceed,
+        msg = msg,
+        onCardClick = onCardClick,
+        onCardLongClick = onCardLongClick,
+        chipGroup = {
+            AssistChip(
+                enabled = true,
+                title = StringResourceToken.fromString(DataType.PACKAGE_APK.type.uppercase()),
+                subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.apkOp.bytes.toDouble())),
+                leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Android),
+                trailingIcon = packageRestoreOp.apkOp.state.icon,
+                color = packageRestoreOp.apkOp.state.color,
+                containerColor = packageRestoreOp.apkOp.state.containerColor,
+            ) {
+                msg = msg.ifNotTheSame(packageRestoreOp.apkOp.log, "")
+            }
+            AssistChip(
+                enabled = true,
+                title = StringResourceToken.fromString(DataType.PACKAGE_USER.type.uppercase()),
+                subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.userOp.bytes.toDouble())),
+                leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Person),
+                trailingIcon = packageRestoreOp.userOp.state.icon,
+                color = packageRestoreOp.userOp.state.color,
+                containerColor = packageRestoreOp.userOp.state.containerColor,
+            ) {
+                msg = msg.ifNotTheSame(packageRestoreOp.userOp.log, "")
+            }
+            AssistChip(
+                enabled = true,
+                title = StringResourceToken.fromString(DataType.PACKAGE_USER_DE.type.uppercase()),
+                subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.userDeOp.bytes.toDouble())),
+                leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.ManageAccounts),
+                trailingIcon = packageRestoreOp.userDeOp.state.icon,
+                color = packageRestoreOp.userDeOp.state.color,
+                containerColor = packageRestoreOp.userDeOp.state.containerColor,
+            ) {
+                msg = msg.ifNotTheSame(packageRestoreOp.userDeOp.log, "")
+            }
+            AssistChip(
+                enabled = true,
+                title = StringResourceToken.fromString(DataType.PACKAGE_DATA.type.uppercase()),
+                subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.dataOp.bytes.toDouble())),
+                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_database),
+                trailingIcon = packageRestoreOp.dataOp.state.icon,
+                color = packageRestoreOp.dataOp.state.color,
+                containerColor = packageRestoreOp.dataOp.state.containerColor,
+            ) {
+                msg = msg.ifNotTheSame(packageRestoreOp.dataOp.log, "")
+            }
+            AssistChip(
+                enabled = true,
+                title = StringResourceToken.fromString(DataType.PACKAGE_OBB.type.uppercase()),
+                subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.obbOp.bytes.toDouble())),
+                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_stadia_controller),
+                trailingIcon = packageRestoreOp.obbOp.state.icon,
+                color = packageRestoreOp.obbOp.state.color,
+                containerColor = packageRestoreOp.obbOp.state.containerColor,
+            ) {
+                msg = msg.ifNotTheSame(packageRestoreOp.obbOp.log, "")
+            }
+            AssistChip(
+                enabled = true,
+                title = StringResourceToken.fromString(DataType.PACKAGE_MEDIA.type.uppercase()),
+                subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.mediaOp.bytes.toDouble())),
+                leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Image),
+                trailingIcon = packageRestoreOp.mediaOp.state.icon,
+                color = packageRestoreOp.mediaOp.state.color,
+                containerColor = packageRestoreOp.mediaOp.state.containerColor,
+            ) {
+                msg = msg.ifNotTheSame(packageRestoreOp.mediaOp.log, "")
+            }
+        },
+    )
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun ProcessingCard(
+    modifier: Modifier = Modifier,
     packageBackup: PackageBackupEntire,
     onCardClick: () -> Unit,
     onCardLongClick: () -> Unit,
@@ -523,6 +684,49 @@ fun ProcessingCard(
         chipGroup = {
             if (packageBackup.apkSelected) RoundChip(text = DataType.PACKAGE_APK.type.uppercase())
             if (packageBackup.dataSelected) {
+                RoundChip(text = DataType.PACKAGE_USER.type.uppercase())
+                RoundChip(text = DataType.PACKAGE_USER_DE.type.uppercase())
+                RoundChip(text = DataType.PACKAGE_DATA.type.uppercase())
+                RoundChip(text = DataType.PACKAGE_OBB.type.uppercase())
+                RoundChip(text = DataType.PACKAGE_MEDIA.type.uppercase())
+            }
+        },
+    )
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun ProcessingCard(
+    modifier: Modifier = Modifier,
+    packageRestore: PackageRestoreEntire,
+    onCardClick: () -> Unit,
+    onCardLongClick: () -> Unit,
+) {
+    val context = LocalContext.current
+    var icon by remember { mutableStateOf<Any?>(null) }
+
+    LaunchedEffect(packageRestore.packageName) {
+        // Read icon from cached internal dir.
+        withIOContext {
+            icon = BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageRestore.packageName)}")
+        }
+    }
+
+    ProcessingCard(
+        modifier = modifier,
+        label = packageRestore.label,
+        packageName = packageRestore.packageName,
+        icon = icon,
+        showStateIcon = false,
+        isProcessing = false,
+        isSucceed = false,
+        msg = "",
+        onCardClick = onCardClick,
+        onCardLongClick = onCardLongClick,
+        chipGroup = {
+            if (packageRestore.apkSelected) RoundChip(text = DataType.PACKAGE_APK.type.uppercase())
+            if (packageRestore.dataSelected) {
                 RoundChip(text = DataType.PACKAGE_USER.type.uppercase())
                 RoundChip(text = DataType.PACKAGE_USER_DE.type.uppercase())
                 RoundChip(text = DataType.PACKAGE_DATA.type.uppercase())

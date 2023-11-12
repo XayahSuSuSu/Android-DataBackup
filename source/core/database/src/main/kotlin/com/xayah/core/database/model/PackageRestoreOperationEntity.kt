@@ -17,7 +17,7 @@ data class PackageRestoreOperation(
     @ColumnInfo(defaultValue = "0") var endTimestamp: Long,
     var packageName: String,
     var label: String,
-    var packageState: Boolean = false,
+    @ColumnInfo(defaultValue = "IDLE") var packageState: OperationState = OperationState.IDLE,
     @Embedded(prefix = "apk_") val apkOp: Operation = Operation(),
     @Embedded(prefix = "user_") val userOp: Operation = Operation(),
     @Embedded(prefix = "userDe_") val userDeOp: Operation = Operation(),

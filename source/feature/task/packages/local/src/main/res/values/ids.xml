@@ -2,4 +2,7 @@
     <item name="backup" type="string" />
     <item name="wait_for_remaining_data_processing" type="string" />
     <item name="backup_completed" type="string" />
+    <item name="restore" type="string" />
+    <item name="internal_storage" type="string" />
+    <item name="restore_completed" type="string" />
 </resources>

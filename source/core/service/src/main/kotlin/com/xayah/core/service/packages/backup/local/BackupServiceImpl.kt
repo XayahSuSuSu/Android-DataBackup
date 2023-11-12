@@ -94,8 +94,8 @@ internal class BackupServiceImpl : Service() {
     @ExperimentalSerializationApi
     suspend fun processing(timestamp: Long) = withIOContext {
         mutex.withLock {
-            rootService.mkdirs(pathUtil.getArchivesPackagesDir())
-            rootService.mkdirs(pathUtil.getConfigsDir())
+            rootService.mkdirs(pathUtil.getLocalBackupArchivesPackagesDir())
+            rootService.mkdirs(pathUtil.getLocalBackupConfigsDir())
 
             val packages = packageBackupDao.querySelectedPackages()
             packages.forEach { currentPackage ->
@@ -108,7 +108,7 @@ internal class BackupServiceImpl : Service() {
                     packageState = OperationState.PROCESSING,
                 ).also { entity -> entity.id = packageBackupOpDao.upsert(entity) }
 
-                val dstDir = "${pathUtil.getArchivesPackagesDir()}/${currentPackage.packageName}/${timestamp}"
+                val dstDir = "${pathUtil.getLocalBackupArchivesPackagesDir()}/${currentPackage.packageName}/${timestamp}"
                 rootService.mkdirs(dstDir)
 
                 if (currentPackage.apkSelected) {

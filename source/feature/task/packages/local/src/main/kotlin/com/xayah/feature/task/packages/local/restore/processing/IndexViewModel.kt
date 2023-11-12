@@ -1,4 +1,4 @@
-package com.xayah.feature.task.packages.local.backup.processing
+package com.xayah.feature.task.packages.local.restore.processing
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarDuration
@@ -7,17 +7,18 @@ import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.UiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
-import com.xayah.core.data.repository.PackageBackupOpRepository
-import com.xayah.core.data.repository.PackageBackupRepository
+import com.xayah.core.data.repository.PackageRestoreOpRepository
+import com.xayah.core.data.repository.PackageRestoreRepository
 import com.xayah.core.data.repository.TaskRepository
-import com.xayah.core.database.model.PackageBackupEntire
-import com.xayah.core.database.model.PackageBackupOperation
+import com.xayah.core.database.model.PackageRestoreEntire
+import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.core.database.model.TaskEntity
+import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.model.EmojiString
 import com.xayah.core.model.OpType
 import com.xayah.core.model.ProcessingState
 import com.xayah.core.model.TaskType
-import com.xayah.core.service.packages.backup.local.BackupService
+import com.xayah.core.service.packages.restore.local.RestoreService
 import com.xayah.core.util.DateUtil
 import com.xayah.feature.task.packages.local.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,10 +51,10 @@ sealed class IndexUiEffect : UiEffect {
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
-    packageBackupRepository: PackageBackupRepository,
-    packageBackupOpRepository: PackageBackupOpRepository,
+    packageRestoreRepository: PackageRestoreRepository,
+    packageRestoreOpRepository: PackageRestoreOpRepository,
     private val taskRepository: TaskRepository,
-    private val backupService: BackupService,
+    private val restoreService: RestoreService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState()) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
@@ -62,14 +63,14 @@ class IndexViewModel @Inject constructor(
                     taskRepository.upsertTask(
                         TaskEntity(
                             timestamp = state.timestampState,
-                            opType = OpType.BACKUP,
+                            opType = OpType.RESTORE,
                             taskType = TaskType.PACKAGE,
                             startTimestamp = 0,
                             endTimestamp = 0,
-                            path = taskRepository.getBackupTargetPath(),
-                            rawBytes = taskRepository.getBackupRawBytes(),
-                            availableBytes = taskRepository.getAvailableBytes(taskRepository.getBackupTargetParentPath()),
-                            totalBytes = taskRepository.getTotalBytes(taskRepository.getBackupTargetParentPath()),
+                            path = taskRepository.getString(R.string.internal_storage),
+                            rawBytes = taskRepository.getRestoreRawBytes(),
+                            availableBytes = taskRepository.getAvailableBytes(ConstantUtil.DefaultPathParent),
+                            totalBytes = taskRepository.getTotalBytes(ConstantUtil.DefaultPathParent),
                         )
                     )
                 }
@@ -88,21 +89,20 @@ class IndexViewModel @Inject constructor(
                         }
                     }
 
-                    val backupPreprocessing = backupService.preprocessing()
-                    backupService.processing(timestamp = state.timestampState)
+                    restoreService.preprocessing()
+                    restoreService.processing(timestamp = state.timestampState)
                     emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = taskRepository.getString(R.string.wait_for_remaining_data_processing),
                             duration = SnackbarDuration.Indefinite
                         )
                     )
-                    backupService.postProcessing(backupPreprocessing = backupPreprocessing, timestamp = state.timestampState)
-                    backupService.destroyService()
+                    restoreService.destroyService()
                     emitStateSuspend(uiState.value.copy(processingState = ProcessingState.DONE))
                     emitEffect(IndexUiEffect.DismissSnackbar)
                     emitEffect(
                         IndexUiEffect.ShowSnackbar(
-                            message = taskRepository.getString(R.string.backup_completed) + EmojiString.PARTY_POPPER.emoji
+                            message = taskRepository.getString(R.string.restore_completed) + EmojiString.PARTY_POPPER.emoji
                         )
                     )
                 }
@@ -131,15 +131,15 @@ class IndexViewModel @Inject constructor(
             taskRepository.getShortRelativeTimeSpanString(0, 0)
     }.stateInScope(initialValue = taskRepository.getShortRelativeTimeSpanString(0, 0))
 
-    val packagesState: StateFlow<List<PackageBackupEntire>> = packageBackupRepository.selectedPackages.stateInScope(initialValue = listOf())
-    val packagesApkOnlyState: StateFlow<List<PackageBackupEntire>> = packageBackupRepository.packagesApkOnly.stateInScope(initialValue = listOf())
-    val packagesDataOnlyState: StateFlow<List<PackageBackupEntire>> = packageBackupRepository.packagesDataOnly.stateInScope(initialValue = listOf())
-    val packagesBothState: StateFlow<List<PackageBackupEntire>> = packageBackupRepository.packagesBoth.stateInScope(initialValue = listOf())
+    val packagesState: StateFlow<List<PackageRestoreEntire>> = packageRestoreRepository.selectedPackages.stateInScope(initialValue = listOf())
+    val packagesApkOnlyState: StateFlow<List<PackageRestoreEntire>> = packageRestoreRepository.packagesApkOnly.stateInScope(initialValue = listOf())
+    val packagesDataOnlyState: StateFlow<List<PackageRestoreEntire>> = packageRestoreRepository.packagesDataOnly.stateInScope(initialValue = listOf())
+    val packagesBothState: StateFlow<List<PackageRestoreEntire>> = packageRestoreRepository.packagesBoth.stateInScope(initialValue = listOf())
 
-    val operationsProcessingState: StateFlow<List<PackageBackupOperation>> =
-        packageBackupOpRepository.getOperationsProcessing(uiState.value.timestampState).stateInScope(initialValue = listOf())
-    val operationsFailedState: StateFlow<List<PackageBackupOperation>> =
-        packageBackupOpRepository.getOperationsFailed(uiState.value.timestampState).stateInScope(initialValue = listOf())
-    val operationsSucceedState: StateFlow<List<PackageBackupOperation>> =
-        packageBackupOpRepository.getOperationsSucceed(uiState.value.timestampState).stateInScope(initialValue = listOf())
+    val operationsProcessingState: StateFlow<List<PackageRestoreOperation>> =
+        packageRestoreOpRepository.getOperationsProcessing(uiState.value.timestampState).stateInScope(initialValue = listOf())
+    val operationsFailedState: StateFlow<List<PackageRestoreOperation>> =
+        packageRestoreOpRepository.getOperationsFailed(uiState.value.timestampState).stateInScope(initialValue = listOf())
+    val operationsSucceedState: StateFlow<List<PackageRestoreOperation>> =
+        packageRestoreOpRepository.getOperationsSucceed(uiState.value.timestampState).stateInScope(initialValue = listOf())
 }

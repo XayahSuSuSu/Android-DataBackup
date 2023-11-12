@@ -78,7 +78,7 @@ fun PageRestore() {
                             MapItem(StringResourceToken.fromString(""), flow { }),
                         ),
                         onClick = {
-                            viewModel.emitIntent(IndexUiIntent.ToList)
+                            navController.navigate(MainRoutes.TaskPackages.routeRestore)
                         }
                     ),
                     ActivityCardItem(

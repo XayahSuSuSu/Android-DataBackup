@@ -283,7 +283,8 @@ class OperationLocalServiceImpl : Service() {
                     timestamp = timestamp,
                     startTimestamp = DateUtil.getTimestamp(),
                     endTimestamp = 0,
-                    label = currentPackage.label
+                    label = currentPackage.label,
+                    packageState = OperationState.PROCESSING,
                 ).also { entity ->
                     entity.id = packageRestoreOperationDao.upsert(entity)
                 }
@@ -330,7 +331,7 @@ class OperationLocalServiceImpl : Service() {
                 } else {
                     logUtil.log(logTag, "Restoring failed.")
                 }
-                packageRestoreOperation.packageState = packageRestoreOperation.isSucceed
+                packageRestoreOperation.packageState = if (packageRestoreOperation.isSucceed) OperationState.DONE else OperationState.ERROR
                 packageRestoreOperation.endTimestamp = DateUtil.getTimestamp()
                 packageRestoreOperationDao.upsert(packageRestoreOperation)
             }

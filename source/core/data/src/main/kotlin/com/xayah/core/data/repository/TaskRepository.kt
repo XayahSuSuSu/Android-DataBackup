@@ -3,6 +3,7 @@ package com.xayah.core.data.repository
 import android.content.Context
 import androidx.annotation.StringRes
 import com.xayah.core.database.dao.PackageBackupEntireDao
+import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.database.model.TaskEntity
 import com.xayah.core.datastore.readBackupSaveParentPath
@@ -20,13 +21,14 @@ class TaskRepository @Inject constructor(
     private val rootService: RemoteRootService,
     private val taskDao: TaskDao,
     private val packageBackupDao: PackageBackupEntireDao,
+    private val packageRestoreDao: PackageRestoreEntireDao,
 ) {
     fun getString(@StringRes resId: Int) = context.getString(resId)
 
-    private suspend fun getTargetParentPath() = context.readBackupSaveParentPath().first()
-    suspend fun getTargetPath() = context.readBackupSavePath().first()
+    suspend fun getBackupTargetParentPath() = context.readBackupSaveParentPath().first()
+    suspend fun getBackupTargetPath() = context.readBackupSavePath().first()
 
-    suspend fun getRawBytes(): Double = run {
+    suspend fun getBackupRawBytes(): Double = run {
         var total = 0.0
         val bothPackages = packageBackupDao.queryActiveBothPackages().first()
         val apkOnlyPackages = packageBackupDao.queryActiveAPKOnlyPackages().first()
@@ -37,8 +39,19 @@ class TaskRepository @Inject constructor(
         total
     }
 
-    suspend fun getAvailableBytes(): Double = rootService.readStatFs(getTargetParentPath()).availableBytes.toDouble()
-    suspend fun getTotalBytes(): Double = rootService.readStatFs(getTargetParentPath()).totalBytes.toDouble()
+    suspend fun getRestoreRawBytes(): Double = run {
+        var total = 0.0
+        val bothPackages = packageRestoreDao.queryActiveBothPackages().first()
+        val apkOnlyPackages = packageRestoreDao.queryActiveAPKOnlyPackages().first()
+        val dataOnlyPackages = packageRestoreDao.queryActiveDataOnlyPackages().first()
+        bothPackages.forEach { total += it.sizeBytes }
+        apkOnlyPackages.forEach { total += it.sizeBytes }
+        dataOnlyPackages.forEach { total += it.sizeBytes }
+        total
+    }
+
+    suspend fun getAvailableBytes(path: String): Double = rootService.readStatFs(path).availableBytes.toDouble()
+    suspend fun getTotalBytes(path: String): Double = rootService.readStatFs(path).totalBytes.toDouble()
 
     fun getShortRelativeTimeSpanString(time1: Long, time2: Long) =
         DateUtil.getShortRelativeTimeSpanString(context = context, time1 = time1, time2 = time2)

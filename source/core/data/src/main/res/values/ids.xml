@@ -6,4 +6,5 @@
     <item name="custom_storage" type="string"/>
     <item name="updating" type="string"/>
     <item name="backup_list" type="string"/>
+    <item name="restore_list" type="string"/>
 </resources>

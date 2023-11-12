@@ -1,35 +1,32 @@
 package com.xayah.feature.task.packages.local.backup.list
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.lifecycle.SavedStateHandle
 import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.UiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.PackageBackupRepository
+import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.PackageBackupEntire
-import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
-import com.xayah.core.model.util.of
+import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
-import com.xayah.core.ui.route.MainRoutes
+import com.xayah.core.ui.util.fromStringId
+import com.xayah.feature.task.packages.common.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 data class IndexUiState(
     val activating: Boolean = true,
-    val topBarState: Flow<TopBarState> = flow {},
-    val type: OpType = OpType.BACKUP,
-    val packages: Flow<List<PackageBackupEntire>> = flow {},
-    val shimmering: Flow<Boolean> = flow {},
     val shimmerCount: Int = 9,
     val emphasizedState: Boolean = false,
-    val selectedAPKsCount: Flow<Int> = flow {},
-    val selectedDataCount: Flow<Int> = flow {},
     val batchSelection: List<String> = listOf(),
 ) : UiState
 
@@ -49,28 +46,14 @@ sealed class IndexUiIntent : UiIntent {
 
 @ExperimentalMaterial3Api
 @HiltViewModel
-class IndexViewModel @Inject constructor(
-    private val packageBackupRepository: PackageBackupRepository,
-    args: SavedStateHandle,
-) : BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(
-    IndexUiState(
-        type = OpType.of(args.get<String>(MainRoutes.ArgOpType)),
-        packages = packageBackupRepository.getMappedPackages(),
-        selectedAPKsCount = packageBackupRepository.selectedAPKsCount,
-        selectedDataCount = packageBackupRepository.selectedDataCount,
-    )
-) {
+class IndexViewModel @Inject constructor(private val packageBackupRepository: PackageBackupRepository) :
+    BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(IndexUiState()) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Update -> {
                 packageBackupRepository.activate()
-                emitState(
-                    uiState.value.copy(
-                        activating = false,
-                        shimmering = packageBackupRepository.packages.map { it.isEmpty() },
-                        topBarState = packageBackupRepository.update()
-                    )
-                )
+                emitState(uiState.value.copy(activating = false))
+                packageBackupRepository.update(topBarState = _topBarState)
             }
 
             is IndexUiIntent.UpdatePackage -> {
@@ -79,15 +62,21 @@ class IndexViewModel @Inject constructor(
 
 
             is IndexUiIntent.FilterByKey -> {
-                emitState(state.copy(packages = packageBackupRepository.getMappedPackages(key = intent.key)))
+                _keyState.value = intent.key
             }
 
             is IndexUiIntent.Sort -> {
-                emitState(state.copy(packages = packageBackupRepository.getMappedPackages(sortIndex = intent.index, sortType = intent.type)))
+                var type = intent.type
+                val index = intent.index
+                if (_sortIndexState.first() == index) {
+                    type = if (type == SortType.ASCENDING) SortType.DESCENDING else SortType.ASCENDING
+                    packageBackupRepository.saveBackupSortType(type)
+                }
+                packageBackupRepository.saveBackupSortTypeIndex(index)
             }
 
             is IndexUiIntent.FilterByFlag -> {
-                emitState(state.copy(packages = packageBackupRepository.getMappedPackages(flagIndex = intent.index)))
+                packageBackupRepository.saveBackupFilterFlagIndex(intent.index)
             }
 
             is IndexUiIntent.Emphasize -> {
@@ -97,7 +86,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.BatchingSelectAll -> {
                 var batchSelection: List<String> = listOf()
                 if (state.batchSelection.isEmpty()) {
-                    batchSelection = state.packages.first().map { it.packageName }
+                    batchSelection = packagesState.first().map { it.packageName }
                 }
                 emitState(state.copy(batchSelection = batchSelection))
             }
@@ -120,4 +109,29 @@ class IndexViewModel @Inject constructor(
             }
         }
     }
+
+    private var _packages: Flow<List<PackageBackupEntire>> = packageBackupRepository.packages.flowOnIO()
+    private var _keyState: MutableStateFlow<String> = MutableStateFlow("")
+    private var _flagIndexState: Flow<Int> = packageBackupRepository.backupFilterFlagIndex.flowOnIO()
+    private var _sortIndexState: Flow<Int> = packageBackupRepository.backupSortTypeIndex.flowOnIO()
+    private var _sortTypeState: Flow<SortType> = packageBackupRepository.backupSortType.flowOnIO()
+    private val _packagesState: Flow<List<PackageBackupEntire>> =
+        combine(_packages, _keyState, _flagIndexState, _sortIndexState, _sortTypeState) { packages, key, flagIndex, sortIndex, sortType ->
+            packages.filter(packageBackupRepository.getKeyPredicate(key = key))
+                .filter(packageBackupRepository.getFlagPredicate(index = flagIndex))
+                .sortedWith(packageBackupRepository.getSortComparator(sortIndex = sortIndex, sortType = sortType))
+        }.flowOnIO()
+    val packagesState: StateFlow<List<PackageBackupEntire>> = _packagesState.stateInScope(listOf())
+    val packagesSelectedState: StateFlow<List<PackageBackupEntire>> = _packagesState.map { packages ->
+        packages.filter { it.operationCode != OperationMask.None }
+    }.flowOnIO().stateInScope(listOf())
+    val packagesNotSelectedState: StateFlow<List<PackageBackupEntire>> = _packagesState.map { packages ->
+        packages.filter { it.operationCode == OperationMask.None }
+    }.flowOnIO().stateInScope(listOf())
+
+    private val _topBarState: MutableStateFlow<TopBarState> = MutableStateFlow(TopBarState(title = StringResourceToken.fromStringId(R.string.backup_list)))
+    val topBarState: StateFlow<TopBarState> = _topBarState.asStateFlow()
+    val shimmeringState: StateFlow<Boolean> = _packages.map { it.isEmpty() }.flowOnIO().stateInScope(initialValue = true)
+    val selectedAPKsCountState: StateFlow<Int> = packageBackupRepository.selectedAPKsCount.flowOnIO().stateInScope(0)
+    val selectedDataCountState: StateFlow<Int> = packageBackupRepository.selectedDataCount.flowOnIO().stateInScope(0)
 }

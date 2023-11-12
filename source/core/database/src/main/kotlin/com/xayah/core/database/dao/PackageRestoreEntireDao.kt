@@ -6,7 +6,6 @@ import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.xayah.core.database.model.PackageRestoreEntire
-import com.xayah.core.database.model.PackageRestoreManifest
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -23,6 +22,9 @@ interface PackageRestoreEntireDao {
     @Query("SELECT DISTINCT timestamp FROM PackageRestoreEntire WHERE savePath = :savePath")
     suspend fun queryTimestamps(savePath: String): List<Long>
 
+    @Query("SELECT DISTINCT timestamp FROM PackageRestoreEntire WHERE savePath = :savePath")
+    fun observeTimestamps(savePath: String): Flow<List<Long>>
+
     @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND timestamp = :timestamp")
     fun queryPackagesFlow(timestamp: Long): Flow<List<PackageRestoreEntire>>
 
@@ -35,17 +37,26 @@ interface PackageRestoreEntireDao {
     @Query("SELECT * FROM PackageRestoreEntire")
     fun queryAllFlow(): Flow<List<PackageRestoreEntire>>
 
+    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1")
+    fun observeActivePackages(): Flow<List<PackageRestoreEntire>>
+
     @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
-    fun queryActiveTotalPackages(): List<PackageRestoreEntire>
+    suspend fun queryActiveTotalPackages(): List<PackageRestoreEntire>
 
-    @Query("SELECT id, packageName, label FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 3")
-    fun queryActiveBothPackages(): Flow<List<PackageRestoreManifest>>
+    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
+    fun observeSelectedPackages(): Flow<List<PackageRestoreEntire>>
 
-    @Query("SELECT id, packageName, label FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 2")
-    fun queryActiveAPKOnlyPackages(): Flow<List<PackageRestoreManifest>>
+    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 3")
+    fun queryActiveBothPackages(): Flow<List<PackageRestoreEntire>>
 
-    @Query("SELECT id, packageName, label FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 1")
-    fun queryActiveDataOnlyPackages(): Flow<List<PackageRestoreManifest>>
+    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 2")
+    fun queryActiveAPKOnlyPackages(): Flow<List<PackageRestoreEntire>>
+
+    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 1")
+    fun queryActiveDataOnlyPackages(): Flow<List<PackageRestoreEntire>>
+
+    @Query("SELECT * FROM PackageRestoreEntire WHERE packageName = :packageName AND timestamp = :timestamp AND savePath = :savePath")
+    fun queryPackage(packageName: String, timestamp: Long, savePath: String): PackageRestoreEntire?
 
     @Query("SELECT COUNT(*) FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
     fun countSelectedTotal(): Flow<Int>
@@ -70,4 +81,10 @@ interface PackageRestoreEntireDao {
 
     @Query("DELETE FROM PackageRestoreEntire")
     suspend fun clearTable()
+
+    @Query("UPDATE PackageRestoreEntire SET operationCode = (operationCode & :mask) WHERE packageName in (:packageNames) AND sizeBytes != 0")
+    suspend fun andOpCodeByMask(mask: Int, packageNames: List<String>)
+
+    @Query("UPDATE PackageRestoreEntire SET operationCode = (operationCode | (:mask & backupOpCode)) WHERE packageName in (:packageNames) AND sizeBytes != 0")
+    suspend fun orOpCodeByMask(mask: Int, packageNames: List<String>)
 }

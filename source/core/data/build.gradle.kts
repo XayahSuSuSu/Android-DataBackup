@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.library.common)
     alias(libs.plugins.library.hilt)
+    alias(libs.plugins.library.protobuf)
 }
 
 android {
@@ -15,6 +16,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:datastore"))
     implementation(project(":core:ui"))
+    implementation(project(":core:service"))
 
     // RootService
     implementation(project(":librootservice"))

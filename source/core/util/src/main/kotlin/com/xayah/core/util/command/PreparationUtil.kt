@@ -116,4 +116,68 @@ object PreparationUtil {
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
+
+    suspend fun setInstallEnv(): ShellResult = run {
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+
+        // settings put global verifier_verify_adb_installs 0
+        execute(
+            "settings",
+            "put",
+            "global",
+            "verifier_verify_adb_installs",
+            "0",
+        ).also { result ->
+            isSuccess = result.isSuccess
+            out.addAll(result.out)
+        }
+
+        // settings put global package_verifier_enable 0
+        execute(
+            "settings",
+            "put",
+            "global",
+            "package_verifier_enable",
+            "0",
+        ).also { result ->
+            isSuccess = result.isSuccess
+            out.addAll(result.out)
+        }
+
+        // settings get global package_verifier_user_consent
+        val userConsent = execute(
+            "settings",
+            "get",
+            "global",
+            "package_verifier_user_consent",
+        ).outString.trim()
+        if (userConsent != "-1") {
+            // settings put global package_verifier_user_consent -1
+            execute(
+                "settings",
+                "put",
+                "global",
+                "package_verifier_user_consent",
+                "-1",
+            ).also { result ->
+                isSuccess = result.isSuccess
+                out.addAll(result.out)
+            }
+
+            // settings put global upload_apk_enable 0
+            execute(
+                "settings",
+                "put",
+                "global",
+                "upload_apk_enable",
+                "0",
+            ).also { result ->
+                isSuccess = result.isSuccess
+                out.addAll(result.out)
+            }
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
 }

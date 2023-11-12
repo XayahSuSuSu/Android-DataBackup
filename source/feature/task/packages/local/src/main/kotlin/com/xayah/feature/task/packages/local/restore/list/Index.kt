@@ -1,5 +1,6 @@
-package com.xayah.feature.task.packages.local.backup.list
+package com.xayah.feature.task.packages.local.restore.list
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Checklist
@@ -18,11 +19,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.xayah.core.database.model.OperationMask
-import com.xayah.core.datastore.readBackupFilterFlagIndex
-import com.xayah.core.datastore.readBackupSortType
-import com.xayah.core.datastore.readBackupSortTypeIndex
+import com.xayah.core.datastore.readRestoreFilterFlagIndex
+import com.xayah.core.datastore.readRestoreInstallationTypeIndex
+import com.xayah.core.datastore.readRestoreSortType
+import com.xayah.core.datastore.readRestoreSortTypeIndex
 import com.xayah.core.model.SortType
 import com.xayah.core.ui.component.ActionChip
+import com.xayah.core.ui.component.AnimatedRoundChip
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.RoundChip
 import com.xayah.core.ui.component.SortChip
@@ -33,12 +36,14 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
+import com.xayah.core.ui.util.value
 import com.xayah.feature.task.packages.common.R
 import com.xayah.feature.task.packages.common.component.ListScaffold
 import com.xayah.feature.task.packages.common.component.PackageCard
 import com.xayah.feature.task.packages.common.component.PackageCardShimmer
-import com.xayah.feature.task.packages.local.backup.TaskPackagesBackupRoutes
+import com.xayah.feature.task.packages.local.restore.TaskPackagesRestoreRoutes
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
@@ -53,9 +58,11 @@ fun PageList(navController: NavHostController) {
     val packagesSelected by viewModel.packagesSelectedState.collectAsStateWithLifecycle()
     val packagesNotSelected by viewModel.packagesNotSelectedState.collectAsStateWithLifecycle()
     val shimmering by viewModel.shimmeringState.collectAsStateWithLifecycle()
+    val timestampIndexState by viewModel.timestampIndexState.collectAsStateWithLifecycle()
+    val timestampListState by viewModel.timestampListState.collectAsStateWithLifecycle()
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.Update)
+        viewModel.emitIntent(IndexUiIntent.Initialize)
     }
 
     ListScaffold(
@@ -72,27 +79,39 @@ fun PageList(navController: NavHostController) {
         itemKey = { "${it.packageName} - ${it.operationCode}" },
         onFabClick = {
             if (packagesSelected.isEmpty()) viewModel.emitIntent(IndexUiIntent.Emphasize)
-            else navController.navigate(TaskPackagesBackupRoutes.Processing.route)
+            else navController.navigate(TaskPackagesRestoreRoutes.Processing.route)
         },
         onSearchTextChange = { text ->
             viewModel.emitIntent(IndexUiIntent.FilterByKey(key = text))
         },
         mapChipGroup = { targetState ->
-            val sortSelectedIndex by context.readBackupSortTypeIndex().collectAsState(initial = 0)
-            val sortType by context.readBackupSortType().collectAsState(initial = SortType.ASCENDING)
+            FilterChip(
+                enabled = targetState.not(),
+                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_unfold_more),
+                label = StringResourceToken.fromStringId(R.string.date),
+                selectedIndex = timestampIndexState,
+                list = timestampListState,
+                onSelected = { index, _ ->
+                    viewModel.emitIntent(IndexUiIntent.SelectTimestamp(index = index))
+                },
+                onClick = {}
+            )
+
+            val sortSelectedIndex by context.readRestoreSortTypeIndex().collectAsState(initial = 0)
+            val sortType by context.readRestoreSortType().collectAsState(initial = SortType.ASCENDING)
             SortChip(
                 enabled = targetState.not(),
                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_sort),
                 selectedIndex = sortSelectedIndex,
                 type = sortType,
-                list = stringArrayResource(id = R.array.backup_sort_type_items).toList(),
+                list = stringArrayResource(id = R.array.restore_sort_type_items).toList(),
                 onSelected = { index, _ ->
                     viewModel.emitIntent(IndexUiIntent.Sort(index = index, type = sortType))
                 },
                 onClick = {}
             )
 
-            val filterSelectedIndex by context.readBackupFilterFlagIndex().collectAsState(initial = 0)
+            val filterSelectedIndex by context.readRestoreFilterFlagIndex().collectAsState(initial = 0)
             FilterChip(
                 enabled = targetState.not(),
                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_deployed_code),
@@ -100,6 +119,18 @@ fun PageList(navController: NavHostController) {
                 list = stringArrayResource(id = R.array.flag_type_items).toList(),
                 onSelected = { index, _ ->
                     viewModel.emitIntent(IndexUiIntent.FilterByFlag(index = index))
+                },
+                onClick = {}
+            )
+
+            val installationTypeIndex by context.readRestoreInstallationTypeIndex().collectAsState(initial = 0)
+            FilterChip(
+                enabled = targetState.not(),
+                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_apk_install),
+                selectedIndex = installationTypeIndex,
+                list = stringArrayResource(id = R.array.restore_installation_type_items).toList(),
+                onSelected = { index, _ ->
+                    viewModel.emitIntent(IndexUiIntent.FilterByInstallation(index = index))
                 },
                 onClick = {}
             )
@@ -157,8 +188,11 @@ fun PageList(navController: NavHostController) {
             PackageCardShimmer()
         },
         item = { item ->
+            val enabled = remember(item.sizeBytes) { item.isExists }
+
             PackageCard(
-                packageBackup = item,
+                enabled = enabled,
+                packageRestore = item,
                 cardSelected = item.packageName in uiState.batchSelection,
                 onApkSelected = {
                     viewModel.emitIntent(
@@ -180,7 +214,7 @@ fun PageList(navController: NavHostController) {
                     } else {
                         viewModel.emitIntent(
                             IndexUiIntent.UpdatePackage(
-                                entity = item.copy(operationCode = if (item.operationCode == OperationMask.Both) OperationMask.None else OperationMask.Both)
+                                entity = item.copy(operationCode = if (item.operationCode == OperationMask.None) item.backupOpCode else OperationMask.None)
                             )
                         )
                     }
@@ -189,8 +223,16 @@ fun PageList(navController: NavHostController) {
                     viewModel.emitIntent(IndexUiIntent.BatchingSelect(packageName = item.packageName))
                 },
                 chipGroup = {
-                    if (item.versionName.isNotEmpty()) RoundChip(text = item.versionName)
-                    RoundChip(text = item.sizeDisplay)
+                    LaunchedEffect(item) {
+                        viewModel.emitIntent(IndexUiIntent.UpdatePackageState(entity = item))
+                    }
+                    if (enabled) {
+                        if (item.versionName.isNotEmpty()) RoundChip(text = item.versionName)
+                        AnimatedRoundChip(text = item.sizeDisplay)
+                        AnimatedRoundChip(text = StringResourceToken.fromStringId(if (item.installed) R.string.installed else R.string.not_installed).value)
+                    } else {
+                        RoundChip(text = StringResourceToken.fromStringId(R.string.not_exist).value, enabled = false)
+                    }
                 },
             )
         }

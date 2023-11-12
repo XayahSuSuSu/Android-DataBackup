@@ -37,11 +37,26 @@ data class PackageRestoreEntire(
     @Transient
     var selected: MutableState<Boolean> = mutableStateOf(false)
 
+    val apkSelected: Boolean
+        get() = operationCode and OperationMask.Apk == OperationMask.Apk
+
+    val dataSelected: Boolean
+        get() = operationCode and OperationMask.Data == OperationMask.Data
+
+    val apkExists: Boolean
+        get() = backupOpCode and OperationMask.Apk == OperationMask.Apk
+
+    val dataExists: Boolean
+        get() = backupOpCode and OperationMask.Data == OperationMask.Data
+
     val isSystemApp: Boolean
         get() = (flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
     val sizeDisplay: String
         get() = formatSize(sizeBytes.toDouble())
+
+    val isExists: Boolean
+        get() = sizeBytes != 0L
 }
 
 /**

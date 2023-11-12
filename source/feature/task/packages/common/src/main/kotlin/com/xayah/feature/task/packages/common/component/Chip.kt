@@ -15,9 +15,10 @@ import com.xayah.core.ui.util.value
 
 @ExperimentalMaterial3Api
 @Composable
-fun OpChip(modifier: Modifier = Modifier, selected: Boolean, label: StringResourceToken, onClick: () -> Unit) {
+fun OpChip(modifier: Modifier = Modifier, enabled: Boolean = true, selected: Boolean, label: StringResourceToken, onClick: () -> Unit) {
     FilterChip(
         modifier = modifier,
+        enabled = enabled,
         selected = selected,
         onClick = onClick,
         label = { Text(text = label.value) },

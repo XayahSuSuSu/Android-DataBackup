@@ -14,6 +14,9 @@ import com.xayah.core.datastore.readBackupSortType
 import com.xayah.core.datastore.readBackupSortTypeIndex
 import com.xayah.core.datastore.readBackupUserId
 import com.xayah.core.datastore.readIconUpdateTime
+import com.xayah.core.datastore.saveBackupFilterFlagIndex
+import com.xayah.core.datastore.saveBackupSortType
+import com.xayah.core.datastore.saveBackupSortTypeIndex
 import com.xayah.core.datastore.saveIconUpdateTime
 import com.xayah.core.model.SortType
 import com.xayah.core.ui.model.StringResourceToken
@@ -26,13 +29,10 @@ import com.xayah.core.util.iconDir
 import com.xayah.librootservice.service.RemoteRootService
 import com.xayah.librootservice.util.withIOContext
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import java.text.Collator
 import javax.inject.Inject
 
@@ -49,6 +49,14 @@ class PackageBackupRepository @Inject constructor(
     val selectedPackages = packageBackupDao.querySelectedPackagesFlow().distinctUntilChanged()
     val selectedAPKsCount = packageBackupDao.countSelectedAPKs().distinctUntilChanged()
     val selectedDataCount = packageBackupDao.countSelectedData().distinctUntilChanged()
+
+    val backupFilterFlagIndex = context.readBackupFilterFlagIndex()
+    val backupSortTypeIndex = context.readBackupSortTypeIndex()
+    val backupSortType = context.readBackupSortType()
+
+    suspend fun saveBackupSortType(value: SortType) = context.saveBackupSortType(value = value)
+    suspend fun saveBackupSortTypeIndex(value: Int) = context.saveBackupSortTypeIndex(value = value)
+    suspend fun saveBackupFilterFlagIndex(value: Int) = context.saveBackupFilterFlagIndex(value = value)
 
     private suspend fun getInstalledPackages(userId: Int) = rootService.getInstalledPackagesAsUser(0, userId).filter {
         // Filter itself
@@ -68,12 +76,12 @@ class PackageBackupRepository @Inject constructor(
         packageBackupDao.update(activePackages)
     }
 
-    suspend fun update() = flow {
+    suspend fun update(topBarState: MutableStateFlow<TopBarState>) = run {
         val pm = context.packageManager
         val userId = context.readBackupUserId().first()
         val userHandle = rootService.getUserHandle(userId)
         val installedPackages = getInstalledPackages(userId)
-        val installedPackagesCount = installedPackages.size
+        val installedPackagesCount = (installedPackages.size - 1).coerceAtLeast(1)
 
         val newPackages = mutableListOf<PackageBackupUpdate>()
         BaseUtil.mkdirs(context.iconDir())
@@ -84,7 +92,7 @@ class PackageBackupRepository @Inject constructor(
         if (hasPassedOneDay) context.saveIconUpdateTime(now)
 
         // Get 1/10 of total count.
-        val epoch: Int = installedPackagesCount / 10
+        val epoch: Int = ((installedPackagesCount + 1) / 10).coerceAtLeast(1)
 
         installedPackages.forEachIndexed { index, packageInfo ->
             val iconPath = pathUtil.getPackageIconPath(packageInfo.packageName)
@@ -116,36 +124,23 @@ class PackageBackupRepository @Inject constructor(
                 )
             )
             if (index % epoch == 0)
-                emit(TopBarState(progress = index.toFloat() / (installedPackagesCount - 1), title = StringResourceToken.fromStringId(R.string.updating)))
+                topBarState.emit(
+                    TopBarState(
+                        progress = index.toFloat() / installedPackagesCount,
+                        title = StringResourceToken.fromStringId(R.string.updating)
+                    )
+                )
         }
         packageBackupDao.upsert(newPackages)
-        emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.backup_list)))
-    }.flowOn(Dispatchers.IO)
+        topBarState.emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.backup_list)))
+    }
 
     suspend fun updatePackage(entity: PackageBackupEntire) = packageBackupDao.update(entity)
 
     suspend fun andOpCodeByMask(mask: Int, packageNames: List<String>) = packageBackupDao.andOpCodeByMask(mask, packageNames)
     suspend fun orOpCodeByMask(mask: Int, packageNames: List<String>) = packageBackupDao.orOpCodeByMask(mask, packageNames)
 
-    private var key: String = ""
-    private var flagIndex: Int = runBlocking { context.readBackupFilterFlagIndex().first() }
-    private var sortIndex: Int = runBlocking { context.readBackupSortTypeIndex().first() }
-    private var sortType: SortType = runBlocking { context.readBackupSortType().first() }
-
-    fun getMappedPackages(key: String = this.key, flagIndex: Int = this.flagIndex, sortIndex: Int = this.sortIndex, sortType: SortType = this.sortType) = run {
-        this.key = key
-        this.flagIndex = flagIndex
-        this.sortIndex = sortIndex
-        this.sortType = sortType
-
-        packageBackupDao.queryActivePackages().map {
-            it.filter(getKeyPredicate(key = key))
-                .filter(getFlagPredicate(index = flagIndex))
-                .sortedWith(getSortComparator(sortIndex = sortIndex, sortType = sortType))
-        }.distinctUntilChanged()
-    }
-
-    private fun getFlagPredicate(index: Int): (PackageBackupEntire) -> Boolean = { packageBackup ->
+    fun getFlagPredicate(index: Int): (PackageBackupEntire) -> Boolean = { packageBackup ->
         when (index) {
             1 -> packageBackup.isSystemApp.not()
             2 -> packageBackup.isSystemApp
@@ -153,11 +148,11 @@ class PackageBackupRepository @Inject constructor(
         }
     }
 
-    private fun getKeyPredicate(key: String): (PackageBackupEntire) -> Boolean = { packageBackup ->
+    fun getKeyPredicate(key: String): (PackageBackupEntire) -> Boolean = { packageBackup ->
         packageBackup.label.lowercase().contains(key.lowercase()) || packageBackup.packageName.lowercase().contains(key.lowercase())
     }
 
-    private fun getSortComparator(sortIndex: Int, sortType: SortType): Comparator<in PackageBackupEntire> = when (sortIndex) {
+    fun getSortComparator(sortIndex: Int, sortType: SortType): Comparator<in PackageBackupEntire> = when (sortIndex) {
         1 -> sortByInstallTime(sortType)
         2 -> sortByDataSize(sortType)
         else -> sortByAlphabet(sortType)

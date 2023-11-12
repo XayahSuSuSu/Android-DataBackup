@@ -10,5 +10,10 @@
             android:name=".packages.backup.local.BackupServiceImpl"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".packages.restore.local.RestoreServiceImpl"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
     </application>
 </manifest>

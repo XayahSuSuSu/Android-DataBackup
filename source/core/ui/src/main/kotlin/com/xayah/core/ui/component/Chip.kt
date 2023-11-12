@@ -1,5 +1,6 @@
 package com.xayah.core.ui.component
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,6 +59,32 @@ fun RoundChip(modifier: Modifier = Modifier, text: String, enabled: Boolean = tr
                 color = if (enabled) surface else surface.copy(alpha = DisabledAlpha),
                 fontWeight = FontWeight.Bold
             )
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun AnimatedRoundChip(modifier: Modifier = Modifier, text: String, enabled: Boolean = true) {
+    val onSurfaceVariant = ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
+    val surface = ColorSchemeKeyTokens.Surface.toColor()
+    Surface(
+        shape = CircleShape,
+        modifier = modifier.height(ChipTokens.DefaultHeight),
+        color = if (enabled) onSurfaceVariant else onSurfaceVariant.copy(alpha = DisabledAlpha)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            AnimatedTextContainer(targetState = text) { text ->
+                TitleSmallText(
+                    modifier = Modifier.paddingHorizontal(ChipTokens.DefaultPadding),
+                    text = text,
+                    color = if (enabled) surface else surface.copy(alpha = DisabledAlpha),
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -192,6 +219,7 @@ fun FilterChip(
     enabled: Boolean,
     leadingIcon: ImageVectorToken,
     trailingIcon: ImageVectorToken? = null,
+    label: StringResourceToken,
     selectedIndex: Int,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
@@ -205,7 +233,7 @@ fun FilterChip(
                 onClick()
                 if (list.isNotEmpty()) expanded = true
             },
-            label = StringResourceToken.fromString(list[selectedIndex]),
+            label = label,
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon
         )
@@ -219,6 +247,28 @@ fun FilterChip(
             onDismissRequest = { expanded = false }
         )
     }
+}
+
+@Composable
+fun FilterChip(
+    enabled: Boolean,
+    leadingIcon: ImageVectorToken,
+    trailingIcon: ImageVectorToken? = null,
+    selectedIndex: Int,
+    list: List<String>,
+    onSelected: (index: Int, selected: String) -> Unit,
+    onClick: () -> Unit,
+) {
+    FilterChip(
+        enabled = enabled,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        label = StringResourceToken.fromString(list[selectedIndex]),
+        selectedIndex = selectedIndex,
+        list = list,
+        onSelected = onSelected,
+        onClick = onClick
+    )
 }
 
 @ExperimentalMaterial3Api
