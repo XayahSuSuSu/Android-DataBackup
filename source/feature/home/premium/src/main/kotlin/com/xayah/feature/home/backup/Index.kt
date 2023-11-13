@@ -88,7 +88,9 @@ fun PageBackup() {
                             MapItem(StringResourceToken.fromString(""), flow { }),
                             MapItem(StringResourceToken.fromString(""), flow { }),
                         ),
-                        onClick = {}
+                        onClick = {
+                            navController.navigate(MainRoutes.TaskMedium.routeBackup)
+                        }
                     ),
                     ActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.telephony),

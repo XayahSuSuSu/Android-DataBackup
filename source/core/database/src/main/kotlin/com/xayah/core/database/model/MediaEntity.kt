@@ -7,13 +7,14 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.xayah.core.model.OperationState
+import kotlinx.serialization.Serializable
 
 @Entity
 data class MediaBackupEntity(
     @PrimaryKey var path: String,
     var name: String,
     @ColumnInfo(defaultValue = "0") var sizeBytes: Long,
-    @ColumnInfo(defaultValue = "1") var selected: Boolean,
+    @ColumnInfo(defaultValue = "0") var selected: Boolean,
 ) {
     val sizeDisplay: String
         get() = formatSize(sizeBytes.toDouble())
@@ -25,6 +26,7 @@ data class MediaBackupEntityUpsert(
     var name: String,
 )
 
+@Serializable
 @Entity
 data class MediaRestoreEntity(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
@@ -32,7 +34,7 @@ data class MediaRestoreEntity(
     var path: String,
     var name: String,
     var sizeBytes: Long,
-    var selected: Boolean,
+    @ColumnInfo(defaultValue = "0") var selected: Boolean,
     @ColumnInfo(defaultValue = "") var savePath: String,
 ) {
     val sizeDisplay: String
@@ -54,13 +56,12 @@ data class MediaBackupOperationEntity(
     var endTimestamp: Long,
     @ColumnInfo(index = true) var path: String,
     var name: String,
-    var opLog: String,
-    var opState: OperationState = OperationState.IDLE,
-    var state: Boolean = false,
+    @ColumnInfo(defaultValue = "IDLE") var mediaState: OperationState = OperationState.IDLE,
+    @Embedded(prefix = "data_") val dataOp: Operation = Operation(),
 ) {
     val isSucceed: Boolean
         get() {
-            if (opState == OperationState.ERROR) return false
+            if (dataOp.state == OperationState.ERROR) return false
             return true
         }
 }
@@ -81,13 +82,12 @@ data class MediaRestoreOperationEntity(
     var endTimestamp: Long,
     var path: String,
     var name: String,
-    var opLog: String,
-    var opState: OperationState = OperationState.IDLE,
-    var state: Boolean = false,
+    @ColumnInfo(defaultValue = "IDLE") var mediaState: OperationState = OperationState.IDLE,
+    @Embedded(prefix = "data_") val dataOp: Operation = Operation(),
 ) {
     val isSucceed: Boolean
         get() {
-            if (opState == OperationState.ERROR) return false
+            if (dataOp.state == OperationState.ERROR) return false
             return true
         }
 }

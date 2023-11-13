@@ -135,6 +135,7 @@ dependencies {
     "premiumImplementation"(project(":feature:home:premium"))
     implementation(project(":feature:directory"))
     implementation(project(":feature:task:packages:local"))
+    implementation(project(":feature:task:medium:local"))
 
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "e599924aa7710af7c4552fcc76e2f5ad",
+    "identityHash": "1e9407e4d6a235e8d3ee510ebfaf9c0c",
     "entities": [
       {
         "tableName": "LogEntity",
@@ -787,7 +787,7 @@
       },
       {
         "tableName": "MediaBackupEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`path` TEXT NOT NULL, `name` TEXT NOT NULL, `sizeBytes` INTEGER NOT NULL DEFAULT 0, `selected` INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(`path`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`path` TEXT NOT NULL, `name` TEXT NOT NULL, `sizeBytes` INTEGER NOT NULL DEFAULT 0, `selected` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`path`))",
         "fields": [
           {
             "fieldPath": "path",
@@ -813,7 +813,7 @@
             "columnName": "selected",
             "affinity": "INTEGER",
             "notNull": true,
-            "defaultValue": "1"
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -827,7 +827,7 @@
       },
       {
         "tableName": "MediaRestoreEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `name` TEXT NOT NULL, `sizeBytes` INTEGER NOT NULL, `selected` INTEGER NOT NULL, `savePath` TEXT NOT NULL DEFAULT '')",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `name` TEXT NOT NULL, `sizeBytes` INTEGER NOT NULL, `selected` INTEGER NOT NULL DEFAULT 0, `savePath` TEXT NOT NULL DEFAULT '')",
         "fields": [
           {
             "fieldPath": "id",
@@ -863,7 +863,8 @@
             "fieldPath": "selected",
             "columnName": "selected",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "savePath",
@@ -884,7 +885,7 @@
       },
       {
         "tableName": "MediaBackupOperationEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `startTimestamp` INTEGER NOT NULL, `endTimestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `name` TEXT NOT NULL, `opLog` TEXT NOT NULL, `opState` TEXT NOT NULL, `state` INTEGER NOT NULL, FOREIGN KEY(`path`) REFERENCES `MediaBackupEntity`(`path`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `startTimestamp` INTEGER NOT NULL, `endTimestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `name` TEXT NOT NULL, `mediaState` TEXT NOT NULL DEFAULT 'IDLE', `data_bytes` INTEGER NOT NULL DEFAULT 0, `data_log` TEXT NOT NULL DEFAULT '', `data_state` TEXT NOT NULL DEFAULT 'IDLE', FOREIGN KEY(`path`) REFERENCES `MediaBackupEntity`(`path`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -923,22 +924,32 @@
             "notNull": true
           },
           {
-            "fieldPath": "opLog",
-            "columnName": "opLog",
+            "fieldPath": "mediaState",
+            "columnName": "mediaState",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "opState",
-            "columnName": "opState",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "state",
-            "columnName": "state",
+            "fieldPath": "dataOp.bytes",
+            "columnName": "data_bytes",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "dataOp.log",
+            "columnName": "data_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "dataOp.state",
+            "columnName": "data_state",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
           }
         ],
         "primaryKey": {
@@ -974,7 +985,7 @@
       },
       {
         "tableName": "MediaRestoreOperationEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entityId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `startTimestamp` INTEGER NOT NULL, `endTimestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `name` TEXT NOT NULL, `opLog` TEXT NOT NULL, `opState` TEXT NOT NULL, `state` INTEGER NOT NULL, FOREIGN KEY(`entityId`) REFERENCES `MediaRestoreEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entityId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `startTimestamp` INTEGER NOT NULL, `endTimestamp` INTEGER NOT NULL, `path` TEXT NOT NULL, `name` TEXT NOT NULL, `mediaState` TEXT NOT NULL DEFAULT 'IDLE', `data_bytes` INTEGER NOT NULL DEFAULT 0, `data_log` TEXT NOT NULL DEFAULT '', `data_state` TEXT NOT NULL DEFAULT 'IDLE', FOREIGN KEY(`entityId`) REFERENCES `MediaRestoreEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1019,22 +1030,32 @@
             "notNull": true
           },
           {
-            "fieldPath": "opLog",
-            "columnName": "opLog",
+            "fieldPath": "mediaState",
+            "columnName": "mediaState",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "'IDLE'"
           },
           {
-            "fieldPath": "opState",
-            "columnName": "opState",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "state",
-            "columnName": "state",
+            "fieldPath": "dataOp.bytes",
+            "columnName": "data_bytes",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "dataOp.log",
+            "columnName": "data_log",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "dataOp.state",
+            "columnName": "data_state",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'IDLE'"
           }
         ],
         "primaryKey": {
@@ -1251,7 +1272,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e599924aa7710af7c4552fcc76e2f5ad')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e9407e4d6a235e8d3ee510ebfaf9c0c')"
     ]
   }
 }

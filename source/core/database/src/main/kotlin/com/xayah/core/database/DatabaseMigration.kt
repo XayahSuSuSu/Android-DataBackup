@@ -129,5 +129,36 @@ object DatabaseMigrations {
         fromColumnName = "mediaState",
         toColumnName = "media_state",
     )
+    @RenameColumn(
+        tableName = "MediaBackupOperationEntity",
+        fromColumnName = "opLog",
+        toColumnName = "data_log",
+    )
+    @RenameColumn(
+        tableName = "MediaBackupOperationEntity",
+        fromColumnName = "opState",
+        toColumnName = "data_state",
+    )
+    @RenameColumn(
+        tableName = "MediaBackupOperationEntity",
+        fromColumnName = "state",
+        toColumnName = "mediaState",
+    )
+    @RenameColumn(
+        tableName = "MediaRestoreOperationEntity",
+        fromColumnName = "opLog",
+        toColumnName = "data_log",
+    )
+    @RenameColumn(
+        tableName = "MediaRestoreOperationEntity",
+        fromColumnName = "opState",
+        toColumnName = "data_state",
+    )
+    @RenameColumn(
+        tableName = "MediaRestoreOperationEntity",
+        fromColumnName = "state",
+        toColumnName = "mediaState",
+    )
+
     class Schema2to3 : AutoMigrationSpec
 }

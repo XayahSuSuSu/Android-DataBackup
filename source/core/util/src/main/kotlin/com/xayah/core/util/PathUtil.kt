@@ -18,8 +18,10 @@ const val ApksRelativeDir = "apks"
 const val ExtensionRelativeDir = "extension"
 const val ArchivesRelativeDir = "archives"
 const val PackagesRelativeDir = "packages"
+const val MediumRelativeDir = "medium"
 const val ConfigsRelativeDir = "configs"
 const val ConfigsPackageRestoreName = "package_restore_config.pb"
+const val ConfigsMediaRestoreName = "media_restore_config.pb"
 
 fun Context.filesDir(): String = filesDir.path
 fun Context.binDir(): String = "${filesDir()}/$BinRelativeDir"
@@ -49,6 +51,7 @@ class PathUtil @Inject constructor(
         fun getConfigsRelativeDir(): String = ConfigsRelativeDir
         fun getArchivesRelativeDir(): String = ArchivesRelativeDir
         fun getArchivesPackagesRelativeDir(): String = "$ArchivesRelativeDir/$PackagesRelativeDir"
+        fun getArchivesMediumRelativeDir(): String = "$ArchivesRelativeDir/$MediumRelativeDir"
     }
 
     fun getPackageIconPath(packageName: String): String = "${context.iconDir()}/${getPackageIconRelativePath(packageName)}"
@@ -59,6 +62,9 @@ class PathUtil @Inject constructor(
     fun getArchivesPackagesDir(parent: String): String = "${parent}/${getArchivesPackagesRelativeDir()}"
     fun getLocalBackupArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localRestoreSaveDir())
+    fun getArchivesMediumDir(parent: String): String = "${parent}/${getArchivesMediumRelativeDir()}"
+    fun getLocalBackupArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localBackupSaveDir())
+    fun getLocalRestoreArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localRestoreSaveDir())
 
     fun getTmpApkPath(packageName: String): String = "${context.tmpApksDir()}/$packageName"
 }

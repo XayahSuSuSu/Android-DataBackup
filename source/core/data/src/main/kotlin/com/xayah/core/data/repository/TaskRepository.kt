@@ -2,6 +2,7 @@ package com.xayah.core.data.repository
 
 import android.content.Context
 import androidx.annotation.StringRes
+import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.dao.PackageBackupEntireDao
 import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.dao.TaskDao
@@ -22,13 +23,14 @@ class TaskRepository @Inject constructor(
     private val taskDao: TaskDao,
     private val packageBackupDao: PackageBackupEntireDao,
     private val packageRestoreDao: PackageRestoreEntireDao,
+    private val mediaDao: MediaDao,
 ) {
     fun getString(@StringRes resId: Int) = context.getString(resId)
 
     suspend fun getBackupTargetParentPath() = context.readBackupSaveParentPath().first()
     suspend fun getBackupTargetPath() = context.readBackupSavePath().first()
 
-    suspend fun getBackupRawBytes(): Double = run {
+    suspend fun getPackagesBackupRawBytes(): Double = run {
         var total = 0.0
         val bothPackages = packageBackupDao.queryActiveBothPackages().first()
         val apkOnlyPackages = packageBackupDao.queryActiveAPKOnlyPackages().first()
@@ -39,7 +41,7 @@ class TaskRepository @Inject constructor(
         total
     }
 
-    suspend fun getRestoreRawBytes(): Double = run {
+    suspend fun getPackagesRestoreRawBytes(): Double = run {
         var total = 0.0
         val bothPackages = packageRestoreDao.queryActiveBothPackages().first()
         val apkOnlyPackages = packageRestoreDao.queryActiveAPKOnlyPackages().first()
@@ -47,6 +49,13 @@ class TaskRepository @Inject constructor(
         bothPackages.forEach { total += it.sizeBytes }
         apkOnlyPackages.forEach { total += it.sizeBytes }
         dataOnlyPackages.forEach { total += it.sizeBytes }
+        total
+    }
+
+    suspend fun getMediumBackupRawBytes(): Double = run {
+        var total = 0.0
+        val medium = mediaDao.queryBackupSelected()
+        medium.forEach { total += it.sizeBytes }
         total
     }
 

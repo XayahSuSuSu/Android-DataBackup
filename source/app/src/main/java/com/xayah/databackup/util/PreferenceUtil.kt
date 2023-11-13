@@ -86,14 +86,14 @@ fun DataType.setEntityLog(entity: PackageRestoreOperation, msg: String) {
 
 fun DataType.setEntityLog(entity: MediaBackupOperationEntity, msg: String) {
     when (this) {
-        DataType.MEDIA_MEDIA -> entity.opLog = msg
+        DataType.MEDIA_MEDIA -> entity.dataOp.log = msg
         else -> {}
     }
 }
 
 fun DataType.setEntityLog(entity: MediaRestoreOperationEntity, msg: String) {
     when (this) {
-        DataType.MEDIA_MEDIA -> entity.opLog = msg
+        DataType.MEDIA_MEDIA -> entity.dataOp.log = msg
         else -> {}
     }
 }
@@ -124,14 +124,14 @@ fun DataType.setEntityState(entity: PackageRestoreOperation, state: OperationSta
 
 fun DataType.setEntityState(entity: MediaBackupOperationEntity, state: OperationState) {
     when (this) {
-        DataType.MEDIA_MEDIA -> entity.opState = state
+        DataType.MEDIA_MEDIA -> entity.dataOp.state = state
         else -> {}
     }
 }
 
 fun DataType.setEntityState(entity: MediaRestoreOperationEntity, state: OperationState) {
     when (this) {
-        DataType.MEDIA_MEDIA -> entity.opState = state
+        DataType.MEDIA_MEDIA -> entity.dataOp.state = state
         else -> {}
     }
 }

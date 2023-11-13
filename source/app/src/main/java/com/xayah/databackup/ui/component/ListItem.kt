@@ -616,22 +616,22 @@ fun ListItemMediaBackup(
     val isProcessing = remember(uiState) { uiState.opType == OpType.PROCESSING }
     var selectedInList by remember(entity, isProcessing) { mutableStateOf(media.selected && isProcessing.not()) }
     val mediaOpIndex by remember(entity, uiState) { mutableIntStateOf(entity.opList.indexOfLast { it.timestamp == uiState.timestamp }) }
-    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].opState == OperationState.PROCESSING) }
+    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].dataOp.state == OperationState.PROCESSING) }
     val mediaOpDone by remember(
         entity,
         mediaOpIndex
-    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].opState != OperationState.IDLE && opList[mediaOpIndex].opState != OperationState.PROCESSING)) }
+    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].dataOp.state != OperationState.IDLE && opList[mediaOpIndex].dataOp.state != OperationState.PROCESSING)) }
     val mediaOpLog by remember(
         entity,
         mediaOpProcessing
-    ) { mutableStateOf(if (mediaOpProcessing || mediaOpDone) opList[mediaOpIndex].opLog else context.getString(R.string.idle)) }
+    ) { mutableStateOf(if (mediaOpProcessing || mediaOpDone) opList[mediaOpIndex].dataOp.log else context.getString(R.string.idle)) }
     var expanded by remember { mutableStateOf(false) }
 
     ListItemMedia(
         modifier = modifier,
         name = media.name,
         path = media.path,
-        state = if (mediaOpDone) opList[mediaOpIndex].state else false,
+        state = false,
         mediaOpLog = mediaOpLog,
         isProcessing = isProcessing,
         selectedInList = selectedInList,
@@ -745,15 +745,15 @@ fun ListItemMediaRestore(
     val isProcessing = remember(uiState) { uiState.opType == OpType.PROCESSING }
     var selectedInList by remember(entity, isProcessing) { mutableStateOf(media.selected && isProcessing.not()) }
     val mediaOpIndex by remember(entity, uiState) { mutableIntStateOf(entity.opList.indexOfLast { it.timestamp == uiState.timestamp }) }
-    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].opState == OperationState.PROCESSING) }
+    val mediaOpProcessing by remember(entity, mediaOpIndex) { mutableStateOf(mediaOpIndex != -1 && opList[mediaOpIndex].dataOp.state == OperationState.PROCESSING) }
     val mediaOpDone by remember(
         entity,
         mediaOpIndex
-    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].opState != OperationState.IDLE && opList[mediaOpIndex].opState != OperationState.PROCESSING)) }
+    ) { mutableStateOf(mediaOpIndex != -1 && (opList[mediaOpIndex].dataOp.state != OperationState.IDLE && opList[mediaOpIndex].dataOp.state != OperationState.PROCESSING)) }
     val mediaOpLog by remember(
         entity,
         mediaOpProcessing
-    ) { mutableStateOf(if (mediaOpProcessing || mediaOpDone) opList[mediaOpIndex].opLog else context.getString(R.string.idle)) }
+    ) { mutableStateOf(if (mediaOpProcessing || mediaOpDone) opList[mediaOpIndex].dataOp.log else context.getString(R.string.idle)) }
     var expanded by remember { mutableStateOf(false) }
     val archivePath = remember {
         "${PathUtil.getRestoreMediumSavePath()}/${media.name}/${media.timestamp}/${DataType.MEDIA_MEDIA.type}.${CompressionType.TAR.suffix}"
@@ -764,7 +764,7 @@ fun ListItemMediaRestore(
         name = media.name,
         path = media.path,
         archivePath = archivePath,
-        state = if (mediaOpDone) opList[mediaOpIndex].state else false,
+        state = false,
         mediaOpLog = mediaOpLog,
         isProcessing = isProcessing,
         selectedInList = selectedInList,

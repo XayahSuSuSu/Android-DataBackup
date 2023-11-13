@@ -21,6 +21,8 @@ import com.xayah.databackup.ui.component.rememberSlotScope
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.feature.directory.PageDirectory
 import com.xayah.feature.home.HomeGraph
+import com.xayah.feature.task.medium.local.backup.TaskMediumBackupGraph
+import com.xayah.feature.task.medium.local.restore.TaskMediumRestoreGraph
 import com.xayah.feature.task.packages.local.backup.TaskPackagesBackupGraph
 import com.xayah.feature.task.packages.local.restore.TaskPackagesRestoreGraph
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,6 +57,12 @@ class MainActivity : ComponentActivity() {
                                 when (OpType.of(backStackEntry.arguments?.getString(MainRoutes.ArgOpType))) {
                                     OpType.BACKUP -> TaskPackagesBackupGraph()
                                     OpType.RESTORE -> TaskPackagesRestoreGraph()
+                                }
+                            }
+                            composable(route = MainRoutes.TaskMedium.route) { backStackEntry ->
+                                when (OpType.of(backStackEntry.arguments?.getString(MainRoutes.ArgOpType))) {
+                                    OpType.BACKUP -> TaskMediumBackupGraph()
+                                    OpType.RESTORE -> TaskMediumRestoreGraph()
                                 }
                             }
                         }

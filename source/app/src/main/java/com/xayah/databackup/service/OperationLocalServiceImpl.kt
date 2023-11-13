@@ -359,9 +359,7 @@ class OperationLocalServiceImpl : Service() {
                     endTimestamp = 0,
                     path = path,
                     name = name,
-                    opLog = "",
-                    opState = OperationState.IDLE,
-                    state = false,
+                    mediaState = OperationState.PROCESSING,
                 ).also { entity ->
                     entity.id = mediaDao.upsertBackupOp(entity)
                 }
@@ -381,7 +379,7 @@ class OperationLocalServiceImpl : Service() {
                 } else {
                     logUtil.log(logTag, "Backup failed.")
                 }
-                mediaBackupOperationEntity.state = mediaBackupOperationEntity.isSucceed
+                mediaBackupOperationEntity.mediaState = if (mediaBackupOperationEntity.isSucceed) OperationState.DONE else OperationState.ERROR
                 mediaBackupOperationEntity.endTimestamp = DateUtil.getTimestamp()
                 mediaDao.upsertBackupOp(mediaBackupOperationEntity)
 
@@ -456,9 +454,7 @@ class OperationLocalServiceImpl : Service() {
                     endTimestamp = 0,
                     path = path,
                     name = name,
-                    opLog = "",
-                    opState = OperationState.IDLE,
-                    state = false,
+                    mediaState = OperationState.PROCESSING,
                 ).also { entity ->
                     entity.id = mediaDao.upsertRestoreOp(entity)
                 }
@@ -477,7 +473,7 @@ class OperationLocalServiceImpl : Service() {
                 } else {
                     logUtil.log(logTag, "Restoring failed.")
                 }
-                mediaRestoreOperationEntity.state = mediaRestoreOperationEntity.isSucceed
+                mediaRestoreOperationEntity.mediaState = if (mediaRestoreOperationEntity.isSucceed) OperationState.DONE else OperationState.ERROR
                 mediaRestoreOperationEntity.endTimestamp = DateUtil.getTimestamp()
                 mediaDao.upsertRestoreOp(mediaRestoreOperationEntity)
             }

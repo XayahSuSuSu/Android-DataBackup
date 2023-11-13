@@ -68,7 +68,7 @@ class IndexViewModel @Inject constructor(
                             startTimestamp = 0,
                             endTimestamp = 0,
                             path = taskRepository.getString(R.string.internal_storage),
-                            rawBytes = taskRepository.getRestoreRawBytes(),
+                            rawBytes = taskRepository.getPackagesRestoreRawBytes(),
                             availableBytes = taskRepository.getAvailableBytes(ConstantUtil.DefaultPathParent),
                             totalBytes = taskRepository.getTotalBytes(ConstantUtil.DefaultPathParent),
                         )

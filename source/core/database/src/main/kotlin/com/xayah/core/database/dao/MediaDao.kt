@@ -12,6 +12,8 @@ import com.xayah.core.database.model.MediaBackupWithOpEntity
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.MediaRestoreWithOpEntity
+import com.xayah.core.database.model.PackageBackupOperation
+import com.xayah.core.database.model.PackageRestoreEntire
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,6 +26,9 @@ interface MediaDao {
 
     @Upsert(entity = MediaBackupOperationEntity::class)
     suspend fun upsertBackupOp(item: MediaBackupOperationEntity): Long
+
+    @Query("SELECT * FROM MediaBackupOperationEntity WHERE timestamp = :timestamp ORDER BY id DESC")
+    fun observeBackupOp(timestamp: Long): Flow<List<MediaBackupOperationEntity>>
 
     @Upsert(entity = MediaRestoreOperationEntity::class)
     suspend fun upsertRestoreOp(item: MediaRestoreOperationEntity): Long
@@ -39,6 +44,9 @@ interface MediaDao {
     fun queryAllBackupFlow(): Flow<List<MediaBackupWithOpEntity>>
 
     @Query("SELECT * FROM MediaBackupEntity")
+    fun observeBackupMedium(): Flow<List<MediaBackupEntity>>
+
+    @Query("SELECT * FROM MediaBackupEntity")
     suspend fun queryAllBackup(): List<MediaBackupEntity>
 
     @Transaction
@@ -51,8 +59,14 @@ interface MediaDao {
     @Query("SELECT * FROM MediaBackupEntity WHERE selected = 1")
     suspend fun queryBackupSelected(): List<MediaBackupEntity>
 
+    @Query("SELECT * FROM MediaBackupEntity WHERE selected = 1")
+    fun observeBackupSelected(): Flow<List<MediaBackupEntity>>
+
     @Query("SELECT * FROM MediaRestoreEntity WHERE selected = 1 AND timestamp = :timestamp")
     suspend fun queryRestoreSelected(timestamp: Long): List<MediaRestoreEntity>
+
+    @Query("SELECT * FROM MediaRestoreEntity WHERE timestamp = :timestamp")
+    suspend fun queryRestoreMedium(timestamp: Long): List<MediaRestoreEntity>
 
     @Query("SELECT DISTINCT timestamp FROM MediaRestoreEntity WHERE savePath = :savePath")
     suspend fun queryTimestamps(savePath: String): List<Long>
@@ -77,4 +91,7 @@ interface MediaDao {
 
     @Query("DELETE FROM MediaRestoreEntity")
     suspend fun clearRestoreTable()
+
+    @Query("UPDATE MediaBackupEntity SET selected = :selected WHERE path in (:pathList)")
+    suspend fun batchSelectOp(selected: Boolean, pathList: List<String>)
 }

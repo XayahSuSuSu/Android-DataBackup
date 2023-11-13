@@ -1,7 +1,9 @@
 package com.xayah.core.service.util
 
+import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.dao.PackageBackupOperationDao
 import com.xayah.core.database.dao.PackageRestoreOperationDao
+import com.xayah.core.database.model.MediaBackupOperationEntity
 import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.core.model.OperationState
@@ -105,4 +107,12 @@ suspend fun PackageRestoreOperationDao.upsertMedia(op: PackageRestoreOperation, 
         op.mediaOp.log = opLog ?: op.mediaOp.log
         op.mediaOp.bytes = opBytes ?: op.mediaOp.bytes
         upsert(op)
+    }
+
+suspend fun MediaDao.upsertBackupOpData(op: MediaBackupOperationEntity, opState: OperationState? = null, opLog: String? = null, opBytes: Long? = null) =
+    run {
+        op.dataOp.state = opState ?: op.dataOp.state
+        op.dataOp.log = opLog ?: op.dataOp.log
+        op.dataOp.bytes = opBytes ?: op.dataOp.bytes
+        upsertBackupOp(op)
     }
