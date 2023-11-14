@@ -7,7 +7,7 @@ import com.xayah.core.database.model.LogCmdType
 import com.xayah.core.database.dao.LogDao
 import com.xayah.core.database.model.LogEntity
 import com.xayah.core.util.DateUtil
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withIOContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

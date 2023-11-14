@@ -1,6 +1,6 @@
 package com.xayah.core.data.repository
 
-import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.core.rootservice.service.RemoteRootService
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(

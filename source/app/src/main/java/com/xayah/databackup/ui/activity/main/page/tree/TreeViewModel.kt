@@ -9,7 +9,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.readBackupSavePath
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject

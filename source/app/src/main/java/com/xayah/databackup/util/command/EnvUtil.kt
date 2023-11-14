@@ -13,8 +13,8 @@ import com.xayah.databackup.util.binArchivePath
 import com.xayah.databackup.util.binPath
 import com.xayah.databackup.util.filesPath
 import com.xayah.databackup.util.iconPath
-import com.xayah.librootservice.util.ExceptionUtil.tryOn
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
+import com.xayah.core.rootservice.util.withIOContext
 import net.lingala.zip4j.ZipFile
 import java.io.ByteArrayOutputStream
 import java.io.File

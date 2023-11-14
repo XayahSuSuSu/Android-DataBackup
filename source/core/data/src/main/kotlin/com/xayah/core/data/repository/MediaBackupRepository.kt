@@ -4,7 +4,7 @@ import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.model.MediaBackupEntity
 import com.xayah.core.database.model.MediaBackupEntityUpsert
 import com.xayah.core.datastore.ConstantUtil
-import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.core.rootservice.service.RemoteRootService
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 

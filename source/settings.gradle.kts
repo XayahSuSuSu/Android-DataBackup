@@ -17,8 +17,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "DataBackup"
 include(":app")
-include(":librootservice")
-include(":libhiddenapi")
 include(":core:common")
 include(":core:service")
 include(":core:ui")
@@ -27,6 +25,8 @@ include(":core:database")
 include(":core:data")
 include(":core:datastore")
 include(":core:util")
+include(":core:hiddenapi")
+include(":core:rootservice")
 include(":feature:home:common")
 include(":feature:home:foss")
 include(":feature:home:premium")

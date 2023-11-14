@@ -78,10 +78,10 @@ import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.PathUtil
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.activity.PickerType
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.ExceptionUtil
-import com.xayah.librootservice.util.ExceptionUtil.tryOn
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.ExceptionUtil
+import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
+import com.xayah.core.rootservice.util.withIOContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File

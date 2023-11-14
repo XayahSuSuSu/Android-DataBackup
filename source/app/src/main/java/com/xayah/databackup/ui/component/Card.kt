@@ -44,7 +44,7 @@ import com.xayah.core.util.DateUtil
 import com.xayah.databackup.util.readCloudActiveName
 import com.xayah.databackup.util.readLastBackupTime
 import com.xayah.databackup.util.readLastRestoringTime
-import com.xayah.librootservice.util.ExceptionUtil.tryOn
+import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 

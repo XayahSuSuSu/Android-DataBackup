@@ -11,7 +11,7 @@ import com.xayah.databackup.util.readUpdateCheckTime
 import com.xayah.databackup.util.saveLatestVersionLink
 import com.xayah.databackup.util.saveLatestVersionName
 import com.xayah.databackup.util.saveUpdateCheckTime
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withIOContext
 import kotlinx.coroutines.launch
 
 private fun compareVersionName(context: Context, viewModel: SettingsViewModel) {

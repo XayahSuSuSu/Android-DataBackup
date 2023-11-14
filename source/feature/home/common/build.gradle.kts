@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
+    implementation(project(":core:hiddenapi"))
 
     // Compose Navigation
     implementation(libs.androidx.navigation.compose)
@@ -23,7 +24,4 @@ dependencies {
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
-
-    // Hidden api
-    implementation(project(":libhiddenapi"))
 }

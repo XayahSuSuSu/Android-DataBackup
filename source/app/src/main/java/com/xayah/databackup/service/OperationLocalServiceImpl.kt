@@ -36,8 +36,8 @@ import com.xayah.databackup.util.readResetBackupList
 import com.xayah.databackup.util.readResetRestoreList
 import com.xayah.databackup.util.saveLastBackupTime
 import com.xayah.databackup.util.saveLastRestoringTime
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

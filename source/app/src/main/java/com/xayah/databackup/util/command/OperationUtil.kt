@@ -41,10 +41,10 @@ import com.xayah.databackup.util.readRestoreUserId
 import com.xayah.databackup.util.setEntityLog
 import com.xayah.databackup.util.setEntityState
 import com.xayah.databackup.util.suffixOf
-import com.xayah.librootservice.parcelables.PathParcelable
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.ExceptionUtil
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.parcelables.PathParcelable
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.ExceptionUtil
+import com.xayah.core.rootservice.util.withIOContext
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

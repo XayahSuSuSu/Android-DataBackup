@@ -15,8 +15,8 @@ import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.service.OperationLocalService
 import com.xayah.databackup.ui.activity.operation.page.media.backup.OpType
 import com.xayah.databackup.util.PathUtil
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

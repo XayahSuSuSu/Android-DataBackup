@@ -89,9 +89,9 @@ import com.xayah.databackup.util.saveRestoreFlagTypeIndex
 import com.xayah.databackup.util.saveRestoreInstallationTypeIndex
 import com.xayah.databackup.util.saveRestoreSortState
 import com.xayah.databackup.util.saveRestoreSortTypeIndex
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.ExceptionUtil.tryService
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.ExceptionUtil.tryService
+import com.xayah.core.rootservice.util.withIOContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.Collator

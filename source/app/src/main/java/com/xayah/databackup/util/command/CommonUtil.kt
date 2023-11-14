@@ -10,7 +10,7 @@ import com.xayah.core.database.model.LogCmdType
 import com.xayah.core.common.util.trim
 import com.xayah.databackup.util.ConstantUtil
 import com.xayah.databackup.util.LogUtil
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withIOContext
 
 suspend fun ShellResult.logCmd(logUtil: LogUtil, logId: Long) {
     logUtil.logCmd(logId, LogCmdType.SHELL_IN, inputString)

@@ -17,9 +17,7 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:ui"))
     implementation(project(":core:service"))
-
-    // RootService
-    implementation(project(":librootservice"))
+    implementation(project(":core:rootservice"))
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)

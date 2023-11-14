@@ -10,7 +10,7 @@ import com.xayah.databackup.DataBackupApplication
 import com.xayah.databackup.util.LogUtil
 import com.xayah.core.util.SymbolUtil
 import com.xayah.databackup.util.command.CommonUtil.execute
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withIOContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

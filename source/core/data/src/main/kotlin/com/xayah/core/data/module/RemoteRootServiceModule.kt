@@ -1,7 +1,7 @@
 package com.xayah.core.data.module
 
 import android.content.Context
-import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.core.rootservice.service.RemoteRootService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

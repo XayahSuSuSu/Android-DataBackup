@@ -14,8 +14,8 @@ import com.xayah.core.datastore.saveRestoreSavePath
 import com.xayah.core.model.OpType
 import com.xayah.core.model.StorageType
 import com.xayah.core.util.command.PreparationUtil
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.nio.file.Paths

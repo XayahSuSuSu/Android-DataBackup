@@ -21,7 +21,7 @@ import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.ui.activity.main.page.restore.PageRestore
 import com.xayah.databackup.ui.component.SortState
 import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
-import com.xayah.librootservice.util.ExceptionUtil.tryOn
+import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
 import kotlinx.coroutines.flow.map
 
 const val PreferenceName = "settings"

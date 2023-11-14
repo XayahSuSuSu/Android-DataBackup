@@ -11,7 +11,7 @@ import com.xayah.core.database.model.PackageBackupManifest
 import com.xayah.core.database.model.formatSize
 import com.xayah.databackup.util.LogUtil
 import com.xayah.databackup.util.PathUtil
-import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.core.rootservice.service.RemoteRootService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

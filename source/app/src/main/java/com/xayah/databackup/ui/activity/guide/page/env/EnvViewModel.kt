@@ -21,8 +21,8 @@ import com.xayah.databackup.ui.component.openConfirmDialog
 import com.xayah.databackup.util.command.PreparationUtil
 import com.xayah.databackup.util.command.releaseBin
 import com.xayah.databackup.util.saveAppVersionName
-import com.xayah.librootservice.util.ExceptionUtil
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.ExceptionUtil
+import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.sync.Mutex

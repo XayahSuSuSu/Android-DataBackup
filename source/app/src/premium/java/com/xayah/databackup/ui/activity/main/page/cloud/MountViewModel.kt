@@ -20,9 +20,9 @@ import com.xayah.databackup.util.command.CloudUtil
 import com.xayah.databackup.util.command.Rclone
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.activity.PickerType
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.withIOContext
-import com.xayah.librootservice.util.withMainContext
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withMainContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

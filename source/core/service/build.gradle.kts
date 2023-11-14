@@ -14,7 +14,5 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:database"))
     implementation(project(":core:datastore"))
-
-    // RootService
-    implementation(project(":librootservice"))
+    implementation(project(":core:rootservice"))
 }

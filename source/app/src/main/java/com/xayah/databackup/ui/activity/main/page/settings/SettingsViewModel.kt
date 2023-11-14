@@ -15,7 +15,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.SettingsGridItemConfig
 import com.xayah.databackup.util.ServerUtil
 import com.xayah.databackup.util.readLatestVersionLink
-import com.xayah.librootservice.util.ExceptionUtil
+import com.xayah.core.rootservice.util.ExceptionUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject

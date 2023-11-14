@@ -19,8 +19,8 @@ import com.xayah.databackup.util.command.Rclone
 import com.xayah.databackup.util.command.logCmd
 import com.xayah.databackup.util.readCloudActiveName
 import com.xayah.libpickyou.ui.PickYouLauncher
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.withMainContext
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withMainContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 

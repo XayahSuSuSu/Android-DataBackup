@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xayah.core.database.dao.LogDao
 import com.xayah.core.util.DateUtil
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

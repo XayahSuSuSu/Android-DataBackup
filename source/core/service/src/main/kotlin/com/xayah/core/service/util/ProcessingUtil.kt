@@ -19,7 +19,7 @@ import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.model.ShellResult
-import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.core.rootservice.service.RemoteRootService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

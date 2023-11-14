@@ -66,10 +66,10 @@ import com.xayah.databackup.util.saveMonetEnabled
 import com.xayah.databackup.util.saveResetBackupList
 import com.xayah.databackup.util.saveResetRestoreList
 import com.xayah.databackup.util.saveRestoreUserId
-import com.xayah.librootservice.service.RemoteRootService
-import com.xayah.librootservice.util.ExceptionUtil.tryService
-import com.xayah.librootservice.util.withIOContext
-import com.xayah.librootservice.util.withMainContext
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.ExceptionUtil.tryService
+import com.xayah.core.rootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withMainContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

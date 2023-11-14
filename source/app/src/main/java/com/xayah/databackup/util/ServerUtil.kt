@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.xayah.core.util.module.GitHub
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withIOContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject

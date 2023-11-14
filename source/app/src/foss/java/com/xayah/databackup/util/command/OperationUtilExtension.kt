@@ -2,7 +2,7 @@ package com.xayah.databackup.util.command
 
 import androidx.compose.runtime.MutableState
 import com.xayah.core.model.DataType
-import com.xayah.librootservice.parcelables.PathParcelable
+import com.xayah.core.rootservice.parcelables.PathParcelable
 import javax.inject.Inject
 
 fun AdditionUtil.backupItselfExtension(targetPath: String) {}

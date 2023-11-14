@@ -10,7 +10,7 @@ import com.xayah.core.database.model.TaskEntity
 import com.xayah.core.datastore.readBackupSaveParentPath
 import com.xayah.core.datastore.readBackupSavePath
 import com.xayah.core.util.DateUtil
-import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.core.rootservice.service.RemoteRootService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged

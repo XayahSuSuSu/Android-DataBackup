@@ -115,12 +115,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
 
-    // RootService
-    implementation(project(":librootservice"))
-
-    // Hidden api
-    implementation(project(":libhiddenapi"))
-
     // Core
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
@@ -129,6 +123,8 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:datastore"))
     implementation(project(":core:util"))
+    implementation(project(":core:hiddenapi"))
+    implementation(project(":core:rootservice"))
 
     // Feature
     "fossImplementation"(project(":feature:home:foss"))

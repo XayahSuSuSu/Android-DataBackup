@@ -4,7 +4,7 @@ import android.content.Context
 import com.xayah.databackup.util.command.EnvUtil.setPermissions
 import com.xayah.databackup.util.extensionArchivePath
 import com.xayah.databackup.util.extensionPath
-import com.xayah.librootservice.util.withIOContext
+import com.xayah.core.rootservice.util.withIOContext
 import java.io.File
 
 private suspend fun releaseExtension(context: Context): Boolean {

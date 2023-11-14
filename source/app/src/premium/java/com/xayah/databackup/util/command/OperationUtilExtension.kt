@@ -11,8 +11,8 @@ import com.xayah.databackup.util.PathUtil
 import com.xayah.databackup.util.readCloudActiveName
 import com.xayah.databackup.util.setEntityLog
 import com.xayah.databackup.util.setEntityState
-import com.xayah.librootservice.parcelables.PathParcelable
-import com.xayah.librootservice.service.RemoteRootService
+import com.xayah.core.rootservice.parcelables.PathParcelable
+import com.xayah.core.rootservice.service.RemoteRootService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
