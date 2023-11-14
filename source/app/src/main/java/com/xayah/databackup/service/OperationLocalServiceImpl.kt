@@ -435,7 +435,7 @@ class OperationLocalServiceImpl : Service() {
             val context = applicationContext
 
             logUtil.log(logTag, "Started.")
-            val medium = mediaDao.queryRestoreSelected(timestamp)
+            val medium = mediaDao.queryRestoreSelected()
             medium.forEach { current ->
                 val name = current.name
                 val path = current.path

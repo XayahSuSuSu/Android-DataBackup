@@ -59,6 +59,13 @@ class TaskRepository @Inject constructor(
         total
     }
 
+    suspend fun getMediumRestoreRawBytes(): Double = run {
+        var total = 0.0
+        val medium = mediaDao.queryRestoreSelected()
+        medium.forEach { total += it.sizeBytes }
+        total
+    }
+
     suspend fun getAvailableBytes(path: String): Double = rootService.readStatFs(path).availableBytes.toDouble()
     suspend fun getTotalBytes(path: String): Double = rootService.readStatFs(path).totalBytes.toDouble()
 

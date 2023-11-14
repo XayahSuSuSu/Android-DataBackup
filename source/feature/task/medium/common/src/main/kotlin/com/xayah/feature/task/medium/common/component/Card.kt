@@ -20,11 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.DataUsage
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.ManageAccounts
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -38,15 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.xayah.core.database.model.MediaBackupEntity
 import com.xayah.core.database.model.MediaBackupOperationEntity
-import com.xayah.core.database.model.PackageRestoreEntire
-import com.xayah.core.database.model.PackageRestoreOperation
+import com.xayah.core.database.model.MediaRestoreEntity
+import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.formatSize
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
@@ -77,14 +72,9 @@ import com.xayah.core.ui.util.containerColor
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.icon
 import com.xayah.core.ui.util.value
-import com.xayah.core.util.PathUtil
-import com.xayah.core.util.command.BaseUtil
-import com.xayah.core.util.iconDir
 import com.xayah.core.util.ifNotTheSame
-import com.xayah.core.util.withIOContext
 import com.xayah.feature.task.medium.common.R
 import kotlinx.coroutines.CoroutineScope
 
@@ -124,7 +114,7 @@ fun MediumCard(
     modifier: Modifier = Modifier,
     enabled: Boolean,
     cardSelected: Boolean,
-    packageRestore: PackageRestoreEntire,
+    mediaRestore: MediaRestoreEntity,
     onDataSelected: () -> Unit,
     onCardClick: () -> Unit,
     onCardLongClick: () -> Unit,
@@ -134,11 +124,11 @@ fun MediumCard(
         modifier = modifier,
         enabled = enabled,
         shimmering = false,
-        label = packageRestore.label,
-        path = packageRestore.packageName,
+        label = mediaRestore.name,
+        path = mediaRestore.path,
         cardSelected = cardSelected,
-        dataSelected = packageRestore.dataSelected,
-        dataChipEnabled = packageRestore.dataExists,
+        dataSelected = mediaRestore.selected,
+        dataChipEnabled = true,
         onDataSelected = onDataSelected,
         onCardClick = onCardClick,
         onCardLongClick = onCardLongClick,
@@ -436,97 +426,33 @@ fun ProcessingCard(
 @Composable
 fun ProcessingCard(
     modifier: Modifier = Modifier,
-    packageRestoreOp: PackageRestoreOperation,
+    mediaRestoreOp: MediaRestoreOperationEntity,
     onCardClick: () -> Unit,
     onCardLongClick: () -> Unit,
 ) {
-    val context = LocalContext.current
-    var icon by remember { mutableStateOf<Any?>(null) }
     var msg by remember { mutableStateOf("") }
-
-    LaunchedEffect(packageRestoreOp.packageName) {
-        // Read icon from cached internal dir.
-        withIOContext {
-            icon = BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageRestoreOp.packageName)}")
-        }
-    }
 
     ProcessingCard(
         modifier = modifier,
-        label = packageRestoreOp.label,
-        path = packageRestoreOp.packageName,
+        label = mediaRestoreOp.name,
+        path = mediaRestoreOp.path,
         showStateIcon = true,
-        isProcessing = packageRestoreOp.packageState == OperationState.PROCESSING,
-        isSucceed = packageRestoreOp.isSucceed,
+        isProcessing = mediaRestoreOp.mediaState == OperationState.PROCESSING,
+        isSucceed = mediaRestoreOp.isSucceed,
         msg = msg,
         onCardClick = onCardClick,
         onCardLongClick = onCardLongClick,
     ) {
         AssistChip(
             enabled = true,
-            title = StringResourceToken.fromString(DataType.PACKAGE_APK.type.uppercase()),
-            subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.apkOp.bytes.toDouble())),
-            leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Android),
-            trailingIcon = packageRestoreOp.apkOp.state.icon,
-            color = packageRestoreOp.apkOp.state.color,
-            containerColor = packageRestoreOp.apkOp.state.containerColor,
-        ) {
-            msg = msg.ifNotTheSame(packageRestoreOp.apkOp.log, "")
-        }
-        AssistChip(
-            enabled = true,
-            title = StringResourceToken.fromString(DataType.PACKAGE_USER.type.uppercase()),
-            subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.userOp.bytes.toDouble())),
-            leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Person),
-            trailingIcon = packageRestoreOp.userOp.state.icon,
-            color = packageRestoreOp.userOp.state.color,
-            containerColor = packageRestoreOp.userOp.state.containerColor,
-        ) {
-            msg = msg.ifNotTheSame(packageRestoreOp.userOp.log, "")
-        }
-        AssistChip(
-            enabled = true,
-            title = StringResourceToken.fromString(DataType.PACKAGE_USER_DE.type.uppercase()),
-            subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.userDeOp.bytes.toDouble())),
-            leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.ManageAccounts),
-            trailingIcon = packageRestoreOp.userDeOp.state.icon,
-            color = packageRestoreOp.userDeOp.state.color,
-            containerColor = packageRestoreOp.userDeOp.state.containerColor,
-        ) {
-            msg = msg.ifNotTheSame(packageRestoreOp.userDeOp.log, "")
-        }
-        AssistChip(
-            enabled = true,
             title = StringResourceToken.fromString(DataType.PACKAGE_DATA.type.uppercase()),
-            subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.dataOp.bytes.toDouble())),
+            subtitle = StringResourceToken.fromString(formatSize(mediaRestoreOp.dataOp.bytes.toDouble())),
             leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_database),
-            trailingIcon = packageRestoreOp.dataOp.state.icon,
-            color = packageRestoreOp.dataOp.state.color,
-            containerColor = packageRestoreOp.dataOp.state.containerColor,
+            trailingIcon = mediaRestoreOp.dataOp.state.icon,
+            color = mediaRestoreOp.dataOp.state.color,
+            containerColor = mediaRestoreOp.dataOp.state.containerColor,
         ) {
-            msg = msg.ifNotTheSame(packageRestoreOp.dataOp.log, "")
-        }
-        AssistChip(
-            enabled = true,
-            title = StringResourceToken.fromString(DataType.PACKAGE_OBB.type.uppercase()),
-            subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.obbOp.bytes.toDouble())),
-            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_stadia_controller),
-            trailingIcon = packageRestoreOp.obbOp.state.icon,
-            color = packageRestoreOp.obbOp.state.color,
-            containerColor = packageRestoreOp.obbOp.state.containerColor,
-        ) {
-            msg = msg.ifNotTheSame(packageRestoreOp.obbOp.log, "")
-        }
-        AssistChip(
-            enabled = true,
-            title = StringResourceToken.fromString(DataType.PACKAGE_MEDIA.type.uppercase()),
-            subtitle = StringResourceToken.fromString(formatSize(packageRestoreOp.mediaOp.bytes.toDouble())),
-            leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Image),
-            trailingIcon = packageRestoreOp.mediaOp.state.icon,
-            color = packageRestoreOp.mediaOp.state.color,
-            containerColor = packageRestoreOp.mediaOp.state.containerColor,
-        ) {
-            msg = msg.ifNotTheSame(packageRestoreOp.mediaOp.log, "")
+            msg = msg.ifNotTheSame(mediaRestoreOp.dataOp.log, "")
         }
     }
 }
@@ -560,24 +486,14 @@ fun ProcessingCard(
 @Composable
 fun ProcessingCard(
     modifier: Modifier = Modifier,
-    packageRestore: PackageRestoreEntire,
+    mediaRestore: MediaRestoreEntity,
     onCardClick: () -> Unit,
     onCardLongClick: () -> Unit,
 ) {
-    val context = LocalContext.current
-    var icon by remember { mutableStateOf<Any?>(null) }
-
-    LaunchedEffect(packageRestore.packageName) {
-        // Read icon from cached internal dir.
-        withIOContext {
-            icon = BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageRestore.packageName)}")
-        }
-    }
-
     ProcessingCard(
         modifier = modifier,
-        label = packageRestore.label,
-        path = packageRestore.packageName,
+        label = mediaRestore.name,
+        path = mediaRestore.path,
         showStateIcon = false,
         isProcessing = false,
         isSucceed = false,
@@ -585,14 +501,7 @@ fun ProcessingCard(
         onCardClick = onCardClick,
         onCardLongClick = onCardLongClick,
     ) {
-        if (packageRestore.apkSelected) RoundChip(text = DataType.PACKAGE_APK.type.uppercase())
-        if (packageRestore.dataSelected) {
-            RoundChip(text = DataType.PACKAGE_USER.type.uppercase())
-            RoundChip(text = DataType.PACKAGE_USER_DE.type.uppercase())
-            RoundChip(text = DataType.PACKAGE_DATA.type.uppercase())
-            RoundChip(text = DataType.PACKAGE_OBB.type.uppercase())
-            RoundChip(text = DataType.PACKAGE_MEDIA.type.uppercase())
-        }
+        RoundChip(text = DataType.MEDIA_MEDIA.type.uppercase())
     }
 }
 

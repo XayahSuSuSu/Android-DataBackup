@@ -24,10 +24,7 @@ fun PageProcessing(navController: NavHostController) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val taskState by viewModel.taskState.collectAsStateWithLifecycle()
     val taskTimerState by viewModel.taskTimerState.collectAsStateWithLifecycle()
-    val packages by viewModel.packagesState.collectAsStateWithLifecycle()
-    val packagesApkOnly by viewModel.packagesApkOnlyState.collectAsStateWithLifecycle()
-    val packagesDataOnly by viewModel.packagesDataOnlyState.collectAsStateWithLifecycle()
-    val packagesBoth by viewModel.packagesBothState.collectAsStateWithLifecycle()
+    val medium by viewModel.mediumState.collectAsStateWithLifecycle()
     val operationsProcessing by viewModel.operationsProcessingState.collectAsStateWithLifecycle()
     val operationsFailed by viewModel.operationsFailedState.collectAsStateWithLifecycle()
     val operationsSucceed by viewModel.operationsSucceedState.collectAsStateWithLifecycle()
@@ -44,24 +41,24 @@ fun PageProcessing(navController: NavHostController) {
         availableBytes = taskState?.availableBytes ?: 0.0,
         rawBytes = taskState?.rawBytes ?: 0.0,
         totalBytes = taskState?.totalBytes ?: 0.0,
-        remainingCount = (packages.size - operationsSucceed.size - operationsFailed.size),
+        remainingCount = (medium.size - operationsSucceed.size - operationsFailed.size),
         succeedCount = operationsSucceed.size,
         failedCount = operationsFailed.size,
         timer = taskTimerState,
         processingState = uiState.processingState,
-        medium = packagesBoth,
-        packageItemKey = { it.packageName },
+        medium = medium,
+        packageItemKey = { it.path },
         operationsProcessing = operationsProcessing,
         operationsFailed = operationsFailed,
         operationsSucceed = operationsSucceed,
-        operationItemKey = { "${it.packageState}-${it.id}" },
+        operationItemKey = { "${it.path}-${it.id}" },
         onProcess = {
             viewModel.emitIntent(IndexUiIntent.Process)
         },
         packageItem = { item ->
             ProcessingCard(
                 modifier = Modifier.fillMaxWidth(),
-                packageRestore = item,
+                mediaRestore = item,
                 onCardClick = {},
                 onCardLongClick = {}
             )
@@ -69,7 +66,7 @@ fun PageProcessing(navController: NavHostController) {
         operationItem = { item ->
             ProcessingCard(
                 modifier = Modifier.fillMaxWidth(),
-                packageRestoreOp = item,
+                mediaRestoreOp = item,
                 onCardClick = {},
                 onCardLongClick = {}
             )

@@ -90,7 +90,8 @@ fun <T> ListScaffold(
     itemKey: ((item: T) -> Any)? = null,
     onFabClick: () -> Unit,
     onSearchTextChange: (String) -> Unit,
-    actionChipGroup: @Composable() (RowScope.(targetState: Boolean) -> Unit),
+    mapChipGroup: @Composable (RowScope.(targetState: Boolean) -> Unit)? = null,
+    actionChipGroup: @Composable (RowScope.(targetState: Boolean) -> Unit),
     shimmerItem: @Composable () -> Unit,
     item: @Composable (T) -> Unit,
 ) {
@@ -155,16 +156,30 @@ fun <T> ListScaffold(
                         }
 
                         item {
-                            Row(
-                                modifier = Modifier.horizontalScroll(rememberScrollState()),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
-                            ) {
-                                Spacer(modifier = Modifier.size(PaddingTokens.Level0))
+                            Column {
+                                if (mapChipGroup != null)
+                                    Row(
+                                        modifier = Modifier.horizontalScroll(rememberScrollState()),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
+                                    ) {
+                                        Spacer(modifier = Modifier.size(PaddingTokens.Level0))
 
-                                actionChipGroup(targetState)
+                                        mapChipGroup(targetState)
 
-                                Spacer(modifier = Modifier.size(PaddingTokens.Level0))
+                                        Spacer(modifier = Modifier.size(PaddingTokens.Level0))
+                                    }
+                                Row(
+                                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
+                                ) {
+                                    Spacer(modifier = Modifier.size(PaddingTokens.Level0))
+
+                                    actionChipGroup(targetState)
+
+                                    Spacer(modifier = Modifier.size(PaddingTokens.Level0))
+                                }
                             }
                         }
 

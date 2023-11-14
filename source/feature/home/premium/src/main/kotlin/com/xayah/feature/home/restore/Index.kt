@@ -88,7 +88,9 @@ fun PageRestore() {
                             MapItem(StringResourceToken.fromString(""), flow { }),
                             MapItem(StringResourceToken.fromString(""), flow { }),
                         ),
-                        onClick = {}
+                        onClick = {
+                            navController.navigate(MainRoutes.TaskMedium.routeRestore)
+                        }
                     ),
                     ActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.telephony),

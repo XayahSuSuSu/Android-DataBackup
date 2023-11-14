@@ -12,7 +12,6 @@ import com.xayah.core.database.model.MediaBackupWithOpEntity
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.MediaRestoreWithOpEntity
-import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.core.database.model.PackageRestoreEntire
 import kotlinx.coroutines.flow.Flow
 
@@ -50,7 +49,7 @@ interface MediaDao {
     suspend fun queryAllBackup(): List<MediaBackupEntity>
 
     @Transaction
-    @Query("SELECT * FROM MediaRestoreEntity WHERE timestamp = :timestamp AND savePath = :savePath")
+    @Query("SELECT * FROM MediaRestoreEntity WHERE active = 1 AND timestamp = :timestamp AND savePath = :savePath")
     fun queryAllRestoreFlow(timestamp: Long, savePath: String): Flow<List<MediaRestoreWithOpEntity>>
 
     @Query("SELECT * FROM MediaRestoreEntity")
@@ -62,8 +61,8 @@ interface MediaDao {
     @Query("SELECT * FROM MediaBackupEntity WHERE selected = 1")
     fun observeBackupSelected(): Flow<List<MediaBackupEntity>>
 
-    @Query("SELECT * FROM MediaRestoreEntity WHERE selected = 1 AND timestamp = :timestamp")
-    suspend fun queryRestoreSelected(timestamp: Long): List<MediaRestoreEntity>
+    @Query("SELECT * FROM MediaRestoreEntity WHERE active = 1 AND selected = 1")
+    suspend fun queryRestoreSelected(): List<MediaRestoreEntity>
 
     @Query("SELECT * FROM MediaRestoreEntity WHERE timestamp = :timestamp")
     suspend fun queryRestoreMedium(timestamp: Long): List<MediaRestoreEntity>
@@ -94,4 +93,28 @@ interface MediaDao {
 
     @Query("UPDATE MediaBackupEntity SET selected = :selected WHERE path in (:pathList)")
     suspend fun batchSelectOp(selected: Boolean, pathList: List<String>)
+
+    @Query("SELECT DISTINCT timestamp FROM MediaRestoreEntity WHERE  savePath = :savePath")
+    fun observeTimestamps(savePath: String): Flow<List<Long>>
+
+    @Query("SELECT * FROM MediaRestoreEntity WHERE active = 1 AND timestamp = :timestamp")
+    fun queryMediumFlow(timestamp: Long): Flow<List<MediaRestoreEntity>>
+
+    @Query("SELECT * FROM MediaRestoreEntity WHERE path = :path AND timestamp = :timestamp AND savePath = :savePath")
+    fun queryMedia(path: String, timestamp: Long, savePath: String): MediaRestoreEntity?
+
+    @Query("UPDATE MediaRestoreEntity SET selected = :selected WHERE path in (:pathList) AND timestamp = :timestamp")
+    suspend fun batchSelectOp(selected: Boolean, timestamp: Long, pathList: List<String>)
+
+    @Query("SELECT * FROM MediaRestoreOperationEntity WHERE timestamp = :timestamp ORDER BY id DESC")
+    fun observeRestoreOp(timestamp: Long): Flow<List<MediaRestoreOperationEntity>>
+
+    @Query("SELECT * FROM MediaRestoreEntity WHERE active = 1")
+    fun observeActiveMedium(): Flow<List<MediaRestoreEntity>>
+
+    @Query("UPDATE MediaRestoreEntity SET active = :active")
+    suspend fun updateRestoreActive(active: Boolean)
+
+    @Query("UPDATE MediaRestoreEntity SET active = :active WHERE timestamp = :timestamp AND savePath = :savePath")
+    suspend fun updateRestoreActive(active: Boolean, timestamp: Long, savePath: String)
 }

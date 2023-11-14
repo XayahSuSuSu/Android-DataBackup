@@ -35,10 +35,14 @@ data class MediaRestoreEntity(
     var name: String,
     var sizeBytes: Long,
     @ColumnInfo(defaultValue = "0") var selected: Boolean,
+    @ColumnInfo(defaultValue = "0") var active: Boolean = false,
     @ColumnInfo(defaultValue = "") var savePath: String,
 ) {
     val sizeDisplay: String
         get() = formatSize(sizeBytes.toDouble())
+
+    val isExists: Boolean
+        get() = sizeBytes != 0L
 }
 
 @Entity(

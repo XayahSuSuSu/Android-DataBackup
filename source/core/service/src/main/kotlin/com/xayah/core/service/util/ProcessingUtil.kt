@@ -529,3 +529,49 @@ class MediumBackupUtil @Inject constructor(
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
 }
+
+class MediumRestoreUtil @Inject constructor(
+    @ApplicationContext val context: Context,
+) {
+    private val compressionType = CompressionType.TAR
+
+    @Inject
+    lateinit var rootService: RemoteRootService
+
+    @Inject
+    lateinit var pathUtil: PathUtil
+
+    fun getDataSrc(srcDir: String) = "${srcDir}/${DataType.MEDIA_MEDIA.type}.${compressionType.suffix}"
+
+    /**
+     * Package data: USER, USER_DE, DATA, OBB, MEDIA
+     */
+    suspend fun restoreData(path: String, srcDir: String): ShellResult = run {
+        val src = getDataSrc(srcDir = srcDir)
+        val dstDir = PathUtil.getParentPath(path)
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+
+        // Return if the archive doesn't exist.
+        if (rootService.exists(src)) {
+            // Decompress the archive.
+            Tar.decompress(
+                exclusionList = listOf(),
+                clear = if (context.readCleanRestoring().first()) "--recursive-unlink" else "",
+                m = false,
+                src = src,
+                dst = dstDir,
+                extra = compressionType.decompressPara
+            ).also { result ->
+                isSuccess = result.isSuccess
+                out.addAll(result.out)
+            }
+        } else {
+            out.add("Not exist: $src")
+            return@run ShellResult(code = -1, input = listOf(), out = out)
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+}

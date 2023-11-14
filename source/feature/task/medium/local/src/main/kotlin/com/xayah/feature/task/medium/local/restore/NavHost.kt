@@ -22,17 +22,17 @@ fun TaskMediumRestoreGraph() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = TaskPackagesRestoreRoutes.List.route,
+        startDestination = TaskMediumRestoreRoutes.List.route,
         enterTransition = { scaleIn() + fadeIn() },
         popEnterTransition = { scaleIn() + fadeIn() },
         exitTransition = { scaleOut() + fadeOut() },
         popExitTransition = { scaleOut() + fadeOut() },
     ) {
-        composable(TaskPackagesRestoreRoutes.List.route) {
+        composable(TaskMediumRestoreRoutes.List.route) {
             PageList(navController = navController)
         }
 
-        composable(TaskPackagesRestoreRoutes.Processing.route) {
+        composable(TaskMediumRestoreRoutes.Processing.route) {
             PageProcessing(navController = navController)
         }
     }

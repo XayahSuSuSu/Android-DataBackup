@@ -7,18 +7,18 @@ import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.UiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
-import com.xayah.core.data.repository.PackageRestoreOpRepository
-import com.xayah.core.data.repository.PackageRestoreRepository
+import com.xayah.core.data.repository.MediaRestoreOpRepository
+import com.xayah.core.data.repository.MediaRestoreRepository
 import com.xayah.core.data.repository.TaskRepository
-import com.xayah.core.database.model.PackageRestoreEntire
-import com.xayah.core.database.model.PackageRestoreOperation
+import com.xayah.core.database.model.MediaRestoreEntity
+import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.TaskEntity
 import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.model.EmojiString
 import com.xayah.core.model.OpType
 import com.xayah.core.model.ProcessingState
 import com.xayah.core.model.TaskType
-import com.xayah.core.service.packages.restore.local.RestoreService
+import com.xayah.core.service.medium.restore.local.RestoreService
 import com.xayah.core.util.DateUtil
 import com.xayah.feature.task.medium.local.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,8 +51,8 @@ sealed class IndexUiEffect : UiEffect {
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
-    packageRestoreRepository: PackageRestoreRepository,
-    packageRestoreOpRepository: PackageRestoreOpRepository,
+    mediaRestoreRepository: MediaRestoreRepository,
+    mediaRestoreOpRepository: MediaRestoreOpRepository,
     private val taskRepository: TaskRepository,
     private val restoreService: RestoreService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState()) {
@@ -64,11 +64,11 @@ class IndexViewModel @Inject constructor(
                         TaskEntity(
                             timestamp = state.timestampState,
                             opType = OpType.RESTORE,
-                            taskType = TaskType.PACKAGE,
+                            taskType = TaskType.MEDIA,
                             startTimestamp = 0,
                             endTimestamp = 0,
                             path = taskRepository.getString(R.string.internal_storage),
-                            rawBytes = taskRepository.getPackagesRestoreRawBytes(),
+                            rawBytes = taskRepository.getMediumRestoreRawBytes(),
                             availableBytes = taskRepository.getAvailableBytes(ConstantUtil.DefaultPathParent),
                             totalBytes = taskRepository.getTotalBytes(ConstantUtil.DefaultPathParent),
                         )
@@ -89,7 +89,6 @@ class IndexViewModel @Inject constructor(
                         }
                     }
 
-                    restoreService.preprocessing()
                     restoreService.processing(timestamp = state.timestampState)
                     emitEffect(
                         IndexUiEffect.ShowSnackbar(
@@ -131,15 +130,13 @@ class IndexViewModel @Inject constructor(
             taskRepository.getShortRelativeTimeSpanString(0, 0)
     }.stateInScope(initialValue = taskRepository.getShortRelativeTimeSpanString(0, 0))
 
-    val packagesState: StateFlow<List<PackageRestoreEntire>> = packageRestoreRepository.selectedPackages.stateInScope(initialValue = listOf())
-    val packagesApkOnlyState: StateFlow<List<PackageRestoreEntire>> = packageRestoreRepository.packagesApkOnly.stateInScope(initialValue = listOf())
-    val packagesDataOnlyState: StateFlow<List<PackageRestoreEntire>> = packageRestoreRepository.packagesDataOnly.stateInScope(initialValue = listOf())
-    val packagesBothState: StateFlow<List<PackageRestoreEntire>> = packageRestoreRepository.packagesBoth.stateInScope(initialValue = listOf())
+    val mediumState: StateFlow<List<MediaRestoreEntity>> =
+        mediaRestoreRepository.selectedMedium.stateInScope(initialValue = listOf())
 
-    val operationsProcessingState: StateFlow<List<PackageRestoreOperation>> =
-        packageRestoreOpRepository.getOperationsProcessing(uiState.value.timestampState).stateInScope(initialValue = listOf())
-    val operationsFailedState: StateFlow<List<PackageRestoreOperation>> =
-        packageRestoreOpRepository.getOperationsFailed(uiState.value.timestampState).stateInScope(initialValue = listOf())
-    val operationsSucceedState: StateFlow<List<PackageRestoreOperation>> =
-        packageRestoreOpRepository.getOperationsSucceed(uiState.value.timestampState).stateInScope(initialValue = listOf())
+    val operationsProcessingState: StateFlow<List<MediaRestoreOperationEntity>> =
+        mediaRestoreOpRepository.getOperationsProcessing(uiState.value.timestampState).stateInScope(initialValue = listOf())
+    val operationsFailedState: StateFlow<List<MediaRestoreOperationEntity>> =
+        mediaRestoreOpRepository.getOperationsFailed(uiState.value.timestampState).stateInScope(initialValue = listOf())
+    val operationsSucceedState: StateFlow<List<MediaRestoreOperationEntity>> =
+        mediaRestoreOpRepository.getOperationsSucceed(uiState.value.timestampState).stateInScope(initialValue = listOf())
 }
