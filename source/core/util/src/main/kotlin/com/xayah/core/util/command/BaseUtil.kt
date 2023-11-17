@@ -10,6 +10,10 @@ import androidx.core.graphics.drawable.toDrawable
 import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.util.trim
 import com.xayah.core.util.BinArchiveName
+import com.xayah.core.util.LogUtil.TAG_SHELL_CODE
+import com.xayah.core.util.LogUtil.TAG_SHELL_IN
+import com.xayah.core.util.LogUtil.TAG_SHELL_OUT
+import com.xayah.core.util.LogUtil.log
 import com.xayah.core.util.SymbolUtil.USD
 import com.xayah.core.util.binArchivePath
 import com.xayah.core.util.binDir
@@ -52,7 +56,7 @@ object BaseUtil {
 
     fun getNewShell() = getShellBuilder().build()
 
-    suspend fun execute(vararg args: String, shell: Shell? = null): ShellResult = withIOContext {
+    suspend fun execute(vararg args: String, shell: Shell? = null, log: Boolean = true): ShellResult = withIOContext {
         val shellResult = ShellResult(code = -1, input = args.toList().trim(), out = listOf())
 
         if (shell == null) {
@@ -66,6 +70,12 @@ object BaseUtil {
                 shellResult.code = result.code
                 shellResult.out = outList
             }
+        }
+
+        if (log) {
+            log { TAG_SHELL_IN to shellResult.inputString }
+            log { TAG_SHELL_OUT to shellResult.outString }
+            log { TAG_SHELL_CODE to shellResult.code.toString() }
         }
 
         shellResult
@@ -173,5 +183,4 @@ object BaseUtil {
 
         return@withIOContext true
     }
-
 }

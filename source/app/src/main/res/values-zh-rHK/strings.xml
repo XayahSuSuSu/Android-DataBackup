@@ -165,4 +165,6 @@
     <string name="apk_only">僅安裝套件</string>
     <string name="data_only">僅數據</string>
     <string name="processing">處理中</string>
+    <string name="in_use">使用中</string>
+    <string name="clear_all">清空</string>
 </resources>

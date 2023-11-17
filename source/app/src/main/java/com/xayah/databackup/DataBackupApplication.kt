@@ -5,7 +5,9 @@ import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.topjohnwu.superuser.Shell
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.logDir
 import com.xayah.databackup.util.binPath
 import com.xayah.databackup.util.extensionPath
 import com.xayah.databackup.util.filesPath
@@ -57,5 +59,6 @@ class DataBackupApplication : Application() {
         super.onCreate()
         application = this
         monetEnabled = mutableStateOf(readMonetEnabled())
+        LogUtil.initialize(logDir())
     }
 }

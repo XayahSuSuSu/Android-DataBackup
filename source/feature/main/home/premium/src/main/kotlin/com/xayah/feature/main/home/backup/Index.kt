@@ -140,6 +140,7 @@ fun PageBackup() {
                         label = StringResourceToken.fromStringId(R.string.log),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_bug_report),
                         onClick = {
+                            navController.navigate(MainRoutes.Log.route)
                         }
                     )
                 )

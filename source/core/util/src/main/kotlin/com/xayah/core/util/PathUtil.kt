@@ -11,6 +11,7 @@ import java.nio.file.Paths
 import javax.inject.Inject
 import kotlin.io.path.pathString
 
+const val LogRelativeDir = "log"
 const val IconRelativeDir = "icon"
 const val BinRelativeDir = "bin"
 const val TmpRelativeDir = "tmp"
@@ -25,6 +26,7 @@ const val ConfigsMediaRestoreName = "media_restore_config.pb"
 const val BinArchiveName = "bin.zip"
 
 fun Context.filesDir(): String = filesDir.path
+fun Context.logDir(): String = "${filesDir()}/$LogRelativeDir"
 fun Context.binDir(): String = "${filesDir()}/$BinRelativeDir"
 fun Context.binArchivePath(): String = "${filesDir()}/$BinArchiveName"
 fun Context.extensionDir(): String = "${filesDir()}/$ExtensionRelativeDir"

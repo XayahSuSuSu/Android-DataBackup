@@ -8,22 +8,27 @@ import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.datastore.readResetBackupList
 import com.xayah.core.model.OperationState
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.util.MediumRestoreUtil
 import com.xayah.core.service.util.upsertRestoreOpData
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
-import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import javax.inject.Inject
+import com.xayah.core.util.LogUtil.log as KLog
 
 @AndroidEntryPoint
 internal class RestoreServiceImpl : Service() {
+    companion object {
+        private const val TAG = "MediumRestoreServiceImpl"
+    }
+
     private val binder = OperationLocalBinder()
 
     override fun onBind(intent: Intent): IBinder {
@@ -37,6 +42,7 @@ internal class RestoreServiceImpl : Service() {
 
     private val mutex = Mutex()
     private val context by lazy { applicationContext }
+    private fun log(msg: () -> String) = KLog { TAG to msg() }
 
     @Inject
     lateinit var rootService: RemoteRootService
@@ -53,11 +59,12 @@ internal class RestoreServiceImpl : Service() {
     @ExperimentalSerializationApi
     suspend fun processing(timestamp: Long) = withIOContext {
         mutex.withLock {
-            rootService.mkdirs(pathUtil.getLocalBackupArchivesMediumDir())
-            rootService.mkdirs(pathUtil.getLocalBackupConfigsDir())
+            log { "Processing is starting." }
 
             val medium = mediaDao.queryRestoreSelected()
             medium.forEach { currentMedia ->
+                log { "Current media: ${currentMedia.name}, src: ${currentMedia.path}." }
+
                 val mediaRestoreOperationEntity = MediaRestoreOperationEntity(
                     entityId = currentMedia.id,
                     timestamp = timestamp,
@@ -93,11 +100,15 @@ internal class RestoreServiceImpl : Service() {
 
                 // Insert restore config into database.
                 if (mediaRestoreOperationEntity.isSucceed) {
+                    log { "Succeed." }
+
                     // Reset selected items if enabled.
                     if (context.readResetBackupList().first()) {
                         currentMedia.selected = false
                         mediaDao.upsertRestore(currentMedia)
                     }
+                } else {
+                    log { "Failed." }
                 }
             }
         }

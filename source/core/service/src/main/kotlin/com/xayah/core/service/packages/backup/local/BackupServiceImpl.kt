@@ -14,6 +14,8 @@ import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.datastore.readResetBackupList
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.model.BackupPreprocessing
 import com.xayah.core.service.util.PackagesBackupUtil
 import com.xayah.core.service.util.upsertApk
@@ -27,8 +29,6 @@ import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.PreparationUtil
 import com.xayah.core.util.localBackupSaveDir
-import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
@@ -37,9 +37,14 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import javax.inject.Inject
+import com.xayah.core.util.LogUtil.log as KLog
 
 @AndroidEntryPoint
 internal class BackupServiceImpl : Service() {
+    companion object {
+        private const val TAG = "PackagesBackupServiceImpl"
+    }
+
     private val binder = OperationLocalBinder()
 
     override fun onBind(intent: Intent): IBinder {
@@ -53,6 +58,7 @@ internal class BackupServiceImpl : Service() {
 
     private val mutex = Mutex()
     private val context by lazy { applicationContext }
+    private fun log(msg: () -> String) = KLog { TAG to msg() }
 
     @Inject
     lateinit var rootService: RemoteRootService
@@ -74,6 +80,8 @@ internal class BackupServiceImpl : Service() {
 
     suspend fun preprocessing(): BackupPreprocessing = withIOContext {
         mutex.withLock {
+            log { "Preprocessing is starting." }
+
             /**
              * Somehow the input methods and accessibility services
              * will be changed after backing up on some devices,
@@ -87,6 +95,8 @@ internal class BackupServiceImpl : Service() {
             PreparationUtil.getAccessibilityServices().also { result ->
                 backupPreprocessing.accessibilityServices = result.outString.trim()
             }
+            log { "InputMethods: ${backupPreprocessing.inputMethods}." }
+            log { "AccessibilityServices: ${backupPreprocessing.accessibilityServices}." }
             backupPreprocessing
         }
     }
@@ -94,11 +104,21 @@ internal class BackupServiceImpl : Service() {
     @ExperimentalSerializationApi
     suspend fun processing(timestamp: Long) = withIOContext {
         mutex.withLock {
-            rootService.mkdirs(pathUtil.getLocalBackupArchivesPackagesDir())
-            rootService.mkdirs(pathUtil.getLocalBackupConfigsDir())
+            log { "Processing is starting." }
+
+            val archivesPackagesDir = pathUtil.getLocalBackupArchivesPackagesDir()
+            val configsDir = pathUtil.getLocalBackupConfigsDir()
+            log { "Trying to create: $archivesPackagesDir." }
+            log { "Trying to create: $configsDir." }
+            rootService.mkdirs(archivesPackagesDir)
+            rootService.mkdirs(configsDir)
 
             val packages = packageBackupDao.querySelectedPackages()
+            log { "Task count: ${packages.size}." }
+            log { "Task target timestamp: $timestamp." }
             packages.forEach { currentPackage ->
+                log { "Current package: ${currentPackage.packageName}, apk: ${currentPackage.apkSelected}, data: ${currentPackage.dataSelected}." }
+
                 val packageBackupOperation = PackageBackupOperation(
                     packageName = currentPackage.packageName,
                     timestamp = timestamp,
@@ -108,7 +128,7 @@ internal class BackupServiceImpl : Service() {
                     packageState = OperationState.PROCESSING,
                 ).also { entity -> entity.id = packageBackupOpDao.upsert(entity) }
 
-                val dstDir = "${pathUtil.getLocalBackupArchivesPackagesDir()}/${currentPackage.packageName}/${timestamp}"
+                val dstDir = "${archivesPackagesDir}/${currentPackage.packageName}/${timestamp}"
                 rootService.mkdirs(dstDir)
 
                 if (currentPackage.apkSelected) {
@@ -232,6 +252,8 @@ internal class BackupServiceImpl : Service() {
 
                 // Insert restore config into database.
                 if (packageBackupOperation.isSucceed) {
+                    log { "Succeed." }
+
                     val restoreEntire = PackageRestoreEntire(
                         packageName = currentPackage.packageName,
                         label = currentPackage.label,
@@ -253,6 +275,8 @@ internal class BackupServiceImpl : Service() {
                         currentPackage.operationCode = OperationMask.None
                         packageBackupDao.update(currentPackage)
                     }
+                } else {
+                    log { "Failed." }
                 }
             }
         }
@@ -261,24 +285,35 @@ internal class BackupServiceImpl : Service() {
     @ExperimentalSerializationApi
     suspend fun postProcessing(backupPreprocessing: BackupPreprocessing, timestamp: Long) = withIOContext {
         mutex.withLock {
+            log { "PostProcessing is starting." }
+
             // Restore keyboard and services.
             if (backupPreprocessing.inputMethods.isNotEmpty()) {
                 PreparationUtil.setInputMethods(inputMethods = backupPreprocessing.inputMethods)
+                log { "InputMethods restored: ${backupPreprocessing.inputMethods}." }
+            } else {
+                log { "InputMethods is empty, skip restoring." }
             }
             if (backupPreprocessing.accessibilityServices.isNotEmpty()) {
                 PreparationUtil.setAccessibilityServices(accessibilityServices = backupPreprocessing.accessibilityServices)
+                log { "AccessibilityServices restored: ${backupPreprocessing.accessibilityServices}." }
+            } else {
+                log { "AccessibilityServices is empty, skip restoring." }
             }
 
             val dstDir = context.localBackupSaveDir()
             // Backup itself if enabled.
             if (context.readBackupItself().first()) {
+                log { "Backup itself enabled." }
                 packagesBackupUtil.backupItself(dstDir = dstDir)
             }
 
             val configsDstDir = pathUtil.getConfigsDir(dstDir)
             // Backup others.
+            log { "Save icons." }
             packagesBackupUtil.backupIcons(dstDir = configsDstDir)
 
+            log { "Save configs." }
             val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
             runCatching {
                 val bytes = rootService.readBytes(packagesBackupUtil.getConfigsDst(dstDir = configsDstDir))

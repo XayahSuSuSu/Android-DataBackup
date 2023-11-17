@@ -24,6 +24,7 @@ import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.rootservice.parcelables.StatFsParcelable
 import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
 import com.xayah.core.rootservice.util.ExceptionUtil.tryWithBoolean
+import com.xayah.core.util.FileUtil
 import java.io.File
 import java.io.IOException
 import java.nio.file.FileVisitResult
@@ -32,7 +33,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
-import java.util.concurrent.atomic.AtomicLong
 import kotlin.io.path.pathString
 
 internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
@@ -116,14 +116,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun listFilePaths(path: String): List<String> = synchronized(lock) {
-        tryOn(
-            block = {
-                File(path).listFiles()!!.map { it.path }
-            },
-            onException = {
-                listOf()
-            }
-        )
+        FileUtil.listFilePaths(path = path)
     }
 
     private fun writeToParcel(onWrite: (Parcel) -> Unit) = run {
@@ -144,15 +137,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun readText(path: String): ParcelFileDescriptor = synchronized(lock) {
         writeToParcel { parcel ->
-            val text = tryOn(
-                block = {
-                    File(path).readText()
-                },
-                onException = {
-                    ""
-                }
-            )
-            parcel.writeString(text)
+            parcel.writeString(FileUtil.readText(path))
         }
     }
 
@@ -173,30 +158,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         }
 
     override fun calculateSize(path: String): Long = synchronized(lock) {
-        val size = AtomicLong(0)
-        tryOn {
-            Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
-                override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
-                    return FileVisitResult.CONTINUE
-                }
-
-                override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
-                    if (file != null && attrs != null) {
-                        size.addAndGet(attrs.size())
-                    }
-                    return FileVisitResult.CONTINUE
-                }
-
-                override fun visitFileFailed(file: Path?, exc: IOException?): FileVisitResult {
-                    return FileVisitResult.CONTINUE
-                }
-
-                override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
-                    return FileVisitResult.CONTINUE
-                }
-            })
-        }
-        size.get()
+        FileUtil.calculateSize(path = path)
     }
 
     override fun clearEmptyDirectoriesRecursively(path: String) = synchronized(lock) {

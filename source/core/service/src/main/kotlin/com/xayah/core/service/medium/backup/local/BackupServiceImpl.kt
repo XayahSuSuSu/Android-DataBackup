@@ -10,14 +10,14 @@ import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.datastore.readResetBackupList
 import com.xayah.core.model.OperationState
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.util.MediumBackupUtil
 import com.xayah.core.service.util.upsertBackupOpData
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
-import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
@@ -26,9 +26,14 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import javax.inject.Inject
+import com.xayah.core.util.LogUtil.log as KLog
 
 @AndroidEntryPoint
 internal class BackupServiceImpl : Service() {
+    companion object {
+        private const val TAG = "MediumBackupServiceImpl"
+    }
+
     private val binder = OperationLocalBinder()
 
     override fun onBind(intent: Intent): IBinder {
@@ -42,6 +47,7 @@ internal class BackupServiceImpl : Service() {
 
     private val mutex = Mutex()
     private val context by lazy { applicationContext }
+    private fun log(msg: () -> String) = KLog { TAG to msg() }
 
     @Inject
     lateinit var rootService: RemoteRootService
@@ -58,11 +64,15 @@ internal class BackupServiceImpl : Service() {
     @ExperimentalSerializationApi
     suspend fun processing(timestamp: Long) = withIOContext {
         mutex.withLock {
+            log { "Processing is starting." }
+
             rootService.mkdirs(pathUtil.getLocalBackupArchivesMediumDir())
             rootService.mkdirs(pathUtil.getLocalBackupConfigsDir())
 
             val medium = mediaDao.queryBackupSelected()
             medium.forEach { currentMedia ->
+                log { "Current media: ${currentMedia.name}, src: ${currentMedia.path}." }
+
                 val mediaBackupOperationEntity = MediaBackupOperationEntity(
                     timestamp = timestamp,
                     startTimestamp = DateUtil.getTimestamp(),
@@ -98,6 +108,7 @@ internal class BackupServiceImpl : Service() {
 
                 // Insert restore config into database.
                 if (mediaBackupOperationEntity.isSucceed) {
+                    log { "Succeed." }
 
                     val restoreEntire = MediaRestoreEntity(
                         timestamp = timestamp,
@@ -117,6 +128,8 @@ internal class BackupServiceImpl : Service() {
                         currentMedia.selected = false
                         mediaDao.upsertBackup(currentMedia)
                     }
+                } else {
+                    log { "Failed." }
                 }
             }
         }
@@ -125,14 +138,17 @@ internal class BackupServiceImpl : Service() {
     @ExperimentalSerializationApi
     suspend fun postProcessing(timestamp: Long) = withIOContext {
         mutex.withLock {
+            log { "PostProcessing is starting." }
+
             val dstDir = context.localBackupSaveDir()
             // Backup itself if enabled.
             if (context.readBackupItself().first()) {
+                log { "Backup itself enabled." }
                 mediumBackupUtil.backupItself(dstDir = dstDir)
             }
 
+            log { "Save configs." }
             val configsDstDir = pathUtil.getConfigsDir(dstDir)
-
             val mediaRestoreList: MutableList<MediaRestoreEntity> = mutableListOf()
             runCatching {
                 val bytes = rootService.readBytes(mediumBackupUtil.getConfigsDst(dstDir = configsDstDir))

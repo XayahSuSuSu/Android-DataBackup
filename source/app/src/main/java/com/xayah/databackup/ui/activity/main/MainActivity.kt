@@ -21,6 +21,7 @@ import com.xayah.databackup.ui.component.rememberSlotScope
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.home.HomeGraph
+import com.xayah.feature.main.log.LogGraph
 import com.xayah.feature.main.task.medium.local.backup.TaskMediumBackupGraph
 import com.xayah.feature.main.task.medium.local.restore.TaskMediumRestoreGraph
 import com.xayah.feature.main.task.packages.local.backup.TaskPackagesBackupGraph
@@ -49,6 +50,9 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(MainRoutes.Home.route) {
                                 HomeGraph()
+                            }
+                            composable(route = MainRoutes.Log.route) {
+                                LogGraph()
                             }
                             composable(route = MainRoutes.Directory.route) {
                                 PageDirectory()

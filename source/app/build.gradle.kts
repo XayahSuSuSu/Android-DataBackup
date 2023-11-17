@@ -132,6 +132,7 @@ dependencies {
     "fossImplementation"(project(":feature:main:home:foss"))
     "premiumImplementation"(project(":feature:main:home:premium"))
     implementation(project(":feature:main:directory"))
+    implementation(project(":feature:main:log"))
     implementation(project(":feature:main:task:packages:local"))
     implementation(project(":feature:main:task:medium:local"))
 

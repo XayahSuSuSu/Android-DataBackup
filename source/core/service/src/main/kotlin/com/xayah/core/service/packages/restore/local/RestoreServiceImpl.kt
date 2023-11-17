@@ -11,6 +11,8 @@ import com.xayah.core.database.model.PackageRestoreOperation
 import com.xayah.core.datastore.readResetRestoreList
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.util.PackagesRestoreUtil
 import com.xayah.core.service.util.upsertApk
 import com.xayah.core.service.util.upsertData
@@ -22,17 +24,20 @@ import com.xayah.core.util.DateUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.PreparationUtil
-import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import javax.inject.Inject
+import com.xayah.core.util.LogUtil.log as KLog
 
 @AndroidEntryPoint
 internal class RestoreServiceImpl : Service() {
+    companion object {
+        private const val TAG = "PackagesRestoreServiceImpl"
+    }
+
     private val binder = OperationLocalBinder()
 
     override fun onBind(intent: Intent): IBinder {
@@ -46,6 +51,7 @@ internal class RestoreServiceImpl : Service() {
 
     private val mutex = Mutex()
     private val context by lazy { applicationContext }
+    private fun log(msg: () -> String) = KLog { TAG to msg() }
 
     @Inject
     lateinit var rootService: RemoteRootService
@@ -64,6 +70,9 @@ internal class RestoreServiceImpl : Service() {
 
     suspend fun preprocessing() = withIOContext {
         mutex.withLock {
+            log { "Preprocessing is starting." }
+
+            log { "Trying to enable adb install permissions." }
             PreparationUtil.setInstallEnv()
         }
     }
@@ -71,8 +80,12 @@ internal class RestoreServiceImpl : Service() {
     @ExperimentalSerializationApi
     suspend fun processing(timestamp: Long) = withIOContext {
         mutex.withLock {
+            log { "Processing is starting." }
+
             val packages = packageRestoreDao.queryActiveTotalPackages()
             packages.forEach { currentPackage ->
+                log { "Current package: ${currentPackage.packageName}, apk: ${currentPackage.apkSelected}, data: ${currentPackage.dataSelected}." }
+
                 val packageRestoreOperation = PackageRestoreOperation(
                     packageName = currentPackage.packageName,
                     timestamp = timestamp,
@@ -205,11 +218,15 @@ internal class RestoreServiceImpl : Service() {
 
                 // Insert restore config into database.
                 if (packageRestoreOperation.isSucceed) {
+                    log { "Succeed." }
+
                     // Reset selected items if enabled.
                     if (context.readResetRestoreList().first()) {
                         currentPackage.operationCode = OperationMask.None
                         packageRestoreDao.update(currentPackage)
                     }
+                } else {
+                    log { "Failed." }
                 }
             }
         }

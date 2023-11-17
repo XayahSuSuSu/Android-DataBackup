@@ -9,6 +9,8 @@ sealed class MainRoutes(val route: String) {
 
     object Home : MainRoutes(route = "main_home")
 
+    object Log : MainRoutes(route = "main_log")
+
     object Directory : MainRoutes(route = "main_directory/{$ArgOpType}") {
         val routeBackup = "main_directory/${OpType.BACKUP.name}"
         val routeRestore = "main_directory/${OpType.RESTORE.name}"

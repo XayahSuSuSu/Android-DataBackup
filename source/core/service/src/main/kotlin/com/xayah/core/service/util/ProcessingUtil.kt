@@ -9,6 +9,7 @@ import com.xayah.core.datastore.readFollowSymlinks
 import com.xayah.core.datastore.readRestoreUserId
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
+import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.ConfigsMediaRestoreName
 import com.xayah.core.util.ConfigsPackageRestoreName
 import com.xayah.core.util.IconRelativeDir
@@ -19,7 +20,6 @@ import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.model.ShellResult
-import com.xayah.core.rootservice.service.RemoteRootService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -27,13 +27,22 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import javax.inject.Inject
+import com.xayah.core.util.LogUtil.log as KLog
 
 class PackagesBackupUtil @Inject constructor(
     @ApplicationContext val context: Context,
 ) {
+    companion object {
+        private const val TAG = "PackagesBackupUtil"
+    }
+
     private val usePipe = runBlocking { context.readCompatibleMode().first() }
     val compressionType = runBlocking { context.readCompressionType().first() }
     private val userId = runBlocking { context.readBackupUserId().first() }
+    fun log(msg: () -> String): String = run {
+        KLog { TAG to msg() }
+        msg()
+    }
 
     @Inject
     lateinit var rootService: RemoteRootService
@@ -48,10 +57,10 @@ class PackagesBackupUtil @Inject constructor(
                 code = result.code
                 input = result.input
                 if (result.isSuccess.not()) {
-                    out.add("$src is broken, trying to delete it.")
+                    out.add(log { "$src is broken, trying to delete it." })
                     rootService.deleteRecursively(src)
                 } else {
-                    out.add("$src is tested well.")
+                    out.add(log { "$src is tested well." })
                 }
             }
 
@@ -64,6 +73,8 @@ class PackagesBackupUtil @Inject constructor(
     }
 
     suspend fun backupApk(packageName: String, dstDir: String): ShellResult = run {
+        log { "Backing up apk..." }
+
         val dst = getApkDst(dstDir = dstDir)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -80,7 +91,7 @@ class PackagesBackupUtil @Inject constructor(
             }
         } else {
             isSuccess = false
-            out.add("Failed to get apk path of $packageName.")
+            out.add(log { "Failed to get apk path of $packageName." })
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
@@ -94,6 +105,8 @@ class PackagesBackupUtil @Inject constructor(
      * Package data: USER, USER_DE, DATA, OBB, MEDIA
      */
     suspend fun backupData(packageName: String, dataType: DataType, dstDir: String): ShellResult = run {
+        log { "Backing up ${dataType.type}..." }
+
         val dst = getDataDst(dstDir = dstDir, dataType = dataType)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -105,10 +118,10 @@ class PackagesBackupUtil @Inject constructor(
             if (it.not()) {
                 if (dataType == DataType.PACKAGE_USER) {
                     isSuccess = false
-                    out.add("Not exist: $src")
+                    out.add(log { "Not exist: $src" })
                     return@run ShellResult(code = -1, input = listOf(), out = out)
                 } else {
-                    out.add("Not exist and skip: $src")
+                    out.add(log { "Not exist and skip: $src" })
                     return@run ShellResult(code = -2, input = listOf(), out = out)
                 }
             }
@@ -133,6 +146,7 @@ class PackagesBackupUtil @Inject constructor(
 
             else -> {}
         }
+        log { "ExclusionList: $exclusionList." }
 
         // Compress and test.
         Tar.compress(
@@ -156,6 +170,8 @@ class PackagesBackupUtil @Inject constructor(
     }
 
     suspend fun backupItself(dstDir: String): ShellResult = run {
+        log { "Backing up itself..." }
+
         val packageName = context.packageName
         val isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -167,13 +183,13 @@ class PackagesBackupUtil @Inject constructor(
             val targetPath = "${dstDir}/DataBackup.apk"
             isSuccess = rootService.copyTo(path = path, targetPath = targetPath, overwrite = true)
             if (isSuccess.not()) {
-                out.add("Failed to copy $path to $targetPath.")
+                out.add(log { "Failed to copy $path to $targetPath." })
             } else {
-                out.add("Copied from $path to $targetPath.")
+                out.add(log { "Copied from $path to $targetPath." })
             }
         } else {
             isSuccess = false
-            out.add("Failed to get apk path of $packageName.")
+            out.add(log { "Failed to get apk path of $packageName." })
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
@@ -184,6 +200,8 @@ class PackagesBackupUtil @Inject constructor(
     fun getIconsDst(dstDir: String) = "${dstDir}/${IconRelativeDir}.${tarCompressionType.suffix}"
 
     suspend fun backupIcons(dstDir: String): ShellResult = run {
+        log { "Backing up icons..." }
+
         val dst = getIconsDst(dstDir = dstDir)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -212,6 +230,8 @@ class PackagesBackupUtil @Inject constructor(
 
     @ExperimentalSerializationApi
     suspend inline fun <reified T> backupConfigs(data: T, dstDir: String): ShellResult = run {
+        log { "Backing up configs..." }
+
         val dst = getConfigsDst(dstDir = dstDir)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -220,9 +240,9 @@ class PackagesBackupUtil @Inject constructor(
         rootService.writeBytes(bytes = bytes, dst = dst).also {
             isSuccess = it
             if (isSuccess) {
-                out.add("Failed to write configs: $dst")
+                out.add(log { "Succeed to write configs: $dst" })
             } else {
-                out.add("Succeed to write configs: $dst")
+                out.add(log { "Failed to write configs: $dst" })
             }
         }
 
@@ -233,7 +253,15 @@ class PackagesBackupUtil @Inject constructor(
 class PackagesRestoreUtil @Inject constructor(
     @ApplicationContext val context: Context,
 ) {
+    companion object {
+        private const val TAG = "PackagesRestoreUtil"
+    }
+
     private val userId = runBlocking { context.readRestoreUserId().first() }
+    fun log(msg: () -> String): String = run {
+        KLog { TAG to msg() }
+        msg()
+    }
 
     @Inject
     lateinit var rootService: RemoteRootService
@@ -244,6 +272,8 @@ class PackagesRestoreUtil @Inject constructor(
     fun getApkSrc(srcDir: String, compressionType: CompressionType) = "${srcDir}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
 
     suspend fun restoreApk(packageName: String, srcDir: String, compressionType: CompressionType): ShellResult = run {
+        log { "Restoring apk..." }
+
         val src = getApkSrc(srcDir = srcDir, compressionType = compressionType)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -265,7 +295,7 @@ class PackagesRestoreUtil @Inject constructor(
                 when (apksPath.size) {
                     0 -> {
                         isSuccess = false
-                        out.add("$tmpApkPath is empty.")
+                        out.add(log { "$tmpApkPath is empty." })
                     }
 
                     1 -> {
@@ -281,11 +311,11 @@ class PackagesRestoreUtil @Inject constructor(
                             if (result.isSuccess) pmSession = result.outString
                         }
                         if (pmSession.isNotEmpty()) {
-                            out.add("Install session: $pmSession.")
+                            out.add(log { "Install session: $pmSession." })
 
                         } else {
                             isSuccess = false
-                            out.add("Failed to get install session.")
+                            out.add(log { "Failed to get install session." })
                         }
 
                         apksPath.forEach { apkPath ->
@@ -308,12 +338,12 @@ class PackagesRestoreUtil @Inject constructor(
             rootService.queryInstalled(packageName = packageName, userId = userId).also {
                 if (it.not()) {
                     isSuccess = false
-                    val msg = "Not installed: $packageName."
+                    log { "Not installed: $packageName." }
                 }
             }
         } else {
             isSuccess = false
-            out.add("Not exist: $src")
+            out.add(log { "Not exist: $src" })
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
@@ -327,6 +357,8 @@ class PackagesRestoreUtil @Inject constructor(
      * Package data: USER, USER_DE, DATA, OBB, MEDIA
      */
     suspend fun restoreData(packageName: String, dataType: DataType, srcDir: String, compressionType: CompressionType): ShellResult = run {
+        log { "Restoring ${dataType.type}..." }
+
         val src = getDataSrc(srcDir = srcDir, dataType = dataType, compressionType = compressionType)
         val dst = getDataDst(dataType = dataType, packageName = packageName)
         val dstDir = getDataDstDir(dataType = dataType)
@@ -352,12 +384,15 @@ class PackagesRestoreUtil @Inject constructor(
 
                 else -> {}
             }
+            log { "ExclusionList: $exclusionList." }
 
             // Get the SELinux context of the path.
             val pathContext: String
             SELinux.getContext(path = dst).also { result ->
                 pathContext = if (result.isSuccess) result.outString else ""
             }
+
+            log { "Original SELinux context: $pathContext." }
 
             // Decompress the archive.
             Tar.decompress(
@@ -395,15 +430,15 @@ class PackagesRestoreUtil @Inject constructor(
                         }
                     } else {
                         isSuccess = false
-                        out.add("Failed to restore context: $dst")
+                        out.add(log { "Failed to restore context: $dst" })
                     }
                 }
             } else {
                 isSuccess = false
-                out.add("Failed to get uid of $packageName.")
+                out.add(log { "Failed to get uid of $packageName." })
             }
         } else {
-            out.add("Not exist and skip: $src")
+            out.add(log { "Not exist and skip: $src" })
             return@run ShellResult(code = -2, input = listOf(), out = out)
         }
 
@@ -415,9 +450,17 @@ class PackagesRestoreUtil @Inject constructor(
 class MediumBackupUtil @Inject constructor(
     @ApplicationContext val context: Context,
 ) {
+    companion object {
+        private const val TAG = "MediumBackupUtil"
+    }
+
     private val usePipe = runBlocking { context.readCompatibleMode().first() }
     private val compressionType = CompressionType.TAR
     private val userId = runBlocking { context.readBackupUserId().first() }
+    fun log(msg: () -> String): String = run {
+        KLog { TAG to msg() }
+        msg()
+    }
 
     @Inject
     lateinit var rootService: RemoteRootService
@@ -432,10 +475,10 @@ class MediumBackupUtil @Inject constructor(
                 code = result.code
                 input = result.input
                 if (result.isSuccess.not()) {
-                    out.add("$src is broken, trying to delete it.")
+                    out.add(log { "$src is broken, trying to delete it." })
                     rootService.deleteRecursively(src)
                 } else {
-                    out.add("$src is tested well.")
+                    out.add(log { "$src is tested well." })
                 }
             }
 
@@ -448,6 +491,8 @@ class MediumBackupUtil @Inject constructor(
      * Package data: USER, USER_DE, DATA, OBB, MEDIA
      */
     suspend fun backupData(src: String, dstDir: String): ShellResult = run {
+        log { "Backing up media..." }
+
         val dst = getDataDst(dstDir = dstDir)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -458,7 +503,7 @@ class MediumBackupUtil @Inject constructor(
         rootService.exists(src).also {
             if (it.not()) {
                 isSuccess = false
-                out.add("Not exist: $src")
+                out.add(log { "Not exist: $src" })
                 return@run ShellResult(code = -1, input = listOf(), out = out)
             }
         }
@@ -485,6 +530,8 @@ class MediumBackupUtil @Inject constructor(
     }
 
     suspend fun backupItself(dstDir: String): ShellResult = run {
+        log { "Backing up itself..." }
+
         val packageName = context.packageName
         val isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -496,13 +543,13 @@ class MediumBackupUtil @Inject constructor(
             val targetPath = "${dstDir}/DataBackup.apk"
             isSuccess = rootService.copyTo(path = path, targetPath = targetPath, overwrite = true)
             if (isSuccess.not()) {
-                out.add("Failed to copy $path to $targetPath.")
+                out.add(log { "Failed to copy $path to $targetPath." })
             } else {
-                out.add("Copied from $path to $targetPath.")
+                out.add(log { "Copied from $path to $targetPath." })
             }
         } else {
             isSuccess = false
-            out.add("Failed to get apk path of $packageName.")
+            out.add(log { "Failed to get apk path of $packageName." })
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
@@ -512,6 +559,8 @@ class MediumBackupUtil @Inject constructor(
 
     @ExperimentalSerializationApi
     suspend inline fun <reified T> backupConfigs(data: T, dstDir: String): ShellResult = run {
+        log { "Backing up configs..." }
+
         val dst = getConfigsDst(dstDir = dstDir)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -520,9 +569,9 @@ class MediumBackupUtil @Inject constructor(
         rootService.writeBytes(bytes = bytes, dst = dst).also {
             isSuccess = it
             if (isSuccess) {
-                out.add("Failed to write configs: $dst")
+                out.add(log { "Succeed to write configs: $dst" })
             } else {
-                out.add("Succeed to write configs: $dst")
+                out.add(log { "Failed to write configs: $dst" })
             }
         }
 
@@ -533,7 +582,15 @@ class MediumBackupUtil @Inject constructor(
 class MediumRestoreUtil @Inject constructor(
     @ApplicationContext val context: Context,
 ) {
+    companion object {
+        private const val TAG = "MediumRestoreUtil"
+    }
+
     private val compressionType = CompressionType.TAR
+    fun log(msg: () -> String): String = run {
+        KLog { TAG to msg() }
+        msg()
+    }
 
     @Inject
     lateinit var rootService: RemoteRootService
@@ -547,6 +604,8 @@ class MediumRestoreUtil @Inject constructor(
      * Package data: USER, USER_DE, DATA, OBB, MEDIA
      */
     suspend fun restoreData(path: String, srcDir: String): ShellResult = run {
+        log { "Restoring media..." }
+
         val src = getDataSrc(srcDir = srcDir)
         val dstDir = PathUtil.getParentPath(path)
         var isSuccess: Boolean
@@ -567,11 +626,10 @@ class MediumRestoreUtil @Inject constructor(
                 out.addAll(result.out)
             }
         } else {
-            out.add("Not exist: $src")
+            out.add(log { "Not exist: $src" })
             return@run ShellResult(code = -1, input = listOf(), out = out)
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
-
 }

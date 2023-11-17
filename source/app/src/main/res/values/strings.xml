@@ -170,4 +170,6 @@
     <string name="apk_only">Apk only</string>
     <string name="data_only">Data only</string>
     <string name="processing">Processing</string>
+    <string name="in_use">In use</string>
+    <string name="clear_all">Clear all</string>
 </resources>
