@@ -127,11 +127,13 @@ dependencies {
     implementation(project(":core:rootservice"))
 
     // Feature
-    "fossImplementation"(project(":feature:home:foss"))
-    "premiumImplementation"(project(":feature:home:premium"))
-    implementation(project(":feature:directory"))
-    implementation(project(":feature:task:packages:local"))
-    implementation(project(":feature:task:medium:local"))
+    "fossImplementation"(project(":feature:guide:foss"))
+    "premiumImplementation"(project(":feature:guide:premium"))
+    "fossImplementation"(project(":feature:main:home:foss"))
+    "premiumImplementation"(project(":feature:main:home:premium"))
+    implementation(project(":feature:main:directory"))
+    implementation(project(":feature:main:task:packages:local"))
+    implementation(project(":feature:main:task:medium:local"))
 
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)

@@ -1,0 +1,23 @@
+<resources>
+    <item name="welcome_to_use" type="string"/>
+    <item name="update_records" type="string"/>
+    <item name="environment_detection" type="string"/>
+    <item name="start" type="string"/>
+    <item name="application" type="string"/>
+    <item name="storage" type="string"/>
+    <item name="start_subtitle" type="string"/>
+    <item name="application_subtitle" type="string"/>
+    <item name="storage_subtitle" type="string"/>
+    <item name="start_desc" type="string"/>
+    <item name="application_desc" type="string"/>
+    <item name="storage_desc" type="string"/>
+    <item name="grant_root_access" type="string"/>
+    <item name="release_prebuilt_binaries" type="string"/>
+    <item name="abi_validation" type="string"/>
+    <item name="this_version_only_supports_but_your_device_is_please_install_version" type="string"/>
+    <item name="network" type="string"/>
+    <item name="network_subtitle" type="string"/>
+    <item name="network_desc" type="string"/>
+    <item name="ic_rounded_link" type="drawable"/>
+    <item name="no_browser" type="string"/>
+</resources>

@@ -17,4 +17,7 @@ dependencies {
 
     // libsu
     implementation(libs.libsu.core)
+
+    // zip4j
+    implementation(libs.zip4j)
 }

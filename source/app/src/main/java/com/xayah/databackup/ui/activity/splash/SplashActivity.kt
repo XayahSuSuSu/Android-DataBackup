@@ -4,25 +4,29 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.xayah.databackup.ui.activity.guide.GuideActivity
+import com.xayah.core.datastore.getCurrentAppVersionName
+import com.xayah.core.datastore.readAppVersionName
 import com.xayah.databackup.ui.activity.main.MainActivity
-import com.xayah.databackup.util.command.EnvUtil.getCurrentAppVersionName
-import com.xayah.databackup.util.readAppVersionName
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import com.xayah.feature.guide.MainActivity as GuideActivity
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
 
     // Workaround for HarmonyOS
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         installSplashScreen()
 
-        if (getCurrentAppVersionName() > readAppVersionName()) {
+        if (getCurrentAppVersionName() > runBlocking { readAppVersionName().first() }) {
             // There is an update
             startActivity(Intent(this, GuideActivity::class.java))
         } else {

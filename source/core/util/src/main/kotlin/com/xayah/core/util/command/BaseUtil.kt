@@ -1,5 +1,6 @@
 package com.xayah.core.util.command
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -8,23 +9,26 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.util.trim
-import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.BinArchiveName
 import com.xayah.core.util.SymbolUtil.USD
+import com.xayah.core.util.binArchivePath
 import com.xayah.core.util.binDir
 import com.xayah.core.util.extensionDir
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.model.ShellResult
 import com.xayah.core.util.withIOContext
+import net.lingala.zip4j.ZipFile
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 
 private class EnvInitializer : Shell.Initializer() {
     companion object {
         fun initShell(shell: Shell, context: Context) {
             shell.newJob()
                 .add("nsenter -t 1 -m su") // Switch to global namespace
-                .add("export PATH=${context.binDir()}:${SymbolUtil.USD}PATH")
-                .add("export PATH=${context.extensionDir()}:${SymbolUtil.USD}PATH")
+                .add("export PATH=${context.binDir()}:${USD}PATH")
+                .add("export PATH=${context.extensionDir()}:${USD}PATH")
                 .add("export HOME=${context.filesDir()}")
                 .add("set -o pipefail") // Ensure that the exit code of each command is correct.
                 .exec()
@@ -103,4 +107,71 @@ object BaseUtil {
             BitmapFactory.decodeByteArray(bytes, 0, bytes.size).toDrawable(context.resources)
         }.getOrNull()
     }
+
+    @SuppressLint("SetWorldWritable", "SetWorldReadable")
+    private fun File.setAllPermissions(): Boolean = run {
+        setExecutable(true, false).also {
+            if (it.not()) return@run false
+        }
+        setWritable(true, false).also {
+            if (it.not()) return@run false
+        }
+        setReadable(true, false).also {
+            if (it.not()) return@run false
+        }
+    }
+
+    /**
+     * Unzip and return file headers.
+     */
+    private suspend fun unzip(src: String, dst: String): List<String> = withIOContext {
+        runCatching {
+            val zip = ZipFile(src)
+            zip.extractAll(dst)
+            zip.fileHeaders.map { it.fileName }
+        }.getOrElse { listOf() }
+    }
+
+    private suspend fun releaseAssets(context: Context, src: String, child: String) {
+        withIOContext {
+            runCatching {
+                val assets = File(context.filesDir(), child)
+                if (!assets.exists()) {
+                    val outStream = FileOutputStream(assets)
+                    val inputStream = context.resources.assets.open(src)
+                    inputStream.copyTo(outStream)
+                    assets.setExecutable(true)
+                    assets.setReadable(true)
+                    assets.setWritable(true)
+                    outStream.flush()
+                    inputStream.close()
+                    outStream.close()
+                }
+            }
+        }
+    }
+
+    suspend fun releaseBase(context: Context): Boolean = withIOContext {
+        val bin = File(context.binDir())
+        val binArchive = File(context.binArchivePath())
+
+        // Remove old bin files
+        bin.deleteRecursively()
+        binArchive.deleteRecursively()
+
+        // Release binaries
+        releaseAssets(context = context, src = BinArchiveName, child = BinArchiveName)
+        unzip(src = context.binArchivePath(), dst = context.binDir())
+
+        // All binaries need full permissions
+        bin.listFiles()?.forEach { file ->
+            if (file.setAllPermissions().not()) return@withIOContext false
+        }
+
+        // Remove binary archive
+        binArchive.deleteRecursively()
+
+        return@withIOContext true
+    }
+
 }

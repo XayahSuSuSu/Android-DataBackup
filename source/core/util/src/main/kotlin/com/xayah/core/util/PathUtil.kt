@@ -22,9 +22,11 @@ const val MediumRelativeDir = "medium"
 const val ConfigsRelativeDir = "configs"
 const val ConfigsPackageRestoreName = "package_restore_config.pb"
 const val ConfigsMediaRestoreName = "media_restore_config.pb"
+const val BinArchiveName = "bin.zip"
 
 fun Context.filesDir(): String = filesDir.path
 fun Context.binDir(): String = "${filesDir()}/$BinRelativeDir"
+fun Context.binArchivePath(): String = "${filesDir()}/$BinArchiveName"
 fun Context.extensionDir(): String = "${filesDir()}/$ExtensionRelativeDir"
 fun Context.iconDir(): String = "${filesDir()}/$IconRelativeDir"
 fun Context.tmpDir(): String = "${filesDir()}/$TmpRelativeDir"

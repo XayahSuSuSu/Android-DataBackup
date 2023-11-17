@@ -1,11 +1,25 @@
 package com.xayah.core.datastore
 
 import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.map
+
+private fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
+    } else {
+        getPackageInfo(packageName, flags)
+    }
+
+fun Context.getCurrentAppVersionName(): String {
+    return packageManager.getPackageInfoCompat(packageName).versionName
+}
 
 private const val PREFERENCE_NAME = "DataStore"
 internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCE_NAME)

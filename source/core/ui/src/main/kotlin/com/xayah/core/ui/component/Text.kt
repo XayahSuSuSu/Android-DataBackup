@@ -154,3 +154,22 @@ fun BodySmallText(
         fontWeight = fontWeight,
     )
 }
+
+@Composable
+fun BodyMediumText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+    textAlign: TextAlign? = null,
+    fontWeight: FontWeight? = null,
+    enabled: Boolean = true,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        textAlign = textAlign,
+        fontWeight = fontWeight,
+    )
+}

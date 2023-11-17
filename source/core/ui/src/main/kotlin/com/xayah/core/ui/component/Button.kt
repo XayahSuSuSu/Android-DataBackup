@@ -2,6 +2,7 @@ package com.xayah.core.ui.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 
@@ -48,5 +50,21 @@ fun TextButton(text: StringResourceToken, onClick: () -> Unit) {
         onClick = onClick,
         content = { TitleSmallText(text = text.value, fontWeight = FontWeight.Bold) },
         contentPadding = ButtonDefaults.ContentPadding
+    )
+}
+
+@Composable
+fun IconTextButton(modifier: Modifier = Modifier, icon: ImageVectorToken, text: StringResourceToken, onClick: () -> Unit) {
+    Button(
+        modifier = modifier,
+        onClick = onClick,
+        content = {
+            Icon(
+                imageVector = icon.value,
+                contentDescription = null,
+                modifier = Modifier.paddingEnd(PaddingTokens.Level3),
+            )
+            TitleSmallText(text = text.value, fontWeight = FontWeight.Bold)
+        }
     )
 }

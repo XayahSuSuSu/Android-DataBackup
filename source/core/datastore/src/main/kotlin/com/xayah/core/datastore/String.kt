@@ -17,6 +17,7 @@ val KeyRestoreSavePath = stringPreferencesKey("restore_save_path")
 val KeyRestoreSaveParentPath = stringPreferencesKey("restore_save_parent_path")
 val KeyBackupSortType = stringPreferencesKey("backup_sort_type")
 val KeyRestoreSortType = stringPreferencesKey("restore_sort_type")
+val KeyAppVersionName = stringPreferencesKey("app_version_name")
 
 
 // -----------------------------------------Read-----------------------------------------
@@ -25,6 +26,7 @@ fun Context.readLastRestoreTime() = readStoreString(key = KeyLastRestoreTime, de
 fun Context.readCompressionType() = readStoreString(key = KeyCompressionType, defValue = "").map { CompressionType.of(it) }
 fun Context.readBackupSortType() = readStoreString(key = KeyBackupSortType, defValue = "").map { SortType.of(it) }
 fun Context.readRestoreSortType() = readStoreString(key = KeyRestoreSortType, defValue = "").map { SortType.of(it) }
+fun Context.readAppVersionName() = readStoreString(key = KeyAppVersionName, defValue = "")
 
 /**
  * The final path for saving the backup.
@@ -46,6 +48,7 @@ suspend fun Context.saveLastRestoreTime(value: String) = saveStoreString(key = K
 suspend fun Context.saveCompressionType(value: CompressionType) = saveStoreString(key = KeyCompressionType, value = value.type.trim())
 suspend fun Context.saveBackupSortType(value: SortType) = saveStoreString(key = KeyBackupSortType, value = value.name.trim())
 suspend fun Context.saveRestoreSortType(value: SortType) = saveStoreString(key = KeyRestoreSortType, value = value.name.trim())
+suspend fun Context.saveAppVersionName() = saveStoreString(key = KeyAppVersionName, value = getCurrentAppVersionName())
 
 /**
  * @see [readBackupSavePath]
