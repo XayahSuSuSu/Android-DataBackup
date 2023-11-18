@@ -26,6 +26,7 @@ import com.xayah.feature.main.task.medium.local.backup.TaskMediumBackupGraph
 import com.xayah.feature.main.task.medium.local.restore.TaskMediumRestoreGraph
 import com.xayah.feature.main.task.packages.local.backup.TaskPackagesBackupGraph
 import com.xayah.feature.main.task.packages.local.restore.TaskPackagesRestoreGraph
+import com.xayah.feature.main.tree.PageTree
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -53,6 +54,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(route = MainRoutes.Log.route) {
                                 LogGraph()
+                            }
+                            composable(route = MainRoutes.Tree.route) {
+                                PageTree()
                             }
                             composable(route = MainRoutes.Directory.route) {
                                 PageDirectory()

@@ -134,7 +134,9 @@ fun PageBackup() {
                     UtilityChipItem(
                         label = StringResourceToken.fromStringId(R.string.structure),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_account_tree),
-                        onClick = {}
+                        onClick = {
+                            navController.navigate(MainRoutes.Tree.route)
+                        }
                     ),
                     UtilityChipItem(
                         label = StringResourceToken.fromStringId(R.string.log),
