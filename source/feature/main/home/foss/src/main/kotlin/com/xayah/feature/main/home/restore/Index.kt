@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +35,7 @@ import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 import com.xayah.feature.main.home.common.ActivityCard
 import com.xayah.feature.main.home.common.Module
@@ -143,6 +145,13 @@ fun PageRestore() {
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_bug_report),
                         onClick = {
                             navController.navigate(MainRoutes.Log.route)
+                        }
+                    ),
+                    UtilityChipItem(
+                        label = StringResourceToken.fromStringId(R.string.reload),
+                        icon = ImageVectorToken.fromVector(Icons.Rounded.Refresh),
+                        onClick = {
+                            navController.navigate(MainRoutes.Reload.route)
                         }
                     )
                 )

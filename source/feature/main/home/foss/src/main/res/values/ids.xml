@@ -17,4 +17,5 @@
     <item name="directory" type="string"/>
     <item name="structure" type="string"/>
     <item name="log" type="string"/>
+    <item name="reload" type="string"/>
 </resources>

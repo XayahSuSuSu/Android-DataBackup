@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -90,4 +92,7 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(state: S) 
     )
 
     fun <T> Flow<T>.flowOnIO(): Flow<T> = flowOn(Dispatchers.IO)
+
+    @ExperimentalCoroutinesApi
+    fun <R> flatMapLatestUiState(transform: suspend (value: S) -> Flow<R>) = _uiState.flatMapLatest(transform)
 }

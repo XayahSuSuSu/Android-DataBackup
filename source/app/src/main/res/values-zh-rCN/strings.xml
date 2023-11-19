@@ -167,4 +167,6 @@
     <string name="processing">处理中</string>
     <string name="in_use">使用中</string>
     <string name="clear_all">清空</string>
+    <string name="existing_files">实际文件</string>
+    <string name="overall_config">整体配置</string>
 </resources>

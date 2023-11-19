@@ -172,4 +172,6 @@
     <string name="processing">Processing</string>
     <string name="in_use">In use</string>
     <string name="clear_all">Clear all</string>
+    <string name="existing_files">Existing files</string>
+    <string name="overall_config">Overall config</string>
 </resources>

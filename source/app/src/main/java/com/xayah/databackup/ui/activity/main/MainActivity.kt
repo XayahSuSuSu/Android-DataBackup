@@ -22,6 +22,7 @@ import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.home.HomeGraph
 import com.xayah.feature.main.log.LogGraph
+import com.xayah.feature.main.reload.PageReload
 import com.xayah.feature.main.task.medium.local.backup.TaskMediumBackupGraph
 import com.xayah.feature.main.task.medium.local.restore.TaskMediumRestoreGraph
 import com.xayah.feature.main.task.packages.local.backup.TaskPackagesBackupGraph
@@ -57,6 +58,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(route = MainRoutes.Tree.route) {
                                 PageTree()
+                            }
+                            composable(route = MainRoutes.Reload.route) {
+                                PageReload()
                             }
                             composable(route = MainRoutes.Directory.route) {
                                 PageDirectory()
