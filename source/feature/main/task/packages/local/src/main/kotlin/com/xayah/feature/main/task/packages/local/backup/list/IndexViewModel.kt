@@ -131,7 +131,9 @@ class IndexViewModel @Inject constructor(private val packageBackupRepository: Pa
 
     private val _topBarState: MutableStateFlow<TopBarState> = MutableStateFlow(TopBarState(title = StringResourceToken.fromStringId(R.string.backup_list)))
     val topBarState: StateFlow<TopBarState> = _topBarState.asStateFlow()
-    val shimmeringState: StateFlow<Boolean> = _packages.map { it.isEmpty() }.flowOnIO().stateInScope(initialValue = true)
+    val shimmeringState: StateFlow<Boolean> = combine(_topBarState, _packages) { topBarState, packages ->
+        topBarState.progress != 1f && packages.isEmpty()
+    }.flowOnIO().stateInScope(initialValue = true)
     val selectedAPKsCountState: StateFlow<Int> = packageBackupRepository.selectedAPKsCount.flowOnIO().stateInScope(0)
     val selectedDataCountState: StateFlow<Int> = packageBackupRepository.selectedDataCount.flowOnIO().stateInScope(0)
 }
