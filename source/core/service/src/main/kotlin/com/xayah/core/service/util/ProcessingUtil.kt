@@ -488,7 +488,7 @@ class MediumBackupUtil @Inject constructor(
     private fun getDataDst(dstDir: String) = "${dstDir}/${DataType.MEDIA_MEDIA.type}.${compressionType.suffix}"
 
     /**
-     * Package data: USER, USER_DE, DATA, OBB, MEDIA
+     * Media data: MEDIA
      */
     suspend fun backupData(src: String, dstDir: String): ShellResult = run {
         log { "Backing up media..." }
