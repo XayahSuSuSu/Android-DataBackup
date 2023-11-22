@@ -179,6 +179,36 @@ object Tar {
         }
     }
 
+    suspend fun decompress(src: String, dst: String, extra: String, target: String): ShellResult = run {
+        if (extra.isEmpty()) {
+            // tar --totals -xpf "$src" -C "$dst" --wildcards --no-anchored "$target"
+            execute(
+                "--totals",
+                "-xmpf",
+                "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
+                "-C",
+                "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
+                "--wildcards",
+                "--no-anchored",
+                "${SymbolUtil.QUOTE}$target${SymbolUtil.QUOTE}",
+            )
+        } else {
+            // tar --totals -I "$extra" -xpf "$src" -C "$dst" --wildcards --no-anchored "$target"
+            execute(
+                "--totals",
+                "-I",
+                "${SymbolUtil.QUOTE}$extra${SymbolUtil.QUOTE}",
+                "-xmpf",
+                "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
+                "-C",
+                "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
+                "--wildcards",
+                "--no-anchored",
+                "${SymbolUtil.QUOTE}$target${SymbolUtil.QUOTE}",
+            )
+        }
+    }
+
     suspend fun decompress(exclusionList: List<String>, clear: String, m: Boolean, src: String, dst: String, extra: String): ShellResult = run {
         val exclusion = exclusionList.trim().map { "--exclude=$it" }.toSpaceString()
         if (extra.isEmpty()) {

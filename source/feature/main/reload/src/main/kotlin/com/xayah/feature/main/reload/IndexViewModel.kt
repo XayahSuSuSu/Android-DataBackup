@@ -8,6 +8,8 @@ import com.xayah.core.common.viewmodel.UiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.model.EmojiString
+import com.xayah.feature.main.reload.model.MediumReloadingState
+import com.xayah.feature.main.reload.model.PackagesReloadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

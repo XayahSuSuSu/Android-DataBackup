@@ -1,4 +1,4 @@
-package com.xayah.feature.main.reload
+package com.xayah.feature.main.reload.model
 
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.PackageRestoreEntire
@@ -29,5 +29,5 @@ data class PackagesReloadingState(
     val packages: MutableList<PackageRestoreEntire> = mutableListOf(),
 )
 
-internal const val Migration1 = "1.0.x"
-internal const val Migration2 = "1.1.x"
+internal const val Migration1Version = "1.0.x"
+internal const val Migration2Version = "1.1.x"

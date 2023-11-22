@@ -601,7 +601,7 @@ class MediumRestoreUtil @Inject constructor(
     fun getDataSrc(srcDir: String) = "${srcDir}/${DataType.MEDIA_MEDIA.type}.${compressionType.suffix}"
 
     /**
-     * Package data: USER, USER_DE, DATA, OBB, MEDIA
+     * Media data
      */
     suspend fun restoreData(path: String, srcDir: String): ShellResult = run {
         log { "Restoring media..." }

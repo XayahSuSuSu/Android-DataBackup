@@ -1,7 +1,9 @@
 package com.xayah.feature.main.reload
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import androidx.annotation.StringRes
+import com.google.gson.reflect.TypeToken
 import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.model.MediaRestoreEntity
@@ -15,13 +17,23 @@ import com.xayah.core.service.util.MediumBackupUtil
 import com.xayah.core.service.util.PackagesBackupUtil
 import com.xayah.core.util.ConfigsMediaRestoreName
 import com.xayah.core.util.ConfigsPackageRestoreName
+import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.Tar
+import com.xayah.core.util.filesDir
 import com.xayah.core.util.iconDir
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.localRestoreSaveDir
+import com.xayah.feature.main.reload.model.AppInfoRestoreMap
+import com.xayah.feature.main.reload.model.MediaInfoRestoreMap
+import com.xayah.feature.main.reload.model.MediumReloadingState
+import com.xayah.feature.main.reload.model.Migration1Version
+import com.xayah.feature.main.reload.model.Migration2Version
+import com.xayah.feature.main.reload.model.PackagesReloadingState
+import com.xayah.feature.main.reload.model.TypedPath
+import com.xayah.feature.main.reload.model.TypedTimestamp
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
@@ -37,8 +49,8 @@ class ReloadRepository @Inject constructor(
     private val migration2Repository: Migration2Repository,
 ) {
     fun getString(@StringRes resId: Int) = context.getString(resId)
-    val typeList = listOf(context.getString(R.string.existing_files), context.getString(R.string.overall_config))
-    val versionList = listOf(Migration2, Migration1)
+    val typeList = listOf(context.getString(R.string.overall_config), context.getString(R.string.existing_files))
+    val versionList = listOf(Migration2Version, Migration1Version)
 
     suspend fun saveMedium(medium: List<MediaRestoreEntity>, versionIndex: Int) = when (versionIndex) {
         1 -> migration1Repository.saveMedium(medium = medium)
@@ -52,18 +64,26 @@ class ReloadRepository @Inject constructor(
     }
 
     suspend fun getMedium(typeIndex: Int, versionIndex: Int, mutableState: MutableStateFlow<MediumReloadingState>) = when (versionIndex) {
-        1 -> migration1Repository.dumpMediaConfigsRecursively(mutableState)
+        1 -> when (typeIndex) {
+            1 -> migration1Repository.dumpMediaConfigsRecursively(mutableState)
+            else -> migration1Repository.dumpMediumOverallConfig(mutableState)
+        }
+
         else -> when (typeIndex) {
-            1 -> {}
-            else -> migration2Repository.dumpMediaConfigsRecursively(mutableState)
+            1 -> migration2Repository.dumpMediaConfigsRecursively(mutableState)
+            else -> migration2Repository.dumpMediumOverallConfig(mutableState)
         }
     }
 
     suspend fun getPackages(typeIndex: Int, versionIndex: Int, mutableState: MutableStateFlow<PackagesReloadingState>) = when (versionIndex) {
-        1 -> migration1Repository.dumpPackageConfigsRecursively(mutableState)
+        1 -> when (typeIndex) {
+            1 -> migration1Repository.dumpPackageConfigsRecursively(mutableState)
+            else -> migration1Repository.dumpPackagesOverallConfig(mutableState)
+        }
+
         else -> when (typeIndex) {
-            1 -> {}
-            else -> migration2Repository.dumpPackageConfigsRecursively(mutableState)
+            1 -> migration2Repository.dumpPackageConfigsRecursively(mutableState)
+            else -> migration2Repository.dumpPackagesOverallConfig(mutableState)
         }
     }
 }
@@ -71,6 +91,8 @@ class ReloadRepository @Inject constructor(
 interface Reload {
     suspend fun dumpMediaConfigsRecursively(mutableState: MutableStateFlow<MediumReloadingState>)
     suspend fun dumpPackageConfigsRecursively(mutableState: MutableStateFlow<PackagesReloadingState>)
+    suspend fun dumpMediumOverallConfig(mutableState: MutableStateFlow<MediumReloadingState>)
+    suspend fun dumpPackagesOverallConfig(mutableState: MutableStateFlow<PackagesReloadingState>)
     suspend fun saveMedium(medium: List<MediaRestoreEntity>)
     suspend fun savePackages(packages: List<PackageRestoreEntire>)
 }
@@ -89,7 +111,7 @@ class Migration2Repository @Inject constructor(
     private val mutex = Mutex()
 
     companion object {
-        private const val TAG = "Reload($Migration2)"
+        private const val TAG = "Reload($Migration2Version)"
         private fun log(msg: () -> String) = LogUtil.log { TAG to msg() }
     }
 
@@ -375,6 +397,47 @@ class Migration2Repository @Inject constructor(
         }
     }
 
+    override suspend fun dumpMediumOverallConfig(mutableState: MutableStateFlow<MediumReloadingState>) {
+        mutex.withLock {
+            log { "Dumping medium overall config..." }
+            val state = MediumReloadingState(isFinished = false, current = 0, total = 0, medium = mutableListOf())
+            val configsDir = pathUtil.getLocalBackupConfigsDir()
+
+            runCatching {
+                val configPath = mediumBackupUtil.getConfigsDst(dstDir = configsDir)
+                val bytes = rootService.readBytes(configPath)
+                state.medium.addAll(ProtoBuf.decodeFromByteArray<List<MediaRestoreEntity>>(bytes).toMutableList())
+            }.onFailure {
+                log { "Failed: ${it.message}" }
+            }
+
+            mutableState.value = state.copy(isFinished = true, current = state.medium.size, total = state.medium.size)
+        }
+    }
+
+    override suspend fun dumpPackagesOverallConfig(mutableState: MutableStateFlow<PackagesReloadingState>) {
+        mutex.withLock {
+            log { "Dumping packages overall config..." }
+            val state = PackagesReloadingState(isFinished = false, current = 0, total = 0, packages = mutableListOf())
+            val configsDir = pathUtil.getLocalBackupConfigsDir()
+
+            runCatching {
+                val configPath = packagesBackupUtil.getConfigsDst(dstDir = configsDir)
+                val bytes = rootService.readBytes(configPath)
+                state.packages.addAll(ProtoBuf.decodeFromByteArray<List<PackageRestoreEntire>>(bytes).toMutableList())
+            }.onFailure {
+                log { "Failed: ${it.message}" }
+            }
+
+            log { "Dumping packages icons..." }
+            // Restore icons.
+            val archivePath = packagesBackupUtil.getIconsDst(dstDir = configsDir)
+            Tar.decompress(src = archivePath, dst = context.filesDir(), extra = packagesBackupUtil.tarCompressionType.decompressPara)
+
+            mutableState.value = state.copy(isFinished = true, current = state.packages.size, total = state.packages.size)
+        }
+    }
+
     override suspend fun saveMedium(medium: List<MediaRestoreEntity>) {
         mutex.withLock {
             medium.forEach { mediaInfo ->
@@ -411,12 +474,13 @@ class Migration1Repository @Inject constructor(
     private val mediumBackupUtil: MediumBackupUtil,
     private val packageRestoreDao: PackageRestoreEntireDao,
     private val packagesBackupUtil: PackagesBackupUtil,
+    private val gsonUtil: GsonUtil,
 ) : Reload {
     private val configsDstDir = pathUtil.getConfigsDir(context.localBackupSaveDir())
     private val mutex = Mutex()
 
     companion object {
-        private const val TAG = "Reload($Migration1)"
+        private const val TAG = "Reload($Migration1Version)"
         private fun log(msg: () -> String) = LogUtil.log { TAG to msg() }
     }
 
@@ -497,7 +561,12 @@ class Migration1Repository @Inject constructor(
                         )
                         log { "Media timestamp: $timestamp" }
 
+                        val tmpMediaPath = pathUtil.getTmpApkPath(packageName = name)
+                        rootService.deleteRecursively(tmpMediaPath)
+                        rootService.mkdirs(tmpMediaPath)
+
                         val timestampPath = "${mediumDir}/${mediaRestore.name}/${timestampName}"
+                        val targetName = "com.xayah.databackup.PATH"
 
                         archivePathList.forEach { archivePath ->
                             // For each archive
@@ -507,6 +576,17 @@ class Migration1Repository @Inject constructor(
                                     name.lowercase() -> {
                                         log { "Dumping media data..." }
                                         mediaExists = true
+
+                                        // Get target path from archive.
+                                        Tar.decompress(
+                                            src = archivePath.pathString,
+                                            dst = tmpMediaPath,
+                                            extra = CompressionType.TAR.decompressPara,
+                                            target = targetName
+                                        )
+                                        mediaRestore.name = name
+                                        mediaRestore.path = rootService.readText("${tmpMediaPath}/${name}/${targetName}")
+                                        log { "Dumped target path: ${mediaRestore.path}" }
                                     }
 
                                     else -> {
@@ -527,6 +607,7 @@ class Migration1Repository @Inject constructor(
                             log { "Media exists, size: ${mediaRestore.sizeBytes}" }
                         }
 
+                        rootService.deleteRecursively(tmpMediaPath)
                         state.medium.add(mediaRestore)
                     }
                     mutableState.value = state.copy()
@@ -701,6 +782,131 @@ class Migration1Repository @Inject constructor(
                         state.packages.add(packageRestore)
                     }
                     mutableState.value = state.copy()
+                }
+            }
+
+            mutableState.value = state.copy(isFinished = true, current = state.packages.size, total = state.packages.size)
+        }
+    }
+
+    override suspend fun dumpMediumOverallConfig(mutableState: MutableStateFlow<MediumReloadingState>) {
+        mutex.withLock {
+            log { "Dumping medium overall config..." }
+            val state = MediumReloadingState(isFinished = false, current = 0, total = 0, medium = mutableListOf())
+            val backupDir = "${context.localRestoreSaveDir()}/backup"
+            var serial: Long = -1
+            rootService.listFilePaths(backupDir).forEach { userPath ->
+                // Timestamp serial for "Cover".
+                serial++
+                log { "Dumping: $userPath" }
+
+                val configDir = "${userPath}/config/mediaRestoreMap"
+                val mediumDir = "${userPath}/media"
+
+                runCatching {
+                    val json = rootService.readText(configDir)
+                    val type = object : TypeToken<MediaInfoRestoreMap>() {}.type
+                    val mediaInfoRestoreMap: MediaInfoRestoreMap = gsonUtil.fromJson(json, type)
+                    mediaInfoRestoreMap.forEach { (_, base) ->
+                        base.detailRestoreList.forEach timestamp@{
+                            val name = base.name
+                            val path = base.path
+                            log { "Media name: $name" }
+                            val timestamp = runCatching { it.date.toLong() }.getOrElse { serial }
+                            val mediaRestore = MediaRestoreEntity(
+                                timestamp = timestamp,
+                                path = path,
+                                name = name,
+                                sizeBytes = 0,
+                                selected = false,
+                                savePath = context.localRestoreSaveDir()
+                            )
+                            val timestampPath = "${mediumDir}/${name}/${it.date}"
+                            val archivePath = "${timestampPath}/${name}.tar"
+                            val archiveExists = rootService.exists(archivePath)
+                            log { "$archivePath exists: $archiveExists" }
+                            // If the media archive doesn't exist, continue for the next one.
+                            if (archiveExists.not()) {
+                                log { "Media not exists." }
+                                return@timestamp
+                            } else {
+                                mediaRestore.sizeBytes = rootService.calculateSize(timestampPath)
+                                log { "Media exists, size: ${mediaRestore.sizeBytes}" }
+                            }
+                            state.medium.add(mediaRestore)
+                        }
+                        mutableState.value = state.copy()
+                    }
+                }.onFailure {
+                    log { "Failed: ${it.message}" }
+                }
+            }
+
+            mutableState.value = state.copy(isFinished = true, current = state.medium.size, total = state.medium.size)
+        }
+    }
+
+    override suspend fun dumpPackagesOverallConfig(mutableState: MutableStateFlow<PackagesReloadingState>) {
+        mutex.withLock {
+            log { "Dumping packages overall config..." }
+            val state = PackagesReloadingState(isFinished = false, current = 0, total = 0, packages = mutableListOf())
+            val backupDir = "${context.localRestoreSaveDir()}/backup"
+            var serial: Long = -1
+            rootService.listFilePaths(backupDir).forEach { userPath ->
+                // Timestamp serial for "Cover".
+                serial++
+                log { "Dumping: $userPath" }
+
+                val configDir = "${userPath}/config/appRestoreMap"
+                val packagesDir = "${userPath}/data"
+
+                runCatching {
+                    val json = rootService.readText(configDir)
+                    val type = object : TypeToken<AppInfoRestoreMap>() {}.type
+                    val appInfoRestoreMap: AppInfoRestoreMap = gsonUtil.fromJson(json, type)
+                    appInfoRestoreMap.forEach { (_, base) ->
+                        base.detailRestoreList.forEach timestamp@{
+                            val label = base.detailBase.appName
+                            val packageName = base.detailBase.packageName
+                            val isSystemApp = base.detailBase.isSystemApp
+                            log { "Package name: $packageName" }
+                            val timestamp = runCatching { it.date.toLong() }.getOrElse { serial }
+                            val packageRestore = PackageRestoreEntire(
+                                label = label,
+                                packageName = packageName,
+                                backupOpCode = OperationMask.None,
+                                timestamp = timestamp,
+                                versionName = it.versionName,
+                                versionCode = it.versionCode,
+                                flags = if (isSystemApp) ApplicationInfo.FLAG_SYSTEM else 0,
+                                compressionType = CompressionType.ZSTD,
+                                savePath = context.localRestoreSaveDir(),
+                            )
+
+                            val timestampPath = "${packagesDir}/${packageName}/${it.date}"
+
+                            // Dump the first file and get the compression type.
+                            val firstFile = rootService.walkFileTree(timestampPath).first()
+                            val compressionType = CompressionType.suffixOf(firstFile.extension)
+                            if (compressionType == null) {
+                                log { "Failed to parse compression type: ${firstFile.extension}" }
+                                return@timestamp
+                            } else {
+                                if (it.hasApp)
+                                    packageRestore.backupOpCode = packageRestore.backupOpCode or OperationMask.Apk
+                                if (it.hasData)
+                                    packageRestore.backupOpCode = packageRestore.backupOpCode or OperationMask.Data
+                                packageRestore.compressionType = compressionType
+                                packageRestore.sizeBytes = rootService.calculateSize(timestampPath)
+                                log { "Package data exists, size: ${packageRestore.sizeBytes}" }
+                            }
+
+                            state.packages.add(packageRestore)
+                        }
+                        mutableState.value = state.copy()
+                    }
+                }.onFailure {
+                    log { "Failed: ${it.message}" }
                 }
             }
 

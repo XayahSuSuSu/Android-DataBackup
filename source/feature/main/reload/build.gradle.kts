@@ -22,4 +22,7 @@ dependencies {
     // Compose Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Gson
+    implementation(libs.gson)
 }
