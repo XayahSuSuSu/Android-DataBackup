@@ -137,6 +137,8 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean = getService().copyTo(path, targetPath, overwrite)
 
+    suspend fun renameTo(src: String, dst: String): Boolean = getService().renameTo(src, dst)
+
     suspend fun writeText(text: String, path: String, context: Context): Boolean {
         var state = true
         val tmpFilePath = "${context.cacheDir.path}/tmp"

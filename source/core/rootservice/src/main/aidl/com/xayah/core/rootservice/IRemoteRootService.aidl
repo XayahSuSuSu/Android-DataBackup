@@ -7,6 +7,7 @@ interface IRemoteRootService {
     boolean mkdirs(String path);
     boolean copyRecursively(String path, String targetPath, boolean overwrite);
     boolean copyTo(String path, String targetPath, boolean overwrite);
+    boolean renameTo(String src, String dst);
     boolean exists(String path);
     boolean createNewFile(String path);
     boolean deleteRecursively(String path);

@@ -9,14 +9,11 @@ import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.model.EmojiString
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 data class IndexUiState(
@@ -27,6 +24,7 @@ data class IndexUiState(
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
+    object Update : IndexUiIntent()
     object Save : IndexUiIntent()
 }
 
@@ -48,17 +46,23 @@ class IndexViewModel @Inject constructor(
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(typeList = reloadRepository.typeList, versionList = reloadRepository.versionList)) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
+            is IndexUiIntent.Update -> {
+                reloadRepository.getMedium(typeIndex = uiState.value.typeIndex, versionIndex = uiState.value.versionIndex, mutableState = _medium)
+                reloadRepository.getPackages(typeIndex = uiState.value.typeIndex, versionIndex = uiState.value.versionIndex, mutableState = _packages)
+            }
+
             is IndexUiIntent.Save -> {
                 if (savingState.value.not()) {
                     _savingState.value = true
-                    reloadRepository.saveMedium(list = mediumState.value.medium)
-                    reloadRepository.savePackages(list = packagesState.value.packages)
+                    reloadRepository.saveMedium(medium = mediumState.value.medium, versionIndex = state.versionIndex)
+                    reloadRepository.savePackages(packages = packagesState.value.packages, versionIndex = state.versionIndex)
                     _savingState.value = false
                     emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = reloadRepository.getString(R.string.succeed) + EmojiString.PARTY_POPPER.emoji
                         )
                     )
+                    emitIntent(IndexUiIntent.Update)
                 }
             }
         }
@@ -78,20 +82,11 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _medium: Flow<MediumReloadingState> = flatMapLatestUiState {
-        reloadRepository.getMedium(typeIndex = it.typeIndex, versionIndex = it.versionIndex)
-    }.flowOnIO()
-    val mediumState: StateFlow<MediumReloadingState> = _medium.stateInScope(MediumReloadingState())
+    private val _medium: MutableStateFlow<MediumReloadingState> = MutableStateFlow(MediumReloadingState())
+    val mediumState: StateFlow<MediumReloadingState> = _medium.asStateFlow()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _packages: Flow<PackagesReloadingState> = _medium.flatMapLatest {
-        if (it.isFinished)
-            reloadRepository.getPackages(typeIndex = uiState.value.typeIndex, versionIndex = uiState.value.versionIndex)
-        else
-            flow { emit(PackagesReloadingState()) }
-    }.flowOnIO()
-    val packagesState: StateFlow<PackagesReloadingState> = _packages.stateInScope(PackagesReloadingState())
+    private val _packages: MutableStateFlow<PackagesReloadingState> = MutableStateFlow(PackagesReloadingState())
+    val packagesState: StateFlow<PackagesReloadingState> = _packages.asStateFlow()
 
     private val _reloadState: Flow<Boolean> = combine(_medium, _packages) { medium, packages ->
         medium.isFinished && packages.isFinished

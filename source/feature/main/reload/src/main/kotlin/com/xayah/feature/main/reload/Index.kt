@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -65,6 +66,10 @@ fun PageReload() {
     val packagesState by viewModel.packagesState.collectAsState()
     val reloadState by viewModel.reloadState.collectAsState()
     val savingState by viewModel.savingState.collectAsState()
+
+    LaunchedEffect(uiState.typeIndex, uiState.versionIndex) {
+        viewModel.emitIntent(IndexUiIntent.Update)
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -109,7 +114,7 @@ fun PageReload() {
                                 Spacer(modifier = Modifier.size(PaddingTokens.Level0))
 
                                 FilterChip(
-                                    enabled = savingState.not(),
+                                    enabled = reloadState && savingState.not(),
                                     leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Key),
                                     selectedIndex = uiState.typeIndex,
                                     list = uiState.typeList,
@@ -122,7 +127,7 @@ fun PageReload() {
                                 )
 
                                 FilterChip(
-                                    enabled = savingState.not(),
+                                    enabled = reloadState && savingState.not(),
                                     leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Apps),
                                     selectedIndex = uiState.versionIndex,
                                     list = uiState.versionList,

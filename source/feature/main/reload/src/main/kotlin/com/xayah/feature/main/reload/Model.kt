@@ -6,6 +6,7 @@ import com.xayah.core.rootservice.parcelables.PathParcelable
 
 internal data class TypedTimestamp(
     val timestamp: Long,
+    val timestampName: String,
     val archivePathList: MutableList<PathParcelable>,
 )
 
@@ -28,6 +29,5 @@ data class PackagesReloadingState(
     val packages: MutableList<PackageRestoreEntire> = mutableListOf(),
 )
 
-internal const val Migration1 = "1.0.0sp1"
-internal const val Migration2 = "1.1.0-alpha01"
-internal const val Migration3 = "1.1.0-alpha05"
+internal const val Migration1 = "1.0.x"
+internal const val Migration2 = "1.1.x"

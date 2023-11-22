@@ -103,6 +103,10 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         }
     }
 
+    override fun renameTo(src: String, dst: String): Boolean = synchronized(lock) {
+        runCatching { File(src).renameTo(File(dst)) }.getOrElse { false }
+    }
+
     override fun exists(path: String): Boolean = synchronized(lock) {
         tryOn(block = { File(path).exists() }, onException = { false })
     }
