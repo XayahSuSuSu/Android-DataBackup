@@ -30,14 +30,14 @@
     <string name="storage_desc">Используется для конфигурации резервного копирования, чтения и записи архива</string>
     <string name="simplify">Упрощенно</string>
     <string name="not_installed">Не установленно</string>
-    <string name="reset_backup_list">Сбросить список бекапов</string>
+    <string name="reset_backup_list">Сброс списка бекапов</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Поддерживается только версия %1$s, на вашем устройстве установлена %2$s. Пожалуйста, установите %3$s или выше.</string>
     <string name="directory">Папки</string>
     <string name="restore">Восстановление</string>
     <string name="copy">Копировать</string>
     <string name="manifest">Манифест</string>
     <string name="search_bar_hint">Поиск имени пакета…</string>
-    <string name="none">Ни одного</string>
+    <string name="none">Нет</string>
     <string name="export">Экспорт</string>
     <string name="confirm_delete">Удалить\?</string>
     <string name="restore_completed">Восстановление завершено</string>
@@ -128,7 +128,7 @@
     <string name="compression_test">Тестирование сжатия</string>
     <string name="failed">Сбой</string>
     <string name="selected_both">Выбрано оба</string>
-    <string name="restore_dir">Восстановление папки</string>
+    <string name="restore_dir">Папка восстановления</string>
     <string name="set_remote">Облачная настройка</string>
     <string name="mount">Монтирование</string>
     <string name="set_local">Настройка локального хранилища</string>
@@ -161,4 +161,13 @@
     <string name="follow_symlinks_desc">Архивировать файлы, на которые они указывают</string>
     <string name="speed_mode">Скоростной режим</string>
     <string name="recursive_mode">Рекурсивный режим</string>
+    <string name="apk_only">Только АРК</string>
+    <string name="existing_files">Существующие файлы</string>
+    <string name="remain">Осталось</string>
+    <string name="clear_all">Очистить все</string>
+    <string name="processing">Обработка</string>
+    <string name="data_only">Только данные</string>
+    <string name="batching_select">Выбрать все</string>
+    <string name="in_use">Используется</string>
+    <string name="overall_config">Общая конфигурация</string>
 </resources>
