@@ -22,10 +22,28 @@ dependencies {
     compileOnly(libs.android.build.logic)
     compileOnly(libs.kotlin.build.logic)
     compileOnly(libs.ksp.build.logic)
+    compileOnly(libs.firebase.crashlytics.build.logic)
 }
 
 gradlePlugin {
     plugins {
+        register("applicationCommon") {
+            id = "application.common"
+            implementationClass = "ApplicationCommonConventionPlugin"
+        }
+        register("applicationCompose") {
+            id = "application.compose"
+            implementationClass = "ApplicationComposeConventionPlugin"
+        }
+        register("applicationHilt") {
+            id = "application.hilt"
+            implementationClass = "ApplicationHiltConventionPlugin"
+        }
+        register("applicationFirebase") {
+            id = "application.firebase"
+            implementationClass = "ApplicationFirebaseConventionPlugin"
+        }
+
         register("libraryCommon") {
             id = "library.common"
             implementationClass = "LibraryCommonConventionPlugin"

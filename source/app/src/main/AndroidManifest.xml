@@ -14,12 +14,8 @@
         android:theme="@style/Theme.DataBackup"
         tools:targetApi="31">
 
-        <service
-            android:name=".service.OperationLocalServiceImpl"
-            android:exported="false" />
-
         <activity
-            android:name=".ui.activity.splash.SplashActivity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.DataBackup.SplashScreen">
             <intent-filter>
@@ -29,23 +25,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.crash.CrashActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.activity.guide.GuideActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.activity.main.MainActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.activity.operation.OperationActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.activity.directory.DirectoryActivity"
+            android:name=".MainActivity"
             android:exported="false" />
     </application>
 </manifest>

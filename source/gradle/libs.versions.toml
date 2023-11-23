@@ -91,6 +91,7 @@ serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization
 android-build-logic = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
 kotlin-build-logic = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-build-logic = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp-kotlin" }
+firebase-crashlytics-build-logic = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -101,6 +102,12 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 com-android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-kotlin" }
 gms-google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
+
+application-common = { id = "application.common", version = "unspecified" }
+application-compose = { id = "application.compose", version = "unspecified" }
+application-hilt = { id = "application.hilt", version = "unspecified" }
+application-firebase = { id = "application.firebase", version = "unspecified" }
 library-common = { id = "library.common", version = "unspecified" }
 library-hilt = { id = "library.hilt", version = "unspecified" }
 library-room = { id = "library.room", version = "unspecified" }
