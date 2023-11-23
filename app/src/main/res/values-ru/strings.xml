@@ -110,7 +110,7 @@
     <string name="backup_dir_as_media_error">Невозможно добавить папку бекапов как медиа</string>
     <string name="add">Добавить</string>
     <string name="select_all">Выбрать все</string>
-    <string name="none">Ни одного</string>
+    <string name="none">Нет</string>
     <string name="link">Связь</string>
     <string name="stable">Стабильный</string>
     <string name="test">Тестовый</string>
@@ -165,7 +165,7 @@
     <string name="call_log_permission">Разрешение на журнал вызовов</string>
     <string name="monet_title">Включить движок темы monet Material You</string>
     <string name="miui_service_sms_tips">Если вы используете MIUI, пожалуйста, предоставьте разрешение службы СМС вручную.</string>
-    <string name="reset_backup_list">Сбросить список бекапов</string>
+    <string name="reset_backup_list">Сброс списка бекапов</string>
     <string name="reset_backup_list_title">Снять выделение после бекапа</string>
     <string name="reset_restore_list">Сброс списка восстановления</string>
     <string name="reset_restore_list_title">Снять выделение после восстановления</string>
