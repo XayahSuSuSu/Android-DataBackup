@@ -44,7 +44,7 @@ fun PageProcessing(navController: NavHostController) {
         availableBytes = taskState?.availableBytes ?: 0.0,
         rawBytes = taskState?.rawBytes ?: 0.0,
         totalBytes = taskState?.totalBytes ?: 0.0,
-        remainingCount = (packages.size - operationsSucceed.size - operationsFailed.size),
+        remainingCount = (packages.size - operationsSucceed.size - operationsFailed.size).coerceAtLeast(0),
         succeedCount = operationsSucceed.size,
         failedCount = operationsFailed.size,
         timer = taskTimerState,
