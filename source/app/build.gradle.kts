@@ -127,6 +127,7 @@ dependencies {
     implementation(project(":core:rootservice"))
 
     // Feature
+    implementation(project(":feature:crash"))
     "fossImplementation"(project(":feature:guide:foss"))
     "premiumImplementation"(project(":feature:guide:premium"))
     "fossImplementation"(project(":feature:main:home:foss"))

@@ -1,0 +1,3 @@
+<resources>
+    <item name="app_crashed" type="string"/>
+</resources>

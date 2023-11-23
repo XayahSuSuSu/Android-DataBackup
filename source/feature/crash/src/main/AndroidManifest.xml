@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- Workaround for CrashHandler -->
+        <provider
+            android:name=".CrashProvider"
+            android:authorities="com.xayah.feature.crash.CrashProvider"
+            android:exported="false"
+            android:initOrder="101" />
+        <!-- End -->
+    </application>
+</manifest>
