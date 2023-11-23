@@ -61,6 +61,7 @@ class PathUtil @Inject constructor(
     fun getPackageIconPath(packageName: String): String = "${context.iconDir()}/${getPackageIconRelativePath(packageName)}"
     fun getConfigsDir(parent: String): String = "${parent}/${getConfigsRelativeDir()}"
     fun getLocalBackupConfigsDir(): String = getConfigsDir(parent = context.localBackupSaveDir())
+    fun getLocalRestoreConfigsDir(): String = getConfigsDir(parent = context.localRestoreSaveDir())
     fun getArchivesDir(parent: String): String = "${parent}/${getArchivesRelativeDir()}"
     fun getLocalBackupArchivesDir(): String = getArchivesDir(parent = context.localBackupSaveDir())
     fun getArchivesPackagesDir(parent: String): String = "${parent}/${getArchivesPackagesRelativeDir()}"

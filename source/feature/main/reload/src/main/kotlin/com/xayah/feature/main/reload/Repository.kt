@@ -24,7 +24,6 @@ import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.iconDir
-import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.localRestoreSaveDir
 import com.xayah.feature.main.reload.model.AppInfoRestoreMap
 import com.xayah.feature.main.reload.model.MediaInfoRestoreMap
@@ -107,7 +106,7 @@ class Migration2Repository @Inject constructor(
     private val packageRestoreDao: PackageRestoreEntireDao,
     private val packagesBackupUtil: PackagesBackupUtil,
 ) : Reload {
-    private val configsDstDir = pathUtil.getConfigsDir(context.localBackupSaveDir())
+    private val configsDstDir = pathUtil.getConfigsDir(context.localRestoreSaveDir())
     private val mutex = Mutex()
 
     companion object {
@@ -401,7 +400,7 @@ class Migration2Repository @Inject constructor(
         mutex.withLock {
             log { "Dumping medium overall config..." }
             val state = MediumReloadingState(isFinished = false, current = 0, total = 0, medium = mutableListOf())
-            val configsDir = pathUtil.getLocalBackupConfigsDir()
+            val configsDir = pathUtil.getLocalRestoreConfigsDir()
 
             runCatching {
                 val configPath = mediumBackupUtil.getConfigsDst(dstDir = configsDir)
@@ -419,7 +418,7 @@ class Migration2Repository @Inject constructor(
         mutex.withLock {
             log { "Dumping packages overall config..." }
             val state = PackagesReloadingState(isFinished = false, current = 0, total = 0, packages = mutableListOf())
-            val configsDir = pathUtil.getLocalBackupConfigsDir()
+            val configsDir = pathUtil.getLocalRestoreConfigsDir()
 
             runCatching {
                 val configPath = packagesBackupUtil.getConfigsDst(dstDir = configsDir)
@@ -476,7 +475,7 @@ class Migration1Repository @Inject constructor(
     private val packagesBackupUtil: PackagesBackupUtil,
     private val gsonUtil: GsonUtil,
 ) : Reload {
-    private val configsDstDir = pathUtil.getConfigsDir(context.localBackupSaveDir())
+    private val configsDstDir = pathUtil.getConfigsDir(context.localRestoreSaveDir())
     private val mutex = Mutex()
 
     companion object {
