@@ -10,6 +10,8 @@ import androidx.core.graphics.drawable.toDrawable
 import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.util.trim
 import com.xayah.core.util.BinArchiveName
+import com.xayah.core.util.BuildConfigUtil
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.LogUtil.TAG_SHELL_CODE
 import com.xayah.core.util.LogUtil.TAG_SHELL_IN
 import com.xayah.core.util.LogUtil.TAG_SHELL_OUT
@@ -20,6 +22,7 @@ import com.xayah.core.util.binArchivePath
 import com.xayah.core.util.binDir
 import com.xayah.core.util.extensionDir
 import com.xayah.core.util.filesDir
+import com.xayah.core.util.logDir
 import com.xayah.core.util.model.ShellResult
 import com.xayah.core.util.withIOContext
 import net.lingala.zip4j.ZipFile
@@ -53,6 +56,15 @@ object BaseUtil {
         .setTimeout(3)
 
     private fun getNewShell() = getShellBuilder().build()
+
+    fun initializeEnvironment(context: Context) = run {
+        // Set up shell environment.
+        Shell.enableVerboseLogging = BuildConfigUtil.ENABLE_VERBOSE
+        Shell.setDefaultBuilder(getShellBuilder())
+
+        // Set up LogUtil.
+        LogUtil.initialize(context.logDir())
+    }
 
     suspend fun execute(vararg args: String, shell: Shell? = null, log: Boolean = true): ShellResult = withIOContext {
         val shellResult = ShellResult(code = -1, input = args.toList().trim(), out = listOf())

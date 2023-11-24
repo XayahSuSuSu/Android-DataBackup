@@ -17,6 +17,7 @@ import com.xayah.core.model.util.of
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.theme.DataBackupTheme
 import com.xayah.core.ui.util.LocalNavController
+import com.xayah.core.util.command.BaseUtil
 import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.home.HomeGraph
 import com.xayah.feature.main.log.LogGraph
@@ -37,6 +38,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        runCatching {
+            BaseUtil.initializeEnvironment(context = this)
+        }
 
         setContent {
             DataBackupTheme {

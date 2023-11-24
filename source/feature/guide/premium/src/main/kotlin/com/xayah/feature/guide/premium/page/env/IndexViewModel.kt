@@ -33,7 +33,7 @@ data class IndexUiState(
 
 sealed class IndexUiIntent : UiIntent {
     data class Initialize(val context: Context) : IndexUiIntent()
-    object ValidateRoot : IndexUiIntent()
+    data class ValidateRoot(val context: Context) : IndexUiIntent()
     data class ValidateBin(val context: Context) : IndexUiIntent()
     data class ValidateAbi(val context: Context) : IndexUiIntent()
 }
@@ -71,6 +71,10 @@ class IndexViewModel @Inject constructor() : BaseViewModel<IndexUiState, IndexUi
 
             is IndexUiIntent.ValidateRoot -> {
                 mutex.withLock {
+                    runCatching {
+                        BaseUtil.initializeEnvironment(context = intent.context)
+                    }
+
                     val rootItem = state.rootItem
                     emitStateSuspend(state = uiState.value.copy(rootItem = rootItem.copy(state = EnvState.Processing)))
                     emitStateSuspend(state = uiState.value.copy(rootItem = rootItem.copy(state = if (Shell.getShell().isRoot) EnvState.Succeed else EnvState.Failed)))
