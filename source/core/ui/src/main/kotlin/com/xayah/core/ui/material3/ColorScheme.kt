@@ -73,6 +73,6 @@ internal const val DisabledAlpha = 0.38f
 
 /** Converts a color token key to the local color scheme provided by the theme */
 @Composable
-fun ColorSchemeKeyTokens.toColor(): Color {
-    return MaterialTheme.colorScheme.fromToken(this)
+fun ColorSchemeKeyTokens.toColor(enabled: Boolean = true): Color {
+    return if (enabled) MaterialTheme.colorScheme.fromToken(this) else MaterialTheme.colorScheme.fromToken(this).copy(alpha = DisabledAlpha)
 }

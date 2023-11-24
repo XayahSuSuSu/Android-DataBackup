@@ -14,6 +14,7 @@ data class ActionMenuItem(
     val color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.LocalContent,
     val backgroundColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnPrimary,
     val enabled: Boolean,
+    val countdown: Int = 0,
     val secondaryMenu: List<ActionMenuItem>,
     val onClick: () -> Unit,
 )
@@ -32,6 +33,7 @@ fun getActionMenuConfirmItem(onClick: () -> Unit) = ActionMenuItem(
     color = ColorSchemeKeyTokens.Error,
     backgroundColor = ColorSchemeKeyTokens.ErrorContainer,
     enabled = true,
+    countdown = 3,
     secondaryMenu = listOf(),
     onClick = onClick
 )

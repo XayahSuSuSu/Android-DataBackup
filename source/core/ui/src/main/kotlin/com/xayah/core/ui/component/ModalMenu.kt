@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.Pending
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.DropdownMenuContent
 import com.xayah.core.ui.material3.DropdownMenuPositionProvider
@@ -40,9 +42,12 @@ import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
+import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 
 @Composable
 fun ModalActionDropdownMenu(
@@ -62,18 +67,30 @@ fun ModalActionDropdownMenu(
         ) { targetState ->
             Column {
                 targetState.forEach { item ->
+                    val countdown by remember(item.countdown) {
+                        flow {
+                            var countdown = item.countdown
+                            while (countdown != 0) {
+                                delay(1000)
+                                countdown--
+                                emit(countdown)
+                            }
+                        }
+                    }.collectAsStateWithLifecycle(initialValue = item.countdown)
+                    val enabled = remember(item.enabled, countdown) { item.enabled && countdown == 0 }
+
                     DropdownMenuItem(
                         modifier = Modifier
-                            .background(item.backgroundColor.toColor())
+                            .background(item.backgroundColor.toColor(enabled = enabled))
                             .onSizeChanged { itemHeightPx = it.height },
                         text = {
                             Text(
                                 modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
                                 text = item.title.value,
-                                color = item.color.toColor()
+                                color = item.color.toColor(enabled = enabled)
                             )
                         },
-                        enabled = item.enabled,
+                        enabled = enabled,
                         onClick = {
                             if (item.secondaryMenu.isNotEmpty()) {
                                 targetList = item.secondaryMenu
@@ -84,8 +101,21 @@ fun ModalActionDropdownMenu(
                             }
                         },
                         leadingIcon = {
-                            item.icon?.apply {
-                                Icon(imageVector = item.icon.value, tint = item.color.toColor(), contentDescription = null)
+                            if (countdown != 0) {
+                                Icon(
+                                    imageVector = when (countdown) {
+                                        3 -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_counter_3)
+                                        2 -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_counter_2)
+                                        1 -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_counter_1)
+                                        else -> ImageVectorToken.fromVector(Icons.Rounded.Pending)
+                                    }.value,
+                                    tint = item.color.toColor(enabled = enabled),
+                                    contentDescription = null
+                                )
+                            } else {
+                                item.icon?.apply {
+                                    Icon(imageVector = item.icon.value, tint = item.color.toColor(enabled = enabled), contentDescription = null)
+                                }
                             }
                         },
                     )
