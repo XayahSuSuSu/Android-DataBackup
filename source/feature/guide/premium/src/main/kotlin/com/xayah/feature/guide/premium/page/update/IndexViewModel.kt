@@ -50,7 +50,13 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Initialize -> {
-                _releases.value = gitHubNetwork.getReleases()
+                runCatching {
+                    _releases.value = gitHubNetwork.getReleases()
+                }.onFailure {
+                    val msg = it.message
+                    if (msg != null)
+                        emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
+                }
                 emitState(state = state.copy(isInitializing = false))
             }
         }
