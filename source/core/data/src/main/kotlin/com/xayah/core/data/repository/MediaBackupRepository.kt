@@ -15,9 +15,10 @@ class MediaBackupRepository @Inject constructor(
     val medium = mediaDao.observeBackupMedium().distinctUntilChanged()
     val selectedMedium = mediaDao.observeBackupSelected().distinctUntilChanged()
 
-    private suspend fun upsertBackup(items: List<MediaBackupEntityUpsert>) = mediaDao.upsertBackup(items)
+    suspend fun upsertBackup(items: List<MediaBackupEntityUpsert>) = mediaDao.upsertBackup(items)
     suspend fun upsertBackup(item: MediaBackupEntity) = mediaDao.upsertBackup(item)
     suspend fun batchSelectOp(selected: Boolean, pathList: List<String>) = mediaDao.batchSelectOp(selected, pathList)
+    suspend fun queryAllBackup() = mediaDao.queryAllBackup()
 
     suspend fun updateDefaultMedium() {
         upsertBackup(ConstantUtil.DefaultMediaList.map { (name, path) -> MediaBackupEntityUpsert(path = path, name = name) })
@@ -32,5 +33,16 @@ class MediaBackupRepository @Inject constructor(
 
     fun getKeyPredicate(key: String): (MediaBackupEntity) -> Boolean = { mediaBackup ->
         mediaBackup.name.lowercase().contains(key.lowercase()) || mediaBackup.path.lowercase().contains(key.lowercase())
+    }
+
+    fun renameDuplicateMedia(name: String): String {
+        val nameList = name.split("_").toMutableList()
+        val index = nameList.first().toIntOrNull()
+        if (index == null) {
+            nameList.add("0")
+        } else {
+            nameList[nameList.lastIndex] = (index + 1).toString()
+        }
+        return nameList.joinToString(separator = "_")
     }
 }

@@ -31,4 +31,7 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // PickYou
+    implementation(libs.pickyou)
 }

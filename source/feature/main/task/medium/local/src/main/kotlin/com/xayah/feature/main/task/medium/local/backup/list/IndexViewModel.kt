@@ -1,17 +1,26 @@
 package com.xayah.feature.main.task.medium.local.backup.list
 
+import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.UiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.MediaBackupRepository
 import com.xayah.core.database.model.MediaBackupEntity
+import com.xayah.core.database.model.MediaBackupEntityUpsert
 import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.feature.main.task.medium.common.R
+import com.xayah.core.util.PathUtil
+import com.xayah.core.util.localBackupSaveDir
+import com.xayah.feature.main.task.medium.local.R
+import com.xayah.libpickyou.ui.PickYouLauncher
+import com.xayah.libpickyou.ui.activity.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +46,18 @@ sealed class IndexUiIntent : UiIntent {
     object BatchingSelectAll : IndexUiIntent()
     data class BatchingSelect(val path: String) : IndexUiIntent()
     data class BatchSelectOp(val selected: Boolean, val pathList: List<String>) : IndexUiIntent()
+    data class AddMedia(val context: Context) : IndexUiIntent()
+}
+
+sealed class IndexUiEffect : UiEffect {
+    data class ShowSnackbar(
+        val message: String,
+        val actionLabel: String? = null,
+        val withDismissAction: Boolean = false,
+        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
+    ) : IndexUiEffect()
+
+    object DismissSnackbar : IndexUiEffect()
 }
 
 @ExperimentalMaterial3Api
@@ -44,7 +65,7 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     private val mediaBackupRepository: MediaBackupRepository,
 ) :
-    BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(IndexUiState()) {
+    BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState()) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Update -> {
@@ -87,6 +108,53 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.BatchSelectOp -> {
                 mediaBackupRepository.batchSelectOp(selected = intent.selected, pathList = intent.pathList)
+            }
+
+            is IndexUiIntent.AddMedia -> {
+                withMainContext {
+                    val context = intent.context as ComponentActivity
+                    PickYouLauncher().apply {
+                        setTitle(context.getString(R.string.select_target_directory))
+                        setType(PickerType.DIRECTORY)
+                        setLimitation(0)
+                        launch(context) { pathList ->
+                            launchOnIO {
+                                val customMediaList = mutableListOf<MediaBackupEntityUpsert>()
+                                pathList.forEach { pathString ->
+                                    if (pathString.isNotEmpty() && ConstantUtil.DefaultMediaList.indexOfFirst { it.second == pathString } == -1) {
+                                        if (pathString == context.localBackupSaveDir()) {
+                                            emitEffect(IndexUiEffect.ShowSnackbar(message = context.getString(R.string.backup_dir_as_media_error)))
+                                            return@forEach
+                                        }
+                                        var name = PathUtil.getFileName(pathString)
+                                        mediaBackupRepository.queryAllBackup().forEach {
+                                            if (it.name == name && it.path != pathString) name = mediaBackupRepository.renameDuplicateMedia(name)
+                                        }
+                                        customMediaList.forEach {
+                                            if (it.name == name && it.path != pathString) name = mediaBackupRepository.renameDuplicateMedia(name)
+                                        }
+                                        customMediaList.add(MediaBackupEntityUpsert(path = pathString, name = name))
+                                    }
+                                }
+                                mediaBackupRepository.upsertBackup(customMediaList)
+                                emitEffect(IndexUiEffect.ShowSnackbar(message = "${context.getString(R.string.succeed)}: ${customMediaList.size}"))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    val snackbarHostState: SnackbarHostState = SnackbarHostState()
+    override suspend fun onEffect(effect: IndexUiEffect) {
+        when (effect) {
+            is IndexUiEffect.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
+            }
+
+            is IndexUiEffect.DismissSnackbar -> {
+                snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
     }

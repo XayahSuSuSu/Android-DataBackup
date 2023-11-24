@@ -3,6 +3,7 @@ package com.xayah.feature.main.task.medium.local.backup.list
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.TripOrigin
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -23,10 +25,10 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
-import com.xayah.feature.main.task.medium.common.R
 import com.xayah.feature.main.task.medium.common.component.ListScaffold
 import com.xayah.feature.main.task.medium.common.component.MediumCard
 import com.xayah.feature.main.task.medium.common.component.MediumCardShimmer
+import com.xayah.feature.main.task.medium.local.R
 import com.xayah.feature.main.task.medium.local.backup.TaskMediumBackupRoutes
 
 @ExperimentalAnimationApi
@@ -34,6 +36,7 @@ import com.xayah.feature.main.task.medium.local.backup.TaskMediumBackupRoutes
 @ExperimentalMaterial3Api
 @Composable
 fun PageList(navController: NavHostController) {
+    val context = LocalContext.current
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val topBarState by viewModel.topBarState.collectAsStateWithLifecycle()
@@ -47,6 +50,7 @@ fun PageList(navController: NavHostController) {
     }
 
     ListScaffold(
+        snackbarHostState = viewModel.snackbarHostState,
         topBarState = topBarState,
         fabVisible = true,
         fabEmphasizedState = uiState.emphasizedState,
@@ -65,6 +69,14 @@ fun PageList(navController: NavHostController) {
             viewModel.emitIntent(IndexUiIntent.FilterByKey(key = text))
         },
         actionChipGroup = { targetState ->
+            ActionChip(
+                enabled = targetState.not(),
+                label = StringResourceToken.fromStringId(R.string.add),
+                leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Add),
+                onClick = {
+                    viewModel.emitIntent(IndexUiIntent.AddMedia(context = context))
+                },
+            )
             ActionChip(
                 enabled = targetState.not(),
                 label = StringResourceToken.fromStringArgs(
