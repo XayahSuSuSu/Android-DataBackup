@@ -43,8 +43,10 @@ class RemoteRootService(private val context: Context) {
         }
     }
 
-    private fun log(msg: () -> String) = LogUtil.log { "RemoteRootService" to msg() }
+    // TODO: Will this cause memory leak? It needs to test.
+    var onFailure: (Throwable) -> Unit = {}
 
+    private fun log(msg: () -> String) = LogUtil.log { "RemoteRootService" to msg() }
 
     class RemoteRootService : RootService() {
         override fun onBind(intent: Intent): IBinder = RemoteRootServiceImpl()
@@ -136,19 +138,19 @@ class RemoteRootService(private val context: Context) {
         )
     }
 
-    suspend fun testService(): IRemoteRootService = getService()
+    suspend fun readStatFs(path: String): StatFsParcelable = runCatching { getService().readStatFs(path) }.onFailure(onFailure).getOrElse { StatFsParcelable() }
 
-    suspend fun readStatFs(path: String): StatFsParcelable = getService().readStatFs(path)
+    suspend fun mkdirs(path: String): Boolean = runCatching { getService().mkdirs(path) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun mkdirs(path: String): Boolean = getService().mkdirs(path)
+    suspend fun copyRecursively(path: String, targetPath: String, overwrite: Boolean): Boolean =
+        runCatching { getService().copyRecursively(path, targetPath, overwrite) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun copyRecursively(path: String, targetPath: String, overwrite: Boolean): Boolean = getService().copyRecursively(path, targetPath, overwrite)
+    suspend fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean =
+        runCatching { getService().copyTo(path, targetPath, overwrite) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun copyTo(path: String, targetPath: String, overwrite: Boolean): Boolean = getService().copyTo(path, targetPath, overwrite)
+    suspend fun renameTo(src: String, dst: String): Boolean = runCatching { getService().renameTo(src, dst) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun renameTo(src: String, dst: String): Boolean = getService().renameTo(src, dst)
-
-    suspend fun writeText(text: String, path: String, context: Context): Boolean {
+    suspend fun writeText(text: String, path: String, context: Context): Boolean = runCatching {
         var state = true
         val tmpFilePath = "${context.cacheDir.path}/tmp"
         val tmpFile = File(tmpFilePath)
@@ -156,10 +158,10 @@ class RemoteRootService(private val context: Context) {
         if (getService().mkdirs(path).not()) state = false
         if (getService().copyTo(tmpFilePath, path, true).not()) state = false
         tmpFile.deleteRecursively()
-        return state
-    }
+        state
+    }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun writeBytes(bytes: ByteArray, dst: String): Boolean {
+    suspend fun writeBytes(bytes: ByteArray, dst: String): Boolean = runCatching {
         var isSuccess = true
         val tmpFilePath = "${context.cacheDir.path}/tmp"
         val tmpFile = File(tmpFilePath)
@@ -167,18 +169,18 @@ class RemoteRootService(private val context: Context) {
         getService().mkdirs(PathUtil.getParentPath(dst))
         isSuccess = isSuccess and getService().copyTo(tmpFilePath, dst, true)
         tmpFile.deleteRecursively()
-        return isSuccess
-    }
+        isSuccess
+    }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun exists(path: String): Boolean = getService().exists(path)
+    suspend fun exists(path: String): Boolean = runCatching { getService().exists(path) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun createNewFile(path: String): Boolean = getService().createNewFile(path)
+    suspend fun createNewFile(path: String): Boolean = runCatching { getService().createNewFile(path) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun deleteRecursively(path: String): Boolean = getService().deleteRecursively(path)
+    suspend fun deleteRecursively(path: String): Boolean = runCatching { getService().deleteRecursively(path) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun listFilePaths(path: String): List<String> = getService().listFilePaths(path)
+    suspend fun listFilePaths(path: String): List<String> = runCatching { getService().listFilePaths(path) }.onFailure(onFailure).getOrElse { listOf() }
 
-    private fun readFromParcel(pfd: ParcelFileDescriptor, onRead: (Parcel) -> Unit) {
+    private fun readFromParcel(pfd: ParcelFileDescriptor, onRead: (Parcel) -> Unit) = run {
         val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
         val bytes = stream.readBytes()
         val parcel = Parcel.obtain()
@@ -191,63 +193,67 @@ class RemoteRootService(private val context: Context) {
         parcel.recycle()
     }
 
-    suspend fun readText(path: String): String {
+    suspend fun readText(path: String): String = runCatching {
         val pfd = getService().readText(path)
         var text: String? = null
         readFromParcel(pfd) {
             text = it.readString()
         }
-        return text ?: ""
-    }
+        text ?: ""
+    }.onFailure(onFailure).getOrElse { "" }
 
-    suspend fun readBytes(src: String): ByteArray {
+    suspend fun readBytes(src: String): ByteArray = runCatching {
         val pfd = getService().readBytes(src)
         var bytes = ByteArray(0)
         readFromParcel(pfd) {
             bytes = ByteArray(it.readInt())
             it.readByteArray(bytes)
         }
-        return bytes
-    }
+        bytes
+    }.onFailure(onFailure).getOrElse { ByteArray(0) }
 
-    suspend fun calculateSize(path: String): Long = getService().calculateSize(path)
+    suspend fun calculateSize(path: String): Long = runCatching { getService().calculateSize(path) }.onFailure(onFailure).getOrElse { 0 }
 
-    suspend fun clearEmptyDirectoriesRecursively(path: String) = getService().clearEmptyDirectoriesRecursively(path)
+    suspend fun clearEmptyDirectoriesRecursively(path: String) = runCatching { getService().clearEmptyDirectoriesRecursively(path) }.onFailure(onFailure)
 
-    suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
+    suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> = runCatching {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)
         val packages = mutableListOf<PackageInfo>()
         readFromParcel(pfd) {
             it.readTypedList(packages, PackageInfo.CREATOR)
         }
-        return packages
-    }
+        packages
+    }.onFailure(onFailure).getOrElse { listOf() }
 
-    suspend fun getPackageSourceDir(packageName: String, userId: Int): List<String> = getService().getPackageSourceDir(packageName, userId)
+    suspend fun getPackageSourceDir(packageName: String, userId: Int): List<String> =
+        runCatching { getService().getPackageSourceDir(packageName, userId) }.onFailure(onFailure).getOrElse { listOf() }
 
-    suspend fun queryInstalled(packageName: String, userId: Int): Boolean = getService().queryInstalled(packageName, userId)
+    suspend fun queryInstalled(packageName: String, userId: Int): Boolean =
+        runCatching { getService().queryInstalled(packageName, userId) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun getPackageUid(packageName: String, userId: Int): Int = getService().getPackageUid(packageName, userId)
+    suspend fun getPackageUid(packageName: String, userId: Int): Int =
+        runCatching { getService().getPackageUid(packageName, userId) }.onFailure(onFailure).getOrElse { -1 }
 
-    suspend fun getUserHandle(userId: Int): UserHandle = getService().getUserHandle(userId)
+    suspend fun getUserHandle(userId: Int): UserHandle? = runCatching { getService().getUserHandle(userId) }.onFailure(onFailure).getOrNull()
 
-    suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats? = getService().queryStatsForPackage(packageInfo, user)
+    suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats? =
+        runCatching { getService().queryStatsForPackage(packageInfo, user) }.onFailure(onFailure).getOrNull()
 
-    suspend fun getUsers(): List<UserInfo> = getService().users
+    suspend fun getUsers(): List<UserInfo> = runCatching { getService().users }.onFailure(onFailure).getOrElse { listOf() }
 
-    suspend fun walkFileTree(path: String): List<PathParcelable> {
+    suspend fun walkFileTree(path: String): List<PathParcelable> = runCatching {
         val pfd = getService().walkFileTree(path)
         val list = mutableListOf<PathParcelable>()
         readFromParcel(pfd) {
             it.readTypedList(list, PathParcelable.CREATOR)
         }
-        return list
-    }
+        list
+    }.onFailure(onFailure).getOrElse { listOf() }
 
-    suspend fun getPackageArchiveInfo(path: String): PackageInfo? = getService().getPackageArchiveInfo(path)
+    suspend fun getPackageArchiveInfo(path: String): PackageInfo? = runCatching { getService().getPackageArchiveInfo(path) }.onFailure(onFailure).getOrNull()
 
     @OptIn(ExperimentalSerializationApi::class)
-    suspend inline fun <reified T> writeProtoBuf(data: T, dst: String): ShellResult = run {
+    suspend inline fun <reified T> writeProtoBuf(data: T, dst: String): ShellResult = runCatching {
         var isSuccess: Boolean
         val out = mutableListOf<String>()
 
@@ -262,11 +268,11 @@ class RemoteRootService(private val context: Context) {
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
-    }
+    }.onFailure(onFailure).getOrElse { ShellResult(code = -1, input = listOf(), out = listOf()) }
 
     @OptIn(ExperimentalSerializationApi::class)
-    suspend inline fun <reified T> readProtoBuf(src: String): T = run {
+    suspend inline fun <reified T> readProtoBuf(src: String): T? = runCatching<T?> {
         val bytes = readBytes(src = src)
         ProtoBuf.decodeFromByteArray(bytes)
-    }
+    }.onFailure(onFailure).getOrNull()
 }

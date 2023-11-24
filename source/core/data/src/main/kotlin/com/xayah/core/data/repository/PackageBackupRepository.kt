@@ -19,6 +19,8 @@ import com.xayah.core.datastore.saveBackupSortType
 import com.xayah.core.datastore.saveBackupSortTypeIndex
 import com.xayah.core.datastore.saveIconUpdateTime
 import com.xayah.core.model.SortType
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromStringId
@@ -26,8 +28,6 @@ import com.xayah.core.util.DateUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.iconDir
-import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.rootservice.util.withIOContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -102,12 +102,14 @@ class PackageBackupRepository @Inject constructor(
                 BaseUtil.writeIcon(icon = icon, dst = iconPath)
             }
             val storageStats = StorageStats()
-            rootService.queryStatsForPackage(packageInfo, userHandle).also { stats ->
-                if (stats != null) {
-                    storageStats.appBytes = stats.appBytes
-                    storageStats.cacheBytes = stats.cacheBytes
-                    storageStats.dataBytes = stats.dataBytes
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) storageStats.externalCacheBytes = stats.externalCacheBytes
+            if (userHandle != null) {
+                rootService.queryStatsForPackage(packageInfo, userHandle).also { stats ->
+                    if (stats != null) {
+                        storageStats.appBytes = stats.appBytes
+                        storageStats.cacheBytes = stats.cacheBytes
+                        storageStats.dataBytes = stats.dataBytes
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) storageStats.externalCacheBytes = stats.externalCacheBytes
+                    }
                 }
             }
 

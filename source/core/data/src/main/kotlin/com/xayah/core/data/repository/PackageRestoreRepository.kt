@@ -70,7 +70,7 @@ class PackageRestoreRepository @Inject constructor(
         val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
         runCatching {
             val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = dst)
-            packageRestoreList.addAll(storedList)
+            packageRestoreList.addAll(storedList!!)
         }
         rootService.writeProtoBuf(data = onStoredList(packageRestoreList), dst = dst)
     }
@@ -178,7 +178,7 @@ class PackageRestoreRepository @Inject constructor(
         runCatching {
             val configPath = PathUtil.getPackageRestoreConfigDst(dstDir = configsDir.first())
             val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = configPath)
-            packageRestoreList.addAll(storedList)
+            packageRestoreList.addAll(storedList!!)
         }
         val packagesCount = (packageRestoreList.size - 1).coerceAtLeast(1)
 

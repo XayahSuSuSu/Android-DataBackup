@@ -2,6 +2,8 @@ package com.xayah.feature.main.directory
 
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.SavedStateHandle
 import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.UiEffect
@@ -11,6 +13,7 @@ import com.xayah.core.data.repository.DirectoryRepository
 import com.xayah.core.database.model.DirectoryEntity
 import com.xayah.core.model.OpType
 import com.xayah.core.model.util.of
+import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.activity.PickerType
@@ -33,17 +36,35 @@ sealed class IndexUiIntent : UiIntent {
     data class DeleteDir(val type: OpType, val entity: DirectoryEntity) : IndexUiIntent()
 }
 
+sealed class IndexUiEffect : UiEffect {
+    data class ShowSnackbar(
+        val message: String,
+        val actionLabel: String? = null,
+        val withDismissAction: Boolean = false,
+        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
+    ) : IndexUiEffect()
+}
+
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
+    rootService: RemoteRootService,
     private val directoryRepository: DirectoryRepository,
     args: SavedStateHandle,
-) : BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
         type = OpType.of(args.get<String>(MainRoutes.ArgOpType)),
         directories = directoryRepository.directories
     )
 ) {
+    init {
+        rootService.onFailure = {
+            val msg = it.message
+            if (msg != null)
+                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
+        }
+    }
+
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Update -> {
@@ -75,6 +96,15 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.DeleteDir -> {
                 directoryRepository.deleteDir(type = state.type, entity = intent.entity)
+            }
+        }
+    }
+
+    val snackbarHostState: SnackbarHostState = SnackbarHostState()
+    override suspend fun onEffect(effect: IndexUiEffect) {
+        when (effect) {
+            is IndexUiEffect.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
             }
         }
     }

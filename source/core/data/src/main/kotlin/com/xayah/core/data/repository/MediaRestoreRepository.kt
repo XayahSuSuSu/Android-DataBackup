@@ -51,7 +51,7 @@ class MediaRestoreRepository @Inject constructor(
         val mediaRestoreList: MutableList<MediaRestoreEntity> = mutableListOf()
         runCatching {
             val storedList = rootService.readProtoBuf<List<MediaRestoreEntity>>(src = dst)
-            mediaRestoreList.addAll(storedList)
+            mediaRestoreList.addAll(storedList!!)
         }
 
         rootService.writeProtoBuf(
@@ -102,7 +102,7 @@ class MediaRestoreRepository @Inject constructor(
         runCatching {
             val configPath = PathUtil.getMediaRestoreConfigDst(dstDir = configsDir.first())
             val storedList = rootService.readProtoBuf<List<MediaRestoreEntity>>(src = configPath)
-            mediaRestoreList.addAll(storedList)
+            mediaRestoreList.addAll(storedList!!)
         }
         val mediumCount = (mediaRestoreList.size - 1).coerceAtLeast(1)
 

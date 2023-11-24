@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:model"))
     implementation(project(":core:service"))
+    implementation(project(":core:rootservice"))
 
     // Feature
     implementation(project(":feature:main:task:medium:common"))

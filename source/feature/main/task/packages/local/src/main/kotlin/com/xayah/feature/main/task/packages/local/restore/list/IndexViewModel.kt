@@ -11,6 +11,7 @@ import com.xayah.core.data.repository.PackageRestoreRepository
 import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.PackageRestoreEntire
 import com.xayah.core.model.SortType
+import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromStringId
@@ -66,8 +67,17 @@ sealed class IndexUiEffect : UiEffect {
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
+    rootService: RemoteRootService,
     private val packageRestoreRepository: PackageRestoreRepository,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState()) {
+    init {
+        rootService.onFailure = {
+            val msg = it.message
+            if (msg != null)
+                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
+        }
+    }
+
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Initialize -> {

@@ -176,8 +176,13 @@ class Migration2Repository @Inject constructor(
 
                     runCatching {
                         if (rootService.exists(configPath)) {
-                            mediaRestore = rootService.readProtoBuf(configPath)
-                            log { "Config is reloaded from ProtoBuf." }
+                            val stored: MediaRestoreEntity? = rootService.readProtoBuf(configPath)
+                            if (stored != null) {
+                                mediaRestore = stored
+                                log { "Config is reloaded from ProtoBuf." }
+                            } else {
+                                log { "Failed to load config from: $configPath." }
+                            }
                         } else {
                             log { "Config is missing." }
                         }
@@ -295,9 +300,14 @@ class Migration2Repository @Inject constructor(
 
                     runCatching {
                         if (rootService.exists(configPath)) {
-                            packageRestore = rootService.readProtoBuf(configPath)
-                            log { "Config is reloaded from ProtoBuf." }
-                            loadedFromConfig = true
+                            val stored: PackageRestoreEntire? = rootService.readProtoBuf(configPath)
+                            if (stored != null) {
+                                packageRestore = stored
+                                loadedFromConfig = true
+                                log { "Config is reloaded from ProtoBuf." }
+                            } else {
+                                log { "Failed to load config from: $configPath." }
+                            }
                         } else {
                             log { "Config is missing." }
                         }
@@ -395,7 +405,7 @@ class Migration2Repository @Inject constructor(
 
             runCatching {
                 val configPath = PathUtil.getMediaRestoreConfigDst(dstDir = configsDir)
-                state.medium.addAll(rootService.readProtoBuf<List<MediaRestoreEntity>>(configPath).toMutableList())
+                state.medium.addAll(rootService.readProtoBuf<List<MediaRestoreEntity>>(configPath)!!.toMutableList())
             }.onFailure {
                 log { "Failed: ${it.message}" }
             }
@@ -412,7 +422,7 @@ class Migration2Repository @Inject constructor(
 
             runCatching {
                 val configPath = PathUtil.getPackageRestoreConfigDst(dstDir = configsDir)
-                state.packages.addAll(rootService.readProtoBuf<List<PackageRestoreEntire>>(configPath).toMutableList())
+                state.packages.addAll(rootService.readProtoBuf<List<PackageRestoreEntire>>(configPath)!!.toMutableList())
             }.onFailure {
                 log { "Failed: ${it.message}" }
             }

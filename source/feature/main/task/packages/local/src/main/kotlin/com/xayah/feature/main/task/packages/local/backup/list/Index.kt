@@ -59,6 +59,7 @@ fun PageList(navController: NavHostController) {
     }
 
     ListScaffold(
+        snackbarHostState = viewModel.snackbarHostState,
         topBarState = topBarState,
         fabVisible = uiState.activating.not(),
         fabEmphasizedState = uiState.emphasizedState,

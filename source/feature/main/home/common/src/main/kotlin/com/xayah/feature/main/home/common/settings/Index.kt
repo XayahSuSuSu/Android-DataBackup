@@ -15,7 +15,9 @@ import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -69,9 +71,13 @@ import com.xayah.core.ui.R as UiR
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun PageSettings() {
+fun PageSettings(snackbarHostState: SnackbarHostState) {
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(null) {
+        viewModel.snackbarHostState = snackbarHostState
+    }
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Spacer(modifier = Modifier.paddingVertical(PaddingTokens.Level3))

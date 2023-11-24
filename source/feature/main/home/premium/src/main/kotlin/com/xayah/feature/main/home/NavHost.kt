@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NavHostController
@@ -32,7 +35,7 @@ import com.xayah.feature.main.home.restore.PageRestore
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-private fun HomeScaffold(navController: NavHostController, content: @Composable BoxScope.() -> Unit) {
+private fun HomeScaffold(navController: NavHostController, snackbarHostState: SnackbarHostState, content: @Composable BoxScope.() -> Unit) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val currentRoute = navController.currentRoute()
 
@@ -44,6 +47,7 @@ private fun HomeScaffold(navController: NavHostController, content: @Composable 
         bottomBar = {
             BottomBar(currentRoute = currentRoute, navController = navController, routeList = HomeRoutes.RouteList)
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
         Column {
             InnerTopSpacer(innerPadding = innerPadding)
@@ -60,7 +64,8 @@ private fun HomeScaffold(navController: NavHostController, content: @Composable 
 @Composable
 fun HomeGraph() {
     val navController = rememberNavController()
-    HomeScaffold(navController) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    HomeScaffold(navController = navController, snackbarHostState = snackbarHostState) {
         NavHost(
             navController = navController,
             startDestination = HomeRoutes.Backup.route,
@@ -79,7 +84,7 @@ fun HomeGraph() {
                 PageCloud()
             }
             composable(HomeRoutes.Settings.route) {
-                PageSettings()
+                PageSettings(snackbarHostState = snackbarHostState)
             }
         }
     }
