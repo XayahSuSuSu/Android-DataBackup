@@ -14,6 +14,7 @@ import com.xayah.core.util.LogUtil.TAG_SHELL_CODE
 import com.xayah.core.util.LogUtil.TAG_SHELL_IN
 import com.xayah.core.util.LogUtil.TAG_SHELL_OUT
 import com.xayah.core.util.LogUtil.log
+import com.xayah.core.util.SymbolUtil.QUOTE
 import com.xayah.core.util.SymbolUtil.USD
 import com.xayah.core.util.binArchivePath
 import com.xayah.core.util.binDir
@@ -179,5 +180,23 @@ object BaseUtil {
         binArchive.deleteRecursively()
 
         return@withIOContext true
+    }
+
+    suspend fun readLink(pid: String) = run {
+        // readlink /proc/$pid/ns/mnt
+        execute(
+            "readlink",
+            "/proc/$pid/ns/mnt",
+            log = false,
+        ).outString
+    }
+
+    suspend fun readVariable(variable: String) = run {
+        // echo "$variable"
+        execute(
+            "echo",
+            "${QUOTE}$USD$variable${QUOTE}",
+            log = false,
+        ).outString
     }
 }

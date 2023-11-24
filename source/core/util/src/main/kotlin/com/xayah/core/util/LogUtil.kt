@@ -2,6 +2,9 @@ package com.xayah.core.util
 
 import android.os.Build
 import com.xayah.core.util.SymbolUtil.LF
+import com.xayah.core.util.SymbolUtil.USD
+import com.xayah.core.util.command.BaseUtil
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.channels.FileChannel
@@ -36,6 +39,10 @@ object LogUtil {
         log("Model:      ${Build.MODEL}")
         log("ABIs:       ${Build.SUPPORTED_ABIS.firstOrNull() ?: ""}")
         log("SDK:        ${Build.VERSION.SDK_INT}")
+        log("Global Namespace:     ${runBlocking { BaseUtil.readLink("1") }}")
+        log("Namespace:            ${runBlocking { BaseUtil.readLink("self") }}")
+        log("${USD}PATH:                ${runBlocking { BaseUtil.readVariable("PATH").trim() }}")
+        log("${USD}HOME:                ${runBlocking { BaseUtil.readVariable("HOME").trim() }}")
     }
 
     private fun appendLine(msg: String) = runCatching {
