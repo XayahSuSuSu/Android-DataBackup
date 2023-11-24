@@ -12,7 +12,6 @@ import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.os.UserHandle
-import android.widget.Toast
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.impl.RemoteRootServiceImpl
@@ -20,6 +19,7 @@ import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.rootservice.parcelables.StatFsParcelable
 import com.xayah.core.rootservice.util.ExceptionUtil.tryOnScope
 import com.xayah.core.rootservice.util.withMainContext
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.model.ShellResult
 import kotlinx.coroutines.isActive
@@ -43,6 +43,9 @@ class RemoteRootService(private val context: Context) {
         }
     }
 
+    private fun log(msg: () -> String) = LogUtil.log { "RemoteRootService" to msg() }
+
+
     class RemoteRootService : RootService() {
         override fun onBind(intent: Intent): IBinder = RemoteRootServiceImpl()
     }
@@ -59,7 +62,7 @@ class RemoteRootService(private val context: Context) {
                     mService = null
                     mConnection = null
                     val msg = "Service disconnected."
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    log { msg }
                     if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                 }
 
@@ -67,7 +70,7 @@ class RemoteRootService(private val context: Context) {
                     mService = null
                     mConnection = null
                     val msg = "Binding died."
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    log { msg }
                     if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                 }
 
@@ -75,7 +78,7 @@ class RemoteRootService(private val context: Context) {
                     mService = null
                     mConnection = null
                     val msg = "Null binding."
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    log { msg }
                     if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                 }
             }
@@ -109,12 +112,12 @@ class RemoteRootService(private val context: Context) {
                         if (isFirstConnection)
                             isFirstConnection = false
                         else
-                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                            log { msg }
                         bindService()
                     } else if (mService!!.asBinder().isBinderAlive.not()) {
                         mService = null
                         val msg = "Service is dead."
-                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        log { msg }
                         bindService()
                     } else {
                         mService!!
@@ -125,7 +128,8 @@ class RemoteRootService(private val context: Context) {
                 withMainContext {
                     mService = null
                     val msg = it.message
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    if (msg != null)
+                        log { msg }
                     bindService()
                 }
             }
@@ -263,6 +267,6 @@ class RemoteRootService(private val context: Context) {
     @OptIn(ExperimentalSerializationApi::class)
     suspend inline fun <reified T> readProtoBuf(src: String): T = run {
         val bytes = readBytes(src = src)
-        ProtoBuf.decodeFromByteArray<T>(bytes)
+        ProtoBuf.decodeFromByteArray(bytes)
     }
 }
