@@ -94,9 +94,9 @@ fun ModalActionDropdownMenu(
                         onClick = {
                             if (item.secondaryMenu.isNotEmpty()) {
                                 targetList = item.secondaryMenu
-                            } else if (item.title == StringResourceToken.fromStringId(R.string.word_return)) {
+                            } else if (item.title == StringResourceToken.fromStringId(R.string.word_return) && item.onClick == null) {
                                 targetList = actionList
-                            } else {
+                            } else if (item.onClick != null) {
                                 item.onClick.invoke()
                             }
                         },

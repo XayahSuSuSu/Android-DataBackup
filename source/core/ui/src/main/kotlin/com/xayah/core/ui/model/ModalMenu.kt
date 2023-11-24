@@ -16,15 +16,15 @@ data class ActionMenuItem(
     val enabled: Boolean,
     val countdown: Int = 0,
     val secondaryMenu: List<ActionMenuItem>,
-    val onClick: () -> Unit,
+    val onClick: (() -> Unit)?,
 )
 
-fun getActionMenuReturnItem() = ActionMenuItem(
+fun getActionMenuReturnItem(onClick: (() -> Unit)? = null) = ActionMenuItem(
     title = StringResourceToken.fromStringId(R.string.word_return),
     icon = ImageVectorToken.fromVector(Icons.Rounded.ArrowBack),
     enabled = true,
     secondaryMenu = listOf(),
-    onClick = {}
+    onClick = onClick
 )
 
 fun getActionMenuConfirmItem(onClick: () -> Unit) = ActionMenuItem(

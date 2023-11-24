@@ -2,6 +2,8 @@ package com.xayah.feature.main.task.packages.local.restore.list
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Delete
@@ -14,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,6 +32,7 @@ import com.xayah.core.model.SortType
 import com.xayah.core.ui.component.ActionChip
 import com.xayah.core.ui.component.AnimatedRoundChip
 import com.xayah.core.ui.component.FilterChip
+import com.xayah.core.ui.component.ModalActionDropdownMenu
 import com.xayah.core.ui.component.RoundChip
 import com.xayah.core.ui.component.SortChip
 import com.xayah.core.ui.model.ActionMenuItem
@@ -154,16 +159,29 @@ fun PageList(navController: NavHostController) {
             )
 
             if (uiState.batchSelection.isNotEmpty()) {
-                ActionChip(
-                    enabled = targetState.not(),
-                    label = StringResourceToken.fromStringId(R.string.delete),
-                    leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
-                    onClick = {
-                        viewModel.emitIntent(IndexUiIntent.Delete(items = uiState.batchSelection.map { packageName ->
-                            packagesState.first { it.packageName == packageName }
-                        }))
-                    },
-                )
+                var expanded by remember { mutableStateOf(false) }
+
+                Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
+                    ActionChip(
+                        enabled = targetState.not(),
+                        label = StringResourceToken.fromStringId(R.string.delete),
+                        leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
+                        onClick = {
+                            expanded = true
+                        },
+                    )
+
+                    ModalActionDropdownMenu(expanded = expanded, actionList = listOf(
+                        getActionMenuReturnItem {
+                            expanded = false
+                        },
+                        getActionMenuConfirmItem {
+                            viewModel.emitIntent(IndexUiIntent.Delete(items = uiState.batchSelection.map { packageName ->
+                                packagesState.first { it.packageName == packageName }
+                            }))
+                        }
+                    ), onDismissRequest = { expanded = false })
+                }
             }
 
             var batchingApkSelection by remember { mutableStateOf(true) }
