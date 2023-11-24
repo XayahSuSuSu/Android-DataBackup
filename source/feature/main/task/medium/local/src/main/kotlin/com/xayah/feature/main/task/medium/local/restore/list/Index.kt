@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.TripOrigin
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -19,8 +20,11 @@ import com.xayah.core.ui.component.ActionChip
 import com.xayah.core.ui.component.AnimatedRoundChip
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.RoundChip
+import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.model.getActionMenuConfirmItem
+import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
@@ -53,6 +57,7 @@ fun PageList(navController: NavHostController) {
     }
 
     ListScaffold(
+        snackbarHostState = viewModel.snackbarHostState,
         topBarState = topBarState,
         fabVisible = true,
         fabEmphasizedState = uiState.emphasizedState,
@@ -95,6 +100,20 @@ fun PageList(navController: NavHostController) {
                     viewModel.emitIntent(IndexUiIntent.BatchingSelectAll)
                 },
             )
+
+            if (uiState.batchSelection.isNotEmpty()) {
+                ActionChip(
+                    enabled = targetState.not(),
+                    label = StringResourceToken.fromStringId(R.string.delete),
+                    leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
+                    onClick = {
+                        viewModel.emitIntent(IndexUiIntent.Delete(items = uiState.batchSelection.map { path ->
+                            medium.first { it.path == path }
+                        }))
+                    },
+                )
+            }
+
             var batchingDataSelection by remember { mutableStateOf(true) }
             ActionChip(
                 enabled = targetState.not(),
@@ -124,6 +143,20 @@ fun PageList(navController: NavHostController) {
             enabled = enabled,
             cardSelected = item.path in uiState.batchSelection,
             mediaRestore = item,
+            actions = listOf(
+                ActionMenuItem(
+                    title = StringResourceToken.fromStringId(com.xayah.feature.main.task.medium.local.R.string.delete),
+                    icon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
+                    enabled = true,
+                    secondaryMenu = listOf(
+                        getActionMenuReturnItem(),
+                        getActionMenuConfirmItem {
+                            viewModel.emitIntent(IndexUiIntent.Delete(items = listOf(item)))
+                        }
+                    ),
+                    onClick = {}
+                )
+            ),
             onDataSelected = {
                 viewModel.emitIntent(
                     IndexUiIntent.UpdateMedia(

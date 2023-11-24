@@ -19,6 +19,7 @@ class MediaBackupRepository @Inject constructor(
     suspend fun upsertBackup(item: MediaBackupEntity) = mediaDao.upsertBackup(item)
     suspend fun batchSelectOp(selected: Boolean, pathList: List<String>) = mediaDao.batchSelectOp(selected, pathList)
     suspend fun queryAllBackup() = mediaDao.queryAllBackup()
+    suspend fun deleteBackup(item: MediaBackupEntity) = mediaDao.deleteBackup(item)
 
     suspend fun updateDefaultMedium() {
         upsertBackup(ConstantUtil.DefaultMediaList.map { (name, path) -> MediaBackupEntityUpsert(path = path, name = name) })

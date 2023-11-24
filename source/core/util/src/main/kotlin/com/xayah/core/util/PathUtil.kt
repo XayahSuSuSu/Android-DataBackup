@@ -56,6 +56,9 @@ class PathUtil @Inject constructor(
         fun getArchivesRelativeDir(): String = ArchivesRelativeDir
         fun getArchivesPackagesRelativeDir(): String = "$ArchivesRelativeDir/$PackagesRelativeDir"
         fun getArchivesMediumRelativeDir(): String = "$ArchivesRelativeDir/$MediumRelativeDir"
+
+        fun getMediaRestoreConfigDst(dstDir: String): String = "${dstDir}/$ConfigsMediaRestoreName"
+        fun getPackageRestoreConfigDst(dstDir: String): String = "${dstDir}/$ConfigsPackageRestoreName"
     }
 
     fun getPackageIconPath(packageName: String): String = "${context.iconDir()}/${getPackageIconRelativePath(packageName)}"

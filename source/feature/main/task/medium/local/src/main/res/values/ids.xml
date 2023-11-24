@@ -12,4 +12,5 @@
     <item name="add" type="string" />
     <item name="batching_select" type="string" />
     <item name="data" type="string" />
+    <item name="delete" type="string" />
 </resources>

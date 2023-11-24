@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.DataUsage
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.ManageAccounts
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
@@ -55,8 +57,10 @@ import com.xayah.core.model.OperationState
 import com.xayah.core.ui.component.AnimatedMultiColorLinearProgressIndicator
 import com.xayah.core.ui.component.AssistChip
 import com.xayah.core.ui.component.Card
+import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LabelLargeText
 import com.xayah.core.ui.component.LabelSmallText
+import com.xayah.core.ui.component.ModalActionDropdownMenu
 import com.xayah.core.ui.component.RoundChip
 import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.component.TitleMediumText
@@ -70,6 +74,7 @@ import com.xayah.core.ui.material3.CircularProgressIndicator
 import com.xayah.core.ui.material3.VerticalDivider
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.MultiColorProgress
 import com.xayah.core.ui.model.StringResourceToken
@@ -96,6 +101,7 @@ fun PackageCard(
     modifier: Modifier = Modifier,
     cardSelected: Boolean,
     packageBackup: PackageBackupEntire,
+    actions: List<ActionMenuItem> = listOf(),
     onApkSelected: () -> Unit,
     onDataSelected: () -> Unit,
     onCardClick: () -> Unit,
@@ -121,6 +127,7 @@ fun PackageCard(
         cardSelected = cardSelected,
         apkSelected = packageBackup.apkSelected,
         dataSelected = packageBackup.dataSelected,
+        actions = actions,
         onApkSelected = onApkSelected,
         onDataSelected = onDataSelected,
         onCardClick = onCardClick,
@@ -137,6 +144,7 @@ fun PackageCard(
     enabled: Boolean,
     cardSelected: Boolean,
     packageRestore: PackageRestoreEntire,
+    actions: List<ActionMenuItem> = listOf(),
     onApkSelected: () -> Unit,
     onDataSelected: () -> Unit,
     onCardClick: () -> Unit,
@@ -165,6 +173,7 @@ fun PackageCard(
         dataSelected = packageRestore.dataSelected,
         apkChipEnabled = packageRestore.apkExists,
         dataChipEnabled = packageRestore.dataExists,
+        actions = actions,
         onApkSelected = onApkSelected,
         onDataSelected = onDataSelected,
         onCardClick = onCardClick,
@@ -188,6 +197,7 @@ fun PackageCardShimmer(
         cardSelected = false,
         apkSelected = false,
         dataSelected = false,
+        actions = listOf(),
         onApkSelected = {},
         onDataSelected = {},
         onCardClick = {},
@@ -213,6 +223,7 @@ fun PackageCard(
     dataSelected: Boolean,
     apkChipEnabled: Boolean = true,
     dataChipEnabled: Boolean = true,
+    actions: List<ActionMenuItem>,
     onApkSelected: () -> Unit,
     onDataSelected: () -> Unit,
     onCardClick: () -> Unit,
@@ -290,9 +301,10 @@ fun PackageCard(
                         .ignorePaddingHorizontal(PaddingTokens.Level3)
                         .fillMaxWidth()
                         .background(color = ColorSchemeKeyTokens.InverseOnSurface.toColor()),
-                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3, Alignment.End)
+                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
                 ) {
                     if (shimmering) {
+                        Spacer(modifier = Modifier.weight(1f))
                         repeat(2) {
                             Spacer(
                                 modifier = Modifier
@@ -302,6 +314,16 @@ fun PackageCard(
                             )
                         }
                     } else {
+                        if (actions.isNotEmpty()) {
+                            var expanded by remember { mutableStateOf(false) }
+
+                            Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
+                                IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.MoreVert), onClick = { expanded = true })
+
+                                ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
+                            }
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
                         OpChip(
                             enabled = enabled && apkChipEnabled,
                             selected = apkSelected,

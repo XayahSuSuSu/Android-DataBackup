@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import com.xayah.core.data.repository.PackageRestoreRepository
 import com.xayah.core.database.dao.PackageBackupEntireDao
 import com.xayah.core.database.dao.PackageBackupOperationDao
 import com.xayah.core.database.dao.PackageRestoreEntireDao
@@ -34,8 +35,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import javax.inject.Inject
 import com.xayah.core.util.LogUtil.log as KLog
 
@@ -77,6 +76,9 @@ internal class BackupServiceImpl : Service() {
 
     @Inject
     lateinit var packageBackupOpDao: PackageBackupOperationDao
+
+    @Inject
+    lateinit var packageRestoreRepository: PackageRestoreRepository
 
     suspend fun preprocessing(): BackupPreprocessing = withIOContext {
         mutex.withLock {
@@ -268,7 +270,7 @@ internal class BackupServiceImpl : Service() {
                     packageRestoreDao.upsert(restoreEntire)
 
                     // Save config
-                    packagesBackupUtil.backupConfigs(data = restoreEntire, dstDir = dstDir)
+                    rootService.writeProtoBuf(data = restoreEntire, dst = dstDir)
 
                     // Reset selected items if enabled.
                     if (context.readResetBackupList().first()) {
@@ -314,13 +316,10 @@ internal class BackupServiceImpl : Service() {
             packagesBackupUtil.backupIcons(dstDir = configsDstDir)
 
             log { "Save configs." }
-            val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
-            runCatching {
-                val bytes = rootService.readBytes(packagesBackupUtil.getConfigsDst(dstDir = configsDstDir))
-                packageRestoreList.addAll(ProtoBuf.decodeFromByteArray<List<PackageRestoreEntire>>(bytes).toMutableList())
+            val configsDst = PathUtil.getPackageRestoreConfigDst(dstDir = configsDstDir)
+            packageRestoreRepository.writePackagesProtoBuf(configsDst) { storedList ->
+                storedList.apply { addAll(packageRestoreDao.queryPackages(timestamp)) }.toList()
             }
-            packageRestoreList.addAll(packageRestoreDao.queryPackages(timestamp))
-            packagesBackupUtil.backupConfigs(data = packageRestoreList, dstDir = configsDstDir)
         }
     }
 }

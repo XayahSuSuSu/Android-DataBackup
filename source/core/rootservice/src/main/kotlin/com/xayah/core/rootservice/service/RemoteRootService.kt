@@ -21,7 +21,12 @@ import com.xayah.core.rootservice.parcelables.StatFsParcelable
 import com.xayah.core.rootservice.util.ExceptionUtil.tryOnScope
 import com.xayah.core.rootservice.util.withMainContext
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.model.ShellResult
 import kotlinx.coroutines.isActive
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.protobuf.ProtoBuf
 import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -191,8 +196,8 @@ class RemoteRootService(private val context: Context) {
         return text ?: ""
     }
 
-    suspend fun readBytes(dst: String): ByteArray {
-        val pfd = getService().readBytes(dst)
+    suspend fun readBytes(src: String): ByteArray {
+        val pfd = getService().readBytes(src)
         var bytes = ByteArray(0)
         readFromParcel(pfd) {
             bytes = ByteArray(it.readInt())
@@ -236,4 +241,28 @@ class RemoteRootService(private val context: Context) {
     }
 
     suspend fun getPackageArchiveInfo(path: String): PackageInfo? = getService().getPackageArchiveInfo(path)
+
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend inline fun <reified T> writeProtoBuf(data: T, dst: String): ShellResult = run {
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+
+        val bytes = ProtoBuf.encodeToByteArray(data)
+        writeBytes(bytes = bytes, dst = dst).also {
+            isSuccess = it
+            if (isSuccess) {
+                out.add("Succeed to write configs: $dst")
+            } else {
+                out.add("Failed to write configs: $dst")
+            }
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    suspend inline fun <reified T> readProtoBuf(src: String): T = run {
+        val bytes = readBytes(src = src)
+        ProtoBuf.decodeFromByteArray<T>(bytes)
+    }
 }

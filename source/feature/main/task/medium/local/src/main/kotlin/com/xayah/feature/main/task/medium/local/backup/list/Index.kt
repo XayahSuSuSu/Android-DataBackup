@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.TripOrigin
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -17,10 +18,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.ui.component.ActionChip
 import com.xayah.core.ui.component.AnimatedRoundChip
+import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.model.getActionMenuConfirmItem
+import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
@@ -74,7 +79,7 @@ fun PageList(navController: NavHostController) {
                 label = StringResourceToken.fromStringId(R.string.add),
                 leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Add),
                 onClick = {
-                    viewModel.emitIntent(IndexUiIntent.AddMedia(context = context))
+                    viewModel.emitIntent(IndexUiIntent.Add(context = context))
                 },
             )
             ActionChip(
@@ -114,6 +119,20 @@ fun PageList(navController: NavHostController) {
         MediumCard(
             cardSelected = item.path in uiState.batchSelection,
             mediaBackup = item,
+            actions = listOf(
+                ActionMenuItem(
+                    title = StringResourceToken.fromStringId(R.string.delete),
+                    icon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
+                    enabled = ConstantUtil.DefaultMediaList.indexOfFirst { it.second == item.path } == -1,
+                    secondaryMenu = listOf(
+                        getActionMenuReturnItem(),
+                        getActionMenuConfirmItem {
+                            viewModel.emitIntent(IndexUiIntent.Delete(entity = item))
+                        }
+                    ),
+                    onClick = {}
+                )
+            ),
             onDataSelected = {
                 viewModel.emitIntent(
                     IndexUiIntent.UpdateMedia(

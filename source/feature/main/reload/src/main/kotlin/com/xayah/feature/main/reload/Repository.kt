@@ -13,11 +13,10 @@ import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.util.suffixOf
 import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.service.util.MediumBackupUtil
-import com.xayah.core.service.util.PackagesBackupUtil
 import com.xayah.core.util.ConfigsMediaRestoreName
 import com.xayah.core.util.ConfigsPackageRestoreName
 import com.xayah.core.util.GsonUtil
+import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
@@ -37,9 +36,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import javax.inject.Inject
 
 class ReloadRepository @Inject constructor(
@@ -96,15 +92,12 @@ interface Reload {
     suspend fun savePackages(packages: List<PackageRestoreEntire>)
 }
 
-@OptIn(ExperimentalSerializationApi::class)
 class Migration2Repository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
     private val pathUtil: PathUtil,
     private val mediaDao: MediaDao,
-    private val mediumBackupUtil: MediumBackupUtil,
     private val packageRestoreDao: PackageRestoreEntireDao,
-    private val packagesBackupUtil: PackagesBackupUtil,
 ) : Reload {
     private val configsDstDir = pathUtil.getConfigsDir(context.localRestoreSaveDir())
     private val mutex = Mutex()
@@ -183,8 +176,7 @@ class Migration2Repository @Inject constructor(
 
                     runCatching {
                         if (rootService.exists(configPath)) {
-                            val bytes = rootService.readBytes(configPath)
-                            mediaRestore = ProtoBuf.decodeFromByteArray(bytes)
+                            mediaRestore = rootService.readProtoBuf(configPath)
                             log { "Config is reloaded from ProtoBuf." }
                         } else {
                             log { "Config is missing." }
@@ -303,8 +295,7 @@ class Migration2Repository @Inject constructor(
 
                     runCatching {
                         if (rootService.exists(configPath)) {
-                            val bytes = rootService.readBytes(configPath)
-                            packageRestore = ProtoBuf.decodeFromByteArray(bytes)
+                            packageRestore = rootService.readProtoBuf(configPath)
                             log { "Config is reloaded from ProtoBuf." }
                             loadedFromConfig = true
                         } else {
@@ -403,9 +394,8 @@ class Migration2Repository @Inject constructor(
             val configsDir = pathUtil.getLocalRestoreConfigsDir()
 
             runCatching {
-                val configPath = mediumBackupUtil.getConfigsDst(dstDir = configsDir)
-                val bytes = rootService.readBytes(configPath)
-                state.medium.addAll(ProtoBuf.decodeFromByteArray<List<MediaRestoreEntity>>(bytes).toMutableList())
+                val configPath = PathUtil.getMediaRestoreConfigDst(dstDir = configsDir)
+                state.medium.addAll(rootService.readProtoBuf<List<MediaRestoreEntity>>(configPath).toMutableList())
             }.onFailure {
                 log { "Failed: ${it.message}" }
             }
@@ -421,17 +411,16 @@ class Migration2Repository @Inject constructor(
             val configsDir = pathUtil.getLocalRestoreConfigsDir()
 
             runCatching {
-                val configPath = packagesBackupUtil.getConfigsDst(dstDir = configsDir)
-                val bytes = rootService.readBytes(configPath)
-                state.packages.addAll(ProtoBuf.decodeFromByteArray<List<PackageRestoreEntire>>(bytes).toMutableList())
+                val configPath = PathUtil.getPackageRestoreConfigDst(dstDir = configsDir)
+                state.packages.addAll(rootService.readProtoBuf<List<PackageRestoreEntire>>(configPath).toMutableList())
             }.onFailure {
                 log { "Failed: ${it.message}" }
             }
 
             log { "Dumping packages icons..." }
             // Restore icons.
-            val archivePath = packagesBackupUtil.getIconsDst(dstDir = configsDir)
-            Tar.decompress(src = archivePath, dst = context.filesDir(), extra = packagesBackupUtil.tarCompressionType.decompressPara)
+            val archivePath = "${configsDir}/$IconRelativeDir.${CompressionType.TAR.suffix}"
+            Tar.decompress(src = archivePath, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
 
             mutableState.value = state.copy(isFinished = true, current = state.packages.size, total = state.packages.size)
         }
@@ -445,7 +434,7 @@ class Migration2Repository @Inject constructor(
                 val selected = mediaRestore?.selected ?: false
                 mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected))
             }
-            mediumBackupUtil.backupConfigs(data = medium, dstDir = configsDstDir)
+            rootService.writeProtoBuf(data = medium, dst = configsDstDir)
         }
     }
 
@@ -459,20 +448,17 @@ class Migration2Repository @Inject constructor(
                 val operationCode = packageRestore?.operationCode ?: OperationMask.None
                 packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode))
             }
-            packagesBackupUtil.backupConfigs(data = packages, dstDir = configsDstDir)
+            rootService.writeProtoBuf(data = packages, dst = configsDstDir)
         }
     }
 }
 
-@OptIn(ExperimentalSerializationApi::class)
 class Migration1Repository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
     private val pathUtil: PathUtil,
     private val mediaDao: MediaDao,
-    private val mediumBackupUtil: MediumBackupUtil,
     private val packageRestoreDao: PackageRestoreEntireDao,
-    private val packagesBackupUtil: PackagesBackupUtil,
     private val gsonUtil: GsonUtil,
 ) : Reload {
     private val configsDstDir = pathUtil.getConfigsDir(context.localRestoreSaveDir())
@@ -958,7 +944,7 @@ class Migration1Repository @Inject constructor(
                 val selected = mediaRestore?.selected ?: false
                 mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected))
             }
-            mediumBackupUtil.backupConfigs(data = medium, dstDir = configsDstDir)
+            rootService.writeProtoBuf(data = medium, dst = configsDstDir)
         }
     }
 
@@ -1014,7 +1000,7 @@ class Migration1Repository @Inject constructor(
                 val operationCode = packageRestore?.operationCode ?: OperationMask.None
                 packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode))
             }
-            packagesBackupUtil.backupConfigs(data = packages, dstDir = configsDstDir)
+            rootService.writeProtoBuf(data = packages, dst = configsDstDir)
         }
     }
 }

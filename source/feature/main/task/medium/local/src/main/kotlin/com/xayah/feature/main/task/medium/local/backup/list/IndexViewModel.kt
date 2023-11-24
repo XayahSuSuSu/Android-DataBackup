@@ -46,7 +46,8 @@ sealed class IndexUiIntent : UiIntent {
     object BatchingSelectAll : IndexUiIntent()
     data class BatchingSelect(val path: String) : IndexUiIntent()
     data class BatchSelectOp(val selected: Boolean, val pathList: List<String>) : IndexUiIntent()
-    data class AddMedia(val context: Context) : IndexUiIntent()
+    data class Add(val context: Context) : IndexUiIntent()
+    data class Delete(val entity: MediaBackupEntity) : IndexUiIntent()
 }
 
 sealed class IndexUiEffect : UiEffect {
@@ -56,8 +57,6 @@ sealed class IndexUiEffect : UiEffect {
         val withDismissAction: Boolean = false,
         val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
     ) : IndexUiEffect()
-
-    object DismissSnackbar : IndexUiEffect()
 }
 
 @ExperimentalMaterial3Api
@@ -110,7 +109,7 @@ class IndexViewModel @Inject constructor(
                 mediaBackupRepository.batchSelectOp(selected = intent.selected, pathList = intent.pathList)
             }
 
-            is IndexUiIntent.AddMedia -> {
+            is IndexUiIntent.Add -> {
                 withMainContext {
                     val context = intent.context as ComponentActivity
                     PickYouLauncher().apply {
@@ -143,6 +142,10 @@ class IndexViewModel @Inject constructor(
                     }
                 }
             }
+
+            is IndexUiIntent.Delete -> {
+                mediaBackupRepository.deleteBackup(item = intent.entity)
+            }
         }
     }
 
@@ -151,10 +154,6 @@ class IndexViewModel @Inject constructor(
         when (effect) {
             is IndexUiEffect.ShowSnackbar -> {
                 snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
-            }
-
-            is IndexUiEffect.DismissSnackbar -> {
-                snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
     }

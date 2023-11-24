@@ -16,11 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.rounded.DataUsage
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -48,8 +50,10 @@ import com.xayah.core.model.OperationState
 import com.xayah.core.ui.component.AnimatedMultiColorLinearProgressIndicator
 import com.xayah.core.ui.component.AssistChip
 import com.xayah.core.ui.component.Card
+import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LabelLargeText
 import com.xayah.core.ui.component.LabelSmallText
+import com.xayah.core.ui.component.ModalActionDropdownMenu
 import com.xayah.core.ui.component.RoundChip
 import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.component.TitleMediumText
@@ -63,6 +67,7 @@ import com.xayah.core.ui.material3.CircularProgressIndicator
 import com.xayah.core.ui.material3.VerticalDivider
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.MultiColorProgress
 import com.xayah.core.ui.model.StringResourceToken
@@ -72,6 +77,7 @@ import com.xayah.core.ui.util.containerColor
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.icon
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.ifNotTheSame
@@ -85,6 +91,7 @@ fun MediumCard(
     modifier: Modifier = Modifier,
     cardSelected: Boolean,
     mediaBackup: MediaBackupEntity,
+    actions: List<ActionMenuItem>,
     onDataSelected: () -> Unit,
     onCardClick: () -> Unit,
     onCardLongClick: () -> Unit,
@@ -100,6 +107,7 @@ fun MediumCard(
         path = mediaBackup.path,
         cardSelected = cardSelected,
         dataSelected = mediaBackup.selected,
+        actions = actions,
         onDataSelected = onDataSelected,
         onCardClick = onCardClick,
         onCardLongClick = onCardLongClick,
@@ -115,6 +123,7 @@ fun MediumCard(
     enabled: Boolean,
     cardSelected: Boolean,
     mediaRestore: MediaRestoreEntity,
+    actions: List<ActionMenuItem>,
     onDataSelected: () -> Unit,
     onCardClick: () -> Unit,
     onCardLongClick: () -> Unit,
@@ -129,6 +138,7 @@ fun MediumCard(
         cardSelected = cardSelected,
         dataSelected = mediaRestore.selected,
         dataChipEnabled = true,
+        actions = actions,
         onDataSelected = onDataSelected,
         onCardClick = onCardClick,
         onCardLongClick = onCardLongClick,
@@ -149,6 +159,7 @@ fun MediumCardShimmer(
         path = "Shimmer.Shimmer.Shimmer",
         cardSelected = false,
         dataSelected = false,
+        actions = listOf(),
         onDataSelected = {},
         onCardClick = {},
         onCardLongClick = {},
@@ -169,6 +180,7 @@ fun MediumCard(
     cardSelected: Boolean,
     dataSelected: Boolean,
     dataChipEnabled: Boolean = true,
+    actions: List<ActionMenuItem>,
     onDataSelected: () -> Unit,
     onCardClick: () -> Unit,
     onCardLongClick: () -> Unit,
@@ -234,9 +246,10 @@ fun MediumCard(
                         .ignorePaddingHorizontal(PaddingTokens.Level3)
                         .fillMaxWidth()
                         .background(color = ColorSchemeKeyTokens.InverseOnSurface.toColor()),
-                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3, Alignment.End)
+                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
                 ) {
                     if (shimmering) {
+                        Spacer(modifier = Modifier.weight(1f))
                         repeat(1) {
                             Spacer(
                                 modifier = Modifier
@@ -246,6 +259,14 @@ fun MediumCard(
                             )
                         }
                     } else {
+                        var expanded by remember { mutableStateOf(false) }
+
+                        Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
+                            IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.MoreVert), onClick = { expanded = true })
+
+                            ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
                         OpChip(
                             enabled = enabled && dataChipEnabled,
                             selected = dataSelected,

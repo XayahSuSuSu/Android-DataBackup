@@ -10,8 +10,6 @@ import com.xayah.core.datastore.readRestoreUserId
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.util.ConfigsMediaRestoreName
-import com.xayah.core.util.ConfigsPackageRestoreName
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil
@@ -23,9 +21,6 @@ import com.xayah.core.util.model.ShellResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encodeToByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import javax.inject.Inject
 import com.xayah.core.util.LogUtil.log as KLog
 
@@ -39,7 +34,7 @@ class PackagesBackupUtil @Inject constructor(
     private val usePipe = runBlocking { context.readCompatibleMode().first() }
     val compressionType = runBlocking { context.readCompressionType().first() }
     private val userId = runBlocking { context.readBackupUserId().first() }
-    fun log(msg: () -> String): String = run {
+    private fun log(msg: () -> String): String = run {
         KLog { TAG to msg() }
         msg()
     }
@@ -67,7 +62,7 @@ class PackagesBackupUtil @Inject constructor(
         ShellResult(code = code, input = input, out = out)
     }
 
-    fun getApkDst(dstDir: String) = "${dstDir}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
+    private fun getApkDst(dstDir: String) = "${dstDir}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
     suspend fun getApkCur(packageName: String) = rootService.getPackageSourceDir(packageName, userId).let { list ->
         if (list.isNotEmpty()) PathUtil.getParentPath(list[0]) else ""
     }
@@ -97,7 +92,7 @@ class PackagesBackupUtil @Inject constructor(
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
 
-    fun getDataDst(dstDir: String, dataType: DataType) = "${dstDir}/${dataType.type}.${compressionType.suffix}"
+    private fun getDataDst(dstDir: String, dataType: DataType) = "${dstDir}/${dataType.type}.${compressionType.suffix}"
     fun getDataSrcDir(dataType: DataType) = dataType.srcDir(userId)
     fun getDataSrc(srcDir: String, packageName: String) = "$srcDir/$packageName"
 
@@ -195,9 +190,9 @@ class PackagesBackupUtil @Inject constructor(
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
 
-    val tarCompressionType = CompressionType.TAR
+    private val tarCompressionType = CompressionType.TAR
 
-    fun getIconsDst(dstDir: String) = "${dstDir}/${IconRelativeDir}.${tarCompressionType.suffix}"
+    private fun getIconsDst(dstDir: String) = "${dstDir}/${IconRelativeDir}.${tarCompressionType.suffix}"
 
     suspend fun backupIcons(dstDir: String): ShellResult = run {
         log { "Backing up icons..." }
@@ -225,29 +220,6 @@ class PackagesBackupUtil @Inject constructor(
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
-
-    fun getConfigsDst(dstDir: String) = "${dstDir}/$ConfigsPackageRestoreName"
-
-    @ExperimentalSerializationApi
-    suspend inline fun <reified T> backupConfigs(data: T, dstDir: String): ShellResult = run {
-        log { "Backing up configs..." }
-
-        val dst = getConfigsDst(dstDir = dstDir)
-        var isSuccess: Boolean
-        val out = mutableListOf<String>()
-
-        val bytes = ProtoBuf.encodeToByteArray(data)
-        rootService.writeBytes(bytes = bytes, dst = dst).also {
-            isSuccess = it
-            if (isSuccess) {
-                out.add(log { "Succeed to write configs: $dst" })
-            } else {
-                out.add(log { "Failed to write configs: $dst" })
-            }
-        }
-
-        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
-    }
 }
 
 class PackagesRestoreUtil @Inject constructor(
@@ -258,7 +230,7 @@ class PackagesRestoreUtil @Inject constructor(
     }
 
     private val userId = runBlocking { context.readRestoreUserId().first() }
-    fun log(msg: () -> String): String = run {
+    private fun log(msg: () -> String): String = run {
         KLog { TAG to msg() }
         msg()
     }
@@ -457,7 +429,7 @@ class MediumBackupUtil @Inject constructor(
     private val usePipe = runBlocking { context.readCompatibleMode().first() }
     private val compressionType = CompressionType.TAR
     private val userId = runBlocking { context.readBackupUserId().first() }
-    fun log(msg: () -> String): String = run {
+    private fun log(msg: () -> String): String = run {
         KLog { TAG to msg() }
         msg()
     }
@@ -554,29 +526,6 @@ class MediumBackupUtil @Inject constructor(
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
-
-    fun getConfigsDst(dstDir: String) = "${dstDir}/$ConfigsMediaRestoreName"
-
-    @ExperimentalSerializationApi
-    suspend inline fun <reified T> backupConfigs(data: T, dstDir: String): ShellResult = run {
-        log { "Backing up configs..." }
-
-        val dst = getConfigsDst(dstDir = dstDir)
-        var isSuccess: Boolean
-        val out = mutableListOf<String>()
-
-        val bytes = ProtoBuf.encodeToByteArray(data)
-        rootService.writeBytes(bytes = bytes, dst = dst).also {
-            isSuccess = it
-            if (isSuccess) {
-                out.add(log { "Succeed to write configs: $dst" })
-            } else {
-                out.add(log { "Failed to write configs: $dst" })
-            }
-        }
-
-        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
-    }
 }
 
 class MediumRestoreUtil @Inject constructor(
@@ -587,7 +536,7 @@ class MediumRestoreUtil @Inject constructor(
     }
 
     private val compressionType = CompressionType.TAR
-    fun log(msg: () -> String): String = run {
+    private fun log(msg: () -> String): String = run {
         KLog { TAG to msg() }
         msg()
     }

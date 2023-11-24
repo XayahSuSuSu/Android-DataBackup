@@ -16,7 +16,6 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:datastore"))
     implementation(project(":core:ui"))
-    implementation(project(":core:service"))
     implementation(project(":core:rootservice"))
 
     // Preferences DataStore

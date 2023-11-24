@@ -1,18 +1,19 @@
 package com.xayah.core.data.repository
 
 import android.content.Context
+import androidx.annotation.StringRes
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.model.MediaRestoreEntity
-import com.xayah.core.database.model.OperationMask
 import com.xayah.core.datastore.readRestoreSavePath
-import com.xayah.core.service.util.MediumBackupUtil
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
-import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.rootservice.util.withIOContext
+import com.xayah.core.util.localRestoreSaveDir
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +21,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import javax.inject.Inject
 
 class MediaRestoreRepository @Inject constructor(
@@ -30,8 +28,11 @@ class MediaRestoreRepository @Inject constructor(
     private val mediaDao: MediaDao,
     private val rootService: RemoteRootService,
     private val pathUtil: PathUtil,
-    private val mediumBackupUtil: MediumBackupUtil,
 ) {
+    private fun log(msg: () -> String) = LogUtil.log { "MediaRestoreRepository" to msg() }
+
+    fun getString(@StringRes resId: Int) = context.getString(resId)
+
     fun observeMedium(timestamp: Long) = mediaDao.queryMediumFlow(timestamp).distinctUntilChanged()
     val selectedMedium = mediaDao.observeActiveMedium().map { medium -> medium.filter { it.selected } }.distinctUntilChanged()
 
@@ -45,6 +46,39 @@ class MediaRestoreRepository @Inject constructor(
     suspend fun updateActive(active: Boolean) = mediaDao.updateRestoreActive(active = active)
     suspend fun updateActive(active: Boolean, timestamp: Long, savePath: String) =
         mediaDao.updateRestoreActive(active = active, timestamp = timestamp, savePath = savePath)
+
+    suspend fun writeMediaProtoBuf(dst: String, onStoredList: suspend (MutableList<MediaRestoreEntity>) -> List<MediaRestoreEntity>) {
+        val mediaRestoreList: MutableList<MediaRestoreEntity> = mutableListOf()
+        runCatching {
+            val storedList = rootService.readProtoBuf<List<MediaRestoreEntity>>(src = dst)
+            mediaRestoreList.addAll(storedList)
+        }
+
+        rootService.writeProtoBuf(
+            data = onStoredList(mediaRestoreList),
+            dst = dst
+        )
+    }
+
+    suspend fun deleteRestore(items: List<MediaRestoreEntity>) = withIOContext {
+        items.forEach { item ->
+            val path = "${pathUtil.getLocalRestoreArchivesMediumDir()}/${item.name}/${item.timestamp}"
+            log { "Trying to delete: $path" }
+            rootService.deleteRecursively(path = path)
+        }
+        rootService.clearEmptyDirectoriesRecursively(path = context.localRestoreSaveDir())
+
+        val configsDst = PathUtil.getMediaRestoreConfigDst(dstDir = pathUtil.getLocalRestoreConfigsDir())
+        writeMediaProtoBuf(configsDst) { storedList ->
+            storedList.apply {
+                items.forEach { item ->
+                    removeIf { it.path == item.path && it.timestamp == item.timestamp && it.savePath == item.savePath }
+                }
+            }.toList()
+        }
+
+        mediaDao.deleteRestore(items)
+    }
 
     suspend fun batchSelectOp(selected: Boolean, timestamp: Long, pathList: List<String>) = mediaDao.batchSelectOp(selected, timestamp, pathList)
 
@@ -63,13 +97,12 @@ class MediaRestoreRepository @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     suspend fun loadLocalConfig(topBarState: MutableStateFlow<TopBarState>) {
         val mediaRestoreList: MutableList<MediaRestoreEntity> = mutableListOf()
         runCatching {
-            val configPath = mediumBackupUtil.getConfigsDst(dstDir = configsDir.first())
-            val bytes = rootService.readBytes(configPath)
-            mediaRestoreList.addAll(ProtoBuf.decodeFromByteArray<List<MediaRestoreEntity>>(bytes).toMutableList())
+            val configPath = PathUtil.getMediaRestoreConfigDst(dstDir = configsDir.first())
+            val storedList = rootService.readProtoBuf<List<MediaRestoreEntity>>(src = configPath)
+            mediaRestoreList.addAll(storedList)
         }
         val mediumCount = (mediaRestoreList.size - 1).coerceAtLeast(1)
 

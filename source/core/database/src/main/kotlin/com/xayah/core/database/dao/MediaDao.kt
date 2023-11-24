@@ -12,7 +12,6 @@ import com.xayah.core.database.model.MediaBackupWithOpEntity
 import com.xayah.core.database.model.MediaRestoreEntity
 import com.xayah.core.database.model.MediaRestoreOperationEntity
 import com.xayah.core.database.model.MediaRestoreWithOpEntity
-import com.xayah.core.database.model.PackageRestoreEntire
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -87,6 +86,9 @@ interface MediaDao {
 
     @Delete(entity = MediaRestoreEntity::class)
     suspend fun deleteRestore(item: MediaRestoreEntity)
+
+    @Delete(entity = MediaRestoreEntity::class)
+    suspend fun deleteRestore(items: List<MediaRestoreEntity>)
 
     @Query("DELETE FROM MediaRestoreEntity")
     suspend fun clearRestoreTable()

@@ -1,6 +1,7 @@
 package com.xayah.core.data.repository
 
 import android.content.Context
+import androidx.annotation.StringRes
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.model.OperationMask
@@ -15,16 +16,19 @@ import com.xayah.core.datastore.saveRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveRestoreInstallationTypeIndex
 import com.xayah.core.datastore.saveRestoreSortType
 import com.xayah.core.datastore.saveRestoreSortTypeIndex
+import com.xayah.core.model.CompressionType
 import com.xayah.core.model.SortType
-import com.xayah.core.service.util.PackagesBackupUtil
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.util.IconRelativeDir
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
-import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.rootservice.util.withIOContext
+import com.xayah.core.util.localRestoreSaveDir
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,9 +36,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import java.text.Collator
 import javax.inject.Inject
 
@@ -43,8 +44,11 @@ class PackageRestoreRepository @Inject constructor(
     private val rootService: RemoteRootService,
     private val packageRestoreDao: PackageRestoreEntireDao,
     private val pathUtil: PathUtil,
-    private val packagesBackupUtil: PackagesBackupUtil,
 ) {
+    private fun log(msg: () -> String) = LogUtil.log { "PackageRestoreRepository" to msg() }
+
+    fun getString(@StringRes resId: Int) = context.getString(resId)
+
     fun observePackages(timestamp: Long) = packageRestoreDao.queryPackagesFlow(timestamp).distinctUntilChanged()
     val packages = packageRestoreDao.observeActivePackages().distinctUntilChanged()
     val packagesApkOnly = packages.map { packages -> packages.filter { it.operationCode == OperationMask.Apk } }.distinctUntilChanged()
@@ -62,6 +66,15 @@ class PackageRestoreRepository @Inject constructor(
     val restoreSavePath = context.readRestoreSavePath().distinctUntilChanged()
     private val configsDir = restoreSavePath.map { pathUtil.getConfigsDir(it) }.distinctUntilChanged()
 
+    suspend fun writePackagesProtoBuf(dst: String, onStoredList: suspend (MutableList<PackageRestoreEntire>) -> List<PackageRestoreEntire>) {
+        val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
+        runCatching {
+            val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = dst)
+            packageRestoreList.addAll(storedList)
+        }
+        rootService.writeProtoBuf(data = onStoredList(packageRestoreList), dst = dst)
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun observeTimestamps() = restoreSavePath.flatMapLatest { packageRestoreDao.observeTimestamps(it).distinctUntilChanged() }.distinctUntilChanged()
 
@@ -77,6 +90,25 @@ class PackageRestoreRepository @Inject constructor(
 
     suspend fun andOpCodeByMask(mask: Int, packageNames: List<String>) = packageRestoreDao.andOpCodeByMask(mask, packageNames)
     suspend fun orOpCodeByMask(mask: Int, packageNames: List<String>) = packageRestoreDao.orOpCodeByMask(mask, packageNames)
+    suspend fun delete(items: List<PackageRestoreEntire>) = withIOContext {
+        items.forEach { item ->
+            val path = "${pathUtil.getLocalRestoreArchivesPackagesDir()}/${item.packageName}/${item.timestamp}"
+            log { "Trying to delete: $path" }
+            rootService.deleteRecursively(path = path)
+        }
+        rootService.clearEmptyDirectoriesRecursively(path = context.localRestoreSaveDir())
+
+        val configsDst = PathUtil.getPackageRestoreConfigDst(dstDir = pathUtil.getLocalRestoreConfigsDir())
+        writePackagesProtoBuf(configsDst) { storedList ->
+            storedList.apply {
+                items.forEach { item ->
+                    removeIf { it.packageName == item.packageName && it.timestamp == item.timestamp && it.savePath == item.savePath }
+                }
+            }.toList()
+        }
+
+        packageRestoreDao.delete(items)
+    }
 
     fun getFlagPredicate(index: Int): (PackageRestoreEntire) -> Boolean = { packageRestore ->
         when (index) {
@@ -141,13 +173,12 @@ class PackageRestoreRepository @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     suspend fun loadLocalConfig(topBarState: MutableStateFlow<TopBarState>) {
         val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
         runCatching {
-            val configPath = packagesBackupUtil.getConfigsDst(dstDir = configsDir.first())
-            val bytes = rootService.readBytes(configPath)
-            packageRestoreList.addAll(ProtoBuf.decodeFromByteArray<List<PackageRestoreEntire>>(bytes).toMutableList())
+            val configPath = PathUtil.getPackageRestoreConfigDst(dstDir = configsDir.first())
+            val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = configPath)
+            packageRestoreList.addAll(storedList)
         }
         val packagesCount = (packageRestoreList.size - 1).coerceAtLeast(1)
 
@@ -174,7 +205,7 @@ class PackageRestoreRepository @Inject constructor(
     }
 
     suspend fun loadLocalIcon() {
-        val archivePath = packagesBackupUtil.getIconsDst(dstDir = configsDir.first())
-        Tar.decompress(src = archivePath, dst = context.filesDir(), extra = packagesBackupUtil.tarCompressionType.decompressPara)
+        val archivePath = "${configsDir.first()}/$IconRelativeDir.${CompressionType.TAR.suffix}"
+        Tar.decompress(src = archivePath, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
     }
 }

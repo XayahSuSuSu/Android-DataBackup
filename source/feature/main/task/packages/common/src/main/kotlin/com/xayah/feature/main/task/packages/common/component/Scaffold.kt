@@ -78,6 +78,7 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 fun <T> ListScaffold(
+    snackbarHostState: SnackbarHostState? = null,
     topBarState: TopBarState,
     fabVisible: Boolean,
     fabEmphasizedState: Boolean,
@@ -138,7 +139,8 @@ fun <T> ListScaffold(
 
             }
         },
-        floatingActionButtonPosition = FabPosition.Center
+        floatingActionButtonPosition = FabPosition.Center,
+        snackbarHost = { if (snackbarHostState != null) SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
         Column {
             InnerTopSpacer(innerPadding = innerPadding)

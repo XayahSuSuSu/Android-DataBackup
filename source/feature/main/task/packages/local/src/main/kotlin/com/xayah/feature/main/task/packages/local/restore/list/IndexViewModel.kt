@@ -1,6 +1,8 @@
 package com.xayah.feature.main.task.packages.local.restore.list
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.UiEffect
 import com.xayah.core.common.viewmodel.UiIntent
@@ -49,13 +51,23 @@ sealed class IndexUiIntent : UiIntent {
     data class BatchOrOp(val mask: Int, val packageNames: List<String>) : IndexUiIntent()
     data class SelectTimestamp(val index: Int) : IndexUiIntent()
     data class UpdatePackageState(val entity: PackageRestoreEntire) : IndexUiIntent()
+    data class Delete(val items: List<PackageRestoreEntire>) : IndexUiIntent()
+}
+
+sealed class IndexUiEffect : UiEffect {
+    data class ShowSnackbar(
+        val message: String,
+        val actionLabel: String? = null,
+        val withDismissAction: Boolean = false,
+        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
+    ) : IndexUiEffect()
 }
 
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     private val packageRestoreRepository: PackageRestoreRepository,
-) : BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(IndexUiState()) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState()) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Initialize -> {
@@ -138,6 +150,29 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.UpdatePackageState -> {
                 packageRestoreRepository.updatePackageState(entity = intent.entity)
+            }
+
+            is IndexUiIntent.Delete -> {
+                runCatching {
+                    packageRestoreRepository.delete(items = intent.items)
+                    val packages = intent.items.map { it.packageName }
+                    val batchSelection = state.batchSelection.toMutableList().apply {
+                        removeAll(packages)
+                    }
+                    emitState(state.copy(batchSelection = batchSelection))
+                    emitEffect(IndexUiEffect.ShowSnackbar(message = packageRestoreRepository.getString(R.string.succeed)))
+                }.onFailure {
+                    emitEffect(IndexUiEffect.ShowSnackbar(message = "${packageRestoreRepository.getString(R.string.failed)}: ${it.message}"))
+                }
+            }
+        }
+    }
+
+    val snackbarHostState: SnackbarHostState = SnackbarHostState()
+    override suspend fun onEffect(effect: IndexUiEffect) {
+        when (effect) {
+            is IndexUiEffect.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
             }
         }
     }

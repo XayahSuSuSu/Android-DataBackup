@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import com.xayah.core.data.repository.MediaRestoreRepository
 import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.model.MediaBackupOperationEntity
 import com.xayah.core.database.model.MediaRestoreEntity
@@ -23,8 +24,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import javax.inject.Inject
 import com.xayah.core.util.LogUtil.log as KLog
 
@@ -60,6 +59,9 @@ internal class BackupServiceImpl : Service() {
 
     @Inject
     lateinit var mediaDao: MediaDao
+
+    @Inject
+    lateinit var mediaRestoreRepository: MediaRestoreRepository
 
     @ExperimentalSerializationApi
     suspend fun processing(timestamp: Long) = withIOContext {
@@ -121,7 +123,7 @@ internal class BackupServiceImpl : Service() {
                     mediaDao.upsertRestore(restoreEntire)
 
                     // Save config
-                    mediumBackupUtil.backupConfigs(data = restoreEntire, dstDir = dstDir)
+                    rootService.writeProtoBuf(data = restoreEntire, dst = dstDir)
 
                     // Reset selected items if enabled.
                     if (context.readResetBackupList().first()) {
@@ -148,14 +150,10 @@ internal class BackupServiceImpl : Service() {
             }
 
             log { "Save configs." }
-            val configsDstDir = pathUtil.getConfigsDir(dstDir)
-            val mediaRestoreList: MutableList<MediaRestoreEntity> = mutableListOf()
-            runCatching {
-                val bytes = rootService.readBytes(mediumBackupUtil.getConfigsDst(dstDir = configsDstDir))
-                mediaRestoreList.addAll(ProtoBuf.decodeFromByteArray<List<MediaRestoreEntity>>(bytes).toMutableList())
+            val configsDst = PathUtil.getMediaRestoreConfigDst(dstDir = pathUtil.getConfigsDir(dstDir))
+            mediaRestoreRepository.writeMediaProtoBuf(configsDst) { storedList ->
+                storedList.apply { addAll(mediaDao.queryRestoreMedium(timestamp)) }.toList()
             }
-            mediaRestoreList.addAll(mediaDao.queryRestoreMedium(timestamp))
-            mediumBackupUtil.backupConfigs(data = mediaRestoreList, dstDir = configsDstDir)
         }
     }
 }
