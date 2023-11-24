@@ -51,10 +51,7 @@ object BaseUtil {
         .setInitializers(EnvInitializer::class.java)
         .setTimeout(3)
 
-    fun getShellBuilder(context: Context) = getShellBuilder().setContext(context)
-
-
-    fun getNewShell() = getShellBuilder().build()
+    private fun getNewShell() = getShellBuilder().build()
 
     suspend fun execute(vararg args: String, shell: Shell? = null, log: Boolean = true): ShellResult = withIOContext {
         val shellResult = ShellResult(code = -1, input = args.toList().trim(), out = listOf())
