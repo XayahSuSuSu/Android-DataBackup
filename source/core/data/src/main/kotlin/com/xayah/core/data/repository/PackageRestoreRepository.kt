@@ -161,30 +161,13 @@ class PackageRestoreRepository @Inject constructor(
         }
     }
 
-    /**
-     * Update sizeBytes, installed state.
-     */
-    suspend fun updatePackageState(entity: PackageRestoreEntire) = withIOContext {
-        val timestampPath = "${pathUtil.getLocalRestoreArchivesPackagesDir()}/${entity.packageName}/${entity.timestamp}"
-        val sizeBytes = rootService.calculateSize(timestampPath)
-        val installed = rootService.queryInstalled(entity.packageName, context.readRestoreUserId().first())
-        if (entity.sizeBytes != sizeBytes || entity.installed != installed) {
-            updatePackage(entity.copy(sizeBytes = sizeBytes, installed = installed))
-        }
-    }
-
-    suspend fun loadLocalConfig(topBarState: MutableStateFlow<TopBarState>) {
+    suspend fun loadLocalConfig() {
         val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
         runCatching {
             val configPath = PathUtil.getPackageRestoreConfigDst(dstDir = configsDir.first())
             val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = configPath)
             packageRestoreList.addAll(storedList!!)
         }
-        val packagesCount = (packageRestoreList.size - 1).coerceAtLeast(1)
-
-        // Get 1/10 of total count.
-        val epoch: Int = ((packagesCount + 1) / 10).coerceAtLeast(1)
-
         packageRestoreList.forEachIndexed { index, packageInfo ->
             val packageRestore =
                 packageRestoreDao.queryPackage(packageName = packageInfo.packageName, timestamp = packageInfo.timestamp, savePath = packageInfo.savePath)
@@ -192,6 +175,33 @@ class PackageRestoreRepository @Inject constructor(
             val active = packageRestore?.active ?: false
             val operationCode = packageRestore?.operationCode ?: OperationMask.None
             packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode))
+        }
+    }
+
+    suspend fun loadLocalIcon() {
+        val archivePath = "${configsDir.first()}/$IconRelativeDir.${CompressionType.TAR.suffix}"
+        Tar.decompress(src = archivePath, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
+    }
+
+    /**
+     * Update sizeBytes, installed state.
+     */
+    suspend fun update(topBarState: MutableStateFlow<TopBarState>) {
+        val packages = packageRestoreDao.queryAll()
+        val packagesCount = (packages.size - 1).coerceAtLeast(1)
+        // Get 1/10 of total count.
+        val epoch: Int = ((packagesCount + 1) / 10).coerceAtLeast(1)
+
+        packages.forEachIndexed { index, entity ->
+            val timestampPath = "${pathUtil.getLocalRestoreArchivesPackagesDir()}/${entity.packageName}/${entity.timestamp}"
+            val sizeBytes = rootService.calculateSize(timestampPath)
+            val installed = rootService.queryInstalled(entity.packageName, context.readRestoreUserId().first())
+            entity.sizeBytes = sizeBytes
+            entity.installed = installed
+            if (entity.isExists.not()) {
+                entity.backupOpCode = OperationMask.None
+                entity.operationCode = OperationMask.None
+            }
 
             if (index % epoch == 0)
                 topBarState.emit(
@@ -201,11 +211,7 @@ class PackageRestoreRepository @Inject constructor(
                     )
                 )
         }
+        packageRestoreDao.upsert(packages)
         topBarState.emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.restore_list)))
-    }
-
-    suspend fun loadLocalIcon() {
-        val archivePath = "${configsDir.first()}/$IconRelativeDir.${CompressionType.TAR.suffix}"
-        Tar.decompress(src = archivePath, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
     }
 }

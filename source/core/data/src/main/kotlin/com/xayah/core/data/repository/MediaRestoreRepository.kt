@@ -86,34 +86,37 @@ class MediaRestoreRepository @Inject constructor(
         mediaRestore.name.lowercase().contains(key.lowercase()) || mediaRestore.path.lowercase().contains(key.lowercase())
     }
 
-    /**
-     * Update sizeBytes, installed state.
-     */
-    suspend fun updateMediaState(entity: MediaRestoreEntity) = withIOContext {
-        val timestampPath = "${pathUtil.getLocalRestoreArchivesMediumDir()}/${entity.name}/${entity.timestamp}"
-        val sizeBytes = rootService.calculateSize(timestampPath)
-        if (entity.sizeBytes != sizeBytes) {
-            upsertRestore(entity.copy(sizeBytes = sizeBytes))
-        }
-    }
-
-    suspend fun loadLocalConfig(topBarState: MutableStateFlow<TopBarState>) {
+    suspend fun loadLocalConfig() {
         val mediaRestoreList: MutableList<MediaRestoreEntity> = mutableListOf()
         runCatching {
             val configPath = PathUtil.getMediaRestoreConfigDst(dstDir = configsDir.first())
             val storedList = rootService.readProtoBuf<List<MediaRestoreEntity>>(src = configPath)
             mediaRestoreList.addAll(storedList!!)
         }
-        val mediumCount = (mediaRestoreList.size - 1).coerceAtLeast(1)
-
-        // Get 1/10 of total count.
-        val epoch: Int = ((mediumCount + 1) / 10).coerceAtLeast(1)
-
         mediaRestoreList.forEachIndexed { index, mediaInfo ->
             val mediaRestore = mediaDao.queryMedia(path = mediaInfo.path, timestamp = mediaInfo.timestamp, savePath = mediaInfo.savePath)
             val id = mediaRestore?.id ?: 0
             val selected = mediaRestore?.selected ?: false
             mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected))
+        }
+    }
+
+    /**
+     * Update sizeBytes, installed state.
+     */
+    suspend fun update(topBarState: MutableStateFlow<TopBarState>) = withIOContext {
+        val medium = mediaDao.queryAllRestore()
+        val mediumCount = (medium.size - 1).coerceAtLeast(1)
+        // Get 1/10 of total count.
+        val epoch: Int = ((mediumCount + 1) / 10).coerceAtLeast(1)
+
+        medium.forEachIndexed { index, entity ->
+            val timestampPath = "${pathUtil.getLocalRestoreArchivesMediumDir()}/${entity.name}/${entity.timestamp}"
+            val sizeBytes = rootService.calculateSize(timestampPath)
+            entity.sizeBytes = sizeBytes
+            if (entity.isExists.not()) {
+                entity.selected = false
+            }
 
             if (index % epoch == 0)
                 topBarState.emit(
@@ -123,6 +126,7 @@ class MediaRestoreRepository @Inject constructor(
                     )
                 )
         }
+        mediaDao.upsertRestore(medium)
         topBarState.emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.restore_list)))
     }
 }

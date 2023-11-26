@@ -51,7 +51,6 @@ sealed class IndexUiIntent : UiIntent {
     data class BatchAndOp(val mask: Int, val packageNames: List<String>) : IndexUiIntent()
     data class BatchOrOp(val mask: Int, val packageNames: List<String>) : IndexUiIntent()
     data class SelectTimestamp(val index: Int) : IndexUiIntent()
-    data class UpdatePackageState(val entity: PackageRestoreEntire) : IndexUiIntent()
     data class Delete(val items: List<PackageRestoreEntire>) : IndexUiIntent()
 }
 
@@ -82,8 +81,9 @@ class IndexViewModel @Inject constructor(
         when (intent) {
             is IndexUiIntent.Initialize -> {
                 packageRestoreRepository.loadLocalIcon()
+                packageRestoreRepository.loadLocalConfig()
+                packageRestoreRepository.update(topBarState = _topBarState)
                 emitState(uiState.value.copy(activating = false))
-                packageRestoreRepository.loadLocalConfig(topBarState = _topBarState)
                 emitIntentSuspend(IndexUiIntent.Update)
             }
 
@@ -158,10 +158,6 @@ class IndexViewModel @Inject constructor(
                 emitIntentSuspend(IndexUiIntent.Update)
             }
 
-            is IndexUiIntent.UpdatePackageState -> {
-                packageRestoreRepository.updatePackageState(entity = intent.entity)
-            }
-
             is IndexUiIntent.Delete -> {
                 runCatching {
                     packageRestoreRepository.delete(items = intent.items)
@@ -231,9 +227,7 @@ class IndexViewModel @Inject constructor(
 
     private val _topBarState: MutableStateFlow<TopBarState> = MutableStateFlow(TopBarState(title = StringResourceToken.fromStringId(R.string.restore_list)))
     val topBarState: StateFlow<TopBarState> = _topBarState.asStateFlow()
-    val shimmeringState: StateFlow<Boolean> = combine(_topBarState, _packages) { topBarState, packages ->
-        topBarState.progress != 1f && packages.isEmpty()
-    }.flowOnIO().stateInScope(initialValue = true)
+    val shimmeringState: StateFlow<Boolean> = _topBarState.map { topBarState -> topBarState.progress != 1f }.flowOnIO().stateInScope(initialValue = true)
     val selectedAPKsCountState: StateFlow<Int> = packageRestoreRepository.selectedAPKsCount.flowOnIO().stateInScope(0)
     val selectedDataCountState: StateFlow<Int> = packageRestoreRepository.selectedDataCount.flowOnIO().stateInScope(0)
 }

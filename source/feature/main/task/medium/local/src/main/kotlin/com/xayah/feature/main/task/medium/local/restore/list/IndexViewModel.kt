@@ -45,7 +45,6 @@ sealed class IndexUiIntent : UiIntent {
     data class BatchingSelect(val path: String) : IndexUiIntent()
     data class BatchSelectOp(val selected: Boolean, val pathList: List<String>) : IndexUiIntent()
     data class SelectTimestamp(val index: Int) : IndexUiIntent()
-    data class UpdatePackageState(val entity: MediaRestoreEntity) : IndexUiIntent()
     data class Delete(val items: List<MediaRestoreEntity>) : IndexUiIntent()
 }
 
@@ -75,8 +74,9 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Initialize -> {
+                mediaRestoreRepository.loadLocalConfig()
+                mediaRestoreRepository.update(topBarState = _topBarState)
                 _shimmeringState.value = false
-                mediaRestoreRepository.loadLocalConfig(topBarState = _topBarState)
                 emitIntentSuspend(IndexUiIntent.Update)
             }
 
@@ -126,10 +126,6 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.SelectTimestamp -> {
                 _timestampState.value = _timestampListState.first().getOrNull(intent.index) ?: 0
                 emitIntentSuspend(IndexUiIntent.Update)
-            }
-
-            is IndexUiIntent.UpdatePackageState -> {
-                mediaRestoreRepository.updateMediaState(entity = intent.entity)
             }
 
             is IndexUiIntent.Delete -> {

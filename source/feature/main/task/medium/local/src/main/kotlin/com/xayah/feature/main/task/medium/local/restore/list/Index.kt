@@ -197,9 +197,6 @@ fun PageList(navController: NavHostController) {
                 viewModel.emitIntent(IndexUiIntent.BatchingSelect(path = item.path))
             },
         ) {
-            LaunchedEffect(item) {
-                viewModel.emitIntent(IndexUiIntent.UpdatePackageState(entity = item))
-            }
             if (enabled) {
                 AnimatedRoundChip(text = item.sizeDisplay)
             } else {
