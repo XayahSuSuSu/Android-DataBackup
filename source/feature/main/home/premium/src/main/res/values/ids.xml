@@ -19,4 +19,29 @@
     <item name="structure" type="string"/>
     <item name="log" type="string"/>
     <item name="reload" type="string"/>
+    <item name="add" type="string"/>
+    <item name="delete" type="string"/>
+    <item name="set_as_main_account" type="string"/>
+    <item name="main_account" type="string"/>
+    <item name="remote_not_set" type="string"/>
+    <item name="set_remote" type="string"/>
+    <item name="select_target_directory" type="string"/>
+    <item name="test_connection" type="string"/>
+    <item name="connection_established" type="string"/>
+    <item name="processing" type="string"/>
+    <item name="account" type="string"/>
+    <item name="ic_rounded_deployed_code" type="drawable" />
+    <item name="ic_rounded_link" type="drawable" />
+    <item name="ic_rounded_person" type="drawable" />
+    <item name="ic_rounded_key" type="drawable" />
+    <item name="ic_rounded_lan" type="drawable" />
+    <item name="ic_rounded_badge" type="drawable" />
+    <item name="url" type="string" />
+    <item name="username" type="string" />
+    <item name="password" type="string" />
+    <item name="port" type="string" />
+    <item name="name" type="string" />
+    <item name="confirm" type="string" />
+    <item name="modify" type="string" />
+    <item name="edit" type="string" />
 </resources>

@@ -88,7 +88,16 @@ class IndexViewModel @Inject constructor() : BaseViewModel<IndexUiState, IndexUi
                     emitStateSuspend(
                         state = uiState.value.copy(
                             binItem = binItem.copy(
-                                state = if (runCatching { BaseUtil.releaseBase(context = intent.context) }.getOrElse { false }) {
+                                state = if (runCatching {
+                                        var isSuccess = true
+                                        BaseUtil.releaseBase(context = intent.context).also {
+                                            if (it.not()) isSuccess = false
+                                        }
+                                        BaseUtil.releaseExtension(context = intent.context).also {
+                                            if (it.not()) isSuccess = false
+                                        }
+                                        isSuccess
+                                    }.getOrElse { false }) {
                                     EnvState.Succeed
                                 } else {
                                     EnvState.Failed

@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CloudDao {
     @Upsert(entity = CloudEntity::class)
+    suspend fun upsertCloud(item: CloudEntity)
+
+    @Upsert(entity = CloudEntity::class)
     suspend fun upsertMount(item: CloudMountEntity)
 
     @Upsert(entity = CloudEntity::class)
@@ -32,9 +35,15 @@ interface CloudDao {
     @Query("SELECT * FROM CloudEntity WHERE active = 1")
     fun queryAccountFlow(): Flow<List<CloudAccountEntity>>
 
+    @Query("SELECT * FROM CloudEntity WHERE active = 1")
+    fun queryActiveCloudsFlow(): Flow<List<CloudEntity>>
+
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
     suspend fun queryAccountByName(name: String): CloudAccountEntity?
+
+    @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
+    suspend fun queryCloudByName(name: String): CloudEntity?
 
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
@@ -61,4 +70,7 @@ interface CloudDao {
 
     @Delete(entity = CloudEntity::class)
     suspend fun deleteAccount(item: CloudAccountEntity)
+
+    @Delete(entity = CloudEntity::class)
+    suspend fun deleteCloud(item: CloudEntity)
 }

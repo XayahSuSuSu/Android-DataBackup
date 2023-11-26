@@ -169,4 +169,7 @@
     <string name="clear_all">清空</string>
     <string name="existing_files">實際文件</string>
     <string name="overall_config">整體配置</string>
+    <string name="remote_not_set">遠端目錄未設定</string>
+    <string name="test_connection">測試連線</string>
+    <string name="connection_established">成功建立連接</string>
 </resources>

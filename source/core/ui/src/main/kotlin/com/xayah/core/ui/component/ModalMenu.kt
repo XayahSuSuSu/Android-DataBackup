@@ -98,6 +98,7 @@ fun ModalActionDropdownMenu(
                                 targetList = actionList
                             } else if (item.onClick != null) {
                                 item.onClick.invoke()
+                                if (item.dismissOnClick) onDismissRequest.invoke()
                             }
                         },
                         leadingIcon = {

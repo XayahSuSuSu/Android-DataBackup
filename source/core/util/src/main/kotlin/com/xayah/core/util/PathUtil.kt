@@ -16,6 +16,7 @@ const val IconRelativeDir = "icon"
 const val BinRelativeDir = "bin"
 const val TmpRelativeDir = "tmp"
 const val ApksRelativeDir = "apks"
+const val MountsRelativeDir = "mounts"
 const val ExtensionRelativeDir = "extension"
 const val ArchivesRelativeDir = "archives"
 const val PackagesRelativeDir = "packages"
@@ -24,15 +25,19 @@ const val ConfigsRelativeDir = "configs"
 const val ConfigsPackageRestoreName = "package_restore_config.pb"
 const val ConfigsMediaRestoreName = "media_restore_config.pb"
 const val BinArchiveName = "bin.zip"
+const val ExtensionArchiveName = "extension.zip"
+const val CloudTmpTestFileName = "DataBackupCloudTmpTest"
 
 fun Context.filesDir(): String = filesDir.path
 fun Context.logDir(): String = "${filesDir()}/$LogRelativeDir"
 fun Context.binDir(): String = "${filesDir()}/$BinRelativeDir"
 fun Context.binArchivePath(): String = "${filesDir()}/$BinArchiveName"
 fun Context.extensionDir(): String = "${filesDir()}/$ExtensionRelativeDir"
+fun Context.extensionArchivePath(): String = "${filesDir()}/$ExtensionArchiveName"
 fun Context.iconDir(): String = "${filesDir()}/$IconRelativeDir"
 fun Context.tmpDir(): String = "${filesDir()}/$TmpRelativeDir"
 fun Context.tmpApksDir(): String = "${filesDir()}/$TmpRelativeDir/$ApksRelativeDir"
+fun Context.tmpMountsDir(): String = "${filesDir()}/$TmpRelativeDir/$MountsRelativeDir"
 fun Context.localBackupSaveDir(): String = runBlocking { readBackupSavePath().first() }
 fun Context.localRestoreSaveDir(): String = runBlocking { readRestoreSavePath().first() }
 
@@ -75,4 +80,5 @@ class PathUtil @Inject constructor(
     fun getLocalRestoreArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localRestoreSaveDir())
 
     fun getTmpApkPath(packageName: String): String = "${context.tmpApksDir()}/$packageName"
+    fun getTmpMountPath(name: String): String = "${context.tmpMountsDir()}/$name"
 }

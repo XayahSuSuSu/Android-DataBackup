@@ -18,6 +18,7 @@ val KeyRestoreSaveParentPath = stringPreferencesKey("restore_save_parent_path")
 val KeyBackupSortType = stringPreferencesKey("backup_sort_type")
 val KeyRestoreSortType = stringPreferencesKey("restore_sort_type")
 val KeyAppVersionName = stringPreferencesKey("app_version_name")
+val KeyRcloneMainAccountName = stringPreferencesKey("rclone_main_account_name")
 
 
 // -----------------------------------------Read-----------------------------------------
@@ -27,6 +28,7 @@ fun Context.readCompressionType() = readStoreString(key = KeyCompressionType, de
 fun Context.readBackupSortType() = readStoreString(key = KeyBackupSortType, defValue = "").map { SortType.of(it) }
 fun Context.readRestoreSortType() = readStoreString(key = KeyRestoreSortType, defValue = "").map { SortType.of(it) }
 fun Context.readAppVersionName() = readStoreString(key = KeyAppVersionName, defValue = "")
+fun Context.readRcloneMainAccountName() = readStoreString(key = KeyRcloneMainAccountName, defValue = "")
 
 /**
  * The final path for saving the backup.
@@ -49,6 +51,7 @@ suspend fun Context.saveCompressionType(value: CompressionType) = saveStoreStrin
 suspend fun Context.saveBackupSortType(value: SortType) = saveStoreString(key = KeyBackupSortType, value = value.name.trim())
 suspend fun Context.saveRestoreSortType(value: SortType) = saveStoreString(key = KeyRestoreSortType, value = value.name.trim())
 suspend fun Context.saveAppVersionName() = saveStoreString(key = KeyAppVersionName, value = getCurrentAppVersionName())
+suspend fun Context.saveRcloneMainAccountName(value: String) = saveStoreString(key = KeyRcloneMainAccountName, value = value.trim())
 
 /**
  * @see [readBackupSavePath]

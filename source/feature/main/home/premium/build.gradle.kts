@@ -14,6 +14,9 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:datastore"))
     implementation(project(":core:data"))
+    implementation(project(":core:database"))
+    implementation(project(":core:util"))
+    implementation(project(":core:rootservice"))
 
     // Feature
     implementation(project(":feature:main:home:common"))
@@ -21,4 +24,10 @@ dependencies {
     // Compose Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Preferences DataStore
+    implementation(libs.androidx.datastore.preferences)
+
+    // PickYou
+    implementation(libs.pickyou)
 }

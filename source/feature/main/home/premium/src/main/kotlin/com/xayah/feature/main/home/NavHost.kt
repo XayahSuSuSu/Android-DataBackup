@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -23,10 +24,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.InnerTopSpacer
+import com.xayah.core.ui.component.SecondaryTopBar
+import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.currentRoute
+import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.value
 import com.xayah.feature.main.home.backup.PageBackup
-import com.xayah.feature.main.home.cloud.PageCloud
+import com.xayah.feature.main.home.cloud.page.account.PageCloudAccount
+import com.xayah.feature.main.home.cloud.page.list.PageCloudList
 import com.xayah.feature.main.home.common.BottomBar
 import com.xayah.feature.main.home.common.TopBar
 import com.xayah.feature.main.home.common.settings.PageSettings
@@ -42,7 +47,17 @@ private fun HomeScaffold(navController: NavHostController, snackbarHostState: Sn
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopBar(scrollBehavior = scrollBehavior, title = HomeRoutes.ofTitle(currentRoute).value)
+            if (currentRoute in HomeRoutes.RouteList.map { it.route }) {
+                TopBar(scrollBehavior = scrollBehavior, title = HomeRoutes.ofTitle(currentRoute).value)
+            } else {
+                SecondaryTopBar(
+                    scrollBehavior = scrollBehavior,
+                    title = StringResourceToken.fromString(HomeRoutes.ofTitle(currentRoute).value),
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
         },
         bottomBar = {
             BottomBar(currentRoute = currentRoute, navController = navController, routeList = HomeRoutes.RouteList)
@@ -59,6 +74,7 @@ private fun HomeScaffold(navController: NavHostController, snackbarHostState: Sn
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
@@ -81,7 +97,10 @@ fun HomeGraph() {
                 PageRestore()
             }
             composable(HomeRoutes.Cloud.route) {
-                PageCloud()
+                PageCloudList(navController = navController)
+            }
+            composable(HomeRoutes.CloudAccount.route) {
+                PageCloudAccount(navController = navController)
             }
             composable(HomeRoutes.Settings.route) {
                 PageSettings(snackbarHostState = snackbarHostState)

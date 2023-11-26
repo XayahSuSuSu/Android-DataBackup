@@ -174,4 +174,7 @@
     <string name="clear_all">Clear all</string>
     <string name="existing_files">Existing files</string>
     <string name="overall_config">Overall config</string>
+    <string name="remote_not_set">Remote not set</string>
+    <string name="test_connection">Test connection</string>
+    <string name="connection_established">The connection was successfully established</string>
 </resources>

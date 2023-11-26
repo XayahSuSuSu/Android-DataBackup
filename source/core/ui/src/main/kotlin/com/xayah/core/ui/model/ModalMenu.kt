@@ -15,6 +15,7 @@ data class ActionMenuItem(
     val backgroundColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnPrimary,
     val enabled: Boolean,
     val countdown: Int = 0,
+    val dismissOnClick: Boolean = false,
     val secondaryMenu: List<ActionMenuItem>,
     val onClick: (() -> Unit)?,
 )
