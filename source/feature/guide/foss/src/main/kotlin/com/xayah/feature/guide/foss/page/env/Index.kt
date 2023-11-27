@@ -58,7 +58,7 @@ fun PageEnv() {
                         } else {
                             viewModel.launchOnIO {
                                 if (uiState.rootItem.enabled)
-                                    viewModel.emitIntent(IndexUiIntent.ValidateRoot)
+                                    viewModel.emitIntent(IndexUiIntent.ValidateRoot(context = context))
                                 if (uiState.binItem.enabled)
                                     viewModel.emitIntent(IndexUiIntent.ValidateBin(context = context))
                                 if (uiState.abiItem.enabled)
@@ -82,7 +82,7 @@ fun PageEnv() {
                 state = uiState.rootItem.state,
                 enabled = uiState.rootItem.enabled,
                 onClick = {
-                    viewModel.emitIntent(IndexUiIntent.ValidateRoot)
+                    viewModel.emitIntent(IndexUiIntent.ValidateRoot(context = context))
                 }
             )
         }
