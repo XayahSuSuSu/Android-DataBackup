@@ -1,10 +1,16 @@
 package com.xayah.core.ui.component
 
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,6 +58,25 @@ fun TitleLargeText(
     enabled: Boolean = true,
 ) {
     Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.titleLarge,
+        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        textAlign = textAlign,
+        fontWeight = fontWeight,
+    )
+}
+
+@Composable
+fun AutoTitleLargeText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+    textAlign: TextAlign? = null,
+    fontWeight: FontWeight? = null,
+    enabled: Boolean = true,
+) {
+    AutoSizeText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.titleLarge,
@@ -174,5 +199,34 @@ fun BodyMediumText(
         color = if (enabled) color else color.copy(alpha = DisabledAlpha),
         textAlign = textAlign,
         fontWeight = fontWeight,
+    )
+}
+
+@Composable
+fun AutoSizeText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+    style: TextStyle = LocalTextStyle.current,
+    textAlign: TextAlign? = null,
+    fontWeight: FontWeight? = null,
+    enabled: Boolean = true,
+) {
+    var autoStyle by remember { mutableStateOf(style) }
+    Text(
+        modifier = modifier,
+        text = text,
+        style = autoStyle,
+        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        textAlign = textAlign,
+        fontWeight = fontWeight,
+        maxLines = 1,
+        softWrap = false,
+        onTextLayout = { textLayoutResult ->
+            val fraction = textLayoutResult.size.width / textLayoutResult.multiParagraph.width
+            if (textLayoutResult.didOverflowWidth) {
+                autoStyle = autoStyle.copy(fontSize = autoStyle.fontSize * fraction)
+            }
+        },
     )
 }

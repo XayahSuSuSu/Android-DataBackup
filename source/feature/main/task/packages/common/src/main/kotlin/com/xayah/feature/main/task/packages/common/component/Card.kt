@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -56,13 +57,13 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
 import com.xayah.core.ui.component.AnimatedMultiColorLinearProgressIndicator
 import com.xayah.core.ui.component.AssistChip
+import com.xayah.core.ui.component.AutoTitleLargeText
 import com.xayah.core.ui.component.Card
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LabelLargeText
 import com.xayah.core.ui.component.LabelSmallText
 import com.xayah.core.ui.component.ModalActionDropdownMenu
 import com.xayah.core.ui.component.RoundChip
-import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.component.TitleMediumText
 import com.xayah.core.ui.component.ignorePaddingHorizontal
 import com.xayah.core.ui.component.outlinedCardBorder
@@ -407,62 +408,94 @@ fun ProcessingInfoCard(
                     .fillMaxWidth()
                     .paddingTop(PaddingTokens.Level1)
                     .height(IntrinsicSize.Min),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
                     LabelSmallText(
                         text = StringResourceToken.fromStringId(R.string.remain).value,
                         color = ColorSchemeKeyTokens.Tertiary.toColor(),
                         textAlign = TextAlign.Center,
                     )
-                    TitleLargeText(
+                    AutoTitleLargeText(
+                        modifier = modifier.paddingHorizontal(PaddingTokens.Level1),
                         text = remainingCount.toString(),
                         color = ColorSchemeKeyTokens.Tertiary.toColor(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(modifier = Modifier.size(PaddingTokens.Level0))
                 }
                 VerticalDivider(modifier = Modifier.paddingVertical(4.dp))
-                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
                     LabelSmallText(
                         text = StringResourceToken.fromStringId(R.string.succeed).value,
                         color = ColorSchemeKeyTokens.Primary.toColor(),
                         textAlign = TextAlign.Center,
                     )
-                    TitleLargeText(
+                    AutoTitleLargeText(
+                        modifier = modifier.paddingHorizontal(PaddingTokens.Level1),
                         text = succeedCount.toString(),
                         color = ColorSchemeKeyTokens.Primary.toColor(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(modifier = Modifier.size(PaddingTokens.Level0))
                 }
                 VerticalDivider(modifier = Modifier.paddingVertical(4.dp))
-                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
                     LabelSmallText(
                         text = StringResourceToken.fromStringId(R.string.failed).value,
                         color = ColorSchemeKeyTokens.Error.toColor(),
                         textAlign = TextAlign.Center,
                     )
-                    TitleLargeText(
+                    AutoTitleLargeText(
+                        modifier = modifier.paddingHorizontal(PaddingTokens.Level1),
                         text = failedCount.toString(),
                         color = ColorSchemeKeyTokens.Error.toColor(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(modifier = Modifier.size(PaddingTokens.Level0))
                 }
                 VerticalDivider(modifier = Modifier.paddingVertical(4.dp))
-                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
                     LabelSmallText(
                         text = StringResourceToken.fromStringId(R.string.time).value,
                         color = ColorSchemeKeyTokens.Primary.toColor(),
                         textAlign = TextAlign.Center,
                     )
-                    TitleLargeText(
+                    AutoTitleLargeText(
+                        modifier = modifier.paddingHorizontal(PaddingTokens.Level1),
                         text = timer,
                         color = ColorSchemeKeyTokens.Primary.toColor(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(modifier = Modifier.size(PaddingTokens.Level0))
                 }
             }
         }
