@@ -69,8 +69,6 @@ fun PageEnv() {
                 )
             )
         )
-
-        viewModel.emitIntent(IndexUiIntent.Initialize(context = context))
     }
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)) {

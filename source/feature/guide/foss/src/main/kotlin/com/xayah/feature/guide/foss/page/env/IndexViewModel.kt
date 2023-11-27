@@ -75,6 +75,7 @@ class IndexViewModel @Inject constructor() : BaseViewModel<IndexUiState, IndexUi
                     runCatching {
                         BaseUtil.initializeEnvironment(context = intent.context)
                     }
+                    emitIntentSuspend(IndexUiIntent.Initialize(context = intent.context))
 
                     val rootItem = state.rootItem
                     emitStateSuspend(state = uiState.value.copy(rootItem = rootItem.copy(state = EnvState.Processing)))
