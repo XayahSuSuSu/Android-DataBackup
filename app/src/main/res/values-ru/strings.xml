@@ -21,7 +21,7 @@
     <string name="backup_user">Пользователь бекапа</string>
     <string name="compression_type_help">Выберите тип сжатия приложений и данных, который влияет как на резервное копирование, так и на восстановление. Если вы не знаете, для чего нужен этот параметр, не меняйте его.</string>
     <string name="restore_user">Восстановление пользователя</string>
-    <string name="failed">Сбой</string>
+    <string name="failed">Сбои</string>
     <string name="grant_root_access">Предоставление root</string>
     <string name="release_prebuilt_binaries">Использование предустановленных бинарников</string>
     <string name="finish">Готово</string>
