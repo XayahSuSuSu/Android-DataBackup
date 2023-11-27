@@ -123,7 +123,7 @@ internal class BackupServiceImpl : Service() {
                     mediaDao.upsertRestore(restoreEntire)
 
                     // Save config
-                    rootService.writeProtoBuf(data = restoreEntire, dst = dstDir)
+                    rootService.writeProtoBuf(data = restoreEntire, dst = PathUtil.getMediaRestoreConfigDst(dstDir = dstDir))
 
                     // Reset selected items if enabled.
                     if (context.readResetBackupList().first()) {

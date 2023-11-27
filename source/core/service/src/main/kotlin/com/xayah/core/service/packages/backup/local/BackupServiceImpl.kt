@@ -270,7 +270,7 @@ internal class BackupServiceImpl : Service() {
                     packageRestoreDao.upsert(restoreEntire)
 
                     // Save config
-                    rootService.writeProtoBuf(data = restoreEntire, dst = dstDir)
+                    rootService.writeProtoBuf(data = restoreEntire, dst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir))
 
                     // Reset selected items if enabled.
                     if (context.readResetBackupList().first()) {

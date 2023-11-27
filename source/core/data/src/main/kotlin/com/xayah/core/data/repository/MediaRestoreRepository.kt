@@ -54,10 +54,7 @@ class MediaRestoreRepository @Inject constructor(
             mediaRestoreList.addAll(storedList!!)
         }
 
-        rootService.writeProtoBuf(
-            data = onStoredList(mediaRestoreList),
-            dst = dst
-        )
+        rootService.writeProtoBuf(data = onStoredList(mediaRestoreList), dst = dst)
     }
 
     suspend fun deleteRestore(items: List<MediaRestoreEntity>) = withIOContext {
