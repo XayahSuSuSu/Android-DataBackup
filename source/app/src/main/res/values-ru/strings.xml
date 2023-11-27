@@ -126,7 +126,7 @@
     <string name="save_directory_structure">Сохранить структуру папки</string>
     <string name="app_and_data">Приложения и данные</string>
     <string name="compression_test">Тестирование сжатия</string>
-    <string name="failed">Сбой</string>
+    <string name="failed">Сбои</string>
     <string name="selected_both">Выбрано оба</string>
     <string name="restore_dir">Папка восстановления</string>
     <string name="set_remote">Облачная настройка</string>
@@ -170,4 +170,7 @@
     <string name="batching_select">Выбрать все</string>
     <string name="in_use">Используется</string>
     <string name="overall_config">Общая конфигурация</string>
+    <string name="connection_established">Связь успешно установлена</string>
+    <string name="remote_not_set">Облако не настроено</string>
+    <string name="test_connection">Проверка соединения</string>
 </resources>
