@@ -13,6 +13,7 @@ import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.database.model.CloudEntity
 import com.xayah.core.datastore.saveRcloneMainAccountName
+import com.xayah.core.datastore.saveRcloneMainAccountRemote
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.CloudTmpTestFileName
 import com.xayah.core.util.PathUtil
@@ -85,6 +86,7 @@ class IndexViewModel @Inject constructor(
                     emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.remote_not_set)))
                 } else {
                     intent.context.saveRcloneMainAccountName(entity.name)
+                    intent.context.saveRcloneMainAccountRemote(entity.mount.remote)
                 }
             }
 
