@@ -12,6 +12,7 @@ import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.database.model.CloudEntity
+import com.xayah.core.datastore.readRcloneMainAccountName
 import com.xayah.core.datastore.saveRcloneMainAccountName
 import com.xayah.core.datastore.saveRcloneMainAccountRemote
 import com.xayah.core.rootservice.service.RemoteRootService
@@ -25,6 +26,7 @@ import com.xayah.libpickyou.ui.activity.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 data class IndexUiState(
@@ -119,6 +121,9 @@ class IndexViewModel @Inject constructor(
                                     // Add "${name}:"
                                     val finalPath = "${entity.name}:${remote}"
                                     cloudRepository.upsertCloud(entity.copy(mount = entity.mount.copy(remote = finalPath)))
+                                    if (context.readRcloneMainAccountName().first() == entity.name) {
+                                        context.saveRcloneMainAccountRemote(finalPath)
+                                    }
                                 }
                                 launchOnIO {
                                     cloudRepository.unmountTmp(tmpMountPath)
