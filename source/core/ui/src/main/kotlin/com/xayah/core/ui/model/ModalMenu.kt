@@ -17,10 +17,10 @@ data class ActionMenuItem(
     val countdown: Int = 0,
     val dismissOnClick: Boolean = false,
     val secondaryMenu: List<ActionMenuItem>,
-    val onClick: (() -> Unit)?,
+    val onClick: (suspend () -> Unit)?,
 )
 
-fun getActionMenuReturnItem(onClick: (() -> Unit)? = null) = ActionMenuItem(
+fun getActionMenuReturnItem(onClick: (suspend () -> Unit)? = null) = ActionMenuItem(
     title = StringResourceToken.fromStringId(R.string.word_return),
     icon = ImageVectorToken.fromVector(Icons.Rounded.ArrowBack),
     enabled = true,
@@ -28,7 +28,7 @@ fun getActionMenuReturnItem(onClick: (() -> Unit)? = null) = ActionMenuItem(
     onClick = onClick
 )
 
-fun getActionMenuConfirmItem(onClick: () -> Unit) = ActionMenuItem(
+fun getActionMenuConfirmItem(onClick: suspend () -> Unit) = ActionMenuItem(
     title = StringResourceToken.fromStringId(R.string.confirm),
     icon = ImageVectorToken.fromVector(Icons.Rounded.Warning),
     color = ColorSchemeKeyTokens.Error,

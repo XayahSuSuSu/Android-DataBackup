@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
@@ -19,9 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -29,6 +32,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.R
+import com.xayah.core.ui.material3.CircularProgressIndicator
 import com.xayah.core.ui.material3.DropdownMenuContent
 import com.xayah.core.ui.material3.DropdownMenuPositionProvider
 import com.xayah.core.ui.material3.calculateTransformOrigin
@@ -42,12 +46,14 @@ import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
+import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 @Composable
 fun ModalActionDropdownMenu(
@@ -56,7 +62,10 @@ fun ModalActionDropdownMenu(
     maxDisplay: Int? = null,
     onDismissRequest: () -> Unit,
 ) {
-    ModalDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+    val scope = rememberCoroutineScope()
+    var processingIndex by remember { mutableIntStateOf(-1) }
+    val processing by remember(processingIndex) { mutableStateOf(processingIndex != -1) }
+    ModalDropdownMenu(expanded = expanded, onDismissRequest = { if (processing.not()) onDismissRequest.invoke() }) {
         var itemHeightPx by remember { mutableIntStateOf(0) }
         val scrollState = rememberScrollState()
         var targetList by remember { mutableStateOf(actionList) }
@@ -66,7 +75,7 @@ fun ModalActionDropdownMenu(
             label = AnimationTokens.AnimatedContentLabel
         ) { targetState ->
             Column {
-                targetState.forEach { item ->
+                targetState.forEachIndexed { index, item ->
                     val countdown by remember(item.countdown) {
                         flow {
                             var countdown = item.countdown
@@ -77,7 +86,7 @@ fun ModalActionDropdownMenu(
                             }
                         }
                     }.collectAsStateWithLifecycle(initialValue = item.countdown)
-                    val enabled = remember(item.enabled, countdown) { item.enabled && countdown == 0 }
+                    val enabled = remember(item.enabled, countdown, processing) { item.enabled && countdown == 0 && processing.not() }
 
                     DropdownMenuItem(
                         modifier = Modifier
@@ -92,13 +101,19 @@ fun ModalActionDropdownMenu(
                         },
                         enabled = enabled,
                         onClick = {
-                            if (item.secondaryMenu.isNotEmpty()) {
-                                targetList = item.secondaryMenu
-                            } else if (item.title == StringResourceToken.fromStringId(R.string.word_return) && item.onClick == null) {
-                                targetList = actionList
-                            } else if (item.onClick != null) {
-                                item.onClick.invoke()
-                                if (item.dismissOnClick) onDismissRequest.invoke()
+                            if (processing.not()) {
+                                if (item.secondaryMenu.isNotEmpty()) {
+                                    targetList = item.secondaryMenu
+                                } else if (item.title == StringResourceToken.fromStringId(R.string.word_return) && item.onClick == null) {
+                                    targetList = actionList
+                                } else if (item.onClick != null) {
+                                    scope.launch {
+                                        processingIndex = index
+                                        item.onClick.invoke()
+                                        processingIndex = -1
+                                        if (item.dismissOnClick) onDismissRequest.invoke()
+                                    }
+                                }
                             }
                         },
                         leadingIcon = {
@@ -119,6 +134,15 @@ fun ModalActionDropdownMenu(
                                 }
                             }
                         },
+                        trailingIcon = if (processingIndex != index) null else {
+                            {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(SizeTokens.Level3),
+                                    color = item.color.toColor(enabled = enabled),
+                                    strokeCap = StrokeCap.Round
+                                )
+                            }
+                        }
                     )
                 }
             }
