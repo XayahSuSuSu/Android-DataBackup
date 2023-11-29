@@ -181,6 +181,10 @@ class PackageRestoreRepository @Inject constructor(
     suspend fun loadLocalIcon() {
         val archivePath = "${configsDir.first()}/$IconRelativeDir.${CompressionType.TAR.suffix}"
         Tar.decompress(src = archivePath, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
+        SELinux.getContext(path = context.filesDir()).also { result ->
+            val pathContext = if (result.isSuccess) result.outString else ""
+            SELinux.chcon(context = pathContext, path = context.filesDir())
+        }
     }
 
     /**
