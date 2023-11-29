@@ -71,6 +71,26 @@ class IndexViewModel @Inject constructor(
         }
     }
 
+    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
+        when (intent) {
+            is IndexUiIntent.Delete -> {
+                runCatching {
+                    mediaRestoreRepository.deleteRestore(items = intent.items)
+                    val medium = intent.items.map { it.path }
+                    val batchSelection = state.batchSelection.toMutableList().apply {
+                        removeAll(medium)
+                    }
+                    emitState(state.copy(batchSelection = batchSelection))
+                    emitEffect(IndexUiEffect.ShowSnackbar(message = mediaRestoreRepository.getString(R.string.succeed)))
+                }.onFailure {
+                    emitEffect(IndexUiEffect.ShowSnackbar(message = "${mediaRestoreRepository.getString(R.string.failed)}: ${it.message}"))
+                }
+            }
+
+            else -> {}
+        }
+    }
+
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Initialize -> {
@@ -128,19 +148,7 @@ class IndexViewModel @Inject constructor(
                 emitIntentSuspend(IndexUiIntent.Update)
             }
 
-            is IndexUiIntent.Delete -> {
-                runCatching {
-                    mediaRestoreRepository.deleteRestore(items = intent.items)
-                    val medium = intent.items.map { it.path }
-                    val batchSelection = state.batchSelection.toMutableList().apply {
-                        removeAll(medium)
-                    }
-                    emitState(state.copy(batchSelection = batchSelection))
-                    emitEffect(IndexUiEffect.ShowSnackbar(message = mediaRestoreRepository.getString(R.string.succeed)))
-                }.onFailure {
-                    emitEffect(IndexUiEffect.ShowSnackbar(message = "${mediaRestoreRepository.getString(R.string.failed)}: ${it.message}"))
-                }
-            }
+            else -> {}
         }
     }
 

@@ -77,6 +77,26 @@ class IndexViewModel @Inject constructor(
         }
     }
 
+    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
+        when (intent) {
+            is IndexUiIntent.Delete -> {
+                runCatching {
+                    packageRestoreRepository.delete(items = intent.items)
+                    val packages = intent.items.map { it.packageName }
+                    val batchSelection = state.batchSelection.toMutableList().apply {
+                        removeAll(packages)
+                    }
+                    emitState(state.copy(batchSelection = batchSelection))
+                    emitEffect(IndexUiEffect.ShowSnackbar(message = packageRestoreRepository.getString(R.string.succeed)))
+                }.onFailure {
+                    emitEffect(IndexUiEffect.ShowSnackbar(message = "${packageRestoreRepository.getString(R.string.failed)}: ${it.message}"))
+                }
+            }
+
+            else -> {}
+        }
+    }
+
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Initialize -> {
@@ -158,19 +178,7 @@ class IndexViewModel @Inject constructor(
                 emitIntentSuspend(IndexUiIntent.Update)
             }
 
-            is IndexUiIntent.Delete -> {
-                runCatching {
-                    packageRestoreRepository.delete(items = intent.items)
-                    val packages = intent.items.map { it.packageName }
-                    val batchSelection = state.batchSelection.toMutableList().apply {
-                        removeAll(packages)
-                    }
-                    emitState(state.copy(batchSelection = batchSelection))
-                    emitEffect(IndexUiEffect.ShowSnackbar(message = packageRestoreRepository.getString(R.string.succeed)))
-                }.onFailure {
-                    emitEffect(IndexUiEffect.ShowSnackbar(message = "${packageRestoreRepository.getString(R.string.failed)}: ${it.message}"))
-                }
-            }
+            else -> {}
         }
     }
 

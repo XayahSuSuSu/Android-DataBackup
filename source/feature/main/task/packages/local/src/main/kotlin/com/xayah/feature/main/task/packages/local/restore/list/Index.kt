@@ -176,7 +176,7 @@ fun PageList(navController: NavHostController) {
                             expanded = false
                         },
                         getActionMenuConfirmItem {
-                            viewModel.emitIntent(IndexUiIntent.Delete(items = uiState.batchSelection.map { packageName ->
+                            viewModel.suspendEmitIntent(IndexUiIntent.Delete(items = uiState.batchSelection.map { packageName ->
                                 packagesState.first { it.packageName == packageName }
                             }))
                         }
@@ -239,7 +239,7 @@ fun PageList(navController: NavHostController) {
                         secondaryMenu = listOf(
                             getActionMenuReturnItem(),
                             getActionMenuConfirmItem {
-                                viewModel.emitIntent(IndexUiIntent.Delete(items = listOf(item)))
+                                viewModel.suspendEmitIntent(IndexUiIntent.Delete(items = listOf(item)))
                             }
                         ),
                         onClick = {}
