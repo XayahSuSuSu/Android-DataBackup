@@ -25,6 +25,7 @@ interface UiEffect
 interface IBaseViewModel<S : UiState, I : UiIntent, E : UiEffect> {
 
     suspend fun onEvent(state: S, intent: I)
+    suspend fun onSuspendEvent(state: S, intent: I)
     suspend fun onEffect(effect: E)
 }
 
@@ -35,6 +36,7 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(state: S) 
     private val _uiState = MutableStateFlow(state)
     val uiState: StateFlow<S> = _uiState.asStateFlow()
     override suspend fun onEffect(effect: E) {}
+    override suspend fun onSuspendEvent(state: S, intent: I) {}
 
     init {
         launchOnIO {
@@ -75,6 +77,10 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(state: S) 
 
     suspend fun emitEffectSuspend(effect: E) = withIOContext {
         effectChannel.send(effect)
+    }
+
+    suspend fun suspendEmitIntent(intent: I) = withIOContext {
+        onSuspendEvent(state = uiState.value, intent = intent)
     }
 
     suspend fun withIOContext(block: suspend CoroutineScope.() -> Unit) = withContext(Dispatchers.IO, block = block)
