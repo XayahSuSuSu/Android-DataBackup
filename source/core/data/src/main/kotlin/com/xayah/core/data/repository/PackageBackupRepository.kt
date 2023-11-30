@@ -76,7 +76,7 @@ class PackageBackupRepository @Inject constructor(
         packageBackupDao.update(activePackages)
     }
 
-    suspend fun update(topBarState: MutableStateFlow<TopBarState>) = run {
+    suspend fun update(topBarState: MutableStateFlow<TopBarState>, endTitle: StringResourceToken) = run {
         val pm = context.packageManager
         val userId = context.readBackupUserId().first()
         val userHandle = rootService.getUserHandle(userId)
@@ -134,7 +134,7 @@ class PackageBackupRepository @Inject constructor(
                 )
         }
         packageBackupDao.upsert(newPackages)
-        topBarState.emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.backup_list)))
+        topBarState.emit(TopBarState(progress = 1f, title = endTitle))
     }
 
     suspend fun updatePackage(entity: PackageBackupEntire) = packageBackupDao.update(entity)

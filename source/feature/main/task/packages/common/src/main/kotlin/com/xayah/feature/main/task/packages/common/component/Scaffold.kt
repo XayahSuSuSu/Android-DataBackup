@@ -276,6 +276,62 @@ private suspend fun onFinishProcessing(
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
+fun <P, O> CloudProcessingScaffold(
+    topBarTitle: StringResourceToken,
+    snackHostState: SnackbarHostState,
+    navController: NavHostController,
+    targetPath: String,
+    rawBytes: Double,
+    remainingCount: Int,
+    succeedCount: Int,
+    failedCount: Int,
+    timer: String,
+    processingState: ProcessingState,
+    packagesApkOnly: List<P>,
+    packagesDataOnly: List<P>,
+    packagesBoth: List<P>,
+    packageItemKey: ((item: P) -> Any)? = null,
+    operationsProcessing: List<O>,
+    operationsFailed: List<O>,
+    operationsSucceed: List<O>,
+    operationItemKey: ((item: O) -> Any)? = null,
+    onProcess: () -> Unit,
+    packageItem: @Composable (P) -> Unit,
+    operationItem: @Composable (O) -> Unit,
+) {
+    ProcessingScaffold(
+        topBarTitle = topBarTitle,
+        snackHostState = snackHostState,
+        navController = navController,
+        infoCard = {
+            CloudProcessingInfoCard(
+                modifier = Modifier.fillMaxWidth(),
+                targetPath = targetPath,
+                rawBytes = rawBytes,
+                remainingCount = remainingCount,
+                succeedCount = succeedCount,
+                failedCount = failedCount,
+                timer = timer
+            )
+        },
+        processingState = processingState,
+        packagesApkOnly = packagesApkOnly,
+        packagesDataOnly = packagesDataOnly,
+        packagesBoth = packagesBoth,
+        packageItemKey = packageItemKey,
+        operationsProcessing = operationsProcessing,
+        operationsFailed = operationsFailed,
+        operationsSucceed = operationsSucceed,
+        operationItemKey = operationItemKey,
+        onProcess = onProcess,
+        packageItem = packageItem,
+        operationItem = operationItem,
+    )
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
 fun <P, O> ProcessingScaffold(
     topBarTitle: StringResourceToken,
     snackHostState: SnackbarHostState,
@@ -288,6 +344,59 @@ fun <P, O> ProcessingScaffold(
     succeedCount: Int,
     failedCount: Int,
     timer: String,
+    processingState: ProcessingState,
+    packagesApkOnly: List<P>,
+    packagesDataOnly: List<P>,
+    packagesBoth: List<P>,
+    packageItemKey: ((item: P) -> Any)? = null,
+    operationsProcessing: List<O>,
+    operationsFailed: List<O>,
+    operationsSucceed: List<O>,
+    operationItemKey: ((item: O) -> Any)? = null,
+    onProcess: () -> Unit,
+    packageItem: @Composable (P) -> Unit,
+    operationItem: @Composable (O) -> Unit,
+) {
+    ProcessingScaffold(
+        topBarTitle = topBarTitle,
+        snackHostState = snackHostState,
+        navController = navController,
+        infoCard = {
+            ProcessingInfoCard(
+                modifier = Modifier.fillMaxWidth(),
+                targetPath = targetPath,
+                availableBytes = availableBytes,
+                rawBytes = rawBytes,
+                totalBytes = totalBytes,
+                remainingCount = remainingCount,
+                succeedCount = succeedCount,
+                failedCount = failedCount,
+                timer = timer
+            )
+        },
+        processingState = processingState,
+        packagesApkOnly = packagesApkOnly,
+        packagesDataOnly = packagesDataOnly,
+        packagesBoth = packagesBoth,
+        packageItemKey = packageItemKey,
+        operationsProcessing = operationsProcessing,
+        operationsFailed = operationsFailed,
+        operationsSucceed = operationsSucceed,
+        operationItemKey = operationItemKey,
+        onProcess = onProcess,
+        packageItem = packageItem,
+        operationItem = operationItem,
+    )
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun <P, O> ProcessingScaffold(
+    topBarTitle: StringResourceToken,
+    snackHostState: SnackbarHostState,
+    navController: NavHostController,
+    infoCard: @Composable () -> Unit,
     processingState: ProcessingState,
     packagesApkOnly: List<P>,
     packagesDataOnly: List<P>,
@@ -372,17 +481,7 @@ fun <P, O> ProcessingScaffold(
                     LazyColumn(modifier = Modifier.paddingHorizontal(PaddingTokens.Level3), verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)) {
                         item {
                             Spacer(modifier = Modifier.height(PaddingTokens.Level3))
-                            ProcessingInfoCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                targetPath = targetPath,
-                                availableBytes = availableBytes,
-                                rawBytes = rawBytes,
-                                totalBytes = totalBytes,
-                                remainingCount = remainingCount,
-                                succeedCount = succeedCount,
-                                failedCount = failedCount,
-                                timer = timer
-                            )
+                            infoCard()
                         }
 
                         if (targetProcessingState) {

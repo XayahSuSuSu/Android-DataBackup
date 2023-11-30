@@ -172,4 +172,6 @@
     <string name="remote_not_set">遠端目錄未設定</string>
     <string name="test_connection">測試連線</string>
     <string name="connection_established">成功建立連接</string>
+    <string name="main_account_not_set">主帳戶未設定</string>
+    <string name="local">本地</string>
 </resources>

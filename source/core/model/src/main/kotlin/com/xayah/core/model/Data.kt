@@ -17,3 +17,9 @@ data class ShellResult(
     val outString: String
         get() = out.toLineString()
 }
+
+data class RcloneSizeInfo(
+    val count: Int = 0,
+    val bytes: Long = 0,
+    val sizeless: Int = 0,
+)

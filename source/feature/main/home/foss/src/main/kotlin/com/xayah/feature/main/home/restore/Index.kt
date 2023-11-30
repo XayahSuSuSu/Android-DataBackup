@@ -37,10 +37,10 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
-import com.xayah.feature.main.home.common.ActivityCard
+import com.xayah.feature.main.home.common.FossActivityCard
 import com.xayah.feature.main.home.common.Module
 import com.xayah.feature.main.home.common.OverLookCard
-import com.xayah.feature.main.home.common.model.ActivityCardItem
+import com.xayah.feature.main.home.common.model.FossActivityCardItem
 import com.xayah.feature.main.home.common.model.MapItem
 import com.xayah.feature.main.home.common.model.UtilityChipItem
 import com.xayah.feature.main.home.foss.R
@@ -72,7 +72,7 @@ fun PageRestore() {
         item {
             Module(title = stringResource(R.string.activities)) {
                 val items = listOf(
-                    ActivityCardItem(
+                    FossActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.app_and_data),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_palette),
                         details = listOf(
@@ -83,7 +83,7 @@ fun PageRestore() {
                             navController.navigate(MainRoutes.TaskPackages.routeRestore)
                         }
                     ),
-                    ActivityCardItem(
+                    FossActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.media),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_image),
                         details = listOf(
@@ -94,7 +94,7 @@ fun PageRestore() {
                             navController.navigate(MainRoutes.TaskMedium.routeRestore)
                         }
                     ),
-                    ActivityCardItem(
+                    FossActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.telephony),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_call),
                         details = listOf(
@@ -112,7 +112,7 @@ fun PageRestore() {
                     horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3),
                     verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
                 ) { index ->
-                    ActivityCard(
+                    FossActivityCard(
                         modifier = Modifier.fillMaxWidth(),
                         label = items[index].label,
                         icon = items[index].icon,

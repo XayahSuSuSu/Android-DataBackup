@@ -36,7 +36,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.xayah.core.database.model.CloudEntity
 import com.xayah.core.ui.component.BodySmallText
 import com.xayah.core.ui.component.Card
@@ -56,6 +55,7 @@ import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.PaddingTokens
+import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
@@ -199,7 +199,7 @@ fun AccountCard(
                                 modifier = Modifier
                                     .fillMaxHeight()
                                     .paddingVertical(PaddingTokens.Level1)
-                                    .width(1.dp)
+                                    .width(SizeTokens.Level1)
                             )
                             Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
                                 IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.MoreVert), onClick = { expanded = true })

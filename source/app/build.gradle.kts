@@ -91,6 +91,7 @@ dependencies {
     implementation(project(":feature:main:tree"))
     implementation(project(":feature:main:reload"))
     implementation(project(":feature:main:task:packages:local"))
+    implementation(project(":feature:main:task:packages:cloud"))
     implementation(project(":feature:main:task:medium:local"))
 
     // Splash Screen

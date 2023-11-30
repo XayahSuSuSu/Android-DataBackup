@@ -14,6 +14,7 @@ import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.command.Pm
+import com.xayah.core.util.command.Rclone
 import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
@@ -42,6 +43,24 @@ class PackagesBackupUtil @Inject constructor(
     @Inject
     lateinit var rootService: RemoteRootService
 
+    suspend fun upload(src: String, dstDir: String): ShellResult = run {
+        log { "Uploading..." }
+
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+
+        Rclone.copy(src = src, dst = dstDir).also { result ->
+            isSuccess = result.isSuccess
+            out.addAll(result.out)
+        }
+        rootService.deleteRecursively(src).also { result ->
+            isSuccess = isSuccess and result
+            if (result.not()) out.add(log { "Failed to delete $src." })
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
     private suspend fun testArchive(src: String, compressionType: CompressionType = this.compressionType) = run {
         var code: Int
         var input: List<String>
@@ -62,7 +81,7 @@ class PackagesBackupUtil @Inject constructor(
         ShellResult(code = code, input = input, out = out)
     }
 
-    private fun getApkDst(dstDir: String) = "${dstDir}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
+    fun getApkDst(dstDir: String) = "${dstDir}/${DataType.PACKAGE_APK.type}.${compressionType.suffix}"
     suspend fun getApkCur(packageName: String) = rootService.getPackageSourceDir(packageName, userId).let { list ->
         if (list.isNotEmpty()) PathUtil.getParentPath(list[0]) else ""
     }
@@ -92,7 +111,7 @@ class PackagesBackupUtil @Inject constructor(
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
 
-    private fun getDataDst(dstDir: String, dataType: DataType) = "${dstDir}/${dataType.type}.${compressionType.suffix}"
+    fun getDataDst(dstDir: String, dataType: DataType) = "${dstDir}/${dataType.type}.${compressionType.suffix}"
     fun getDataSrcDir(dataType: DataType) = dataType.srcDir(userId)
     fun getDataSrc(srcDir: String, packageName: String) = "$srcDir/$packageName"
 
@@ -164,6 +183,7 @@ class PackagesBackupUtil @Inject constructor(
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
 
+    fun getItselfDst(dstDir: String) = "${dstDir}/DataBackup.apk"
     suspend fun backupItself(dstDir: String): ShellResult = run {
         log { "Backing up itself..." }
 
@@ -175,7 +195,7 @@ class PackagesBackupUtil @Inject constructor(
         if (sourceDirList.isNotEmpty()) {
             val apkPath = PathUtil.getParentPath(sourceDirList[0])
             val path = "${apkPath}/base.apk"
-            val targetPath = "${dstDir}/DataBackup.apk"
+            val targetPath = getItselfDst(dstDir = dstDir)
             isSuccess = rootService.copyTo(path = path, targetPath = targetPath, overwrite = true)
             if (isSuccess.not()) {
                 out.add(log { "Failed to copy $path to $targetPath." })
@@ -192,7 +212,7 @@ class PackagesBackupUtil @Inject constructor(
 
     private val tarCompressionType = CompressionType.TAR
 
-    private fun getIconsDst(dstDir: String) = "${dstDir}/${IconRelativeDir}.${tarCompressionType.suffix}"
+    fun getIconsDst(dstDir: String) = "${dstDir}/${IconRelativeDir}.${tarCompressionType.suffix}"
 
     suspend fun backupIcons(dstDir: String): ShellResult = run {
         log { "Backing up icons..." }
@@ -410,13 +430,18 @@ class PackagesRestoreUtil @Inject constructor(
                 out.add(log { "Failed to get uid of $packageName." })
             }
         } else {
-            out.add(log { "Not exist and skip: $src" })
-            return@run ShellResult(code = -2, input = listOf(), out = out)
+            if (dataType == DataType.PACKAGE_USER) {
+                isSuccess = false
+                out.add(log { "Not exist: $src" })
+                return@run ShellResult(code = -1, input = listOf(), out = out)
+            } else {
+                out.add(log { "Not exist and skip: $src" })
+                return@run ShellResult(code = -2, input = listOf(), out = out)
+            }
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
-
 }
 
 class MediumBackupUtil @Inject constructor(
@@ -543,9 +568,6 @@ class MediumRestoreUtil @Inject constructor(
 
     @Inject
     lateinit var rootService: RemoteRootService
-
-    @Inject
-    lateinit var pathUtil: PathUtil
 
     fun getDataSrc(srcDir: String) = "${srcDir}/${DataType.MEDIA_MEDIA.type}.${compressionType.suffix}"
 

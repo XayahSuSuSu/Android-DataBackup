@@ -146,7 +146,7 @@ class IndexViewModel @Inject constructor(
                             duration = SnackbarDuration.Indefinite
                         )
                     )
-                    Rclone.mkdir(dst = "${entity.name}:${entity.mount.remote}/$CloudTmpTestFileName", dryRun = true).also { result ->
+                    Rclone.mkdir(dst = "${entity.mount.remote}/$CloudTmpTestFileName", dryRun = true).also { result ->
                         emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                         if (result.isSuccess) {
                             emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.connection_established)))

@@ -172,4 +172,6 @@
     <string name="remote_not_set">远程目录未设置</string>
     <string name="test_connection">测试连接</string>
     <string name="connection_established">成功建立连接</string>
+    <string name="main_account_not_set">主账户未设置</string>
+    <string name="local">本地</string>
 </resources>

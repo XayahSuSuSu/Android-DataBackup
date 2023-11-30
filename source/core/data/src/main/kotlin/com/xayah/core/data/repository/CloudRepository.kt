@@ -13,6 +13,7 @@ import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.Rclone
+import com.xayah.core.util.model.ShellResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
@@ -24,7 +25,11 @@ class CloudRepository @Inject constructor(
     private val gsonUtil: GsonUtil,
     private val pathUtil: PathUtil,
 ) {
-    private fun log(msg: () -> String) = LogUtil.log { "CloudRepository" to msg() }
+    private fun log(msg: () -> String): String = run {
+        LogUtil.log { "CloudRepository" to msg() }
+        msg()
+    }
+
     fun getString(@StringRes resId: Int) = context.getString(resId)
     suspend fun upsertCloud(item: CloudEntity) = cloudDao.upsertCloud(item)
     suspend fun queryCloudByName(name: String) = cloudDao.queryCloudByName(name)
@@ -75,5 +80,47 @@ class CloudRepository @Inject constructor(
         BaseUtil.kill("rclone")
         BaseUtil.umount(tmpMountPath)
         rootService.deleteRecursively(tmpMountPath)
+    }
+
+    suspend fun upload(src: String, dstDir: String): ShellResult = run {
+        log { "Uploading..." }
+
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+
+        Rclone.copy(src = src, dst = dstDir).also { result ->
+            isSuccess = result.isSuccess
+            out.addAll(result.out)
+        }
+        rootService.deleteRecursively(src).also { result ->
+            isSuccess = isSuccess and result
+            if (result.not()) out.add(log { "Failed to delete $src." })
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    suspend fun download(src: String, dstDir: String, onDownloaded: suspend () -> Unit): ShellResult = run {
+        log { "Downloading..." }
+
+        var code: Int
+        val out = mutableListOf<String>()
+
+        Rclone.copy(src = src, dst = dstDir).also { result ->
+            code = if (result.isSuccess) 0 else -2
+            out.addAll(result.out)
+        }
+
+        if (code == 0) {
+            onDownloaded()
+        } else {
+            out.add(log { "Failed to download $src." })
+        }
+        rootService.deleteRecursively(dstDir).also { result ->
+            code = if (result) code else -1
+            if (result.not()) out.add(log { "Failed to delete $dstDir." })
+        }
+
+        ShellResult(code = code, input = listOf(), out = out)
     }
 }

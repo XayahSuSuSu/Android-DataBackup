@@ -129,7 +129,7 @@ internal class RestoreServiceImpl : Service() {
                         .also { result ->
                             packageRestoreOpDao.upsertUser(
                                 op = packageRestoreOperation,
-                                opState = if (result.code == -2) OperationState.SKIP else if (result.isSuccess) OperationState.DONE else OperationState.ERROR,
+                                opState = if (result.isSuccess) OperationState.DONE else OperationState.ERROR,
                                 opLog = result.outString
                             )
                         }

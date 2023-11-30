@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.DataUsage
 import androidx.compose.material.icons.rounded.Image
@@ -59,6 +60,7 @@ import com.xayah.core.ui.component.AnimatedMultiColorLinearProgressIndicator
 import com.xayah.core.ui.component.AssistChip
 import com.xayah.core.ui.component.AutoTitleLargeText
 import com.xayah.core.ui.component.Card
+import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LabelLargeText
 import com.xayah.core.ui.component.LabelSmallText
@@ -349,12 +351,73 @@ fun PackageCard(
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @Composable
+fun CloudProcessingInfoCard(
+    modifier: Modifier = Modifier,
+    targetPath: String,
+    rawBytes: Double,
+    remainingCount: Int,
+    succeedCount: Int,
+    failedCount: Int,
+    timer: String,
+) {
+    ProcessingInfoCard(
+        modifier = modifier,
+        icon = ImageVectorToken.fromVector(Icons.Outlined.CloudUpload),
+        title = targetPath,
+        subtitle = "+${formatSize(rawBytes)}",
+        multiColorProgress = listOf(),
+        remainingCount = remainingCount,
+        succeedCount = succeedCount,
+        failedCount = failedCount,
+        timer = timer
+    )
+}
+
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
+@Composable
 fun ProcessingInfoCard(
     modifier: Modifier = Modifier,
     targetPath: String,
     availableBytes: Double,
     rawBytes: Double,
     totalBytes: Double,
+    remainingCount: Int,
+    succeedCount: Int,
+    failedCount: Int,
+    timer: String,
+) {
+    ProcessingInfoCard(
+        modifier = modifier,
+        icon = ImageVectorToken.fromVector(Icons.Rounded.DataUsage),
+        title = targetPath,
+        subtitle = "${formatSize(totalBytes - availableBytes)} (+${formatSize(rawBytes)}) / ${formatSize(totalBytes)}",
+        multiColorProgress = listOf(
+            MultiColorProgress(
+                progress = ((totalBytes - availableBytes) / totalBytes).toFloat().takeIf { it.isNaN().not() } ?: 0f,
+                color = ColorSchemeKeyTokens.Primary.toColor()
+            ),
+            MultiColorProgress(
+                progress = (rawBytes / totalBytes).toFloat().takeIf { it.isNaN().not() } ?: 0f,
+                color = ColorSchemeKeyTokens.Error.toColor()
+            ),
+        ),
+        remainingCount = remainingCount,
+        succeedCount = succeedCount,
+        failedCount = failedCount,
+        timer = timer
+    )
+}
+
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
+@Composable
+fun ProcessingInfoCard(
+    modifier: Modifier = Modifier,
+    icon: ImageVectorToken,
+    title: String,
+    subtitle: String,
+    multiColorProgress: List<MultiColorProgress>,
     remainingCount: Int,
     succeedCount: Int,
     failedCount: Int,
@@ -369,44 +432,38 @@ fun ProcessingInfoCard(
             Row(horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level1), verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     modifier = Modifier.size(CardTokens.IconSize),
-                    imageVector = Icons.Rounded.DataUsage,
+                    imageVector = icon.value,
                     tint = ColorSchemeKeyTokens.Primary.toColor(),
                     contentDescription = null
                 )
                 Column {
                     LabelLargeText(
-                        text = targetPath,
+                        text = title,
                         color = ColorSchemeKeyTokens.Primary.toColor(),
                         fontWeight = FontWeight.Bold
                     )
                     LabelSmallText(
-                        text = "${formatSize(totalBytes - availableBytes)} (+${formatSize(rawBytes)}) / ${formatSize(totalBytes)}",
+                        text = subtitle,
                         color = ColorSchemeKeyTokens.Secondary.toColor(),
                     )
                 }
             }
 
-            AnimatedMultiColorLinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                multiColorProgress = listOf(
-                    MultiColorProgress(
-                        progress = ((totalBytes - availableBytes) / totalBytes).toFloat().takeIf { it.isNaN().not() } ?: 0f,
-                        color = ColorSchemeKeyTokens.Primary.toColor()
-                    ),
-                    MultiColorProgress(
-                        progress = (rawBytes / totalBytes).toFloat().takeIf { it.isNaN().not() } ?: 0f,
-                        color = ColorSchemeKeyTokens.Error.toColor()
-                    ),
-                ),
-                trackColor = ColorSchemeKeyTokens.InverseOnSurface.toColor(),
-                strokeCap = StrokeCap.Round,
-            )
+            if (multiColorProgress.isNotEmpty()) {
+                AnimatedMultiColorLinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    multiColorProgress = multiColorProgress,
+                    trackColor = ColorSchemeKeyTokens.InverseOnSurface.toColor(),
+                    strokeCap = StrokeCap.Round,
+                )
+            } else {
+                Divider(modifier = Modifier.fillMaxWidth())
+            }
 
             Row(
                 modifier = Modifier
                     .ignorePaddingHorizontal(PaddingTokens.Level3)
                     .fillMaxWidth()
-                    .paddingTop(PaddingTokens.Level1)
                     .height(IntrinsicSize.Min),
                 verticalAlignment = Alignment.CenterVertically,
             ) {

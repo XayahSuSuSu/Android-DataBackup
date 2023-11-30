@@ -32,4 +32,6 @@
     <item name="clean_restoring_desc" type="string"/>
     <item name="reset_restore_list" type="string"/>
     <item name="reset_restore_list_desc" type="string"/>
+    <item name="cloud" type="string"/>
+    <item name="local" type="string"/>
 </resources>

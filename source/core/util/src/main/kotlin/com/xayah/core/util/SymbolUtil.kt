@@ -5,4 +5,5 @@ object SymbolUtil {
     const val BACKSLASH = '\\'
     const val QUOTE = '"'
     const val LF = '\n'
+    const val DOT = '•'
 }

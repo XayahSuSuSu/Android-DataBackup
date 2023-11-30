@@ -9,8 +9,10 @@ import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.database.model.TaskEntity
 import com.xayah.core.datastore.readBackupSaveParentPath
 import com.xayah.core.datastore.readBackupSavePath
-import com.xayah.core.util.DateUtil
+import com.xayah.core.datastore.readRcloneMainAccountName
+import com.xayah.core.datastore.readRcloneMainAccountRemote
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.util.DateUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -29,6 +31,8 @@ class TaskRepository @Inject constructor(
 
     suspend fun getBackupTargetParentPath() = context.readBackupSaveParentPath().first()
     suspend fun getBackupTargetPath() = context.readBackupSavePath().first()
+    suspend fun getRcloneMainAccountName() = context.readRcloneMainAccountName().first()
+    suspend fun getRcloneMainAccountRemote() = context.readRcloneMainAccountRemote().first()
 
     suspend fun getPackagesBackupRawBytes(): Double = run {
         var total = 0.0

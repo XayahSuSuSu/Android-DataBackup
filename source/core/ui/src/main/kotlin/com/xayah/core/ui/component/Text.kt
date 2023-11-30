@@ -144,6 +144,25 @@ fun LabelLargeText(
 }
 
 @Composable
+fun AutoLabelMediumText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+    textAlign: TextAlign? = null,
+    fontWeight: FontWeight? = null,
+    enabled: Boolean = true,
+) {
+    AutoSizeText(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        textAlign = textAlign,
+        fontWeight = fontWeight,
+    )
+}
+
+@Composable
 fun LabelSmallText(
     modifier: Modifier = Modifier,
     text: String,

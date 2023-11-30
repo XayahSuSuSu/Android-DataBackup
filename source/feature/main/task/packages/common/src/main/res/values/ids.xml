@@ -40,4 +40,5 @@
     <item name="not_installed" type="string" />
     <item name="not_exist" type="string" />
     <item name="delete" type="string" />
+    <item name="cloud" type="string" />
 </resources>

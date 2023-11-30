@@ -24,6 +24,11 @@ sealed class MainRoutes(val route: String) {
         val routeRestore = "main_task_packages/${OpType.RESTORE.name}"
     }
 
+    object TaskPackagesCloud : MainRoutes(route = "main_task_packages_cloud/{$ArgOpType}") {
+        val routeBackup = "main_task_packages_cloud/${OpType.BACKUP.name}"
+        val routeRestore = "main_task_packages_cloud/${OpType.RESTORE.name}"
+    }
+
     object TaskMedium : MainRoutes(route = "main_task_medium/{$ArgOpType}") {
         val routeBackup = "main_task_medium/${OpType.BACKUP.name}"
         val routeRestore = "main_task_medium/${OpType.RESTORE.name}"

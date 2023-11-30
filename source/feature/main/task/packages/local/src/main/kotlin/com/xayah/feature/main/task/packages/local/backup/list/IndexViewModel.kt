@@ -76,7 +76,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.Update -> {
                 packageBackupRepository.activate()
                 emitState(uiState.value.copy(activating = false))
-                packageBackupRepository.update(topBarState = _topBarState)
+                packageBackupRepository.update(topBarState = _topBarState, endTitle = StringResourceToken.fromStringId(R.string.backup_list))
             }
 
             is IndexUiIntent.UpdatePackage -> {

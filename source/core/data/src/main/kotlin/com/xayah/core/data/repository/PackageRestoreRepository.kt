@@ -6,6 +6,7 @@ import com.xayah.core.data.R
 import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.PackageRestoreEntire
+import com.xayah.core.datastore.readRcloneMainAccountRemote
 import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.readRestoreInstallationTypeIndex
 import com.xayah.core.datastore.readRestoreSavePath
@@ -23,9 +24,12 @@ import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.util.CloudTmpAbsoluteDir
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.command.Rclone
+import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.localRestoreSaveDir
@@ -43,6 +47,7 @@ class PackageRestoreRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
     private val packageRestoreDao: PackageRestoreEntireDao,
+    private val cloudRepository: CloudRepository,
     private val pathUtil: PathUtil,
 ) {
     private fun log(msg: () -> String) = LogUtil.log { "PackageRestoreRepository" to msg() }
@@ -66,6 +71,8 @@ class PackageRestoreRepository @Inject constructor(
     val restoreSavePath = context.readRestoreSavePath().distinctUntilChanged()
     private val configsDir = restoreSavePath.map { pathUtil.getConfigsDir(it) }.distinctUntilChanged()
 
+    val remoteDir = context.readRcloneMainAccountRemote().distinctUntilChanged()
+
     suspend fun writePackagesProtoBuf(dst: String, onStoredList: suspend (MutableList<PackageRestoreEntire>) -> List<PackageRestoreEntire>) {
         val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
         runCatching {
@@ -77,6 +84,9 @@ class PackageRestoreRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun observeTimestamps() = restoreSavePath.flatMapLatest { packageRestoreDao.observeTimestamps(it).distinctUntilChanged() }.distinctUntilChanged()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun observeRemoteTimestamps() = remoteDir.flatMapLatest { packageRestoreDao.observeTimestamps(it).distinctUntilChanged() }.distinctUntilChanged()
 
     suspend fun saveRestoreSortType(value: SortType) = context.saveRestoreSortType(value = value)
     suspend fun saveRestoreSortTypeIndex(value: Int) = context.saveRestoreSortTypeIndex(value = value)
@@ -108,6 +118,44 @@ class PackageRestoreRepository @Inject constructor(
         }
 
         packageRestoreDao.delete(items)
+    }
+
+    suspend fun deleteRemote(items: List<PackageRestoreEntire>) = withIOContext {
+        val remoteDir = context.readRcloneMainAccountRemote().first()
+        val remotePackagesDir = pathUtil.getArchivesPackagesDir(parent = remoteDir)
+        items.forEach { item ->
+            val path = "${remotePackagesDir}/${item.packageName}/${item.timestamp}"
+            log { "Trying to delete: $path" }
+            Rclone.purge(src = path)
+            rootService.deleteRecursively(path = path)
+        }
+
+        Rclone.rmdirs(src = remoteDir)
+
+        val remoteConfigsDstDir = pathUtil.getConfigsDir(remoteDir)
+        val configsSrc = PathUtil.getPackageRestoreConfigDst(dstDir = remoteConfigsDstDir)
+        val tmpDstDir = CloudTmpAbsoluteDir
+        val tmpConfigsDstDir = pathUtil.getConfigsDir(tmpDstDir)
+        val configsDst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpConfigsDstDir)
+        runCatching {
+            cloudRepository.download(src = configsSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
+                writePackagesProtoBuf(configsDst) { storedList ->
+                    storedList.apply {
+                        items.forEach { item ->
+                            removeIf { it.packageName == item.packageName && it.timestamp == item.timestamp && it.savePath == item.savePath }
+                        }
+                    }.toList()
+                }
+
+                cloudRepository.upload(src = configsDst, dstDir = remoteConfigsDstDir).also { result ->
+                    if (result.isSuccess) {
+                        packageRestoreDao.delete(items)
+                    } else {
+                        log { "Failed to upload $configsDst to $remoteConfigsDstDir" }
+                    }
+                }
+            })
+        }
     }
 
     fun getFlagPredicate(index: Int): (PackageRestoreEntire) -> Boolean = { packageRestore ->
@@ -168,13 +216,39 @@ class PackageRestoreRepository @Inject constructor(
             val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = configPath)
             packageRestoreList.addAll(storedList!!)
         }
-        packageRestoreList.forEachIndexed { index, packageInfo ->
+        packageRestoreList.forEach { packageInfo ->
             val packageRestore =
                 packageRestoreDao.queryPackage(packageName = packageInfo.packageName, timestamp = packageInfo.timestamp, savePath = packageInfo.savePath)
             val id = packageRestore?.id ?: 0
             val active = packageRestore?.active ?: false
             val operationCode = packageRestore?.operationCode ?: OperationMask.None
-            packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode))
+            val savePath = context.localRestoreSaveDir()
+            packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode, savePath = savePath))
+        }
+    }
+
+    suspend fun loadRemoteConfig() {
+        val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
+        val remoteDir = context.readRcloneMainAccountRemote().first()
+        val remoteConfigsDstDir = pathUtil.getConfigsDir(remoteDir)
+        val configsSrc = PathUtil.getPackageRestoreConfigDst(dstDir = remoteConfigsDstDir)
+        val tmpDstDir = CloudTmpAbsoluteDir
+        val tmpConfigsDstDir = pathUtil.getConfigsDir(tmpDstDir)
+        val configsDst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpConfigsDstDir)
+        runCatching {
+            cloudRepository.download(src = configsSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
+                val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = configsDst)
+                packageRestoreList.addAll(storedList!!)
+            })
+        }
+        packageRestoreList.forEach { packageInfo ->
+            val packageRestore =
+                packageRestoreDao.queryPackage(packageName = packageInfo.packageName, timestamp = packageInfo.timestamp, savePath = packageInfo.savePath)
+            val id = packageRestore?.id ?: 0
+            val active = packageRestore?.active ?: false
+            val operationCode = packageRestore?.operationCode ?: OperationMask.None
+            val savePath = remoteDir
+            packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode, savePath = savePath))
         }
     }
 
@@ -185,6 +259,23 @@ class PackageRestoreRepository @Inject constructor(
             val pathContext = if (result.isSuccess) result.outString else ""
             SELinux.chcon(context = pathContext, path = context.filesDir())
         }
+    }
+
+    suspend fun loadRemoteIcon() {
+        val remoteDir = context.readRcloneMainAccountRemote().first()
+        val remoteConfigsDstDir = pathUtil.getConfigsDir(remoteDir)
+        val iconSrc = "${remoteConfigsDstDir}/$IconRelativeDir.${CompressionType.TAR.suffix}"
+        val tmpDstDir = CloudTmpAbsoluteDir
+        val tmpConfigsDstDir = pathUtil.getConfigsDir(tmpDstDir)
+        val iconDst = "${tmpConfigsDstDir}/$IconRelativeDir.${CompressionType.TAR.suffix}"
+
+        cloudRepository.download(src = iconSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
+            Tar.decompress(src = iconDst, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
+            SELinux.getContext(path = context.filesDir()).also { result ->
+                val pathContext = if (result.isSuccess) result.outString else ""
+                SELinux.chcon(context = pathContext, path = context.filesDir())
+            }
+        })
     }
 
     /**
@@ -217,5 +308,33 @@ class PackageRestoreRepository @Inject constructor(
         }
         packageRestoreDao.upsert(packages)
         topBarState.emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.restore_list)))
+    }
+
+    /**
+     * Update sizeBytes, installed state.
+     */
+    suspend fun updateRemote(topBarState: MutableStateFlow<TopBarState>, endTitle: StringResourceToken) {
+        val packages = packageRestoreDao.queryAll()
+        val packagesCount = (packages.size - 1).coerceAtLeast(1)
+        // Get 1/10 of total count.
+        val epoch: Int = ((packagesCount + 1) / 10).coerceAtLeast(1)
+        packages.forEachIndexed { index, entity ->
+            val installed = rootService.queryInstalled(entity.packageName, context.readRestoreUserId().first())
+            entity.installed = installed
+            if (entity.isExists.not()) {
+                entity.backupOpCode = OperationMask.None
+                entity.operationCode = OperationMask.None
+            }
+
+            if (index % epoch == 0)
+                topBarState.emit(
+                    TopBarState(
+                        progress = index.toFloat() / packagesCount,
+                        title = StringResourceToken.fromStringId(R.string.updating)
+                    )
+                )
+        }
+        packageRestoreDao.upsert(packages)
+        topBarState.emit(TopBarState(progress = 1f, title = endTitle))
     }
 }

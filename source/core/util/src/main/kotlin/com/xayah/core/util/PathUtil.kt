@@ -27,6 +27,7 @@ const val ConfigsMediaRestoreName = "media_restore_config.pb"
 const val BinArchiveName = "bin.zip"
 const val ExtensionArchiveName = "extension.zip"
 const val CloudTmpTestFileName = "DataBackupCloudTmpTest"
+const val CloudTmpAbsoluteDir = "/data/local/tmp/DataBackupTmpDir"
 
 fun Context.filesDir(): String = filesDir.path
 fun Context.logDir(): String = "${filesDir()}/$LogRelativeDir"
@@ -70,11 +71,13 @@ class PathUtil @Inject constructor(
     fun getConfigsDir(parent: String): String = "${parent}/${getConfigsRelativeDir()}"
     fun getLocalBackupConfigsDir(): String = getConfigsDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreConfigsDir(): String = getConfigsDir(parent = context.localRestoreSaveDir())
+    fun getTmpBackupConfigsDir(): String = getConfigsDir(parent = CloudTmpAbsoluteDir)
     fun getArchivesDir(parent: String): String = "${parent}/${getArchivesRelativeDir()}"
     fun getLocalBackupArchivesDir(): String = getArchivesDir(parent = context.localBackupSaveDir())
     fun getArchivesPackagesDir(parent: String): String = "${parent}/${getArchivesPackagesRelativeDir()}"
     fun getLocalBackupArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localRestoreSaveDir())
+    fun getTmpBackupArchivesPackagesDir(): String = getArchivesPackagesDir(parent = CloudTmpAbsoluteDir)
     fun getArchivesMediumDir(parent: String): String = "${parent}/${getArchivesMediumRelativeDir()}"
     fun getLocalBackupArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localRestoreSaveDir())

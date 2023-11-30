@@ -8,4 +8,5 @@
     <item name="backup_list" type="string"/>
     <item name="restore_list" type="string"/>
     <item name="select_target_directory" type="string"/>
+    <item name="cloud" type="string"/>
 </resources>

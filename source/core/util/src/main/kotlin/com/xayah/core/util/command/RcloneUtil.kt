@@ -55,4 +55,38 @@ object Rclone {
             if (dryRun) "--dry-run" else ""
         )
     }
+
+    suspend fun copy(src: String, dst: String): ShellResult = run {
+        // rclone copy $src $dst
+        execute(
+            "copy",
+            "$QUOTE$src$QUOTE",
+            "$QUOTE$dst$QUOTE",
+        )
+    }
+
+    suspend fun size(src: String): ShellResult = run {
+        // rclone size $src
+        execute(
+            "size",
+            "$QUOTE$src$QUOTE",
+            "--json"
+        )
+    }
+
+    suspend fun purge(src: String): ShellResult = run {
+        // rclone purge $src
+        execute(
+            "purge",
+            "$QUOTE$src$QUOTE",
+        )
+    }
+
+    suspend fun rmdirs(src: String): ShellResult = run {
+        // rclone rmdirs $src
+        execute(
+            "rmdirs",
+            "$QUOTE$src$QUOTE",
+        )
+    }
 }

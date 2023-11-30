@@ -10,11 +10,19 @@ data class MapItem(
     val value: Flow<String>,
 )
 
-data class ActivityCardItem(
+data class FossActivityCardItem(
     val label: StringResourceToken,
     val icon: ImageVectorToken,
     val details: List<MapItem>,
     val onClick: () -> Unit,
+)
+
+data class PremiumActivityCardItem(
+    val label: StringResourceToken,
+    val icon: ImageVectorToken,
+    val details: List<MapItem>,
+    val onClick: () -> Unit,
+    val onCloudBtnClick: () -> Unit,
 )
 
 data class UtilityChipItem(

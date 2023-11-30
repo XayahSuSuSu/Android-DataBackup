@@ -12,3 +12,11 @@ object PaddingTokens {
     val Level6 = 48.dp
     val Level7 = 56.dp
 }
+
+object SizeTokens {
+    val Level0 = 0.dp
+    val Level1 = 1.dp
+    val Level2 = 2.dp
+    val Level3 = 18.dp
+    val Level4 = 24.dp
+}

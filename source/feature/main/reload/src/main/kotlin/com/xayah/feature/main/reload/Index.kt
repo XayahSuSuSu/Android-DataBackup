@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.core.ui.component.ExtendedFab
 import com.xayah.core.ui.component.FilterChip
@@ -50,6 +49,7 @@ import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.PaddingTokens
+import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
@@ -151,7 +151,7 @@ fun PageReload() {
                             horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level1),
                         ) {
                             if (packagesState.isFinished.not())
-                                CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeCap = StrokeCap.Round)
+                                CircularProgressIndicator(modifier = Modifier.size(SizeTokens.Level4), strokeCap = StrokeCap.Round)
                             LabelLargeText(
                                 text = "${StringResourceToken.fromStringId(R.string.media).value} - ${mediumState.current}/${mediumState.total}",
                                 color = ColorSchemeKeyTokens.Primary.toColor(),
@@ -177,7 +177,7 @@ fun PageReload() {
                             horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level1),
                         ) {
                             if (packagesState.isFinished.not())
-                                CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeCap = StrokeCap.Round)
+                                CircularProgressIndicator(modifier = Modifier.size(SizeTokens.Level4), strokeCap = StrokeCap.Round)
                             LabelLargeText(
                                 text = "${StringResourceToken.fromStringId(R.string.app_and_data).value} - ${packagesState.current}/${packagesState.total}",
                                 color = ColorSchemeKeyTokens.Secondary.toColor(),

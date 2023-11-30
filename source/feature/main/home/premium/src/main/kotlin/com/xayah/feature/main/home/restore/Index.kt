@@ -37,11 +37,11 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
-import com.xayah.feature.main.home.common.ActivityCard
 import com.xayah.feature.main.home.common.Module
 import com.xayah.feature.main.home.common.OverLookCard
-import com.xayah.feature.main.home.common.model.ActivityCardItem
+import com.xayah.feature.main.home.common.PremiumActivityCard
 import com.xayah.feature.main.home.common.model.MapItem
+import com.xayah.feature.main.home.common.model.PremiumActivityCardItem
 import com.xayah.feature.main.home.common.model.UtilityChipItem
 import com.xayah.feature.main.home.premium.R
 import kotlinx.coroutines.flow.flow
@@ -72,7 +72,7 @@ fun PageRestore() {
         item {
             Module(title = stringResource(R.string.activities)) {
                 val items = listOf(
-                    ActivityCardItem(
+                    PremiumActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.app_and_data),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_palette),
                         details = listOf(
@@ -81,9 +81,12 @@ fun PageRestore() {
                         ),
                         onClick = {
                             navController.navigate(MainRoutes.TaskPackages.routeRestore)
-                        }
+                        },
+                        onCloudBtnClick = {
+                            navController.navigate(MainRoutes.TaskPackagesCloud.routeRestore)
+                        },
                     ),
-                    ActivityCardItem(
+                    PremiumActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.media),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_image),
                         details = listOf(
@@ -92,17 +95,18 @@ fun PageRestore() {
                         ),
                         onClick = {
                             navController.navigate(MainRoutes.TaskMedium.routeRestore)
-                        }
+                        },
+                        onCloudBtnClick = {},
                     ),
-                    ActivityCardItem(
+                    PremiumActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.telephony),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_call),
                         details = listOf(
                             MapItem(StringResourceToken.fromString(""), flow { }),
                             MapItem(StringResourceToken.fromString(""), flow { }),
                         ),
-                        onClick = {
-                        }
+                        onClick = {},
+                        onCloudBtnClick = {},
                     )
                 )
 
@@ -112,12 +116,13 @@ fun PageRestore() {
                     horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3),
                     verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
                 ) { index ->
-                    ActivityCard(
+                    PremiumActivityCard(
                         modifier = Modifier.fillMaxWidth(),
                         label = items[index].label,
                         icon = items[index].icon,
                         details = items[index].details,
                         onClick = items[index].onClick,
+                        onCloudBtnClick = items[index].onCloudBtnClick,
                     )
                 }
             }

@@ -24,6 +24,8 @@ import com.xayah.feature.main.log.LogGraph
 import com.xayah.feature.main.reload.PageReload
 import com.xayah.feature.main.task.medium.local.backup.TaskMediumBackupGraph
 import com.xayah.feature.main.task.medium.local.restore.TaskMediumRestoreGraph
+import com.xayah.feature.main.task.packages.cloud.backup.TaskPackagesCloudBackupGraph
+import com.xayah.feature.main.task.packages.cloud.restore.TaskPackagesCloudRestoreGraph
 import com.xayah.feature.main.task.packages.local.backup.TaskPackagesBackupGraph
 import com.xayah.feature.main.task.packages.local.restore.TaskPackagesRestoreGraph
 import com.xayah.feature.main.tree.PageTree
@@ -70,6 +72,12 @@ class MainActivity : ComponentActivity() {
                             when (OpType.of(backStackEntry.arguments?.getString(MainRoutes.ArgOpType))) {
                                 OpType.BACKUP -> TaskPackagesBackupGraph()
                                 OpType.RESTORE -> TaskPackagesRestoreGraph()
+                            }
+                        }
+                        composable(route = MainRoutes.TaskPackagesCloud.route) { backStackEntry ->
+                            when (OpType.of(backStackEntry.arguments?.getString(MainRoutes.ArgOpType))) {
+                                OpType.BACKUP -> TaskPackagesCloudBackupGraph()
+                                OpType.RESTORE -> TaskPackagesCloudRestoreGraph()
                             }
                         }
                         composable(route = MainRoutes.TaskMedium.route) { backStackEntry ->
