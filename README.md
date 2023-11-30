@@ -53,12 +53,13 @@ Thanks to all these wonderful people!
 [![Contributors](https://contrib.rocks/image?repo=XayahSuSuSu/Android-DataBackup)](https://github.com/XayahSuSuSu/Android-DataBackup/graphs/contributors)
 
 ## Support
-### • Patreon (Monthly)
-If you enjoy this app and want to help us become better, check out our **Patreon** :)
+If you enjoy this app and want to help it become better, feel free to sponsor me!
 
-<a href="https://patreon.com/DataBackup">
-     <img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160">
-</a>
+[<img src="./docs/static/img/bmc-button.svg"
+     alt="Buy Me a Coffee"
+     height="60">](https://www.buymeacoffee.com/XayahSuSuSu)[<img src="./docs/static/img/afdian.svg"
+     alt=爱发电
+     height="60">](https://afdian.net/a/XayahSuSuSu)
 
 ## LICENSE
 [GNU General Public License v3.0](./LICENSE)
