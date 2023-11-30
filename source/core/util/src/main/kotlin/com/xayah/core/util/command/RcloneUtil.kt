@@ -6,6 +6,7 @@ import com.xayah.core.util.model.ShellResult
 object Rclone {
     private val shell = BaseUtil.getNewShell()
     private suspend fun execute(vararg args: String): ShellResult = BaseUtil.execute("rclone", *args, shell = shell)
+    private const val argRetries = "--retries 1 --low-level-retries 3"
 
     object Config {
         suspend fun create(name: String, type: String, vararg args: String): ShellResult = run {
@@ -52,7 +53,8 @@ object Rclone {
         execute(
             "mkdir",
             "$QUOTE$dst$QUOTE",
-            if (dryRun) "--dry-run" else ""
+            if (dryRun) "--dry-run" else "",
+            argRetries,
         )
     }
 
@@ -62,6 +64,7 @@ object Rclone {
             "copy",
             "$QUOTE$src$QUOTE",
             "$QUOTE$dst$QUOTE",
+            argRetries,
         )
     }
 
@@ -70,7 +73,8 @@ object Rclone {
         execute(
             "size",
             "$QUOTE$src$QUOTE",
-            "--json"
+            "--json",
+            argRetries
         )
     }
 
@@ -79,6 +83,7 @@ object Rclone {
         execute(
             "purge",
             "$QUOTE$src$QUOTE",
+            argRetries,
         )
     }
 
@@ -87,6 +92,7 @@ object Rclone {
         execute(
             "rmdirs",
             "$QUOTE$src$QUOTE",
+            argRetries,
         )
     }
 }
