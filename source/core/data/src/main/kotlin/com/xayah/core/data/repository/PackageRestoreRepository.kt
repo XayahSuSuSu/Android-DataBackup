@@ -258,6 +258,7 @@ class PackageRestoreRepository @Inject constructor(
         SELinux.getContext(path = context.filesDir()).also { result ->
             val pathContext = if (result.isSuccess) result.outString else ""
             SELinux.chcon(context = pathContext, path = context.filesDir())
+            SELinux.chown(uid = context.applicationInfo.uid, path = context.filesDir())
         }
     }
 
@@ -274,6 +275,7 @@ class PackageRestoreRepository @Inject constructor(
             SELinux.getContext(path = context.filesDir()).also { result ->
                 val pathContext = if (result.isSuccess) result.outString else ""
                 SELinux.chcon(context = pathContext, path = context.filesDir())
+                SELinux.chown(uid = context.applicationInfo.uid, path = context.filesDir())
             }
         })
     }
