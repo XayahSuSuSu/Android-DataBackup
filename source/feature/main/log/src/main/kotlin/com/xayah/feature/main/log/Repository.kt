@@ -3,6 +3,7 @@ package com.xayah.feature.main.log
 import android.content.Context
 import com.xayah.core.common.util.trim
 import com.xayah.core.util.FileUtil
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.LogUtil.LOG_FILE_Prefix
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil
@@ -21,6 +22,10 @@ class LogListRepository @Inject constructor(@ApplicationContext private val cont
             items.add(LogCardItem(name = name, sizeBytes = sizeBytes.toDouble(), timestamp = timestamp.toLongOrNull() ?: 0, path = path))
         }
         items.sortedByDescending { it.timestamp }
+    }
+
+    fun shareLog(name: String) = run {
+        LogUtil.shareLog(context = context, name = name)
     }
 }
 

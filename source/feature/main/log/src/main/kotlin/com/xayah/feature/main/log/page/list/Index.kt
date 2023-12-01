@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
@@ -115,6 +116,15 @@ fun PageList(navController: NavHostController) {
                                                     }
                                                 ),
                                                 onClick = {}
+                                            ),
+                                            ActionMenuItem(
+                                                title = StringResourceToken.fromStringId(R.string.share),
+                                                icon = ImageVectorToken.fromVector(Icons.Rounded.Share),
+                                                enabled = true,
+                                                secondaryMenu = listOf(),
+                                                onClick = {
+                                                    viewModel.emitIntent(IndexUiIntent.ShareLog(name = item.name))
+                                                }
                                             )
                                         ),
                                         onCardClick = {

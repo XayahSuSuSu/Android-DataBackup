@@ -179,4 +179,5 @@
     <string name="connection_established">The connection was successfully established</string>
     <string name="main_account_not_set">Main account not set</string>
     <string name="local">Local</string>
+    <string name="share">Share</string>
 </resources>

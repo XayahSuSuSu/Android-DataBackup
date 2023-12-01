@@ -174,4 +174,5 @@
     <string name="connection_established">成功建立连接</string>
     <string name="main_account_not_set">主账户未设置</string>
     <string name="local">本地</string>
+    <string name="share">分享</string>
 </resources>

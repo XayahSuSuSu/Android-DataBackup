@@ -1,6 +1,9 @@
 package com.xayah.core.util
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
+import androidx.core.content.FileProvider.getUriForFile
 import com.xayah.core.util.SymbolUtil.LF
 import com.xayah.core.util.SymbolUtil.USD
 import com.xayah.core.util.command.BaseUtil
@@ -60,5 +63,17 @@ object LogUtil {
 
     fun log(msg: String) {
         appendWithTimestamp(tag = TAG_COMMON, msg = msg)
+    }
+
+    fun shareLog(context: Context, name: String) {
+        val sharingLog = File(cacheDir, name)
+        val sharingUri = getUriForFile(context, "com.xayah.core.util.provider.FileSharingProvider", sharingLog)
+        val sharingIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "*/*"
+            putExtra(Intent.EXTRA_STREAM, sharingUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(sharingIntent)
     }
 }

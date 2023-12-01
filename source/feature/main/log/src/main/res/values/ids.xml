@@ -3,4 +3,5 @@
     <item name="delete" type="string"/>
     <item name="in_use" type="string"/>
     <item name="clear_all" type="string"/>
+    <item name="share" type="string"/>
 </resources>
