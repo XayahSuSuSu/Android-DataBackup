@@ -87,8 +87,10 @@ class MediaRestoreRepository @Inject constructor(
         val mediaRestoreList: MutableList<MediaRestoreEntity> = mutableListOf()
         runCatching {
             val configPath = PathUtil.getMediaRestoreConfigDst(dstDir = configsDir.first())
-            val storedList = rootService.readProtoBuf<List<MediaRestoreEntity>>(src = configPath)
-            mediaRestoreList.addAll(storedList!!)
+            if (rootService.exists(configPath)) {
+                val storedList = rootService.readProtoBuf<List<MediaRestoreEntity>>(src = configPath)
+                mediaRestoreList.addAll(storedList!!)
+            }
         }
         mediaRestoreList.forEachIndexed { index, mediaInfo ->
             val mediaRestore = mediaDao.queryMedia(path = mediaInfo.path, timestamp = mediaInfo.timestamp, savePath = mediaInfo.savePath)

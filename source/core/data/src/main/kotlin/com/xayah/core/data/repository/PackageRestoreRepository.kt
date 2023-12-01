@@ -213,8 +213,10 @@ class PackageRestoreRepository @Inject constructor(
         val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
         runCatching {
             val configPath = PathUtil.getPackageRestoreConfigDst(dstDir = configsDir.first())
-            val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = configPath)
-            packageRestoreList.addAll(storedList!!)
+            if (rootService.exists(configPath)) {
+                val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = configPath)
+                packageRestoreList.addAll(storedList!!)
+            }
         }
         packageRestoreList.forEach { packageInfo ->
             val packageRestore =
