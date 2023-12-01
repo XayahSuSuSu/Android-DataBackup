@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.CloudCircle
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -106,7 +107,7 @@ fun AccountCardShimmer(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun AccountRow(shimmering: Boolean, icon: ImageVectorToken, text: StringResourceToken, color: Color = Color.Unspecified) {
+fun AccountRow(shimmering: Boolean, icon: ImageVectorToken, text: StringResourceToken, color: Color = LocalContentColor.current) {
     Row(horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level1), verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = icon.value,
@@ -170,7 +171,7 @@ fun AccountCard(
                     text = StringResourceToken.fromString(user)
                 )
 
-                val remoteRowColor = if (remote.isEmpty()) ColorSchemeKeyTokens.Error.toColor() else Color.Unspecified
+                val remoteRowColor = if (remote.isEmpty()) ColorSchemeKeyTokens.Error.toColor() else LocalContentColor.current
                 val remoteRowText = remote.ifEmpty { stringResource(id = R.string.remote_not_set) }
                 AccountRow(
                     shimmering = shimmering,
