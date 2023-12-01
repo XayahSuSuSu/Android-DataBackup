@@ -4,9 +4,9 @@ import android.content.Context
 import com.xayah.core.common.util.trim
 import com.xayah.core.util.FileUtil
 import com.xayah.core.util.LogUtil
-import com.xayah.core.util.LogUtil.LOG_FILE_Prefix
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.logDir
 import com.xayah.core.util.withIOContext
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,8 +18,8 @@ class LogListRepository @Inject constructor(@ApplicationContext private val cont
         FileUtil.listFilePaths(context.logDir()).forEach { path ->
             val name = PathUtil.getFileName(path)
             val sizeBytes = FileUtil.calculateSize(path)
-            val timestamp = name.replace(LOG_FILE_Prefix, "")
-            items.add(LogCardItem(name = name, sizeBytes = sizeBytes.toDouble(), timestamp = timestamp.toLongOrNull() ?: 0, path = path))
+            val timestamp: Long = runCatching { name.split("_")[1].toLong() }.getOrElse { 0L }
+            items.add(LogCardItem(name = name, sizeBytes = sizeBytes.toDouble(), timestamp = timestamp, path = path))
         }
         items.sortedByDescending { it.timestamp }
     }
@@ -31,6 +31,7 @@ class LogListRepository @Inject constructor(@ApplicationContext private val cont
 
 class LogDetailRepository @Inject constructor(@ApplicationContext private val context: Context) {
     suspend fun getFilePath(name: String): String = withIOContext {
+        SELinux.chown(uid = context.applicationInfo.uid, path = context.logDir())
         "${context.logDir()}/$name"
     }
 

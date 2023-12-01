@@ -66,6 +66,7 @@ object BaseUtil {
 
         // Set up LogUtil.
         LogUtil.initialize(context.logDir())
+        Rclone.initialize(context.logDir())
     }
 
     suspend fun execute(vararg args: String, shell: Shell? = null, log: Boolean = true): ShellResult = withIOContext {

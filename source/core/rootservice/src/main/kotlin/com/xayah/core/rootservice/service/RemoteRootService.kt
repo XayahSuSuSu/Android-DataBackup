@@ -22,6 +22,7 @@ import com.xayah.core.rootservice.util.withMainContext
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.model.ShellResult
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
@@ -35,7 +36,7 @@ import kotlin.coroutines.suspendCoroutine
 class RemoteRootService(private val context: Context) {
     private var mService: IRemoteRootService? = null
     private var mConnection: ServiceConnection? = null
-    private var isFirstConnection = true
+    private var retries = 0
     private val intent by lazy {
         Intent().apply {
             component = ComponentName(context.packageName, RemoteRootService::class.java.name)
@@ -52,41 +53,48 @@ class RemoteRootService(private val context: Context) {
         override fun onBind(intent: Intent): IBinder = RemoteRootServiceImpl()
     }
 
-    private suspend fun bindService(): IRemoteRootService = suspendCoroutine { continuation ->
-        if (mService == null) {
-            mConnection = object : ServiceConnection {
-                override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                    mService = IRemoteRootService.Stub.asInterface(service)
-                    if (continuation.context.isActive) continuation.resume(mService!!)
-                }
+    private suspend fun bindService(): IRemoteRootService = run {
+        delay(1000)
+        suspendCoroutine { continuation ->
+            if (mService == null) {
+                retries++
+                destroyService()
+                log { "Trying to bind the service..." }
+                mConnection = object : ServiceConnection {
+                    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                        mService = IRemoteRootService.Stub.asInterface(service)
+                        if (continuation.context.isActive) continuation.resume(mService!!)
+                    }
 
-                override fun onServiceDisconnected(name: ComponentName) {
-                    mService = null
-                    mConnection = null
-                    val msg = "Service disconnected."
-                    log { msg }
-                    if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
-                }
+                    override fun onServiceDisconnected(name: ComponentName) {
+                        mService = null
+                        mConnection = null
+                        val msg = "Service disconnected."
+                        log { msg }
+                        if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
+                    }
 
-                override fun onBindingDied(name: ComponentName) {
-                    mService = null
-                    mConnection = null
-                    val msg = "Binding died."
-                    log { msg }
-                    if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
-                }
+                    override fun onBindingDied(name: ComponentName) {
+                        mService = null
+                        mConnection = null
+                        val msg = "Binding died."
+                        log { msg }
+                        if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
+                    }
 
-                override fun onNullBinding(name: ComponentName) {
-                    mService = null
-                    mConnection = null
-                    val msg = "Null binding."
-                    log { msg }
-                    if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
+                    override fun onNullBinding(name: ComponentName) {
+                        mService = null
+                        mConnection = null
+                        val msg = "Null binding."
+                        log { msg }
+                        if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
+                    }
                 }
+                RootService.bind(intent, mConnection!!)
+            } else {
+                retries = 0
+                mService
             }
-            RootService.bind(intent, mConnection!!)
-        } else {
-            mService
         }
     }
 
@@ -94,6 +102,7 @@ class RemoteRootService(private val context: Context) {
      * Destroy the service.
      */
     fun destroyService(killDaemon: Boolean = false) {
+        log { "Trying to destroy the service..." }
         if (killDaemon) {
             if (mConnection != null) {
                 RootService.unbind(mConnection!!)
@@ -110,15 +119,12 @@ class RemoteRootService(private val context: Context) {
             block = {
                 withMainContext {
                     if (mService == null) {
-                        val msg = "Service is null."
-                        if (isFirstConnection)
-                            isFirstConnection = false
-                        else
-                            log { msg }
+                        val msg = "Service is null, trying to bind: $retries."
+                        log { msg }
                         bindService()
                     } else if (mService!!.asBinder().isBinderAlive.not()) {
                         mService = null
-                        val msg = "Service is dead."
+                        val msg = "Service is dead, trying to bind: $retries."
                         log { msg }
                         bindService()
                     } else {

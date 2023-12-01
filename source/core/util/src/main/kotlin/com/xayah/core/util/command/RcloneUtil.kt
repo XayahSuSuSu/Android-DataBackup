@@ -1,12 +1,22 @@
 package com.xayah.core.util.command
 
+import com.xayah.core.util.DateUtil
 import com.xayah.core.util.SymbolUtil.QUOTE
 import com.xayah.core.util.model.ShellResult
 
 object Rclone {
     private val shell = BaseUtil.getNewShell()
     private suspend fun execute(vararg args: String): ShellResult = BaseUtil.execute("rclone", *args, shell = shell)
+
+    private val timestamp: Long = DateUtil.getTimestamp()
+    private const val LOG_FILE_Prefix = "rclone_"
+
     private const val argRetries = "--retries 1 --low-level-retries 3"
+    private lateinit var argLogFile: String
+
+    fun initialize(logDir: String) = run {
+        this.argLogFile = "-vv --log-file $logDir/$LOG_FILE_Prefix$timestamp"
+    }
 
     object Config {
         suspend fun create(name: String, type: String, vararg args: String): ShellResult = run {
@@ -45,6 +55,7 @@ object Rclone {
             "${QUOTE}$src${QUOTE}",
             "${QUOTE}$dst${QUOTE}",
             *args,
+            argLogFile,
         )
     }
 
@@ -55,6 +66,7 @@ object Rclone {
             "$QUOTE$dst$QUOTE",
             if (dryRun) "--dry-run" else "",
             argRetries,
+            argLogFile,
         )
     }
 
@@ -65,6 +77,7 @@ object Rclone {
             "$QUOTE$src$QUOTE",
             "$QUOTE$dst$QUOTE",
             argRetries,
+            argLogFile,
         )
     }
 
@@ -74,7 +87,8 @@ object Rclone {
             "size",
             "$QUOTE$src$QUOTE",
             "--json",
-            argRetries
+            argRetries,
+            argLogFile,
         )
     }
 
@@ -84,6 +98,7 @@ object Rclone {
             "purge",
             "$QUOTE$src$QUOTE",
             argRetries,
+            argLogFile,
         )
     }
 
@@ -93,6 +108,7 @@ object Rclone {
             "rmdirs",
             "$QUOTE$src$QUOTE",
             argRetries,
+            argLogFile,
         )
     }
 }
