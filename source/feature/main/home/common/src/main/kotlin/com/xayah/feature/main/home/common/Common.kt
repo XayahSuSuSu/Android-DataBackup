@@ -1,29 +1,21 @@
 package com.xayah.feature.main.home.common
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -33,7 +25,6 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -49,12 +40,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.xayah.core.ui.component.AnimatedTextContainer
-import com.xayah.core.ui.component.AutoLabelMediumText
 import com.xayah.core.ui.component.BodySmallText
-import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.LabelLargeText
 import com.xayah.core.ui.component.LabelSmallText
 import com.xayah.core.ui.component.ModalStringListDropdownMenu
@@ -74,8 +62,6 @@ import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.ModalMenuTokens
 import com.xayah.core.ui.token.PaddingTokens
-import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.navigateAndPopBackStack
 import com.xayah.core.ui.util.value
 import com.xayah.feature.main.home.common.model.BottomBarItem
@@ -143,101 +129,6 @@ fun Module(title: String, content: @Composable () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level2)) {
         TitleMediumText(text = title, fontWeight = FontWeight.Bold)
         content()
-    }
-}
-
-@ExperimentalMaterial3Api
-@ExperimentalAnimationApi
-@Composable
-fun PremiumActivityCard(
-    modifier: Modifier = Modifier,
-    label: StringResourceToken,
-    icon: ImageVectorToken,
-    details: List<MapItem>,
-    onClick: () -> Unit,
-    onCloudBtnClick: () -> Unit,
-) {
-    ActivityCard(
-        modifier = modifier,
-        label = label,
-        icon = icon,
-        onClick = onClick,
-        details = details,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-                .background(ColorSchemeKeyTokens.Surface.toColor()),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Surface(
-                modifier = Modifier.weight(1f),
-                color = ColorSchemeKeyTokens.SecondaryContainer.toColor(),
-                onClick = onClick,
-                interactionSource = remember { MutableInteractionSource() },
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level1, Alignment.CenterHorizontally)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.PhoneAndroid,
-                        contentDescription = null,
-                        modifier = Modifier.size(SizeTokens.Level3),
-                        tint = ColorSchemeKeyTokens.Primary.toColor()
-                    )
-                    AutoLabelMediumText(
-                        modifier = Modifier
-                            .paddingVertical(PaddingTokens.Level1),
-                        color = ColorSchemeKeyTokens.Primary.toColor(),
-                        textAlign = TextAlign.Center,
-                        text = StringResourceToken.fromStringId(R.string.local).value
-                    )
-                }
-            }
-            Divider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(SizeTokens.Level1),
-                color = ColorSchemeKeyTokens.Primary.toColor()
-            )
-            Surface(
-                modifier = Modifier.weight(1f),
-                onClick = onCloudBtnClick,
-                color = ColorSchemeKeyTokens.Surface.toColor(),
-                interactionSource = remember { MutableInteractionSource() },
-            ) {
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .width(SizeTokens.Level1),
-                    color = ColorSchemeKeyTokens.Primary.toColor()
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level1, Alignment.CenterHorizontally)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Cloud,
-                        contentDescription = null,
-                        tint = ColorSchemeKeyTokens.InverseSurface.toColor(),
-                        modifier = Modifier.size(SizeTokens.Level3)
-                    )
-                    AutoLabelMediumText(
-                        modifier = Modifier
-                            .paddingVertical(PaddingTokens.Level1),
-                        textAlign = TextAlign.Center,
-                        color = ColorSchemeKeyTokens.InverseSurface.toColor(),
-                        text = StringResourceToken.fromStringId(R.string.cloud).value
-                    )
-                }
-            }
-        }
     }
 }
 

@@ -36,6 +36,11 @@
     <item name="ic_rounded_key" type="drawable" />
     <item name="ic_rounded_lan" type="drawable" />
     <item name="ic_rounded_badge" type="drawable" />
+    <item name="ic_rounded_acute" type="drawable" />
+    <item name="ic_rounded_history" type="drawable" />
+    <item name="ic_rounded_palette" type="drawable" />
+    <item name="ic_rounded_image" type="drawable" />
+    <item name="ic_rounded_call" type="drawable" />
     <item name="url" type="string" />
     <item name="username" type="string" />
     <item name="password" type="string" />

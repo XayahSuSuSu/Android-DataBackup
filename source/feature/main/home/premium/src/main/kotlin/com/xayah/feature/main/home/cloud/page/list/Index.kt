@@ -18,7 +18,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Sensors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -42,8 +41,11 @@ import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.getActionMenuConfirmItem
 import com.xayah.core.ui.model.getActionMenuReturnItem
+import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
+import com.xayah.core.ui.util.LocalNavController
+import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
@@ -51,6 +53,9 @@ import com.xayah.core.ui.util.value
 import com.xayah.feature.main.home.HomeRoutes
 import com.xayah.feature.main.home.cloud.AccountCard
 import com.xayah.feature.main.home.cloud.AccountCardShimmer
+import com.xayah.feature.main.home.cloud.getActionMenuMediumItem
+import com.xayah.feature.main.home.cloud.getActionMenuPackagesItem
+import com.xayah.feature.main.home.cloud.getActionMenuTelephonyItem
 import com.xayah.feature.main.home.premium.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -60,6 +65,7 @@ import com.xayah.feature.main.home.premium.R
 @Composable
 fun PageCloudList(navController: NavHostController) {
     val context = LocalContext.current
+    val globalNavController = LocalNavController.current!!
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val accounts by viewModel.accounts.collectAsState()
@@ -109,15 +115,51 @@ fun PageCloudList(navController: NavHostController) {
                                         selected = item.name == mainAccountName,
                                         actions = listOf(
                                             ActionMenuItem(
-                                                title = StringResourceToken.fromStringId(R.string.set_as_main_account),
-                                                icon = ImageVectorToken.fromVector(Icons.Rounded.Favorite),
-                                                enabled = mainAccountName != item.name,
-                                                secondaryMenu = listOf(),
+                                                title = StringResourceToken.fromStringId(R.string.backup),
+                                                icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
+                                                enabled = true,
+                                                secondaryMenu = listOf(
+                                                    getActionMenuReturnItem(),
+                                                    getActionMenuPackagesItem {
+                                                        viewModel.emitIntent(
+                                                            IndexUiIntent.Navigate(
+                                                                context = context,
+                                                                entity = item,
+                                                                navController = globalNavController,
+                                                                route = MainRoutes.TaskPackagesCloud.routeBackup
+                                                            )
+                                                        )
+                                                    },
+                                                    getActionMenuMediumItem {},
+                                                    getActionMenuTelephonyItem {},
+                                                ),
                                                 dismissOnClick = true,
-                                                onClick = {
-                                                    viewModel.emitIntent(IndexUiIntent.SetAsMainAccount(context = context, entity = item))
-                                                }
+                                                onClick = {}
                                             ),
+                                            ActionMenuItem(
+                                                title = StringResourceToken.fromStringId(R.string.restore),
+                                                icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
+                                                enabled = true,
+                                                secondaryMenu = listOf(
+                                                    getActionMenuReturnItem(),
+                                                    getActionMenuPackagesItem {
+                                                        viewModel.emitIntent(
+                                                            IndexUiIntent.Navigate(
+                                                                context = context,
+                                                                entity = item,
+                                                                navController = globalNavController,
+                                                                route = MainRoutes.TaskPackagesCloud.routeRestore
+                                                            )
+                                                        )
+                                                    },
+                                                    getActionMenuMediumItem {},
+                                                    getActionMenuTelephonyItem {},
+                                                ),
+                                                dismissOnClick = true,
+                                                onClick = {}
+                                            ),
+                                        ),
+                                        accountActions = listOf(
                                             ActionMenuItem(
                                                 title = StringResourceToken.fromStringId(R.string.test_connection),
                                                 icon = ImageVectorToken.fromVector(Icons.Rounded.Sensors),

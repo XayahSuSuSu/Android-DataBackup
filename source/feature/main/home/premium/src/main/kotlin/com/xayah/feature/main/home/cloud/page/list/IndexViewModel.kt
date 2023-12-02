@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.navigation.NavHostController
 import com.xayah.core.common.util.toPathString
 import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.UiEffect
@@ -36,9 +37,9 @@ data class IndexUiState(
 sealed class IndexUiIntent : UiIntent {
     object Update : IndexUiIntent()
     data class Delete(val entity: CloudEntity) : IndexUiIntent()
-    data class SetAsMainAccount(val context: Context, val entity: CloudEntity) : IndexUiIntent()
     data class SetRemote(val context: ComponentActivity, val entity: CloudEntity) : IndexUiIntent()
     data class TestConnection(val entity: CloudEntity) : IndexUiIntent()
+    data class Navigate(val context: Context, val entity: CloudEntity, val navController: NavHostController, val route: String) : IndexUiIntent()
 }
 
 sealed class IndexUiEffect : UiEffect {
@@ -79,16 +80,6 @@ class IndexViewModel @Inject constructor(
                     if (result.isSuccess.not()) {
                         emitEffect(IndexUiEffect.ShowSnackbar(message = result.outString))
                     }
-                }
-            }
-
-            is IndexUiIntent.SetAsMainAccount -> {
-                val entity = intent.entity
-                if (entity.mount.remote.isEmpty()) {
-                    emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.remote_not_set)))
-                } else {
-                    intent.context.saveRcloneMainAccountName(entity.name)
-                    intent.context.saveRcloneMainAccountRemote(entity.mount.remote)
                 }
             }
 
@@ -153,6 +144,22 @@ class IndexViewModel @Inject constructor(
                         } else {
                             emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = result.outString, duration = SnackbarDuration.Long))
                         }
+                    }
+                }
+            }
+
+            is IndexUiIntent.Navigate -> {
+                val entity = intent.entity
+                val context = intent.context
+                val navController = intent.navController
+                val route = intent.route
+                if (entity.mount.remote.isEmpty()) {
+                    emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.remote_not_set)))
+                } else {
+                    context.saveRcloneMainAccountName(entity.name)
+                    context.saveRcloneMainAccountRemote(entity.mount.remote)
+                    withMainContext {
+                        navController.navigate(route = route)
                     }
                 }
             }

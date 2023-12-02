@@ -20,8 +20,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.CloudCircle
-import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.ManageAccounts
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -73,6 +74,7 @@ fun AccountCard(
     item: CloudEntity,
     selected: Boolean,
     actions: List<ActionMenuItem>,
+    accountActions: List<ActionMenuItem>,
     onCardClick: () -> Unit,
     chipGroup: @Composable RowScope.() -> Unit,
 ) {
@@ -84,6 +86,7 @@ fun AccountCard(
         remote = item.mount.remote,
         selected = selected,
         actions = actions,
+        accountActions = accountActions,
         onCardClick = onCardClick,
         chipGroup = chipGroup,
     )
@@ -101,6 +104,7 @@ fun AccountCardShimmer(modifier: Modifier = Modifier) {
         remote = "ShimmerShimmerShimmer",
         selected = false,
         actions = listOf(),
+        accountActions = listOf(),
         onCardClick = {},
         chipGroup = {}
     )
@@ -129,11 +133,13 @@ fun AccountCard(
     remote: String,
     selected: Boolean,
     actions: List<ActionMenuItem>,
+    accountActions: List<ActionMenuItem>,
     onCardClick: () -> Unit,
     chipGroup: @Composable RowScope.() -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
-    var expanded by remember { mutableStateOf(false) }
+    var actionMenuExpanded by remember { mutableStateOf(false) }
+    var accountMenuExpanded by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
@@ -143,7 +149,7 @@ fun AccountCard(
         onClick = onCardClick,
         onLongClick = {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            expanded = true
+            accountMenuExpanded = true
         },
         border = if (selected) outlinedCardBorder(borderColor = ColorSchemeKeyTokens.Primary.toColor()) else null,
     ) {
@@ -203,9 +209,17 @@ fun AccountCard(
                                     .width(SizeTokens.Level1)
                             )
                             Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
-                                IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.MoreVert), onClick = { expanded = true })
+                                IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.Apps), onClick = { actionMenuExpanded = true })
 
-                                ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
+                                ModalActionDropdownMenu(expanded = actionMenuExpanded, actionList = actions, onDismissRequest = { actionMenuExpanded = false })
+                            }
+                            Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
+                                IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.ManageAccounts), onClick = { accountMenuExpanded = true })
+
+                                ModalActionDropdownMenu(
+                                    expanded = accountMenuExpanded,
+                                    actionList = accountActions,
+                                    onDismissRequest = { accountMenuExpanded = false })
                             }
                         } else {
                             Spacer(modifier = Modifier.height(PaddingTokens.Level6))

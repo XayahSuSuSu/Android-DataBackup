@@ -1,14 +1,19 @@
 package com.xayah.feature.main.home.cloud
 
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.KeyboardType
 import com.xayah.core.database.model.CloudEntity
+import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.home.premium.R
 
 internal data class TextFieldConfig(
@@ -106,3 +111,33 @@ internal object TypeConfigTokens {
         )
     )
 }
+
+internal fun getActionMenuPackagesItem(onClick: suspend () -> Unit) = ActionMenuItem(
+    title = StringResourceToken.fromStringId(R.string.app_and_data),
+    icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_palette),
+    color = ColorSchemeKeyTokens.Primary,
+    backgroundColor = ColorSchemeKeyTokens.PrimaryContainer,
+    enabled = true,
+    secondaryMenu = listOf(),
+    onClick = onClick
+)
+
+internal fun getActionMenuMediumItem(onClick: suspend () -> Unit) = ActionMenuItem(
+    title = StringResourceToken.fromStringId(R.string.media),
+    icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_image),
+    color = ColorSchemeKeyTokens.Primary,
+    backgroundColor = ColorSchemeKeyTokens.PrimaryContainer,
+    enabled = true,
+    secondaryMenu = listOf(),
+    onClick = onClick
+)
+
+internal fun getActionMenuTelephonyItem(onClick: suspend () -> Unit) = ActionMenuItem(
+    title = StringResourceToken.fromStringId(R.string.telephony),
+    icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_call),
+    color = ColorSchemeKeyTokens.Primary,
+    backgroundColor = ColorSchemeKeyTokens.PrimaryContainer,
+    enabled = true,
+    secondaryMenu = listOf(),
+    onClick = onClick
+)
