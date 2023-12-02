@@ -173,4 +173,7 @@
     <string name="connection_established">Связь успешно установлена</string>
     <string name="remote_not_set">Облако не настроено</string>
     <string name="test_connection">Проверка соединения</string>
+    <string name="main_account_not_set">Главный аккаунт не настроен</string>
+    <string name="local">Локально</string>
+    <string name="share">Поделиться</string>
 </resources>
