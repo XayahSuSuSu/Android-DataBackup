@@ -159,4 +159,19 @@
     <string name="follow_symlinks_desc">Архівувати файли, на які вони вказують</string>
     <string name="speed_mode">Швидкісний режим</string>
     <string name="recursive_mode">Рекурсивний режим</string>
+    <string name="connection_established">З\'єднання було успішно створено</string>
+    <string name="apk_only">Тільки АРК</string>
+    <string name="existing_files">Існуючі файли</string>
+    <string name="main_account_not_set">Основний обліковий запис не встановлено</string>
+    <string name="remote_not_set">Хмара не налаштована</string>
+    <string name="remain">Залишилось</string>
+    <string name="clear_all">Очистити все</string>
+    <string name="processing">Обробка</string>
+    <string name="data_only">Тільки дані</string>
+    <string name="batching_select">Пакетний вибір</string>
+    <string name="local">Локально</string>
+    <string name="in_use">Використовується</string>
+    <string name="overall_config">Загальні налаштування</string>
+    <string name="test_connection">Тестове підключення</string>
+    <string name="share">Поділитися</string>
 </resources>
