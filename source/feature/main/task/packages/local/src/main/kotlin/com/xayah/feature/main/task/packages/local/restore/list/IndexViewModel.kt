@@ -14,8 +14,11 @@ import com.xayah.core.model.SortType
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
+import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.util.DateUtil
+import com.xayah.core.util.SymbolUtil
 import com.xayah.feature.main.task.packages.common.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -233,7 +236,15 @@ class IndexViewModel @Inject constructor(
         packages.filter { it.operationCode == OperationMask.None }
     }.flowOnIO().stateInScope(listOf())
 
-    private val _topBarState: MutableStateFlow<TopBarState> = MutableStateFlow(TopBarState(title = StringResourceToken.fromStringId(R.string.restore_list)))
+    private val _topBarState: MutableStateFlow<TopBarState> = MutableStateFlow(
+        TopBarState(
+            title = StringResourceToken.fromStringArgs(
+                StringResourceToken.fromStringId(R.string.local),
+                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                StringResourceToken.fromStringId(R.string.restore_list),
+            )
+        )
+    )
     val topBarState: StateFlow<TopBarState> = _topBarState.asStateFlow()
     val shimmeringState: StateFlow<Boolean> = _topBarState.map { topBarState -> topBarState.progress != 1f }.flowOnIO().stateInScope(initialValue = true)
     val selectedAPKsCountState: StateFlow<Int> = packageRestoreRepository.selectedAPKsCount.flowOnIO().stateInScope(0)

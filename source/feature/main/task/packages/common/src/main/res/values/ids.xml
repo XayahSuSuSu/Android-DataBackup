@@ -41,4 +41,5 @@
     <item name="not_exist" type="string" />
     <item name="delete" type="string" />
     <item name="cloud" type="string" />
+    <item name="local" type="string" />
 </resources>

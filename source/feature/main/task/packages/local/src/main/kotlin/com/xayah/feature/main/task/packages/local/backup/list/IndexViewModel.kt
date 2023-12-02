@@ -14,7 +14,10 @@ import com.xayah.core.model.SortType
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
+import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.util.SymbolUtil
 import com.xayah.feature.main.task.packages.common.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -76,7 +79,13 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.Update -> {
                 packageBackupRepository.activate()
                 emitState(uiState.value.copy(activating = false))
-                packageBackupRepository.update(topBarState = _topBarState, endTitle = StringResourceToken.fromStringId(R.string.backup_list))
+                packageBackupRepository.update(
+                    topBarState = _topBarState, endTitle = StringResourceToken.fromStringArgs(
+                        StringResourceToken.fromStringId(R.string.local),
+                        StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                        StringResourceToken.fromStringId(R.string.backup_list),
+                    )
+                )
             }
 
             is IndexUiIntent.UpdatePackage -> {
@@ -161,7 +170,15 @@ class IndexViewModel @Inject constructor(
         packages.filter { it.operationCode == OperationMask.None }
     }.flowOnIO().stateInScope(listOf())
 
-    private val _topBarState: MutableStateFlow<TopBarState> = MutableStateFlow(TopBarState(title = StringResourceToken.fromStringId(R.string.backup_list)))
+    private val _topBarState: MutableStateFlow<TopBarState> = MutableStateFlow(
+        TopBarState(
+            title = StringResourceToken.fromStringArgs(
+                StringResourceToken.fromStringId(R.string.local),
+                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                StringResourceToken.fromStringId(R.string.backup_list),
+            )
+        )
+    )
     val topBarState: StateFlow<TopBarState> = _topBarState.asStateFlow()
     val shimmeringState: StateFlow<Boolean> = combine(_topBarState, _packages) { topBarState, packages ->
         topBarState.progress != 1f && packages.isEmpty()

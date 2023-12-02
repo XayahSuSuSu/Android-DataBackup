@@ -5,4 +5,5 @@
     <item name="restore" type="string" />
     <item name="internal_storage" type="string" />
     <item name="restore_completed" type="string" />
+    <item name="local" type="string" />
 </resources>

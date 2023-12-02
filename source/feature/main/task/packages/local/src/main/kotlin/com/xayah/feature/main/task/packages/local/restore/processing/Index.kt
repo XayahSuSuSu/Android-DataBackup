@@ -11,6 +11,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.task.packages.common.component.ProcessingCard
 import com.xayah.feature.main.task.packages.common.component.ProcessingScaffold
@@ -37,7 +39,11 @@ fun PageProcessing(navController: NavHostController) {
     }
 
     ProcessingScaffold(
-        topBarTitle = StringResourceToken.fromStringId(R.string.restore),
+        topBarTitle = StringResourceToken.fromStringArgs(
+            StringResourceToken.fromStringId(R.string.local),
+            StringResourceToken.fromString("•"),
+            StringResourceToken.fromStringId(R.string.restore),
+        ),
         snackHostState = viewModel.snackbarHostState,
         navController = navController,
         targetPath = taskState?.path ?: "",

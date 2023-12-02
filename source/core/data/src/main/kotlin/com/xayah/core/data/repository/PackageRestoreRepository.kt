@@ -23,11 +23,14 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
+import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.util.CloudTmpAbsoluteDir
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.SymbolUtil.DOT
 import com.xayah.core.util.command.Rclone
 import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
@@ -311,7 +314,15 @@ class PackageRestoreRepository @Inject constructor(
                 )
         }
         packageRestoreDao.upsert(packages)
-        topBarState.emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.restore_list)))
+        topBarState.emit(
+            TopBarState(
+                progress = 1f, title = StringResourceToken.fromStringArgs(
+                    StringResourceToken.fromStringId(R.string.local),
+                    StringResourceToken.fromString(DOT.toString()),
+                    StringResourceToken.fromStringId(R.string.restore_list),
+                )
+            )
+        )
     }
 
     /**

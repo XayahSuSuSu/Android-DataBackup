@@ -9,4 +9,5 @@
     <item name="restore_list" type="string"/>
     <item name="select_target_directory" type="string"/>
     <item name="cloud" type="string"/>
+    <item name="local" type="string"/>
 </resources>
