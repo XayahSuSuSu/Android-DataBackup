@@ -4,9 +4,26 @@ import com.xayah.core.util.DateUtil
 import com.xayah.core.util.SymbolUtil.QUOTE
 import com.xayah.core.util.model.ShellResult
 
+private fun List<String>.dropDebugMsg() = this.filter { (it.split(" ").getOrNull(2) ?: "") != "DEBUG" }
+
 object Rclone {
     private val shell = BaseUtil.getNewShell()
     private suspend fun execute(vararg args: String): ShellResult = BaseUtil.execute("rclone", *args, shell = shell)
+    private suspend fun executeWithExtension(vararg args: String, retries: Boolean = true, logToFile: Boolean = true): ShellResult = run {
+        val shellResult = ShellResult(code = -1, input = listOf(), out = listOf())
+
+        execute(
+            *args,
+            if (retries) argRetries else "",
+            if (logToFile) argLogFile else "",
+        ).also { result ->
+            shellResult.code = result.code
+            shellResult.input = result.input
+            shellResult.out = result.out.dropDebugMsg()
+        }
+
+        shellResult
+    }
 
     private val timestamp: Long = DateUtil.getTimestamp()
     private const val LOG_FILE_Prefix = "rclone_"
@@ -15,7 +32,7 @@ object Rclone {
     private lateinit var argLogFile: String
 
     fun initialize(logDir: String) = run {
-        this.argLogFile = "-vv --log-file $logDir/$LOG_FILE_Prefix$timestamp"
+        this.argLogFile = "-vv 2>&1 | tee $logDir/$LOG_FILE_Prefix$timestamp"
     }
 
     object Config {
@@ -50,65 +67,55 @@ object Rclone {
 
     suspend fun mount(src: String, dst: String, vararg args: String): ShellResult = run {
         // rclone mount "$src" "$dst" "$args"
-        execute(
+        executeWithExtension(
             "mount",
             "${QUOTE}$src${QUOTE}",
             "${QUOTE}$dst${QUOTE}",
             *args,
-            argLogFile,
+            retries = false,
         )
     }
 
     suspend fun mkdir(dst: String, dryRun: Boolean = false): ShellResult = run {
         // rclone mkdir "$dst" *args
-        execute(
+        executeWithExtension(
             "mkdir",
             "$QUOTE$dst$QUOTE",
             if (dryRun) "--dry-run" else "",
-            argRetries,
-            argLogFile,
         )
     }
 
     suspend fun copy(src: String, dst: String): ShellResult = run {
         // rclone copy $src $dst
-        execute(
+        executeWithExtension(
             "copy",
             "$QUOTE$src$QUOTE",
             "$QUOTE$dst$QUOTE",
-            argRetries,
-            argLogFile,
         )
     }
 
     suspend fun size(src: String): ShellResult = run {
         // rclone size $src
-        execute(
+        executeWithExtension(
             "size",
             "$QUOTE$src$QUOTE",
             "--json",
-            argRetries,
-            argLogFile,
         )
     }
 
     suspend fun purge(src: String): ShellResult = run {
         // rclone purge $src
-        execute(
+        executeWithExtension(
             "purge",
             "$QUOTE$src$QUOTE",
-            argRetries,
-            argLogFile,
         )
     }
 
     suspend fun rmdirs(src: String): ShellResult = run {
         // rclone rmdirs $src
-        execute(
+        executeWithExtension(
             "rmdirs",
             "$QUOTE$src$QUOTE",
-            argRetries,
-            argLogFile,
         )
     }
 }
