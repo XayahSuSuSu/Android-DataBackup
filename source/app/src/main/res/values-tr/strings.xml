@@ -81,7 +81,7 @@
     <string name="backing_up">Yedekleniyor…</string>
     <string name="backup_list">Yedekleme listesi</string>
     <string name="compression_type_desc">Hem yedeklemeyi hem de geri yüklemeyi etkiler. Yalnızca ileri düzey kullanıcılar tarafından değiştirilmelidir.</string>
-    <string name="remote_service_err_info">Lütfen cihazı yeniden başlatmayı veya Magisk\'i yeniden yüklemeyi deneyin</string>
+    <string name="remote_service_err_info">Lütfen cihazı yeniden başlatmayı veya Magisk\'i yeniden yüklemeyi deneyin.</string>
     <string name="fetch_failed">Aktarma başarısız</string>
     <string name="directory_structure">Rehber yapısı</string>
     <string name="loading">Yükleniyor</string>
@@ -118,7 +118,7 @@
     <string name="add">Ekle</string>
     <string name="abi_validation">ABI\'yi doğrulayın</string>
     <string name="not_installed">Yüklü değil</string>
-    <string name="this_version_only_supports_but_your_device_is_please_install_version">Bu sürüm yalnızca destekler: 1$s, ancak cihazınız %2$s. Lütfen %3$s sürümünü yükleyin.</string>
+    <string name="this_version_only_supports_but_your_device_is_please_install_version">Bu sürüm yalnızca destekler: %1$s, ancak cihazınız %2$s. Lütfen %3$s sürümünü yükleyin.</string>
     <string name="media_target_path_missing">Hedef klasör eksik. Lütfen manuel olarak ayarlayın.</string>
     <string name="update_available">Güncelleme mevcut</string>
     <string name="media_set_path">Yolu ayarlayın</string>
@@ -173,4 +173,7 @@
     <string name="unmount_all">Hepsini çıkar</string>
     <string name="speed_mode">Hız modu</string>
     <string name="recursive_mode">Yinelemeli mod</string>
+    <string name="main_account_not_set">Ana hesap ayarlanmamış</string>
+    <string name="local">Yerel</string>
+    <string name="share">Paylaş</string>
 </resources>
