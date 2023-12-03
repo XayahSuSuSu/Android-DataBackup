@@ -1,5 +1,6 @@
 package com.xayah.core.util.command
 
+import com.xayah.core.util.CloudTmpTestFileName
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.SymbolUtil.QUOTE
 import com.xayah.core.util.model.ShellResult
@@ -76,13 +77,23 @@ object Rclone {
         )
     }
 
-    suspend fun mkdir(dst: String, dryRun: Boolean = false): ShellResult = run {
+    suspend fun mkdir(dst: String): ShellResult = run {
         // rclone mkdir "$dst" *args
         executeWithExtension(
             "mkdir",
             "$QUOTE$dst$QUOTE",
-            if (dryRun) "--dry-run" else "",
         )
+    }
+
+    /**
+     * Try creating a tmp dir to test remote IO.
+     */
+    suspend fun testIO(remote: String): ShellResult = run {
+        mkdir(dst = "$remote/$CloudTmpTestFileName").also { result ->
+            if (result.isSuccess) {
+                rmdirs(src = remote)
+            }
+        }
     }
 
     suspend fun copy(src: String, dst: String): ShellResult = run {

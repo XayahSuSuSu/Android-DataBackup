@@ -18,7 +18,6 @@ import com.xayah.core.model.OpType
 import com.xayah.core.model.ProcessingState
 import com.xayah.core.model.TaskType
 import com.xayah.core.service.packages.restore.cloud.RestoreService
-import com.xayah.core.util.CloudTmpTestFileName
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.command.Rclone
 import com.xayah.feature.main.task.packages.cloud.R
@@ -84,7 +83,7 @@ class IndexViewModel @Inject constructor(
                         emitStateSuspend(uiState.value.copy(processingState = ProcessingState.Idle))
                         return
                     } else {
-                        Rclone.mkdir(dst = "$remote/$CloudTmpTestFileName", dryRun = true).also { result ->
+                        Rclone.testIO(remote = remote).also { result ->
                             if (result.isSuccess.not()) {
                                 emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                                 emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = result.outString, duration = SnackbarDuration.Long))

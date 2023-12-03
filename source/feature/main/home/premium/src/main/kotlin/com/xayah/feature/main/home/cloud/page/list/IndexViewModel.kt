@@ -16,7 +16,6 @@ import com.xayah.core.datastore.readRcloneMainAccountName
 import com.xayah.core.datastore.saveRcloneMainAccountName
 import com.xayah.core.datastore.saveRcloneMainAccountRemote
 import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.util.CloudTmpTestFileName
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.Rclone
 import com.xayah.core.util.toPathList
@@ -125,7 +124,7 @@ class IndexViewModel @Inject constructor(
                             duration = SnackbarDuration.Indefinite
                         )
                     )
-                    Rclone.mkdir(dst = "${entity.mount.remote}/$CloudTmpTestFileName", dryRun = true).also { result ->
+                    Rclone.testIO(remote = entity.mount.remote).also { result ->
                         emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                         if (result.isSuccess) {
                             emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.connection_established)))
