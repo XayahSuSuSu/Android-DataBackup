@@ -4,6 +4,7 @@ import android.content.Context
 import com.xayah.core.datastore.readBackupUserId
 import com.xayah.core.datastore.readCleanRestoring
 import com.xayah.core.datastore.readCompatibleMode
+import com.xayah.core.datastore.readCompressionTest
 import com.xayah.core.datastore.readCompressionType
 import com.xayah.core.datastore.readFollowSymlinks
 import com.xayah.core.datastore.readRestoreUserId
@@ -66,17 +67,23 @@ class PackagesBackupUtil @Inject constructor(
         var input: List<String>
         val out = mutableListOf<String>()
 
-        Tar.test(src = src, extra = compressionType.decompressPara)
-            .also { result ->
-                code = result.code
-                input = result.input
-                if (result.isSuccess.not()) {
-                    out.add(log { "$src is broken, trying to delete it." })
-                    rootService.deleteRecursively(src)
-                } else {
-                    out.add(log { "$src is tested well." })
+        if (context.readCompressionTest().first()) {
+            Tar.test(src = src, extra = compressionType.decompressPara)
+                .also { result ->
+                    code = result.code
+                    input = result.input
+                    if (result.isSuccess.not()) {
+                        out.add(log { "$src is broken, trying to delete it." })
+                        rootService.deleteRecursively(src)
+                    } else {
+                        out.add(log { "Everything seems fine." })
+                    }
                 }
-            }
+        } else {
+            code = 0
+            input = listOf()
+            out.add(log { "Skip testing." })
+        }
 
         ShellResult(code = code, input = input, out = out)
     }
@@ -467,17 +474,23 @@ class MediumBackupUtil @Inject constructor(
         var input: List<String>
         val out = mutableListOf<String>()
 
-        Tar.test(src = src, extra = compressionType.decompressPara)
-            .also { result ->
-                code = result.code
-                input = result.input
-                if (result.isSuccess.not()) {
-                    out.add(log { "$src is broken, trying to delete it." })
-                    rootService.deleteRecursively(src)
-                } else {
-                    out.add(log { "$src is tested well." })
+        if (context.readCompressionTest().first()) {
+            Tar.test(src = src, extra = compressionType.decompressPara)
+                .also { result ->
+                    code = result.code
+                    input = result.input
+                    if (result.isSuccess.not()) {
+                        out.add(log { "$src is broken, trying to delete it." })
+                        rootService.deleteRecursively(src)
+                    } else {
+                        out.add(log { "Everything seems fine." })
+                    }
                 }
-            }
+        } else {
+            code = 0
+            input = listOf()
+            out.add(log { "Skip testing." })
+        }
 
         ShellResult(code = code, input = input, out = out)
     }
