@@ -4,12 +4,16 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.xayah.core.datastore.readKeepScreenOn
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
@@ -17,11 +21,14 @@ import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.task.packages.common.component.ProcessingCard
 import com.xayah.feature.main.task.packages.common.component.ProcessingScaffold
 import com.xayah.feature.main.task.packages.local.R
+import kotlinx.coroutines.flow.first
 
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
 fun PageProcessing(navController: NavHostController) {
+    val context = LocalContext.current
+    val view = LocalView.current
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val taskState by viewModel.taskState.collectAsStateWithLifecycle()
@@ -36,6 +43,15 @@ fun PageProcessing(navController: NavHostController) {
 
     LaunchedEffect(null) {
         viewModel.emitIntent(IndexUiIntent.Initialize)
+    }
+
+    DisposableEffect(null) {
+        viewModel.launchOnMain {
+            view.keepScreenOn = context.readKeepScreenOn().first()
+        }
+        onDispose {
+            view.keepScreenOn = false
+        }
     }
 
     ProcessingScaffold(
