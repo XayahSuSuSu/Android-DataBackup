@@ -4,11 +4,10 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavHostController
 import com.xayah.core.common.util.toPathString
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
@@ -40,17 +39,6 @@ sealed class IndexUiIntent : UiIntent {
     data class SetRemote(val context: ComponentActivity, val entity: CloudEntity) : IndexUiIntent()
     data class TestConnection(val entity: CloudEntity) : IndexUiIntent()
     data class Navigate(val context: Context, val entity: CloudEntity, val navController: NavHostController, val route: String) : IndexUiIntent()
-}
-
-sealed class IndexUiEffect : UiEffect {
-    data class ShowSnackbar(
-        val message: String,
-        val actionLabel: String? = null,
-        val withDismissAction: Boolean = false,
-        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
-    ) : IndexUiEffect()
-
-    object DismissSnackbar : IndexUiEffect()
 }
 
 @ExperimentalMaterial3Api
@@ -162,19 +150,6 @@ class IndexViewModel @Inject constructor(
                         navController.navigate(route = route)
                     }
                 }
-            }
-        }
-    }
-
-    var snackbarHostState: SnackbarHostState = SnackbarHostState()
-    override suspend fun onEffect(effect: IndexUiEffect) {
-        when (effect) {
-            is IndexUiEffect.ShowSnackbar -> {
-                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
-            }
-
-            is IndexUiEffect.DismissSnackbar -> {
-                snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
     }

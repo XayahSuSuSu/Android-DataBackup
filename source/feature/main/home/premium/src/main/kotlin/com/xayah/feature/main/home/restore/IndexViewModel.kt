@@ -3,7 +3,7 @@ package com.xayah.feature.main.home.restore
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.datastore.readLastRestoreTime
@@ -25,7 +25,7 @@ sealed class IndexUiIntent : UiIntent {
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     @ApplicationContext context: Context,
-) : BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
         lastRestoreTime = context.readLastRestoreTime().distinctUntilChanged(),
     )

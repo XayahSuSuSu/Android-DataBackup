@@ -3,10 +3,8 @@ package com.xayah.feature.main.home.common.settings
 import android.content.pm.UserInfo
 import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.UserRepository
@@ -32,15 +30,6 @@ sealed class IndexUiIntent : UiIntent {
     object UpdateUserList : IndexUiIntent()
 }
 
-sealed class IndexUiEffect : UiEffect {
-    data class ShowSnackbar(
-        val message: String,
-        val actionLabel: String? = null,
-        val withDismissAction: Boolean = false,
-        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
-    ) : IndexUiEffect()
-}
-
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
@@ -59,15 +48,6 @@ class IndexViewModel @Inject constructor(
         when (intent) {
             is IndexUiIntent.UpdateUserList -> {
                 emitState(state.copy(userList = userRepository.getUsers()))
-            }
-        }
-    }
-
-    var snackbarHostState: SnackbarHostState? = null
-    override suspend fun onEffect(effect: IndexUiEffect) {
-        when (effect) {
-            is IndexUiEffect.ShowSnackbar -> {
-                snackbarHostState?.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
             }
         }
     }

@@ -2,7 +2,7 @@ package com.xayah.feature.main.tree
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +27,7 @@ sealed class IndexUiIntent : UiIntent {
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     private val treeRepository: TreeRepository,
-) : BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(IndexUiState(typeList = treeRepository.typeList, filterList = treeRepository.filterList)) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(typeList = treeRepository.typeList, filterList = treeRepository.filterList)) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Refresh -> {

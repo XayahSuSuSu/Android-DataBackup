@@ -1,5 +1,7 @@
 package com.xayah.core.common.viewmodel
 
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
@@ -29,13 +31,37 @@ interface IBaseViewModel<S : UiState, I : UiIntent, E : UiEffect> {
     suspend fun onEffect(effect: E)
 }
 
-abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(state: S) : IBaseViewModel<S, I, E>, ViewModel() {
+sealed class IndexUiEffect : UiEffect {
+    data class ShowSnackbar(
+        val message: String,
+        val actionLabel: String? = null,
+        val withDismissAction: Boolean = false,
+        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
+    ) : IndexUiEffect()
+
+    object DismissSnackbar : IndexUiEffect()
+}
+
+abstract class BaseViewModel<S : UiState, I : UiIntent, E : IndexUiEffect>(state: S) : IBaseViewModel<S, I, IndexUiEffect>, ViewModel() {
     private val intentChannel = Channel<I>(Channel.UNLIMITED)
     private val effectChannel = Channel<E>(Channel.UNLIMITED)
 
     private val _uiState = MutableStateFlow(state)
     val uiState: StateFlow<S> = _uiState.asStateFlow()
-    override suspend fun onEffect(effect: E) {}
+    var snackbarHostState: SnackbarHostState = SnackbarHostState()
+
+    override suspend fun onEffect(effect: IndexUiEffect) {
+        when (effect) {
+            is IndexUiEffect.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
+            }
+
+            is IndexUiEffect.DismissSnackbar -> {
+                snackbarHostState.currentSnackbarData?.dismiss()
+            }
+        }
+    }
+
     override suspend fun onSuspendEvent(state: S, intent: I) {}
 
     init {

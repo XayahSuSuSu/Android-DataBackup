@@ -1,10 +1,8 @@
 package com.xayah.feature.main.task.packages.local.restore.list
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRestoreRepository
@@ -55,15 +53,6 @@ sealed class IndexUiIntent : UiIntent {
     data class BatchOrOp(val mask: Int, val packageNames: List<String>) : IndexUiIntent()
     data class SelectTimestamp(val index: Int) : IndexUiIntent()
     data class Delete(val items: List<PackageRestoreEntire>) : IndexUiIntent()
-}
-
-sealed class IndexUiEffect : UiEffect {
-    data class ShowSnackbar(
-        val message: String,
-        val actionLabel: String? = null,
-        val withDismissAction: Boolean = false,
-        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
-    ) : IndexUiEffect()
 }
 
 @ExperimentalMaterial3Api
@@ -182,15 +171,6 @@ class IndexViewModel @Inject constructor(
             }
 
             else -> {}
-        }
-    }
-
-    val snackbarHostState: SnackbarHostState = SnackbarHostState()
-    override suspend fun onEffect(effect: IndexUiEffect) {
-        when (effect) {
-            is IndexUiEffect.ShowSnackbar -> {
-                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
-            }
         }
     }
 

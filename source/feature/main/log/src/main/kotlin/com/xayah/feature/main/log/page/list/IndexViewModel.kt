@@ -2,7 +2,7 @@ package com.xayah.feature.main.log.page.list
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.util.FileUtil
@@ -30,7 +30,7 @@ sealed class IndexUiIntent : UiIntent {
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     private val logListRepository: LogListRepository,
-) : BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(IndexUiState()) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState()) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Update -> {

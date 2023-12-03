@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.ui.model.StringResourceToken
@@ -38,28 +36,10 @@ sealed class IndexUiIntent : UiIntent {
     data class ValidateAbi(val context: Context) : IndexUiIntent()
 }
 
-sealed class IndexUiEffect : UiEffect {
-    data class ShowSnackbar(
-        val message: String,
-        val actionLabel: String? = null,
-        val withDismissAction: Boolean = false,
-        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
-    ) : IndexUiEffect()
-}
-
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor() : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState()) {
     private val mutex = Mutex()
-
-    val snackbarHostState: SnackbarHostState = SnackbarHostState()
-    override suspend fun onEffect(effect: IndexUiEffect) {
-        when (effect) {
-            is IndexUiEffect.ShowSnackbar -> {
-                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
-            }
-        }
-    }
 
     @SuppressLint("StringFormatInvalid")
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {

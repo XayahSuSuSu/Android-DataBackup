@@ -2,14 +2,13 @@ package com.xayah.feature.main.home.cloud.page.account
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.xayah.core.common.util.toSpaceString
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
@@ -39,17 +38,6 @@ sealed class IndexUiIntent : UiIntent {
     object Initialize : IndexUiIntent()
     data class SetTypeIndex(val index: Int) : IndexUiIntent()
     data class Confirm(val navController: NavHostController) : IndexUiIntent()
-}
-
-sealed class IndexUiEffect : UiEffect {
-    data class ShowSnackbar(
-        val message: String,
-        val actionLabel: String? = null,
-        val withDismissAction: Boolean = false,
-        val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
-    ) : IndexUiEffect()
-
-    object DismissSnackbar : IndexUiEffect()
 }
 
 @ExperimentalMaterial3Api
@@ -129,19 +117,6 @@ internal class IndexViewModel @Inject constructor(
                         }
                     }
                 }
-            }
-        }
-    }
-
-    var snackbarHostState: SnackbarHostState = SnackbarHostState()
-    override suspend fun onEffect(effect: IndexUiEffect) {
-        when (effect) {
-            is IndexUiEffect.ShowSnackbar -> {
-                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
-            }
-
-            is IndexUiEffect.DismissSnackbar -> {
-                snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
     }

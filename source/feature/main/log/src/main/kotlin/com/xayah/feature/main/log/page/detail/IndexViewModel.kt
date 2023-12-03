@@ -3,7 +3,7 @@ package com.xayah.feature.main.log.page.detail
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.feature.main.log.LogDetailRepository
@@ -29,7 +29,7 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     private val logDetailRepository: LogDetailRepository,
     args: SavedStateHandle,
-) : BaseViewModel<IndexUiState, IndexUiIntent, UiEffect>(IndexUiState(name = args.get<String>(LogRoutes.ArgFileName) ?: "")) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(name = args.get<String>(LogRoutes.ArgFileName) ?: "")) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Load -> {

@@ -5,7 +5,7 @@ import androidx.compose.material.icons.rounded.Pending
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.UiEffect
+import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.ui.model.ImageVectorToken
@@ -31,7 +31,7 @@ sealed class MainUiIntent : UiIntent {
 @ExperimentalMaterial3Api
 @HiltViewModel
 class MainViewModel @Inject constructor(
-) : BaseViewModel<MainUiState, MainUiIntent, UiEffect>(MainUiState()) {
+) : BaseViewModel<MainUiState, MainUiIntent, IndexUiEffect>(MainUiState()) {
     override suspend fun onEvent(state: MainUiState, intent: MainUiIntent) {
         when (intent) {
             is MainUiIntent.SetUiState -> {
