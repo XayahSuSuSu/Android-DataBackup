@@ -15,6 +15,7 @@ import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.core.database.model.PackageRestoreEntire
 import com.xayah.core.datastore.readBackupItself
+import com.xayah.core.datastore.readBackupUserId
 import com.xayah.core.datastore.readRcloneMainAccountRemote
 import com.xayah.core.datastore.readResetBackupList
 import com.xayah.core.model.DataType
@@ -119,6 +120,7 @@ internal class BackupServiceImpl : Service() {
         mutex.withLock {
             log { "Processing is starting." }
 
+            val userId = context.readBackupUserId().first()
             val remote = context.readRcloneMainAccountRemote().first()
             val archivesPackagesRelativeDir = PathUtil.getArchivesPackagesRelativeDir()
             val configsRelativeDir = PathUtil.getConfigsRelativeDir()
@@ -143,7 +145,7 @@ internal class BackupServiceImpl : Service() {
 
                 // Kill the package.
                 log { "Trying to kill ${currentPackage.packageName}." }
-                BaseUtil.killPackage(currentPackage.packageName)
+                BaseUtil.killPackage(userId = userId, packageName = currentPackage.packageName)
 
                 val packageBackupOperation = PackageBackupOperation(
                     packageName = currentPackage.packageName,
