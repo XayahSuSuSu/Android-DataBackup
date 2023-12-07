@@ -444,7 +444,7 @@ class Migration2Repository @Inject constructor(
                 val selected = mediaRestore?.selected ?: false
                 mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected))
             }
-            rootService.writeProtoBuf(data = medium, dst = configsDstDir)
+            rootService.writeProtoBuf(data = medium, dst = PathUtil.getMediaRestoreConfigDst(configsDstDir))
         }
     }
 
@@ -458,7 +458,7 @@ class Migration2Repository @Inject constructor(
                 val operationCode = packageRestore?.operationCode ?: OperationMask.None
                 packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode))
             }
-            rootService.writeProtoBuf(data = packages, dst = configsDstDir)
+            rootService.writeProtoBuf(data = packages, dst = PathUtil.getPackageRestoreConfigDst(configsDstDir))
         }
     }
 }
@@ -954,7 +954,7 @@ class Migration1Repository @Inject constructor(
                 val selected = mediaRestore?.selected ?: false
                 mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected))
             }
-            rootService.writeProtoBuf(data = medium, dst = configsDstDir)
+            rootService.writeProtoBuf(data = medium, dst = PathUtil.getMediaRestoreConfigDst(configsDstDir))
         }
     }
 
@@ -1010,7 +1010,7 @@ class Migration1Repository @Inject constructor(
                 val operationCode = packageRestore?.operationCode ?: OperationMask.None
                 packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode))
             }
-            rootService.writeProtoBuf(data = packages, dst = configsDstDir)
+            rootService.writeProtoBuf(data = packages, dst = PathUtil.getPackageRestoreConfigDst(configsDstDir))
         }
     }
 }
