@@ -99,10 +99,10 @@ interface MediaDao {
     @Query("SELECT DISTINCT timestamp FROM MediaRestoreEntity WHERE  savePath = :savePath")
     fun observeTimestamps(savePath: String): Flow<List<Long>>
 
-    @Query("SELECT * FROM MediaRestoreEntity WHERE active = 1 AND timestamp = :timestamp")
+    @Query("SELECT * FROM MediaRestoreEntity WHERE active = 1 AND timestamp = :timestamp GROUP BY path")
     fun queryMediumFlow(timestamp: Long): Flow<List<MediaRestoreEntity>>
 
-    @Query("SELECT * FROM MediaRestoreEntity WHERE path = :path AND timestamp = :timestamp AND savePath = :savePath")
+    @Query("SELECT * FROM MediaRestoreEntity WHERE path = :path AND timestamp = :timestamp AND savePath = :savePath LIMIT 1")
     fun queryMedia(path: String, timestamp: Long, savePath: String): MediaRestoreEntity?
 
     @Query("UPDATE MediaRestoreEntity SET selected = :selected WHERE path in (:pathList) AND timestamp = :timestamp")
@@ -119,4 +119,7 @@ interface MediaDao {
 
     @Query("UPDATE MediaRestoreEntity SET active = :active WHERE timestamp = :timestamp AND savePath = :savePath")
     suspend fun updateRestoreActive(active: Boolean, timestamp: Long, savePath: String)
+
+    @Query("DELETE FROM MediaRestoreEntity WHERE id NOT IN (SELECT MIN(id) FROM MediaRestoreEntity GROUP BY path, timestamp, savePath)")
+    suspend fun deduplicate()
 }

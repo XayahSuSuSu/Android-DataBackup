@@ -290,6 +290,9 @@ class PackageRestoreRepository @Inject constructor(
      * Update sizeBytes, installed state.
      */
     suspend fun update(topBarState: MutableStateFlow<TopBarState>) {
+        // Deduplicate items.
+        packageRestoreDao.deduplicate()
+
         val packages = packageRestoreDao.queryAll()
         val packagesCount = (packages.size - 1).coerceAtLeast(1)
         // Get 1/10 of total count.
@@ -330,6 +333,9 @@ class PackageRestoreRepository @Inject constructor(
      * Update sizeBytes, installed state.
      */
     suspend fun updateRemote(topBarState: MutableStateFlow<TopBarState>, endTitle: StringResourceToken) {
+        // Deduplicate items.
+        packageRestoreDao.deduplicate()
+
         val packages = packageRestoreDao.queryAll()
         val packagesCount = (packages.size - 1).coerceAtLeast(1)
         // Get 1/10 of total count.

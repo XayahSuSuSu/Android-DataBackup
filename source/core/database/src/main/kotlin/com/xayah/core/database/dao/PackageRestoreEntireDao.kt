@@ -25,7 +25,7 @@ interface PackageRestoreEntireDao {
     @Query("SELECT DISTINCT timestamp FROM PackageRestoreEntire WHERE savePath = :savePath")
     fun observeTimestamps(savePath: String): Flow<List<Long>>
 
-    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND timestamp = :timestamp")
+    @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND timestamp = :timestamp GROUP BY packageName")
     fun queryPackagesFlow(timestamp: Long): Flow<List<PackageRestoreEntire>>
 
     @Query("SELECT * FROM PackageRestoreEntire WHERE timestamp = :timestamp")
@@ -55,7 +55,7 @@ interface PackageRestoreEntireDao {
     @Query("SELECT * FROM PackageRestoreEntire WHERE active = 1 AND operationCode = 1")
     fun queryActiveDataOnlyPackages(): Flow<List<PackageRestoreEntire>>
 
-    @Query("SELECT * FROM PackageRestoreEntire WHERE packageName = :packageName AND timestamp = :timestamp AND savePath = :savePath")
+    @Query("SELECT * FROM PackageRestoreEntire WHERE packageName = :packageName AND timestamp = :timestamp AND savePath = :savePath LIMIT 1")
     fun queryPackage(packageName: String, timestamp: Long, savePath: String): PackageRestoreEntire?
 
     @Query("SELECT COUNT(*) FROM PackageRestoreEntire WHERE active = 1 AND (operationCode = 1 OR operationCode = 2 OR operationCode = 3)")
@@ -87,4 +87,7 @@ interface PackageRestoreEntireDao {
 
     @Query("UPDATE PackageRestoreEntire SET operationCode = (operationCode | (:mask & backupOpCode)) WHERE packageName in (:packageNames) AND sizeBytes != 0")
     suspend fun orOpCodeByMask(mask: Int, packageNames: List<String>)
+
+    @Query("DELETE FROM PackageRestoreEntire WHERE id NOT IN (SELECT MIN(id) FROM PackageRestoreEntire GROUP BY packageName, timestamp, savePath)")
+    suspend fun deduplicate()
 }

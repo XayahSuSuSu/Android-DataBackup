@@ -104,6 +104,9 @@ class MediaRestoreRepository @Inject constructor(
      * Update sizeBytes, installed state.
      */
     suspend fun update(topBarState: MutableStateFlow<TopBarState>) = withIOContext {
+        // Deduplicate items.
+        mediaDao.deduplicate()
+
         val medium = mediaDao.queryAllRestore()
         val mediumCount = (medium.size - 1).coerceAtLeast(1)
         // Get 1/10 of total count.
