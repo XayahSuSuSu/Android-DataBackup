@@ -521,7 +521,7 @@ class MediumBackupUtil @Inject constructor(
         // Compress and test.
         Tar.compress(
             usePipe = usePipe,
-            exclusionList = listOf(),
+            exclusionList = listOf(".*"),
             h = if (context.readFollowSymlinks().first()) "-h" else "",
             srcDir = srcDir,
             src = srcName,
