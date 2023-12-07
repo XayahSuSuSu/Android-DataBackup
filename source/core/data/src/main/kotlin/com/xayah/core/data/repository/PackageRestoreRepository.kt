@@ -133,7 +133,8 @@ class PackageRestoreRepository @Inject constructor(
             rootService.deleteRecursively(path = path)
         }
 
-        Rclone.rmdirs(src = remoteDir)
+        Rclone.rmdirs(src = pathUtil.getArchivesDir(remoteDir))
+        Rclone.rmdirs(src = pathUtil.getConfigsDir(remoteDir))
 
         val remoteConfigsDstDir = pathUtil.getConfigsDir(remoteDir)
         val configsSrc = PathUtil.getPackageRestoreConfigDst(dstDir = remoteConfigsDstDir)

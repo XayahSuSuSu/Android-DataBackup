@@ -89,9 +89,10 @@ object Rclone {
      * Try creating a tmp dir to test remote IO.
      */
     suspend fun testIO(remote: String): ShellResult = run {
-        mkdir(dst = "$remote/$CloudTmpTestFileName").also { result ->
+        val dstDir = "$remote/$CloudTmpTestFileName"
+        mkdir(dst = dstDir).also { result ->
             if (result.isSuccess) {
-                rmdirs(src = remote)
+                rmdirs(src = dstDir)
             }
         }
     }
