@@ -1,14 +1,14 @@
 package com.xayah.core.util.command
 
-import com.xayah.core.common.util.toSpaceString
-import com.xayah.core.common.util.trim
 import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.model.ShellResult
+import com.xayah.core.common.util.toSpaceString
+import com.xayah.core.common.util.trim
 
 object Tar {
     private suspend fun execute(vararg args: String): ShellResult = BaseUtil.execute("tar", *args)
 
-    suspend fun compressInCur(usePipe: Boolean, cur: String, src: String, dst: String, extra: String): ShellResult = run {
+    suspend fun compressInCur(usePipe: Boolean, cur: String, src: String, dst: String, extra: String): ShellResult {
         // Move to $cur path.
         BaseUtil.execute("cd", cur)
 
@@ -59,14 +59,13 @@ object Tar {
         // Move back
         BaseUtil.execute("cd", "/")
 
-        if (result.code == 1) result.code = 0
-        result
+        return result
     }
 
     suspend fun compress(usePipe: Boolean, exclusionList: List<String>, h: String, srcDir: String, src: String, dst: String, extra: String): ShellResult =
         run {
             val exclusion = exclusionList.trim().map { "--exclude=$it" }.toSpaceString()
-            val result = if (usePipe) {
+            if (usePipe) {
                 if (extra.isEmpty()) {
                     // tar --totals "$exclusion" $h -cpf - -C "$srcDir" "$src" > "$dst"
                     execute(
@@ -126,9 +125,6 @@ object Tar {
                     )
                 }
             }
-
-            if (result.code == 1) result.code = 0
-            result
         }
 
     suspend fun test(src: String, extra: String): ShellResult = if (extra.isEmpty()) {
