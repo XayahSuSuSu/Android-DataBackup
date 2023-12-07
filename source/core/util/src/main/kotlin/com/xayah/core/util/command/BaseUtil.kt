@@ -27,6 +27,9 @@ import com.xayah.core.util.filesDir
 import com.xayah.core.util.logDir
 import com.xayah.core.util.model.ShellResult
 import com.xayah.core.util.withIOContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import net.lingala.zip4j.ZipFile
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -104,6 +107,45 @@ object BaseUtil {
             "| xargs kill -9",
             shell = getNewShell()
         )
+    }
+
+    suspend fun killPackage(packageName: String) = runBlocking {
+        launch {
+            withTimeout(10000) {
+                var processesCount = 1
+
+                while (processesCount != 0) {
+                    // ps -A | grep -w "$packageName"
+                    execute(
+                        "ps",
+                        "-A",
+                        "|",
+                        "grep",
+                        "-w",
+                        "$QUOTE$packageName$QUOTE",
+                    ).also { result ->
+                        if (result.isSuccess) {
+                            // There are still processes left.
+                            processesCount = result.out.size
+
+                            // killall -9 "$packageName" && am force-stop "$packageName" && am kill "$packageName"
+                            execute(
+                                "killall -9",
+                                "$QUOTE$packageName$QUOTE",
+                                "&&",
+                                "am force-stop",
+                                "$QUOTE$packageName$QUOTE",
+                                "&&",
+                                "am kill",
+                                "$QUOTE$packageName$QUOTE",
+                            )
+                        } else {
+                            processesCount = 0
+                        }
+                    }
+                }
+            }
+        }.join()
     }
 
     suspend fun umount(dst: String) {

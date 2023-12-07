@@ -28,6 +28,7 @@ import com.xayah.core.service.util.upsertUserDe
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PreparationUtil
 import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
@@ -120,6 +121,10 @@ internal class BackupServiceImpl : Service() {
             log { "Task target timestamp: $timestamp." }
             packages.forEach { currentPackage ->
                 log { "Current package: ${currentPackage.packageName}, apk: ${currentPackage.apkSelected}, data: ${currentPackage.dataSelected}." }
+
+                // Kill the package.
+                log { "Trying to kill ${currentPackage.packageName}." }
+                BaseUtil.killPackage(currentPackage.packageName)
 
                 val packageBackupOperation = PackageBackupOperation(
                     packageName = currentPackage.packageName,
