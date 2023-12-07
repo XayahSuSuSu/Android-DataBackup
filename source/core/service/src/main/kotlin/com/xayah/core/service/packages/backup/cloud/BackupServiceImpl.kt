@@ -7,6 +7,7 @@ import android.os.IBinder
 import com.google.gson.reflect.TypeToken
 import com.xayah.core.common.util.toLineString
 import com.xayah.core.common.util.trim
+import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageRestoreRepository
 import com.xayah.core.database.dao.PackageBackupEntireDao
 import com.xayah.core.database.dao.PackageBackupOperationDao
@@ -91,6 +92,9 @@ internal class BackupServiceImpl : Service() {
 
     @Inject
     lateinit var packageRestoreRepository: PackageRestoreRepository
+
+    @Inject
+    lateinit var cloudRepository: CloudRepository
 
     suspend fun preprocessing(): BackupPreprocessing = withIOContext {
         mutex.withLock {
@@ -493,6 +497,9 @@ internal class BackupServiceImpl : Service() {
             packagesBackupUtil.upload(src = src, dstDir = remoteConfigsDstDir)
 
             log { "Save configs." }
+            val configsSrc = PathUtil.getPackageRestoreConfigDst(dstDir = remoteConfigsDstDir)
+            Rclone.copy(src = configsSrc, dst = tmpConfigsDstDir)
+
             val configsDst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpConfigsDstDir)
             packageRestoreRepository.writePackagesProtoBuf(configsDst) { storedList ->
                 storedList.apply { addAll(packageRestoreDao.queryPackages(timestamp)) }.toList()
