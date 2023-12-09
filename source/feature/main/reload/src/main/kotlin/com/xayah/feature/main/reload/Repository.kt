@@ -176,7 +176,7 @@ class Migration2Repository @Inject constructor(
 
                     runCatching {
                         if (rootService.exists(configPath)) {
-                            val stored: MediaRestoreEntity? = rootService.readProtoBuf(configPath)
+                            val stored = rootService.readProtoBuf<MediaRestoreEntity>(configPath)
                             if (stored != null) {
                                 mediaRestore = stored
                                 log { "Config is reloaded from ProtoBuf." }
@@ -300,7 +300,7 @@ class Migration2Repository @Inject constructor(
 
                     runCatching {
                         if (rootService.exists(configPath)) {
-                            val stored: PackageRestoreEntire? = rootService.readProtoBuf(configPath)
+                            val stored = rootService.readProtoBuf<PackageRestoreEntire>(configPath)
                             if (stored != null) {
                                 packageRestore = stored
                                 loadedFromConfig = true

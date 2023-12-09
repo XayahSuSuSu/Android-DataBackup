@@ -263,7 +263,7 @@ class RemoteRootService(private val context: Context) {
         var isSuccess: Boolean
         val out = mutableListOf<String>()
 
-        val bytes = ProtoBuf.encodeToByteArray(data)
+        val bytes = ProtoBuf.encodeToByteArray<T>(data)
         writeBytes(bytes = bytes, dst = dst).also {
             isSuccess = it
             if (isSuccess) {
@@ -276,9 +276,12 @@ class RemoteRootService(private val context: Context) {
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }.onFailure(onFailure).getOrElse { ShellResult(code = -1, input = listOf(), out = listOf()) }
 
+    /**
+     * @see <a href="https://github.com/Kotlin/kotlinx.serialization/issues/2185#issuecomment-1420612365">Unsupported start group or end group wire type: 7</a>
+     */
     @OptIn(ExperimentalSerializationApi::class)
     suspend inline fun <reified T> readProtoBuf(src: String): T? = runCatching<T?> {
         val bytes = readBytes(src = src)
-        ProtoBuf.decodeFromByteArray(bytes)
+        ProtoBuf.decodeFromByteArray<T>(bytes)
     }.onFailure(onFailure).getOrNull()
 }
