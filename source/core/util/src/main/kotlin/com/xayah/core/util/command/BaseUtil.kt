@@ -109,7 +109,7 @@ object BaseUtil {
 
     suspend fun killPackage(userId: Int, packageName: String) = runBlocking {
         val cmd = """
-            while ps -ef | egrep -w "$packageName" | grep -v egrep &>/dev/null; do
+            until [[ $USD(dumpsys activity processes | grep "packageList" | cut -d '{' -f2 | cut -d '}' -f1 | egrep -w "$packageName" | sed -n '1p') = "" ]]; do
                 killall -9 "$packageName" &>/dev/null
                 am force-stop --user "$userId" "$packageName" &>/dev/null
                 am kill "$packageName" &>/dev/null
