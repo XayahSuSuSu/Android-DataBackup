@@ -92,11 +92,12 @@ class MediaRestoreRepository @Inject constructor(
                 mediaRestoreList.addAll(storedList!!)
             }
         }
-        mediaRestoreList.forEachIndexed { index, mediaInfo ->
+        mediaRestoreList.forEach { mediaInfo ->
             val mediaRestore = mediaDao.queryMedia(path = mediaInfo.path, timestamp = mediaInfo.timestamp, savePath = mediaInfo.savePath)
             val id = mediaRestore?.id ?: 0
             val selected = mediaRestore?.selected ?: false
-            mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected))
+            val savePath = context.localRestoreSaveDir()
+            mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected, savePath = savePath))
         }
     }
 

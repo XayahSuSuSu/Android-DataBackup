@@ -442,7 +442,14 @@ class Migration2Repository @Inject constructor(
                 val mediaRestore = mediaDao.queryMedia(path = mediaInfo.path, timestamp = mediaInfo.timestamp, savePath = mediaInfo.savePath)
                 val id = mediaRestore?.id ?: 0
                 val selected = mediaRestore?.selected ?: false
-                mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected))
+                mediaInfo.apply {
+                    this.id = id
+                    this.selected = selected
+                    this.savePath = context.localRestoreSaveDir()
+                }
+                val mediaDstDir = "${pathUtil.getLocalRestoreArchivesMediumDir()}/${mediaInfo.name}/${mediaInfo.timestamp}"
+                rootService.writeProtoBuf(data = mediaInfo, dst = PathUtil.getMediaRestoreConfigDst(dstDir = mediaDstDir))
+                mediaDao.upsertRestore(mediaInfo)
             }
             rootService.writeProtoBuf(data = medium, dst = PathUtil.getMediaRestoreConfigDst(configsDstDir))
         }
@@ -456,7 +463,15 @@ class Migration2Repository @Inject constructor(
                 val id = packageRestore?.id ?: 0
                 val active = packageRestore?.active ?: false
                 val operationCode = packageRestore?.operationCode ?: OperationMask.None
-                packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode))
+                packageInfo.apply {
+                    this.id = id
+                    this.active = active
+                    this.operationCode = operationCode
+                    this.savePath = context.localRestoreSaveDir()
+                }
+                val packageDstDir = "${pathUtil.getLocalRestoreArchivesPackagesDir()}/${packageInfo.packageName}/${packageInfo.timestamp}"
+                rootService.writeProtoBuf(data = packageInfo, dst = PathUtil.getPackageRestoreConfigDst(dstDir = packageDstDir))
+                packageRestoreDao.upsert(packageInfo)
             }
             rootService.writeProtoBuf(data = packages, dst = PathUtil.getPackageRestoreConfigDst(configsDstDir))
         }
@@ -952,7 +967,14 @@ class Migration1Repository @Inject constructor(
                 val mediaRestore = mediaDao.queryMedia(path = mediaInfo.path, timestamp = mediaInfo.timestamp, savePath = mediaInfo.savePath)
                 val id = mediaRestore?.id ?: 0
                 val selected = mediaRestore?.selected ?: false
-                mediaDao.upsertRestore(mediaInfo.copy(id = id, selected = selected))
+                mediaInfo.apply {
+                    this.id = id
+                    this.selected = selected
+                    this.savePath = context.localRestoreSaveDir()
+                }
+                val mediaDstDir = "${pathUtil.getLocalRestoreArchivesMediumDir()}/${mediaInfo.name}/${mediaInfo.timestamp}"
+                rootService.writeProtoBuf(data = mediaInfo, dst = PathUtil.getMediaRestoreConfigDst(dstDir = mediaDstDir))
+                mediaDao.upsertRestore(mediaInfo)
             }
             rootService.writeProtoBuf(data = medium, dst = PathUtil.getMediaRestoreConfigDst(configsDstDir))
         }
@@ -1008,7 +1030,15 @@ class Migration1Repository @Inject constructor(
                 val id = packageRestore?.id ?: 0
                 val active = packageRestore?.active ?: false
                 val operationCode = packageRestore?.operationCode ?: OperationMask.None
-                packageRestoreDao.upsert(packageInfo.copy(id = id, active = active, operationCode = operationCode))
+                packageInfo.apply {
+                    this.id = id
+                    this.active = active
+                    this.operationCode = operationCode
+                    this.savePath = context.localRestoreSaveDir()
+                }
+                val packageDstDir = "${pathUtil.getLocalRestoreArchivesPackagesDir()}/${packageInfo.packageName}/${packageInfo.timestamp}"
+                rootService.writeProtoBuf(data = packageInfo, dst = PathUtil.getPackageRestoreConfigDst(dstDir = packageDstDir))
+                packageRestoreDao.upsert(packageInfo)
             }
             rootService.writeProtoBuf(data = packages, dst = PathUtil.getPackageRestoreConfigDst(configsDstDir))
         }
