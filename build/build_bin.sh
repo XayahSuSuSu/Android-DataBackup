@@ -20,7 +20,7 @@ LZ4_VERSION=1.9.4              # https://github.com/lz4/lz4/releases
 ZSTD_VERSION=1.5.5             # https://github.com/facebook/zstd/releases
 TAR_VERSION=1.35               # https://ftp.gnu.org/gnu/tar/?C=M;O=D
 COREUTLS_VERSION=9.4           # https://ftp.gnu.org/gnu/coreutils/?C=M;O=D
-TREE_VERSION=2.1.1             # https://mama.indstate.edu/users/ice/tree
+TREE_VERSION=2.1.1             # https://gitlab.com/OldManProgrammer/unix-tree
 
 EXTENSION_VERSION=1.2
 LIBFUSE_VERSION=3.16.1         # https://github.com/libfuse/libfuse/releases
@@ -260,13 +260,13 @@ build_coreutls() {
 
 build_tree() {
     # tree
-    if [ ! -f $LOCAL_PATH/tree-$TREE_VERSION.tgz ]; then
-        wget https://mama.indstate.edu/users/ice/tree/src/tree-$TREE_VERSION.tgz
+    if [ ! -f $LOCAL_PATH/unix-tree-$TREE_VERSION.tar.gz ]; then
+        wget https://gitlab.com/OldManProgrammer/unix-tree/-/archive/$TREE_VERSION/unix-tree-$TREE_VERSION.tar.gz
     fi
     if [ -d $LOCAL_PATH/tree-$TREE_VERSION ]; then
         rm -rf $LOCAL_PATH/tree-$TREE_VERSION
     fi
-    tar xf tree-$TREE_VERSION.tgz
+    tar xf unix-tree-$TREE_VERSION.tar.gz
     cd tree-$TREE_VERSION
 
     echo "int strverscmp (const char *s1, const char *s2);" >> tree.h
