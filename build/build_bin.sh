@@ -267,7 +267,7 @@ build_tree() {
         rm -rf $LOCAL_PATH/tree-$TREE_VERSION
     fi
     tar xf unix-tree-$TREE_VERSION.tar.gz
-    cd tree-$TREE_VERSION
+    cd unix-tree-$TREE_VERSION
 
     echo "int strverscmp (const char *s1, const char *s2);" >> tree.h
     sed -i -e "/#ifndef __linux__/d" -e "/#endif/d" strverscmp.c
