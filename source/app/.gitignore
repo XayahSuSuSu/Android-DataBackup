@@ -1,9 +1,13 @@
 /build
 /arm64-v8aFoss
 /arm64-v8aPremium
+/arm64-v8aCoolapk
 /armeabi-v7aFoss
 /armeabi-v7aPremium
+/armeabi-v7aCoolapk
 /x86Foss
 /x86Premium
+/x86Coolapk
 /x86_64Foss
 /x86_64Premium
+/x86_64Coolapk
