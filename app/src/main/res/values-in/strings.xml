@@ -49,4 +49,20 @@
     <string name="installing">Memasang</string>
     <string name="all">Semua</string>
     <string name="name">Nama</string>
+    <string name="filter">Saring</string>
+    <string name="repeat_to_add">Ulangi untuk menambahkan!</string>
+    <string name="backup_icon">Ikon Cadangan</string>
+    <string name="backup_strategy">Strategi cadangan</string>
+    <string name="backup_icon_title">Cadangan Ikon ketika mencadangkan aplikasi, digunakan untuk menunjukkan ketika memulihkan</string>
+    <string name="cover">Cover</string>
+    <string name="confirm_exit">Yakin ingin keluar?</string>
+    <string name="not_selected">Tidak dipilih</string>
+    <string name="by_time">Berdasarkan waktu</string>
+    <string name="alphabet">Alphabet</string>
+    <string name="install_time">Waktu instalasi</string>
+    <string name="monet_title">Engine tema monet yang dapat diaktifkan dari Material You</string>
+    <string name="cover_desc">Timpa file cadangan yang ada dengan setiap cadangan, atau lewatkan cadangan jika tidak ada perubahan, jadi hanya satu salinan data Anda ada</string>
+    <string name="backup_itself_title">Ketika mencadangkan aplikasi, secara otomatis mencadangkan paket instalasinya sendiri ke direktori cadangan</string>
+    <string name="sort">Urutkan</string>
+    <string name="backup_itself">Cadangkan sendiri</string>
 </resources>
