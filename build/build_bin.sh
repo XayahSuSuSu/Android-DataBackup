@@ -60,15 +60,17 @@ set_up_environment() {
     esac
 
     # NDK
-    if [ ! -f $LOCAL_PATH/android-ndk-$NDK_VERSION-linux.zip ]; then
-        wget https://dl.google.com/android/repository/android-ndk-$NDK_VERSION-linux.zip
+    if [ -z ${NDK} ]; then
+        if [ ! -f $LOCAL_PATH/android-ndk-$NDK_VERSION-linux.zip ]; then
+            wget https://dl.google.com/android/repository/android-ndk-$NDK_VERSION-linux.zip
+        fi
+        if [ -d $LOCAL_PATH/NDK ]; then
+            rm -rf $LOCAL_PATH/NDK
+        fi
+        unzip -q android-ndk-$NDK_VERSION-linux.zip
+        mv android-ndk-$NDK_VERSION NDK
+        export NDK=$LOCAL_PATH/NDK
     fi
-    if [ -d $LOCAL_PATH/NDK ]; then
-        rm -rf $LOCAL_PATH/NDK
-    fi
-    unzip -q android-ndk-$NDK_VERSION-linux.zip
-    mv android-ndk-$NDK_VERSION NDK
-    export NDK=$LOCAL_PATH/NDK
     export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64
     export SYSROOT=$TOOLCHAIN/sysroot
     export API=28
