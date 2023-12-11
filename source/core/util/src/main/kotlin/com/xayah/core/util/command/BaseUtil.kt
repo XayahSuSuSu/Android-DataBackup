@@ -73,6 +73,10 @@ object BaseUtil {
     suspend fun execute(vararg args: String, shell: Shell? = null, log: Boolean = true): ShellResult = withIOContext {
         val shellResult = ShellResult(code = -1, input = args.toList().trim(), out = listOf())
 
+        if (log) {
+            log { TAG_SHELL_IN to shellResult.inputString }
+        }
+
         if (shell == null) {
             Shell.cmd(shellResult.inputString).exec().also { result ->
                 shellResult.code = result.code
@@ -87,8 +91,8 @@ object BaseUtil {
         }
 
         if (log) {
-            log { TAG_SHELL_IN to shellResult.inputString }
-            log { TAG_SHELL_OUT to shellResult.outString }
+            if (shellResult.outString.trim().isNotEmpty())
+                log { TAG_SHELL_OUT to shellResult.outString }
             log { TAG_SHELL_CODE to shellResult.code.toString() }
         }
 
