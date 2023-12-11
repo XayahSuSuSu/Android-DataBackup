@@ -291,4 +291,13 @@ object BaseUtil {
             log = false,
         ).outString
     }
+
+    suspend fun readSuVersion() = run {
+        // su -v
+        execute(
+            "su",
+            "-v",
+            log = false,
+        ).outString
+    }
 }

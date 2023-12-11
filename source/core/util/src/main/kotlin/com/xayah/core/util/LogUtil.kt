@@ -44,6 +44,7 @@ object LogUtil {
         log("SDK:        ${Build.VERSION.SDK_INT}")
         log("Global Namespace:     ${runBlocking { BaseUtil.readLink("1") }}")
         log("Namespace:            ${runBlocking { BaseUtil.readLink("self") }}")
+        log("SU:                   ${runBlocking { BaseUtil.readSuVersion() }}")
         log("${USD}PATH:                ${runBlocking { BaseUtil.readVariable("PATH").trim() }}")
         log("${USD}HOME:                ${runBlocking { BaseUtil.readVariable("HOME").trim() }}")
     }
