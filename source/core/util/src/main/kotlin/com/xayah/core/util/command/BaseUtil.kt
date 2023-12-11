@@ -27,11 +27,14 @@ import com.xayah.core.util.filesDir
 import com.xayah.core.util.logDir
 import com.xayah.core.util.model.ShellResult
 import com.xayah.core.util.withIOContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.lingala.zip4j.ZipFile
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.util.concurrent.TimeUnit
 
 private class EnvInitializer : Shell.Initializer() {
     companion object {
@@ -99,6 +102,27 @@ object BaseUtil {
         shellResult
     }
 
+    suspend fun execute(vararg args: String, shell: Shell, log: Boolean = true, timeout: Long): ShellResult = withIOContext {
+        var shellResult = ShellResult(code = -1, input = args.toList().trim(), out = listOf())
+
+        val job = launch {
+            shellResult = execute(args = args, shell = shell, log = log)
+        }
+        delay(50)
+        runCatching {
+            if (timeout != -1L) {
+                shell.waitAndClose(timeout, TimeUnit.SECONDS)
+            } else {
+                shell.waitAndClose()
+            }
+        }.onFailure {
+            log("Execution timeout.")
+        }
+        job.join()
+
+        shellResult
+    }
+
     suspend fun kill(vararg keys: String) {
         // ps -A | grep -w $key1 | grep -w $key2 | ... | awk 'NF>1{print $2}' | xargs kill -9
         val keysArg = keys.map { "| grep -w $it" }.toTypedArray()
@@ -107,7 +131,8 @@ object BaseUtil {
             *keysArg,
             "| awk 'NF>1{print ${USD}2}'",
             "| xargs kill -9",
-            shell = getNewShell()
+            shell = getNewShell(),
+            timeout = -1
         )
     }
 
@@ -119,7 +144,7 @@ object BaseUtil {
                 am kill "$packageName" &>/dev/null
             done
         """.trimIndent()
-        execute(cmd)
+        execute(cmd, shell = getNewShell(), timeout = 3)
     }
 
     suspend fun umount(dst: String) {
@@ -128,7 +153,8 @@ object BaseUtil {
             "umount",
             "-f",
             "${QUOTE}$dst${QUOTE}",
-            shell = getNewShell()
+            shell = getNewShell(),
+            timeout = -1
         )
     }
 
