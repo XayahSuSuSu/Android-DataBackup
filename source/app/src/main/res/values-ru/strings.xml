@@ -129,7 +129,7 @@
     <string name="failed">Сбои</string>
     <string name="selected_both">Выбрано оба</string>
     <string name="restore_dir">Папка восстановления</string>
-    <string name="set_remote">Облачная настройка</string>
+    <string name="set_remote">Настройка облака</string>
     <string name="mount">Монтирование</string>
     <string name="set_local">Настройка локального хранилища</string>
     <string name="unmount">Размонтировать</string>
