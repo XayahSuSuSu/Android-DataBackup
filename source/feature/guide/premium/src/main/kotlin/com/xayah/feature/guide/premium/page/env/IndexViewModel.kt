@@ -74,9 +74,6 @@ class IndexViewModel @Inject constructor() : BaseViewModel<IndexUiState, IndexUi
                                         BaseUtil.releaseBase(context = intent.context).also {
                                             if (it.not()) isSuccess = false
                                         }
-                                        BaseUtil.releaseExtension(context = intent.context).also {
-                                            if (it.not()) isSuccess = false
-                                        }
                                         isSuccess
                                     }.getOrElse { false }) {
                                     EnvState.Succeed

@@ -11,7 +11,6 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.util.trim
 import com.xayah.core.util.BinArchiveName
 import com.xayah.core.util.BuildConfigUtil
-import com.xayah.core.util.ExtensionArchiveName
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.LogUtil.TAG_SHELL_CODE
 import com.xayah.core.util.LogUtil.TAG_SHELL_IN
@@ -21,8 +20,6 @@ import com.xayah.core.util.SymbolUtil.QUOTE
 import com.xayah.core.util.SymbolUtil.USD
 import com.xayah.core.util.binArchivePath
 import com.xayah.core.util.binDir
-import com.xayah.core.util.extensionArchivePath
-import com.xayah.core.util.extensionDir
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.logDir
 import com.xayah.core.util.model.ShellResult
@@ -42,7 +39,6 @@ private class EnvInitializer : Shell.Initializer() {
             shell.newJob()
                 .add("nsenter -t 1 -m su") // Switch to global namespace
                 .add("export PATH=${context.binDir()}:${USD}PATH")
-                .add("export PATH=${context.extensionDir()}:${USD}PATH")
                 .add("export HOME=${context.filesDir()}")
                 .add("set -o pipefail") // Ensure that the exit code of each command is correct.
                 .exec()
@@ -70,7 +66,6 @@ object BaseUtil {
 
         // Set up LogUtil.
         LogUtil.initialize(context.logDir())
-        Rclone.initialize(context.logDir())
     }
 
     suspend fun execute(vararg args: String, shell: Shell? = null, log: Boolean = true): ShellResult = withIOContext {
@@ -145,17 +140,6 @@ object BaseUtil {
             done
         """.trimIndent()
         execute(cmd, shell = getNewShell(), timeout = 3)
-    }
-
-    suspend fun umount(dst: String) {
-        // umount -f "$dst"
-        execute(
-            "umount",
-            "-f",
-            "${QUOTE}$dst${QUOTE}",
-            shell = getNewShell(),
-            timeout = -1
-        )
     }
 
     suspend fun mkdirs(dst: String) = withIOContext {
@@ -245,31 +229,6 @@ object BaseUtil {
 
         // Remove binary archive
         binArchive.deleteRecursively()
-
-        return@withIOContext true
-    }
-
-    suspend fun releaseExtension(context: Context): Boolean = withIOContext {
-        val extension = File(context.extensionDir())
-        val extensionArchive = File(context.extensionArchivePath())
-
-        // Remove old extension files
-        extension.deleteRecursively()
-        extensionArchive.deleteRecursively()
-
-        // Release binaries
-        releaseAssets(context = context, src = ExtensionArchiveName, child = ExtensionArchiveName)
-        unzip(src = context.extensionArchivePath(), dst = context.extensionDir())
-
-        // All binaries need full permissions
-        extension.listFiles()?.forEach { file ->
-            if (file.setAllPermissions().not()) return@withIOContext false
-            // Rename fusermount to fusermount3 for rclone
-            if (file.name == "fusermount") file.renameTo(File(file.parent, "fusermount3"))
-        }
-
-        // Remove binary archive
-        extensionArchive.deleteRecursively()
 
         return@withIOContext true
     }

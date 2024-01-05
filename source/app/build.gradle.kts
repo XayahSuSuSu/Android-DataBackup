@@ -54,13 +54,6 @@ android {
             (output as BaseVariantOutputImpl).outputFileName =
                 "DataBackup-${versionName}-${productFlavors[0].name}-${productFlavors[1].name}-${buildType.name}.apk"
         }
-
-        // Drop extension for foss build
-        if (productFlavors[1].name == "foss") {
-            mergeAssetsProvider.get().doLast {
-                delete(fileTree(mapOf("dir" to mergeAssetsProvider.get().outputDir, "includes" to listOf("extension.zip"))))
-            }
-        }
     }
 }
 

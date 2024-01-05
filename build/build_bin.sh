@@ -3,7 +3,7 @@
 # Tested on Ubuntu22.04.1(WSL2)
 
 # Config
-# $type: built-in, extension, all
+# $type: built-in, all
 # $abis: all or abis(armeabi-v7a, arm64-v8a, x86, x86_64) split by `,`
 # `bash build_bin.sh $type $abis`
 # e.g. `bash build_bin.sh built-in x86,x86_64`
@@ -21,11 +21,6 @@ ZSTD_VERSION=1.5.5             # https://github.com/facebook/zstd/releases
 TAR_VERSION=1.35               # https://ftp.gnu.org/gnu/tar/?C=M;O=D
 COREUTLS_VERSION=9.4           # https://ftp.gnu.org/gnu/coreutils/?C=M;O=D
 TREE_VERSION=2.1.1             # https://gitlab.com/OldManProgrammer/unix-tree
-
-EXTENSION_VERSION=1.2
-LIBFUSE_VERSION=3.16.1         # https://github.com/libfuse/libfuse/releases
-RCLONE_VERSION=1.64.0          # https://github.com/rclone/rclone/releases
-
 ##################################################
 # Functions
 set_up_utils() {
@@ -292,112 +287,11 @@ build_tree() {
     rm -rf tree-$TREE_VERSION
 }
 
-build_fusermount() {
-    if [ ! -f $LOCAL_PATH/fuse-$LIBFUSE_VERSION.tar.gz ]; then
-        wget https://github.com/libfuse/libfuse/releases/download/fuse-$LIBFUSE_VERSION/fuse-$LIBFUSE_VERSION.tar.gz
-    fi
-    if [ -d $LOCAL_PATH/fuse-$LIBFUSE_VERSION ]; then
-        rm -rf fuse-$LIBFUSE_VERSION
-    fi
-    tar xf fuse-$LIBFUSE_VERSION.tar.gz
-    cd fuse-$LIBFUSE_VERSION
-    sed -i '/# Read build files from sub-directories/, $d' meson.build
-    echo "subdir('util')" >> meson.build
-    sed -i '/mount.fuse3/, $d' util/meson.build
-    mkdir build && cd build
-
-    export FUSE_HOST=aarch64
-    case "$TARGET_ARCH" in
-    armeabi-v7a)
-        export FUSE_HOST=armv7a
-        ;;
-    arm64-v8a)
-        export FUSE_HOST=aarch64
-        ;;
-    x86)
-        export FUSE_HOST=i686
-        ;;
-    x86_64)
-        export FUSE_HOST=x86_64
-        ;;
-    esac
-
-    echo -e \
-"[binaries]\n\
-c = '$CC'\n\
-cpp = '$CXX'\n\
-ar = '$AR'\n\
-ld = '$LD'\n\
-strip = '$STRIP'\n\n\
-[built-in options]\n\
-c_args = ['-O3', '-ffunction-sections', '-fdata-sections']\n\
-cpp_args = c_args\n\
-c_link_args = ['-static', '-s', '-flto', '-Wl,--gc-sections']\n\
-cpp_link_args = c_link_args\n\n\
-[host_machine]\n\
-system = 'android'\n\
-cpu_family = '$FUSE_HOST'\n\
-cpu = '$FUSE_HOST'\n\
-endian = 'little'" > cross_config
-
-    meson .. $FUSE_HOST --cross-file cross_config --prefix=/
-    ninja -C $FUSE_HOST
-    DESTDIR=$LOCAL_PATH/fuse ninja -C $FUSE_HOST install
-    $STRIP $LOCAL_PATH/fuse/bin/fusermount3
-    mv $LOCAL_PATH/fuse/bin/fusermount3 $LOCAL_PATH/fuse/bin/fusermount
-    cd ../../
-    rm -rf fuse-$LIBFUSE_VERSION
-}
-
-build_rclone() {
-    if [ ! -f $LOCAL_PATH/rclone-v$RCLONE_VERSION.tar.gz ]; then
-        wget https://github.com/rclone/rclone/releases/download/v$RCLONE_VERSION/rclone-v$RCLONE_VERSION.tar.gz
-    fi
-    if [ -d $LOCAL_PATH/rclone-v$RCLONE_VERSION ]; then
-        rm -rf rclone-v$RCLONE_VERSION
-    fi
-    tar zxf rclone-v$RCLONE_VERSION.tar.gz
-    cd rclone-v$RCLONE_VERSION
-
-    export VAR_GOARCH=arm64
-    case "$TARGET_ARCH" in
-    armeabi-v7a)
-        export VAR_GOARCH=arm
-        ;;
-    arm64-v8a)
-        export VAR_GOARCH=arm64
-        ;;
-    x86)
-        export VAR_GOARCH=386
-        ;;
-    x86_64)
-        export VAR_GOARCH=amd64
-        ;;
-    esac
-
-    # Static elf is not easy to build 'cause ndk doesn't provide static llog(liblog) which rlone needs.
-    mkdir $LOCAL_PATH/rclone
-    CGO_ENABLED=1 \
-    CGO_CFLAGS="$CGO_CFLAGS $BUILD_CFLAGS" \
-    CGO_CPPFLAGS="$CGO_CPPFLAGS $BUILD_CFLAGS" \
-    CGO_LDFLAGS="$CGO_LDFLAGS $BUILD_LDFLAGS" \
-    CC=$TOOLCHAIN/bin/$TARGET$API-clang GOOS=android GOARCH=$VAR_GOARCH \
-    go build -o $LOCAL_PATH/rclone
-    $STRIP $LOCAL_PATH/rclone/rclone
-    cd ..
-    rm -rf rclone-v$RCLONE_VERSION
-}
-
 build_built_in() {
     build_zstd
     build_tar
     build_coreutls
     build_tree
-}
-
-build_extension() {
-    build_fusermount
-    build_rclone
 }
 
 package_built_in() {
@@ -407,25 +301,14 @@ package_built_in() {
     zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df tar/bin/tar zstd/bin/zstd built_in/version tree/tree
 }
 
-package_extension() {
-    # Extension modules
-    mkdir -p extension
-    echo "$EXTENSION_VERSION" > extension/version
-    zip -pj extension/$TARGET_ARCH fuse/bin/fusermount rclone/rclone extension/version
-}
-
 build() {
     # $1: type
     case "$1" in
     built-in)
         build_built_in
         ;;
-    extension)
-        build_extension
-        ;;
     *)
         build_built_in
-        build_extension
         ;;
     esac
 }
@@ -436,12 +319,8 @@ package() {
     built-in)
         package_built_in
         ;;
-    extension)
-        package_extension
-        ;;
     *)
         package_built_in
-        package_extension
         ;;
     esac
 }
