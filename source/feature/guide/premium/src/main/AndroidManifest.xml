@@ -4,7 +4,7 @@
     <!-- Update/Firebase -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application>
+    <application android:usesCleartextTraffic="true">
         <activity
             android:name="com.xayah.feature.guide.MainActivity"
             android:exported="false" />

@@ -23,5 +23,19 @@
 -dontwarn com.xayah.**
 -dontwarn android.**
 
+# smbj
+-dontwarn javax.el.**
+-dontwarn org.ietf.jgss.**
+
+# smbj-rpc
+-dontwarn java.rmi.UnmarshalException
+
 -keep class com.xayah.** { *; }
 -keep class android.** { *; }
+
+# smbj
+-keep class javax.el.**
+-keep class org.ietf.jgss.**
+
+# smbj-rpc
+-keep class java.rmi.UnmarshalException

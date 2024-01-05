@@ -17,6 +17,8 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:util"))
     implementation(project(":core:rootservice"))
+    implementation(project(":core:network"))
+    implementation(project(":core:model"))
 
     // Feature
     implementation(project(":feature:main:home:common"))

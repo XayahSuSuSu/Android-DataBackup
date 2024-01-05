@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.xayah.core.datastore.readBackupSavePath
 import com.xayah.core.datastore.readRestoreSavePath
+import com.xayah.core.util.command.SELinux
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -27,7 +28,7 @@ const val ConfigsMediaRestoreName = "media_restore_config.pb"
 const val BinArchiveName = "bin.zip"
 const val ExtensionArchiveName = "extension.zip"
 const val CloudTmpTestFileName = "DataBackupCloudTmpTest"
-const val CloudTmpAbsoluteDir = "/data/local/tmp/DataBackupTmpDir"
+const val CloudTmpRelativeDir = "DataBackupTmpDir"
 
 fun Context.filesDir(): String = filesDir.path
 fun Context.logDir(): String = "${filesDir()}/$LogRelativeDir"
@@ -41,6 +42,7 @@ fun Context.tmpApksDir(): String = "${filesDir()}/$TmpRelativeDir/$ApksRelativeD
 fun Context.tmpMountsDir(): String = "${filesDir()}/$TmpRelativeDir/$MountsRelativeDir"
 fun Context.localBackupSaveDir(): String = runBlocking { readBackupSavePath().first() }
 fun Context.localRestoreSaveDir(): String = runBlocking { readRestoreSavePath().first() }
+fun Context.cloudTmpAbsoluteDir(): String = "${filesDir()}/$CloudTmpRelativeDir"
 
 class PathUtil @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -65,19 +67,25 @@ class PathUtil @Inject constructor(
 
         fun getMediaRestoreConfigDst(dstDir: String): String = "${dstDir}/$ConfigsMediaRestoreName"
         fun getPackageRestoreConfigDst(dstDir: String): String = "${dstDir}/$ConfigsPackageRestoreName"
+
+        suspend fun setFilesDirSELinux(context: Context) = SELinux.getContext(path = context.filesDir()).also { result ->
+            val pathContext = if (result.isSuccess) result.outString else ""
+            SELinux.chcon(context = pathContext, path = context.filesDir())
+            SELinux.chown(uid = context.applicationInfo.uid, path = context.filesDir())
+        }
     }
 
     fun getPackageIconPath(packageName: String): String = "${context.iconDir()}/${getPackageIconRelativePath(packageName)}"
     fun getConfigsDir(parent: String): String = "${parent}/${getConfigsRelativeDir()}"
     fun getLocalBackupConfigsDir(): String = getConfigsDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreConfigsDir(): String = getConfigsDir(parent = context.localRestoreSaveDir())
-    fun getTmpBackupConfigsDir(): String = getConfigsDir(parent = CloudTmpAbsoluteDir)
+    fun getCloudTmpConfigsDir(): String = getConfigsDir(parent = context.cloudTmpAbsoluteDir())
     fun getArchivesDir(parent: String): String = "${parent}/${getArchivesRelativeDir()}"
     fun getLocalBackupArchivesDir(): String = getArchivesDir(parent = context.localBackupSaveDir())
     fun getArchivesPackagesDir(parent: String): String = "${parent}/${getArchivesPackagesRelativeDir()}"
     fun getLocalBackupArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localRestoreSaveDir())
-    fun getTmpBackupArchivesPackagesDir(): String = getArchivesPackagesDir(parent = CloudTmpAbsoluteDir)
+    fun getCloudTmpArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.cloudTmpAbsoluteDir())
     fun getArchivesMediumDir(parent: String): String = "${parent}/${getArchivesMediumRelativeDir()}"
     fun getLocalBackupArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localRestoreSaveDir())

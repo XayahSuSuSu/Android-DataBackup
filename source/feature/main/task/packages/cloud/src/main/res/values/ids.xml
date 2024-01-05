@@ -7,4 +7,5 @@
     <item name="restore_completed" type="string" />
     <item name="cloud" type="string" />
     <item name="main_account_not_set" type="string" />
+    <item name="processing" type="string" />
 </resources>

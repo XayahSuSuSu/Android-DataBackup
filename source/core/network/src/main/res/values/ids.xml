@@ -1,0 +1,4 @@
+<resources>
+    <item name="cloud" type="string" />
+    <item name="select_target_directory" type="string" />
+</resources>

@@ -2,56 +2,58 @@ package com.xayah.feature.main.home.cloud
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material.icons.rounded.Domain
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.KeyboardType
 import com.xayah.core.database.model.CloudEntity
+import com.xayah.core.database.model.FTPExtra
+import com.xayah.core.database.model.SMBExtra
+import com.xayah.core.model.CloudType
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromDrawable
+import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.home.premium.R
 
 internal data class TextFieldConfig(
     val emphasizedState: MutableState<Boolean> = mutableStateOf(false),
-    val key: String,
     val value: MutableState<String> = mutableStateOf(""),
     val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     val placeholder: StringResourceToken,
     val leadingIcon: ImageVectorToken,
     val prefix: String? = null,
+    val allowEmpty: Boolean = false,
 )
 
 internal data class TypeConfig(
     val typeDisplay: String,
-    val type: String,
+    val type: CloudType,
     val name: MutableState<String> = mutableStateOf(""),
     val nameEmphasizedState: MutableState<Boolean> = mutableStateOf(false),
-    val fixedArgs: List<String> = listOf(),
-    val textFields: List<TextFieldConfig>,
+    val commonTextFields: List<TextFieldConfig>,
+    val extraTextFields: List<TextFieldConfig>,
 )
 
 internal object TextFieldConfigTokens {
     fun getUrl(value: String?) = TextFieldConfig(
-        key = "url",
         value = mutableStateOf(value ?: ""),
         placeholder = StringResourceToken.fromStringId(R.string.url),
         leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_link),
     )
 
     fun getUsername(value: String?) = TextFieldConfig(
-        key = "user",
         value = mutableStateOf(value ?: ""),
         placeholder = StringResourceToken.fromStringId(R.string.username),
         leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
     )
 
     fun getPassword(value: String?) = TextFieldConfig(
-        key = "pass",
         value = mutableStateOf(value ?: ""),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         placeholder = StringResourceToken.fromStringId(R.string.password),
@@ -59,16 +61,38 @@ internal object TextFieldConfigTokens {
     )
 
     fun getHost(value: String?, prefix: String?) = TextFieldConfig(
-        key = "host",
         value = mutableStateOf(value ?: ""),
         prefix = prefix,
         placeholder = StringResourceToken.fromStringId(R.string.url),
         leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_link),
     )
 
-    fun getPort(value: String?) = TextFieldConfig(
-        key = "port",
-        value = mutableStateOf(value ?: "21"),
+    fun getShare(value: String?) = TextFieldConfig(
+        value = mutableStateOf(value ?: ""),
+        placeholder = StringResourceToken.fromStringArgs(
+            StringResourceToken.fromStringId(R.string.shared_dir),
+            StringResourceToken.fromString("("),
+            StringResourceToken.fromStringId(R.string.allow_empty),
+            StringResourceToken.fromString(")"),
+        ),
+        leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+        allowEmpty = true
+    )
+
+    fun getDomain(value: String?) = TextFieldConfig(
+        value = mutableStateOf(value ?: ""),
+        placeholder = StringResourceToken.fromStringArgs(
+            StringResourceToken.fromStringId(R.string.domain),
+            StringResourceToken.fromString("("),
+            StringResourceToken.fromStringId(R.string.allow_empty),
+            StringResourceToken.fromString(")"),
+        ),
+        leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Domain),
+        allowEmpty = true
+    )
+
+    fun getPort(value: Int?, defaultValue: Int) = TextFieldConfig(
+        value = mutableStateOf(value?.toString() ?: defaultValue.toString()),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         placeholder = StringResourceToken.fromStringId(R.string.port),
         leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_lan),
@@ -76,38 +100,45 @@ internal object TextFieldConfigTokens {
 }
 
 internal object TypeConfigTokens {
-    fun getFTP(account: CloudEntity?) = TypeConfig(
-        name = mutableStateOf(account?.name ?: ""),
+    fun getFTP(entity: CloudEntity?, extra: FTPExtra?) = TypeConfig(
+        name = mutableStateOf(entity?.name ?: ""),
         typeDisplay = "FTP",
-        type = "ftp",
-        textFields = listOf(
-            TextFieldConfigTokens.getHost(account?.account?.host, "ftp://"),
-            TextFieldConfigTokens.getPort(account?.account?.port?.toString()),
-            TextFieldConfigTokens.getUsername(account?.account?.user),
-            TextFieldConfigTokens.getPassword(account?.account?.pass),
+        type = CloudType.FTP,
+        commonTextFields = listOf(
+            TextFieldConfigTokens.getHost(entity?.host, "ftp://"),
+            TextFieldConfigTokens.getUsername(entity?.user),
+            TextFieldConfigTokens.getPassword(entity?.pass),
+        ),
+        extraTextFields = listOf(
+            TextFieldConfigTokens.getPort(extra?.port, 21),
         )
     )
 
-    fun getWebDAV(account: CloudEntity?) = TypeConfig(
-        name = mutableStateOf(account?.name ?: ""),
+    fun getWebDAV(entity: CloudEntity?) = TypeConfig(
+        name = mutableStateOf(entity?.name ?: ""),
         typeDisplay = "WebDAV",
-        type = "webdav",
-        fixedArgs = listOf("vendor=other"),
-        textFields = listOf(
-            TextFieldConfigTokens.getUrl(account?.account?.url),
-            TextFieldConfigTokens.getUsername(account?.account?.user),
-            TextFieldConfigTokens.getPassword(account?.account?.pass),
-        )
+        type = CloudType.WEBDAV,
+        commonTextFields = listOf(
+            TextFieldConfigTokens.getUrl(entity?.host),
+            TextFieldConfigTokens.getUsername(entity?.user),
+            TextFieldConfigTokens.getPassword(entity?.pass),
+        ),
+        extraTextFields = listOf()
     )
 
-    fun getSMB(account: CloudEntity?) = TypeConfig(
-        name = mutableStateOf(account?.name ?: ""),
+    fun getSMB(entity: CloudEntity?, extra: SMBExtra?) = TypeConfig(
+        name = mutableStateOf(entity?.name ?: ""),
         typeDisplay = "SMB / CIFS",
-        type = "smb",
-        textFields = listOf(
-            TextFieldConfigTokens.getHost(account?.account?.host, "smb://"),
-            TextFieldConfigTokens.getUsername(account?.account?.user),
-            TextFieldConfigTokens.getPassword(account?.account?.pass),
+        type = CloudType.SMB,
+        commonTextFields = listOf(
+            TextFieldConfigTokens.getHost(entity?.host, "smb://"),
+            TextFieldConfigTokens.getUsername(entity?.user),
+            TextFieldConfigTokens.getPassword(entity?.pass),
+        ),
+        extraTextFields = listOf(
+            TextFieldConfigTokens.getShare(extra?.share),
+            TextFieldConfigTokens.getPort(extra?.port, 445),
+            TextFieldConfigTokens.getDomain(extra?.domain),
         )
     )
 }

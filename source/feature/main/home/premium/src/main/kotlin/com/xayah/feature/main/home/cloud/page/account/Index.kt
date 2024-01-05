@@ -119,7 +119,55 @@ fun PageCloudAccount(navController: NavHostController) {
                 }
             }
 
-            items(items = uiState.currentConfig.textFields) { config ->
+            items(items = uiState.currentConfig.commonTextFields) { config ->
+                var text by config.value
+                val emphasizedState by config.emphasizedState
+                val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)
+
+                when (config.keyboardOptions.keyboardType) {
+                    KeyboardType.Password -> {
+                        CleanablePasswordTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .paddingHorizontal(PaddingTokens.Level3)
+                                .offset(x = emphasizedOffset),
+                            value = StringResourceToken.fromString(text),
+                            placeholder = config.placeholder,
+                            enabled = true,
+                            leadingIcon = config.leadingIcon,
+                            keyboardOptions = config.keyboardOptions,
+                            prefix = if (config.prefix == null) null else StringResourceToken.fromString(config.prefix),
+                            onCleanClick = {
+                                text = ""
+                            },
+                        ) {
+                            text = it
+                        }
+                    }
+
+                    else -> {
+                        CleanableTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .paddingHorizontal(PaddingTokens.Level3)
+                                .offset(x = emphasizedOffset),
+                            value = StringResourceToken.fromString(text),
+                            placeholder = config.placeholder,
+                            enabled = true,
+                            leadingIcon = config.leadingIcon,
+                            keyboardOptions = config.keyboardOptions,
+                            prefix = if (config.prefix == null) null else StringResourceToken.fromString(config.prefix),
+                            onCleanClick = {
+                                text = ""
+                            },
+                        ) {
+                            text = it
+                        }
+                    }
+                }
+            }
+
+            items(items = uiState.currentConfig.extraTextFields) { config ->
                 var text by config.value
                 val emphasizedState by config.emphasizedState
                 val emphasizedOffset by emphasizedOffset(targetState = emphasizedState)

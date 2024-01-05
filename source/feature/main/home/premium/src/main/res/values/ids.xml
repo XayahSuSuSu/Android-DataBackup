@@ -41,6 +41,7 @@
     <item name="ic_rounded_palette" type="drawable" />
     <item name="ic_rounded_image" type="drawable" />
     <item name="ic_rounded_call" type="drawable" />
+    <item name="ic_rounded_folder_open" type="drawable" />
     <item name="url" type="string" />
     <item name="username" type="string" />
     <item name="password" type="string" />
@@ -49,4 +50,7 @@
     <item name="confirm" type="string" />
     <item name="modify" type="string" />
     <item name="edit" type="string" />
+    <item name="shared_dir" type="string" />
+    <item name="allow_empty" type="string" />
+    <item name="domain" type="string" />
 </resources>

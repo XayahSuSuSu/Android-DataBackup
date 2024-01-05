@@ -24,7 +24,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -69,10 +68,6 @@ fun PageCloudList(navController: NavHostController) {
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val accounts by viewModel.accounts.collectAsState()
-
-    LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.Update)
-    }
 
     Scaffold(
         floatingActionButton = {
@@ -210,12 +205,8 @@ fun PageCloudList(navController: NavHostController) {
                                             text = StringResourceToken.fromStringId(R.string.main_account).value,
                                             enabled = true
                                         )
-                                        if (item.account.type.isNotEmpty()) RoundChip(
-                                            text = StringResourceToken.fromString(item.account.type).value,
-                                            enabled = true
-                                        )
-                                        if (item.account.vendor.isNotEmpty()) RoundChip(
-                                            text = StringResourceToken.fromString(item.account.vendor).value,
+                                        RoundChip(
+                                            text = StringResourceToken.fromString(item.type.toString()).value,
                                             enabled = true
                                         )
                                     }

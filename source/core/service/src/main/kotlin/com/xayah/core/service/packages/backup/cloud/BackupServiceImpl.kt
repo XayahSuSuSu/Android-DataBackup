@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.google.gson.reflect.TypeToken
 import com.xayah.core.common.util.toLineString
 import com.xayah.core.common.util.trim
 import com.xayah.core.data.repository.CloudRepository
@@ -17,11 +16,11 @@ import com.xayah.core.database.model.PackageBackupOperation
 import com.xayah.core.database.model.PackageRestoreEntire
 import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.datastore.readBackupUserId
-import com.xayah.core.datastore.readRcloneMainAccountRemote
+import com.xayah.core.datastore.readRcloneMainAccountName
 import com.xayah.core.datastore.readResetBackupList
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
-import com.xayah.core.model.RcloneSizeInfo
+import com.xayah.core.network.client.getCloud
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.model.BackupPreprocessing
@@ -32,14 +31,13 @@ import com.xayah.core.service.util.upsertMedia
 import com.xayah.core.service.util.upsertObb
 import com.xayah.core.service.util.upsertUser
 import com.xayah.core.service.util.upsertUserDe
-import com.xayah.core.util.CloudTmpAbsoluteDir
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.cloudTmpAbsoluteDir
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PreparationUtil
-import com.xayah.core.util.command.Rclone
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
@@ -123,23 +121,26 @@ internal class BackupServiceImpl : Service() {
     suspend fun processing(timestamp: Long) = withIOContext {
         mutex.withLock {
             log { "Processing is starting." }
-
+            val cloudEntity = cloudRepository.queryByName(context.readRcloneMainAccountName().first())
+            val client = cloudEntity!!.getCloud().apply {
+                connect()
+            }
+            val remote = cloudEntity.remote
             val userId = context.readBackupUserId().first()
-            val remote = context.readRcloneMainAccountRemote().first()
             val archivesPackagesRelativeDir = PathUtil.getArchivesPackagesRelativeDir()
             val configsRelativeDir = PathUtil.getConfigsRelativeDir()
-            val tmpArchivesPackagesDir = "$CloudTmpAbsoluteDir/$archivesPackagesRelativeDir"
-            val tmpConfigsDir = "$CloudTmpAbsoluteDir/$configsRelativeDir"
+            val tmpArchivesPackagesDir = "${context.cloudTmpAbsoluteDir()}/$archivesPackagesRelativeDir"
+            val tmpConfigsDir = "${context.cloudTmpAbsoluteDir()}/$configsRelativeDir"
             val remoteArchivesPackagesDir = "$remote/$archivesPackagesRelativeDir"
-            val remoteConfigsDir = "$CloudTmpAbsoluteDir/$configsRelativeDir"
+            val remoteConfigsDir = "$remote/$configsRelativeDir"
             log { "Trying to create: $tmpArchivesPackagesDir." }
             log { "Trying to create: $tmpConfigsDir." }
             rootService.mkdirs(tmpArchivesPackagesDir)
             rootService.mkdirs(tmpConfigsDir)
             log { "Trying to create: $remoteArchivesPackagesDir." }
             log { "Trying to create: $remoteConfigsDir." }
-            Rclone.mkdir(remoteArchivesPackagesDir)
-            Rclone.mkdir(remoteConfigsDir)
+            client.mkdirRecursively(remoteArchivesPackagesDir)
+            client.mkdirRecursively(remoteConfigsDir)
 
             val packages = packageBackupDao.querySelectedPackages()
             log { "Task count: ${packages.size}." }
@@ -163,7 +164,7 @@ internal class BackupServiceImpl : Service() {
                 val tmpDstDir = "${tmpArchivesPackagesDir}/${currentPackage.packageName}/${timestamp}"
                 val remoteDstDir = "${remoteArchivesPackagesDir}/${currentPackage.packageName}/${timestamp}"
                 rootService.mkdirs(tmpDstDir)
-                Rclone.mkdir(remoteDstDir)
+                client.mkdirRecursively(remoteDstDir)
 
                 if (currentPackage.apkSelected) {
                     packageBackupOpDao.upsertApk(
@@ -178,7 +179,7 @@ internal class BackupServiceImpl : Service() {
                                     op = packageBackupOperation,
                                     opState = OperationState.UPLOADING,
                                 )
-                                packagesBackupUtil.upload(src = packagesBackupUtil.getApkDst(dstDir = tmpDstDir), dstDir = remoteDstDir)
+                                cloudRepository.upload(client = client, src = packagesBackupUtil.getApkDst(dstDir = tmpDstDir), dstDir = remoteDstDir)
                                     .also {
                                         packageBackupOpDao.upsertApk(
                                             op = packageBackupOperation,
@@ -221,7 +222,8 @@ internal class BackupServiceImpl : Service() {
                                     op = packageBackupOperation,
                                     opState = OperationState.UPLOADING,
                                 )
-                                packagesBackupUtil.upload(
+                                cloudRepository.upload(
+                                    client = client,
                                     src = packagesBackupUtil.getDataDst(dstDir = tmpDstDir, dataType = DataType.PACKAGE_USER),
                                     dstDir = remoteDstDir
                                 ).also {
@@ -261,7 +263,8 @@ internal class BackupServiceImpl : Service() {
                                     op = packageBackupOperation,
                                     opState = OperationState.UPLOADING,
                                 )
-                                packagesBackupUtil.upload(
+                                cloudRepository.upload(
+                                    client = client,
                                     src = packagesBackupUtil.getDataDst(dstDir = tmpDstDir, dataType = DataType.PACKAGE_USER_DE),
                                     dstDir = remoteDstDir
                                 ).also {
@@ -301,7 +304,8 @@ internal class BackupServiceImpl : Service() {
                                     op = packageBackupOperation,
                                     opState = OperationState.UPLOADING,
                                 )
-                                packagesBackupUtil.upload(
+                                cloudRepository.upload(
+                                    client = client,
                                     src = packagesBackupUtil.getDataDst(dstDir = tmpDstDir, dataType = DataType.PACKAGE_DATA),
                                     dstDir = remoteDstDir
                                 ).also {
@@ -341,7 +345,8 @@ internal class BackupServiceImpl : Service() {
                                     op = packageBackupOperation,
                                     opState = OperationState.UPLOADING,
                                 )
-                                packagesBackupUtil.upload(
+                                cloudRepository.upload(
+                                    client = client,
                                     src = packagesBackupUtil.getDataDst(dstDir = tmpDstDir, dataType = DataType.PACKAGE_OBB),
                                     dstDir = remoteDstDir
                                 ).also {
@@ -381,7 +386,8 @@ internal class BackupServiceImpl : Service() {
                                     op = packageBackupOperation,
                                     opState = OperationState.UPLOADING,
                                 )
-                                packagesBackupUtil.upload(
+                                cloudRepository.upload(
+                                    client = client,
                                     src = packagesBackupUtil.getDataDst(dstDir = tmpDstDir, dataType = DataType.PACKAGE_MEDIA),
                                     dstDir = remoteDstDir
                                 ).also {
@@ -429,14 +435,10 @@ internal class BackupServiceImpl : Service() {
                         compressionType = packagesBackupUtil.compressionType,
                         savePath = remote,
                     ).apply {
-                        Rclone.size(src = remoteDstDir).also { result ->
-                            runCatching {
-                                val type = object : TypeToken<RcloneSizeInfo>() {}.type
-                                val info = gsonUtil.fromJson<RcloneSizeInfo>(result.outString, type)
-                                sizeBytes = info.bytes
-                            }.onFailure {
-                                log { "Failed to calculate the total size of $remoteDstDir." }
-                            }
+                        runCatching {
+                            sizeBytes = client.size(src = remoteDstDir)
+                        }.onFailure {
+                            log { "Failed to calculate the total size of $remoteDstDir: ${it.localizedMessage}." }
                         }
                     }
                     packageRestoreDao.upsert(restoreEntire)
@@ -444,7 +446,7 @@ internal class BackupServiceImpl : Service() {
                     // Save config
                     val tmpConfigPath = PathUtil.getPackageRestoreConfigDst(tmpDstDir)
                     rootService.writeProtoBuf(data = restoreEntire, dst = tmpConfigPath)
-                    packagesBackupUtil.upload(src = tmpConfigPath, dstDir = remoteDstDir)
+                    cloudRepository.upload(client = client, src = tmpConfigPath, dstDir = remoteDstDir)
 
                     // Reset selected items if enabled.
                     if (context.readResetBackupList().first()) {
@@ -477,15 +479,19 @@ internal class BackupServiceImpl : Service() {
                 log { "AccessibilityServices is empty, skip restoring." }
             }
 
-            val remoteDir = context.readRcloneMainAccountRemote().first()
-            val tmpDstDir = CloudTmpAbsoluteDir
+            val cloudEntity = cloudRepository.queryByName(context.readRcloneMainAccountName().first())
+            val client = cloudEntity!!.getCloud().apply {
+                connect()
+            }
+            val remoteDir = cloudEntity.remote
+            val tmpDstDir = context.cloudTmpAbsoluteDir()
 
             // Backup itself if enabled.
             if (context.readBackupItself().first()) {
                 log { "Backup itself enabled." }
                 packagesBackupUtil.backupItself(dstDir = tmpDstDir)
                 val src = packagesBackupUtil.getItselfDst(tmpDstDir)
-                packagesBackupUtil.upload(src = src, dstDir = remoteDir)
+                cloudRepository.upload(client = client, src = src, dstDir = remoteDir)
             }
 
             val tmpConfigsDstDir = pathUtil.getConfigsDir(tmpDstDir)
@@ -494,19 +500,19 @@ internal class BackupServiceImpl : Service() {
             log { "Save icons." }
             packagesBackupUtil.backupIcons(dstDir = tmpConfigsDstDir)
             val src = packagesBackupUtil.getIconsDst(dstDir = tmpConfigsDstDir)
-            packagesBackupUtil.upload(src = src, dstDir = remoteConfigsDstDir)
+            cloudRepository.upload(client = client, src = src, dstDir = remoteConfigsDstDir)
 
             log { "Save configs." }
             val configsSrc = PathUtil.getPackageRestoreConfigDst(dstDir = remoteConfigsDstDir)
-            Rclone.copy(src = configsSrc, dst = tmpConfigsDstDir)
+            cloudRepository.download(client = client, src = configsSrc, dstDir = tmpConfigsDstDir, onDownloaded = {}, deleteAfterDownloaded = false)
 
             val configsDst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpConfigsDstDir)
             packageRestoreRepository.writePackagesProtoBuf(configsDst) { storedList ->
                 storedList.apply { addAll(packageRestoreDao.queryPackages(timestamp)) }.toList()
             }
-            packagesBackupUtil.upload(src = configsDst, dstDir = remoteConfigsDstDir)
+            cloudRepository.upload(client = client, src = configsDst, dstDir = remoteConfigsDstDir)
 
-            rootService.deleteRecursively(CloudTmpAbsoluteDir)
+            rootService.deleteRecursively(context.cloudTmpAbsoluteDir())
         }
     }
 }

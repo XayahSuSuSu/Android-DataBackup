@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:service"))
     implementation(project(":core:rootservice"))
+    implementation(project(":core:network"))
 
     // Feature
     implementation(project(":feature:main:task:packages:common"))

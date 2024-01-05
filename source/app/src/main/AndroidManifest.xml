@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        tools:replace="android:name"
         android:name=".DataBackupApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"

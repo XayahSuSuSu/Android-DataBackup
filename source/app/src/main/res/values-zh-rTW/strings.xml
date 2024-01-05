@@ -175,4 +175,7 @@
     <string name="main_account_not_set">主帳戶未設定</string>
     <string name="local">本地</string>
     <string name="share">分享</string>
+    <string name="shared_dir">共享資料夾</string>
+    <string name="allow_empty">可空</string>
+    <string name="domain">域</string>
 </resources>

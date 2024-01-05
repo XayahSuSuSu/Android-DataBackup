@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "8b72d3793c7ffe885478e901639d0caf",
+    "identityHash": "5584c75fe59bc52ce9b415925e8316fa",
     "entities": [
       {
         "tableName": "LogEntity",
@@ -1098,7 +1098,7 @@
       },
       {
         "tableName": "CloudEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `backupSavePath` TEXT NOT NULL DEFAULT '', `active` INTEGER NOT NULL DEFAULT 0, `type` TEXT NOT NULL DEFAULT '', `host` TEXT NOT NULL DEFAULT '', `port` INTEGER NOT NULL DEFAULT -1, `url` TEXT NOT NULL DEFAULT '', `user` TEXT NOT NULL DEFAULT '', `pass` TEXT NOT NULL DEFAULT '', `vendor` TEXT NOT NULL DEFAULT '', `sizeBytes` INTEGER NOT NULL DEFAULT -255, `mounted` INTEGER NOT NULL DEFAULT 0, `remote` TEXT NOT NULL DEFAULT '', `local` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `type` TEXT NOT NULL, `host` TEXT NOT NULL, `user` TEXT NOT NULL, `pass` TEXT NOT NULL, `remote` TEXT NOT NULL, `extra` TEXT NOT NULL, PRIMARY KEY(`name`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -1107,95 +1107,40 @@
             "notNull": true
           },
           {
-            "fieldPath": "backupSavePath",
-            "columnName": "backupSavePath",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
-          },
-          {
-            "fieldPath": "active",
-            "columnName": "active",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "account.type",
+            "fieldPath": "type",
             "columnName": "type",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": true
           },
           {
-            "fieldPath": "account.host",
+            "fieldPath": "host",
             "columnName": "host",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": true
           },
           {
-            "fieldPath": "account.port",
-            "columnName": "port",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "-1"
-          },
-          {
-            "fieldPath": "account.url",
-            "columnName": "url",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
-          },
-          {
-            "fieldPath": "account.user",
+            "fieldPath": "user",
             "columnName": "user",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": true
           },
           {
-            "fieldPath": "account.pass",
+            "fieldPath": "pass",
             "columnName": "pass",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": true
           },
           {
-            "fieldPath": "account.vendor",
-            "columnName": "vendor",
-            "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
-          },
-          {
-            "fieldPath": "account.sizeBytes",
-            "columnName": "sizeBytes",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "-255"
-          },
-          {
-            "fieldPath": "mount.mounted",
-            "columnName": "mounted",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "mount.remote",
+            "fieldPath": "remote",
             "columnName": "remote",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": true
           },
           {
-            "fieldPath": "mount.local",
-            "columnName": "local",
+            "fieldPath": "extra",
+            "columnName": "extra",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -1279,7 +1224,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8b72d3793c7ffe885478e901639d0caf')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5584c75fe59bc52ce9b415925e8316fa')"
     ]
   }
 }

@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:rootservice"))
     implementation(project(":core:data"))
+    implementation(project(":core:network"))
 
     // Gson
     implementation(libs.gson)

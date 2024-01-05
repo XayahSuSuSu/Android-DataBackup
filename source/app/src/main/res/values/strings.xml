@@ -180,4 +180,7 @@
     <string name="main_account_not_set">Main account not set</string>
     <string name="local">Local</string>
     <string name="share">Share</string>
+    <string name="shared_dir">Shared dir</string>
+    <string name="allow_empty">Allow empty</string>
+    <string name="domain">Domain</string>
 </resources>

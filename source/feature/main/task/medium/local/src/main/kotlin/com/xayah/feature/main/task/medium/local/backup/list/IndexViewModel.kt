@@ -19,7 +19,7 @@ import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.feature.main.task.medium.local.R
 import com.xayah.libpickyou.ui.PickYouLauncher
-import com.xayah.libpickyou.ui.activity.PickerType
+import com.xayah.libpickyou.ui.model.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

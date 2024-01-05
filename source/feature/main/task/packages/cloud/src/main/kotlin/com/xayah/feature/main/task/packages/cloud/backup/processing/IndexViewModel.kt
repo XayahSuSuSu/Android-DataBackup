@@ -6,6 +6,7 @@ import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageBackupOpRepository
 import com.xayah.core.data.repository.PackageBackupRepository
 import com.xayah.core.data.repository.TaskRepository
@@ -16,9 +17,9 @@ import com.xayah.core.model.EmojiString
 import com.xayah.core.model.OpType
 import com.xayah.core.model.ProcessingState
 import com.xayah.core.model.TaskType
+import com.xayah.core.network.client.getCloud
 import com.xayah.core.service.packages.backup.cloud.BackupService
 import com.xayah.core.util.DateUtil
-import com.xayah.core.util.command.Rclone
 import com.xayah.feature.main.task.packages.cloud.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -42,6 +43,7 @@ class IndexViewModel @Inject constructor(
     packageBackupRepository: PackageBackupRepository,
     packageBackupOpRepository: PackageBackupOpRepository,
     private val taskRepository: TaskRepository,
+    private val cloudRepository: CloudRepository,
     private val backupService: BackupService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState()) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
@@ -70,7 +72,8 @@ class IndexViewModel @Inject constructor(
 
                     // Check server connection.
                     val mainAccountName = taskRepository.getRcloneMainAccountName()
-                    val remote = taskRepository.getRcloneMainAccountRemote()
+                    val cloudEntity = cloudRepository.queryByName(mainAccountName)
+                    val client = cloudEntity!!.getCloud()
                     if (mainAccountName.isEmpty()) {
                         emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                         emitEffectSuspend(
@@ -82,13 +85,22 @@ class IndexViewModel @Inject constructor(
                         emitStateSuspend(uiState.value.copy(processingState = ProcessingState.Idle))
                         return
                     } else {
-                        Rclone.testIO(remote = remote).also { result ->
-                            if (result.isSuccess.not()) {
-                                emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                                emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = result.outString, duration = SnackbarDuration.Long))
-                                emitStateSuspend(uiState.value.copy(processingState = ProcessingState.Idle))
-                                return
-                            }
+                        emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                        emitEffect(
+                            IndexUiEffect.ShowSnackbar(
+                                message = "${cloudRepository.getString(R.string.processing)}...",
+                                duration = SnackbarDuration.Indefinite
+                            )
+                        )
+                        runCatching {
+                            client.testConnection()
+                            emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                        }.onFailure {
+                            emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                            if (it.localizedMessage != null)
+                                emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = it.localizedMessage!!, duration = SnackbarDuration.Long))
+                            emitStateSuspend(uiState.value.copy(processingState = ProcessingState.Idle))
+                            return
                         }
                     }
 
@@ -102,23 +114,29 @@ class IndexViewModel @Inject constructor(
                         }
                     }
 
-                    val backupPreprocessing = backupService.preprocessing()
-                    backupService.processing(timestamp = state.timestampState)
-                    emitEffect(
-                        IndexUiEffect.ShowSnackbar(
-                            message = taskRepository.getString(R.string.wait_for_remaining_data_processing),
-                            duration = SnackbarDuration.Indefinite
+                    runCatching {
+                        val backupPreprocessing = backupService.preprocessing()
+                        backupService.processing(timestamp = state.timestampState)
+                        emitEffect(
+                            IndexUiEffect.ShowSnackbar(
+                                message = taskRepository.getString(R.string.wait_for_remaining_data_processing),
+                                duration = SnackbarDuration.Indefinite
+                            )
                         )
-                    )
-                    backupService.postProcessing(backupPreprocessing = backupPreprocessing, timestamp = state.timestampState)
-                    backupService.destroyService()
+                        backupService.postProcessing(backupPreprocessing = backupPreprocessing, timestamp = state.timestampState)
+                        backupService.destroyService()
+                        emitEffect(IndexUiEffect.DismissSnackbar)
+                        emitEffect(
+                            IndexUiEffect.ShowSnackbar(
+                                message = taskRepository.getString(R.string.backup_completed) + EmojiString.PARTY_POPPER.emoji
+                            )
+                        )
+                    }.onFailure {
+                        emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                        if (it.localizedMessage != null)
+                            emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = it.localizedMessage!!, duration = SnackbarDuration.Long))
+                    }
                     emitStateSuspend(uiState.value.copy(processingState = ProcessingState.DONE))
-                    emitEffect(IndexUiEffect.DismissSnackbar)
-                    emitEffect(
-                        IndexUiEffect.ShowSnackbar(
-                            message = taskRepository.getString(R.string.backup_completed) + EmojiString.PARTY_POPPER.emoji
-                        )
-                    )
                 }
             }
         }

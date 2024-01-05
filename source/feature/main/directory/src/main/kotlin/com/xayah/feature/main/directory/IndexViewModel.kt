@@ -14,7 +14,7 @@ import com.xayah.core.model.util.of
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.libpickyou.ui.PickYouLauncher
-import com.xayah.libpickyou.ui.activity.PickerType
+import com.xayah.libpickyou.ui.model.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

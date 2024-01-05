@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.annotation.StringRes
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.PackageRestoreEntireDao
+import com.xayah.core.database.model.CloudEntity
 import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.PackageRestoreEntire
+import com.xayah.core.datastore.readRcloneMainAccountName
 import com.xayah.core.datastore.readRcloneMainAccountRemote
 import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.readRestoreInstallationTypeIndex
@@ -19,6 +21,8 @@ import com.xayah.core.datastore.saveRestoreSortType
 import com.xayah.core.datastore.saveRestoreSortTypeIndex
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.SortType
+import com.xayah.core.network.client.CloudClient
+import com.xayah.core.network.client.getCloud
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.ui.model.StringResourceToken
@@ -26,13 +30,10 @@ import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.util.CloudTmpAbsoluteDir
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil.DOT
-import com.xayah.core.util.command.Rclone
-import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.localRestoreSaveDir
@@ -75,6 +76,14 @@ class PackageRestoreRepository @Inject constructor(
     private val configsDir = restoreSavePath.map { pathUtil.getConfigsDir(it) }.distinctUntilChanged()
 
     val remoteDir = context.readRcloneMainAccountRemote().distinctUntilChanged()
+
+    private suspend fun getCloud(): Pair<CloudEntity, CloudClient> {
+        val cloudEntity = cloudRepository.queryByName(context.readRcloneMainAccountName().first())
+        return cloudEntity!! to cloudEntity.getCloud().apply {
+            connect()
+        }
+    }
+
 
     suspend fun writePackagesProtoBuf(dst: String, onStoredList: suspend (MutableList<PackageRestoreEntire>) -> List<PackageRestoreEntire>) {
         val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
@@ -124,25 +133,20 @@ class PackageRestoreRepository @Inject constructor(
     }
 
     suspend fun deleteRemote(items: List<PackageRestoreEntire>) = withIOContext {
-        val remoteDir = context.readRcloneMainAccountRemote().first()
-        val remotePackagesDir = pathUtil.getArchivesPackagesDir(parent = remoteDir)
+        val (entity, client) = getCloud()
+        val remotePackagesDir = pathUtil.getArchivesPackagesDir(parent = entity.remote)
         items.forEach { item ->
             val path = "${remotePackagesDir}/${item.packageName}/${item.timestamp}"
             log { "Trying to delete: $path" }
-            Rclone.purge(src = path)
-            rootService.deleteRecursively(path = path)
+            client.deleteRecursively(path)
         }
 
-        Rclone.rmdirs(src = pathUtil.getArchivesDir(remoteDir))
-        Rclone.rmdirs(src = pathUtil.getConfigsDir(remoteDir))
-
-        val remoteConfigsDstDir = pathUtil.getConfigsDir(remoteDir)
+        val remoteConfigsDstDir = pathUtil.getConfigsDir(entity.remote)
         val configsSrc = PathUtil.getPackageRestoreConfigDst(dstDir = remoteConfigsDstDir)
-        val tmpDstDir = CloudTmpAbsoluteDir
-        val tmpConfigsDstDir = pathUtil.getConfigsDir(tmpDstDir)
+        val tmpConfigsDstDir = pathUtil.getCloudTmpConfigsDir()
         val configsDst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpConfigsDstDir)
         runCatching {
-            cloudRepository.download(src = configsSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
+            cloudRepository.download(client = client, src = configsSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
                 writePackagesProtoBuf(configsDst) { storedList ->
                     storedList.apply {
                         items.forEach { item ->
@@ -151,7 +155,7 @@ class PackageRestoreRepository @Inject constructor(
                     }.toList()
                 }
 
-                cloudRepository.upload(src = configsDst, dstDir = remoteConfigsDstDir).also { result ->
+                cloudRepository.upload(client = client, src = configsDst, dstDir = remoteConfigsDstDir).also { result ->
                     if (result.isSuccess) {
                         packageRestoreDao.delete(items)
                     } else {
@@ -234,15 +238,15 @@ class PackageRestoreRepository @Inject constructor(
     }
 
     suspend fun loadRemoteConfig() {
+        val (entity, client) = getCloud()
         val packageRestoreList: MutableList<PackageRestoreEntire> = mutableListOf()
-        val remoteDir = context.readRcloneMainAccountRemote().first()
+        val remoteDir = entity.remote
         val remoteConfigsDstDir = pathUtil.getConfigsDir(remoteDir)
         val configsSrc = PathUtil.getPackageRestoreConfigDst(dstDir = remoteConfigsDstDir)
-        val tmpDstDir = CloudTmpAbsoluteDir
-        val tmpConfigsDstDir = pathUtil.getConfigsDir(tmpDstDir)
+        val tmpConfigsDstDir = pathUtil.getCloudTmpConfigsDir()
         val configsDst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpConfigsDstDir)
         runCatching {
-            cloudRepository.download(src = configsSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
+            cloudRepository.download(client = client, src = configsSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
                 val storedList = rootService.readProtoBuf<List<PackageRestoreEntire>>(src = configsDst)
                 packageRestoreList.addAll(storedList!!)
             })
@@ -261,28 +265,20 @@ class PackageRestoreRepository @Inject constructor(
     suspend fun loadLocalIcon() {
         val archivePath = "${configsDir.first()}/$IconRelativeDir.${CompressionType.TAR.suffix}"
         Tar.decompress(src = archivePath, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
-        SELinux.getContext(path = context.filesDir()).also { result ->
-            val pathContext = if (result.isSuccess) result.outString else ""
-            SELinux.chcon(context = pathContext, path = context.filesDir())
-            SELinux.chown(uid = context.applicationInfo.uid, path = context.filesDir())
-        }
+        PathUtil.setFilesDirSELinux(context)
     }
 
     suspend fun loadRemoteIcon() {
-        val remoteDir = context.readRcloneMainAccountRemote().first()
+        val (entity, client) = getCloud()
+        val remoteDir = entity.remote
         val remoteConfigsDstDir = pathUtil.getConfigsDir(remoteDir)
         val iconSrc = "${remoteConfigsDstDir}/$IconRelativeDir.${CompressionType.TAR.suffix}"
-        val tmpDstDir = CloudTmpAbsoluteDir
-        val tmpConfigsDstDir = pathUtil.getConfigsDir(tmpDstDir)
+        val tmpConfigsDstDir = pathUtil.getCloudTmpConfigsDir()
         val iconDst = "${tmpConfigsDstDir}/$IconRelativeDir.${CompressionType.TAR.suffix}"
 
-        cloudRepository.download(src = iconSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
+        cloudRepository.download(client = client, src = iconSrc, dstDir = tmpConfigsDstDir, onDownloaded = {
             Tar.decompress(src = iconDst, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
-            SELinux.getContext(path = context.filesDir()).also { result ->
-                val pathContext = if (result.isSuccess) result.outString else ""
-                SELinux.chcon(context = pathContext, path = context.filesDir())
-                SELinux.chown(uid = context.applicationInfo.uid, path = context.filesDir())
-            }
+            PathUtil.setFilesDirSELinux(context)
         })
     }
 

@@ -15,7 +15,6 @@ import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.command.Pm
-import com.xayah.core.util.command.Rclone
 import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
@@ -43,24 +42,6 @@ class PackagesBackupUtil @Inject constructor(
 
     @Inject
     lateinit var rootService: RemoteRootService
-
-    suspend fun upload(src: String, dstDir: String): ShellResult = run {
-        log { "Uploading..." }
-
-        var isSuccess: Boolean
-        val out = mutableListOf<String>()
-
-        Rclone.copy(src = src, dst = dstDir).also { result ->
-            isSuccess = result.isSuccess
-            out.addAll(result.out)
-        }
-        rootService.deleteRecursively(src).also { result ->
-            isSuccess = isSuccess and result
-            if (result.not()) out.add(log { "Failed to delete $src." })
-        }
-
-        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
-    }
 
     private suspend fun testArchive(src: String, compressionType: CompressionType = this.compressionType) = run {
         var code: Int

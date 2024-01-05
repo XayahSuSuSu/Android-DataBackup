@@ -4,17 +4,16 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.google.gson.reflect.TypeToken
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.database.dao.PackageRestoreEntireDao
 import com.xayah.core.database.dao.PackageRestoreOperationDao
 import com.xayah.core.database.model.OperationMask
 import com.xayah.core.database.model.PackageRestoreOperation
-import com.xayah.core.datastore.readRcloneMainAccountRemote
+import com.xayah.core.datastore.readRcloneMainAccountName
 import com.xayah.core.datastore.readResetRestoreList
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
-import com.xayah.core.model.RcloneSizeInfo
+import com.xayah.core.network.client.getCloud
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.util.PackagesRestoreUtil
@@ -24,13 +23,12 @@ import com.xayah.core.service.util.upsertMedia
 import com.xayah.core.service.util.upsertObb
 import com.xayah.core.service.util.upsertUser
 import com.xayah.core.service.util.upsertUserDe
-import com.xayah.core.util.CloudTmpAbsoluteDir
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.cloudTmpAbsoluteDir
 import com.xayah.core.util.command.PreparationUtil
-import com.xayah.core.util.command.Rclone
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
@@ -94,10 +92,13 @@ internal class RestoreServiceImpl : Service() {
     suspend fun processing(timestamp: Long) = withIOContext {
         mutex.withLock {
             log { "Processing is starting." }
-
-            val remote = context.readRcloneMainAccountRemote().first()
+            val cloudEntity = cloudRepository.queryByName(context.readRcloneMainAccountName().first())
+            val client = cloudEntity!!.getCloud().apply {
+                connect()
+            }
+            val remote = cloudEntity.remote
             val archivesPackagesRelativeDir = PathUtil.getArchivesPackagesRelativeDir()
-            val tmpArchivesPackagesDir = "$CloudTmpAbsoluteDir/$archivesPackagesRelativeDir"
+            val tmpArchivesPackagesDir = "${context.cloudTmpAbsoluteDir()}/$archivesPackagesRelativeDir"
             val remoteArchivesPackagesDir = "$remote/$archivesPackagesRelativeDir"
 
             val packages = packageRestoreDao.queryActiveTotalPackages()
@@ -119,21 +120,17 @@ internal class RestoreServiceImpl : Service() {
                 if (currentPackage.apkSelected) {
                     var sizeBytes: Long = 0
                     val remoteApkSrc = packagesRestoreUtil.getApkSrc(srcDir = remoteSrcDir, compressionType = currentPackage.compressionType)
-                    Rclone.size(src = remoteApkSrc).also { result ->
-                        runCatching {
-                            val type = object : TypeToken<RcloneSizeInfo>() {}.type
-                            val info = gsonUtil.fromJson<RcloneSizeInfo>(result.outString, type)
-                            sizeBytes = info.bytes
-                        }.onFailure {
-                            log { "Failed to calculate the total size of $remoteApkSrc." }
-                        }
+                    runCatching {
+                        sizeBytes = client.size(src = remoteApkSrc)
+                    }.onFailure {
+                        log { "Failed to calculate the total size of $remoteApkSrc: ${it.localizedMessage}." }
                     }
                     packageRestoreOpDao.upsertApk(
                         op = packageRestoreOperation,
                         opState = OperationState.PROCESSING,
                         opBytes = sizeBytes
                     )
-                    cloudRepository.download(src = remoteApkSrc, dstDir = tmpSrcDir, onDownloaded = {
+                    cloudRepository.download(client = client, src = remoteApkSrc, dstDir = tmpSrcDir, onDownloaded = {
                         packagesRestoreUtil.restoreApk(
                             packageName = currentPackage.packageName,
                             srcDir = tmpSrcDir,
@@ -159,21 +156,17 @@ internal class RestoreServiceImpl : Service() {
                     // User
                     var userSizeBytes: Long = 0
                     val remoteUserSrc = packagesRestoreUtil.getDataSrc(remoteSrcDir, DataType.PACKAGE_USER, currentPackage.compressionType)
-                    Rclone.size(src = remoteUserSrc).also { result ->
-                        runCatching {
-                            val type = object : TypeToken<RcloneSizeInfo>() {}.type
-                            val info = gsonUtil.fromJson<RcloneSizeInfo>(result.outString, type)
-                            userSizeBytes = info.bytes
-                        }.onFailure {
-                            log { "Failed to calculate the total size of $remoteUserSrc." }
-                        }
+                    runCatching {
+                        userSizeBytes = client.size(src = remoteUserSrc)
+                    }.onFailure {
+                        log { "Failed to calculate the total size of $remoteUserSrc: ${it.localizedMessage}." }
                     }
                     packageRestoreOpDao.upsertUser(
                         op = packageRestoreOperation,
                         opState = OperationState.PROCESSING,
                         opBytes = userSizeBytes
                     )
-                    cloudRepository.download(src = remoteUserSrc, dstDir = tmpSrcDir, onDownloaded = {
+                    cloudRepository.download(client = client, src = remoteUserSrc, dstDir = tmpSrcDir, onDownloaded = {
                         packagesRestoreUtil.restoreData(
                             packageName = currentPackage.packageName,
                             dataType = DataType.PACKAGE_USER,
@@ -197,20 +190,16 @@ internal class RestoreServiceImpl : Service() {
                     // UserDe
                     var userDeSizeBytes: Long = 0
                     val remoteUserDeSrc = packagesRestoreUtil.getDataSrc(remoteSrcDir, DataType.PACKAGE_USER_DE, currentPackage.compressionType)
-                    Rclone.size(src = remoteUserDeSrc).also { result ->
-                        runCatching {
-                            val type = object : TypeToken<RcloneSizeInfo>() {}.type
-                            val info = gsonUtil.fromJson<RcloneSizeInfo>(result.outString, type)
-                            userDeSizeBytes = info.bytes
-                        }.onFailure {
-                            log { "Failed to calculate the total size of $remoteUserDeSrc." }
-                        }
+                    runCatching {
+                        userDeSizeBytes = client.size(src = remoteUserDeSrc)
+                    }.onFailure {
+                        log { "Failed to calculate the total size of $remoteUserDeSrc: ${it.localizedMessage}." }
                     }
                     packageRestoreOpDao.upsertUserDe(
                         op = packageRestoreOperation, opState = OperationState.PROCESSING,
                         opBytes = userDeSizeBytes
                     )
-                    cloudRepository.download(src = remoteUserDeSrc, dstDir = tmpSrcDir, onDownloaded = {
+                    cloudRepository.download(client = client, src = remoteUserDeSrc, dstDir = tmpSrcDir, onDownloaded = {
                         packagesRestoreUtil.restoreData(
                             packageName = currentPackage.packageName,
                             dataType = DataType.PACKAGE_USER_DE,
@@ -234,20 +223,16 @@ internal class RestoreServiceImpl : Service() {
                     // Data
                     var dataSizeBytes: Long = 0
                     val remoteDataSrc = packagesRestoreUtil.getDataSrc(remoteSrcDir, DataType.PACKAGE_DATA, currentPackage.compressionType)
-                    Rclone.size(src = remoteDataSrc).also { result ->
-                        runCatching {
-                            val type = object : TypeToken<RcloneSizeInfo>() {}.type
-                            val info = gsonUtil.fromJson<RcloneSizeInfo>(result.outString, type)
-                            dataSizeBytes = info.bytes
-                        }.onFailure {
-                            log { "Failed to calculate the total size of $remoteDataSrc." }
-                        }
+                    runCatching {
+                        dataSizeBytes = client.size(src = remoteDataSrc)
+                    }.onFailure {
+                        log { "Failed to calculate the total size of $remoteDataSrc: ${it.localizedMessage}." }
                     }
                     packageRestoreOpDao.upsertData(
                         op = packageRestoreOperation, opState = OperationState.PROCESSING,
                         opBytes = dataSizeBytes
                     )
-                    cloudRepository.download(src = remoteDataSrc, dstDir = tmpSrcDir, onDownloaded = {
+                    cloudRepository.download(client = client, src = remoteDataSrc, dstDir = tmpSrcDir, onDownloaded = {
                         packagesRestoreUtil.restoreData(
                             packageName = currentPackage.packageName,
                             dataType = DataType.PACKAGE_DATA,
@@ -271,20 +256,16 @@ internal class RestoreServiceImpl : Service() {
                     // Obb
                     var obbSizeBytes: Long = 0
                     val remoteObbSrc = packagesRestoreUtil.getDataSrc(remoteSrcDir, DataType.PACKAGE_OBB, currentPackage.compressionType)
-                    Rclone.size(src = remoteObbSrc).also { result ->
-                        runCatching {
-                            val type = object : TypeToken<RcloneSizeInfo>() {}.type
-                            val info = gsonUtil.fromJson<RcloneSizeInfo>(result.outString, type)
-                            obbSizeBytes = info.bytes
-                        }.onFailure {
-                            log { "Failed to calculate the total size of $remoteObbSrc." }
-                        }
+                    runCatching {
+                        obbSizeBytes = client.size(src = remoteObbSrc)
+                    }.onFailure {
+                        log { "Failed to calculate the total size of $remoteObbSrc: ${it.localizedMessage}." }
                     }
                     packageRestoreOpDao.upsertObb(
                         op = packageRestoreOperation, opState = OperationState.PROCESSING,
                         opBytes = obbSizeBytes
                     )
-                    cloudRepository.download(src = remoteObbSrc, dstDir = tmpSrcDir, onDownloaded = {
+                    cloudRepository.download(client = client, src = remoteObbSrc, dstDir = tmpSrcDir, onDownloaded = {
                         packagesRestoreUtil.restoreData(
                             packageName = currentPackage.packageName,
                             dataType = DataType.PACKAGE_OBB,
@@ -308,20 +289,16 @@ internal class RestoreServiceImpl : Service() {
                     // Media
                     var mediaSizeBytes: Long = 0
                     val remoteMediaSrc = packagesRestoreUtil.getDataSrc(remoteSrcDir, DataType.PACKAGE_MEDIA, currentPackage.compressionType)
-                    Rclone.size(src = remoteMediaSrc).also { result ->
-                        runCatching {
-                            val type = object : TypeToken<RcloneSizeInfo>() {}.type
-                            val info = gsonUtil.fromJson<RcloneSizeInfo>(result.outString, type)
-                            mediaSizeBytes = info.bytes
-                        }.onFailure {
-                            log { "Failed to calculate the total size of $remoteMediaSrc." }
-                        }
+                    runCatching {
+                        mediaSizeBytes = client.size(src = remoteMediaSrc)
+                    }.onFailure {
+                        log { "Failed to calculate the total size of $remoteMediaSrc: ${it.localizedMessage}." }
                     }
                     packageRestoreOpDao.upsertMedia(
                         op = packageRestoreOperation, opState = OperationState.PROCESSING,
                         opBytes = mediaSizeBytes
                     )
-                    cloudRepository.download(src = remoteMediaSrc, dstDir = tmpSrcDir, onDownloaded = {
+                    cloudRepository.download(client = client, src = remoteMediaSrc, dstDir = tmpSrcDir, onDownloaded = {
                         packagesRestoreUtil.restoreData(
                             packageName = currentPackage.packageName,
                             dataType = DataType.PACKAGE_MEDIA,

@@ -75,3 +75,9 @@ enum class EmojiString(val emoji: String) {
     BROKEN_HEART("💔"),
     SWEAT_DROPLETS("💦"),
 }
+
+enum class CloudType {
+    FTP,
+    WEBDAV,
+    SMB,
+}
