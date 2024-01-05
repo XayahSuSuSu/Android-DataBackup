@@ -44,7 +44,7 @@ guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
 sardine-android = "v0.8"
 
 # plugins
-android-gradle-plugin = "8.1.2"
+android-gradle-plugin = "8.2.0"
 kotlin = "1.8.10"
 hilt = "2.44"
 ksp-kotlin = "1.8.10-1.0.9"
