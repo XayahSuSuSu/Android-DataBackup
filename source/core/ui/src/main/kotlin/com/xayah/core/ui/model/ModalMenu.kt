@@ -34,7 +34,7 @@ fun getActionMenuConfirmItem(onClick: suspend () -> Unit) = ActionMenuItem(
     color = ColorSchemeKeyTokens.Error,
     backgroundColor = ColorSchemeKeyTokens.ErrorContainer,
     enabled = true,
-    countdown = 3,
+    countdown = 1,
     secondaryMenu = listOf(),
     onClick = onClick
 )

@@ -80,7 +80,7 @@ fun ModalActionDropdownMenu(
                         flow {
                             var countdown = item.countdown
                             while (countdown != 0) {
-                                delay(1000)
+                                delay(500)
                                 countdown--
                                 emit(countdown)
                             }
