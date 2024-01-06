@@ -96,7 +96,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
             val resources = client.list(getPath(src))
             for ((index, resource) in resources.withIndex()) {
                 if (index == 0) continue
-                val creationTime = resource.creation.time
+                val creationTime = runCatching { resource.creation.time }.getOrDefault(0)
                 val fileParcelable = FileParcelable(resource.name, creationTime)
                 if (resource.isDirectory) directories.add(fileParcelable)
                 else files.add(fileParcelable)
