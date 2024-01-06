@@ -31,7 +31,7 @@ dependencies {
     implementation(libs.smbj.rpc) {
         exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
     }
-    implementation(libs.sardine.android)
+    implementation(libs.sardine.next)
 
     // PickYou
     implementation(libs.pickyou)

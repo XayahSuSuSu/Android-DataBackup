@@ -1,7 +1,6 @@
 package com.xayah.core.network.client
 
 import android.content.Context
-import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import com.xayah.core.common.util.toPathString
 import com.xayah.core.database.model.CloudEntity
 import com.xayah.core.network.R
@@ -12,6 +11,7 @@ import com.xayah.libpickyou.parcelables.DirChildrenParcelable
 import com.xayah.libpickyou.parcelables.FileParcelable
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PickerType
+import com.xayah.libsardine.impl.OkHttpSardine
 import java.io.File
 import java.nio.file.Paths
 import kotlin.io.path.pathString

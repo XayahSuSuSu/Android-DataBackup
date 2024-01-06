@@ -41,7 +41,7 @@ apache-commons = "3.10.0"
 smbj = "0.13.0"
 smbj-rpc = "0.12.0"
 guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
-sardine-android = "v0.8"
+sardine-next = "1.0.0_3"
 
 # plugins
 android-gradle-plugin = "8.2.0"
@@ -95,7 +95,7 @@ apache-commons-net = { module = "commons-net:commons-net", version.ref = "apache
 smbj = { module = "com.hierynomus:smbj", version.ref = "smbj" }
 smbj-rpc = { module = "com.rapid7.client:dcerpc", version.ref = "smbj-rpc" }
 guava-compat = { module = "com.google.guava:listenablefuture", version.ref = "guava-compat" }
-sardine-android = { module = "com.github.thegrizzlylabs:sardine-android", version.ref = "sardine-android" }
+sardine-next = { module = "com.github.xayahsususu:sardine-next", version.ref = "sardine-next" }
 
 # Dependencies of the included build-logic
 android-build-logic = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
