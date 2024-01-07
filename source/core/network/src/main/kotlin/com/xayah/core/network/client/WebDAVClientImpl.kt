@@ -34,7 +34,6 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     override fun connect() {
         client = OkHttpSardine().apply {
             setCredentials(entity.user, entity.pass)
-            exists(entity.host)
             list(entity.host)
         }
     }
