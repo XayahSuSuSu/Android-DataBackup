@@ -13,7 +13,7 @@
     <string name="compression_type">Тип стиснення</string>
     <string name="cancel">Скасувати</string>
     <string name="tips">Підказка</string>
-    <string name="success">Успішно</string>
+    <string name="success">Успіх</string>
     <string name="compress">Стиснення</string>
     <string name="decompress">Розпакування</string>
     <string name="environment_detection">Виявлення середовища</string>
@@ -120,7 +120,7 @@
     <string name="test_subtitle">Відслідковування нових функцій</string>
     <string name="update">Оновлення</string>
     <string name="current">Поточна</string>
-    <string name="delete_confirm">Ви впевнені що хочете видалити вибране?</string>
+    <string name="delete_confirm">Переконайтеся, що ви видалили вибір</string>
     <string name="delete_selected">Видалення вибраного</string>
     <string name="selection_is_empty">Вибір порожній</string>
     <string name="system_app">Система</string>
@@ -135,29 +135,29 @@
     <string name="retry">Повторити</string>
     <string name="succeed">Успішно</string>
     <string name="telephony">Телефонія</string>
-    <string name="backed_up">Бекап</string>
+    <string name="backed_up">Створено резервну копію</string>
     <string name="restored">Відновлено</string>
     <plurals name="num_hours_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> год.</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> год.</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> год.</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> год.</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> година</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> години</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> годин</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> годин</item>
     </plurals>
     <string name="card_telephony_subtitle">Бекап контактів, журналу дзвінків або СМС/ММС</string>
     <string name="posted_just_now">Щойно</string>
     <plurals name="num_minutes_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> хв</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> хв</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> хв</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> хв</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> хвилина</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> хвилини</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> хвилин</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> хвилин</item>
     </plurals>
     <string name="posted_now">Зараз</string>
     <string name="not_the_default_sms_app_info">Для відновлення СМС/MMC потрібно, щоб DataBackup було встановлено CМС-додатком за замовчуванням</string>
     <plurals name="num_days_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> д.</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> д.</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> д.</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> д.</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> день</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> дні</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> днів</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> днів</item>
     </plurals>
     <string name="contacts_permission">Права доступу до контактів</string>
     <string name="call_log_permission">Права доступу до ведення журналу дзвінків</string>
@@ -180,4 +180,7 @@
     <string name="separated_by_newlines">Розділені новими рядками</string>
     <string name="add_list">Додати список</string>
     <string name="clean_restoring">Чисте відновлення</string>
+    <string name="clean_restoring_help">Очистити цільовий каталог перед відновленням</string>
+    <string name="exclude_cache">Виключити кеш</string>
+    <string name="others">Інші</string>
 </resources>
