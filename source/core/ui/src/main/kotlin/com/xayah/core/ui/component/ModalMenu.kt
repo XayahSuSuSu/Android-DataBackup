@@ -228,6 +228,86 @@ fun ModalStringListDropdownMenu(
 }
 
 @Composable
+fun ModalStringListMultipleSelectionDropdownMenu(
+    expanded: Boolean,
+    selectedIndexList: List<Int>,
+    selectedIcon: ImageVectorToken = ImageVectorToken.fromVector(Icons.Rounded.Done),
+    list: List<String>,
+    maxDisplay: Int? = null,
+    onSelected: (indexList: List<Int>) -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    ModalDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+        var itemHeightPx by remember { mutableIntStateOf(0) }
+        val scrollState = rememberScrollState()
+        if (maxDisplay != null) {
+            LaunchedEffect(expanded, list) {
+                if (expanded && list.isNotEmpty()) {
+                    // Scroll to selected item.
+                    val itemValue = scrollState.maxValue / list.size
+                    scrollState.scrollTo(itemValue * (selectedIndexList.maxOrNull() ?: 0))
+                }
+            }
+        }
+        AnimatedContent(
+            modifier = Modifier.limitMaxDisplay(itemHeightPx = itemHeightPx, maxDisplay = maxDisplay, scrollState = scrollState),
+            targetState = list.isEmpty(),
+            label = AnimationTokens.AnimatedContentLabel
+        ) { targetState ->
+            Column {
+                if (targetState) {
+                    repeat(2) {
+                        DropdownMenuItem(
+                            modifier = Modifier
+                                .background(ColorSchemeKeyTokens.OnPrimary.toColor())
+                                .onSizeChanged { itemHeightPx = it.height },
+                            text = {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .shimmer(),
+                                    text = ""
+                                )
+                            },
+                            onClick = {},
+                        )
+                    }
+                } else {
+                    list.forEachIndexed { index, item ->
+                        val selected = index in selectedIndexList
+                        DropdownMenuItem(
+                            modifier = Modifier
+                                .background(if (selected) ColorSchemeKeyTokens.PrimaryContainer.toColor() else ColorSchemeKeyTokens.OnPrimary.toColor())
+                                .onSizeChanged { itemHeightPx = it.height },
+                            text = {
+                                Text(
+                                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
+                                    text = item,
+                                    color = if (selected) ColorSchemeKeyTokens.Primary.toColor() else Color.Unspecified
+                                )
+                            },
+                            onClick = {
+                                if (selected)
+                                    onSelected(selectedIndexList.toMutableList().apply { remove(index) }.toList())
+                                else
+                                    onSelected(selectedIndexList.toMutableList().apply { add(index) }.toList())
+                            },
+                            trailingIcon = {
+                                if (selected) Icon(
+                                    imageVector = selectedIcon.value,
+                                    contentDescription = null,
+                                    tint = ColorSchemeKeyTokens.Primary.toColor()
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun ModalDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,

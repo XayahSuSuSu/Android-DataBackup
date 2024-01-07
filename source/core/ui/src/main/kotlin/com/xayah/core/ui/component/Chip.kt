@@ -250,6 +250,41 @@ fun FilterChip(
 }
 
 @Composable
+fun MultipleSelectionFilterChip(
+    enabled: Boolean,
+    leadingIcon: ImageVectorToken,
+    trailingIcon: ImageVectorToken? = null,
+    label: StringResourceToken,
+    selectedIndexList: List<Int>,
+    list: List<String>,
+    onSelected: (indexList: List<Int>) -> Unit,
+    onClick: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+        AssistChip(
+            enabled = enabled,
+            onClick = {
+                onClick()
+                if (list.isNotEmpty()) expanded = true
+            },
+            label = label,
+            leadingIcon = leadingIcon,
+            trailingIcon = trailingIcon
+        )
+
+        ModalStringListMultipleSelectionDropdownMenu(
+            expanded = expanded,
+            selectedIndexList = selectedIndexList,
+            list = list,
+            maxDisplay = ModalMenuTokens.DefaultMaxDisplay,
+            onSelected = onSelected,
+            onDismissRequest = { expanded = false }
+        )
+    }
+}
+
+@Composable
 fun FilterChip(
     enabled: Boolean,
     leadingIcon: ImageVectorToken,

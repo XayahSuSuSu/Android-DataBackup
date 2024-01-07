@@ -5,8 +5,10 @@ import com.hierynomus.msdtyp.AccessMask
 import com.hierynomus.msfscc.FileAttributes
 import com.hierynomus.mssmb2.SMB2CreateDisposition
 import com.hierynomus.mssmb2.SMB2CreateOptions
+import com.hierynomus.mssmb2.SMB2Dialect
 import com.hierynomus.mssmb2.SMB2ShareAccess
 import com.hierynomus.smbj.SMBClient
+import com.hierynomus.smbj.SmbConfig
 import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.common.SMBRuntimeException
 import com.hierynomus.smbj.io.InputStreamByteChunkProvider
@@ -18,6 +20,7 @@ import com.rapid7.client.dcerpc.transport.SMBTransportFactories
 import com.xayah.core.common.util.toPathString
 import com.xayah.core.database.model.CloudEntity
 import com.xayah.core.database.model.SMBExtra
+import com.xayah.core.model.SmbVersion
 import com.xayah.core.network.R
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
@@ -76,9 +79,22 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         }
     }
 
+    private fun SmbVersion.toDialect() = when (this) {
+        SmbVersion.SMB_2_0_2 -> SMB2Dialect.SMB_2_0_2
+        SmbVersion.SMB_2_1 -> SMB2Dialect.SMB_2_1
+        SmbVersion.SMB_3_0 -> SMB2Dialect.SMB_3_0
+        SmbVersion.SMB_3_0_2 -> SMB2Dialect.SMB_3_0_2
+        SmbVersion.SMB_3_1_1 -> SMB2Dialect.SMB_3_1_1
+    }
+
     override fun connect() {
-        client = SMBClient().apply {
+        val dialects = extra.version.map { it.toDialect() }
+        val config = SmbConfig.builder()
+            .withDialects(dialects)
+            .build()
+        client = SMBClient(config).apply {
             connect(entity.host, extra.port).also { connection ->
+                log { "Dialect: ${connection.connectionContext.negotiatedProtocol.dialect.name}" }
                 AuthenticationContext(entity.user, entity.pass.toCharArray(), extra.domain).also { authentication ->
                     session = connection.authenticate(authentication)
                     if (extra.share.isNotEmpty()) setShare(extra.share)

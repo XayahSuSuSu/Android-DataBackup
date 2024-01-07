@@ -53,4 +53,5 @@
     <item name="shared_dir" type="string" />
     <item name="allow_empty" type="string" />
     <item name="domain" type="string" />
+    <item name="version" type="string" />
 </resources>

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.reflect.TypeToken
 import com.xayah.core.model.CloudType
+import com.xayah.core.model.SmbVersion
 import com.xayah.core.util.GsonUtil
 
 data class FTPExtra(
@@ -14,6 +15,7 @@ data class SMBExtra(
     val share: String,
     val port: Int,
     val domain: String,
+    val version: List<SmbVersion>,
 )
 
 /**

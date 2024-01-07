@@ -81,3 +81,11 @@ enum class CloudType {
     WEBDAV,
     SMB,
 }
+
+enum class SmbVersion(val text: String) {
+    SMB_2_0_2("2.0.2"),
+    SMB_2_1("2.1"),
+    SMB_3_0("3.0"),
+    SMB_3_0_2("3.0.2"),
+    SMB_3_1_1("3.1.1"),
+}

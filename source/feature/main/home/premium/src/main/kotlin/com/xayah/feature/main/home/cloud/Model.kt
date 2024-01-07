@@ -10,6 +10,7 @@ import com.xayah.core.database.model.CloudEntity
 import com.xayah.core.database.model.FTPExtra
 import com.xayah.core.database.model.SMBExtra
 import com.xayah.core.model.CloudType
+import com.xayah.core.model.SmbVersion
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
@@ -31,6 +32,11 @@ internal data class TextFieldConfig(
     val allowEmpty: Boolean = false,
 )
 
+internal data class SmbVersionConfig(
+    val version: SmbVersion,
+    val selected: MutableState<Boolean> = mutableStateOf(true),
+)
+
 internal data class TypeConfig(
     val typeDisplay: String,
     val type: CloudType,
@@ -38,7 +44,19 @@ internal data class TypeConfig(
     val nameEmphasizedState: MutableState<Boolean> = mutableStateOf(false),
     val commonTextFields: List<TextFieldConfig>,
     val extraTextFields: List<TextFieldConfig>,
-)
+    val smbVersionConfigs: List<SmbVersionConfig>? = null,
+) {
+    val smbSelectedList: List<Int>
+        get() {
+            val selected = mutableListOf<Int>()
+            if (smbVersionConfigs != null) {
+                for ((index, i) in smbVersionConfigs.withIndex()) {
+                    if (i.selected.value) selected.add(index)
+                }
+            }
+            return selected
+        }
+}
 
 internal object TextFieldConfigTokens {
     fun getUrl(value: String?) = TextFieldConfig(
@@ -139,6 +157,28 @@ internal object TypeConfigTokens {
             TextFieldConfigTokens.getShare(extra?.share),
             TextFieldConfigTokens.getPort(extra?.port, 445),
             TextFieldConfigTokens.getDomain(extra?.domain),
+        ),
+        smbVersionConfigs = listOf(
+            SmbVersionConfig(
+                selected = mutableStateOf((extra?.version?.getOrNull(0) ?: SmbVersion.SMB_2_0_2) == SmbVersion.SMB_2_0_2),
+                version = SmbVersion.SMB_2_0_2
+            ),
+            SmbVersionConfig(
+                selected = mutableStateOf((extra?.version?.getOrNull(0) ?: SmbVersion.SMB_2_1) == SmbVersion.SMB_2_1),
+                version = SmbVersion.SMB_2_1
+            ),
+            SmbVersionConfig(
+                selected = mutableStateOf((extra?.version?.getOrNull(0) ?: SmbVersion.SMB_3_0) == SmbVersion.SMB_3_0),
+                version = SmbVersion.SMB_3_0
+            ),
+            SmbVersionConfig(
+                selected = mutableStateOf((extra?.version?.getOrNull(0) ?: SmbVersion.SMB_3_0_2) == SmbVersion.SMB_3_0_2),
+                version = SmbVersion.SMB_3_0_2
+            ),
+            SmbVersionConfig(
+                selected = mutableStateOf((extra?.version?.getOrNull(0) ?: SmbVersion.SMB_3_1_1) == SmbVersion.SMB_3_1_1),
+                version = SmbVersion.SMB_3_1_1
+            ),
         )
     )
 }

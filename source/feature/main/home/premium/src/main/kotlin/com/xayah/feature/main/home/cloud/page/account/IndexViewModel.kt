@@ -131,6 +131,7 @@ internal class IndexViewModel @Inject constructor(
                                             currentConfig.extraTextFields[0].value.value,
                                             currentConfig.extraTextFields[1].value.value.toInt(),
                                             currentConfig.extraTextFields[2].value.value,
+                                            version = currentConfig.smbVersionConfigs?.filter { it.selected.value }?.map { it.version } ?: listOf()
                                         )
                                     }
                                 }
