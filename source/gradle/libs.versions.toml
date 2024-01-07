@@ -41,7 +41,7 @@ apache-commons = "3.10.0"
 smbj = "0.13.0"
 smbj-rpc = "0.12.0"
 guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
-sardine-next = "1.0.0_3"
+sardine-next = "1.0.1"
 
 # plugins
 android-gradle-plugin = "8.2.0"
