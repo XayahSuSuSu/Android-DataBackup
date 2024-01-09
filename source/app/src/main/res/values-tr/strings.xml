@@ -127,7 +127,7 @@
     <string name="follow_symlinks">Symlink takibi</string>
     <string name="connection_established">Bağlantı başarıyla kuruldu</string>
     <string name="installation_time">Kurulma zamanı</string>
-    <string name="apk_only">­Sadece uygulama</string>
+    <string name="apk_only">Sadece uygulama</string>
     <string name="existing_files">­Mevcut dosyalar</string>
     <string name="password">Parola</string>
     <string name="remote_not_set">Kumanda ayarlanmamış</string>
