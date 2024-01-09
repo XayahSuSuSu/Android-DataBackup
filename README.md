@@ -42,7 +42,7 @@
 or get the APK from the [Releases](https://github.com/XayahSuSuSu/Android-DataBackup/releases/latest).
 
 ## Translation
-[<img src="https://hosted.weblate.org/widget/databackup/1-1-x/open-graph.png"
+[<img src="https://hosted.weblate.org/widget/databackup/main/open-graph.png"
      alt="Translation">](https://hosted.weblate.org/engage/databackup/)
 
 ## Contributors
