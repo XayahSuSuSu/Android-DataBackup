@@ -9,6 +9,7 @@ private fun fromBuildConfig(key: String): Any? =
 object BuildConfigUtil {
     val ENABLE_VERBOSE = runCatching { fromBuildConfig("ENABLE_VERBOSE") as Boolean }.getOrDefault(false)
     val VERSION_NAME = runCatching { fromBuildConfig("VERSION_NAME") as String }.getOrDefault("")
+    val VERSION_CODE = runCatching { fromBuildConfig("VERSION_CODE") as Int }.getOrDefault(0).toLong()
     val FLAVOR_feature = runCatching { fromBuildConfig("FLAVOR_feature") as String }.getOrDefault("")
     val FLAVOR_abi = runCatching { fromBuildConfig("FLAVOR_abi") as String }.getOrDefault("")
 }

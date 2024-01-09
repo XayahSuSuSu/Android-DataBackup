@@ -11,6 +11,7 @@ import com.xayah.core.datastore.readRestoreUserId
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.util.BuildConfigUtil
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil
@@ -184,11 +185,19 @@ class PackagesBackupUtil @Inject constructor(
             val apkPath = PathUtil.getParentPath(sourceDirList[0])
             val path = "${apkPath}/base.apk"
             val targetPath = getItselfDst(dstDir = dstDir)
-            isSuccess = rootService.copyTo(path = path, targetPath = targetPath, overwrite = true)
-            if (isSuccess.not()) {
-                out.add(log { "Failed to copy $path to $targetPath." })
+
+            if (rootService.exists(targetPath) && (rootService.getPackageArchiveInfo(targetPath)
+                    ?.let { BuildConfigUtil.VERSION_CODE == it.longVersionCode } == true)
+            ) {
+                isSuccess = true
+                out.add(log { "$targetPath exists, skip." })
             } else {
-                out.add(log { "Copied from $path to $targetPath." })
+                isSuccess = rootService.copyTo(path = path, targetPath = targetPath, overwrite = true)
+                if (isSuccess.not()) {
+                    out.add(log { "Failed to copy $path to $targetPath." })
+                } else {
+                    out.add(log { "Copied from $path to $targetPath." })
+                }
             }
         } else {
             isSuccess = false
@@ -532,11 +541,19 @@ class MediumBackupUtil @Inject constructor(
             val apkPath = PathUtil.getParentPath(sourceDirList[0])
             val path = "${apkPath}/base.apk"
             val targetPath = "${dstDir}/DataBackup.apk"
-            isSuccess = rootService.copyTo(path = path, targetPath = targetPath, overwrite = true)
-            if (isSuccess.not()) {
-                out.add(log { "Failed to copy $path to $targetPath." })
+
+            if (rootService.exists(targetPath) && (rootService.getPackageArchiveInfo(targetPath)
+                    ?.let { BuildConfigUtil.VERSION_CODE == it.longVersionCode } == true)
+            ) {
+                isSuccess = true
+                out.add(log { "$targetPath exists, skip." })
             } else {
-                out.add(log { "Copied from $path to $targetPath." })
+                isSuccess = rootService.copyTo(path = path, targetPath = targetPath, overwrite = true)
+                if (isSuccess.not()) {
+                    out.add(log { "Failed to copy $path to $targetPath." })
+                } else {
+                    out.add(log { "Copied from $path to $targetPath." })
+                }
             }
         } else {
             isSuccess = false
