@@ -161,4 +161,19 @@
     <string name="unmount_all">Avmonter alle</string>
     <string name="speed_mode">Hastighetsmodus</string>
     <string name="recursive_mode">Rekursivt modus</string>
+    <string name="local">Lokal</string>
+    <string name="main_account_not_set">Hovedkonto ikke satt</string>
+    <string name="existing_files">Eksisterende filer</string>
+    <string name="share">Del</string>
+    <string name="overall_config">Gjennomgående oppsett</string>
+    <string name="remote_not_set">Fjernenhet ikke satt</string>
+    <string name="connection_established">Tilkobling utført</string>
+    <string name="in_use">I bruk</string>
+    <string name="clear_all">Tøm alt</string>
+    <string name="test_connection">Test tilkobling</string>
+    <string name="apk_only">Kun APK</string>
+    <string name="data_only">Kun data</string>
+    <string name="processing">Behandler</string>
+    <string name="batching_select">Knippeutvalg</string>
+    <string name="remain">Gjenstår</string>
 </resources>
