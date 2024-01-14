@@ -64,5 +64,13 @@ gradlePlugin {
             id = "library.protobuf"
             implementationClass = "LibraryProtobufConventionPlugin"
         }
+        register("libraryTest") {
+            id = "library.test"
+            implementationClass = "LibraryTestConventionPlugin"
+        }
+        register("libraryAndroidTest") {
+            id = "library.androidTest"
+            implementationClass = "LibraryAndroidTestConventionPlugin"
+        }
     }
 }

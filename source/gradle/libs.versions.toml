@@ -13,6 +13,9 @@ compose-compiler = "1.5.6" # https://androidx.dev/storage/compose-compiler/repos
 accompanist = "0.30.1"
 activity-compose = "1.8.2"
 appcompat = "1.6.1"
+androidx-test-ext-junit = "1.1.5"
+espresso-core = "3.5.1"
+junit = "4.13.2"
 compose-bom = "2023.10.01"
 core-ktx = "1.12.0"
 core-splashscreen = "1.0.1"
@@ -72,6 +75,9 @@ androidx-palette = { module = "androidx.palette:palette", version.ref = "palette
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
@@ -123,3 +129,5 @@ library-hilt = { id = "library.hilt", version = "unspecified" }
 library-room = { id = "library.room", version = "unspecified" }
 library-compose = { id = "library.compose", version = "unspecified" }
 library-protobuf = { id = "library.protobuf", version = "unspecified" }
+library-test = { id = "library.test", version = "unspecified" }
+library-androidTest = { id = "library.androidTest", version = "unspecified" }
