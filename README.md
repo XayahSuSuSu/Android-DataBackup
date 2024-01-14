@@ -14,9 +14,11 @@
 :sparkling_heart: This application was born **with the consent of the author**.
 
 ## Features
+* :deciduous_tree: **Root needed, support [Magisk](https://github.com/topjohnwu/Magisk), [KernelSU](https://github.com/tiann/KernelSU)**
+
 * :cyclone: **Multi-user Support**
 
-* :cloud: **Cloud** (Available on **premium**)
+* :cloud: **Cloud**
 
 * :sunglasses: **100% Data Integrity**
 
