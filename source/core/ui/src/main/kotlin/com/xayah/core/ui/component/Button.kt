@@ -5,6 +5,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -29,6 +30,16 @@ fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, onClick: (
 }
 
 @Composable
+fun FilledIconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, onClick: () -> Unit) {
+    FilledIconButton(modifier = modifier, onClick = onClick) {
+        Icon(
+            imageVector = icon.value,
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
 fun ArrowBackButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     IconButton(modifier = modifier, icon = ImageVectorToken.fromVector(Icons.Rounded.ArrowBack), onClick = onClick)
 }
@@ -45,8 +56,9 @@ fun ExtendedFab(modifier: Modifier = Modifier, expanded: Boolean = true, icon: I
 }
 
 @Composable
-fun TextButton(text: StringResourceToken, onClick: () -> Unit) {
+fun TextButton(modifier: Modifier = Modifier, text: StringResourceToken, onClick: () -> Unit) {
     TextButton(
+        modifier = modifier,
         onClick = onClick,
         content = { TitleSmallText(text = text.value, fontWeight = FontWeight.Bold) },
         contentPadding = ButtonDefaults.ContentPadding
@@ -54,17 +66,47 @@ fun TextButton(text: StringResourceToken, onClick: () -> Unit) {
 }
 
 @Composable
-fun IconTextButton(modifier: Modifier = Modifier, icon: ImageVectorToken, text: StringResourceToken, onClick: () -> Unit) {
+fun FilledIconTextButton(modifier: Modifier = Modifier, enabled: Boolean = true, icon: ImageVectorToken, text: StringResourceToken, onClick: () -> Unit) {
     Button(
         modifier = modifier,
+        enabled = enabled,
         onClick = onClick,
         content = {
             Icon(
                 imageVector = icon.value,
                 contentDescription = null,
-                modifier = Modifier.paddingEnd(PaddingTokens.Level3),
+                modifier = Modifier.paddingEnd(PaddingTokens.Level4),
             )
             TitleSmallText(text = text.value, fontWeight = FontWeight.Bold)
+        }
+    )
+}
+
+@Composable
+fun IconTextButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    leadingIcon: ImageVectorToken? = null,
+    trailingIcon: ImageVectorToken? = null,
+    text: StringResourceToken,
+    onClick: () -> Unit,
+) {
+    TextButton(
+        modifier = modifier,
+        enabled = enabled,
+        onClick = onClick,
+        content = {
+            if (leadingIcon != null) Icon(
+                imageVector = leadingIcon.value,
+                contentDescription = null,
+                modifier = Modifier.paddingEnd(PaddingTokens.Level4),
+            )
+            TitleSmallText(text = text.value, fontWeight = FontWeight.Bold)
+            if (trailingIcon != null) Icon(
+                imageVector = trailingIcon.value,
+                contentDescription = null,
+                modifier = Modifier.paddingStart(PaddingTokens.Level4),
+            )
         }
     )
 }

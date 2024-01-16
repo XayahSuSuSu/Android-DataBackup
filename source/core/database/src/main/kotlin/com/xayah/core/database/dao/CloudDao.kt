@@ -4,12 +4,9 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import com.xayah.core.database.model.CloudEntity
+import com.xayah.core.model.database.CloudEntity
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Only used for premium build, but reserved in foss.
- */
 @Dao
 interface CloudDao {
     @Upsert(entity = CloudEntity::class)

@@ -94,7 +94,7 @@ fun ModalActionDropdownMenu(
                             .onSizeChanged { itemHeightPx = it.height },
                         text = {
                             Text(
-                                modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
+                                modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                                 text = item.title.value,
                                 color = item.color.toColor(enabled = enabled)
                             )
@@ -204,7 +204,7 @@ fun ModalStringListDropdownMenu(
                                 .onSizeChanged { itemHeightPx = it.height },
                             text = {
                                 Text(
-                                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
+                                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                                     text = item,
                                     color = if (selected) ColorSchemeKeyTokens.Primary.toColor() else Color.Unspecified
                                 )
@@ -281,7 +281,7 @@ fun ModalStringListMultipleSelectionDropdownMenu(
                                 .onSizeChanged { itemHeightPx = it.height },
                             text = {
                                 Text(
-                                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
+                                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                                     text = item,
                                     color = if (selected) ColorSchemeKeyTokens.Primary.toColor() else Color.Unspecified
                                 )

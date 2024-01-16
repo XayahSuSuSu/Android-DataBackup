@@ -24,8 +24,8 @@ object DateUtil {
     /**
      * Format given [timestamp] as date.
      */
-    fun formatTimestamp(timestamp: Long): String = runCatching {
-        SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(Date(timestamp))
+    fun formatTimestamp(timestamp: Long?, pattern: String = "yyyy-MM-dd HH:mm:ss.SSS"): String = runCatching {
+        SimpleDateFormat(pattern, Locale.CHINA).format(Date(timestamp!!))
     }.getOrDefault("Unknown")
 
     /**

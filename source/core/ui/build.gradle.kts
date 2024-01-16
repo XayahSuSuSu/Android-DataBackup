@@ -23,4 +23,7 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.accompanist.drawablepainter)
     implementation(libs.accompanist.placeholder)
+
+    // Coil
+    implementation(libs.coil.compose)
 }

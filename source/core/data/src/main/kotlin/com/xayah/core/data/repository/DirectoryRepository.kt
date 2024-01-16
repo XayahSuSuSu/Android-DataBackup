@@ -4,18 +4,15 @@ import android.content.Context
 import com.xayah.core.common.util.toSpaceString
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.DirectoryDao
-import com.xayah.core.database.model.DirectoryEntity
-import com.xayah.core.database.model.DirectoryUpsertEntity
+import com.xayah.core.model.database.DirectoryEntity
+import com.xayah.core.model.database.DirectoryUpsertEntity
 import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.datastore.saveBackupSaveParentPath
 import com.xayah.core.datastore.saveBackupSavePath
-import com.xayah.core.datastore.saveRestoreSaveParentPath
-import com.xayah.core.datastore.saveRestoreSavePath
-import com.xayah.core.model.OpType
 import com.xayah.core.model.StorageType
-import com.xayah.core.util.command.PreparationUtil
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
+import com.xayah.core.util.command.PreparationUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.nio.file.Paths
@@ -30,22 +27,18 @@ class DirectoryRepository @Inject constructor(
 ) {
     val directories = directoryDao.queryActiveDirectoriesFlow().distinctUntilChanged()
 
-    private suspend fun resetDir(type: OpType) = selectDir(
-        type = type,
+    private suspend fun resetDir() = selectDir(
         parent = ConstantUtil.DefaultPathParent,
         path = ConstantUtil.DefaultPath,
-        id = when (type) {
-            OpType.BACKUP -> 1
-            OpType.RESTORE -> 2
-        }
+        id = 1
     )
 
-    suspend fun deleteDir(type: OpType, entity: DirectoryEntity) = run {
-        if (entity.selected) resetDir(type = type)
+    suspend fun deleteDir(entity: DirectoryEntity) = run {
+        if (entity.selected) resetDir()
         directoryDao.delete(entity)
     }
 
-    suspend fun addDir(type: OpType, pathList: List<String>) {
+    suspend fun addDir(pathList: List<String>) {
         val customDirList = mutableListOf<DirectoryUpsertEntity>()
         pathList.forEach { pathString ->
             if (pathString.isNotEmpty()) {
@@ -55,11 +48,10 @@ class DirectoryRepository @Inject constructor(
 
                 // Custom storage
                 val dir = DirectoryUpsertEntity(
-                    id = directoryDao.queryId(parent = parent, child = child, type = type),
+                    id = directoryDao.queryId(parent = parent, child = child),
                     title = context.getString(R.string.custom_storage),
                     parent = parent,
                     child = child,
-                    opType = type,
                     storageType = StorageType.CUSTOM,
                 )
                 customDirList.add(dir)
@@ -69,26 +61,17 @@ class DirectoryRepository @Inject constructor(
         directoryDao.upsert(customDirList)
     }
 
-    suspend fun selectDir(type: OpType, entity: DirectoryEntity) = run {
-        selectDir(type, entity.parent, entity.path, entity.id)
+    suspend fun selectDir(entity: DirectoryEntity) = run {
+        selectDir(entity.parent, entity.path, entity.id)
     }
 
-    private suspend fun selectDir(type: OpType, parent: String, path: String, id: Long) = run {
-        when (type) {
-            OpType.BACKUP -> {
-                context.saveBackupSaveParentPath(parent)
-                context.saveBackupSavePath(path)
-            }
-
-            OpType.RESTORE -> {
-                context.saveRestoreSaveParentPath(parent)
-                context.saveRestoreSavePath(path)
-            }
-        }
-        directoryDao.select(type = type, id = id)
+    private suspend fun selectDir(parent: String, path: String, id: Long) = run {
+        context.saveBackupSaveParentPath(parent)
+        context.saveBackupSavePath(path)
+        directoryDao.select(id = id)
     }
 
-    suspend fun update(opType: OpType) {
+    suspend fun update() {
         withIOContext {
             // Inactivate all directories
             directoryDao.updateActive(active = false)
@@ -100,11 +83,9 @@ class DirectoryRepository @Inject constructor(
                 title = context.getString(R.string.internal_storage),
                 parent = ConstantUtil.DefaultPathParent,
                 child = ConstantUtil.DefaultPathChild,
-                opType = OpType.BACKUP,
                 storageType = StorageType.INTERNAL,
             )
             internalDirs.add(internalDirectory)
-            internalDirs.add(internalDirectory.copy(id = 2, opType = OpType.RESTORE))
             directoryDao.upsert(internalDirs)
 
             // External storage
@@ -116,11 +97,10 @@ class DirectoryRepository @Inject constructor(
                     val child = ConstantUtil.DefaultPathChild
                     externalDirs.add(
                         DirectoryUpsertEntity(
-                            id = directoryDao.queryId(parent = storageItem, child = child, opType),
+                            id = directoryDao.queryId(parent = storageItem, child = child),
                             title = context.getString(R.string.external_storage),
                             parent = storageItem,
                             child = child,
-                            opType = opType,
                             storageType = StorageType.EXTERNAL,
                             active = true,
                         )
@@ -130,7 +110,7 @@ class DirectoryRepository @Inject constructor(
             directoryDao.upsert(externalDirs)
 
             // Activate backup/restore directories except external directories
-            directoryDao.updateActive(type = opType, excludeType = StorageType.EXTERNAL, active = true)
+            directoryDao.updateActive(excludeType = StorageType.EXTERNAL, active = true)
 
             // Read statFs of each storage
             directoryDao.queryActiveDirectories().forEach { entity ->
@@ -159,9 +139,9 @@ class DirectoryRepository @Inject constructor(
                 directoryDao.upsert(entity)
             }
 
-            val selectedDirectory = directoryDao.querySelectedByDirectoryType(type = opType)
+            val selectedDirectory = directoryDao.querySelectedByDirectoryType()
             if (selectedDirectory == null || (selectedDirectory.storageType == StorageType.EXTERNAL && selectedDirectory.enabled.not()) || selectedDirectory.active.not()) {
-                resetDir(type = opType)
+                resetDir()
             }
         }
     }

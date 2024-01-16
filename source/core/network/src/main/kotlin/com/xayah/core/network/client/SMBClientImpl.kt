@@ -18,10 +18,11 @@ import com.hierynomus.smbj.share.Share
 import com.rapid7.client.dcerpc.mssrvs.ServerService
 import com.rapid7.client.dcerpc.transport.SMBTransportFactories
 import com.xayah.core.common.util.toPathString
-import com.xayah.core.database.model.CloudEntity
-import com.xayah.core.database.model.SMBExtra
 import com.xayah.core.model.SmbVersion
+import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.SMBExtra
 import com.xayah.core.network.R
+import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.toPathList

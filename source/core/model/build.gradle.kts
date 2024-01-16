@@ -1,5 +1,8 @@
 plugins {
     alias(libs.plugins.library.common)
+    alias(libs.plugins.library.room)
+    alias(libs.plugins.library.test)
+    alias(libs.plugins.library.protobuf)
 }
 
 android {

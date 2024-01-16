@@ -1,36 +1,25 @@
 package com.xayah.core.ui.route
 
-import com.xayah.core.model.OpType
-
 sealed class MainRoutes(val route: String) {
     companion object {
-        const val ArgOpType = "opType"
+        const val ArgPackageName = "pkgName"
+        const val ArgUserId = "userId"
+        const val ArgTaskId = "taskId"
     }
 
-    object Home : MainRoutes(route = "main_home")
-
-    object Log : MainRoutes(route = "main_log")
-
-    object Tree : MainRoutes(route = "main_tree")
-    object Reload : MainRoutes(route = "main_reload")
-
-    object Directory : MainRoutes(route = "main_directory/{$ArgOpType}") {
-        val routeBackup = "main_directory/${OpType.BACKUP.name}"
-        val routeRestore = "main_directory/${OpType.RESTORE.name}"
+    data object Index : MainRoutes(route = "main_index")
+    data object Packages : MainRoutes(route = "main_packages")
+    data object PackageDetail : MainRoutes(route = "main_package_detail/{$ArgPackageName}/{$ArgUserId}") {
+        fun getRoute(packageName: String, userId: Int) = "main_package_detail/${packageName}/${userId}"
     }
 
-    object TaskPackages : MainRoutes(route = "main_task_packages/{$ArgOpType}") {
-        val routeBackup = "main_task_packages/${OpType.BACKUP.name}"
-        val routeRestore = "main_task_packages/${OpType.RESTORE.name}"
+    data object TaskList : MainRoutes(route = "main_taskList")
+    data object TaskPackageDetail : MainRoutes(route = "main_task_package_detail/{$ArgTaskId}") {
+        fun getRoute(taskId: Long) = "main_task_package_detail/${taskId}"
     }
 
-    object TaskPackagesCloud : MainRoutes(route = "main_task_packages_cloud/{$ArgOpType}") {
-        val routeBackup = "main_task_packages_cloud/${OpType.BACKUP.name}"
-        val routeRestore = "main_task_packages_cloud/${OpType.RESTORE.name}"
-    }
-
-    object TaskMedium : MainRoutes(route = "main_task_medium/{$ArgOpType}") {
-        val routeBackup = "main_task_medium/${OpType.BACKUP.name}"
-        val routeRestore = "main_task_medium/${OpType.RESTORE.name}"
-    }
+    data object Log : MainRoutes(route = "main_log")
+    data object Tree : MainRoutes(route = "main_tree")
+    data object Reload : MainRoutes(route = "main_reload")
+    data object Directory : MainRoutes(route = "main_directory")
 }

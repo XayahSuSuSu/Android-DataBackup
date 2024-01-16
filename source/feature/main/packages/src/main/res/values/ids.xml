@@ -1,0 +1,42 @@
+<resources>
+    <item name="app_and_data" type="string"/>
+    <item name="search_bar_hint" type="string"/>
+    <item name="backup_sort_type_items" type="array" />
+    <item name="ic_rounded_deployed_code" type="drawable" />
+    <item name="flag_type_items" type="array" />
+    <item name="ic_rounded_acute" type="drawable" />
+    <item name="ic_rounded_counter_5" type="drawable" />
+    <item name="keystore" type="string" />
+    <item name="keystore_desc" type="string" />
+    <item name="version" type="string" />
+    <item name="data_size" type="string" />
+    <item name="user" type="string" />
+    <item name="system" type="string" />
+    <item name="third_party" type="string" />
+    <item name="ic_rounded_person" type="drawable" />
+    <item name="ic_rounded_history" type="drawable" />
+    <item name="ic_rounded_database" type="drawable" />
+    <item name="ic_rounded_check_circle" type="drawable" />
+    <item name="ic_rounded_error" type="drawable" />
+    <item name="backup" type="string" />
+    <item name="back_up_to_local" type="string" />
+    <item name="details" type="string" />
+    <item name="restore" type="string" />
+    <item name="restore_from_local" type="string" />
+    <item name="task_is_in_progress" type="string" />
+    <item name="backup_completed" type="string" />
+    <item name="ic_rounded_bolt" type="drawable" />
+    <item name="uid" type="string" />
+    <item name="type" type="string" />
+    <item name="first_install" type="string" />
+    <item name="info" type="string" />
+    <item name="apk" type="string" />
+    <item name="data" type="string" />
+    <item name="compression_type" type="string" />
+    <item name="items" type="plurals" />
+    <item name="id" type="string" />
+    <item name="ic_rounded_shield_locked" type="drawable" />
+    <item name="preserve" type="string" />
+    <item name="delete" type="string" />
+    <item name="restore_completed" type="string" />
+</resources>

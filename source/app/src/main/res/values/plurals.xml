@@ -19,4 +19,8 @@
         <item quantity="one"><xliff:g id="count">%d</xliff:g> day</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> days</item>
     </plurals>
+    <plurals name="items">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> item</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> items</item>
+    </plurals>
 </resources>

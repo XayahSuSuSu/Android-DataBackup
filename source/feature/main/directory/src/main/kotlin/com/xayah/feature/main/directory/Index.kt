@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.xayah.core.model.OpType
 import com.xayah.core.model.StorageType
 import com.xayah.core.ui.component.ExtendedFab
 import com.xayah.core.ui.component.InnerTopSpacer
@@ -64,12 +63,7 @@ fun PageDirectory() {
         topBar = {
             SecondaryTopBar(
                 scrollBehavior = scrollBehavior,
-                title = StringResourceToken.fromStringId(
-                    when (uiState.type) {
-                        OpType.BACKUP -> R.string.backup_dir
-                        OpType.RESTORE -> R.string.restore_dir
-                    }
-                )
+                title = StringResourceToken.fromStringId(R.string.backup_dir)
             )
         },
         floatingActionButton = {
@@ -78,7 +72,7 @@ fun PageDirectory() {
                 icon = ImageVectorToken.fromVector(Icons.Rounded.Add),
                 text = StringResourceToken.fromStringId(R.string.add),
                 onClick = {
-                    viewModel.emitIntent(IndexUiIntent.AddDir(type = uiState.type, context = (context as ComponentActivity)))
+                    viewModel.emitIntent(IndexUiIntent.AddDir(context = (context as ComponentActivity)))
                 }
             )
         },
@@ -90,13 +84,13 @@ fun PageDirectory() {
 
             Box(modifier = Modifier.weight(1f)) {
                 AnimatedContent(
-                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
+                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                     targetState = uiState.updating,
                     label = AnimationTokens.AnimatedContentLabel
                 ) { targetState ->
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)) {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
                         item {
-                            Spacer(modifier = Modifier.height(PaddingTokens.Level3))
+                            Spacer(modifier = Modifier.height(PaddingTokens.Level4))
                         }
 
                         if (targetState) {
@@ -118,14 +112,14 @@ fun PageDirectory() {
                                                 secondaryMenu = listOf(
                                                     getActionMenuReturnItem(),
                                                     getActionMenuConfirmItem {
-                                                        viewModel.emitIntent(IndexUiIntent.DeleteDir(type = uiState.type, entity = item))
+                                                        viewModel.emitIntent(IndexUiIntent.DeleteDir(entity = item))
                                                     }
                                                 ),
                                                 onClick = {}
                                             )
                                         ),
                                         onCardClick = {
-                                            viewModel.emitIntent(IndexUiIntent.SelectDir(type = uiState.type, entity = item))
+                                            viewModel.emitIntent(IndexUiIntent.SelectDir(entity = item))
                                         },
                                         chipGroup = {
                                             for (tag in item.tags) {
@@ -138,7 +132,7 @@ fun PageDirectory() {
                         }
 
                         item {
-                            Spacer(modifier = Modifier.paddingBottom(PaddingTokens.Level3))
+                            Spacer(modifier = Modifier.paddingBottom(PaddingTokens.Level4))
                         }
                     }
                 }

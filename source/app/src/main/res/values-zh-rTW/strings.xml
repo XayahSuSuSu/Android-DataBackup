@@ -178,4 +178,19 @@
     <string name="shared_dir">共享資料夾</string>
     <string name="allow_empty">可空</string>
     <string name="domain">域</string>
+    <string name="home">首頁</string>
+    <string name="keystore">KeyStore</string>
+    <string name="keystore_desc">此應用程式使用Android KeyStore供應器, 恢復可能會導致意料之外的錯誤</string>
+    <string name="details">詳情</string>
+    <string name="back_up_to_local">備份到本地</string>
+    <string name="preprocessing">預處理</string>
+    <string name="restore_from_local">從本地恢復</string>
+    <string name="task_is_in_progress">任務進行中</string>
+    <string name="task">任務</string>
+    <string name="task_list">任務清單</string>
+    <string name="finished">已完成</string>
+    <string name="type">類型</string>
+    <string name="first_install">首次安裝</string>
+    <string name="info">信息</string>
+    <string name="preserve">保留</string>
 </resources>

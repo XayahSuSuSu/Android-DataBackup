@@ -71,9 +71,9 @@ fun PageEnv() {
         )
     }
 
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
         item {
-            Spacer(modifier = Modifier.height(PaddingTokens.Level1))
+            Spacer(modifier = Modifier.height(PaddingTokens.Level2))
         }
 
         item {
@@ -108,7 +108,7 @@ fun PageEnv() {
         }
 
         item {
-            Spacer(modifier = Modifier.height(PaddingTokens.Level1))
+            Spacer(modifier = Modifier.height(PaddingTokens.Level2))
         }
     }
 }

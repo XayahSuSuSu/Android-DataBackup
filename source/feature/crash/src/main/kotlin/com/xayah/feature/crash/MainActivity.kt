@@ -57,10 +57,10 @@ class MainActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .paddingHorizontal(PaddingTokens.Level3)
+                            .paddingHorizontal(PaddingTokens.Level4)
                             .verticalScroll(rememberScrollState()),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
+                        verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
                     ) {
                         InnerTopSpacer(innerPadding = innerPadding)
 
@@ -70,8 +70,8 @@ class MainActivity : ComponentActivity() {
                             contentDescription = null,
                             tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
                             modifier = Modifier
-                                .size(PaddingTokens.Level6)
-                                .paddingBottom(PaddingTokens.Level1)
+                                .size(PaddingTokens.Level7)
+                                .paddingBottom(PaddingTokens.Level2)
                         )
                         TopBarTitle(text = stringResource(id = R.string.app_crashed))
 

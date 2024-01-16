@@ -13,27 +13,25 @@ import javax.inject.Inject
 
 data class IndexUiState(
     val refreshing: Boolean = true,
-    val typeIndex: Int = 0,
-    val typeList: List<String>,
     val filterIndex: Int = 0,
     val filterList: List<String>,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
-    object Refresh : IndexUiIntent()
+    data object Refresh : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     private val treeRepository: TreeRepository,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(typeList = treeRepository.typeList, filterList = treeRepository.filterList)) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(filterList = treeRepository.filterList)) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Refresh -> {
                 emitState(state.copy(refreshing = true))
                 _contentItems.value =
-                    treeRepository.tree(src = treeRepository.getTargetPath(state.typeIndex), exclusionList = treeRepository.getExclusionList(state.filterIndex))
+                    treeRepository.tree(src = treeRepository.getTargetPath(), exclusionList = treeRepository.getExclusionList(state.filterIndex))
                 emitState(state.copy(refreshing = false))
             }
         }

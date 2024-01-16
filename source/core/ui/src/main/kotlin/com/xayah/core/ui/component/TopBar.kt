@@ -10,6 +10,15 @@ import com.xayah.core.ui.util.value
 
 @ExperimentalMaterial3Api
 @Composable
+fun PrimaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String) {
+    CenterAlignedTopAppBar(
+        title = { TopBarTitle(text = title) },
+        scrollBehavior = scrollBehavior,
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
 fun SecondaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: StringResourceToken, onBackClick: (() -> Unit)? = null) {
     val navController = LocalNavController.current!!
     CenterAlignedTopAppBar(

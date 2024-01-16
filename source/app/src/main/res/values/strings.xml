@@ -183,4 +183,21 @@
     <string name="shared_dir">Shared dir</string>
     <string name="allow_empty">Allow empty</string>
     <string name="domain">Domain</string>
+    <string name="home">Home</string>
+    <string name="keystore">Keystore</string>
+    <string name="keystore_desc">This app uses Android Keystore provider, restoring it may cause unexpected errors</string>
+    <string name="details">Details</string>
+    <string name="back_up_to_local">Back up to local</string>
+    <string name="preprocessing">Preprocessing</string>
+    <string name="restore_from_local">Restore from local</string>
+    <string name="task_is_in_progress">Task is in progress</string>
+    <string name="task">Task</string>
+    <string name="task_list">Task list</string>
+    <string name="finished">Finished</string>
+    <string name="uid" translatable="false">UID</string>
+    <string name="type">Type</string>
+    <string name="first_install">First install</string>
+    <string name="info">Info</string>
+    <string name="id" translatable="false">ID</string>
+    <string name="preserve">Preserve</string>
 </resources>

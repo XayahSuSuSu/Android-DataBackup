@@ -3,7 +3,7 @@ package com.xayah.core.data.repository
 import android.content.Context
 import androidx.annotation.StringRes
 import com.xayah.core.database.dao.CloudDao
-import com.xayah.core.database.model.CloudEntity
+import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.LogUtil

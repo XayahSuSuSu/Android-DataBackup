@@ -1,0 +1,328 @@
+package com.xayah.core.service.util
+
+import android.content.Context
+import com.xayah.core.common.util.toLineString
+import com.xayah.core.data.repository.PackageRepository
+import com.xayah.core.database.dao.TaskDao
+import com.xayah.core.datastore.readCompatibleMode
+import com.xayah.core.datastore.readCompressionTest
+import com.xayah.core.datastore.readFollowSymlinks
+import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataType
+import com.xayah.core.model.OperationState
+import com.xayah.core.model.database.PackageEntity
+import com.xayah.core.model.database.TaskDetailPackageEntity
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.util.IconRelativeDir
+import com.xayah.core.util.LogUtil
+import com.xayah.core.util.PathUtil
+import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.command.Tar
+import com.xayah.core.util.filesDir
+import com.xayah.core.util.model.ShellResult
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
+
+class PackagesBackupUtil2 @Inject constructor(
+    @ApplicationContext val context: Context,
+    private val rootService: RemoteRootService,
+    private val taskDao: TaskDao,
+    private val packageRepository: PackageRepository,
+) {
+    companion object {
+        private val TAG = this::class.java.simpleName
+    }
+
+    internal fun log(onMsg: () -> String): String = run {
+        val msg = onMsg()
+        LogUtil.log { TAG to msg }
+        msg
+    }
+
+    private val usePipe = runBlocking { context.readCompatibleMode().first() }
+
+    private fun PackageEntity.getDataSelected(dataType: DataType) = when (dataType) {
+        DataType.PACKAGE_APK -> apkSelected
+        DataType.PACKAGE_USER -> userSelected
+        DataType.PACKAGE_USER_DE -> userDeSelected
+        DataType.PACKAGE_DATA -> dataSelected
+        DataType.PACKAGE_OBB -> obbSelected
+        DataType.PACKAGE_MEDIA -> mediaSelected
+        else -> false
+    }
+
+    private fun PackageEntity.getDataBytes(dataType: DataType) = when (dataType) {
+        DataType.PACKAGE_APK -> dataStats.apkBytes
+        DataType.PACKAGE_USER -> dataStats.userBytes
+        DataType.PACKAGE_USER_DE -> dataStats.userDeBytes
+        DataType.PACKAGE_DATA -> dataStats.dataBytes
+        DataType.PACKAGE_OBB -> dataStats.obbBytes
+        DataType.PACKAGE_MEDIA -> dataStats.mediaBytes
+        else -> 0
+    }
+
+    private fun PackageEntity.setDataBytes(dataType: DataType, sizeBytes: Long) = when (dataType) {
+        DataType.PACKAGE_APK -> dataStats.apkBytes = sizeBytes
+        DataType.PACKAGE_USER -> dataStats.userBytes = sizeBytes
+        DataType.PACKAGE_USER_DE -> dataStats.userDeBytes = sizeBytes
+        DataType.PACKAGE_DATA -> dataStats.dataBytes = sizeBytes
+        DataType.PACKAGE_OBB -> dataStats.obbBytes = sizeBytes
+        DataType.PACKAGE_MEDIA -> dataStats.mediaBytes = sizeBytes
+        else -> Unit
+    }
+
+    private suspend fun TaskDetailPackageEntity.updateInfo(
+        dataType: DataType,
+        state: OperationState? = null,
+        bytes: Long? = null,
+        log: String? = null,
+    ) = run {
+        when (dataType) {
+            DataType.PACKAGE_APK -> {
+                apkInfo.also {
+                    if (state != null) it.state = state
+                    if (bytes != null) it.bytes = bytes
+                    if (log != null) it.log = log
+                }
+            }
+
+            DataType.PACKAGE_USER -> {
+                userInfo.also {
+                    if (state != null) it.state = state
+                    if (bytes != null) it.bytes = bytes
+                    if (log != null) it.log = log
+                }
+            }
+
+            DataType.PACKAGE_USER_DE -> {
+                userDeInfo.also {
+                    if (state != null) it.state = state
+                    if (bytes != null) it.bytes = bytes
+                    if (log != null) it.log = log
+                }
+            }
+
+            DataType.PACKAGE_DATA -> {
+                dataInfo.also {
+                    if (state != null) it.state = state
+                    if (bytes != null) it.bytes = bytes
+                    if (log != null) it.log = log
+                }
+            }
+
+            DataType.PACKAGE_OBB -> {
+                obbInfo.also {
+                    if (state != null) it.state = state
+                    if (bytes != null) it.bytes = bytes
+                    if (log != null) it.log = log
+                }
+            }
+
+            DataType.PACKAGE_MEDIA -> {
+                mediaInfo.also {
+                    if (state != null) it.state = state
+                    if (bytes != null) it.bytes = bytes
+                    if (log != null) it.log = log
+                }
+            }
+
+            else -> {}
+        }
+        taskDao.upsert(this)
+    }
+
+    private suspend fun testArchive(src: String, ct: CompressionType) = run {
+        var code: Int
+        var input: List<String>
+        val out = mutableListOf<String>()
+
+        if (context.readCompressionTest().first()) {
+            Tar.test(src = src, extra = ct.decompressPara)
+                .also { result ->
+                    code = result.code
+                    input = result.input
+                    if (result.isSuccess.not()) {
+                        out.add(log { "$src is broken, trying to delete it." })
+                        rootService.deleteRecursively(src)
+                    } else {
+                        out.add(log { "Everything seems fine." })
+                    }
+                }
+        } else {
+            code = 0
+            input = listOf()
+            out.add(log { "Skip testing." })
+        }
+
+        ShellResult(code = code, input = input, out = out)
+    }
+
+    private val tarCt = CompressionType.TAR
+    fun getIconsDst(dstDir: String) = "${dstDir}/$IconRelativeDir.${tarCt.suffix}"
+    suspend fun backupIcons(dstDir: String): ShellResult = run {
+        log { "Backing up icons..." }
+
+        val dst = getIconsDst(dstDir = dstDir)
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+
+        Tar.compress(
+            usePipe = usePipe,
+            exclusionList = listOf(),
+            h = "",
+            srcDir = context.filesDir(),
+            src = IconRelativeDir,
+            dst = dst,
+            extra = tarCt.compressPara
+        ).also { result ->
+            isSuccess = result.isSuccess
+            out.addAll(result.out)
+        }
+        testArchive(src = dst, ct = tarCt).also { result ->
+            isSuccess = isSuccess and result.isSuccess
+            out.addAll(result.out)
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    suspend fun getPackageSourceDir(packageName: String, userId: Int) = rootService.getPackageSourceDir(packageName, userId).let { list ->
+        if (list.isNotEmpty()) PathUtil.getParentPath(list[0]) else ""
+    }
+
+    suspend fun backupApk(p: PackageEntity, r: PackageEntity?, t: TaskDetailPackageEntity, dstDir: String): ShellResult = run {
+        log { "Backing up apk..." }
+
+        val dataType = DataType.PACKAGE_APK
+        val packageName = p.packageName
+        val userId = p.userId
+        val ct = p.extraInfo.compressionType
+        val dst = packageRepository.getArchiveDst(dstDir = dstDir, dataType = dataType, ct = ct)
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+        val srcDir = getPackageSourceDir(packageName = packageName, userId = userId)
+
+        if (p.getDataSelected(dataType).not()) {
+            isSuccess = true
+            t.updateInfo(dataType = dataType, state = OperationState.SKIP)
+        } else {
+            if (srcDir.isNotEmpty()) {
+                val sizeBytes = rootService.calculateSize(srcDir)
+                t.updateInfo(dataType = dataType, state = OperationState.PROCESSING, bytes = sizeBytes)
+                if (rootService.exists(dst) && sizeBytes == r?.getDataBytes(dataType)) {
+                    isSuccess = true
+                    t.updateInfo(dataType = dataType, state = OperationState.SKIP)
+                    out.add(log { "Data has not changed." })
+                } else {
+                    Tar.compressInCur(usePipe = usePipe, cur = srcDir, src = "./*.apk", dst = dst, extra = ct.compressPara)
+                        .also { result ->
+                            isSuccess = result.isSuccess
+                            out.addAll(result.out)
+                        }
+                    testArchive(src = dst, ct = ct).also { result ->
+                        isSuccess = isSuccess and result.isSuccess
+                        out.addAll(result.out)
+                        if (result.isSuccess) p.setDataBytes(dataType, sizeBytes)
+                    }
+                }
+            } else {
+                isSuccess = false
+                out.add(log { "Failed to get apk path of $packageName." })
+            }
+            t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = out.toLineString())
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    /**
+     * Package data: USER, USER_DE, DATA, OBB, MEDIA
+     */
+    suspend fun backupData(p: PackageEntity, t: TaskDetailPackageEntity, r: PackageEntity?, dataType: DataType, dstDir: String): ShellResult = run {
+        log { "Backing up ${dataType.type}..." }
+
+        val packageName = p.packageName
+        val userId = p.userId
+        val ct = p.extraInfo.compressionType
+        val dst = packageRepository.getArchiveDst(dstDir = dstDir, dataType = dataType, ct = ct)
+        var isSuccess: Boolean
+        val out = mutableListOf<String>()
+        val srcDir = packageRepository.getDataSrcDir(dataType, userId)
+
+        if (p.getDataSelected(dataType).not()) {
+            isSuccess = true
+            t.updateInfo(dataType = dataType, state = OperationState.SKIP)
+        } else {
+            // Check the existence of origin path.
+            val src = packageRepository.getDataSrc(srcDir, packageName)
+            rootService.exists(src).also {
+                if (it.not()) {
+                    if (dataType == DataType.PACKAGE_USER) {
+                        isSuccess = false
+                        out.add(log { "Not exist: $src" })
+                        t.updateInfo(dataType = dataType, state = OperationState.ERROR, log = out.toLineString())
+                        return@run ShellResult(code = -1, input = listOf(), out = out)
+                    } else {
+                        out.add(log { "Not exist and skip: $src" })
+                        t.updateInfo(dataType = dataType, state = OperationState.SKIP, log = out.toLineString())
+                        return@run ShellResult(code = -2, input = listOf(), out = out)
+                    }
+                }
+            }
+
+            // Generate exclusion items.
+            val exclusionList = mutableListOf<String>()
+            when (dataType) {
+                DataType.PACKAGE_USER, DataType.PACKAGE_USER_DE -> {
+                    // Exclude cache
+                    val folders = listOf(".ota", "cache", "lib", "code_cache", "no_backup")
+                    exclusionList.addAll(folders.map { "${SymbolUtil.QUOTE}$packageName/$it${SymbolUtil.QUOTE}" })
+                }
+
+                DataType.PACKAGE_DATA, DataType.PACKAGE_OBB, DataType.PACKAGE_MEDIA -> {
+                    // Exclude cache
+                    val folders = listOf("cache")
+                    exclusionList.addAll(folders.map { "${SymbolUtil.QUOTE}$packageName/$it${SymbolUtil.QUOTE}" })
+                    // Exclude Backup_*
+                    exclusionList.add("${SymbolUtil.QUOTE}Backup_${SymbolUtil.QUOTE}*")
+                }
+
+                else -> {}
+            }
+            log { "ExclusionList: $exclusionList." }
+
+            val sizeBytes = rootService.calculateSize(src)
+            t.updateInfo(dataType = dataType, state = OperationState.PROCESSING, bytes = sizeBytes)
+            if (rootService.exists(dst) && sizeBytes == r?.getDataBytes(dataType)) {
+                isSuccess = true
+                t.updateInfo(dataType = dataType, state = OperationState.SKIP)
+                out.add(log { "Data has not changed." })
+            } else {
+                // Compress and test.
+                Tar.compress(
+                    usePipe = usePipe,
+                    exclusionList = exclusionList,
+                    h = if (context.readFollowSymlinks().first()) "-h" else "",
+                    srcDir = srcDir,
+                    src = packageName,
+                    dst = dst,
+                    extra = ct.compressPara
+                ).also { result ->
+                    isSuccess = result.isSuccess
+                    out.addAll(result.out)
+                }
+                testArchive(src = dst, ct = ct).also { result ->
+                    isSuccess = isSuccess and result.isSuccess
+                    out.addAll(result.out)
+                    if (result.isSuccess) p.setDataBytes(dataType, sizeBytes)
+                }
+            }
+
+            t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = out.toLineString())
+        }
+
+        ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+}

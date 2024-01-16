@@ -3,4 +3,5 @@
     <item name="num_minutes_ago" type="plurals"/>
     <item name="num_hours_ago" type="plurals"/>
     <item name="num_days_ago" type="plurals"/>
+    <item name="ic_launcher" type="mipmap" />
 </resources>

@@ -1,84 +1,79 @@
 package com.xayah.core.data.repository
 
 import android.content.Context
-import androidx.annotation.StringRes
-import com.xayah.core.database.dao.MediaDao
-import com.xayah.core.database.dao.PackageBackupEntireDao
-import com.xayah.core.database.dao.PackageRestoreEntireDao
+import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
-import com.xayah.core.database.model.TaskEntity
-import com.xayah.core.datastore.readBackupSaveParentPath
-import com.xayah.core.datastore.readBackupSavePath
-import com.xayah.core.datastore.readRcloneMainAccountName
-import com.xayah.core.datastore.readRcloneMainAccountRemote
+import com.xayah.core.datastore.ConstantUtil
+import com.xayah.core.model.OpType
+import com.xayah.core.model.TaskType
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.DateUtil
+import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TaskRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
+    private val packageDao: PackageDao,
     private val taskDao: TaskDao,
-    private val packageBackupDao: PackageBackupEntireDao,
-    private val packageRestoreDao: PackageRestoreEntireDao,
-    private val mediaDao: MediaDao,
 ) {
-    fun getString(@StringRes resId: Int) = context.getString(resId)
+    val tasks = taskDao.queryFlow().distinctUntilChanged()
 
-    suspend fun getBackupTargetParentPath() = context.readBackupSaveParentPath().first()
-    suspend fun getBackupTargetPath() = context.readBackupSavePath().first()
-    suspend fun getRcloneMainAccountName() = context.readRcloneMainAccountName().first()
-    suspend fun getRcloneMainAccountRemote() = context.readRcloneMainAccountRemote().first()
+    fun queryTaskFlow(id: Long) = taskDao.queryTaskFlow(id)
+    fun queryProcessingFlow(taskId: Long) = taskDao.queryFlow(taskId).map { tasks -> tasks.filter { it.isFinished.not() } }.distinctUntilChanged()
+    fun querySuccessFlow(taskId: Long) = taskDao.queryFlow(taskId).map { tasks -> tasks.filter { it.isFinished && it.isSuccess } }
+    fun queryFailureFlow(taskId: Long) = taskDao.queryFlow(taskId).map { tasks -> tasks.filter { it.isFinished && it.isSuccess.not() } }
 
-    suspend fun getPackagesBackupRawBytes(): Double = run {
+    fun getShortRelativeTimeSpanString(time1: Long, time2: Long) = DateUtil.getShortRelativeTimeSpanString(context = context, time1 = time1, time2 = time2)
+
+    suspend fun getRawBytes(taskType: TaskType): Double = run {
         var total = 0.0
-        val bothPackages = packageBackupDao.queryActiveBothPackages().first()
-        val apkOnlyPackages = packageBackupDao.queryActiveAPKOnlyPackages().first()
-        val dataOnlyPackages = packageBackupDao.queryActiveDataOnlyPackages().first()
-        bothPackages.forEach { total += it.storageStats.appBytes + it.storageStats.dataBytes }
-        apkOnlyPackages.forEach { total += it.storageStats.appBytes }
-        dataOnlyPackages.forEach { total += it.storageStats.dataBytes }
+        when (taskType) {
+            TaskType.PACKAGE -> {
+                val packages = packageDao.queryActivated()
+                packages.forEach {
+                    if (it.apkSelected) total += it.dataStats.apkBytes
+                    if (it.userSelected) total += it.dataStats.userBytes
+                    if (it.userDeSelected) total += it.dataStats.userDeBytes
+                    if (it.dataSelected) total += it.dataStats.dataBytes
+                    if (it.obbSelected) total += it.dataStats.obbBytes
+                    if (it.mediaSelected) total += it.dataStats.mediaBytes
+                }
+            }
+
+            TaskType.MEDIA -> {}
+        }
         total
     }
 
-    suspend fun getPackagesRestoreRawBytes(): Double = run {
+    suspend fun getAvailableBytes(opType: OpType): Double = run {
         var total = 0.0
-        val bothPackages = packageRestoreDao.queryActiveBothPackages().first()
-        val apkOnlyPackages = packageRestoreDao.queryActiveAPKOnlyPackages().first()
-        val dataOnlyPackages = packageRestoreDao.queryActiveDataOnlyPackages().first()
-        bothPackages.forEach { total += it.sizeBytes }
-        apkOnlyPackages.forEach { total += it.sizeBytes }
-        dataOnlyPackages.forEach { total += it.sizeBytes }
+        total += when (opType) {
+            OpType.BACKUP -> {
+                rootService.readStatFs(context.localBackupSaveDir()).availableBytes.toDouble()
+            }
+
+            OpType.RESTORE -> {
+                rootService.readStatFs(ConstantUtil.DefaultPathParent).availableBytes.toDouble()
+            }
+        }
         total
     }
 
-    suspend fun getMediumBackupRawBytes(): Double = run {
+    suspend fun getTotalBytes(opType: OpType): Double = run {
         var total = 0.0
-        val medium = mediaDao.queryBackupSelected()
-        medium.forEach { total += it.sizeBytes }
+        total += when (opType) {
+            OpType.BACKUP -> {
+                rootService.readStatFs(context.localBackupSaveDir()).totalBytes.toDouble()
+            }
+
+            OpType.RESTORE -> {
+                rootService.readStatFs(ConstantUtil.DefaultPathParent).totalBytes.toDouble()
+            }
+        }
         total
     }
-
-    suspend fun getMediumRestoreRawBytes(): Double = run {
-        var total = 0.0
-        val medium = mediaDao.queryRestoreSelected()
-        medium.forEach { total += it.sizeBytes }
-        total
-    }
-
-    suspend fun getAvailableBytes(path: String): Double = rootService.readStatFs(path).availableBytes.toDouble()
-    suspend fun getTotalBytes(path: String): Double = rootService.readStatFs(path).totalBytes.toDouble()
-
-    fun getShortRelativeTimeSpanString(time1: Long, time2: Long) =
-        DateUtil.getShortRelativeTimeSpanString(context = context, time1 = time1, time2 = time2)
-
-    fun getTaskOrNull(timestamp: Long): Flow<TaskEntity?> = taskDao.queryFlow(timestamp).distinctUntilChanged()
-    suspend fun upsertTask(task: TaskEntity) = taskDao.upsert(task)
-    suspend fun updateEndTimestamp(timestamp: Long, endTimestamp: Long) = taskDao.updateEndTimestamp(timestamp = timestamp, endTimestamp = endTimestamp)
-    suspend fun updateStartTimestamp(timestamp: Long, startTimestamp: Long) =
-        taskDao.updateStartTimestamp(timestamp = timestamp, startTimestamp = startTimestamp)
 }

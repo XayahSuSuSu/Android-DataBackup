@@ -78,23 +78,9 @@ fun PageTree() {
                         Row(
                             modifier = Modifier.horizontalScroll(rememberScrollState()),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
+                            horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
                         ) {
                             Spacer(modifier = Modifier.size(PaddingTokens.Level0))
-
-                            FilterChip(
-                                enabled = targetState.not(),
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.FilterList),
-                                selectedIndex = uiState.typeIndex,
-                                list = uiState.typeList,
-                                onSelected = { index, _ ->
-                                    viewModel.launchOnIO {
-                                        viewModel.emitStateSuspend(uiState.copy(typeIndex = index))
-                                        viewModel.emitIntentSuspend(IndexUiIntent.Refresh)
-                                    }
-                                },
-                                onClick = {}
-                            )
 
                             FilterChip(
                                 enabled = targetState.not(),
@@ -117,12 +103,12 @@ fun PageTree() {
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxWidth()
-                                .paddingHorizontal(PaddingTokens.Level3)
-                                .paddingBottom(PaddingTokens.Level4)
+                                .paddingHorizontal(PaddingTokens.Level4)
+                                .paddingBottom(PaddingTokens.Level5)
                         ) {
                             LazyColumn(modifier = Modifier.horizontalScroll(rememberScrollState())) {
                                 item {
-                                    Spacer(modifier = Modifier.height(PaddingTokens.Level3))
+                                    Spacer(modifier = Modifier.height(PaddingTokens.Level4))
                                 }
 
                                 if (targetState) {
@@ -130,7 +116,7 @@ fun PageTree() {
                                         Row(Modifier.animateItemPlacement()) {
                                             LabelSmallText(
                                                 modifier = Modifier
-                                                    .padding(PaddingTokens.Level3)
+                                                    .padding(PaddingTokens.Level4)
                                                     .treeShimmer(true),
                                                 text = "ShimmerShimmerShimmer"
                                             )
@@ -140,7 +126,7 @@ fun PageTree() {
                                     items(count = contentItems.size, key = { it }) { index ->
                                         Row(Modifier.animateItemPlacement()) {
                                             LabelSmallText(
-                                                modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
+                                                modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                                                 text = contentItems[index],
                                                 fontFamily = JetbrainsMonoFamily
                                             )
@@ -149,7 +135,7 @@ fun PageTree() {
                                 }
 
                                 item {
-                                    Spacer(modifier = Modifier.height(PaddingTokens.Level3))
+                                    Spacer(modifier = Modifier.height(PaddingTokens.Level4))
                                 }
                             }
                         }

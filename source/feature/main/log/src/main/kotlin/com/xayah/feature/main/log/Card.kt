@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
-import com.xayah.core.database.model.formatSize
+import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.BodySmallText
 import com.xayah.core.ui.component.Card
 import com.xayah.core.ui.component.Divider
@@ -124,12 +124,12 @@ fun LogCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .paddingHorizontal(PaddingTokens.Level3)
-                .paddingTop(PaddingTokens.Level3)
-                .paddingBottom(PaddingTokens.Level1)
+                .paddingHorizontal(PaddingTokens.Level4)
+                .paddingTop(PaddingTokens.Level4)
+                .paddingBottom(PaddingTokens.Level2)
         ) {
             Column {
-                Row(modifier = Modifier.paddingBottom(PaddingTokens.Level1)) {
+                Row(modifier = Modifier.paddingBottom(PaddingTokens.Level2)) {
                     TitleLargeText(modifier = Modifier.logCardShimmer(shimmering), text = name, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.weight(1f))
                     if (selected) Icon(
@@ -140,15 +140,15 @@ fun LogCard(
                     )
                 }
                 BodySmallText(modifier = Modifier.logCardShimmer(shimmering), text = DateUtil.formatTimestamp(timestamp), fontWeight = FontWeight.Bold)
-                Divider(modifier = Modifier.paddingTop(PaddingTokens.Level1))
+                Divider(modifier = Modifier.paddingTop(PaddingTokens.Level2))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level1),
+                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level2),
                     verticalAlignment = Alignment.CenterVertically,
                     content = {
-                        RoundChip(modifier = Modifier.logCardShimmer(shimmering), text = formatSize(sizeBytes), enabled = true)
+                        RoundChip(modifier = Modifier.logCardShimmer(shimmering), text = sizeBytes.formatSize(), enabled = true)
                         if (shimmering.not()) {
                             chipGroup()
                             Spacer(modifier = Modifier.weight(1f))
@@ -158,7 +158,7 @@ fun LogCard(
                                 ModalActionDropdownMenu(expanded = expanded, actionList = actions, onDismissRequest = { expanded = false })
                             }
                         } else {
-                            Spacer(modifier = Modifier.height(PaddingTokens.Level6))
+                            Spacer(modifier = Modifier.height(PaddingTokens.Level7))
                         }
                     }
                 )

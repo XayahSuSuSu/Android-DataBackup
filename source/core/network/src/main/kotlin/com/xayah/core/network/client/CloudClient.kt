@@ -1,10 +1,11 @@
 package com.xayah.core.network.client
 
 import android.content.Context
-import com.xayah.core.database.model.CloudEntity
-import com.xayah.core.database.model.FTPExtra
-import com.xayah.core.database.model.SMBExtra
 import com.xayah.core.model.CloudType
+import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.FTPExtra
+import com.xayah.core.model.database.SMBExtra
+import com.xayah.core.network.util.getExtraEntity
 import com.xayah.libpickyou.parcelables.DirChildrenParcelable
 
 interface CloudClient {

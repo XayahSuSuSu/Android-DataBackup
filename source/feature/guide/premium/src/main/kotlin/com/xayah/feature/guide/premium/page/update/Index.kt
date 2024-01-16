@@ -67,9 +67,9 @@ fun PageUpdate(navController: NavHostController) {
         targetState = uiState.isInitializing,
         label = AnimationTokens.AnimatedContentLabel
     ) { targetState ->
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
             item {
-                Spacer(modifier = Modifier.height(PaddingTokens.Level1))
+                Spacer(modifier = Modifier.height(PaddingTokens.Level2))
             }
 
             if (targetState) {
@@ -85,7 +85,7 @@ fun PageUpdate(navController: NavHostController) {
             }
 
             item {
-                Spacer(modifier = Modifier.height(PaddingTokens.Level1))
+                Spacer(modifier = Modifier.height(PaddingTokens.Level2))
             }
         }
     }

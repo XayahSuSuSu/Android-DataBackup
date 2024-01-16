@@ -2,17 +2,13 @@ package com.xayah.feature.main.directory
 
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.lifecycle.SavedStateHandle
 import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.DirectoryRepository
-import com.xayah.core.database.model.DirectoryEntity
-import com.xayah.core.model.OpType
-import com.xayah.core.model.util.of
+import com.xayah.core.model.database.DirectoryEntity
 import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.ui.route.MainRoutes
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,16 +18,15 @@ import javax.inject.Inject
 
 data class IndexUiState(
     val updating: Boolean = true,
-    val type: OpType = OpType.BACKUP,
     val directories: Flow<List<DirectoryEntity>> = flow {},
     val shimmerCount: Int = 1,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
-    object Update : IndexUiIntent()
-    data class SelectDir(val type: OpType, val entity: DirectoryEntity) : IndexUiIntent()
-    data class AddDir(val type: OpType, val context: ComponentActivity) : IndexUiIntent()
-    data class DeleteDir(val type: OpType, val entity: DirectoryEntity) : IndexUiIntent()
+    data object Update : IndexUiIntent()
+    data class SelectDir(val entity: DirectoryEntity) : IndexUiIntent()
+    data class AddDir(val context: ComponentActivity) : IndexUiIntent()
+    data class DeleteDir(val entity: DirectoryEntity) : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -39,13 +34,7 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     rootService: RemoteRootService,
     private val directoryRepository: DirectoryRepository,
-    args: SavedStateHandle,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
-    IndexUiState(
-        type = OpType.of(args.get<String>(MainRoutes.ArgOpType)),
-        directories = directoryRepository.directories
-    )
-) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(directories = directoryRepository.directories)) {
     init {
         rootService.onFailure = {
             val msg = it.message
@@ -58,12 +47,12 @@ class IndexViewModel @Inject constructor(
         when (intent) {
             is IndexUiIntent.Update -> {
                 emitState(state.copy(updating = true, shimmerCount = directoryRepository.countActiveDirectories()))
-                directoryRepository.update(state.type)
+                directoryRepository.update()
                 emitState(state.copy(updating = false))
             }
 
             is IndexUiIntent.SelectDir -> {
-                directoryRepository.selectDir(type = state.type, entity = intent.entity)
+                directoryRepository.selectDir(entity = intent.entity)
             }
 
             is IndexUiIntent.AddDir -> {
@@ -75,7 +64,7 @@ class IndexViewModel @Inject constructor(
                         setLimitation(0)
                         launch(context) { pathList ->
                             launchOnIO {
-                                directoryRepository.addDir(state.type, pathList)
+                                directoryRepository.addDir(pathList)
                                 emitIntent(IndexUiIntent.Update)
                             }
                         }
@@ -84,7 +73,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.DeleteDir -> {
-                directoryRepository.deleteDir(type = state.type, entity = intent.entity)
+                directoryRepository.deleteDir(entity = intent.entity)
             }
         }
     }

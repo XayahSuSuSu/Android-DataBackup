@@ -47,7 +47,7 @@ fun GuideScaffold(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        Column(modifier = Modifier.paddingHorizontal(PaddingTokens.Level3)) {
+        Column(modifier = Modifier.paddingHorizontal(PaddingTokens.Level4)) {
             InnerTopSpacer(innerPadding = innerPadding)
             InnerTopSpacer(innerPadding = innerPadding)
 
@@ -58,8 +58,8 @@ fun GuideScaffold(
                     contentDescription = null,
                     tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
                     modifier = Modifier
-                        .size(PaddingTokens.Level6)
-                        .paddingBottom(PaddingTokens.Level1)
+                        .size(PaddingTokens.Level7)
+                        .paddingBottom(PaddingTokens.Level2)
                 )
                 TopBarTitle(text = topBarTitle.value)
             }

@@ -2,9 +2,10 @@ package com.xayah.core.network.client
 
 import android.content.Context
 import com.xayah.core.common.util.toPathString
-import com.xayah.core.database.model.CloudEntity
-import com.xayah.core.database.model.FTPExtra
+import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.FTPExtra
 import com.xayah.core.network.R
+import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.toPathList

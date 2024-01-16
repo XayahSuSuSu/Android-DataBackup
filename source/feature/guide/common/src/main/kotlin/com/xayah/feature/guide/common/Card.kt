@@ -24,6 +24,7 @@ import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.util.value
 
+@ExperimentalMaterial3Api
 @Composable
 fun IntroCard(serial: Char, title: StringResourceToken, subtitle: StringResourceToken, content: StringResourceToken) {
     Card(
@@ -31,11 +32,11 @@ fun IntroCard(serial: Char, title: StringResourceToken, subtitle: StringResource
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
-        Column(modifier = Modifier.padding(PaddingTokens.Level3)) {
+        Column(modifier = Modifier.padding(PaddingTokens.Level4)) {
             RoundChip(text = serial.toString())
-            TitleLargeText(modifier = Modifier.paddingVertical(PaddingTokens.Level1), text = title.value)
-            BodySmallText(modifier = Modifier.paddingVertical(PaddingTokens.Level1), text = subtitle.value, fontWeight = FontWeight.Bold)
-            BodySmallText(modifier = Modifier.paddingVertical(PaddingTokens.Level1), text = content.value, fontWeight = FontWeight.Bold)
+            TitleLargeText(modifier = Modifier.paddingVertical(PaddingTokens.Level2), text = title.value)
+            BodySmallText(modifier = Modifier.paddingVertical(PaddingTokens.Level2), text = subtitle.value, fontWeight = FontWeight.Bold)
+            BodySmallText(modifier = Modifier.paddingVertical(PaddingTokens.Level2), text = content.value, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -52,17 +53,17 @@ fun EnvCard(content: StringResourceToken, state: EnvState, enabled: Boolean, onC
         },
         colors = CardDefaults.cardColors(containerColor = state.backgroundColor.toColor())
     ) {
-        Column(modifier = Modifier.padding(PaddingTokens.Level3)) {
+        Column(modifier = Modifier.padding(PaddingTokens.Level4)) {
             Icon(
                 imageVector = state.icon.value,
                 contentDescription = null,
                 tint = state.tint.toColor(),
                 modifier = Modifier
-                    .size(PaddingTokens.Level5)
-                    .paddingBottom(PaddingTokens.Level1)
+                    .size(PaddingTokens.Level6)
+                    .paddingBottom(PaddingTokens.Level2)
             )
             BodyMediumText(
-                modifier = Modifier.paddingTop(PaddingTokens.Level1),
+                modifier = Modifier.paddingTop(PaddingTokens.Level2),
                 text = content.value,
                 color = state.tint.toColor(),
                 fontWeight = FontWeight.Bold

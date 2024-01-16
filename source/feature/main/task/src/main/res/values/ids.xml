@@ -1,0 +1,36 @@
+<resources>
+    <item name="app_and_data" type="string"/>
+    <item name="search_bar_hint" type="string"/>
+    <item name="backup_sort_type_items" type="array" />
+    <item name="ic_rounded_deployed_code" type="drawable" />
+    <item name="flag_type_items" type="array" />
+    <item name="ic_rounded_acute" type="drawable" />
+    <item name="ic_rounded_counter_5" type="drawable" />
+    <item name="keystore" type="string" />
+    <item name="keystore_desc" type="string" />
+    <item name="version" type="string" />
+    <item name="data_size" type="string" />
+    <item name="user" type="string" />
+    <item name="system" type="string" />
+    <item name="third_party" type="string" />
+    <item name="ic_rounded_person" type="drawable" />
+    <item name="ic_rounded_history" type="drawable" />
+    <item name="ic_rounded_database" type="drawable" />
+    <item name="backup" type="string" />
+    <item name="back_up_to_local" type="string" />
+    <item name="details" type="string" />
+    <item name="restore" type="string" />
+    <item name="restore_from_local" type="string" />
+    <item name="task_is_in_progress" type="string" />
+    <item name="backup_completed" type="string" />
+    <item name="succeed" type="string" />
+    <item name="failed" type="string" />
+    <item name="media" type="string" />
+    <item name="task" type="string" />
+    <item name="task_list" type="string" />
+    <item name="processing" type="string" />
+    <item name="finished" type="string" />
+    <item name="remain" type="string" />
+    <item name="time" type="string" />
+    <item name="internal_storage" type="string" />
+</resources>

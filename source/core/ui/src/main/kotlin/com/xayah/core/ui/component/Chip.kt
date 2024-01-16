@@ -1,11 +1,17 @@
 package com.xayah.core.ui.component
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -16,18 +22,23 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.core.model.SortType
+import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.material3.DisabledAlpha
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
@@ -40,25 +51,36 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 
+@ExperimentalMaterial3Api
 @Composable
-fun RoundChip(modifier: Modifier = Modifier, text: String, enabled: Boolean = true) {
-    val onSurfaceVariant = ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
-    val surface = ColorSchemeKeyTokens.Surface.toColor()
-    Surface(
-        shape = CircleShape,
-        modifier = modifier.height(ChipTokens.DefaultHeight),
-        color = if (enabled) onSurfaceVariant else onSurfaceVariant.copy(alpha = DisabledAlpha)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+fun RoundChip(
+    modifier: Modifier = Modifier,
+    text: String,
+    enabled: Boolean = true,
+    color: Color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+    tint: Color = ColorSchemeKeyTokens.Surface.toColor(),
+    onClick: () -> Unit = {},
+) {
+    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+        Surface(
+            shape = CircleShape,
+            modifier = modifier.wrapContentHeight(),
+            color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+            onClick = onClick
         ) {
-            TitleSmallText(
-                modifier = Modifier.paddingHorizontal(ChipTokens.DefaultPadding),
-                text = text,
-                color = if (enabled) surface else surface.copy(alpha = DisabledAlpha),
-                fontWeight = FontWeight.Bold
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                LabelSmallText(
+                    modifier = Modifier
+                        .paddingVertical(PaddingTokens.Level1)
+                        .paddingHorizontal(PaddingTokens.Level2),
+                    text = text,
+                    color = if (enabled) tint else tint.copy(alpha = DisabledAlpha),
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -93,7 +115,7 @@ fun AnimatedRoundChip(modifier: Modifier = Modifier, text: String, enabled: Bool
 fun AssistChip(
     enabled: Boolean,
     label: StringResourceToken,
-    leadingIcon: ImageVectorToken,
+    leadingIcon: ImageVectorToken?,
     trailingIcon: ImageVectorToken?,
     shape: Shape = AssistChipDefaults.shape,
     color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
@@ -104,13 +126,17 @@ fun AssistChip(
         enabled = enabled,
         onClick = onClick,
         label = { Text(text = label.value) },
-        leadingIcon = {
-            Icon(
-                imageVector = leadingIcon.value,
-                tint = color.toColor(),
-                contentDescription = null,
-                modifier = Modifier.size(AssistChipDefaults.IconSize)
-            )
+        leadingIcon = if (leadingIcon != null) {
+            {
+                Icon(
+                    imageVector = leadingIcon.value,
+                    tint = color.toColor(),
+                    contentDescription = null,
+                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                )
+            }
+        } else {
+            null
         },
         trailingIcon = if (trailingIcon != null) {
             {
@@ -131,9 +157,10 @@ fun AssistChip(
 
 @Composable
 fun AssistChip(
+    modifier: Modifier = Modifier,
     enabled: Boolean,
     title: StringResourceToken,
-    subtitle: StringResourceToken,
+    subtitle: StringResourceToken?,
     leadingIcon: ImageVectorToken,
     trailingIcon: ImageVectorToken?,
     shape: Shape = AssistChipDefaults.shape,
@@ -142,12 +169,17 @@ fun AssistChip(
     onClick: () -> Unit,
 ) {
     AssistChip(
+        modifier = modifier,
         enabled = enabled,
         onClick = onClick,
         label = {
-            Column(modifier = Modifier.paddingVertical(PaddingTokens.Level1)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .paddingVertical(PaddingTokens.Level2)
+            ) {
                 Text(text = title.value)
-                LabelSmallText(text = subtitle.value)
+                LabelSmallText(modifier = Modifier.shimmer(subtitle == null), text = subtitle?.value ?: "Shim")
             }
         },
         leadingIcon = {
@@ -265,8 +297,8 @@ fun MultipleSelectionFilterChip(
         AssistChip(
             enabled = enabled,
             onClick = {
+                expanded = true
                 onClick()
-                if (list.isNotEmpty()) expanded = true
             },
             label = label,
             leadingIcon = leadingIcon,
@@ -341,3 +373,57 @@ fun ActionChip(
     )
 }
 
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
+@Composable
+fun DataChip(
+    modifier: Modifier = Modifier,
+    enabled: Boolean,
+    title: StringResourceToken,
+    subtitle: StringResourceToken?,
+    leadingIcon: ImageVectorToken,
+    trailingIcon: ImageVectorToken?,
+    shape: Shape = AssistChipDefaults.shape,
+    border: BorderStroke? = outlinedCardBorder(),
+    color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
+    containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Transparent,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = modifier,
+        enabled = enabled,
+        onClick = onClick,
+        onLongClick = {},
+        border = border,
+        shape = shape,
+        colors = if (enabled) CardDefaults.cardColors(containerColor = containerColor.toColor(), contentColor = color.toColor()) else CardDefaults.cardColors()
+    ) {
+        Row(
+            modifier = Modifier.paddingHorizontal(PaddingTokens.Level2),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level2)
+        ) {
+            Icon(
+                imageVector = leadingIcon.value,
+                tint = if (enabled) color.toColor() else LocalContentColor.current,
+                contentDescription = null,
+                modifier = Modifier.size(AssistChipDefaults.IconSize)
+            )
+            Column(
+                modifier = Modifier.paddingVertical(PaddingTokens.Level2)
+            ) {
+                LabelLargeText(text = title.value)
+                LabelSmallText(modifier = Modifier.shimmer(subtitle == null), text = subtitle?.value ?: "Shim")
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            if (trailingIcon != null) {
+                Icon(
+                    imageVector = trailingIcon.value,
+                    tint = if (enabled) color.toColor() else LocalContentColor.current,
+                    contentDescription = null,
+                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                )
+            }
+        }
+    }
+}

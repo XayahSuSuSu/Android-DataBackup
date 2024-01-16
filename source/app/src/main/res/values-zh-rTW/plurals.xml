@@ -11,4 +11,7 @@
     <plurals name="num_days_ago" formatted="false">
         <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 天</item>
     </plurals>
+    <plurals name="items" formatted="false">
+        <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 項</item>
+    </plurals>
 </resources>

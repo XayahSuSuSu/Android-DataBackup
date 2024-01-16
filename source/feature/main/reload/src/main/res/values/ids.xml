@@ -1,9 +1,0 @@
-<resources>
-    <item name="reload" type="string"/>
-    <item name="media" type="string"/>
-    <item name="app_and_data" type="string"/>
-    <item name="existing_files" type="string"/>
-    <item name="overall_config" type="string"/>
-    <item name="save" type="string"/>
-    <item name="succeed" type="string" />
-</resources>

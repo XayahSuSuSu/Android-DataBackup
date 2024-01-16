@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.core.ui.component.BodySmallText
-import com.xayah.core.ui.component.IconTextButton
+import com.xayah.core.ui.component.FilledIconTextButton
 import com.xayah.core.ui.component.shimmer
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
@@ -33,7 +33,7 @@ fun UpdateCard(shimmering: Boolean, content: String, version: String, link: Stri
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
-        Column(modifier = Modifier.padding(PaddingTokens.Level3), verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)) {
+        Column(modifier = Modifier.padding(PaddingTokens.Level4), verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
             BodySmallText(modifier = Modifier.updateCardShimmer(shimmering), text = content, fontWeight = FontWeight.Bold)
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -43,12 +43,12 @@ fun UpdateCard(shimmering: Boolean, content: String, version: String, link: Stri
                     BodySmallText(
                         modifier = Modifier
                             .updateCardShimmer(true)
-                            .height(PaddingTokens.Level4),
+                            .height(PaddingTokens.Level5),
                         text = version,
                         fontWeight = FontWeight.Bold
                     )
                 } else {
-                    IconTextButton(
+                    FilledIconTextButton(
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_link),
                         text = StringResourceToken.fromString(version)
                     ) {

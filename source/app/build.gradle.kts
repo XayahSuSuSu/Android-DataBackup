@@ -77,15 +77,12 @@ dependencies {
     implementation(project(":feature:crash"))
     "fossImplementation"(project(":feature:guide:foss"))
     "premiumImplementation"(project(":feature:guide:premium"))
-    "fossImplementation"(project(":feature:main:home:foss"))
-    "premiumImplementation"(project(":feature:main:home:premium"))
+    implementation(project(":feature:main:home"))
+    implementation(project(":feature:main:packages"))
     implementation(project(":feature:main:directory"))
     implementation(project(":feature:main:log"))
     implementation(project(":feature:main:tree"))
-    implementation(project(":feature:main:reload"))
-    implementation(project(":feature:main:task:packages:local"))
-    implementation(project(":feature:main:task:packages:cloud"))
-    implementation(project(":feature:main:task:medium:local"))
+    implementation(project(":feature:main:task"))
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)

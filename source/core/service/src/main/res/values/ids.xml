@@ -1,0 +1,10 @@
+<resources>
+    <item name="backing_up" type="string"/>
+    <item name="preprocessing" type="string"/>
+    <item name="backup_completed" type="string"/>
+    <item name="wait_for_remaining_data_processing" type="string"/>
+    <item name="succeed" type="string"/>
+    <item name="failed" type="string"/>
+    <item name="restoring" type="string"/>
+    <item name="restore_completed" type="string"/>
+</resources>

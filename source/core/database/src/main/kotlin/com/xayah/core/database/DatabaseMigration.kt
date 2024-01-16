@@ -1,5 +1,7 @@
 package com.xayah.core.database
 
+import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
 import androidx.room.RenameColumn
 import androidx.room.migration.AutoMigrationSpec
 
@@ -159,6 +161,44 @@ object DatabaseMigrations {
         fromColumnName = "state",
         toColumnName = "mediaState",
     )
-
     class Schema2to3 : AutoMigrationSpec
+
+    @DeleteTable(
+        tableName = "LogEntity"
+    )
+    @DeleteColumn(
+        tableName = "DirectoryEntity",
+        columnName = "opType"
+    )
+    @DeleteTable(
+        tableName = "TaskEntity"
+    )
+    @DeleteTable(
+        tableName = "CmdEntity"
+    )
+    @DeleteTable(
+        tableName = "PackageBackupEntire"
+    )
+    @DeleteTable(
+        tableName = "PackageBackupOperation"
+    )
+    @DeleteTable(
+        tableName = "PackageRestoreEntire"
+    )
+    @DeleteTable(
+        tableName = "PackageRestoreOperation"
+    )
+    @DeleteTable(
+        tableName = "MediaBackupEntity"
+    )
+    @DeleteTable(
+        tableName = "MediaBackupOperationEntity"
+    )
+    @DeleteTable(
+        tableName = "MediaRestoreEntity"
+    )
+    @DeleteTable(
+        tableName = "MediaRestoreOperationEntity"
+    )
+    class Schema3to4 : AutoMigrationSpec
 }

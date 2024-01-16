@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.library.common)
     alias(libs.plugins.library.hilt)
     alias(libs.plugins.library.protobuf)
+    alias(libs.plugins.library.androidTest)
+    alias(libs.plugins.library.compose)
 }
 
 android {
@@ -18,6 +20,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:rootservice"))
     implementation(project(":core:network"))
+    implementation(project(":core:hiddenapi"))
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
@@ -25,6 +28,6 @@ dependencies {
     // Gson
     implementation(libs.gson)
 
-    // PickYou
-    implementation(libs.pickyou)
+    // libsu
+    implementation(libs.libsu.core)
 }

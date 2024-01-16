@@ -70,9 +70,9 @@ fun PageIntro(navController: NavHostController) {
         )
     }
 
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
         item {
-            Spacer(modifier = Modifier.height(PaddingTokens.Level1))
+            Spacer(modifier = Modifier.height(PaddingTokens.Level2))
         }
 
         items(count = titles.size, key = { it }) {
@@ -84,7 +84,7 @@ fun PageIntro(navController: NavHostController) {
             )
         }
         item {
-            Spacer(modifier = Modifier.height(PaddingTokens.Level1))
+            Spacer(modifier = Modifier.height(PaddingTokens.Level2))
         }
     }
 }

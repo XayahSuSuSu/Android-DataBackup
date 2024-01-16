@@ -57,7 +57,7 @@ object BaseUtil {
         .setInitializers(EnvInitializer::class.java)
         .setTimeout(3)
 
-    fun getNewShell() = getShellBuilder().build()
+    private fun getNewShell() = getShellBuilder().build()
 
     fun initializeEnvironment(context: Context) = run {
         // Set up shell environment.

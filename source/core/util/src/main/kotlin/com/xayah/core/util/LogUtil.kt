@@ -3,6 +3,7 @@ package com.xayah.core.util
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.content.FileProvider.getUriForFile
 import com.xayah.core.util.SymbolUtil.LF
 import com.xayah.core.util.SymbolUtil.USD
@@ -56,7 +57,10 @@ object LogUtil {
         buffer.put(bytes)
     }
 
-    private fun appendWithTimestamp(tag: String, msg: String) = appendLine("${DateUtil.formatTimestamp(DateUtil.getTimestamp())}$SEPARATOR$tag$SEPARATOR$msg")
+    private fun appendWithTimestamp(tag: String, msg: String) = run {
+        Log.d(tag, msg)
+        appendLine("${DateUtil.formatTimestamp(DateUtil.getTimestamp())}$SEPARATOR$tag$SEPARATOR$msg")
+    }
 
     fun log(content: () -> Pair<String, String>) {
         appendWithTimestamp(tag = content().first, msg = content().second)

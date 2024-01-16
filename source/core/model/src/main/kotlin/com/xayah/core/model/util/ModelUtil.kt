@@ -6,6 +6,27 @@ import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.TAR_SUFFIX
 import com.xayah.core.model.ZSTD_SUFFIX
+import java.text.DecimalFormat
+import kotlin.math.pow
+
+fun Double.formatSize(unitValue: Int = 1000): String = run {
+    var unit = "Bytes"
+    var size = this
+    val gb = unitValue.toDouble().pow(3)
+    val mb = unitValue.toDouble().pow(2)
+    val kb = unitValue.toDouble()
+    if (this > gb) {
+        size = this / gb
+        unit = "GB"
+    } else if (this > mb) {
+        size = this / mb
+        unit = "MB"
+    } else if (this > kb) {
+        size = this / kb
+        unit = "KB"
+    }
+    if (size == 0.0) "0.00 $unit" else "${DecimalFormat("#.00").format(size)} $unit"
+}
 
 fun CompressionType.Companion.of(name: String?): CompressionType =
     runCatching { CompressionType.valueOf(name!!.uppercase()) }.getOrDefault(CompressionType.ZSTD)

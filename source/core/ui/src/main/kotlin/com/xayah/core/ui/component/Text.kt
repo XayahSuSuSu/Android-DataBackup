@@ -14,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import com.xayah.core.ui.material3.DisabledAlpha
 
@@ -140,6 +141,27 @@ fun LabelLargeText(
         color = if (enabled) color else color.copy(alpha = DisabledAlpha),
         textAlign = textAlign,
         fontWeight = fontWeight,
+    )
+}
+
+@Composable
+fun LabelMediumText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+    textAlign: TextAlign? = null,
+    fontWeight: FontWeight? = null,
+    textDecoration: TextDecoration? = null,
+    enabled: Boolean = true,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        textAlign = textAlign,
+        fontWeight = fontWeight,
+        textDecoration = textDecoration,
     )
 }
 

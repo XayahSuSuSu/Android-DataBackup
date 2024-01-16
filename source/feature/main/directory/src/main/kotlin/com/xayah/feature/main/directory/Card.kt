@@ -29,7 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
-import com.xayah.core.database.model.DirectoryEntity
+import com.xayah.core.model.database.DirectoryEntity
 import com.xayah.core.ui.component.BodySmallText
 import com.xayah.core.ui.component.Card
 import com.xayah.core.ui.component.Divider
@@ -134,10 +134,10 @@ fun DirectoryCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(PaddingTokens.Level3)
+                .padding(PaddingTokens.Level4)
         ) {
             Column {
-                Row(modifier = Modifier.paddingBottom(PaddingTokens.Level1)) {
+                Row(modifier = Modifier.paddingBottom(PaddingTokens.Level2)) {
                     HeadlineMediumText(modifier = Modifier.directoryCardShimmer(shimmering), text = title, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.weight(1f))
                     if (selected) Icon(
@@ -149,11 +149,11 @@ fun DirectoryCard(
                 }
                 BodySmallText(modifier = Modifier.directoryCardShimmer(shimmering), text = path, fontWeight = FontWeight.Bold)
                 if (error.isNotEmpty()) BodySmallText(text = error, color = ColorSchemeKeyTokens.Error.toColor(), enabled = enabled)
-                Divider(modifier = Modifier.paddingVertical(PaddingTokens.Level1))
+                Divider(modifier = Modifier.paddingVertical(PaddingTokens.Level2))
                 Row(
-                    modifier = Modifier.paddingBottom(PaddingTokens.Level1),
+                    modifier = Modifier.paddingBottom(PaddingTokens.Level2),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
+                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
                 ) {
                     AnimatedLinearProgressIndicator(
                         modifier = Modifier
@@ -175,7 +175,7 @@ fun DirectoryCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level1),
+                    horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level2),
                     content = {
                         chipGroup()
                     }

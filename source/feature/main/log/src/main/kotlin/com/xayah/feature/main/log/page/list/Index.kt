@@ -84,13 +84,13 @@ fun PageList(navController: NavHostController) {
 
             Box(modifier = Modifier.weight(1f)) {
                 AnimatedContent(
-                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
+                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                     targetState = uiState.updating,
                     label = AnimationTokens.AnimatedContentLabel
                 ) { targetState ->
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)) {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
                         item {
-                            Spacer(modifier = Modifier.height(PaddingTokens.Level3))
+                            Spacer(modifier = Modifier.height(PaddingTokens.Level4))
                         }
 
                         if (targetState) {
@@ -139,7 +139,7 @@ fun PageList(navController: NavHostController) {
                         }
 
                         item {
-                            Spacer(modifier = Modifier.height(PaddingTokens.Level3))
+                            Spacer(modifier = Modifier.height(PaddingTokens.Level4))
                         }
                     }
                 }

@@ -2,11 +2,14 @@ package com.xayah.core.common.viewmodel
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,9 +40,11 @@ sealed class IndexUiEffect : UiEffect {
         val actionLabel: String? = null,
         val withDismissAction: Boolean = false,
         val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
+        val onActionPerformed: (suspend () -> Unit)? = null,
+        val onDismissed: (suspend () -> Unit)? = null,
     ) : IndexUiEffect()
 
-    object DismissSnackbar : IndexUiEffect()
+    data object DismissSnackbar : IndexUiEffect()
 }
 
 abstract class BaseViewModel<S : UiState, I : UiIntent, E : IndexUiEffect>(state: S) : IBaseViewModel<S, I, IndexUiEffect>, ViewModel() {
@@ -53,7 +58,15 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : IndexUiEffect>(state
     override suspend fun onEffect(effect: IndexUiEffect) {
         when (effect) {
             is IndexUiEffect.ShowSnackbar -> {
-                snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)
+                when (snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)) {
+                    SnackbarResult.ActionPerformed -> {
+                        effect.onActionPerformed?.invoke()
+                    }
+
+                    SnackbarResult.Dismissed -> {
+                        effect.onDismissed?.invoke()
+                    }
+                }
             }
 
             is IndexUiEffect.DismissSnackbar -> {
@@ -116,6 +129,9 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : IndexUiEffect>(state
     fun launchOnIO(block: suspend CoroutineScope.() -> Unit) = viewModelScope.launch(context = Dispatchers.IO, block = block)
 
     fun launchOnMain(block: suspend CoroutineScope.() -> Unit) = viewModelScope.launch(context = Dispatchers.Main, block = block)
+
+    @DelicateCoroutinesApi
+    fun launchOnGlobal(block: suspend CoroutineScope.() -> Unit) = GlobalScope.launch(block = block)
 
     fun <T> Flow<T>.stateInScope(initialValue: T): StateFlow<T> = stateIn(
         scope = viewModelScope,

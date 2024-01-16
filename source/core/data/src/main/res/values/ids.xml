@@ -10,4 +10,6 @@
     <item name="select_target_directory" type="string"/>
     <item name="cloud" type="string"/>
     <item name="local" type="string"/>
+    <item name="ic_rounded_database" type="drawable"/>
+    <item name="ic_rounded_stadia_controller" type="drawable"/>
 </resources>

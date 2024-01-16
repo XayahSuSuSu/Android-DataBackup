@@ -73,7 +73,7 @@ fun PageDetail(navController: NavHostController) {
                         modifier = Modifier
                             .fillMaxSize()
                             .horizontalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level3)
+                        verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
                     ) {
                         item {
                             Spacer(modifier = Modifier.size(PaddingTokens.Level0))
@@ -84,7 +84,7 @@ fun PageDetail(navController: NavHostController) {
                                 Row(Modifier.animateItemPlacement()) {
                                     LabelSmallText(
                                         modifier = Modifier
-                                            .paddingHorizontal(PaddingTokens.Level3)
+                                            .paddingHorizontal(PaddingTokens.Level4)
                                             .logCardShimmer(true),
                                         text = "ShimmerShimmerShimmer"
                                     )
@@ -94,7 +94,7 @@ fun PageDetail(navController: NavHostController) {
                             items(count = contentItems.size, key = { it }) { index ->
                                 Row(Modifier.animateItemPlacement()) {
                                     LabelSmallText(
-                                        modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
+                                        modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                                         text = contentItems[index],
                                         fontFamily = JetbrainsMonoFamily
                                     )
