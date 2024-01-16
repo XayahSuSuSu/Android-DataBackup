@@ -1,9 +1,10 @@
-package com.xayah.feature.crash
+package com.xayah.core.provider
 
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import com.xayah.feature.crash.CrashHandler
 
 /**
  * Workaround for CrashHandler
