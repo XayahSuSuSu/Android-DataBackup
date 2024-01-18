@@ -91,6 +91,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654344530379:android:81a496ba6d88d955a22e4e",
+        "android_client_info": {
+          "package_name": "com.xayah.feature.flavor.premium"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "654344530379-kp8qomp62c4u1nj114kff02c7vaks3kv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcMtlgRx1NL_Tb2uKJkNTzF6CIufztD4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "654344530379-kp8qomp62c4u1nj114kff02c7vaks3kv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

@@ -34,8 +34,8 @@ room = "2.6.1"
 coil-compose = "2.4.0"
 hiddenapibypass = "4.3"
 palette = "1.0.0"
-google-services = "4.4.0"
-firebase-crashlytics-gradle = "2.9.9"
+google-services = "4.3.15" # Pinned: https://github.com/firebase/firebase-android-sdk/issues/4693#issuecomment-1765778239
+firebase-crashlytics-gradle = "2.9.9" # Workaround: https://github.com/xamarin/GooglePlayServicesComponents/issues/642#issuecomment-1221520982
 firebase-bom = "32.7.0"
 pickyou = "2.1.4"
 datastore-preferences = "1.0.0"
@@ -123,7 +123,6 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 application-common = { id = "application.common", version = "unspecified" }
 application-compose = { id = "application.compose", version = "unspecified" }
 application-hilt = { id = "application.hilt", version = "unspecified" }
-application-firebase = { id = "application.firebase", version = "unspecified" }
 library-common = { id = "library.common", version = "unspecified" }
 library-hilt = { id = "library.hilt", version = "unspecified" }
 library-room = { id = "library.room", version = "unspecified" }
@@ -131,3 +130,4 @@ library-compose = { id = "library.compose", version = "unspecified" }
 library-protobuf = { id = "library.protobuf", version = "unspecified" }
 library-test = { id = "library.test", version = "unspecified" }
 library-androidTest = { id = "library.androidTest", version = "unspecified" }
+library-firebase = { id = "library.firebase", version = "unspecified" }

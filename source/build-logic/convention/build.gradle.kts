@@ -39,10 +39,6 @@ gradlePlugin {
             id = "application.hilt"
             implementationClass = "ApplicationHiltConventionPlugin"
         }
-        register("applicationFirebase") {
-            id = "application.firebase"
-            implementationClass = "ApplicationFirebaseConventionPlugin"
-        }
 
         register("libraryCommon") {
             id = "library.common"
@@ -71,6 +67,10 @@ gradlePlugin {
         register("libraryAndroidTest") {
             id = "library.androidTest"
             implementationClass = "LibraryAndroidTestConventionPlugin"
+        }
+        register("libraryFirebase") {
+            id = "library.firebase"
+            implementationClass = "LibraryFirebaseConventionPlugin"
         }
     }
 }

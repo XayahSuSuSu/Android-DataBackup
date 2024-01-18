@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.application.common)
     alias(libs.plugins.application.hilt)
     alias(libs.plugins.application.compose)
-    alias(libs.plugins.application.firebase)
 }
 
 android {
