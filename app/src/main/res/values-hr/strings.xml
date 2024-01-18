@@ -120,18 +120,18 @@
     <string name="add_list">Dodaj popis</string>
     <string name="log">Dnevnik</string>
     <string name="loading_failed">Učitavanje neuspjelo</string>
-    <string name="path_permission_error">Greška u dozvolama, sljedeći putovi zatraži ispravne dozvole</string>
+    <string name="path_permission_error">Greška u dozvolama, sljedeće putanje zahtijevaju ispravne dozvole</string>
     <string name="select_backup_app">Odaberi aplikaciju za spremanje sigurnosnih kopija</string>
-    <string name="start_subtitle">U skladu s relevantnim pravilima, pažljivo pročitaj i prihvati sljedeći „Korisnički ugovor” i „Pravila o privatnosti” prije korištenja ove aplikacija</string>
+    <string name="start_subtitle">U skladu s relevantnim pravilima, pažljivo pročitaj i prihvati sljedeći „Korisnički ugovor” i „Pravila o privatnosti” prije korištenja ove aplikacije</string>
     <string name="backup_finished">Sigurnosna kopija gotova</string>
     <string name="selected_data">Odabrani podaci</string>
     <string name="confirm">Potvrdi</string>
     <string name="compatible_mode">Kompatibilni modus</string>
     <string name="media">Mediji</string>
     <string name="backup_itself_title">Prilikom izrade sigurnosne kopije aplikacije, ona automatski stvara sigurnosnu kopiju vlastitog instalacijskog paketa u direktorij sigurnosnih kopija</string>
-    <string name="finished">Završeno</string>
+    <string name="finished">Gotovo</string>
     <string name="error">Greška</string>
-    <string name="compression_type_help">Odaberi vrstu kompresije aplikacija i podataka, što utječe na sigurnosne kopije i obnavljanje. Ako ne znaš čemu služi ova opcija, nemoj je mijenjati</string>
+    <string name="compression_type_help">Odaberi vrstu komprimiranja aplikacija i podataka, što utječe na sigurnosne kopije i obnavljanje. Ako ne znaš čemu služi ova opcija, nemoj je mijenjati</string>
     <string name="sort">Razvrstaj</string>
     <string name="grant_root_access">Odobri administratorski pristup</string>
     <string name="update_records">Aktualiziraj zapise</string>
@@ -144,7 +144,7 @@
         <item quantity="other"><xliff:g id="count">%d</xliff:g> giờ</item>
     </plurals>
     <string name="clean_restoring_help">Isprazni ciljni direktorij prije obnavljanja</string>
-    <string name="reset_restore_list_title">Poništi odabir nakon obnavjanja</string>
+    <string name="reset_restore_list_title">Odznači odabire nakon obnavjanja</string>
     <string name="posted_now">Sada</string>
     <string name="backing_up">Sigurnosno kopiranje …</string>
     <string name="app_name_is_missing">Nedostaje ime aplikacije</string>
@@ -167,7 +167,7 @@
     <string name="succeed">Uspjelo</string>
     <string name="check_package_usage_stats_permission">Provjeri dozvolu statistike korištenja paketa</string>
     <string name="add">Dodaj</string>
-    <string name="backup_itself">Vlastito spremanje sigurnosne kopije</string>
+    <string name="backup_itself">Spremanje sigurnosne kopije aplikacije</string>
     <string name="welcome_to_use">Dobro došao, dobro došla</string>
     <string name="speed">Brzina</string>
     <string name="backup_test_title">Automatski testiraj datoteke sigurnosne kopije tijekom izrade sigurnosne kopije</string>
@@ -178,4 +178,6 @@
     <string name="call_log_permission">Dozvole za zapisivanje poziva</string>
     <string name="latest">Zadnje</string>
     <string name="failed">Neuspjelo</string>
+    <string name="compatible_mode_subtitle">Koristi pipe umjesto parametra za unos tar datoteke. Promijeni modus kada se prikaže obavijest \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Ne može se izvršiti: Takva datoteka ili direktorij ne postoji\"</string>
+    <string name="switch_to_system_app_warning">Većina aplikacija sustava se ne preporučuju za spremanje sigurnosnih kopija. Upozoravamo da obnavljanje tih sigurnosnih kopija može prouzročiti probleme pri pokretanju tvog telefona</string>
 </resources>
