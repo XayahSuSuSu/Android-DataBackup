@@ -74,9 +74,7 @@ dependencies {
 
     // Feature
     implementation(project(":feature:crash"))
-    "fossImplementation"(project(":feature:guide:foss"))
     "fossImplementation"(project(":feature:flavor:foss"))
-    "premiumImplementation"(project(":feature:guide:premium"))
     "premiumImplementation"(project(":feature:flavor:premium"))
     implementation(project(":feature:main:home"))
     implementation(project(":feature:main:packages"))

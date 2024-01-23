@@ -12,7 +12,7 @@ import com.xayah.core.datastore.readAppVersionName
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import com.xayah.feature.guide.MainActivity as GuideActivity
+import com.xayah.feature.flavor.MainActivity as GuideActivity
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
