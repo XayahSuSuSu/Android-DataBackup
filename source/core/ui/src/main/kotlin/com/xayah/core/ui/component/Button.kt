@@ -1,6 +1,7 @@
 package com.xayah.core.ui.component
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -45,6 +46,11 @@ fun ArrowBackButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 }
 
 @Composable
+fun AddIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    IconButton(modifier = modifier, icon = ImageVectorToken.fromVector(Icons.Rounded.Add), onClick = onClick)
+}
+
+@Composable
 fun ExtendedFab(modifier: Modifier = Modifier, expanded: Boolean = true, icon: ImageVectorToken, text: StringResourceToken, onClick: () -> Unit) {
     ExtendedFloatingActionButton(
         modifier = modifier,
@@ -66,7 +72,13 @@ fun TextButton(modifier: Modifier = Modifier, text: StringResourceToken, onClick
 }
 
 @Composable
-fun FilledIconTextButton(modifier: Modifier = Modifier, enabled: Boolean = true, icon: ImageVectorToken, text: StringResourceToken, onClick: () -> Unit) {
+fun FilledIconTextButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    icon: ImageVectorToken,
+    text: StringResourceToken,
+    onClick: () -> Unit
+) {
     Button(
         modifier = modifier,
         enabled = enabled,

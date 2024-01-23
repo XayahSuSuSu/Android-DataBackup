@@ -7,6 +7,7 @@ import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.TaskRepository
+import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
@@ -66,9 +67,12 @@ class IndexViewModel @Inject constructor(
         taskRepository.getShortRelativeTimeSpanString(it?.startTimestamp ?: 0, it?.endTimestamp ?: 0)
     }.flowOnIO()
     val taskTimerState: StateFlow<String> = _taskTimer.stateInScope("")
-    private val _taskProcessingDetails: Flow<List<TaskDetailPackageEntity>> =taskRepository.queryProcessingFlow(uiState.value.taskId).flowOnIO()
-    private val _taskSuccessDetails: Flow<List<TaskDetailPackageEntity>> = taskRepository.querySuccessFlow(uiState.value.taskId).flowOnIO()
-    private val _taskFailureDetails: Flow<List<TaskDetailPackageEntity>> = taskRepository.queryFailureFlow(uiState.value.taskId).flowOnIO()
+    private val _taskProcessingDetails: Flow<List<TaskDetailPackageEntity>> =
+        taskRepository.queryProcessingFlow<TaskDetailPackageEntity>(uiState.value.taskId, TaskType.PACKAGE).flowOnIO()
+    private val _taskSuccessDetails: Flow<List<TaskDetailPackageEntity>> =
+        taskRepository.querySuccessFlow<TaskDetailPackageEntity>(uiState.value.taskId, TaskType.PACKAGE).flowOnIO()
+    private val _taskFailureDetails: Flow<List<TaskDetailPackageEntity>> =
+        taskRepository.queryFailureFlow<TaskDetailPackageEntity>(uiState.value.taskId, TaskType.PACKAGE).flowOnIO()
     val taskProcessingDetailsState: StateFlow<List<TaskDetailPackageEntity>> = _taskProcessingDetails.stateInScope(listOf())
     val taskSuccessDetailsState: StateFlow<List<TaskDetailPackageEntity>> = _taskSuccessDetails.stateInScope(listOf())
     val taskFailureDetailsState: StateFlow<List<TaskDetailPackageEntity>> = _taskFailureDetails.stateInScope(listOf())

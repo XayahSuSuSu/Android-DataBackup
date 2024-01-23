@@ -45,7 +45,7 @@
     <string name="failed">Failed</string>
     <string name="save_directory_structure">Save directory structure</string>
     <string name="backup_list">Backup list</string>
-    <string name="search_bar_hint">Search for name or package…</string>
+    <string name="search_bar_hint_packages">Search for name or package…</string>
     <string name="apk">APK</string>
     <string name="data">Data</string>
     <string name="remote_service_err_info">Please try restarting the device, or reinstall Magisk.</string>
@@ -200,4 +200,5 @@
     <string name="info">Info</string>
     <string name="id" translatable="false">ID</string>
     <string name="preserve">Preserve</string>
+    <string name="search_bar_hint_medium">Search for name or path…</string>
 </resources>

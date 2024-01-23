@@ -30,7 +30,6 @@ import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
@@ -75,6 +74,7 @@ fun PageHome() {
                         label = StringResourceToken.fromStringId(R.string.media),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_image),
                         onClick = {
+                            viewModel.emitIntent(IndexUiIntent.ToPageMedium(navController))
                         },
                     ),
                     /**

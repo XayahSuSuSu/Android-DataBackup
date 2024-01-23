@@ -5,15 +5,13 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataState
 import com.xayah.core.model.OpType
 import com.xayah.core.model.util.formatSize
 import kotlinx.serialization.Serializable
 
-const val DefaultPreserveId = 0L
-
 @Serializable
 data class PackageInfo(
-    var packageName: String,
     var label: String,
     var versionName: String,
     var versionCode: Long,
@@ -22,29 +20,18 @@ data class PackageInfo(
 )
 
 /**
- * @param preserveId [DefaultPreserveId] means not a preserved one, otherwise it's a timestamp id.
  * @param activated Marked to be backed up/restored.
  */
 @Serializable
-data class ExtraInfo(
+data class PackageExtraInfo(
     var uid: Int,
-    var userId: Int,
-    var preserveId: Long,
-    var opType: OpType,
     var labels: List<String>,
-    var compressionType: CompressionType,
     var hasKeystore: Boolean,
     var activated: Boolean,
 )
 
-enum class DataState {
-    Selected,
-    NotSelected,
-    Disabled,
-}
-
 @Serializable
-data class DataStates(
+data class PackageDataStates(
     var apkState: DataState = DataState.Selected,
     var userState: DataState = DataState.Selected,
     var userDeState: DataState = DataState.Selected,
@@ -54,7 +41,7 @@ data class DataStates(
 )
 
 @Serializable
-data class StorageStats(
+data class PackageStorageStats(
     var appBytes: Long = 0,
     var cacheBytes: Long = 0,
     var dataBytes: Long = 0,
@@ -62,7 +49,7 @@ data class StorageStats(
 )
 
 @Serializable
-data class DataStats(
+data class PackageDataStats(
     var apkBytes: Long = 0,
     var userBytes: Long = 0,
     var userDeBytes: Long = 0,
@@ -71,28 +58,41 @@ data class DataStats(
     var mediaBytes: Long = 0,
 )
 
+/**
+ * @param preserveId [DefaultPreserveId] means not a preserved one, otherwise it's a timestamp id.
+ */
+@Serializable
+data class PackageIndexInfo(
+    var opType: OpType,
+    var packageName: String,
+    var userId: Int,
+    var compressionType: CompressionType,
+    var preserveId: Long,
+)
+
 @Serializable
 @Entity
 data class PackageEntity(
     @PrimaryKey(autoGenerate = true) var id: Long,
+    @Embedded(prefix = "indexInfo_") var indexInfo: PackageIndexInfo,
     @Embedded(prefix = "packageInfo_") var packageInfo: PackageInfo,
-    @Embedded(prefix = "extraInfo_") var extraInfo: ExtraInfo,
-    @Embedded(prefix = "dataStates_") var dataStates: DataStates,
-    @Embedded(prefix = "storageStats_") var storageStats: StorageStats,
-    @Embedded(prefix = "dataStats_") var dataStats: DataStats,
-    @Embedded(prefix = "displayStats_") var displayStats: DataStats,
+    @Embedded(prefix = "extraInfo_") var extraInfo: PackageExtraInfo,
+    @Embedded(prefix = "dataStates_") var dataStates: PackageDataStates,
+    @Embedded(prefix = "storageStats_") var storageStats: PackageStorageStats,
+    @Embedded(prefix = "dataStats_") var dataStats: PackageDataStats,
+    @Embedded(prefix = "displayStats_") var displayStats: PackageDataStats,
 ) {
     val packageName: String
-        get() = packageInfo.packageName
+        get() = indexInfo.packageName
 
     val userId: Int
-        get() = extraInfo.userId
+        get() = indexInfo.userId
 
     val preserveId: Long
-        get() = extraInfo.preserveId
+        get() = indexInfo.preserveId
 
     private val ctName: String
-        get() = extraInfo.compressionType.type
+        get() = indexInfo.compressionType.type
 
     val apkSelected: Boolean
         get() = dataStates.apkState == DataState.Selected
@@ -126,5 +126,4 @@ data class PackageEntity(
 
     val archivesPreserveRelativeDir: String
         get() = "${archivesRelativeDir}/${preserveId}"
-
 }

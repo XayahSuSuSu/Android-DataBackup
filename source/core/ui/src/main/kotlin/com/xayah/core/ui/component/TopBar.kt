@@ -1,10 +1,22 @@
 package com.xayah.core.ui.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.model.TopBarState
+import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.value
 
@@ -19,7 +31,12 @@ fun PrimaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun SecondaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: StringResourceToken, onBackClick: (() -> Unit)? = null) {
+fun SecondaryTopBar(
+    scrollBehavior: TopAppBarScrollBehavior?,
+    title: StringResourceToken,
+    actions: @Composable RowScope.() -> Unit = {},
+    onBackClick: (() -> Unit)? = null
+) {
     val navController = LocalNavController.current!!
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title.value) },
@@ -30,5 +47,38 @@ fun SecondaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: StringResou
                 else navController.popBackStack()
             }
         },
+        actions = actions,
     )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun SecondaryTopBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    topBarState: TopBarState,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    Column {
+        SecondaryTopBar(
+            scrollBehavior = scrollBehavior,
+            title = topBarState.title,
+            actions = actions,
+        )
+        if (topBarState.indeterminate) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        } else {
+            if (topBarState.progress != 1f) {
+                var targetProgress by remember { mutableFloatStateOf(0f) }
+                val animatedProgress = animateFloatAsState(
+                    targetValue = targetProgress,
+                    animationSpec = tween(),
+                    label = AnimationTokens.AnimatedProgressLabel
+                )
+                targetProgress = topBarState.progress
+                if (animatedProgress.value != 1f)
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = animatedProgress.value)
+            }
+        }
+
+    }
 }

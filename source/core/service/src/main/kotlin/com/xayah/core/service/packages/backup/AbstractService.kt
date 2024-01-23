@@ -18,7 +18,7 @@ import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.R
 import com.xayah.core.service.model.BackupPreprocessing
 import com.xayah.core.service.util.CommonBackupUtil
-import com.xayah.core.service.util.PackagesBackupUtil2
+import com.xayah.core.service.util.PackagesBackupUtil
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.NotificationUtil
@@ -62,7 +62,7 @@ internal abstract class AbstractService : Service() {
     abstract val pathUtil: PathUtil
     abstract val taskDao: TaskDao
     abstract val packageDao: PackageDao
-    abstract val packagesBackupUtil: PackagesBackupUtil2
+    abstract val packagesBackupUtil: PackagesBackupUtil
     abstract val taskRepository: TaskRepository
     abstract val commonBackupUtil: CommonBackupUtil
     abstract val packageRepository: PackageRepository

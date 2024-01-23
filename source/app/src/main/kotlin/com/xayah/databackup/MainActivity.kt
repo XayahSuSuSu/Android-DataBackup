@@ -19,8 +19,11 @@ import com.xayah.core.util.command.BaseUtil
 import com.xayah.databackup.index.MainIndexGraph
 import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.log.LogGraph
+import com.xayah.feature.main.medium.detail.PageMediaDetail
+import com.xayah.feature.main.medium.list.PageMedium
 import com.xayah.feature.main.packages.detail.PagePackageDetail
 import com.xayah.feature.main.packages.list.PagePackages
+import com.xayah.feature.main.task.detail.medium.PageTaskMediaDetail
 import com.xayah.feature.main.task.detail.packages.PageTaskPackageDetail
 import com.xayah.feature.main.task.list.PageTaskList
 import com.xayah.feature.main.tree.PageTree
@@ -57,11 +60,20 @@ class MainActivity : ComponentActivity() {
                         composable(MainRoutes.PackageDetail.route) {
                             PagePackageDetail()
                         }
+                        composable(MainRoutes.Medium.route) {
+                            PageMedium()
+                        }
+                        composable(MainRoutes.MediumDetail.route) {
+                            PageMediaDetail()
+                        }
                         composable(MainRoutes.TaskList.route) {
                             PageTaskList()
                         }
                         composable(MainRoutes.TaskPackageDetail.route) {
                             PageTaskPackageDetail()
+                        }
+                        composable(MainRoutes.TaskMediaDetail.route) {
+                            PageTaskMediaDetail()
                         }
                         composable(route = MainRoutes.Log.route) {
                             LogGraph()

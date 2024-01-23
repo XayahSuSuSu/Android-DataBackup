@@ -1,6 +1,6 @@
 <resources>
     <item name="app_and_data" type="string"/>
-    <item name="search_bar_hint" type="string"/>
+    <item name="search_bar_hint_packages" type="string"/>
     <item name="backup_sort_type_items" type="array" />
     <item name="ic_rounded_deployed_code" type="drawable" />
     <item name="flag_type_items" type="array" />

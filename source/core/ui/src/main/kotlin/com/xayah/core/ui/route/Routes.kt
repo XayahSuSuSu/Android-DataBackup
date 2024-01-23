@@ -3,6 +3,7 @@ package com.xayah.core.ui.route
 sealed class MainRoutes(val route: String) {
     companion object {
         const val ArgPackageName = "pkgName"
+        const val ArgMediaName = "mediaName"
         const val ArgUserId = "userId"
         const val ArgTaskId = "taskId"
     }
@@ -13,9 +14,17 @@ sealed class MainRoutes(val route: String) {
         fun getRoute(packageName: String, userId: Int) = "main_package_detail/${packageName}/${userId}"
     }
 
+    data object Medium : MainRoutes(route = "main_medium")
+    data object MediumDetail : MainRoutes(route = "main_medium_detail/{$ArgMediaName}") {
+        fun getRoute(name: String) = "main_medium_detail/${name}"
+    }
+
     data object TaskList : MainRoutes(route = "main_taskList")
     data object TaskPackageDetail : MainRoutes(route = "main_task_package_detail/{$ArgTaskId}") {
         fun getRoute(taskId: Long) = "main_task_package_detail/${taskId}"
+    }
+    data object TaskMediaDetail : MainRoutes(route = "main_task_media_detail/{$ArgTaskId}") {
+        fun getRoute(taskId: Long) = "main_task_media_detail/${taskId}"
     }
 
     data object Log : MainRoutes(route = "main_log")

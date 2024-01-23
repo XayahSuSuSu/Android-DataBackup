@@ -5,7 +5,6 @@ import com.xayah.core.common.util.toLineString
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readCompatibleMode
-import com.xayah.core.datastore.readCompressionTest
 import com.xayah.core.datastore.readFollowSymlinks
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
@@ -25,11 +24,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
-class PackagesBackupUtil2 @Inject constructor(
+class PackagesBackupUtil @Inject constructor(
     @ApplicationContext val context: Context,
     private val rootService: RemoteRootService,
     private val taskDao: TaskDao,
     private val packageRepository: PackageRepository,
+    private val commonBackupUtil: CommonBackupUtil
 ) {
     companion object {
         private val TAG = this::class.java.simpleName
@@ -133,32 +133,6 @@ class PackagesBackupUtil2 @Inject constructor(
         taskDao.upsert(this)
     }
 
-    private suspend fun testArchive(src: String, ct: CompressionType) = run {
-        var code: Int
-        var input: List<String>
-        val out = mutableListOf<String>()
-
-        if (context.readCompressionTest().first()) {
-            Tar.test(src = src, extra = ct.decompressPara)
-                .also { result ->
-                    code = result.code
-                    input = result.input
-                    if (result.isSuccess.not()) {
-                        out.add(log { "$src is broken, trying to delete it." })
-                        rootService.deleteRecursively(src)
-                    } else {
-                        out.add(log { "Everything seems fine." })
-                    }
-                }
-        } else {
-            code = 0
-            input = listOf()
-            out.add(log { "Skip testing." })
-        }
-
-        ShellResult(code = code, input = input, out = out)
-    }
-
     private val tarCt = CompressionType.TAR
     fun getIconsDst(dstDir: String) = "${dstDir}/$IconRelativeDir.${tarCt.suffix}"
     suspend fun backupIcons(dstDir: String): ShellResult = run {
@@ -180,7 +154,7 @@ class PackagesBackupUtil2 @Inject constructor(
             isSuccess = result.isSuccess
             out.addAll(result.out)
         }
-        testArchive(src = dst, ct = tarCt).also { result ->
+        commonBackupUtil.testArchive(src = dst, ct = tarCt).also { result ->
             isSuccess = isSuccess and result.isSuccess
             out.addAll(result.out)
         }
@@ -198,7 +172,7 @@ class PackagesBackupUtil2 @Inject constructor(
         val dataType = DataType.PACKAGE_APK
         val packageName = p.packageName
         val userId = p.userId
-        val ct = p.extraInfo.compressionType
+        val ct = p.indexInfo.compressionType
         val dst = packageRepository.getArchiveDst(dstDir = dstDir, dataType = dataType, ct = ct)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -221,7 +195,7 @@ class PackagesBackupUtil2 @Inject constructor(
                             isSuccess = result.isSuccess
                             out.addAll(result.out)
                         }
-                    testArchive(src = dst, ct = ct).also { result ->
+                    commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
                         isSuccess = isSuccess and result.isSuccess
                         out.addAll(result.out)
                         if (result.isSuccess) p.setDataBytes(dataType, sizeBytes)
@@ -245,7 +219,7 @@ class PackagesBackupUtil2 @Inject constructor(
 
         val packageName = p.packageName
         val userId = p.userId
-        val ct = p.extraInfo.compressionType
+        val ct = p.indexInfo.compressionType
         val dst = packageRepository.getArchiveDst(dstDir = dstDir, dataType = dataType, ct = ct)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -313,7 +287,7 @@ class PackagesBackupUtil2 @Inject constructor(
                     isSuccess = result.isSuccess
                     out.addAll(result.out)
                 }
-                testArchive(src = dst, ct = ct).also { result ->
+                commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
                     isSuccess = isSuccess and result.isSuccess
                     out.addAll(result.out)
                     if (result.isSuccess) p.setDataBytes(dataType, sizeBytes)

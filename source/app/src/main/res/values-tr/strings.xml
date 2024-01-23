@@ -29,7 +29,7 @@
     <string name="restore">Geri yükle</string>
     <string name="copy">Kopyala</string>
     <string name="manifest">Manifesto</string>
-    <string name="search_bar_hint">İsim veya paket arayın…</string>
+    <string name="search_bar_hint_packages">İsim veya paket arayın…</string>
     <string name="none">Yok</string>
     <string name="export">Dışa Aktar</string>
     <string name="restore_completed">Restorasyon tamamlandı</string>

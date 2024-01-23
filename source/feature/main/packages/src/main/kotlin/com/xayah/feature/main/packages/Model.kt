@@ -2,7 +2,7 @@ package com.xayah.feature.main.packages
 
 import android.content.Context
 import com.xayah.core.model.DataType
-import com.xayah.core.model.database.DataState
+import com.xayah.core.model.DataState
 import com.xayah.core.model.database.PackageEntity
 
 enum class SelectionState {

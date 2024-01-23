@@ -14,17 +14,25 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,6 +52,7 @@ import com.xayah.core.data.util.typeNameToken
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.TaskType
+import com.xayah.core.model.database.TaskDetailMediaEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.model.util.formatSize
@@ -51,13 +61,16 @@ import com.xayah.core.ui.component.AutoTitleLargeText
 import com.xayah.core.ui.component.Card
 import com.xayah.core.ui.component.DataChip
 import com.xayah.core.ui.component.Divider
+import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.LabelLargeText
 import com.xayah.core.ui.component.LabelSmallText
 import com.xayah.core.ui.component.PackageIconImage
 import com.xayah.core.ui.component.RoundChip
+import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.TitleMediumText
 import com.xayah.core.ui.component.ignorePaddingHorizontal
 import com.xayah.core.ui.component.outlinedCardBorder
+import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
@@ -75,6 +88,7 @@ import com.xayah.core.ui.util.containerColor
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.icon
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.DateUtil
@@ -317,6 +331,37 @@ fun TaskItemCard(
     onCardLongClick: () -> Unit,
     chipGroup: @Composable RowScope.() -> Unit,
 ) {
+    TaskItemCard(
+        modifier = modifier,
+        title = label,
+        subtitle = packageName,
+        icon = {
+            PackageIconImage(packageName = packageName, size = SizeTokens.Level5)
+        },
+        isProcessing = isProcessing,
+        isSuccess = isSuccess,
+        msg = msg,
+        onCardClick = onCardClick,
+        onCardLongClick = onCardLongClick,
+        chipGroup = chipGroup
+    )
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun TaskItemCard(
+    modifier: Modifier = Modifier,
+    title: String,
+    subtitle: String,
+    icon: @Composable (() -> Unit)? = null,
+    isProcessing: Boolean,
+    isSuccess: Boolean,
+    msg: String,
+    onCardClick: () -> Unit,
+    onCardLongClick: () -> Unit,
+    chipGroup: @Composable RowScope.() -> Unit,
+) {
     val haptic = LocalHapticFeedback.current
 
     Card(
@@ -342,10 +387,10 @@ fun TaskItemCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level2)
                 ) {
-                    PackageIconImage(packageName = packageName, size = SizeTokens.Level5)
+                    icon?.invoke()
                     Column(modifier = Modifier.weight(1f)) {
-                        TitleMediumText(text = label, fontWeight = FontWeight.Bold)
-                        LabelSmallText(text = packageName)
+                        TitleMediumText(text = title, fontWeight = FontWeight.Bold)
+                        LabelSmallText(text = subtitle)
                     }
 
                     if (isProcessing) {
@@ -502,6 +547,112 @@ fun TaskPackageItemCard(
             containerColor = item.mediaInfo.state.containerColor,
         ) {
             msg = msg.ifNotTheSame(item.mediaInfo.log, "")
+        }
+    }
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun TaskMediaItemCard(
+    modifier: Modifier = Modifier,
+    item: TaskDetailMediaEntity,
+) {
+    var msg by remember { mutableStateOf("") }
+
+    TaskItemCard(
+        modifier = modifier,
+        title = item.mediaEntity.name,
+        subtitle = item.mediaEntity.path,
+        isProcessing = item.isFinished.not(),
+        isSuccess = item.isSuccess,
+        msg = msg,
+        onCardClick = {},
+        onCardLongClick = {}
+    ) {
+        val dataType = DataType.PACKAGE_DATA
+        DataChip(
+            modifier = Modifier.wrapContentSize(),
+            enabled = true,
+            title = dataType.typeNameToken,
+            subtitle = StringResourceToken.fromString(item.dataInfo.bytes.toDouble().formatSize()),
+            leadingIcon = dataType.typeIconToken,
+            trailingIcon = item.dataInfo.state.icon,
+            color = item.dataInfo.state.color,
+            containerColor = item.dataInfo.state.containerColor,
+        ) {
+            msg = msg.ifNotTheSame(item.dataInfo.log, "")
+        }
+    }
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+@Composable
+fun DetailScaffold(
+    scrollBehavior: TopAppBarScrollBehavior,
+    snackbarHostState: SnackbarHostState,
+    taskId: Long,
+    taskState: TaskEntity?,
+    internalTimerState: String,
+    taskTimerState: String,
+    content: LazyListScope.() -> Unit,
+) {
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            SecondaryTopBar(
+                scrollBehavior = scrollBehavior,
+                title = StringResourceToken.fromStringArgs(
+                    StringResourceToken.fromStringId(R.string.task),
+                    StringResourceToken.fromString(taskId.toString())
+                )
+            )
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+    ) { innerPadding ->
+        Column(modifier = Modifier.fillMaxSize()) {
+            InnerTopSpacer(innerPadding = innerPadding)
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .paddingHorizontal(PaddingTokens.Level4),
+                    verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(PaddingTokens.Level4))
+                        taskState?.apply {
+                            TaskInfoCard(
+                                icon = ImageVectorToken.fromVector(Icons.Rounded.PhoneAndroid),
+                                title = StringResourceToken.fromStringId(R.string.internal_storage).value,
+                                subtitle = "${(totalBytes - availableBytes).formatSize()} (+${rawBytes.formatSize()}) / ${totalBytes.formatSize()}",
+                                multiColorProgress = listOf(
+                                    MultiColorProgress(
+                                        progress = ((totalBytes - availableBytes) / totalBytes).toFloat().takeIf { it.isNaN().not() } ?: 0f,
+                                        color = ColorSchemeKeyTokens.Primary.toColor()
+                                    ),
+                                    MultiColorProgress(
+                                        progress = (rawBytes / totalBytes).toFloat().takeIf { it.isNaN().not() } ?: 0f,
+                                        color = ColorSchemeKeyTokens.Error.toColor()
+                                    ),
+                                ),
+                                remainingCount = totalCount - successCount - failureCount,
+                                successCount = successCount,
+                                failureCount = failureCount,
+                                timer = if (isProcessing) internalTimerState else taskTimerState
+                            )
+                        }
+                    }
+
+                    content()
+
+                    item {
+                        Spacer(modifier = Modifier.paddingBottom(PaddingTokens.Level4))
+                    }
+                }
+            }
         }
     }
 }

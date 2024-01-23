@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "1065c825cc49ea8f61fbdd0e8cc9dfeb",
+    "identityHash": "8773f0accdb85891ee0228af70b6bb3e",
     "entities": [
       {
         "tableName": "PackageEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageInfo_packageName` TEXT NOT NULL, `packageInfo_label` TEXT NOT NULL, `packageInfo_versionName` TEXT NOT NULL, `packageInfo_versionCode` INTEGER NOT NULL, `packageInfo_flags` INTEGER NOT NULL, `packageInfo_firstInstallTime` INTEGER NOT NULL, `extraInfo_uid` INTEGER NOT NULL, `extraInfo_userId` INTEGER NOT NULL, `extraInfo_preserveId` INTEGER NOT NULL, `extraInfo_opType` TEXT NOT NULL, `extraInfo_labels` TEXT NOT NULL, `extraInfo_compressionType` TEXT NOT NULL, `extraInfo_hasKeystore` INTEGER NOT NULL, `extraInfo_activated` INTEGER NOT NULL, `dataStates_apkState` TEXT NOT NULL, `dataStates_userState` TEXT NOT NULL, `dataStates_userDeState` TEXT NOT NULL, `dataStates_dataState` TEXT NOT NULL, `dataStates_obbState` TEXT NOT NULL, `dataStates_mediaState` TEXT NOT NULL, `storageStats_appBytes` INTEGER NOT NULL, `storageStats_cacheBytes` INTEGER NOT NULL, `storageStats_dataBytes` INTEGER NOT NULL, `storageStats_externalCacheBytes` INTEGER NOT NULL, `dataStats_apkBytes` INTEGER NOT NULL, `dataStats_userBytes` INTEGER NOT NULL, `dataStats_userDeBytes` INTEGER NOT NULL, `dataStats_dataBytes` INTEGER NOT NULL, `dataStats_obbBytes` INTEGER NOT NULL, `dataStats_mediaBytes` INTEGER NOT NULL, `displayStats_apkBytes` INTEGER NOT NULL, `displayStats_userBytes` INTEGER NOT NULL, `displayStats_userDeBytes` INTEGER NOT NULL, `displayStats_dataBytes` INTEGER NOT NULL, `displayStats_obbBytes` INTEGER NOT NULL, `displayStats_mediaBytes` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `indexInfo_opType` TEXT NOT NULL, `indexInfo_packageName` TEXT NOT NULL, `indexInfo_userId` INTEGER NOT NULL, `indexInfo_compressionType` TEXT NOT NULL, `indexInfo_preserveId` INTEGER NOT NULL, `packageInfo_label` TEXT NOT NULL, `packageInfo_versionName` TEXT NOT NULL, `packageInfo_versionCode` INTEGER NOT NULL, `packageInfo_flags` INTEGER NOT NULL, `packageInfo_firstInstallTime` INTEGER NOT NULL, `extraInfo_uid` INTEGER NOT NULL, `extraInfo_labels` TEXT NOT NULL, `extraInfo_hasKeystore` INTEGER NOT NULL, `extraInfo_activated` INTEGER NOT NULL, `dataStates_apkState` TEXT NOT NULL, `dataStates_userState` TEXT NOT NULL, `dataStates_userDeState` TEXT NOT NULL, `dataStates_dataState` TEXT NOT NULL, `dataStates_obbState` TEXT NOT NULL, `dataStates_mediaState` TEXT NOT NULL, `storageStats_appBytes` INTEGER NOT NULL, `storageStats_cacheBytes` INTEGER NOT NULL, `storageStats_dataBytes` INTEGER NOT NULL, `storageStats_externalCacheBytes` INTEGER NOT NULL, `dataStats_apkBytes` INTEGER NOT NULL, `dataStats_userBytes` INTEGER NOT NULL, `dataStats_userDeBytes` INTEGER NOT NULL, `dataStats_dataBytes` INTEGER NOT NULL, `dataStats_obbBytes` INTEGER NOT NULL, `dataStats_mediaBytes` INTEGER NOT NULL, `displayStats_apkBytes` INTEGER NOT NULL, `displayStats_userBytes` INTEGER NOT NULL, `displayStats_userDeBytes` INTEGER NOT NULL, `displayStats_dataBytes` INTEGER NOT NULL, `displayStats_obbBytes` INTEGER NOT NULL, `displayStats_mediaBytes` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -15,9 +15,33 @@
             "notNull": true
           },
           {
-            "fieldPath": "packageInfo.packageName",
-            "columnName": "packageInfo_packageName",
+            "fieldPath": "indexInfo.opType",
+            "columnName": "indexInfo_opType",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.packageName",
+            "columnName": "indexInfo_packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.userId",
+            "columnName": "indexInfo_userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.compressionType",
+            "columnName": "indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.preserveId",
+            "columnName": "indexInfo_preserveId",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -57,32 +81,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "extraInfo.userId",
-            "columnName": "extraInfo_userId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "extraInfo.preserveId",
-            "columnName": "extraInfo_preserveId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "extraInfo.opType",
-            "columnName": "extraInfo_opType",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "extraInfo.labels",
             "columnName": "extraInfo_labels",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "extraInfo.compressionType",
-            "columnName": "extraInfo_compressionType",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -227,6 +227,86 @@
           {
             "fieldPath": "displayStats.mediaBytes",
             "columnName": "displayStats_mediaBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "MediaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `indexInfo_opType` TEXT NOT NULL, `indexInfo_name` TEXT NOT NULL, `indexInfo_compressionType` TEXT NOT NULL, `indexInfo_preserveId` INTEGER NOT NULL, `mediaInfo_path` TEXT NOT NULL, `mediaInfo_dataState` TEXT NOT NULL, `mediaInfo_dataBytes` INTEGER NOT NULL, `mediaInfo_displayBytes` INTEGER NOT NULL, `extraInfo_labels` TEXT NOT NULL, `extraInfo_activated` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.opType",
+            "columnName": "indexInfo_opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.name",
+            "columnName": "indexInfo_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.compressionType",
+            "columnName": "indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.preserveId",
+            "columnName": "indexInfo_preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.path",
+            "columnName": "mediaInfo_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.dataState",
+            "columnName": "mediaInfo_dataState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.dataBytes",
+            "columnName": "mediaInfo_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.displayBytes",
+            "columnName": "mediaInfo_displayBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.labels",
+            "columnName": "extraInfo_labels",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.activated",
+            "columnName": "extraInfo_activated",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -484,7 +564,7 @@
       },
       {
         "tableName": "TaskDetailPackageEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `packageEntity_id` INTEGER NOT NULL, `packageEntity_packageInfo_packageName` TEXT NOT NULL, `packageEntity_packageInfo_label` TEXT NOT NULL, `packageEntity_packageInfo_versionName` TEXT NOT NULL, `packageEntity_packageInfo_versionCode` INTEGER NOT NULL, `packageEntity_packageInfo_flags` INTEGER NOT NULL, `packageEntity_packageInfo_firstInstallTime` INTEGER NOT NULL, `packageEntity_extraInfo_uid` INTEGER NOT NULL, `packageEntity_extraInfo_userId` INTEGER NOT NULL, `packageEntity_extraInfo_preserveId` INTEGER NOT NULL, `packageEntity_extraInfo_opType` TEXT NOT NULL, `packageEntity_extraInfo_labels` TEXT NOT NULL, `packageEntity_extraInfo_compressionType` TEXT NOT NULL, `packageEntity_extraInfo_hasKeystore` INTEGER NOT NULL, `packageEntity_extraInfo_activated` INTEGER NOT NULL, `packageEntity_dataStates_apkState` TEXT NOT NULL, `packageEntity_dataStates_userState` TEXT NOT NULL, `packageEntity_dataStates_userDeState` TEXT NOT NULL, `packageEntity_dataStates_dataState` TEXT NOT NULL, `packageEntity_dataStates_obbState` TEXT NOT NULL, `packageEntity_dataStates_mediaState` TEXT NOT NULL, `packageEntity_storageStats_appBytes` INTEGER NOT NULL, `packageEntity_storageStats_cacheBytes` INTEGER NOT NULL, `packageEntity_storageStats_dataBytes` INTEGER NOT NULL, `packageEntity_storageStats_externalCacheBytes` INTEGER NOT NULL, `packageEntity_dataStats_apkBytes` INTEGER NOT NULL, `packageEntity_dataStats_userBytes` INTEGER NOT NULL, `packageEntity_dataStats_userDeBytes` INTEGER NOT NULL, `packageEntity_dataStats_dataBytes` INTEGER NOT NULL, `packageEntity_dataStats_obbBytes` INTEGER NOT NULL, `packageEntity_dataStats_mediaBytes` INTEGER NOT NULL, `packageEntity_displayStats_apkBytes` INTEGER NOT NULL, `packageEntity_displayStats_userBytes` INTEGER NOT NULL, `packageEntity_displayStats_userDeBytes` INTEGER NOT NULL, `packageEntity_displayStats_dataBytes` INTEGER NOT NULL, `packageEntity_displayStats_obbBytes` INTEGER NOT NULL, `packageEntity_displayStats_mediaBytes` INTEGER NOT NULL, `apk_bytes` INTEGER NOT NULL, `apk_log` TEXT NOT NULL, `apk_state` TEXT NOT NULL, `user_bytes` INTEGER NOT NULL, `user_log` TEXT NOT NULL, `user_state` TEXT NOT NULL, `userDe_bytes` INTEGER NOT NULL, `userDe_log` TEXT NOT NULL, `userDe_state` TEXT NOT NULL, `data_bytes` INTEGER NOT NULL, `data_log` TEXT NOT NULL, `data_state` TEXT NOT NULL, `obb_bytes` INTEGER NOT NULL, `obb_log` TEXT NOT NULL, `obb_state` TEXT NOT NULL, `media_bytes` INTEGER NOT NULL, `media_log` TEXT NOT NULL, `media_state` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `packageEntity_id` INTEGER NOT NULL, `packageEntity_indexInfo_opType` TEXT NOT NULL, `packageEntity_indexInfo_packageName` TEXT NOT NULL, `packageEntity_indexInfo_userId` INTEGER NOT NULL, `packageEntity_indexInfo_compressionType` TEXT NOT NULL, `packageEntity_indexInfo_preserveId` INTEGER NOT NULL, `packageEntity_packageInfo_label` TEXT NOT NULL, `packageEntity_packageInfo_versionName` TEXT NOT NULL, `packageEntity_packageInfo_versionCode` INTEGER NOT NULL, `packageEntity_packageInfo_flags` INTEGER NOT NULL, `packageEntity_packageInfo_firstInstallTime` INTEGER NOT NULL, `packageEntity_extraInfo_uid` INTEGER NOT NULL, `packageEntity_extraInfo_labels` TEXT NOT NULL, `packageEntity_extraInfo_hasKeystore` INTEGER NOT NULL, `packageEntity_extraInfo_activated` INTEGER NOT NULL, `packageEntity_dataStates_apkState` TEXT NOT NULL, `packageEntity_dataStates_userState` TEXT NOT NULL, `packageEntity_dataStates_userDeState` TEXT NOT NULL, `packageEntity_dataStates_dataState` TEXT NOT NULL, `packageEntity_dataStates_obbState` TEXT NOT NULL, `packageEntity_dataStates_mediaState` TEXT NOT NULL, `packageEntity_storageStats_appBytes` INTEGER NOT NULL, `packageEntity_storageStats_cacheBytes` INTEGER NOT NULL, `packageEntity_storageStats_dataBytes` INTEGER NOT NULL, `packageEntity_storageStats_externalCacheBytes` INTEGER NOT NULL, `packageEntity_dataStats_apkBytes` INTEGER NOT NULL, `packageEntity_dataStats_userBytes` INTEGER NOT NULL, `packageEntity_dataStats_userDeBytes` INTEGER NOT NULL, `packageEntity_dataStats_dataBytes` INTEGER NOT NULL, `packageEntity_dataStats_obbBytes` INTEGER NOT NULL, `packageEntity_dataStats_mediaBytes` INTEGER NOT NULL, `packageEntity_displayStats_apkBytes` INTEGER NOT NULL, `packageEntity_displayStats_userBytes` INTEGER NOT NULL, `packageEntity_displayStats_userDeBytes` INTEGER NOT NULL, `packageEntity_displayStats_dataBytes` INTEGER NOT NULL, `packageEntity_displayStats_obbBytes` INTEGER NOT NULL, `packageEntity_displayStats_mediaBytes` INTEGER NOT NULL, `apk_bytes` INTEGER NOT NULL, `apk_log` TEXT NOT NULL, `apk_state` TEXT NOT NULL, `user_bytes` INTEGER NOT NULL, `user_log` TEXT NOT NULL, `user_state` TEXT NOT NULL, `userDe_bytes` INTEGER NOT NULL, `userDe_log` TEXT NOT NULL, `userDe_state` TEXT NOT NULL, `data_bytes` INTEGER NOT NULL, `data_log` TEXT NOT NULL, `data_state` TEXT NOT NULL, `obb_bytes` INTEGER NOT NULL, `obb_log` TEXT NOT NULL, `obb_state` TEXT NOT NULL, `media_bytes` INTEGER NOT NULL, `media_log` TEXT NOT NULL, `media_state` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -505,9 +585,33 @@
             "notNull": true
           },
           {
-            "fieldPath": "packageEntity.packageInfo.packageName",
-            "columnName": "packageEntity_packageInfo_packageName",
+            "fieldPath": "packageEntity.indexInfo.opType",
+            "columnName": "packageEntity_indexInfo_opType",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.packageName",
+            "columnName": "packageEntity_indexInfo_packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.userId",
+            "columnName": "packageEntity_indexInfo_userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.compressionType",
+            "columnName": "packageEntity_indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.preserveId",
+            "columnName": "packageEntity_indexInfo_preserveId",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -547,32 +651,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "packageEntity.extraInfo.userId",
-            "columnName": "packageEntity_extraInfo_userId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "packageEntity.extraInfo.preserveId",
-            "columnName": "packageEntity_extraInfo_preserveId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "packageEntity.extraInfo.opType",
-            "columnName": "packageEntity_extraInfo_opType",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "packageEntity.extraInfo.labels",
             "columnName": "packageEntity_extraInfo_labels",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "packageEntity.extraInfo.compressionType",
-            "columnName": "packageEntity_extraInfo_compressionType",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -837,12 +917,122 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "TaskDetailMediaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `mediaEntity_id` INTEGER NOT NULL, `mediaEntity_indexInfo_opType` TEXT NOT NULL, `mediaEntity_indexInfo_name` TEXT NOT NULL, `mediaEntity_indexInfo_compressionType` TEXT NOT NULL, `mediaEntity_indexInfo_preserveId` INTEGER NOT NULL, `mediaEntity_mediaInfo_path` TEXT NOT NULL, `mediaEntity_mediaInfo_dataState` TEXT NOT NULL, `mediaEntity_mediaInfo_dataBytes` INTEGER NOT NULL, `mediaEntity_mediaInfo_displayBytes` INTEGER NOT NULL, `mediaEntity_extraInfo_labels` TEXT NOT NULL, `mediaEntity_extraInfo_activated` INTEGER NOT NULL, `data_bytes` INTEGER NOT NULL, `data_log` TEXT NOT NULL, `data_state` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.id",
+            "columnName": "mediaEntity_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.opType",
+            "columnName": "mediaEntity_indexInfo_opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.name",
+            "columnName": "mediaEntity_indexInfo_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.compressionType",
+            "columnName": "mediaEntity_indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.preserveId",
+            "columnName": "mediaEntity_indexInfo_preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.path",
+            "columnName": "mediaEntity_mediaInfo_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.dataState",
+            "columnName": "mediaEntity_mediaInfo_dataState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.dataBytes",
+            "columnName": "mediaEntity_mediaInfo_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.displayBytes",
+            "columnName": "mediaEntity_mediaInfo_displayBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.labels",
+            "columnName": "mediaEntity_extraInfo_labels",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.activated",
+            "columnName": "mediaEntity_extraInfo_activated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.bytes",
+            "columnName": "data_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.log",
+            "columnName": "data_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.state",
+            "columnName": "data_state",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1065c825cc49ea8f61fbdd0e8cc9dfeb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8773f0accdb85891ee0228af70b6bb3e')"
     ]
   }
 }

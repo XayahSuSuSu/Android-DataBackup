@@ -44,6 +44,22 @@ fun LinearProgressIndicator(
 }
 
 @Composable
+fun LinearProgressIndicator(
+    modifier: Modifier = Modifier,
+    color: Color = ProgressIndicatorDefaults.linearColor,
+    trackColor: Color = ProgressIndicatorDefaults.linearTrackColor,
+    strokeCap: StrokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+    enabled: Boolean = true,
+) {
+    LinearProgressIndicator(
+        modifier = modifier,
+        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        trackColor = if (enabled) trackColor else trackColor.copy(alpha = DisabledAlpha),
+        strokeCap = strokeCap,
+    )
+}
+
+@Composable
 fun AnimatedLinearProgressIndicator(
     progress: Float,
     modifier: Modifier = Modifier,

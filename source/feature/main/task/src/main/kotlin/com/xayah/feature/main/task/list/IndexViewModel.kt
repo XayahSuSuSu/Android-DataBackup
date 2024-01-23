@@ -7,6 +7,7 @@ import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.TaskRepository
+import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.ui.route.MainRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,7 @@ import javax.inject.Inject
 data object IndexUiState : UiState
 
 sealed class IndexUiIntent : UiIntent {
-    data class ToPageTaskPackageDetail(val navController: NavHostController, val taskEntity: TaskEntity) : IndexUiIntent()
+    data class ToPageTaskDetail(val navController: NavHostController, val taskEntity: TaskEntity) : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -29,10 +30,18 @@ class IndexViewModel @Inject constructor(
 
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
-            is IndexUiIntent.ToPageTaskPackageDetail -> {
+            is IndexUiIntent.ToPageTaskDetail -> {
                 val entity = intent.taskEntity
                 withMainContext {
-                    intent.navController.navigate(MainRoutes.TaskPackageDetail.getRoute(entity.id))
+                    when (entity.taskType) {
+                        TaskType.PACKAGE -> {
+                            intent.navController.navigate(MainRoutes.TaskPackageDetail.getRoute(entity.id))
+                        }
+
+                        TaskType.MEDIA -> {
+                            intent.navController.navigate(MainRoutes.TaskMediaDetail.getRoute(entity.id))
+                        }
+                    }
                 }
             }
         }

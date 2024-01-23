@@ -12,7 +12,7 @@ import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
-import com.xayah.core.model.database.DefaultPreserveId
+import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.route.MainRoutes

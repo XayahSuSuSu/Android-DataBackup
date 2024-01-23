@@ -12,13 +12,14 @@ import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
-import com.xayah.core.model.database.DataStates
-import com.xayah.core.model.database.DataStats
-import com.xayah.core.model.database.DefaultPreserveId
-import com.xayah.core.model.database.ExtraInfo
+import com.xayah.core.model.database.PackageDataStates
+import com.xayah.core.model.database.PackageDataStats
+import com.xayah.core.model.DefaultPreserveId
+import com.xayah.core.model.database.PackageExtraInfo
+import com.xayah.core.model.database.PackageIndexInfo
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.PackageInfo
-import com.xayah.core.model.database.StorageStats
+import com.xayah.core.model.database.PackageStorageStats
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
@@ -41,7 +42,7 @@ class PackageRepository @Inject constructor(
     private val packageDao: PackageDao,
     private val pathUtil: PathUtil,
 ) {
-    val packages = packageDao.queryFlow(opType = OpType.BACKUP, preserveId = DefaultPreserveId).distinctUntilChanged()
+    val packages = packageDao.queryFlow().distinctUntilChanged()
     val activatedCount = packageDao.countActivatedFlow().distinctUntilChanged()
     private val archivesPackagesDir by lazy { pathUtil.getLocalBackupArchivesPackagesDir() }
 
@@ -179,40 +180,40 @@ class PackageRepository @Inject constructor(
                     BaseUtil.writeIcon(icon = icon, dst = iconPath)
                 }
                 val packageInfo = PackageInfo(
-                    packageName = info.packageName,
                     label = info.applicationInfo.loadLabel(pm).toString(),
                     versionName = info.versionName,
                     versionCode = info.longVersionCode,
                     flags = info.applicationInfo.flags,
                     firstInstallTime = info.firstInstallTime,
                 )
-                val extraInfo = ExtraInfo(
+                val extraInfo = PackageExtraInfo(
                     uid = uid,
-                    preserveId = DefaultPreserveId,
-                    userId = userId,
-                    opType = OpType.BACKUP,
                     labels = listOf(),
-                    compressionType = context.readCompressionType().first(),
                     hasKeystore = PackageUtil.hasKeystore(uid),
                     activated = false,
                 )
-                val packageEntity = packageDao.query(packageName = info.packageName, opType = OpType.BACKUP, userId = userId, preserveId = DefaultPreserveId) ?: PackageEntity(
-                    id = 0,
-                    packageInfo = packageInfo,
-                    extraInfo = extraInfo,
-                    dataStates = DataStates(),
-                    storageStats = StorageStats(),
-                    dataStats = DataStats(),
-                    displayStats = DataStats(),
+                val indexInfo = PackageIndexInfo(
+                    opType = OpType.BACKUP,
+                    packageName = info.packageName,
+                    userId = userId,
+                    compressionType = context.readCompressionType().first(),
+                    preserveId = DefaultPreserveId,
                 )
+                val packageEntity =
+                    packageDao.query(packageName = info.packageName, opType = OpType.BACKUP, userId = userId, preserveId = DefaultPreserveId)
+                        ?: PackageEntity(
+                            id = 0,
+                            indexInfo = indexInfo,
+                            packageInfo = packageInfo,
+                            extraInfo = extraInfo,
+                            dataStates = PackageDataStates(),
+                            storageStats = PackageStorageStats(),
+                            dataStats = PackageDataStats(),
+                            displayStats = PackageDataStats(),
+                        )
                 // Update if exists.
                 packageEntity.apply {
                     this.packageInfo = packageInfo
-                    this.extraInfo = extraInfo.copy(
-                        preserveId = this.extraInfo.preserveId,
-                        labels = this.extraInfo.labels,
-                        compressionType = this.extraInfo.compressionType
-                    )
                 }
                 if (userHandle != null) {
                     rootService.queryStatsForPackage(info, userHandle).also { stats ->
@@ -249,7 +250,7 @@ class PackageRepository @Inject constructor(
     fun getDataSrc(srcDir: String, packageName: String) = "$srcDir/$packageName"
 
     private suspend fun calculateArchiveSize(p: PackageEntity, dataType: DataType) = rootService.calculateSize(
-        getArchiveDst("${archivesPackagesDir}/${p.archivesPreserveRelativeDir}", dataType, p.extraInfo.compressionType)
+        getArchiveDst("${archivesPackagesDir}/${p.archivesPreserveRelativeDir}", dataType, p.indexInfo.compressionType)
     )
 
     private suspend fun calculateDataSize(p: PackageEntity, dataType: DataType) = rootService.calculateSize(
@@ -266,7 +267,7 @@ class PackageRepository @Inject constructor(
         val src = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
         val dst = "${archivesPackagesDir}/${p.archivesRelativeDir}/${preserveId}"
         rootService.renameTo(src, dst)
-        upsert(p.copy(extraInfo = p.extraInfo.copy(preserveId = preserveId)))
+        upsert(p.copy(indexInfo = p.indexInfo.copy(preserveId = preserveId)))
     }
 
     suspend fun delete(p: PackageEntity) {

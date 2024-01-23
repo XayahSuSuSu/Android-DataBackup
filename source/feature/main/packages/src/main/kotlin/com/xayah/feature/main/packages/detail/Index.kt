@@ -34,7 +34,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.util.of
+import com.xayah.core.ui.component.HeaderItem
 import com.xayah.core.ui.component.IconTextButton
+import com.xayah.core.ui.component.InfoItem
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.ModalActionDropdownMenu
 import com.xayah.core.ui.component.PackageIconImage
@@ -60,8 +62,6 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.util.DateUtil
-import com.xayah.feature.main.packages.HeaderItem
-import com.xayah.feature.main.packages.InfoItem
 import com.xayah.feature.main.packages.OpItem
 import com.xayah.feature.main.packages.R
 
@@ -119,7 +119,11 @@ fun PagePackageDetail() {
                                     fontWeight = FontWeight.Bold,
                                     color = ColorSchemeKeyTokens.Primary.toColor()
                                 )
-                                TitleSmallText(text = uiState.packageName, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.Secondary.toColor())
+                                TitleSmallText(
+                                    text = uiState.packageName,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ColorSchemeKeyTokens.Secondary.toColor()
+                                )
                             }
                         }
                     }
@@ -140,7 +144,7 @@ fun PagePackageDetail() {
                                 )
                                 InfoItem(
                                     title = StringResourceToken.fromStringId(R.string.user),
-                                    content = StringResourceToken.fromString(backupItemState!!.extraInfo.userId.toString())
+                                    content = StringResourceToken.fromString(backupItemState!!.indexInfo.userId.toString())
                                 )
                                 if (expand) {
                                     InfoItem(
@@ -178,7 +182,7 @@ fun PagePackageDetail() {
                                     viewModel.emitIntent(IndexUiIntent.BackupToLocal(backupItemState!!, navController))
                                 },
                                 infoContent = {
-                                    val ct = backupItemState!!.extraInfo.compressionType
+                                    val ct = backupItemState!!.indexInfo.compressionType
                                     val ctList = remember { listOf(CompressionType.TAR, CompressionType.ZSTD, CompressionType.LZ4).map { it.type } }
                                     val ctIndex = ctList.indexOf(ct.type)
                                     InfoItem(
@@ -190,7 +194,7 @@ fun PagePackageDetail() {
                                         viewModel.emitIntent(
                                             IndexUiIntent.UpdatePackage(
                                                 backupItemState!!.copy(
-                                                    extraInfo = backupItemState!!.extraInfo.copy(
+                                                    indexInfo = backupItemState!!.indexInfo.copy(
                                                         compressionType = CompressionType.of(selected)
                                                     )
                                                 )
@@ -218,7 +222,7 @@ fun PagePackageDetail() {
                                         viewModel.emitIntent(IndexUiIntent.RestoreFromLocal(restoreItemState, navController))
                                     },
                                     infoContent = {
-                                        val ct = restoreItemState.extraInfo.compressionType
+                                        val ct = restoreItemState.indexInfo.compressionType
                                         InfoItem(
                                             title = StringResourceToken.fromStringId(R.string.compression_type),
                                             content = StringResourceToken.fromString(ct.type)
@@ -262,6 +266,7 @@ fun PagePackageDetail() {
                                                     getActionMenuReturnItem { expanded = false },
                                                     getActionMenuConfirmItem {
                                                         viewModel.emitIntent(IndexUiIntent.Delete(restoreItemState))
+                                                        expanded = false
                                                     }
                                                 ), onDismissRequest = { expanded = false })
                                             }

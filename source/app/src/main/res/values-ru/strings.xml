@@ -36,7 +36,7 @@
     <string name="restore">Восстановление</string>
     <string name="copy">Копировать</string>
     <string name="manifest">Манифест</string>
-    <string name="search_bar_hint">Поиск имени пакета…</string>
+    <string name="search_bar_hint_packages">Поиск имени пакета…</string>
     <string name="none">Нет</string>
     <string name="export">Экспорт</string>
     <string name="confirm_delete">Удалить\?</string>

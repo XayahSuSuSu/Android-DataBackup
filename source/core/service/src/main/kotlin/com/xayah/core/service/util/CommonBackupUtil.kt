@@ -1,12 +1,16 @@
 package com.xayah.core.service.util
 
 import android.content.Context
+import com.xayah.core.datastore.readCompressionTest
+import com.xayah.core.model.CompressionType
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.BuildConfigUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.command.Tar
 import com.xayah.core.util.model.ShellResult
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class CommonBackupUtil @Inject constructor(
@@ -17,7 +21,7 @@ class CommonBackupUtil @Inject constructor(
         private val TAG = this::class.java.simpleName
     }
 
-    internal fun log(onMsg: () -> String): String = run {
+    private fun log(onMsg: () -> String): String = run {
         val msg = onMsg()
         LogUtil.log { TAG to msg }
         msg
@@ -55,5 +59,31 @@ class CommonBackupUtil @Inject constructor(
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    suspend fun testArchive(src: String, ct: CompressionType) = run {
+        var code: Int
+        var input: List<String>
+        val out = mutableListOf<String>()
+
+        if (context.readCompressionTest().first()) {
+            Tar.test(src = src, extra = ct.decompressPara)
+                .also { result ->
+                    code = result.code
+                    input = result.input
+                    if (result.isSuccess.not()) {
+                        out.add(log { "$src is broken, trying to delete it." })
+                        rootService.deleteRecursively(src)
+                    } else {
+                        out.add(log { "Everything seems fine." })
+                    }
+                }
+        } else {
+            code = 0
+            input = listOf()
+            out.add(log { "Skip testing." })
+        }
+
+        ShellResult(code = code, input = input, out = out)
     }
 }

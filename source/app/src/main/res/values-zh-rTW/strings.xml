@@ -41,7 +41,7 @@
     <string name="failed">失敗</string>
     <string name="save_directory_structure">保存目錄結構</string>
     <string name="backup_list">備份列表</string>
-    <string name="search_bar_hint">搜索應用程式名稱或包名…</string>
+    <string name="search_bar_hint_packages">搜索應用程式名稱或包名…</string>
     <string name="apk">安裝包</string>
     <string name="data">數據</string>
     <string name="remote_service_err_info">請嘗試重啟設備或重裝Magisk</string>
@@ -193,4 +193,5 @@
     <string name="first_install">首次安裝</string>
     <string name="info">信息</string>
     <string name="preserve">保留</string>
+    <string name="search_bar_hint_medium">搜尋名稱或路徑…</string>
 </resources>

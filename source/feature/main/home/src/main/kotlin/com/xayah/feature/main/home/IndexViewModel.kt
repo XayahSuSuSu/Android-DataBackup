@@ -21,6 +21,7 @@ data class IndexUiState(
 
 sealed class IndexUiIntent : UiIntent {
     data class ToPagePackages(val navController: NavHostController) : IndexUiIntent()
+    data class ToPageMedium(val navController: NavHostController) : IndexUiIntent()
     data class ToPageTaskList(val navController: NavHostController) : IndexUiIntent()
     data class ToPageDirectory(val navController: NavHostController) : IndexUiIntent()
     data class ToPageTree(val navController: NavHostController) : IndexUiIntent()
@@ -41,6 +42,12 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.ToPagePackages -> {
                 withMainContext {
                     intent.navController.navigate(MainRoutes.Packages.route)
+                }
+            }
+
+            is IndexUiIntent.ToPageMedium -> {
+                withMainContext {
+                    intent.navController.navigate(MainRoutes.Medium.route)
                 }
             }
 

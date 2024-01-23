@@ -80,6 +80,7 @@ dependencies {
     "premiumImplementation"(project(":feature:flavor:premium"))
     implementation(project(":feature:main:home"))
     implementation(project(":feature:main:packages"))
+    implementation(project(":feature:main:medium"))
     implementation(project(":feature:main:directory"))
     implementation(project(":feature:main:log"))
     implementation(project(":feature:main:tree"))

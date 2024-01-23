@@ -37,7 +37,7 @@
     <string name="restore">റീസ്റ്റോർ</string>
     <string name="copy">കോപ്പി</string>
     <string name="manifest">മാനിഫെസ്റ്റ്</string>
-    <string name="search_bar_hint">പേരോ പാക്കേജോ സെർച്ചെയ്യുക</string>
+    <string name="search_bar_hint_packages">പേരോ പാക്കേജോ സെർച്ചെയ്യുക</string>
     <string name="none">ഒന്നുമില്ല</string>
     <string name="export">എക്സ്പോർട്ട്</string>
     <string name="confirm_delete">ഡിലീറ്റ്\?</string>

@@ -20,7 +20,7 @@
     <string name="restore">Відновлення</string>
     <string name="copy">Скопіювати</string>
     <string name="manifest">Маніфест</string>
-    <string name="search_bar_hint">Пошук по назві або пакету…</string>
+    <string name="search_bar_hint_packages">Пошук по назві або пакету…</string>
     <string name="none">Жодного</string>
     <string name="export">Експорт</string>
     <string name="failed_and_terminated">Не вдалося та скасовано</string>

@@ -26,7 +26,7 @@
     <string name="restore">Obnovi</string>
     <string name="copy">Kopiraj</string>
     <string name="manifest">Manifest</string>
-    <string name="search_bar_hint">Traži ime ili paket …</string>
+    <string name="search_bar_hint_packages">Traži ime ili paket …</string>
     <string name="none">Nepoznat</string>
     <string name="export">Izvezi</string>
     <string name="confirm_delete">Izbrisati?</string>

@@ -89,3 +89,9 @@ enum class SmbVersion(val text: String) {
     SMB_3_0_2("3.0.2"),
     SMB_3_1_1("3.1.1"),
 }
+
+enum class DataState {
+    Selected,
+    NotSelected,
+    Disabled,
+}

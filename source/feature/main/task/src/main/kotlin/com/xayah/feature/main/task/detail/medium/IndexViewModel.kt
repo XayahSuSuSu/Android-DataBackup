@@ -1,0 +1,79 @@
+package com.xayah.feature.main.task.detail.medium
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.lifecycle.SavedStateHandle
+import com.xayah.core.common.viewmodel.BaseViewModel
+import com.xayah.core.common.viewmodel.IndexUiEffect
+import com.xayah.core.common.viewmodel.UiIntent
+import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.data.repository.TaskRepository
+import com.xayah.core.model.TaskType
+import com.xayah.core.model.database.TaskDetailMediaEntity
+import com.xayah.core.model.database.TaskEntity
+import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.ui.route.MainRoutes
+import com.xayah.core.util.DateUtil
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
+data class IndexUiState(
+    val taskId: Long,
+) : UiState
+
+sealed class IndexUiIntent : UiIntent {
+    data object OnRefresh : IndexUiIntent()
+}
+
+@ExperimentalMaterial3Api
+@HiltViewModel
+class IndexViewModel @Inject constructor(
+    args: SavedStateHandle,
+    rootService: RemoteRootService,
+    taskRepository: TaskRepository,
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(taskId = args.get<String>(MainRoutes.ArgTaskId)?.toLongOrNull() ?: 0)) {
+    init {
+        rootService.onFailure = {
+            val msg = it.message
+            if (msg != null)
+                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
+        }
+    }
+
+    @DelicateCoroutinesApi
+    override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
+        when (intent) {
+            is IndexUiIntent.OnRefresh -> {
+            }
+        }
+    }
+
+    private val _task: Flow<TaskEntity?> = taskRepository.queryTaskFlow(uiState.value.taskId).flowOnIO()
+    val taskState: StateFlow<TaskEntity?> = _task.stateInScope(null)
+    private val _internalTimer: Flow<String> = flow {
+        while (true) {
+            delay(1000)
+            emit(taskRepository.getShortRelativeTimeSpanString(taskState.value?.startTimestamp ?: 0, DateUtil.getTimestamp()))
+            if (taskState.value?.isProcessing?.not() == true) break
+        }
+    }.flowOnIO()
+    val internalTimerState: StateFlow<String> = _internalTimer.stateInScope("")
+    private val _taskTimer: Flow<String> = _task.map {
+        taskRepository.getShortRelativeTimeSpanString(it?.startTimestamp ?: 0, it?.endTimestamp ?: 0)
+    }.flowOnIO()
+    val taskTimerState: StateFlow<String> = _taskTimer.stateInScope("")
+    private val _taskProcessingDetails: Flow<List<TaskDetailMediaEntity>> =
+        taskRepository.queryProcessingFlow<TaskDetailMediaEntity>(uiState.value.taskId, TaskType.MEDIA).flowOnIO()
+    private val _taskSuccessDetails: Flow<List<TaskDetailMediaEntity>> =
+        taskRepository.querySuccessFlow<TaskDetailMediaEntity>(uiState.value.taskId, TaskType.MEDIA).flowOnIO()
+    private val _taskFailureDetails: Flow<List<TaskDetailMediaEntity>> =
+        taskRepository.queryFailureFlow<TaskDetailMediaEntity>(uiState.value.taskId, TaskType.MEDIA).flowOnIO()
+    val taskProcessingDetailsState: StateFlow<List<TaskDetailMediaEntity>> = _taskProcessingDetails.stateInScope(listOf())
+    val taskSuccessDetailsState: StateFlow<List<TaskDetailMediaEntity>> = _taskSuccessDetails.stateInScope(listOf())
+    val taskFailureDetailsState: StateFlow<List<TaskDetailMediaEntity>> = _taskFailureDetails.stateInScope(listOf())
+}

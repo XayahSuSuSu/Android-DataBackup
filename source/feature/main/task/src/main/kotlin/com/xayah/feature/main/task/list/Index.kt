@@ -92,7 +92,7 @@ fun PageTaskList() {
                                         .wrapContentHeight(),
                                     t = it
                                 ) {
-                                    viewModel.emitIntent(IndexUiIntent.ToPageTaskPackageDetail(navController, it))
+                                    viewModel.emitIntent(IndexUiIntent.ToPageTaskDetail(navController, it))
                                 }
                             }
                         }
@@ -114,7 +114,7 @@ fun PageTaskList() {
                                     .wrapContentHeight(),
                                 t = it
                             ) {
-                                viewModel.emitIntent(IndexUiIntent.ToPageTaskPackageDetail(navController, it))
+                                viewModel.emitIntent(IndexUiIntent.ToPageTaskDetail(navController, it))
                             }
                         }
                     }

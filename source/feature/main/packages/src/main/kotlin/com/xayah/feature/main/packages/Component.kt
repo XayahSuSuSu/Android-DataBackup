@@ -2,12 +2,8 @@ package com.xayah.feature.main.packages
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,18 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +33,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.core.data.util.typeIconToken
 import com.xayah.core.data.util.typeNameToken
@@ -52,13 +42,10 @@ import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.Card
 import com.xayah.core.ui.component.DataChip
 import com.xayah.core.ui.component.FilledIconTextButton
-import com.xayah.core.ui.component.IconButton
-import com.xayah.core.ui.component.LabelMediumText
+import com.xayah.core.ui.component.HeaderItem
+import com.xayah.core.ui.component.InfoItem
 import com.xayah.core.ui.component.LabelSmallText
-import com.xayah.core.ui.component.LinearProgressIndicator
-import com.xayah.core.ui.component.ModalStringListDropdownMenu
 import com.xayah.core.ui.component.PackageIconImage
-import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.TitleMediumText
 import com.xayah.core.ui.component.outlinedCardBorder
 import com.xayah.core.ui.component.paddingBottom
@@ -66,40 +53,14 @@ import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.token.AnimationTokens
-import com.xayah.core.ui.token.ModalMenuTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
 import com.xayah.feature.main.packages.detail.IndexUiIntent
 import com.xayah.feature.main.packages.detail.IndexViewModel
-
-@ExperimentalMaterial3Api
-@Composable
-internal fun TopBar(scrollBehavior: TopAppBarScrollBehavior, topBarState: TopBarState) {
-    Column {
-        SecondaryTopBar(
-            scrollBehavior = scrollBehavior,
-            title = topBarState.title
-        )
-        if (topBarState.progress != 1f) {
-            var targetProgress by remember { mutableFloatStateOf(0f) }
-            val animatedProgress = animateFloatAsState(
-                targetValue = targetProgress,
-                animationSpec = tween(),
-                label = AnimationTokens.AnimatedProgressLabel
-            )
-            targetProgress = topBarState.progress
-            if (animatedProgress.value != 1f)
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = animatedProgress.value)
-        }
-    }
-}
 
 @Composable
 internal fun ChipRow(chipGroup: @Composable () -> Unit) {
@@ -247,81 +208,6 @@ fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean, items: List
     )
 }
 
-@Composable
-fun InfoItem(title: StringResourceToken, content: StringResourceToken) {
-    Row {
-        LabelMediumText(
-            text = title.value,
-            color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        LabelMediumText(
-            text = content.value,
-            color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
-        )
-    }
-}
-
-@ExperimentalMaterial3Api
-@Composable
-fun InfoItem(
-    title: StringResourceToken,
-    content: StringResourceToken,
-    selectedIndex: Int,
-    list: List<String>,
-    onSelected: (index: Int, selected: String) -> Unit,
-) {
-    Row {
-        LabelMediumText(
-            text = title.value,
-            color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        var expanded by remember { mutableStateOf(false) }
-        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-            LabelMediumText(
-                modifier = Modifier.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    enabled = true,
-                    onClick = {
-                        if (list.isNotEmpty()) expanded = true
-                    }
-                ),
-                text = content.value,
-                color = ColorSchemeKeyTokens.Primary.toColor(),
-                fontWeight = FontWeight.Bold,
-                textDecoration = TextDecoration.Underline,
-            )
-
-            ModalStringListDropdownMenu(
-                expanded = expanded,
-                selectedIndex = selectedIndex,
-                list = list,
-                maxDisplay = ModalMenuTokens.DefaultMaxDisplay,
-                onSelected = { index, selected ->
-                    onSelected(index, selected)
-                    expanded = false
-                },
-                onDismissRequest = { expanded = false }
-            )
-        }
-    }
-}
-
-@Composable
-fun HeaderItem(expand: Boolean, title: StringResourceToken, onClick: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        TitleMediumText(
-            modifier = Modifier.paddingBottom(PaddingTokens.Level1),
-            text = title.value,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        IconButton(icon = ImageVectorToken.fromVector(if (expand) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore), onClick = onClick)
-    }
-}
-
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
@@ -356,7 +242,7 @@ fun OpItem(
         ) {
             InfoItem(
                 title = StringResourceToken.fromStringId(R.string.id),
-                content = StringResourceToken.fromString(itemState.extraInfo.preserveId.toString())
+                content = StringResourceToken.fromString(itemState.indexInfo.preserveId.toString())
             )
             infoContent()
             if (targetState.not()) {

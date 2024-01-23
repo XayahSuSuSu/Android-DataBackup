@@ -1,0 +1,20 @@
+<resources>
+    <item name="media" type="string"/>
+    <item name="search_bar_hint_medium" type="string"/>
+    <item name="data_size" type="string"/>
+    <item name="select_target_directory" type="string"/>
+    <item name="id" type="string"/>
+    <item name="task_is_in_progress" type="string"/>
+    <item name="backup" type="string"/>
+    <item name="back_up_to_local" type="string"/>
+    <item name="ic_rounded_acute" type="drawable"/>
+    <item name="compression_type" type="string"/>
+    <item name="restore" type="string"/>
+    <item name="restore_from_local" type="string"/>
+    <item name="ic_rounded_history" type="drawable"/>
+    <item name="preserve" type="string"/>
+    <item name="ic_rounded_shield_locked" type="drawable"/>
+    <item name="delete" type="string"/>
+    <item name="details" type="string"/>
+    <item name="backup_completed" type="string"/>
+</resources>

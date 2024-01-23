@@ -34,6 +34,7 @@ import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
 import com.xayah.core.ui.component.RoundChip
 import com.xayah.core.ui.component.SearchBar
+import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.SortChip
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
@@ -56,7 +57,6 @@ import com.xayah.core.ui.util.value
 import com.xayah.feature.main.packages.ChipRow
 import com.xayah.feature.main.packages.PackageCard
 import com.xayah.feature.main.packages.R
-import com.xayah.feature.main.packages.TopBar
 
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
@@ -81,7 +81,7 @@ fun PagePackages() {
     val enabled = topBarState.progress == 1f
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { TopBar(scrollBehavior = scrollBehavior, topBarState = topBarState) },
+        topBar = { SecondaryTopBar(scrollBehavior = scrollBehavior, topBarState = topBarState) },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize()) {
@@ -99,7 +99,7 @@ fun PagePackages() {
                         SearchBar(
                             modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                             enabled = enabled,
-                            placeholder = StringResourceToken.fromStringId(R.string.search_bar_hint),
+                            placeholder = StringResourceToken.fromStringId(R.string.search_bar_hint_packages),
                             onTextChange = {
                                 viewModel.emitIntent(IndexUiIntent.FilterByKey(key = it))
                             }

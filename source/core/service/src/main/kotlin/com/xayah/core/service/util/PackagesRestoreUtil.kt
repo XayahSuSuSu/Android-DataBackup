@@ -114,7 +114,7 @@ class PackagesRestoreUtil2 @Inject constructor(
         val dataType = DataType.PACKAGE_APK
         val packageName = p.packageName
         val userId = p.userId
-        val ct = p.extraInfo.compressionType
+        val ct = p.indexInfo.compressionType
         val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
         var isSuccess: Boolean
         val out = mutableListOf<String>()
@@ -205,7 +205,7 @@ class PackagesRestoreUtil2 @Inject constructor(
 
         val packageName = p.packageName
         val userId = p.userId
-        val ct = p.extraInfo.compressionType
+        val ct = p.indexInfo.compressionType
         val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
         val dstDir = packageRepository.getDataSrcDir(dataType, userId)
         val dst = packageRepository.getDataSrc(dstDir, packageName)

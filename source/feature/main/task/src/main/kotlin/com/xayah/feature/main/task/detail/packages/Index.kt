@@ -40,7 +40,6 @@ import com.xayah.core.ui.model.MultiColorProgress
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
-import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
@@ -57,7 +56,6 @@ import com.xayah.feature.main.task.TaskPackageItemCard
 @Composable
 fun PageTaskPackageDetail() {
     val viewModel = hiltViewModel<IndexViewModel>()
-    val navController = LocalNavController.current!!
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val taskState by viewModel.taskState.collectAsStateWithLifecycle()
     val internalTimerState by viewModel.internalTimerState.collectAsStateWithLifecycle()
@@ -151,7 +149,8 @@ fun PageTaskPackageDetail() {
                                 TaskPackageItemCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .wrapContentHeight(), item = it
+                                        .wrapContentHeight(),
+                                    item = it
                                 )
                             }
                         }
@@ -171,7 +170,8 @@ fun PageTaskPackageDetail() {
                                 TaskPackageItemCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .wrapContentHeight(), item = it
+                                        .wrapContentHeight(),
+                                    item = it
                                 )
                             }
                         }
