@@ -46,6 +46,12 @@ android {
             dimension = "feature"
             applicationIdSuffix = ".premium"
         }
+        create("alpha") {
+            dimension = "feature"
+            applicationIdSuffix = ".alpha"
+            versionCode = libs.versions.versionCodeAlpha.get().toInt()
+            versionName = libs.versions.versionCodeAlpha.get()
+        }
     }
 
     applicationVariants.all {
@@ -76,6 +82,8 @@ dependencies {
     implementation(project(":feature:crash"))
     "fossImplementation"(project(":feature:flavor:foss"))
     "premiumImplementation"(project(":feature:flavor:premium"))
+    "alphaImplementation"(project(":feature:flavor:alpha"))
+    "alphaImplementation"(project(":feature:flavor:foss"))
     implementation(project(":feature:main:home"))
     implementation(project(":feature:main:packages"))
     implementation(project(":feature:main:medium"))

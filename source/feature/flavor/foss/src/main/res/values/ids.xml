@@ -1,5 +1,6 @@
 
 <resources>
+    <item name="app_name" type="string"/>
     <item name="welcome_to_use" type="string"/>
     <item name="update_records" type="string"/>
     <item name="environment_detection" type="string"/>

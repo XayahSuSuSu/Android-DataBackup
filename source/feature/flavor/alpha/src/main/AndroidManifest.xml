@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:label="@string/app_name_alpha"
+        tools:replace="android:label">
+        <!-- Workaround for CrashHandler -->
+        <provider
+            android:name="com.xayah.core.provider.CrashProvider"
+            android:authorities="com.xayah.core.provider.CrashProvider.alpha"
+            android:exported="false"
+            android:initOrder="101"
+            tools:replace="android:authorities" />
+        <!-- End -->
+
+        <provider
+            android:name="com.xayah.core.provider.FileSharingProvider"
+            android:authorities="com.xayah.core.provider.FileSharingProvider.alpha"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+</manifest>
