@@ -11,12 +11,22 @@ private fun Project.configureCommon() {
     pluginManager.apply("org.jetbrains.kotlin.android")
 
     extensions.getByType<ApplicationExtension>().apply {
+        signingConfigs {
+            create("release") {
+                storeFile = file(System.getenv("STORE_FILE") ?: "placeholder")
+                storePassword = System.getenv("STORE_PASSWORD") ?: ""
+                keyAlias = System.getenv("KEY_ALIAS") ?: ""
+                keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            }
+        }
+
         buildTypes {
             release {
                 isMinifyEnabled = true
                 isShrinkResources = true
                 proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
                 buildConfigField("Boolean", "ENABLE_VERBOSE", "false")
+                signingConfig = signingConfigs.getByName("release")
             }
             debug {
                 isMinifyEnabled = false

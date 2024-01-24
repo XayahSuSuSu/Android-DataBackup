@@ -20,6 +20,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    lint {
+        disable += "MissingTranslation"
+    }
+
     flavorDimensions += listOf("abi", "feature")
     productFlavors {
         create("arm64-v8a") {
