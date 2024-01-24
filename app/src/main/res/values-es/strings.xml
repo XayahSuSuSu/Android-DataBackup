@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="size">Tamaño</string>
     <string name="decompress">Descomprimir</string>
     <string name="progress">Progreso</string>
@@ -58,4 +58,126 @@
     <string name="install_time">Tiempo de instalación</string>
     <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar las siguientes Condiciones de uso y Política de privacidad antes de empezar a utilizar esta aplicación</string>
     <string name="welcome_to_use">Bienvenido</string>
+    <string name="sort">Clasificar</string>
+    <string name="cover_desc">Sobrescribir los archivos de copia de seguridad existentes con cada copia de seguridad, u omitir las copias de seguridad si no hay cambios, de modo que pase lo que pase, sólo exista una copia de sus datos</string>
+    <string name="by_time_desc">Cada copia de seguridad se considera una nueva copia de seguridad completa y se separa según la hora de la copia de seguridad, por lo que sus datos pueden existir en varias copias</string>
+    <string name="application_desc">Obtener información del paquete de la aplicación, utilizada para generar la lista de copias de seguridad y obtener el tamaño de los datos de la aplicación</string>
+    <string name="check_storage_management_permission">Comprobar el permiso de gestión de almacenamiento</string>
+    <string name="compressing">Comprimiendo</string>
+    <string name="read_icon_title">La lectura de iconos requiere mucha memoria, si experimenta fallos durante la restauración, pruebe a desactivar esta opción</string>
+    <string name="card_media_subtitle">Copia de seguridad (restauración) de archivos multimedia o directorios personalizados</string>
+    <string name="delete">Borrar</string>
+    <string name="select_backup_media">Seleccionar soporte de copia de seguridad</string>
+    <string name="link">Enlace</string>
+    <string name="backup_dir_as_media_error">No se puede añadir el directorio de copia de seguridad como soporte</string>
+    <string name="stable">Estable</string>
+    <string name="update_channel">Canal de actualización</string>
+    <string name="test">Prueba</string>
+    <string name="update_channel_subtitle">Tipo de actualizaciones</string>
+    <string name="click_to_clear">Pulse aquí para borrar</string>
+    <string name="keep_the_screen_on_help">Mantener el dispositivo encendido mientras se procesa</string>
+    <string name="duplicate">Duplicar</string>
+    <string name="not_exists">No existe</string>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> minuto</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> minutos</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> minutos</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> hora</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> horas</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> horas</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> día</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> días</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> días</item>
+    </plurals>
+    <string name="filter">Filtrar</string>
+    <string name="backup_strategy">Estrategia de copia de seguridad</string>
+    <string name="cover">Cubrir</string>
+    <string name="by_time">Por tiempo</string>
+    <string name="name">Nombre</string>
+    <string name="backup_test">Prueba de la copia de seguridad</string>
+    <string name="testing">Pruebas</string>
+    <string name="check_package_usage_stats_permission">Verifique el permiso de estadísticas de uso del paquete</string>
+    <string name="backup_test_title">Verificar automáticamente los archivos de respaldo durante la copia de seguridad</string>
+    <string name="network">Red</string>
+    <string name="exclude_cache">Excluir la caché</string>
+    <string name="others">Otros</string>
+    <string name="start_desc">Todos los datos generados por esta aplicación sólo se utilizan para copias de seguridad/restauración, y sólo se almacenan localmente.</string>
+    <string name="network_desc">Se utiliza para obtener información sobre actualizaciones y análisis de aplicaciones</string>
+    <string name="storage">Almacenamiento</string>
+    <string name="storage_desc">Se utiliza para la configuración de copias de seguridad, lectura y escritura de archivos</string>
+    <string name="data_size">Tamaño de los datos</string>
+    <string name="setting_SELinux">Configuración de SELinux</string>
+    <string name="decompressing">Descomprimiendo</string>
+    <string name="finished">Terminado</string>
+    <string name="no_change_and_skip">Sin cambios, omitir</string>
+    <string name="loading">Cargando</string>
+    <string name="loading_failed">Carga fallida</string>
+    <string name="update_records">Actualizar registros</string>
+    <string name="path_permission_error">Error de permisos, las siguientes rutas requieren los permisos correctos</string>
+    <string name="restoring">Restaurando</string>
+    <string name="read_icon">Icono de lectura</string>
+    <string name="app_crashed">La aplicación falló</string>
+    <string name="cancelling">Cancelando</string>
+    <string name="card_app_subtitle">Copia de seguridad (restauración) de aplicaciones de terceros o del sistema</string>
+    <string name="settings_backup_user_subtitle">El usuario de destino durante la copia de seguridad</string>
+    <string name="settings_restore_user_subtitle">Los datos se restauran desde el usuario de respaldo al usuario de restauración</string>
+    <string name="backup_storage_method">Método de almacenamiento de las copias de seguridad</string>
+    <string name="select_backup_app">Seleccionar aplicación de copia de seguridad</string>
+    <string name="blacklist">Lista negra</string>
+    <string name="manifest">Manifiesto</string>
+    <string name="selected_app">Aplicación seleccionada</string>
+    <string name="selected_data">Datos seleccionados</string>
+    <string name="select_restore_app">Seleccione restaurar aplicación</string>
+    <string name="select_restore_media">Seleccione el medio de restauración</string>
+    <string name="add">Añadir</string>
+    <string name="select_all">Seleccionar todo</string>
+    <string name="none">Ninguno</string>
+    <string name="stable_subtitle">Estable y fiable</string>
+    <string name="test_subtitle">Mantente siempre actualizado</string>
+    <string name="update">Actualizar</string>
+    <string name="current">Actual</string>
+    <string name="delete_confirm">Asegúrate de eliminar la selección</string>
+    <string name="delete_selected">Borrar seleccionados</string>
+    <string name="selection_is_empty">La selección está vacía</string>
+    <string name="system_app">Aplicación del sistema</string>
+    <string name="installed_app">Aplicación instalada</string>
+    <string name="switch_to_system_app_warning">La mayoría de las aplicaciones del sistema no son recomendables para hacer copias de seguridad, restaurarlas puede hacer que tu teléfono se reinicie, estás advertido</string>
+    <string name="copy_grant_command">Copia de comandos de autorización</string>
+    <string name="warning">Advertencia</string>
+    <string name="type">Tipo</string>
+    <string name="compatible_mode">Modo compatible</string>
+    <string name="installed">Instalado</string>
+    <string name="not_installed">No instalado</string>
+    <string name="retry">Reintentar</string>
+    <string name="succeed">Exitosamente</string>
+    <string name="telephony">Telefonía</string>
+    <string name="card_telephony_subtitle">Copia de seguridad (restauración) de contactos, registro de llamadas o SMS/MMS</string>
+    <string name="backed_up">Copia de seguridad</string>
+    <string name="restored">Restaurado</string>
+    <string name="posted_just_now">Ahora mismo</string>
+    <string name="posted_now">Ahora</string>
+    <string name="not_the_default_sms_app_info">La restauración de SMS/MMS requiere que DataBackup esté configurada como aplicación SMS predeterminada</string>
+    <string name="telephony_permissions">Permisos de telefonía</string>
+    <string name="compatible_mode_subtitle">Utilice pipe en lugar de parámetro para la entrada de alquitrán. Cámbielo cuando diga \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: No se puede ejecutar: no existe tal archivo o directorio\"</string>
+    <string name="sms_permission">Permiso SMS</string>
+    <string name="contacts_permission">Permiso de contactos</string>
+    <string name="call_log_permission">Permiso de registro de llamadas</string>
+    <string name="miui_service_sms_tips">Si estás en MIUI, por favor concede el permiso de Servicio SMS manualmente.</string>
+    <string name="reset_backup_list">Reiniciar lista de copias de seguridad</string>
+    <string name="reset_backup_list_title">Desmarcar las selecciones tras la copia de seguridad</string>
+    <string name="reset_restore_list">Restablecer la lista de restauración</string>
+    <string name="reset_restore_list_title">Anular la selección después de restaurar</string>
+    <string name="backing_up">Retrocediendo…</string>
+    <string name="log">Registro</string>
+    <string name="keep_the_screen_on">Mantener la pantalla encendida</string>
+    <string name="failed_to_connect_rootservice">Error al conectar con RootService</string>
+    <string name="add_list">Añadir a la lista</string>
+    <string name="separated_by_newlines">Separados por líneas nuevas</string>
+    <string name="added">Añadido</string>
+    <string name="clean_restoring">Restauración limpia</string>
+    <string name="clean_restoring_help">Borrar el directorio de destino antes de restaurar</string>
 </resources>
