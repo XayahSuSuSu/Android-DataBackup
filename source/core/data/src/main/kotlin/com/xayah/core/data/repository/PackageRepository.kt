@@ -10,14 +10,14 @@ import com.xayah.core.datastore.readIconUpdateTime
 import com.xayah.core.datastore.saveIconUpdateTime
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
+import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.database.PackageDataStates
 import com.xayah.core.model.database.PackageDataStats
-import com.xayah.core.model.DefaultPreserveId
+import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.PackageExtraInfo
 import com.xayah.core.model.database.PackageIndexInfo
-import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.PackageInfo
 import com.xayah.core.model.database.PackageStorageStats
 import com.xayah.core.rootservice.service.RemoteRootService
@@ -181,7 +181,7 @@ class PackageRepository @Inject constructor(
                 }
                 val packageInfo = PackageInfo(
                     label = info.applicationInfo.loadLabel(pm).toString(),
-                    versionName = info.versionName,
+                    versionName = info.versionName ?: "",
                     versionCode = info.longVersionCode,
                     flags = info.applicationInfo.flags,
                     firstInstallTime = info.firstInstallTime,
