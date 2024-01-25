@@ -4,4 +4,5 @@
     <item name="num_hours_ago" type="plurals"/>
     <item name="num_days_ago" type="plurals"/>
     <item name="ic_launcher" type="mipmap" />
+    <item name="grant_ntfy_perm_manually" type="string" />
 </resources>

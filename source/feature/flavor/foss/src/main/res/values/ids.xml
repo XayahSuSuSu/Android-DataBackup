@@ -17,4 +17,5 @@
     <item name="release_prebuilt_binaries" type="string"/>
     <item name="abi_validation" type="string"/>
     <item name="this_version_only_supports_but_your_device_is_please_install_version" type="string"/>
+    <item name="notification" type="string"/>
 </resources>

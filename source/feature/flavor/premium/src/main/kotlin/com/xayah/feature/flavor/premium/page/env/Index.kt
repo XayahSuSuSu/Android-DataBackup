@@ -11,11 +11,15 @@ import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.saveAppVersionName
 import com.xayah.core.ui.model.ImageVectorToken
@@ -38,6 +42,18 @@ fun PageEnv() {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val allValidated by viewModel.allValidated.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val owner = LocalLifecycleOwner.current
+    DisposableEffect(owner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.emitIntent(IndexUiIntent.OnResume(context))
+            }
+        }
+        owner.lifecycle.addObserver(observer)
+        onDispose {
+            owner.lifecycle.removeObserver(observer)
+        }
+    }
 
     LaunchedEffect(null) {
         mainViewModel.emitIntent(
@@ -57,6 +73,8 @@ fun PageEnv() {
                             }
                         } else {
                             viewModel.launchOnIO {
+                                if (uiState.notificationItem.enabled)
+                                    viewModel.emitIntent(IndexUiIntent.ValidateNotification(context = context))
                                 if (uiState.rootItem.enabled)
                                     viewModel.emitIntent(IndexUiIntent.ValidateRoot(context = context))
                                 if (uiState.binItem.enabled)
@@ -76,6 +94,16 @@ fun PageEnv() {
             Spacer(modifier = Modifier.height(PaddingTokens.Level2))
         }
 
+        item {
+            EnvCard(
+                content = uiState.notificationItem.content,
+                state = uiState.notificationItem.state,
+                enabled = uiState.notificationItem.enabled,
+                onClick = {
+                    viewModel.emitIntent(IndexUiIntent.ValidateNotification(context = context))
+                }
+            )
+        }
         item {
             EnvCard(
                 content = uiState.rootItem.content,

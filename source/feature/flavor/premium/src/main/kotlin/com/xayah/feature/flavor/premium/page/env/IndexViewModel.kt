@@ -12,6 +12,7 @@ import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.util.BuildConfigUtil
+import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.feature.flavor.premium.R
 import com.xayah.feature.guide.common.EnvItem
@@ -24,6 +25,7 @@ import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 data class IndexUiState(
+    val notificationItem: EnvItem = EnvItem(content = StringResourceToken.fromStringId(R.string.notification), state = EnvState.Idle),
     val rootItem: EnvItem = EnvItem(content = StringResourceToken.fromStringId(R.string.grant_root_access), state = EnvState.Idle),
     val binItem: EnvItem = EnvItem(content = StringResourceToken.fromStringId(R.string.release_prebuilt_binaries), state = EnvState.Idle),
     val abiItem: EnvItem = EnvItem(content = StringResourceToken.fromStringId(R.string.abi_validation), state = EnvState.Idle),
@@ -31,6 +33,8 @@ data class IndexUiState(
 
 sealed class IndexUiIntent : UiIntent {
     data class Initialize(val context: Context) : IndexUiIntent()
+    data class OnResume(val context: Context) : IndexUiIntent()
+    data class ValidateNotification(val context: Context) : IndexUiIntent()
     data class ValidateRoot(val context: Context) : IndexUiIntent()
     data class ValidateBin(val context: Context) : IndexUiIntent()
     data class ValidateAbi(val context: Context) : IndexUiIntent()
@@ -47,6 +51,19 @@ class IndexViewModel @Inject constructor() : BaseViewModel<IndexUiState, IndexUi
             is IndexUiIntent.Initialize -> {
                 // Kill daemon
                 BaseUtil.kill("${intent.context.packageName}:root:daemon")
+            }
+
+            is IndexUiIntent.OnResume -> {
+                val isNotificationPermissionGranted = NotificationUtil.checkPermission(intent.context)
+                if (isNotificationPermissionGranted) {
+                    emitStateSuspend(state = uiState.value.copy(notificationItem = state.notificationItem.copy(state = EnvState.Succeed)))
+                }
+            }
+
+            is IndexUiIntent.ValidateNotification -> {
+                mutex.withLock {
+                    NotificationUtil.requestPermissions(intent.context)
+                }
             }
 
             is IndexUiIntent.ValidateRoot -> {
