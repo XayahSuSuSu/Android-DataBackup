@@ -21,7 +21,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
-class PackagesRestoreUtil2 @Inject constructor(
+class PackagesRestoreUtil @Inject constructor(
     @ApplicationContext val context: Context,
     private val rootService: RemoteRootService,
     private val taskDao: TaskDao,

@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import com.xayah.core.service.medium.backup.LocalService as LocalBackupService
+import com.xayah.core.service.medium.restore.LocalService as LocalRestoreService
 
 data class IndexUiState(
     val isRefreshing: Boolean,
@@ -45,6 +46,7 @@ class IndexViewModel @Inject constructor(
     private val mediaRepo: MediaRepository,
     rootService: RemoteRootService,
     private val localBackupService: LocalBackupService,
+    private val localRestoreService: LocalRestoreService,
     private val contextRepository: ContextRepository,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
@@ -111,7 +113,42 @@ class IndexViewModel @Inject constructor(
                 }
             }
 
-            is IndexUiIntent.RestoreFromLocal -> {}
+            is IndexUiIntent.RestoreFromLocal -> {
+                launchOnGlobal {
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.task_is_in_progress),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Indefinite,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                    mediaRepo.upsert(intent.mediaEntity.copy(extraInfo = intent.mediaEntity.extraInfo.copy(activated = true)))
+                    localRestoreService.preprocessing()
+                    localRestoreService.processing()
+                    localRestoreService.postProcessing()
+                    localRestoreService.destroyService()
+
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.restore_completed),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Long,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                }
+            }
 
             is IndexUiIntent.Preserve -> {
                 mediaRepo.preserve(intent.mediaEntity)

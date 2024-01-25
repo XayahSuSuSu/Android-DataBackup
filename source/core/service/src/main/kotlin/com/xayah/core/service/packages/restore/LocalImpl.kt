@@ -6,7 +6,7 @@ import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.DataType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
-import com.xayah.core.service.util.PackagesRestoreUtil2
+import com.xayah.core.service.util.PackagesRestoreUtil
 import com.xayah.core.util.PathUtil
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -23,7 +23,7 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
     override lateinit var packageDao: PackageDao
 
     @Inject
-    override lateinit var packagesRestoreUtil: PackagesRestoreUtil2
+    override lateinit var packagesRestoreUtil: PackagesRestoreUtil
 
     @Inject
     override lateinit var taskRepository: TaskRepository

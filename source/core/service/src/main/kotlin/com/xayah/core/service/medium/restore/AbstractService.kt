@@ -1,19 +1,19 @@
-package com.xayah.core.service.packages.restore
+package com.xayah.core.service.medium.restore
 
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import com.xayah.core.data.repository.TaskRepository
-import com.xayah.core.database.dao.PackageDao
+import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.OpType
 import com.xayah.core.model.TaskType
-import com.xayah.core.model.database.PackageEntity
+import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.R
-import com.xayah.core.service.util.PackagesRestoreUtil
+import com.xayah.core.service.util.MediumRestoreUtil
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.NotificationUtil
@@ -28,7 +28,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 @AndroidEntryPoint
 internal abstract class AbstractService : Service() {
     companion object {
-        private const val TAG = "PackagesRestoreServiceImpl"
+        private const val TAG = "MediumRestoreServiceImpl"
     }
 
     private val binder = OperationLocalBinder()
@@ -53,8 +53,8 @@ internal abstract class AbstractService : Service() {
 
     abstract val pathUtil: PathUtil
     abstract val taskDao: TaskDao
-    abstract val packageDao: PackageDao
-    abstract val packagesRestoreUtil: PackagesRestoreUtil
+    abstract val mediaDao: MediaDao
+    abstract val mediumRestoreUtil: MediumRestoreUtil
     abstract val taskRepository: TaskRepository
 
     private val notificationBuilder by lazy { NotificationUtil.getProgressNotificationBuilder(context) }
@@ -64,7 +64,7 @@ internal abstract class AbstractService : Service() {
         TaskEntity(
             id = 0,
             opType = OpType.RESTORE,
-            taskType = TaskType.PACKAGE,
+            taskType = TaskType.MEDIA,
             startTimestamp = startTimestamp,
             endTimestamp = endTimestamp,
             backupDir = context.localBackupSaveDir(),
@@ -90,7 +90,7 @@ internal abstract class AbstractService : Service() {
         }
     }
 
-    abstract suspend fun restorePackage(p: PackageEntity)
+    abstract suspend fun restoreMedia(m: MediaEntity)
 
     @ExperimentalSerializationApi
     suspend fun processing() = withIOContext {
@@ -100,31 +100,31 @@ internal abstract class AbstractService : Service() {
             // createTargetDirs() before readStatFs().
             taskEntity.also {
                 it.startTimestamp = startTimestamp
-                it.rawBytes = taskRepository.getRawBytes(TaskType.PACKAGE)
+                it.rawBytes = taskRepository.getRawBytes(TaskType.MEDIA)
                 it.availableBytes = taskRepository.getAvailableBytes(OpType.RESTORE)
                 it.totalBytes = taskRepository.getTotalBytes(OpType.RESTORE)
                 it.id = taskDao.upsert(it)
             }
 
-            val packages = packageDao.queryActivated()
-            log { "Task count: ${packages.size}." }
+            val medium = mediaDao.queryActivated()
+            log { "Task count: ${medium.size}." }
             taskEntity.also {
-                it.totalCount = packages.size
+                it.totalCount = medium.size
                 taskDao.upsert(it)
             }
 
-            packages.forEachIndexed { index, currentPackage ->
+            medium.forEachIndexed { index, currentMedia ->
                 NotificationUtil.notify(
                     context,
                     notificationBuilder,
                     context.getString(R.string.restoring),
-                    currentPackage.packageInfo.label,
-                    packages.size,
+                    currentMedia.name,
+                    medium.size,
                     index
                 )
-                log { "Current package: $currentPackage" }
+                log { "Current media: $currentMedia" }
 
-                restorePackage(currentPackage)
+                restoreMedia(currentMedia)
             }
         }
     }
@@ -140,7 +140,7 @@ internal abstract class AbstractService : Service() {
             )
             log { "PostProcessing is starting." }
 
-            packageDao.clearActivated()
+            mediaDao.clearActivated()
             endTimestamp = DateUtil.getTimestamp()
             taskEntity.also {
                 it.endTimestamp = endTimestamp

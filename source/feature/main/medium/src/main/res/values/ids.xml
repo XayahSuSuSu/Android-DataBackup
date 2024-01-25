@@ -17,4 +17,5 @@
     <item name="delete" type="string"/>
     <item name="details" type="string"/>
     <item name="backup_completed" type="string"/>
+    <item name="restore_completed" type="string"/>
 </resources>
