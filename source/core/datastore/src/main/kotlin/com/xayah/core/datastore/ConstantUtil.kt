@@ -10,7 +10,8 @@ object ConstantUtil {
         "exfat",
         "ntfs",
         "ext4",
-        "f2fs"
+        "f2fs",
+        "texfat",
     )
     val DefaultMediaList = listOf(
         "Pictures" to "/storage/emulated/0/Pictures",
