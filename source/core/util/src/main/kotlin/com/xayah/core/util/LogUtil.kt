@@ -72,7 +72,8 @@ object LogUtil {
 
     fun shareLog(context: Context, name: String) {
         val sharingLog = File(cacheDir, name)
-        val sharingUri = getUriForFile(context, "com.xayah.core.util.provider.FileSharingProvider", sharingLog)
+        val sharingUri =
+            getUriForFile(context, "com.xayah.core.provider.FileSharingProvider.${BuildConfigUtil.FLAVOR_feature.lowercase()}", sharingLog)
         val sharingIntent = Intent().apply {
             action = Intent.ACTION_SEND
             type = "*/*"
