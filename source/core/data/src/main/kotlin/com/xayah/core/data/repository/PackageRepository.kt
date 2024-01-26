@@ -1,6 +1,7 @@
 package com.xayah.core.data.repository
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import com.xayah.core.data.R
 import com.xayah.core.data.util.srcDir
@@ -26,6 +27,7 @@ import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.PermissionUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PackageUtil
 import com.xayah.core.util.iconDir
@@ -85,7 +87,7 @@ class PackageRepository @Inject constructor(
     fun queryPackagesFlow(packageName: String, opType: OpType, userId: Int) =
         packageDao.queryFlow(packageName, opType, userId).distinctUntilChanged()
 
-    private suspend fun getInstalledPackages(userId: Int) = rootService.getInstalledPackagesAsUser(0, userId).filter {
+    private suspend fun getInstalledPackages(userId: Int) = rootService.getInstalledPackagesAsUser(PackageManager.GET_PERMISSIONS, userId).filter {
         // Filter itself
         it.packageName != context.packageName
     }
@@ -172,6 +174,7 @@ class PackageRepository @Inject constructor(
             val hasPassedOneDay = DateUtil.getNumberOfDaysPassed(iconUpdateTime, now) >= 1
             if (hasPassedOneDay) context.saveIconUpdateTime(now)
             installedPackages.forEachIndexed { index, info ->
+                val permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
                 val uid = info.applicationInfo.uid
                 val iconPath = pathUtil.getPackageIconPath(info.packageName)
                 val iconExists = rootService.exists(iconPath)
@@ -190,6 +193,7 @@ class PackageRepository @Inject constructor(
                     uid = uid,
                     labels = listOf(),
                     hasKeystore = PackageUtil.hasKeystore(uid),
+                    permissions = permissions,
                     activated = false,
                 )
                 val indexInfo = PackageIndexInfo(
@@ -214,6 +218,7 @@ class PackageRepository @Inject constructor(
                 // Update if exists.
                 packageEntity.apply {
                     this.packageInfo = packageInfo
+                    this.extraInfo.permissions = permissions
                 }
                 if (userHandle != null) {
                     rootService.queryStatsForPackage(info, userHandle).also { stats ->

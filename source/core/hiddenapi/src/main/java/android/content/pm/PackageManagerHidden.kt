@@ -17,7 +17,16 @@ object PackageManagerHidden {
     fun grantRuntimePermission(packageManager: PackageManager, packageName: String, permName: String, user: UserHandle) =
         HiddenApiBypass.invoke(Class.forName("android.content.pm.PackageManager"), packageManager, "grantRuntimePermission", packageName, permName, user)
 
-    fun setPackagesSuspended(packageManager: PackageManager, packageNames: Array<String>, suspended: Boolean, appExtras: PersistableBundle?, launcherExtras: PersistableBundle?, dialogInfo: Any?, ) =
+    fun revokeRuntimePermission(packageManager: PackageManager, packageName: String, permName: String, user: UserHandle) =
+        HiddenApiBypass.invoke(Class.forName("android.content.pm.PackageManager"), packageManager, "revokeRuntimePermission", packageName, permName, user)
+
+    fun getPermissionFlags(packageManager: PackageManager, packageName: String, permName: String, user: UserHandle): Int =
+        HiddenApiBypass.invoke(Class.forName("android.content.pm.PackageManager"), packageManager, "getPermissionFlags", permName, packageName, user) as Int
+
+    fun updatePermissionFlags(packageManager: PackageManager, packageName: String, permName: String, user: UserHandle, flagMask: Int, flagValues: Int) =
+        HiddenApiBypass.invoke(Class.forName("android.content.pm.PackageManager"), packageManager, "updatePermissionFlags", permName, packageName, flagMask, flagValues, user)
+
+    fun setPackagesSuspended(packageManager: PackageManager, packageNames: Array<String>, suspended: Boolean, appExtras: PersistableBundle?, launcherExtras: PersistableBundle?, dialogInfo: Any?) =
         HiddenApiBypass.invoke(Class.forName("android.content.pm.PackageManager"), packageManager, "setPackagesSuspended", packageNames, suspended, appExtras, launcherExtras, dialogInfo)
 
     fun isPackageSuspended(packageManager: PackageManager, packageName: String): Boolean =

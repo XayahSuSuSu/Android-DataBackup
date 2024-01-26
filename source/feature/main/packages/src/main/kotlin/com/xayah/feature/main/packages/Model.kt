@@ -1,8 +1,8 @@
 package com.xayah.feature.main.packages
 
 import android.content.Context
-import com.xayah.core.model.DataType
 import com.xayah.core.model.DataState
+import com.xayah.core.model.DataType
 import com.xayah.core.model.database.PackageEntity
 
 enum class SelectionState {
@@ -25,7 +25,11 @@ val List<PackageDataChipItem>.dataBytes
 
 fun List<PackageDataChipItem>.countItems(context: Context) = run {
     val count = sumOf { if (it.selected) 1L else 0 }
-    String.format(context.resources.getQuantityString(R.plurals.items, count.toInt()), count)
+    countItems(context, count.toInt())
+}
+
+fun countItems(context: Context, count: Int) = run {
+    String.format(context.resources.getQuantityString(R.plurals.items, count), count)
 }
 
 val List<PackageDataChipItem>.selectionState
@@ -60,6 +64,11 @@ fun List<PackageDataChipItem>.dataReversedPackage(packageEntity: PackageEntity) 
         )
     }
 }
+
+fun PackageEntity.reversePermission() = if (permissionSelected)
+    copy(dataStates = dataStates.copy(permissionState = DataState.NotSelected))
+else
+    copy(dataStates = dataStates.copy(permissionState = DataState.Selected))
 
 data class PackageDataChipItem(
     val dataType: DataType,

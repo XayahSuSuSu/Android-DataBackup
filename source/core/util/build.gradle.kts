@@ -11,6 +11,7 @@ dependencies {
     // Core
     implementation(project(":core:common"))
     implementation(project(":core:datastore"))
+    implementation(project(":core:model"))
 
     // Gson
     implementation(libs.gson)

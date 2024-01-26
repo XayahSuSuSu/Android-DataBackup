@@ -11,6 +11,12 @@ import com.xayah.core.model.util.formatSize
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class PackagePermission(
+    var name: String,
+    var isGranted: Boolean,
+)
+
+@Serializable
 data class PackageInfo(
     var label: String,
     var versionName: String,
@@ -27,6 +33,7 @@ data class PackageExtraInfo(
     var uid: Int,
     var labels: List<String>,
     var hasKeystore: Boolean,
+    var permissions: List<PackagePermission>,
     var activated: Boolean,
 )
 
@@ -38,6 +45,7 @@ data class PackageDataStates(
     var dataState: DataState = DataState.Selected,
     var obbState: DataState = DataState.Selected,
     var mediaState: DataState = DataState.Selected,
+    var permissionState: DataState = DataState.Selected,
 )
 
 @Serializable
@@ -111,6 +119,9 @@ data class PackageEntity(
 
     val mediaSelected: Boolean
         get() = dataStates.mediaState == DataState.Selected
+
+    val permissionSelected: Boolean
+        get() = dataStates.permissionState == DataState.Selected
 
     val storageStatsBytes: Double
         get() = (storageStats.appBytes + storageStats.dataBytes).toDouble()

@@ -47,6 +47,7 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
         packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = srcDir)
         packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = srcDir)
         packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = srcDir)
+        packagesRestoreUtil.restorePermissions(p = p)
 
         t.apply {
             packageEntity = p

@@ -1,6 +1,7 @@
 package com.xayah.core.service.util
 
 import android.content.Context
+import android.content.pm.PackageManager
 import com.xayah.core.common.util.toLineString
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.database.dao.TaskDao
@@ -15,6 +16,7 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.PermissionUtil
 import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
@@ -42,6 +44,7 @@ class PackagesBackupUtil @Inject constructor(
     }
 
     private val usePipe = runBlocking { context.readCompatibleMode().first() }
+    private val packageManager by lazy { context.packageManager }
 
     private fun PackageEntity.getDataSelected(dataType: DataType) = when (dataType) {
         DataType.PACKAGE_APK -> apkSelected
@@ -298,5 +301,26 @@ class PackagesBackupUtil @Inject constructor(
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    suspend fun backupPermissions(p: PackageEntity) = run {
+        log { "Backing up permissions..." }
+
+        val packageName = p.packageName
+        val userId = p.userId
+
+        if (p.permissionSelected) {
+            val packageInfo = rootService.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId)
+            packageInfo?.apply {
+                p.extraInfo.permissions = PermissionUtil.getPermission(packageManager, this)
+            }
+            val permissions = p.extraInfo.permissions
+            log { "Permissions size: ${permissions.size}..." }
+            permissions.forEach {
+                log { "Permission name: ${it.name}, isGranted: ${it.isGranted}" }
+            }
+        } else {
+            log { "Skip." }
+        }
     }
 }

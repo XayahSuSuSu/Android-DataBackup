@@ -204,6 +204,24 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         }
     }
 
+    override fun getPackageInfoAsUser(packageName: String, flags: Int, userId: Int): PackageInfo =
+        PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, flags, userId)
+
+    override fun grantRuntimePermission(packageName: String, permName: String, user: UserHandle) {
+        PackageManagerHidden.grantRuntimePermission(systemContext.packageManager, packageName, permName, user)
+    }
+
+    override fun revokeRuntimePermission(packageName: String, permName: String, user: UserHandle) {
+        PackageManagerHidden.revokeRuntimePermission(systemContext.packageManager, packageName, permName, user)
+    }
+
+    override fun getPermissionFlags(packageName: String, permName: String, user: UserHandle) =
+        PackageManagerHidden.getPermissionFlags(systemContext.packageManager, packageName, permName, user)
+
+    override fun updatePermissionFlags(packageName: String, permName: String, user: UserHandle, flagMask: Int, flagValues: Int) {
+        PackageManagerHidden.updatePermissionFlags(systemContext.packageManager, packageName, permName, user, flagMask, flagValues)
+    }
+
     override fun getPackageSourceDir(packageName: String, userId: Int): List<String> = synchronized(lock) {
         tryOn(
             block = {

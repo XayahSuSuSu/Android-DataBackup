@@ -196,4 +196,5 @@
     <string name="search_bar_hint_medium">搜索名称或路径…</string>
     <string name="grant_ntfy_perm_manually">请手动赋予通知权限</string>
     <string name="notification">通知</string>
+    <string name="permissions">权限</string>
 </resources>

@@ -13,6 +13,7 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.command.Appops
 import com.xayah.core.util.command.Pm
 import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
@@ -306,5 +307,30 @@ class PackagesRestoreUtil @Inject constructor(
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    suspend fun restorePermissions(p: PackageEntity) = run {
+        log { "Restoring permissions..." }
+
+        val packageName = p.packageName
+        val userId = p.userId
+        val user = rootService.getUserHandle(userId)
+        val permissions = p.extraInfo.permissions
+
+        if (p.permissionSelected) {
+            Appops.reset(userId = userId, packageName = packageName)
+            log { "Permissions size: ${permissions.size}..." }
+            permissions.forEach {
+                log { "Permission name: ${it.name}, isGranted: ${it.isGranted}" }
+                runCatching {
+                    if (it.isGranted)
+                        rootService.grantRuntimePermission(packageName, it.name, user!!)
+                    else
+                        rootService.revokeRuntimePermission(packageName, it.name, user!!)
+                }
+            }
+        } else {
+            log { "Skip." }
+        }
     }
 }

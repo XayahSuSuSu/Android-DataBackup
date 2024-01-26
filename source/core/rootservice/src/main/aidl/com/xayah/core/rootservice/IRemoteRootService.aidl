@@ -18,6 +18,11 @@ interface IRemoteRootService {
     void clearEmptyDirectoriesRecursively(String path);
 
     ParcelFileDescriptor getInstalledPackagesAsUser(int flags, int userId);
+    PackageInfo getPackageInfoAsUser(String packageName, int flags, int userId);
+    void grantRuntimePermission(String packageName, String permName, in UserHandle user);
+    void revokeRuntimePermission(String packageName, String permName, in UserHandle user);
+    int getPermissionFlags(String packageName, String permName, in UserHandle user);
+    void updatePermissionFlags(String packageName, String permName, in UserHandle user, int flagMask, int flagValues);
     List<String> getPackageSourceDir(String packageName, int userId);
     boolean queryInstalled(String packageName, int userId);
     int getPackageUid(String packageName, int userId);

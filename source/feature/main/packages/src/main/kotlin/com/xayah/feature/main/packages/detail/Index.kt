@@ -152,6 +152,10 @@ fun PagePackageDetail() {
                                         content = StringResourceToken.fromString(backupItemState!!.extraInfo.uid.toString())
                                     )
                                     InfoItem(
+                                        title = StringResourceToken.fromStringId(R.string.permissions),
+                                        content = StringResourceToken.fromString(backupItemState!!.extraInfo.permissions.size.toString())
+                                    )
+                                    InfoItem(
                                         title = StringResourceToken.fromStringId(R.string.type),
                                         content = if (backupItemState!!.isSystemApp) StringResourceToken.fromStringId(R.string.system)
                                         else StringResourceToken.fromStringId(R.string.third_party)
