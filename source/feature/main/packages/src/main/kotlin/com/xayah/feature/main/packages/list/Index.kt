@@ -178,7 +178,7 @@ fun PagePackages() {
                                     RoundChip(
                                         text = StringResourceToken.fromStringArgs(
                                             StringResourceToken.fromStringId(R.string.user),
-                                            StringResourceToken.fromString(userId.toString()),
+                                            StringResourceToken.fromString(" $userId"),
                                         ).value,
                                         color = ColorSchemeKeyTokens.Primary.toColor(),
                                     ) {
