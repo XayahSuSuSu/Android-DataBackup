@@ -309,6 +309,19 @@ class PackagesRestoreUtil @Inject constructor(
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
 
+    suspend fun updatePackage(p: PackageEntity) = run {
+        log { "Update package..." }
+        val packageName = p.packageName
+
+        val userId = p.userId
+        val packageInfo = rootService.getPackageInfoAsUser(packageName, 0, userId)
+        packageInfo?.apply {
+            val uid = applicationInfo.uid
+            log { "New uid: $uid" }
+            p.extraInfo.uid = uid
+        }
+    }
+
     suspend fun restorePermissions(p: PackageEntity) = run {
         log { "Restoring permissions..." }
 
@@ -328,6 +341,26 @@ class PackagesRestoreUtil @Inject constructor(
                     else
                         rootService.revokeRuntimePermission(packageName, it.name, user!!)
                 }
+            }
+        } else {
+            log { "Skip." }
+        }
+    }
+
+    suspend fun restoreSsaid(p: PackageEntity) = run {
+        log { "Restoring ssaid..." }
+
+        val packageName = p.packageName
+        val uid = p.extraInfo.uid
+        val userId = p.userId
+        val ssaid = p.extraInfo.ssaid
+
+        if (p.ssaidSelected) {
+            if (ssaid.isNotEmpty()) {
+                log { "Ssaid: $ssaid" }
+                rootService.setPackageSsaidAsUser(packageName, uid, userId, ssaid)
+            } else {
+                log { "Ssaid is empty, skip." }
             }
         } else {
             log { "Skip." }

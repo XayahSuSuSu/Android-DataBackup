@@ -155,6 +155,11 @@ fun PagePackageDetail() {
                                         title = StringResourceToken.fromStringId(R.string.permissions),
                                         content = StringResourceToken.fromString(backupItemState!!.extraInfo.permissions.size.toString())
                                     )
+                                    val ssaid = backupItemState!!.extraInfo.ssaid
+                                    if (ssaid.isNotEmpty()) InfoItem(
+                                        title = StringResourceToken.fromStringId(R.string.ssaid),
+                                        content = StringResourceToken.fromString(ssaid)
+                                    )
                                     InfoItem(
                                         title = StringResourceToken.fromStringId(R.string.type),
                                         content = if (backupItemState!!.isSystemApp) StringResourceToken.fromStringId(R.string.system)

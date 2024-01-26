@@ -69,6 +69,8 @@ class PathUtil @Inject constructor(
             SELinux.chcon(context = pathContext, path = context.filesDir())
             SELinux.chown(uid = context.applicationInfo.uid, path = context.filesDir())
         }
+
+        fun getSsaidPath(userId: Int) = "/data/system/users/$userId/settings_ssaid.xml"
     }
 
     fun getPackageIconPath(packageName: String): String = "${context.iconDir()}/${getPackageIconRelativePath(packageName)}"

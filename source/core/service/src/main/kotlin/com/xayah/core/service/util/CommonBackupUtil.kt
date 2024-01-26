@@ -4,7 +4,7 @@ import android.content.Context
 import com.xayah.core.datastore.readCompressionTest
 import com.xayah.core.model.CompressionType
 import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.util.BuildConfigUtil
+import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.Tar

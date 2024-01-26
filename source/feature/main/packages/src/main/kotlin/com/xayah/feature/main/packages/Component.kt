@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.xayah.core.data.util.typeIconToken
 import com.xayah.core.data.util.typeNameToken
 import com.xayah.core.model.DataType
+import com.xayah.core.model.OpType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.Card
@@ -229,6 +231,24 @@ fun PackagePermissionChip(modifier: Modifier = Modifier, enabled: Boolean, item:
     )
 }
 
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
+@Composable
+fun PackageSsaidChip(modifier: Modifier = Modifier, enabled: Boolean, item: PackageEntity, onClick: () -> Unit) {
+    DataChip(
+        modifier = modifier,
+        enabled = enabled,
+        title = StringResourceToken.fromStringId(R.string.ssaid),
+        subtitle = StringResourceToken.fromString(item.extraInfo.ssaid),
+        leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Code),
+        trailingIcon = if (item.ssaidSelected) ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle) else null,
+        border = if (item.ssaidSelected) null else outlinedCardBorder(),
+        color = if (item.ssaidSelected) ColorSchemeKeyTokens.OnSecondaryContainer else ColorSchemeKeyTokens.OnSurfaceVariant,
+        containerColor = if (item.ssaidSelected) ColorSchemeKeyTokens.SecondaryContainer else ColorSchemeKeyTokens.Transparent,
+        onClick = onClick
+    )
+}
+
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
@@ -302,14 +322,23 @@ fun OpItem(
                         }
                     }
                 }
-                PackagePermissionChip(
-                    modifier = Modifier.weight(1f),
-                    enabled = isRefreshing.not(),
-                    item = itemState,
-                ) {
-                    viewModel.emitIntent(IndexUiIntent.UpdatePackage(itemState.reversePermission()))
+                if (itemState.indexInfo.opType == OpType.RESTORE) {
+                    PackagePermissionChip(
+                        modifier = Modifier.weight(1f),
+                        enabled = isRefreshing.not(),
+                        item = itemState,
+                    ) {
+                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(itemState.reversePermission()))
+                    }
+                    if (itemState.extraInfo.ssaid.isNotEmpty()) PackageSsaidChip(
+                        modifier = Modifier.weight(1f),
+                        enabled = isRefreshing.not(),
+                        item = itemState,
+                    ) {
+                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(itemState.reverseSsaid()))
+                    }
+                    else Spacer(modifier = Modifier.weight(1f))
                 }
-                Spacer(modifier = Modifier.weight(1f))
             }
             if (targetState) {
                 btnContent?.invoke(this)

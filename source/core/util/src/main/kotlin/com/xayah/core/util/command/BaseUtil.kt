@@ -10,7 +10,7 @@ import androidx.core.graphics.drawable.toDrawable
 import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.util.trim
 import com.xayah.core.util.BinArchiveName
-import com.xayah.core.util.BuildConfigUtil
+import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.LogUtil.TAG_SHELL_CODE
 import com.xayah.core.util.LogUtil.TAG_SHELL_IN

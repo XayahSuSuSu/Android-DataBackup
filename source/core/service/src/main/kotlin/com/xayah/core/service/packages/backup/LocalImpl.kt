@@ -71,6 +71,7 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
         packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_OBB, dstDir = dstDir)
         packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_MEDIA, dstDir = dstDir)
         packagesBackupUtil.backupPermissions(p = p)
+        packagesBackupUtil.backupSsaid(p = p)
 
         if (t.isSuccess) {
             // Save config

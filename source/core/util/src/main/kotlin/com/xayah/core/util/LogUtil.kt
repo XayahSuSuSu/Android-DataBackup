@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.core.content.FileProvider.getUriForFile
+import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.util.SymbolUtil.LF
 import com.xayah.core.util.SymbolUtil.USD
 import com.xayah.core.util.command.BaseUtil

@@ -31,4 +31,6 @@ interface IRemoteRootService {
     List<UserInfo> getUsers();
     ParcelFileDescriptor walkFileTree(String path);
     PackageInfo getPackageArchiveInfo(String path);
+    String getPackageSsaidAsUser(String packageName, int uid, int userId);
+    void setPackageSsaidAsUser(String packageName, int uid, int userId, String ssaid);
 }

@@ -6,7 +6,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.core.common.util.toLineString
-import com.xayah.core.util.BuildConfigUtil
+import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.util.DateUtil
 import java.io.PrintWriter
 import java.io.StringWriter

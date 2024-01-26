@@ -165,6 +165,7 @@ fun PagePackages() {
                                 val versionName = targetState.packageInfo.versionName
                                 val storageStatsFormat = targetState.storageStatsFormat
                                 val hasKeystore = targetState.extraInfo.hasKeystore
+                                val ssaid = targetState.extraInfo.ssaid
                                 val isSystemApp = targetState.isSystemApp
                                 PackageCard(
                                     label = targetState.packageInfo.label,
@@ -183,6 +184,13 @@ fun PagePackages() {
                                         color = ColorSchemeKeyTokens.Primary.toColor(),
                                     ) {
                                         viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                    }
+                                    if (ssaid.isNotEmpty()) RoundChip(
+                                        text = StringResourceToken.fromStringId(R.string.ssaid).value,
+                                        color = ColorSchemeKeyTokens.Secondary.toColor(),
+                                    ) {
+                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.ssaid)}: $ssaid"))
                                     }
                                     if (hasKeystore) RoundChip(
                                         text = StringResourceToken.fromStringId(R.string.keystore).value,

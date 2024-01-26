@@ -309,18 +309,26 @@ class PackagesBackupUtil @Inject constructor(
         val packageName = p.packageName
         val userId = p.userId
 
-        if (p.permissionSelected) {
-            val packageInfo = rootService.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId)
-            packageInfo?.apply {
-                p.extraInfo.permissions = PermissionUtil.getPermission(packageManager, this)
-            }
-            val permissions = p.extraInfo.permissions
-            log { "Permissions size: ${permissions.size}..." }
-            permissions.forEach {
-                log { "Permission name: ${it.name}, isGranted: ${it.isGranted}" }
-            }
-        } else {
-            log { "Skip." }
+        val packageInfo = rootService.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId)
+        packageInfo?.apply {
+            p.extraInfo.permissions = PermissionUtil.getPermission(packageManager, this)
         }
+        val permissions = p.extraInfo.permissions
+        log { "Permissions size: ${permissions.size}..." }
+        permissions.forEach {
+            log { "Permission name: ${it.name}, isGranted: ${it.isGranted}" }
+        }
+    }
+
+    suspend fun backupSsaid(p: PackageEntity) = run {
+        log { "Backing up ssaid..." }
+
+        val packageName = p.packageName
+        val uid = p.extraInfo.uid
+        val userId = p.userId
+
+        val ssaid = rootService.getPackageSsaidAsUser(packageName = packageName, uid = uid, userId = userId)
+        log { "Ssaid: $ssaid" }
+        p.extraInfo.ssaid = ssaid
     }
 }

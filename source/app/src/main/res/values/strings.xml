@@ -204,4 +204,5 @@
     <string name="grant_ntfy_perm_manually">Please grant notification permission manually</string>
     <string name="notification">Notification</string>
     <string name="permissions">Permissions</string>
+    <string name="ssaid" translatable="false">SSAID</string>
 </resources>

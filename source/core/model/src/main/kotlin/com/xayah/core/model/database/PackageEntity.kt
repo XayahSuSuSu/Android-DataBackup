@@ -34,6 +34,7 @@ data class PackageExtraInfo(
     var labels: List<String>,
     var hasKeystore: Boolean,
     var permissions: List<PackagePermission>,
+    var ssaid: String,
     var activated: Boolean,
 )
 
@@ -46,6 +47,7 @@ data class PackageDataStates(
     var obbState: DataState = DataState.Selected,
     var mediaState: DataState = DataState.Selected,
     var permissionState: DataState = DataState.Selected,
+    var ssaidState: DataState = DataState.Selected,
 )
 
 @Serializable
@@ -122,6 +124,9 @@ data class PackageEntity(
 
     val permissionSelected: Boolean
         get() = dataStates.permissionState == DataState.Selected
+
+    val ssaidSelected: Boolean
+        get() = dataStates.ssaidState == DataState.Selected
 
     val storageStatsBytes: Double
         get() = (storageStats.appBytes + storageStats.dataBytes).toDouble()

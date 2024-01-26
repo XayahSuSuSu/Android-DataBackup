@@ -40,4 +40,5 @@
     <item name="delete" type="string" />
     <item name="restore_completed" type="string" />
     <item name="permissions" type="string" />
+    <item name="ssaid" type="string" />
 </resources>

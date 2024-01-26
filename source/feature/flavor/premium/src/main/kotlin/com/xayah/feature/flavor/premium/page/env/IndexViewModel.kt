@@ -11,7 +11,7 @@ import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.util.BuildConfigUtil
+import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.feature.flavor.premium.R

@@ -24,6 +24,7 @@ import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.rootservice.parcelables.StatFsParcelable
 import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
 import com.xayah.core.rootservice.util.ExceptionUtil.tryWithBoolean
+import com.xayah.core.rootservice.util.SsaidUtil
 import com.xayah.core.util.FileUtil
 import java.io.File
 import java.io.IOException
@@ -205,21 +206,27 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun getPackageInfoAsUser(packageName: String, flags: Int, userId: Int): PackageInfo =
-        PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, flags, userId)
+        synchronized(lock) { PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, flags, userId) }
 
     override fun grantRuntimePermission(packageName: String, permName: String, user: UserHandle) {
-        PackageManagerHidden.grantRuntimePermission(systemContext.packageManager, packageName, permName, user)
+        synchronized(lock) {
+            PackageManagerHidden.grantRuntimePermission(systemContext.packageManager, packageName, permName, user)
+        }
     }
 
     override fun revokeRuntimePermission(packageName: String, permName: String, user: UserHandle) {
-        PackageManagerHidden.revokeRuntimePermission(systemContext.packageManager, packageName, permName, user)
+        synchronized(lock) {
+            PackageManagerHidden.revokeRuntimePermission(systemContext.packageManager, packageName, permName, user)
+        }
     }
 
     override fun getPermissionFlags(packageName: String, permName: String, user: UserHandle) =
-        PackageManagerHidden.getPermissionFlags(systemContext.packageManager, packageName, permName, user)
+        synchronized(lock) { PackageManagerHidden.getPermissionFlags(systemContext.packageManager, packageName, permName, user) }
 
     override fun updatePermissionFlags(packageName: String, permName: String, user: UserHandle, flagMask: Int, flagValues: Int) {
-        PackageManagerHidden.updatePermissionFlags(systemContext.packageManager, packageName, permName, user, flagMask, flagValues)
+        synchronized(lock) {
+            PackageManagerHidden.updatePermissionFlags(systemContext.packageManager, packageName, permName, user, flagMask, flagValues)
+        }
     }
 
     override fun getPackageSourceDir(packageName: String, userId: Int): List<String> = synchronized(lock) {
@@ -327,5 +334,10 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
                 applicationInfo?.publicSourceDir = path
             }
         }
+    }
+
+    override fun getPackageSsaidAsUser(packageName: String, uid: Int, userId: Int): String? = synchronized(lock) { SsaidUtil(userId).getSsaid(packageName, uid) }
+    override fun setPackageSsaidAsUser(packageName: String, uid: Int, userId: Int, ssaid: String) {
+        synchronized(lock) { SsaidUtil(userId).setSsaid(packageName, uid, ssaid) }
     }
 }

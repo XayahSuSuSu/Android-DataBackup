@@ -70,6 +70,11 @@ fun PackageEntity.reversePermission() = if (permissionSelected)
 else
     copy(dataStates = dataStates.copy(permissionState = DataState.Selected))
 
+fun PackageEntity.reverseSsaid() = if (ssaidSelected)
+    copy(dataStates = dataStates.copy(ssaidState = DataState.NotSelected))
+else
+    copy(dataStates = dataStates.copy(ssaidState = DataState.Selected))
+
 data class PackageDataChipItem(
     val dataType: DataType,
     val dataBytes: Long?,

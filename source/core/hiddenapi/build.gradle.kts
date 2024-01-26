@@ -14,4 +14,8 @@ android {
 
 dependencies {
     implementation(libs.hiddenapibypass)
+    implementation(libs.androidx.core.ktx)
+
+    // Core
+    implementation(project(":core:common"))
 }

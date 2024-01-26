@@ -18,6 +18,7 @@ import com.xayah.core.util.DateUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PreparationUtil
 import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
@@ -123,6 +124,10 @@ internal abstract class AbstractService : Service() {
                     index
                 )
                 log { "Current package: $currentPackage" }
+
+                // Kill the package.
+                log { "Trying to kill ${currentPackage.packageName}." }
+                BaseUtil.killPackage(userId = currentPackage.userId, packageName = currentPackage.packageName)
 
                 restorePackage(currentPackage)
             }

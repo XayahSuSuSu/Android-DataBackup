@@ -273,6 +273,12 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun getPackageArchiveInfo(path: String): PackageInfo? = runCatching { getService().getPackageArchiveInfo(path) }.onFailure(onFailure).getOrNull()
 
+    suspend fun getPackageSsaidAsUser(packageName: String, uid: Int, userId: Int): String =
+        runCatching { getService().getPackageSsaidAsUser(packageName, uid, userId) ?: "" }.onFailure(onFailure).getOrElse { "" }
+
+    suspend fun setPackageSsaidAsUser(packageName: String, uid: Int, userId: Int, ssaid: String) =
+        runCatching { getService().setPackageSsaidAsUser(packageName, uid, userId, ssaid) }.onFailure(onFailure)
+
     @OptIn(ExperimentalSerializationApi::class)
     suspend inline fun <reified T> writeProtoBuf(data: T, dst: String): ShellResult = runCatching {
         var isSuccess: Boolean

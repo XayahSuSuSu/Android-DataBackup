@@ -176,6 +176,8 @@ class PackageRepository @Inject constructor(
             installedPackages.forEachIndexed { index, info ->
                 val permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
                 val uid = info.applicationInfo.uid
+                val hasKeystore = PackageUtil.hasKeystore(uid)
+                val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
                 val iconPath = pathUtil.getPackageIconPath(info.packageName)
                 val iconExists = rootService.exists(iconPath)
                 if (iconExists.not() || (iconExists && hasPassedOneDay)) {
@@ -192,8 +194,9 @@ class PackageRepository @Inject constructor(
                 val extraInfo = PackageExtraInfo(
                     uid = uid,
                     labels = listOf(),
-                    hasKeystore = PackageUtil.hasKeystore(uid),
+                    hasKeystore = hasKeystore,
                     permissions = permissions,
+                    ssaid = ssaid,
                     activated = false,
                 )
                 val indexInfo = PackageIndexInfo(
@@ -218,7 +221,10 @@ class PackageRepository @Inject constructor(
                 // Update if exists.
                 packageEntity.apply {
                     this.packageInfo = packageInfo
+                    this.extraInfo.uid = uid
+                    this.extraInfo.hasKeystore = hasKeystore
                     this.extraInfo.permissions = permissions
+                    this.extraInfo.ssaid = ssaid
                 }
                 if (userHandle != null) {
                     rootService.queryStatsForPackage(info, userHandle).also { stats ->
