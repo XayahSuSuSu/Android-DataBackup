@@ -2,6 +2,19 @@ name: Build
 
 on:
   workflow_dispatch:
+    inputs:
+        Alpha:
+          description: 'Alpha'
+          required: true
+          default: 'true'
+        Premium:
+          description: 'Premium'
+          required: true
+          default: 'false'
+        Foss:
+          description: 'Foss'
+          required: true
+          default: 'false'
 
 jobs:
   build:
@@ -55,6 +68,18 @@ jobs:
 
       - name: Move APKs
         run: mv ./*/build/outputs/apk/*/release/*.apk .
+
+      - name: Drop alpha builds
+        if: ${{ github.event.inputs.Alpha }} == 'false'
+        run: rm -rf ./*alpha*.apk
+
+      - name: Drop premium builds
+        if: ${{ github.event.inputs.Premium }} == 'false'
+        run: rm -rf ./*premium*.apk
+
+      - name: Drop foss builds
+        if: ${{ github.event.inputs.Foss }} == 'false'
+        run: rm -rf ./*foss*.apk
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
