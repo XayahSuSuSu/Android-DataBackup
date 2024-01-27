@@ -33,4 +33,6 @@ interface IRemoteRootService {
     PackageInfo getPackageArchiveInfo(String path);
     String getPackageSsaidAsUser(String packageName, int uid, int userId);
     void setPackageSsaidAsUser(String packageName, int uid, int userId, String ssaid);
+
+    String calculateMD5(String src);
 }

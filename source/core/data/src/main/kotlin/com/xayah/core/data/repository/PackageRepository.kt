@@ -8,7 +8,9 @@ import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.datastore.readCompressionType
 import com.xayah.core.datastore.readIconUpdateTime
+import com.xayah.core.datastore.readLoadedIconMD5
 import com.xayah.core.datastore.saveIconUpdateTime
+import com.xayah.core.datastore.saveLoadedIconMD5
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
@@ -17,6 +19,7 @@ import com.xayah.core.model.SortType
 import com.xayah.core.model.database.PackageDataStates
 import com.xayah.core.model.database.PackageDataStats
 import com.xayah.core.model.database.PackageEntity
+import com.xayah.core.model.database.PackageEntityWithCount
 import com.xayah.core.model.database.PackageExtraInfo
 import com.xayah.core.model.database.PackageIndexInfo
 import com.xayah.core.model.database.PackageInfo
@@ -25,11 +28,15 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.util.ConfigsPackageRestoreName
 import com.xayah.core.util.DateUtil
+import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.PermissionUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PackageUtil
+import com.xayah.core.util.command.Tar
+import com.xayah.core.util.filesDir
 import com.xayah.core.util.iconDir
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,12 +65,15 @@ class PackageRepository @Inject constructor(
     suspend fun updatePackageDataSize(packageName: String, opType: OpType, userId: Int, preserveId: Long) {
         queryPackage(packageName, opType, userId, preserveId).also {
             if (it != null) {
-                it.displayStats.apkBytes = calculateDataSize(it, DataType.PACKAGE_APK)
-                it.displayStats.userBytes = calculateDataSize(it, DataType.PACKAGE_USER)
-                it.displayStats.userDeBytes = calculateDataSize(it, DataType.PACKAGE_USER_DE)
-                it.displayStats.dataBytes = calculateDataSize(it, DataType.PACKAGE_DATA)
-                it.displayStats.obbBytes = calculateDataSize(it, DataType.PACKAGE_OBB)
-                it.displayStats.mediaBytes = calculateDataSize(it, DataType.PACKAGE_MEDIA)
+                it.extraInfo.existed = rootService.queryInstalled(packageName = packageName, userId = userId)
+                if (it.extraInfo.existed) {
+                    it.displayStats.apkBytes = calculateDataSize(it, DataType.PACKAGE_APK)
+                    it.displayStats.userBytes = calculateDataSize(it, DataType.PACKAGE_USER)
+                    it.displayStats.userDeBytes = calculateDataSize(it, DataType.PACKAGE_USER_DE)
+                    it.displayStats.dataBytes = calculateDataSize(it, DataType.PACKAGE_DATA)
+                    it.displayStats.obbBytes = calculateDataSize(it, DataType.PACKAGE_OBB)
+                    it.displayStats.mediaBytes = calculateDataSize(it, DataType.PACKAGE_MEDIA)
+                }
                 upsert(it)
             }
         }
@@ -92,54 +102,54 @@ class PackageRepository @Inject constructor(
         it.packageName != context.packageName
     }
 
-    fun getKeyPredicate(key: String): (PackageEntity) -> Boolean = { p ->
-        p.packageInfo.label.lowercase().contains(key.lowercase()) || p.packageName.lowercase().contains(key.lowercase())
+    fun getKeyPredicate(key: String): (PackageEntityWithCount) -> Boolean = { p ->
+        p.entity.packageInfo.label.lowercase().contains(key.lowercase()) || p.entity.packageName.lowercase().contains(key.lowercase())
     }
 
-    fun getFlagPredicate(index: Int): (PackageEntity) -> Boolean = { p ->
+    fun getFlagPredicate(index: Int): (PackageEntityWithCount) -> Boolean = { p ->
         when (index) {
-            1 -> p.isSystemApp.not()
-            2 -> p.isSystemApp
+            1 -> p.entity.isSystemApp.not()
+            2 -> p.entity.isSystemApp
             else -> true
         }
     }
 
-    fun getUserIdPredicate(indexList: List<Int>, userIdList: List<Int>): (PackageEntity) -> Boolean = { p ->
-        runCatching { p.userId in indexList.map { userIdList[it] } }.getOrDefault(p.userId == 0)
+    fun getUserIdPredicate(indexList: List<Int>, userIdList: List<Int>): (PackageEntityWithCount) -> Boolean = { p ->
+        runCatching { p.entity.userId in indexList.map { userIdList[it] } }.getOrDefault(p.entity.userId == 0)
     }
 
-    private fun sortByInstallTime(type: SortType): Comparator<PackageEntity> = when (type) {
+    private fun sortByInstallTime(type: SortType): Comparator<PackageEntityWithCount> = when (type) {
         SortType.ASCENDING -> {
-            compareBy { entity -> entity.packageInfo.firstInstallTime }
+            compareBy { p -> p.entity.packageInfo.firstInstallTime }
         }
 
         SortType.DESCENDING -> {
-            compareByDescending { entity -> entity.packageInfo.firstInstallTime }
+            compareByDescending { p -> p.entity.packageInfo.firstInstallTime }
         }
     }
 
-    private fun sortByDataSize(type: SortType): Comparator<PackageEntity> = when (type) {
+    private fun sortByDataSize(type: SortType): Comparator<PackageEntityWithCount> = when (type) {
         SortType.ASCENDING -> {
-            compareBy { entity -> entity.storageStatsBytes }
+            compareBy { p -> p.entity.storageStatsBytes }
         }
 
         SortType.DESCENDING -> {
-            compareByDescending { entity -> entity.storageStatsBytes }
+            compareByDescending { p -> p.entity.storageStatsBytes }
         }
     }
 
-    private fun sortByAlphabet(type: SortType): Comparator<PackageEntity> = Comparator { entity1, entity2 ->
-        if (entity1 != null && entity2 != null) {
+    private fun sortByAlphabet(type: SortType): Comparator<PackageEntityWithCount> = Comparator { p1, p2 ->
+        if (p1 != null && p2 != null) {
             when (type) {
                 SortType.ASCENDING -> {
                     Collator.getInstance().let { collator ->
-                        collator.getCollationKey(entity1.packageInfo.label).compareTo(collator.getCollationKey(entity2.packageInfo.label))
+                        collator.getCollationKey(p1.entity.packageInfo.label).compareTo(collator.getCollationKey(p2.entity.packageInfo.label))
                     }
                 }
 
                 SortType.DESCENDING -> {
                     Collator.getInstance().let { collator ->
-                        collator.getCollationKey(entity2.packageInfo.label).compareTo(collator.getCollationKey(entity1.packageInfo.label))
+                        collator.getCollationKey(p2.entity.packageInfo.label).compareTo(collator.getCollationKey(p1.entity.packageInfo.label))
                     }
                 }
             }
@@ -148,13 +158,14 @@ class PackageRepository @Inject constructor(
         }
     }
 
-    fun getSortComparator(sortIndex: Int, sortType: SortType): Comparator<in PackageEntity> = when (sortIndex) {
+    fun getSortComparator(sortIndex: Int, sortType: SortType): Comparator<in PackageEntityWithCount> = when (sortIndex) {
         1 -> sortByInstallTime(sortType)
         2 -> sortByDataSize(sortType)
         else -> sortByAlphabet(sortType)
     }
 
     suspend fun refresh(topBarState: MutableStateFlow<TopBarState>) = run {
+        packageDao.clearExisted(opType = OpType.BACKUP)
         val title = topBarState.value.title
         val pm = context.packageManager
         val userInfoList = rootService.getUsers()
@@ -198,6 +209,7 @@ class PackageRepository @Inject constructor(
                     permissions = permissions,
                     ssaid = ssaid,
                     activated = false,
+                    existed = true,
                 )
                 val indexInfo = PackageIndexInfo(
                     opType = OpType.BACKUP,
@@ -225,6 +237,7 @@ class PackageRepository @Inject constructor(
                     this.extraInfo.hasKeystore = hasKeystore
                     this.extraInfo.permissions = permissions
                     this.extraInfo.ssaid = ssaid
+                    this.extraInfo.existed = true
                 }
                 if (userHandle != null) {
                     rootService.queryStatsForPackage(info, userHandle).also { stats ->
@@ -250,7 +263,50 @@ class PackageRepository @Inject constructor(
             }
             topBarState.emit(TopBarState(progress = 1f, title = title))
         }
+        topBarState.emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.updating), indeterminate = true))
+        refreshFromLocal(path = archivesPackagesDir)
+        loadLocalIcon()
+        topBarState.emit(TopBarState(progress = 1f, title = title, indeterminate = false))
     }
+
+    private suspend fun loadLocalIcon() {
+        val archivePath = "${pathUtil.getLocalBackupConfigsDir()}/$IconRelativeDir.${CompressionType.TAR.suffix}"
+        if (rootService.exists(archivePath)) {
+            val loadedIconMD5 = context.readLoadedIconMD5().first()
+            val iconMD5 = rootService.calculateMD5(archivePath) ?: ""
+            if (loadedIconMD5 != iconMD5) {
+                Tar.decompress(src = archivePath, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
+                PathUtil.setFilesDirSELinux(context)
+                context.saveLoadedIconMD5(iconMD5)
+            }
+        }
+    }
+
+    private suspend fun refreshFromLocal(path: String) {
+        val paths = rootService.walkFileTree(path)
+        paths.forEach {
+            val fileName = PathUtil.getFileName(it.pathString)
+            if (fileName == ConfigsPackageRestoreName) {
+                runCatching {
+                    val stored = rootService.readProtoBuf<PackageEntity>(it.pathString).also { p ->
+                        p?.extraInfo?.existed = true
+                        p?.extraInfo?.activated = false
+                    }
+                    if (stored != null) {
+                        packageDao.query(stored.packageName, stored.indexInfo.opType, stored.userId, stored.preserveId, stored.indexInfo.compressionType).also { p ->
+                            if (p == null)
+                                packageDao.upsert(stored)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    suspend fun refreshFromLocalPackage(packageName: String) {
+        refreshFromLocal(path = "$archivesPackagesDir/$packageName")
+    }
+
 
     private suspend fun getPackageSourceDir(packageName: String, userId: Int) = rootService.getPackageSourceDir(packageName, userId).let { list ->
         if (list.isNotEmpty()) PathUtil.getParentPath(list[0]) else ""
@@ -264,12 +320,14 @@ class PackageRepository @Inject constructor(
         getArchiveDst("${archivesPackagesDir}/${p.archivesPreserveRelativeDir}", dataType, p.indexInfo.compressionType)
     )
 
-    private suspend fun calculateDataSize(p: PackageEntity, dataType: DataType) = rootService.calculateSize(
-        if (dataType == DataType.PACKAGE_APK)
+    private suspend fun calculateDataSize(p: PackageEntity, dataType: DataType) = run {
+        val src = if (dataType == DataType.PACKAGE_APK)
             getPackageSourceDir(packageName = p.packageName, userId = p.userId)
         else
             getDataSrc(srcDir = getDataSrcDir(dataType = dataType, userId = p.userId), packageName = p.packageName)
-    )
+        if (rootService.exists(src)) rootService.calculateSize(src)
+        else 0
+    }
 
     suspend fun upsert(item: PackageEntity) = packageDao.upsert(item)
 

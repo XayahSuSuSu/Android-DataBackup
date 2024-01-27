@@ -26,6 +26,7 @@ import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
 import com.xayah.core.rootservice.util.ExceptionUtil.tryWithBoolean
 import com.xayah.core.rootservice.util.SsaidUtil
 import com.xayah.core.util.FileUtil
+import com.xayah.core.util.HashUtil
 import java.io.File
 import java.io.IOException
 import java.nio.file.FileVisitResult
@@ -340,4 +341,6 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     override fun setPackageSsaidAsUser(packageName: String, uid: Int, userId: Int, ssaid: String) {
         synchronized(lock) { SsaidUtil(userId).setSsaid(packageName, uid, ssaid) }
     }
+
+    override fun calculateMD5(src: String): String = synchronized(lock) { HashUtil.calculateMD5(src) }
 }

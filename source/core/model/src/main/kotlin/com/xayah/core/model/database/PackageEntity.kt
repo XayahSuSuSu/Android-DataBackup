@@ -36,6 +36,7 @@ data class PackageExtraInfo(
     var permissions: List<PackagePermission>,
     var ssaid: String,
     var activated: Boolean,
+    var existed: Boolean,
 )
 
 @Serializable
@@ -143,3 +144,8 @@ data class PackageEntity(
     val archivesPreserveRelativeDir: String
         get() = "${archivesRelativeDir}/${preserveId}"
 }
+
+data class PackageEntityWithCount(
+    @Embedded val entity: PackageEntity,
+    val count: Int
+)

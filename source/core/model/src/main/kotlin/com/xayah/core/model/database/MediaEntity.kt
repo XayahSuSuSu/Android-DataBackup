@@ -3,7 +3,6 @@ package com.xayah.core.model.database
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataState
 import com.xayah.core.model.OpType
@@ -61,11 +60,7 @@ data class MediaEntity(
         get() = "${archivesRelativeDir}/${indexInfo.preserveId}"
 }
 
-data class MediaDetail(
-    @Embedded val backupEntity: MediaEntity,
-    @Relation(
-        parentColumn = "indexInfo_name",
-        entityColumn = "indexInfo_name"
-    )
-    var entities: List<MediaEntity>
+data class MediaEntityWithCount(
+    @Embedded val entity: MediaEntity,
+    val count: Int
 )

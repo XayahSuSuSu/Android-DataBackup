@@ -70,9 +70,8 @@ fun PageMediaDetail() {
     val navController = LocalNavController.current!!
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val activatedState by viewModel.activatedState.collectAsStateWithLifecycle()
-    val itemPairState by viewModel.itemPairState.collectAsStateWithLifecycle()
-    val backupItemState = itemPairState?.backupEntity
-    val restoreItemsState = itemPairState?.entities ?: listOf()
+    val backupItemState by viewModel.backupItemState.collectAsStateWithLifecycle()
+    val restoreItemsState by viewModel.restoreItemsState.collectAsStateWithLifecycle()
     val snackbarHostState = viewModel.snackbarHostState
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val isRefreshing = uiState.isRefreshing
@@ -107,13 +106,14 @@ fun PageMediaDetail() {
                         Spacer(modifier = Modifier.height(PaddingTokens.Level4))
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
                             Column {
+                                val path = backupItemState?.path ?: restoreItemsState.firstOrNull { it.path.isNotEmpty() }?.path ?: ""
                                 TitleLargeText(
                                     text = uiState.name,
                                     fontWeight = FontWeight.Bold,
                                     color = ColorSchemeKeyTokens.Primary.toColor()
                                 )
                                 TitleSmallText(
-                                    text = backupItemState?.path ?: "",
+                                    text = path,
                                     fontWeight = FontWeight.Bold,
                                     color = ColorSchemeKeyTokens.Secondary.toColor()
                                 )
@@ -129,12 +129,12 @@ fun PageMediaDetail() {
                                 btnIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
                                 isRefreshing = isRefreshing,
                                 activatedState = activatedState,
-                                itemState = backupItemState,
+                                itemState = backupItemState!!,
                                 onBtnClick = {
-                                    viewModel.emitIntent(IndexUiIntent.BackupToLocal(backupItemState, navController))
+                                    viewModel.emitIntent(IndexUiIntent.BackupToLocal(backupItemState!!, navController))
                                 },
                                 infoContent = {
-                                    val ct = backupItemState.indexInfo.compressionType
+                                    val ct = backupItemState!!.indexInfo.compressionType
                                     val ctList = remember { listOf(CompressionType.TAR, CompressionType.ZSTD, CompressionType.LZ4).map { it.type } }
                                     val ctIndex = ctList.indexOf(ct.type)
                                     InfoItem(
@@ -145,8 +145,8 @@ fun PageMediaDetail() {
                                     ) { _, selected ->
                                         viewModel.emitIntent(
                                             IndexUiIntent.UpdateMedia(
-                                                backupItemState.copy(
-                                                    indexInfo = backupItemState.indexInfo.copy(
+                                                backupItemState!!.copy(
+                                                    indexInfo = backupItemState!!.indexInfo.copy(
                                                         compressionType = CompressionType.of(selected)
                                                     )
                                                 )

@@ -11,8 +11,8 @@ import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.model.DataType
-import com.xayah.core.model.OpType
 import com.xayah.core.model.DefaultPreserveId
+import com.xayah.core.model.OpType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.route.MainRoutes
@@ -71,6 +71,7 @@ class IndexViewModel @Inject constructor(
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
                 emitStateSuspend(state.copy(isRefreshing = true))
+                packageRepo.refreshFromLocalPackage(state.packageName)
                 packageRepo.updatePackageDataSize(state.packageName, OpType.BACKUP, state.userId, 0)
                 packageRepo.updatePackageArchivesSize(state.packageName, OpType.RESTORE, state.userId)
                 emitStateSuspend(state.copy(isRefreshing = false))

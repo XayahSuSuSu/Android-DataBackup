@@ -7,6 +7,7 @@ import androidx.room.Upsert
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.PackageEntity
+import com.xayah.core.model.database.PackageEntityWithCount
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -35,6 +36,9 @@ interface PackageDao {
     @Query("UPDATE PackageEntity SET extraInfo_activated = 0")
     suspend fun clearActivated()
 
+    @Query("UPDATE PackageEntity SET extraInfo_existed = 0 WHERE indexInfo_opType = :opType")
+    suspend fun clearExisted(opType: OpType)
+
     @Query("SELECT * FROM PackageEntity WHERE indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId AND indexInfo_preserveId = :preserveId LIMIT 1")
     fun queryFlow(packageName: String, opType: OpType, userId: Int, preserveId: Long): Flow<PackageEntity?>
 
@@ -42,11 +46,11 @@ interface PackageDao {
     fun queryFlow(packageName: String, opType: OpType, userId: Int): Flow<List<PackageEntity>>
 
     @Query(
-        "SELECT l.* FROM packageentity AS l" +
-                " LEFT JOIN packageentity AS r ON l.indexInfo_packageName = r.indexInfo_packageName AND l.indexInfo_userId = r.indexInfo_userId" +
-                " WHERE l.indexInfo_opType = :leftOpType"
+        "SELECT *, COUNT(*) AS count" +
+                " FROM (SELECT * FROM PackageEntity ORDER BY indexInfo_opType)" +
+                " GROUP BY indexInfo_packageName, indexInfo_userId"
     )
-    fun queryFlow(leftOpType: OpType = OpType.BACKUP): Flow<Map<PackageEntity, List<PackageEntity>>>
+    fun queryFlow(): Flow<List<PackageEntityWithCount>>
 
     @Delete(entity = PackageEntity::class)
     suspend fun delete(item: PackageEntity)

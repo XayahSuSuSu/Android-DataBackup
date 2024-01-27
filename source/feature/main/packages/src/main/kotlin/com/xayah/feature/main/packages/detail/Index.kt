@@ -114,8 +114,9 @@ fun PagePackageDetail() {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
                             PackageIconImage(packageName = uiState.packageName, size = SizeTokens.Level8)
                             Column {
+                                val label = backupItemState?.packageInfo?.label ?: restoreItemsState.firstOrNull { it.packageInfo.label.isNotEmpty() }?.packageInfo?.label ?: ""
                                 TitleLargeText(
-                                    text = backupItemState?.packageInfo?.label ?: "",
+                                    text = label,
                                     fontWeight = FontWeight.Bold,
                                     color = ColorSchemeKeyTokens.Primary.toColor()
                                 )
@@ -128,7 +129,7 @@ fun PagePackageDetail() {
                         }
                     }
 
-                    if (backupItemState != null) {
+                    if (backupItemState != null && backupItemState!!.extraInfo.existed) {
                         item {
                             var expand by remember { mutableStateOf(false) }
                             HeaderItem(expand = expand, title = StringResourceToken.fromStringId(R.string.info)) {

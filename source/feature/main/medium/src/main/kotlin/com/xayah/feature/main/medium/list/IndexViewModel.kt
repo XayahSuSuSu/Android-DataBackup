@@ -9,6 +9,7 @@ import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.model.database.MediaEntity
+import com.xayah.core.model.database.MediaEntityWithCount
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
@@ -95,10 +96,10 @@ class IndexViewModel @Inject constructor(
     private val _topBarState: MutableStateFlow<TopBarState> = MutableStateFlow(TopBarState(title = StringResourceToken.fromStringId(R.string.media)))
     val topBarState: StateFlow<TopBarState> = _topBarState.asStateFlow()
 
-    private val _medium: Flow<List<MediaEntity>> = mediaRepo.medium.flowOnIO()
+    private val _medium: Flow<List<MediaEntityWithCount>> = mediaRepo.medium.flowOnIO()
     private var _keyState: MutableStateFlow<String> = MutableStateFlow("")
-    private val _mediumState: Flow<List<MediaEntity>> = combine(_medium, _keyState) { packages, key ->
+    private val _mediumState: Flow<List<MediaEntityWithCount>> = combine(_medium, _keyState) { packages, key ->
         packages.filter(mediaRepo.getKeyPredicate(key = key))
     }.flowOnIO()
-    val mediumState: StateFlow<List<MediaEntity>> = _mediumState.stateInScope(listOf())
+    val mediumState: StateFlow<List<MediaEntityWithCount>> = _mediumState.stateInScope(listOf())
 }

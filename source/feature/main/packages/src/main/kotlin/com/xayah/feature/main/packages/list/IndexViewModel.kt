@@ -9,6 +9,7 @@ import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.model.SortType
 import com.xayah.core.model.database.PackageEntity
+import com.xayah.core.model.database.PackageEntityWithCount
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
@@ -99,7 +100,7 @@ class IndexViewModel @Inject constructor(
         MutableStateFlow(TopBarState(title = StringResourceToken.fromStringId(R.string.app_and_data)))
     val topBarState: StateFlow<TopBarState> = _topBarState.asStateFlow()
 
-    private val _packages: Flow<Map<PackageEntity, List<PackageEntity>>> = packageRepo.packages.flowOnIO()
+    private val _packages: Flow<List<PackageEntityWithCount>> = packageRepo.packages.flowOnIO()
     private var _keyState: MutableStateFlow<String> = MutableStateFlow("")
     private var _flagIndexState: MutableStateFlow<Int> = MutableStateFlow(1)
     val flagIndexState: StateFlow<Int> = _flagIndexState.stateInScope(1)
@@ -109,15 +110,13 @@ class IndexViewModel @Inject constructor(
     val sortIndexState: StateFlow<Int> = _sortIndexState.stateInScope(0)
     private var _sortTypeState: MutableStateFlow<SortType> = MutableStateFlow(SortType.ASCENDING)
     val sortTypeState: StateFlow<SortType> = _sortTypeState.stateInScope(SortType.ASCENDING)
-    private val _packagesState: Flow<List<PackageEntity>> =
+    private val _packagesState: Flow<List<PackageEntityWithCount>> =
         combine(_packages, _keyState, _flagIndexState, _sortIndexState, _sortTypeState) { packages, key, flagIndex, sortIndex, sortType ->
-            packages.keys.toList().filter(packageRepo.getKeyPredicate(key = key))
+            packages.filter(packageRepo.getKeyPredicate(key = key))
                 .filter(packageRepo.getFlagPredicate(index = flagIndex))
                 .sortedWith(packageRepo.getSortComparator(sortIndex = sortIndex, sortType = sortType))
         }.combine(_userIdIndexListState) { packages, userIdIndexList ->
-            packages.filter(packageRepo.getUserIdPredicate(indexList = userIdIndexList, userIdList = uiState.value.userIdList)).apply {
-
-            }
+            packages.filter(packageRepo.getUserIdPredicate(indexList = userIdIndexList, userIdList = uiState.value.userIdList))
         }.flowOnIO()
-    val packagesState: StateFlow<List<PackageEntity>> = _packagesState.stateInScope(listOf())
+    val packagesState: StateFlow<List<PackageEntityWithCount>> = _packagesState.stateInScope(listOf())
 }

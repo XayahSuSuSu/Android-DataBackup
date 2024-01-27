@@ -72,6 +72,7 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
                 id = id,
                 indexInfo = m.indexInfo.copy(opType = OpType.RESTORE),
                 mediaInfo = m.mediaInfo.copy(dataState = restoreEntity?.mediaInfo?.dataState ?: m.mediaInfo.dataState),
+                extraInfo = m.extraInfo.copy(activated = false)
             )
             rootService.writeProtoBuf(data = restoreEntity, dst = PathUtil.getMediaRestoreConfigDst(dstDir = dstDir))
             mediaDao.upsert(restoreEntity)

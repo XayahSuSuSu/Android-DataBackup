@@ -41,4 +41,5 @@
     <item name="restore_completed" type="string" />
     <item name="permissions" type="string" />
     <item name="ssaid" type="string" />
+    <item name="backups" type="plurals" />
 </resources>

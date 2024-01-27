@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.viewmodel.IndexUiEffect
+import com.xayah.core.model.OpType
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
@@ -57,6 +58,7 @@ import com.xayah.core.ui.util.value
 import com.xayah.feature.main.packages.ChipRow
 import com.xayah.feature.main.packages.PackageCard
 import com.xayah.feature.main.packages.R
+import com.xayah.feature.main.packages.countBackups
 
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
@@ -151,7 +153,7 @@ fun PagePackages() {
                         }
                     }
 
-                    items(items = packagesState, key = { "${it.packageName}: ${it.userId}" }) { item ->
+                    items(items = packagesState, key = { "${it.entity.packageName}: ${it.entity.userId}" }) { item ->
                         AnimatedContent(
                             modifier = Modifier
                                 .animateItemPlacement()
@@ -160,22 +162,32 @@ fun PagePackages() {
                             label = AnimationTokens.AnimatedContentLabel
                         ) { targetState ->
                             Row {
-                                val userId = targetState.userId
-                                val packageName = targetState.packageName
-                                val versionName = targetState.packageInfo.versionName
-                                val storageStatsFormat = targetState.storageStatsFormat
-                                val hasKeystore = targetState.extraInfo.hasKeystore
-                                val ssaid = targetState.extraInfo.ssaid
-                                val isSystemApp = targetState.isSystemApp
+                                val userId = targetState.entity.userId
+                                val packageName = targetState.entity.packageName
+                                val versionName = targetState.entity.packageInfo.versionName
+                                val storageStatsFormat = targetState.entity.storageStatsFormat
+                                val hasKeystore = targetState.entity.extraInfo.hasKeystore
+                                val ssaid = targetState.entity.extraInfo.ssaid
+                                val isSystemApp = targetState.entity.isSystemApp
+                                val backupsCount = when (targetState.entity.indexInfo.opType) {
+                                    OpType.BACKUP -> targetState.count - 1
+                                    OpType.RESTORE -> targetState.count
+                                }
                                 PackageCard(
-                                    label = targetState.packageInfo.label,
+                                    label = targetState.entity.packageInfo.label,
                                     packageName = packageName,
                                     cardSelected = false,
                                     onCardClick = {
-                                        viewModel.emitIntent(IndexUiIntent.ToPagePackageDetail(navController, targetState))
+                                        viewModel.emitIntent(IndexUiIntent.ToPagePackageDetail(navController, targetState.entity))
                                     },
                                     onCardLongClick = {},
                                 ) {
+                                    if (backupsCount > 0) RoundChip(
+                                        text = countBackups(context = context, count = backupsCount),
+                                        color = ColorSchemeKeyTokens.Primary.toColor(),
+                                    ) {
+                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                    }
                                     RoundChip(
                                         text = StringResourceToken.fromStringArgs(
                                             StringResourceToken.fromStringId(R.string.user),
@@ -185,27 +197,29 @@ fun PagePackages() {
                                     ) {
                                         viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
                                     }
-                                    if (ssaid.isNotEmpty()) RoundChip(
-                                        text = StringResourceToken.fromStringId(R.string.ssaid).value,
-                                        color = ColorSchemeKeyTokens.Secondary.toColor(),
-                                    ) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.ssaid)}: $ssaid"))
-                                    }
-                                    if (hasKeystore) RoundChip(
-                                        text = StringResourceToken.fromStringId(R.string.keystore).value,
-                                        color = ColorSchemeKeyTokens.Error.toColor(),
-                                    ) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar(context.getString(R.string.keystore_desc)))
-                                    }
-                                    if (versionName.isNotEmpty()) RoundChip(text = versionName) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.version)}: $versionName"))
-                                    }
-                                    RoundChip(text = storageStatsFormat) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $storageStatsFormat"))
+                                    if (item.entity.extraInfo.existed) {
+                                        if (ssaid.isNotEmpty()) RoundChip(
+                                            text = StringResourceToken.fromStringId(R.string.ssaid).value,
+                                            color = ColorSchemeKeyTokens.Secondary.toColor(),
+                                        ) {
+                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.ssaid)}: $ssaid"))
+                                        }
+                                        if (hasKeystore) RoundChip(
+                                            text = StringResourceToken.fromStringId(R.string.keystore).value,
+                                            color = ColorSchemeKeyTokens.Error.toColor(),
+                                        ) {
+                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar(context.getString(R.string.keystore_desc)))
+                                        }
+                                        if (versionName.isNotEmpty()) RoundChip(text = versionName) {
+                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.version)}: $versionName"))
+                                        }
+                                        RoundChip(text = storageStatsFormat) {
+                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $storageStatsFormat"))
+                                        }
                                     }
                                     RoundChip(
                                         text = if (isSystemApp) StringResourceToken.fromStringId(R.string.system).value

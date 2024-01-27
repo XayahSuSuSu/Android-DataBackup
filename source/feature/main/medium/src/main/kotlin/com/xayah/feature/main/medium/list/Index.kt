@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.viewmodel.IndexUiEffect
+import com.xayah.core.model.OpType
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.AddIconButton
 import com.xayah.core.ui.component.InnerTopSpacer
@@ -37,6 +38,8 @@ import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.material3.pullrefresh.PullRefreshIndicator
 import com.xayah.core.ui.material3.pullrefresh.pullRefresh
 import com.xayah.core.ui.material3.pullrefresh.rememberPullRefreshState
+import com.xayah.core.ui.material3.toColor
+import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
@@ -44,6 +47,7 @@ import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.medium.MediaCard
 import com.xayah.feature.main.medium.R
+import com.xayah.feature.main.medium.countBackups
 
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
@@ -99,7 +103,7 @@ fun PageMedium() {
                         )
                     }
 
-                    items(items = mediumState, key = { it.path }) { item ->
+                    items(items = mediumState, key = { it.entity.name }) { item ->
                         AnimatedContent(
                             modifier = Modifier
                                 .animateItemPlacement()
@@ -108,18 +112,28 @@ fun PageMedium() {
                             label = AnimationTokens.AnimatedContentLabel
                         ) { targetState ->
                             Row {
-                                val name = targetState.name
-                                val path = targetState.path
-                                val displayStatsFormat = targetState.mediaInfo.displayBytes.toDouble().formatSize()
+                                val name = targetState.entity.name
+                                val path = targetState.entity.path
+                                val displayStatsFormat = targetState.entity.mediaInfo.displayBytes.toDouble().formatSize()
+                                val backupsCount = when (targetState.entity.indexInfo.opType) {
+                                    OpType.BACKUP -> targetState.count - 1
+                                    OpType.RESTORE -> targetState.count
+                                }
                                 MediaCard(
                                     name = name,
                                     path = path,
                                     cardSelected = false,
                                     onCardClick = {
-                                        viewModel.emitIntent(IndexUiIntent.ToPageMediaDetail(navController, targetState))
+                                        viewModel.emitIntent(IndexUiIntent.ToPageMediaDetail(navController, targetState.entity))
                                     },
                                     onCardLongClick = {},
                                 ) {
+                                    if (backupsCount > 0) RoundChip(
+                                        text = countBackups(context = context, count = backupsCount),
+                                        color = ColorSchemeKeyTokens.Primary.toColor(),
+                                    ) {
+                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                    }
                                     RoundChip(text = displayStatsFormat) {
                                         viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
                                         viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $displayStatsFormat"))

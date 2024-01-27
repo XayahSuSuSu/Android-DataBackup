@@ -20,6 +20,7 @@ val KeyRestoreSortType = stringPreferencesKey("restore_sort_type")
 val KeyAppVersionName = stringPreferencesKey("app_version_name")
 val KeyRcloneMainAccountName = stringPreferencesKey("rclone_main_account_name")
 val KeyRcloneMainAccountRemote = stringPreferencesKey("rclone_main_account_remote")
+val KeyLoadedIconMD5 = stringPreferencesKey("loaded_icon_md5")
 
 
 // -----------------------------------------Read-----------------------------------------
@@ -31,6 +32,7 @@ fun Context.readRestoreSortType() = readStoreString(key = KeyRestoreSortType, de
 fun Context.readAppVersionName() = readStoreString(key = KeyAppVersionName, defValue = "")
 fun Context.readRcloneMainAccountName() = readStoreString(key = KeyRcloneMainAccountName, defValue = "")
 fun Context.readRcloneMainAccountRemote() = readStoreString(key = KeyRcloneMainAccountRemote, defValue = "")
+fun Context.readLoadedIconMD5() = readStoreString(key = KeyLoadedIconMD5, defValue = "")
 
 /**
  * The final path for saving the backup.
@@ -55,6 +57,7 @@ suspend fun Context.saveRestoreSortType(value: SortType) = saveStoreString(key =
 suspend fun Context.saveAppVersionName() = saveStoreString(key = KeyAppVersionName, value = getCurrentAppVersionName())
 suspend fun Context.saveRcloneMainAccountName(value: String) = saveStoreString(key = KeyRcloneMainAccountName, value = value.trim())
 suspend fun Context.saveRcloneMainAccountRemote(value: String) = saveStoreString(key = KeyRcloneMainAccountRemote, value = value.trim())
+suspend fun Context.saveLoadedIconMD5(value: String) = saveStoreString(key = KeyLoadedIconMD5, value = value.trim())
 
 /**
  * @see [readBackupSavePath]

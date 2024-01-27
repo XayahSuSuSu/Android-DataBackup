@@ -32,6 +32,10 @@ fun countItems(context: Context, count: Int) = run {
     String.format(context.resources.getQuantityString(R.plurals.items, count), count)
 }
 
+fun countBackups(context: Context, count: Int) = run {
+    String.format(context.resources.getQuantityString(R.plurals.backups, count), count)
+}
+
 val List<PackageDataChipItem>.selectionState
     get() = run {
         when (this.sumOf { if (it.selected) 1L else 0 }) {
