@@ -64,22 +64,27 @@ jobs:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleRelease --daemon --parallel
+          BUILD_ALPHA: ${{ github.event.inputs.Alpha }}
+          BUILD_PREMIUM: ${{ github.event.inputs.Premium }}
+          BUILD_FOSS: ${{ github.event.inputs.Foss }}
+        run: |
+          TASKS=""
+          if [ ${BUILD_ALPHA} = 'true' ]; then
+            TASKS="$TASKS assembleArm64-v8aAlphaRelease assembleArmeabi-v7aAlphaRelease assembleX86AlphaRelease assembleX86_64AlphaRelease"
+          fi
+          if [ ${BUILD_PREMIUM} = 'true' ]; then
+            TASKS="$TASKS assembleArm64-v8aPremiumRelease assembleArmeabi-v7aPremiumRelease assembleX86PremiumRelease assembleX86_64PremiumRelease"
+          fi
+          if [ ${BUILD_FOSS} = 'true' ]; then
+            TASKS="$TASKS assembleArm64-v8aFossRelease assembleArmeabi-v7aFossRelease assembleX86FossRelease assembleX86_64FossRelease"
+          fi
+          if [ -z ${TASKS} ]; then
+            TASKS="assembleRelease"
+          fi
+          ./gradlew $TASKS --daemon --parallel
 
       - name: Move APKs
         run: mv ./*/build/outputs/apk/*/release/*.apk .
-
-      - name: Drop alpha builds
-        if: ${{ github.event.inputs.Alpha }} == 'false'
-        run: rm -rf ./*alpha*.apk
-
-      - name: Drop premium builds
-        if: ${{ github.event.inputs.Premium }} == 'false'
-        run: rm -rf ./*premium*.apk
-
-      - name: Drop foss builds
-        if: ${{ github.event.inputs.Foss }} == 'false'
-        run: rm -rf ./*foss*.apk
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
