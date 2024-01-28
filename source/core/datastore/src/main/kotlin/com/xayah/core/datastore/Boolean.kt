@@ -13,6 +13,7 @@ val KeyCompatibleMode = booleanPreferencesKey("compatible_mode")
 val KeyFollowSymlinks = booleanPreferencesKey("follow_symlinks")
 val KeyCleanRestoring = booleanPreferencesKey("clean_restoring")
 val KeyResetRestoreList = booleanPreferencesKey("reset_restore_list")
+val KeyCheckKeystore = booleanPreferencesKey("check_keystore")
 
 
 // -----------------------------------------Read-----------------------------------------
@@ -25,6 +26,7 @@ fun Context.readCompatibleMode() = readStoreBoolean(key = KeyCompatibleMode, def
 fun Context.readFollowSymlinks() = readStoreBoolean(key = KeyFollowSymlinks, defValue = false)
 fun Context.readCleanRestoring() = readStoreBoolean(key = KeyCleanRestoring, defValue = false)
 fun Context.readResetRestoreList() = readStoreBoolean(key = KeyResetRestoreList, defValue = false)
+fun Context.readCheckKeystore() = readStoreBoolean(key = KeyCheckKeystore, defValue = true)
 
 
 // -----------------------------------------Write-----------------------------------------
@@ -37,3 +39,4 @@ suspend fun Context.saveCompatibleMode(value: Boolean) = saveStoreBoolean(key = 
 suspend fun Context.saveFollowSymlinks(value: Boolean) = saveStoreBoolean(key = KeyFollowSymlinks, value = value)
 suspend fun Context.saveCleanRestoring(value: Boolean) = saveStoreBoolean(key = KeyCleanRestoring, value = value)
 suspend fun Context.saveResetRestoreList(value: Boolean) = saveStoreBoolean(key = KeyResetRestoreList, value = value)
+suspend fun Context.saveCheckKeystore(value: Boolean) = saveStoreBoolean(key = KeyCheckKeystore, value = value)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,12 +26,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.readBackupItself
+import com.xayah.core.datastore.readCheckKeystore
 import com.xayah.core.datastore.readCleanRestoring
 import com.xayah.core.datastore.readCompatibleMode
 import com.xayah.core.datastore.readCompressionTest
 import com.xayah.core.datastore.readFollowSymlinks
 import com.xayah.core.datastore.readMonet
 import com.xayah.core.datastore.saveBackupItself
+import com.xayah.core.datastore.saveCheckKeystore
 import com.xayah.core.datastore.saveCleanRestoring
 import com.xayah.core.datastore.saveCompatibleMode
 import com.xayah.core.datastore.saveCompressionTest
@@ -85,6 +88,15 @@ private fun RestoreSettings() {
 @Composable
 private fun BackupSettings() {
     val context = LocalContext.current
+    val checkKeystore by context.readCheckKeystore().collectAsState(initial = true)
+    SettingsSwitch(
+        icon = ImageVectorToken.fromVector(Icons.Rounded.Code),
+        title = StringResourceToken.fromStringId(R.string.check_keystore),
+        content = StringResourceToken.fromStringId(R.string.check_keystore_desc),
+        checked = checkKeystore,
+    ) {
+        runBlocking { context.saveCheckKeystore(checkKeystore.not()) }
+    }
     val backupItself by context.readBackupItself().collectAsState(initial = true)
     SettingsSwitch(
         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_join_inner),

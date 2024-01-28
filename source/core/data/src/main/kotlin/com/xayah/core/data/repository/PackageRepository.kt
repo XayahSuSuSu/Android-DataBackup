@@ -6,6 +6,7 @@ import android.os.Build
 import com.xayah.core.data.R
 import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.PackageDao
+import com.xayah.core.datastore.readCheckKeystore
 import com.xayah.core.datastore.readCompressionType
 import com.xayah.core.datastore.readIconUpdateTime
 import com.xayah.core.datastore.readLoadedIconMD5
@@ -166,6 +167,7 @@ class PackageRepository @Inject constructor(
 
     suspend fun refresh(topBarState: MutableStateFlow<TopBarState>) = run {
         packageDao.clearExisted(opType = OpType.BACKUP)
+        val checkKeystore = context.readCheckKeystore().first()
         val title = topBarState.value.title
         val pm = context.packageManager
         val userInfoList = rootService.getUsers()
@@ -187,7 +189,7 @@ class PackageRepository @Inject constructor(
             installedPackages.forEachIndexed { index, info ->
                 val permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
                 val uid = info.applicationInfo.uid
-                val hasKeystore = PackageUtil.hasKeystore(uid)
+                val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(uid) else false
                 val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
                 val iconPath = pathUtil.getPackageIconPath(info.packageName)
                 val iconExists = rootService.exists(iconPath)

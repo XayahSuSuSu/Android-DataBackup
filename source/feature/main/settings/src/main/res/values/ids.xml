@@ -17,4 +17,6 @@
     <item name="feature" type="string"/>
     <item name="abi" type="string"/>
     <item name="architecture" type="string"/>
+    <item name="check_keystore" type="string"/>
+    <item name="check_keystore_desc" type="string"/>
 </resources>

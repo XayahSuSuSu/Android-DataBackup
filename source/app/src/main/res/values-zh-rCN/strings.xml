@@ -200,4 +200,6 @@
     <string name="recommend">推荐</string>
     <string name="limited_4gb">4GB限制</string>
     <string name="outdated_fs_warning">你正在使用不支持超过4GB单文件的32位或更低的文件系统</string>
+    <string name="check_keystore">检查密钥</string>
+    <string name="check_keystore_desc">刷新时检查应用是否使用密钥, 这会明显减慢刷新速度</string>
 </resources>

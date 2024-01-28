@@ -208,4 +208,6 @@
     <string name="recommend">Recommend</string>
     <string name="limited_4gb">4GB limited</string>
     <string name="outdated_fs_warning">You are using a 32-bit or lower file system, which DOES NOT support ONE FILE bigger than 4GB</string>
+    <string name="check_keystore">Check keystore</string>
+    <string name="check_keystore_desc">Check if the app uses KeyStore while refreshing, this will significantly slow down the process</string>
 </resources>
