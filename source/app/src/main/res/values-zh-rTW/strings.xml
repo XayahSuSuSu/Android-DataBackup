@@ -197,4 +197,7 @@
     <string name="grant_ntfy_perm_manually">請手動賦予通知權限</string>
     <string name="notification">通知</string>
     <string name="permissions">權限</string>
+    <string name="recommend">推薦</string>
+    <string name="limited_4gb">4GB限制</string>
+    <string name="outdated_fs_warning">你正在使用不支援超過4GB單一檔案的32位元或更低的檔案系統</string>
 </resources>

@@ -4,12 +4,12 @@ import android.content.Context
 import com.xayah.core.common.util.toSpaceString
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.DirectoryDao
-import com.xayah.core.model.database.DirectoryEntity
-import com.xayah.core.model.database.DirectoryUpsertEntity
 import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.datastore.saveBackupSaveParentPath
 import com.xayah.core.datastore.saveBackupSavePath
 import com.xayah.core.model.StorageType
+import com.xayah.core.model.database.DirectoryEntity
+import com.xayah.core.model.database.DirectoryUpsertEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.util.command.PreparationUtil
@@ -126,9 +126,10 @@ class DirectoryRepository @Inject constructor(
                     // Check the format
                     val supported = type.lowercase() in ConstantUtil.SupportedExternalStorageFormat
                     if (supported.not()) {
-                        tags.add(context.getString(R.string.unsupported_format))
-                        entity.error = "${context.getString(R.string.supported_format)}: ${ConstantUtil.SupportedExternalStorageFormat.toSpaceString()}"
-                        entity.enabled = false
+                        tags.add(context.getString(R.string.limited_4gb))
+                        entity.error = "${context.getString(R.string.outdated_fs_warning)}\n" +
+                                "${context.getString(R.string.recommend)}: ${ConstantUtil.SupportedExternalStorageFormat.toSpaceString()}"
+                        entity.enabled = true
                     } else {
                         entity.error = ""
                         entity.enabled = true

@@ -15,4 +15,7 @@
     <item name="backup_dir_as_media_error" type="string" />
     <item name="succeed" type="string" />
     <item name="failed" type="string" />
+    <item name="recommend" type="string" />
+    <item name="limited_4gb" type="string" />
+    <item name="outdated_fs_warning" type="string" />
 </resources>
