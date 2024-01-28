@@ -46,9 +46,9 @@ interface PackageDao {
     fun queryFlow(packageName: String, opType: OpType, userId: Int): Flow<List<PackageEntity>>
 
     @Query(
-        "SELECT *, COUNT(*) AS count" +
-                " FROM (SELECT * FROM PackageEntity ORDER BY indexInfo_opType)" +
-                " GROUP BY indexInfo_packageName, indexInfo_userId"
+        "SELECT *, COUNT(*) AS count FROM PackageEntity" +
+                " GROUP BY indexInfo_packageName, indexInfo_userId" +
+                " ORDER BY indexInfo_opType"
     )
     fun queryFlow(): Flow<List<PackageEntityWithCount>>
 
