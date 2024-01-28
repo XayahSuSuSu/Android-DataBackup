@@ -32,6 +32,7 @@ import com.xayah.core.ui.util.currentRoute
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.value
 import com.xayah.feature.main.home.PageHome
+import com.xayah.feature.main.settings.PageSettings
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -95,6 +96,7 @@ fun MainIndexGraph() {
             composable(MainIndexRoutes.CloudAccount.route) {
             }
             composable(MainIndexRoutes.Settings.route) {
+                PageSettings()
             }
         }
     }
