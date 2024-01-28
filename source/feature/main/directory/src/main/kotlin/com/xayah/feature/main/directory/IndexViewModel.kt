@@ -10,6 +10,7 @@ import com.xayah.core.data.repository.DirectoryRepository
 import com.xayah.core.model.database.DirectoryEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.libpickyou.ui.PickYouLauncher
+import com.xayah.libpickyou.ui.model.PermissionType
 import com.xayah.libpickyou.ui.model.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -62,6 +63,7 @@ class IndexViewModel @Inject constructor(
                         setTitle(context.getString(R.string.select_target_directory))
                         setType(PickerType.DIRECTORY)
                         setLimitation(0)
+                        setPermissionType(PermissionType.ROOT)
                         launch(context) { pathList ->
                             launchOnIO {
                                 directoryRepository.addDir(pathList)
