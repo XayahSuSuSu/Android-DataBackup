@@ -14,7 +14,7 @@ ZSTD_DEV=false
 NDK_VERSION=r25c
 
 BIN_VERSION=1.5
-ZLIB_VERSION=1.3               # https://zlib.net/
+ZLIB_VERSION=1.3.1             # https://zlib.net/
 XZ_VERSION=5.4.4               # https://tukaani.org/xz/
 LZ4_VERSION=1.9.4              # https://github.com/lz4/lz4/releases
 ZSTD_VERSION=1.5.5             # https://github.com/facebook/zstd/releases
