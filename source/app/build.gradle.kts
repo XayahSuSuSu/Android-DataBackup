@@ -89,6 +89,7 @@ dependencies {
     "alphaImplementation"(project(":feature:flavor:alpha"))
     "alphaImplementation"(project(":feature:flavor:foss"))
     implementation(project(":feature:main:home"))
+    implementation(project(":feature:main:cloud"))
     implementation(project(":feature:main:settings"))
     implementation(project(":feature:main:packages"))
     implementation(project(":feature:main:medium"))

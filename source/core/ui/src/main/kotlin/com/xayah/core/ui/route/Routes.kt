@@ -6,6 +6,7 @@ sealed class MainRoutes(val route: String) {
         const val ArgMediaName = "mediaName"
         const val ArgUserId = "userId"
         const val ArgTaskId = "taskId"
+        const val ArgAccountName = "accountName"
     }
 
     data object Index : MainRoutes(route = "main_index")
@@ -17,6 +18,10 @@ sealed class MainRoutes(val route: String) {
     data object Medium : MainRoutes(route = "main_medium")
     data object MediumDetail : MainRoutes(route = "main_medium_detail/{$ArgMediaName}") {
         fun getRoute(name: String) = "main_medium_detail/${name}"
+    }
+
+    data object CloudAccount : MainRoutes(route = "main_cloud_account/{$ArgAccountName}") {
+        fun getRoute(name: String) = "main_cloud_account/$name"
     }
 
     data object TaskList : MainRoutes(route = "main_taskList")

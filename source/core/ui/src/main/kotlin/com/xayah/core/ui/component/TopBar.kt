@@ -22,10 +22,11 @@ import com.xayah.core.ui.util.value
 
 @ExperimentalMaterial3Api
 @Composable
-fun PrimaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String) {
+fun PrimaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String, actions: @Composable RowScope.() -> Unit = {}) {
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title) },
         scrollBehavior = scrollBehavior,
+        actions = actions,
     )
 }
 
