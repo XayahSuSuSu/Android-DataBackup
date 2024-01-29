@@ -25,7 +25,7 @@
     <string name="icon_reload_failed">Не удалось перезагрузить иконку</string>
     <string name="telephony">Телефония</string>
     <string name="create_account">Создать аккаунт</string>
-    <string name="confirm_delete_selected_restoring_items">Вы уверены, что хотите удалить выбранные элементы из базы данных и локальных файлов\?</string>
+    <string name="confirm_delete_selected_restoring_items">Вы уверены, что хотите удалить выбранные элементы из базы данных и локальных файлов?</string>
     <string name="abi_validation">Validate ABI</string>
     <string name="storage_desc">Используется для конфигурации резервного копирования, чтения и записи архива</string>
     <string name="simplify">Упрощенно</string>
