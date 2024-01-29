@@ -201,4 +201,6 @@
     <string name="recommend">Preporuči</string>
     <string name="limited_4gb">Ograničeno na 4 GB</string>
     <string name="outdated_fs_warning">Koristiš 32-bitni ili niži datotečni sustav, koji NE PODRŽAVA JEDNU DATOTEKU veću od 4 GB</string>
+    <string name="check_keystore_desc">Provjeri je li aplikacija koristi KeyStore tijekom osvježavanja, to će značajno usporiti proces</string>
+    <string name="check_keystore">Provjeri keystore</string>
 </resources>
