@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">DataBackup</string>
-    <string name="welcome_to_use">Welcome to use</string>
+    <string name="welcome_to_use">Welcome to DataBackup</string>
     <string name="update_records">Update records</string>
     <string name="environment_detection">Environment detection</string>
     <string name="start">Start</string>
@@ -13,7 +13,7 @@
     <string name="application">App</string>
     <string name="application_subtitle" translatable="false">android.permission.QUERY_ALL_PACKAGES\nandroid.permission.PACKAGE_USAGE_STATS</string>
     <string name="application_desc">Obtain application package information, used to generate backup list and obtain application data size</string>
-    <string name="storage">Storage</string>
+    <string name="storage">Permission to read/write to external storage</string>
     <string name="storage_subtitle" translatable="false">android.permission.READ_EXTERNAL_STORAGE\nandroid.permission.WRITE_EXTERNAL_STORAGE\nandroid.permission.MANAGE_EXTERNAL_STORAGE</string>
     <string name="storage_desc">Used for backup configuration, archive read and write</string>
     <string name="loading">Loading</string>
@@ -22,17 +22,17 @@
     <string name="release_prebuilt_binaries">Release prebuilt binaries</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    <string name="overlook">Overlook</string>
+    <string name="overlook">Overview</string>
     <string name="last_backup">Last backup</string>
     <string name="none">None</string>
     <string name="utilities">Utilities</string>
     <string name="activities">Activities</string>
-    <string name="directory">Directory</string>
+    <string name="directory">Storage</string>
     <string name="structure">Structure</string>
-    <string name="log">Log</string>
-    <string name="app_and_data">App and data</string>
+    <string name="log">Logs</string>
+    <string name="app_and_data">Apps</string>
     <string name="media">Media</string>
-    <string name="telephony">Telephony</string>
+    <string name="telephony">Call history</string>
     <string name="internal_storage">Internal storage</string>
     <string name="fetch_failed">Fetch failed</string>
     <string name="unsupported_format">Unsupported format</string>
@@ -41,7 +41,7 @@
     <string name="directory_structure">Directory structure</string>
     <string name="copy">Copy</string>
     <string name="save">Save</string>
-    <string name="succeed">Succeed</string>
+    <string name="succeed">Success</string>
     <string name="failed">Failed</string>
     <string name="save_directory_structure">Save directory structure</string>
     <string name="backup_list">Backup list</string>
@@ -57,7 +57,7 @@
     <string name="idle">Idle</string>
     <string name="backing_up">Backing up…</string>
     <string name="failed_and_terminated">Failed and terminated</string>
-    <string name="not_exist">Not exist</string>
+    <string name="not_exist">Does not exist</string>
     <string name="not_exist_and_skip">Not exist and skip</string>
     <string name="backup_completed">Backup completed</string>
     <string name="word_return">Return</string>
@@ -112,7 +112,7 @@
     <string name="installed">Installed</string>
     <string name="sooner_or_later">Sooner or later</string>
     <string name="delete">Delete</string>
-    <string name="confirm_delete_selected_restoring_items">Sure to delete selected items from the database and local files</string>
+    <string name="confirm_delete_selected_restoring_items">Delete selected items from the database and local files?</string>
     <string name="app_crashed">App crashed</string>
     <string name="no_browser">Maybe there is no browser to open it</string>
     <string name="supported_format">Supported format</string>
@@ -151,7 +151,7 @@
     <string name="data_size">Data size</string>
     <string name="selected">Selected</string>
     <string name="not_selected">Not selected</string>
-    <string name="third_party">Third party</string>
+    <string name="third_party">Installed</string>
     <string name="system">System</string>
     <string name="uploading">Uploading</string>
     <string name="main_account">Main account</string>
