@@ -14,8 +14,8 @@ ZSTD_DEV=false
 NDK_VERSION=r25c
 
 BIN_VERSION=1.5
-ZLIB_VERSION=1.3               # https://zlib.net/
-XZ_VERSION=5.4.4               # https://tukaani.org/xz/
+ZLIB_VERSION=1.3.1             # https://zlib.net/
+XZ_VERSION=5.4.6               # https://github.com/tukaani-project/xz/releases
 LZ4_VERSION=1.9.4              # https://github.com/lz4/lz4/releases
 ZSTD_VERSION=1.5.5             # https://github.com/facebook/zstd/releases
 TAR_VERSION=1.35               # https://ftp.gnu.org/gnu/tar/?C=M;O=D
@@ -121,7 +121,7 @@ build_zlib() {
 build_liblzma() {
     # For zstd
     if [ ! -f $LOCAL_PATH/xz-$XZ_VERSION.tar.gz ]; then
-        wget https://tukaani.org/xz/xz-$XZ_VERSION.tar.gz
+        wget https://github.com/tukaani-project/xz/releases/download/v5.4.6/xz-$XZ_VERSION.tar.gz
     fi
     if [ -d $LOCAL_PATH/xz-$XZ_VERSION ]; then
         rm -rf $LOCAL_PATH/xz-$XZ_VERSION
