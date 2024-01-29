@@ -1,0 +1,35 @@
+name: Bin
+
+on:
+  push:
+    paths:
+    - build/**
+  pull_request:
+    paths:
+    - build/**
+
+jobs:
+  build:
+    name: "Build bin"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: build
+
+    permissions:
+      contents: write
+
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: sudo bash build_bin.sh all all
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bin
+          path: '**/build_bin/built_in/**/bin.zip'
