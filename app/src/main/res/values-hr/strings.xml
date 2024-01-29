@@ -3,7 +3,7 @@
     <string name="size">Veličina</string>
     <string name="click_to_clear">Klikni ovdje za brisanje</string>
     <string name="decompress">Dekomprimiraj</string>
-    <string name="storage">Spremište</string>
+    <string name="storage">Dozvola za čitanje/pisanje u eksternu memoriju</string>
     <string name="keep_the_screen_on_help">Zadrži uređaj aktivnim tijekom obrade</string>
     <string name="backed_up">Spremljeno</string>
     <string name="copy_grant_command">Kopiraj naredbu za dozvolu</string>
@@ -40,7 +40,7 @@
     <string name="all">Sva</string>
     <string name="symbol_question">\?</string>
     <string name="backup_icon">Ikona sigurnosne kopije</string>
-    <string name="telephony">Telefoniranje</string>
+    <string name="telephony">Povijest poziva</string>
     <string name="backup_test">Test sigurnosne kopije</string>
     <string name="storage_desc">Koristi se za konfiguraciju sigurnosne kopije, čitanje i pisanje arhive</string>
     <string name="backup_strategy">Strategija spremanja sigurnosnih kopija</string>
@@ -118,7 +118,7 @@
     <string name="cover_desc">Prepiši postojeće sigurnosne kopije sa svakim spremanjem sigurnosne kopije ili preskoči spremanje sigurnosnih kopija ako nema promjena, tako da uvijek postoji samo jedna kopija tvojih podataka</string>
     <string name="please_wait">Pričekaj</string>
     <string name="add_list">Dodaj popis</string>
-    <string name="log">Dnevnik</string>
+    <string name="log">Dnevnici</string>
     <string name="loading_failed">Učitavanje neuspjelo</string>
     <string name="path_permission_error">Greška u dozvolama, sljedeće putanje zahtijevaju ispravne dozvole</string>
     <string name="select_backup_app">Odaberi aplikaciju za spremanje sigurnosnih kopija</string>
@@ -164,11 +164,11 @@
     <string name="app_name">DataBackup</string>
     <string name="not_the_default_sms_app_info">Obnavljanje SMS/MMS-a zahtijeva da aplikacija DataBackup mora biti postavljena kao standardna SMS aplikacija</string>
     <string name="environment_detection">Prepoznavanje okruženja</string>
-    <string name="succeed">Uspjelo</string>
+    <string name="succeed">Uspjeh</string>
     <string name="check_package_usage_stats_permission">Provjeri dozvolu statistike korištenja paketa</string>
     <string name="add">Dodaj</string>
     <string name="backup_itself">Spremanje sigurnosne kopije aplikacije</string>
-    <string name="welcome_to_use">Dobro došao, dobro došla</string>
+    <string name="welcome_to_use">Dobro došao, dobro došla u DataBackup</string>
     <string name="speed">Brzina</string>
     <string name="backup_test_title">Automatski testiraj datoteke sigurnosne kopije tijekom izrade sigurnosne kopije</string>
     <string name="setting_SELinux">Postavljanje SELinux-a</string>
