@@ -102,7 +102,7 @@
     <string name="user">Користувач</string>
     <string name="backup_user_desc">Цільовий користувач під час завантаження списку або створення бекапу</string>
     <string name="create_account">Створити обліковий запис</string>
-    <string name="confirm_delete_selected_restoring_items">Ви впевнені, що хочете видалити вибрані елементи з бази даних і локальних файлів\?</string>
+    <string name="confirm_delete_selected_restoring_items">Ви впевнені, що хочете видалити вибрані елементи з бази даних і локальних файлів?</string>
     <string name="please_set_up_main_account">Встановіть основний обліковий запис</string>
     <string name="abi_validation">Перевірка АBI</string>
     <string name="not_installed">Не встановлено</string>
