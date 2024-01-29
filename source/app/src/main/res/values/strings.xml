@@ -167,7 +167,7 @@
     <string name="follow_symlinks_desc">Archive and dump the files they point to</string>
     <string name="batching_select">Batching select</string>
     <string name="remain">Remain</string>
-    <string name="apk_only">Apk only</string>
+    <string name="apk_only">APK only</string>
     <string name="data_only">Data only</string>
     <string name="processing">Processing</string>
     <string name="in_use">In use</string>
