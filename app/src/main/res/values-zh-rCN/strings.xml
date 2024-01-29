@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">数据备份</string>
     <string name="backup">备份</string>
@@ -164,14 +165,12 @@
     <string name="clean_restoring_help">恢复前清空目标目录</string>
     <string name="exclude_cache">排除缓存</string>
     <string name="others">其它</string>
-
     <string-array name="telephony_type">
         <item>联系人</item>
         <item>通话记录</item>
         <item>短信</item>
         <item>彩信</item>
     </string-array>
-
     <plurals name="num_minutes_ago" formatted="false">
         <item quantity="other"><xliff:g id="COUNT_1">%d</xliff:g> 分钟</item>
     </plurals>
