@@ -55,17 +55,15 @@ set_up_environment() {
     esac
 
     # NDK
-    if [ -z ${NDK} ]; then
-        if [ ! -f $LOCAL_PATH/android-ndk-$NDK_VERSION-linux.zip ]; then
-            wget https://dl.google.com/android/repository/android-ndk-$NDK_VERSION-linux.zip
-        fi
-        if [ -d $LOCAL_PATH/NDK ]; then
-            rm -rf $LOCAL_PATH/NDK
-        fi
-        unzip -q android-ndk-$NDK_VERSION-linux.zip
-        mv android-ndk-$NDK_VERSION NDK
-        export NDK=$LOCAL_PATH/NDK
+    if [ ! -f $LOCAL_PATH/android-ndk-$NDK_VERSION-linux.zip ]; then
+        wget -nv https://dl.google.com/android/repository/android-ndk-$NDK_VERSION-linux.zip
     fi
+    if [ -d $LOCAL_PATH/NDK ]; then
+        rm -rf $LOCAL_PATH/NDK
+    fi
+    unzip -q android-ndk-$NDK_VERSION-linux.zip
+    mv android-ndk-$NDK_VERSION NDK
+    export NDK=$LOCAL_PATH/NDK
     export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64
     export SYSROOT=$TOOLCHAIN/sysroot
     export API=28
@@ -94,7 +92,7 @@ patch_gnu_symbols() {
 build_zlib() {
     # For zstd
     if [ ! -f $LOCAL_PATH/zlib-$ZLIB_VERSION.tar.gz ]; then
-        wget https://zlib.net/zlib-$ZLIB_VERSION.tar.gz
+        wget -nv https://zlib.net/zlib-$ZLIB_VERSION.tar.gz
     fi
     if [ -d $LOCAL_PATH/zlib-$ZLIB_VERSION ]; then
         rm -rf $LOCAL_PATH/zlib-$ZLIB_VERSION
@@ -121,7 +119,7 @@ build_zlib() {
 build_liblzma() {
     # For zstd
     if [ ! -f $LOCAL_PATH/xz-$XZ_VERSION.tar.gz ]; then
-        wget https://github.com/tukaani-project/xz/releases/download/v5.4.6/xz-$XZ_VERSION.tar.gz
+        wget -nv https://github.com/tukaani-project/xz/releases/download/v5.4.6/xz-$XZ_VERSION.tar.gz
     fi
     if [ -d $LOCAL_PATH/xz-$XZ_VERSION ]; then
         rm -rf $LOCAL_PATH/xz-$XZ_VERSION
@@ -137,7 +135,7 @@ build_liblzma() {
 build_liblz4() {
     # For zstd
     if [ ! -f $LOCAL_PATH/v$LZ4_VERSION.zip ]; then
-        wget https://github.com/lz4/lz4/archive/refs/tags/v$LZ4_VERSION.zip
+        wget -nv https://github.com/lz4/lz4/archive/refs/tags/v$LZ4_VERSION.zip
     fi
     if [ -d $LOCAL_PATH/lz4-$LZ4_VERSION ]; then
         rm -rf $LOCAL_PATH/lz4-$LZ4_VERSION
@@ -178,7 +176,7 @@ build_zstd() {
         git clone https://jihulab.com/XayahSuSuSu/zstd -b dev zstd-$ZSTD_VERSION
     else
         if [ ! -f $LOCAL_PATH/zstd-$ZSTD_VERSION.tar.gz ]; then
-            wget https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz
+            wget -nv https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz
         fi
         if [ -d $LOCAL_PATH/zstd-$ZSTD_VERSION ]; then
             rm -rf $LOCAL_PATH/zstd-$ZSTD_VERSION
@@ -214,7 +212,7 @@ build_zstd() {
 
 build_tar() {
     if [ ! -f $LOCAL_PATH/tar-$TAR_VERSION.tar.xz ]; then
-        wget https://ftp.gnu.org/gnu/tar/tar-$TAR_VERSION.tar.xz
+        wget -nv https://ftp.gnu.org/gnu/tar/tar-$TAR_VERSION.tar.xz
     fi
     if [ -d $LOCAL_PATH/tar-$TAR_VERSION ]; then
         rm -rf tar-$TAR_VERSION
@@ -236,7 +234,7 @@ build_tar() {
 build_coreutls() {
     # df
     if [ ! -f $LOCAL_PATH/coreutils-$COREUTLS_VERSION.tar.xz ]; then
-        wget https://ftp.gnu.org/gnu/coreutils/coreutils-$COREUTLS_VERSION.tar.xz
+        wget -nv https://ftp.gnu.org/gnu/coreutils/coreutils-$COREUTLS_VERSION.tar.xz
     fi
     if [ -d $LOCAL_PATH/coreutils-$COREUTLS_VERSION ]; then
         rm -rf coreutils-$COREUTLS_VERSION
@@ -258,7 +256,7 @@ build_coreutls() {
 build_tree() {
     # tree
     if [ ! -f $LOCAL_PATH/unix-tree-$TREE_VERSION.tar.gz ]; then
-        wget https://gitlab.com/OldManProgrammer/unix-tree/-/archive/$TREE_VERSION/unix-tree-$TREE_VERSION.tar.gz
+        wget -nv https://gitlab.com/OldManProgrammer/unix-tree/-/archive/$TREE_VERSION/unix-tree-$TREE_VERSION.tar.gz
     fi
     if [ -d $LOCAL_PATH/tree-$TREE_VERSION ]; then
         rm -rf $LOCAL_PATH/tree-$TREE_VERSION
@@ -281,7 +279,7 @@ build_tree() {
         CXXFLAGS="$BUILD_CFLAGS" \
         LDFLAGS="$BUILD_LDFLAGS_STATIC" \
         -j8
-    make install prefix= DESTDIR=$LOCAL_PATH/tree
+    make install prefix= DESTDIR=$LOCAL_PATH/tree MANDIR=$LOCAL_PATH/tree
     $STRIP $LOCAL_PATH/tree/tree
     cd ..
     rm -rf tree-$TREE_VERSION
@@ -344,5 +342,5 @@ for abi in ${abis[@]}; do
     build $1
     package $1
     # Clean build files
-    rm -rf NDK coreutls tar zstd fuse rclone tree
+    rm -rf NDK coreutls tar zstd tree
 done
