@@ -195,4 +195,7 @@
     <string name="share">Dijeli</string>
     <string name="main_account_not_set">Glavni račun nije postavljen</string>
     <string name="search_bar_hint_medium">Traži ime ili putanju …</string>
+    <string name="grant_ntfy_perm_manually">Ručno dodijeli dozvolu za obavijesti</string>
+    <string name="permissions">Dozvole</string>
+    <string name="notification">Obavijest</string>
 </resources>
