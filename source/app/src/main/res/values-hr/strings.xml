@@ -194,4 +194,5 @@
     <string name="local">Lokalno</string>
     <string name="share">Dijeli</string>
     <string name="main_account_not_set">Glavni račun nije postavljen</string>
+    <string name="search_bar_hint_medium">Traži ime ili putanju …</string>
 </resources>
