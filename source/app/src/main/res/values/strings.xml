@@ -165,7 +165,7 @@
     <string name="recursive_mode">Recursive mode</string>
     <string name="follow_symlinks">Follow symlinks</string>
     <string name="follow_symlinks_desc">Archive and dump the files they point to</string>
-    <string name="batching_select">Batching select</string>
+    <string name="batching_select">Batch select</string>
     <string name="remain">Remain</string>
     <string name="apk_only">APK only</string>
     <string name="data_only">Data only</string>
@@ -174,8 +174,8 @@
     <string name="clear_all">Clear all</string>
     <string name="existing_files">Existing files</string>
     <string name="overall_config">Overall config</string>
-    <string name="remote_not_set">Remote not set</string>
-    <string name="test_connection">Test connection</string>
+    <string name="remote_not_set">Remote directory not set</string>
+    <string name="test_connection">Test the connection</string>
     <string name="connection_established">The connection was successfully established</string>
     <string name="main_account_not_set">Main account not set</string>
     <string name="local">Local</string>
