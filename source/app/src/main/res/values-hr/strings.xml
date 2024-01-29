@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sooner_or_later">Prije ili kasnije</string>
-    <string name="storage">Spremište</string>
+    <string name="storage">Dozvola za čitanje/pisanje u eksternu memoriju</string>
     <string name="save">Spremi</string>
     <string name="installation_time">Vrijeme instalacije</string>
     <string name="restoring">Obnavljanje</string>
@@ -15,13 +15,13 @@
     <string name="processing">U obradi</string>
     <string name="date">Datum</string>
     <string name="unsupported_format">Nepodržan format</string>
-    <string name="telephony">Telefoniranje</string>
+    <string name="telephony">Povijest poziva</string>
     <string name="create_account">Stvori račun</string>
     <string name="simplify">Pojednostavni</string>
     <string name="not_installed">Nije instaliran</string>
     <string name="uploading">Prenošenje</string>
     <string name="reset_backup_list">Resetiraj popis sigurnosnih kopija</string>
-    <string name="directory">Direktorij</string>
+    <string name="directory">Memorija</string>
     <string name="edit">Uredi</string>
     <string name="restore">Obnovi</string>
     <string name="copy">Kopiraj</string>
@@ -87,7 +87,7 @@
     <string name="mounted">Montirano</string>
     <string name="app_name">DataBackup</string>
     <string name="environment_detection">Prepoznavanje okruženja</string>
-    <string name="succeed">Uspjelo</string>
+    <string name="succeed">Uspjeh</string>
     <string name="system">Sustav</string>
     <string name="add">Dodaj</string>
     <string name="word_return">Natrag</string>
@@ -95,7 +95,7 @@
     <string name="time">Vrijeme</string>
     <string name="external_storage">Eksterno spremište</string>
     <string name="save_directory_structure">Apremi strukturu direktorija</string>
-    <string name="app_and_data">Aplikacija i podaci</string>
+    <string name="app_and_data">Aplikacije</string>
     <string name="failed">Neuspjelo</string>
     <string name="restore_dir">Obnovi direktorij</string>
     <string name="home">Početna</string>
@@ -115,14 +115,14 @@
     <string name="preserve">Sačuvaj</string>
     <string name="apk_only">Samo APK datoteke</string>
     <string name="overlook">Pregled</string>
-    <string name="welcome_to_use">Dobro došao, dobro došla</string>
+    <string name="welcome_to_use">Dobro došao, dobro došla u DataBackup</string>
     <string name="start_subtitle">U skladu s relevantnim pravilima, pažljivo pročitaj i prihvati sljedeći „Korisnički ugovor” i „Pravila o privatnosti” prije korištenja ove aplikacije</string>
     <string name="start_desc">Svi podaci koje ova aplikacija generira koriste se samo za sigurnosne kopije/obnavljanje i spremaju se samo lokalno.</string>
     <string name="network_desc">Koristi se za dobivanje podataka o aktualiziranju aplikacije, analitiku aplikacije</string>
     <string name="application_desc">Dobij informacije o paketu aplikacije koje se koriste za generiranje popisa sigurnosnih kopija i dobivanje veličine podataka aplikacije</string>
     <string name="storage_desc">Koristi se za konfiguraciju sigurnosne kopije, čitanje i pisanje arhive</string>
     <string name="release_prebuilt_binaries">Objavi unaprijed izgrađene binarne datoteke</string>
-    <string name="log">Dnevnik</string>
+    <string name="log">Dnevnici</string>
     <string name="remote_service_err_info">Pokušaj ponovo pokrenuti uređaj ili ponovo instaliraj Magisk.</string>
     <string name="selected_apks">Odabrane APK datoteke</string>
     <string name="failed_and_terminated">Neuspjelo i prekinuto</string>
@@ -162,11 +162,11 @@
     <string name="selected_both">Oboje odabrano</string>
     <string name="abi_validation">Provjeri ABI sučelje</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Ova verzija podržava samo verziju %1$s, ali tvoj uređaj ima %2$s. Instaliraj %3$s ili noviju verziju.</string>
-    <string name="confirm_delete_selected_restoring_items">Izbriši odabrane stavke iz baze podataka i lokalnih datoteka</string>
+    <string name="confirm_delete_selected_restoring_items">Izbrisati odabrane stavke iz baze podataka i lokalnih datoteka?</string>
     <string name="set_remote">Postavi udaljenu</string>
     <string name="set_local">Postavi lokalnu</string>
     <string name="info_set_remote_or_local">Postavi udaljenu ili lokalnu putanju</string>
-    <string name="third_party">Treća strana</string>
+    <string name="third_party">Instalirano</string>
     <string name="main_account">Glavni račun</string>
     <string name="set_as_main_account">Postavi kao glavni račun</string>
     <string name="please_set_up_main_account">Postavi glavni račun</string>
@@ -180,7 +180,7 @@
     <string name="remain">Ostani</string>
     <string name="in_use">Koristi se</string>
     <string name="overall_config">Ukupna konfiguracija</string>
-    <string name="remote_not_set">Udaljena putanja nije postavljena</string>
+    <string name="remote_not_set">Udaljeni direktorij nije postavljen</string>
     <string name="shared_dir">Dijeljeni direktorij</string>
     <string name="allow_empty">Dozvoli prazno</string>
     <string name="original_data_size">Količina podataka (izvorno)</string>
