@@ -179,4 +179,23 @@
     <string name="domain">Домен</string>
     <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Використовувати канал замість параметра для tar. Використати його, коли з\'явиться напис \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
     <string name="url">URL-адреса</string>
+    <string name="search_bar_hint_medium">Пошук за назвою або шляхом…</string>
+    <string name="home">Головна</string>
+    <string name="keystore">Keystore</string>
+    <string name="keystore_desc">Ця програма використовує Android Keystore, відновлення може спричинити непередбачувані помилки</string>
+    <string name="back_up_to_local">Створити резервну копію на лок. диск</string>
+    <string name="preprocessing">Попередня обробка</string>
+    <string name="restore_from_local">Відновити з лок. диска</string>
+    <string name="task_is_in_progress">Завдання в процесі виконання</string>
+    <string name="task">Завдання</string>
+    <string name="task_list">Список завдань</string>
+    <string name="finished">Готово</string>
+    <string name="type">Тип</string>
+    <string name="first_install">Перше встановлення</string>
+    <string name="info">Інфо</string>
+    <string name="preserve">Зберегти</string>
+    <string name="notification">Повідомлення</string>
+    <string name="permissions">Дозволи</string>
+    <string name="details">Деталі</string>
+    <string name="grant_ntfy_perm_manually">Будь ласка, надайте дозвіл на повідомлення вручну</string>
 </resources>
