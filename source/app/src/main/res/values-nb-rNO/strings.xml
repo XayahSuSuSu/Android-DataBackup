@@ -54,7 +54,7 @@
     <string name="unsupported_format">Ustøttet format</string>
     <string name="icon_reload_failed">Kunne ikke laste inn ikon igjen</string>
     <string name="create_account">Opprett konto</string>
-    <string name="confirm_delete_selected_restoring_items">Slett valgte elementer fra databasen og lokale filer\?</string>
+    <string name="confirm_delete_selected_restoring_items">Slett valgte elementer fra databasen og lokale filer?</string>
     <string name="abi_validation">Bekreft ABI</string>
     <string name="storage_desc">Brukt for sikkerhetskopioppsett, erkiveringsskriving og lesing</string>
     <string name="simplify">Forenkle</string>
