@@ -49,8 +49,10 @@ interface MediaDao {
     suspend fun clearActivated()
 
     @Query(
-        "SELECT *, COUNT(*) AS count FROM MediaEntity" +
-                " GROUP BY indexInfo_name" +
+        "SELECT r.*, l.count FROM " +
+                "(SELECT indexInfo_name, MIN(indexInfo_opType) AS opType, COUNT(*) AS count FROM MediaEntity GROUP BY indexInfo_name) AS l" +
+                " LEFT JOIN MediaEntity AS r ON l.indexInfo_name = r.indexInfo_name AND l.opType = r.indexInfo_opType" +
+                " AND r.id = (SELECT MAX(id) FROM MediaEntity WHERE indexInfo_name = l.indexInfo_name AND indexInfo_opType = l.opType)" +
                 " ORDER BY indexInfo_opType"
     )
     fun queryFlow(): Flow<List<MediaEntityWithCount>>

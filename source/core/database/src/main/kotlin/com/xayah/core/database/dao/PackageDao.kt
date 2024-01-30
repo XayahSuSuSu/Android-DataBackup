@@ -46,8 +46,11 @@ interface PackageDao {
     fun queryFlow(packageName: String, opType: OpType, userId: Int): Flow<List<PackageEntity>>
 
     @Query(
-        "SELECT *, COUNT(*) AS count FROM PackageEntity" +
-                " GROUP BY indexInfo_packageName, indexInfo_userId" +
+        "SELECT r.*, l.count FROM " +
+                "(SELECT indexInfo_packageName, indexInfo_userId, MIN(indexInfo_opType) AS opType, COUNT(*) AS count FROM PackageEntity" +
+                " GROUP BY indexInfo_packageName, indexInfo_userId) AS l" +
+                " LEFT JOIN PackageEntity AS r ON l.indexInfo_packageName = r.indexInfo_packageName AND l.indexInfo_userId = r.indexInfo_userId AND l.opType = r.indexInfo_opType" +
+                " AND r.id = (SELECT MAX(id) FROM PackageEntity WHERE indexInfo_packageName = l.indexInfo_packageName AND indexInfo_userId = l.indexInfo_userId AND indexInfo_opType = l.opType)" +
                 " ORDER BY indexInfo_opType"
     )
     fun queryFlow(): Flow<List<PackageEntityWithCount>>
