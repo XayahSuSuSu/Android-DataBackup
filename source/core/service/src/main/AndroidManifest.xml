@@ -7,12 +7,22 @@
 
     <application>
         <service
-            android:name=".packages.backup.LocalImpl"
+            android:name=".packages.backup.LocalBackupImpl"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
 
         <service
-            android:name=".packages.restore.LocalImpl"
+            android:name=".packages.backup.CloudBackupImpl"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".packages.restore.LocalRestoreImpl"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".packages.restore.CloudRestoreImpl"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
 

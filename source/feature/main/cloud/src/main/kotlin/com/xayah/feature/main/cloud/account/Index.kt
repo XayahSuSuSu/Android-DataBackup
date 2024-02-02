@@ -87,6 +87,7 @@ fun PageCloudAccount(navController: NavHostController, snackbarHostState: Snackb
                     onSelected = { index, _ ->
                         viewModel.emitIntent(IndexUiIntent.SetTypeIndex(index = index))
                     },
+                    onSelectedDismiss = true,
                     onClick = {}
                 )
 
@@ -104,6 +105,7 @@ fun PageCloudAccount(navController: NavHostController, snackbarHostState: Snackb
                                     i.selected.value = index in indexList
                             }
                         },
+                        onSelectedDismiss = true,
                         onClick = {}
                     )
                 }

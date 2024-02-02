@@ -5,6 +5,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledIconButton
@@ -81,6 +82,7 @@ fun TextButton(modifier: Modifier = Modifier, text: StringResourceToken, onClick
 fun FilledIconTextButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
     icon: ImageVectorToken,
     text: StringResourceToken,
     onClick: () -> Unit
@@ -88,6 +90,7 @@ fun FilledIconTextButton(
     Button(
         modifier = modifier,
         enabled = enabled,
+        colors = colors,
         onClick = onClick,
         content = {
             Icon(

@@ -25,4 +25,5 @@ data class CloudEntity(
     val pass: String,
     val remote: String,
     val extra: String,
+    val activated: Boolean,
 )

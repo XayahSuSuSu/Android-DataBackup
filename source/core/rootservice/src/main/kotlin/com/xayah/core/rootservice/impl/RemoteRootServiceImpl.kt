@@ -27,6 +27,7 @@ import com.xayah.core.rootservice.util.ExceptionUtil.tryWithBoolean
 import com.xayah.core.rootservice.util.SsaidUtil
 import com.xayah.core.util.FileUtil
 import com.xayah.core.util.HashUtil
+import com.xayah.core.util.command.BaseUtil.setAllPermissions
 import java.io.File
 import java.io.IOException
 import java.nio.file.FileVisitResult
@@ -194,6 +195,8 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
             })
         }
     }
+
+    override fun setAllPermissions(src: String): Unit = synchronized(lock) { File(src).setAllPermissions() }
 
     /**
      * AIDL limits transaction to 1M which means it may throw [android.os.TransactionTooLargeException]

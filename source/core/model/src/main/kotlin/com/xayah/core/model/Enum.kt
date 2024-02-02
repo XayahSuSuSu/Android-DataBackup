@@ -57,6 +57,7 @@ enum class OperationState {
     IDLE,
     PROCESSING,
     UPLOADING,
+    DOWNLOADING,
     SKIP,
     DONE,
     ERROR

@@ -222,6 +222,8 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun clearEmptyDirectoriesRecursively(path: String) = runCatching { getService().clearEmptyDirectoriesRecursively(path) }.onFailure(onFailure)
 
+    suspend fun setAllPermissions(src: String) = runCatching { getService().setAllPermissions(src) }.onFailure(onFailure)
+
     suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> = runCatching {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)
         val packages = mutableListOf<PackageInfo>()
@@ -296,6 +298,7 @@ class RemoteRootService(private val context: Context) {
                 out.add("Failed to write configs: $dst")
             }
         }
+        setAllPermissions(src = dst)
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }.onFailure(onFailure).getOrElse { ShellResult(code = -1, input = listOf(), out = listOf()) }

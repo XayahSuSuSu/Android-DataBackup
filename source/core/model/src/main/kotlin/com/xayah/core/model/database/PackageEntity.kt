@@ -79,6 +79,8 @@ data class PackageIndexInfo(
     var userId: Int,
     var compressionType: CompressionType,
     var preserveId: Long,
+    var cloud: String,
+    var backupDir: String,
 )
 
 @Serializable

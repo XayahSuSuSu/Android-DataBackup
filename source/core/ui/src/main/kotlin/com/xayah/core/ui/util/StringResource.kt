@@ -1,10 +1,11 @@
 package com.xayah.core.ui.util
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.common.util.toPureString
+import com.xayah.core.ui.model.StringResourceToken
 
 fun StringResourceToken.Companion.fromStringId(@StringRes id: Int): StringResourceToken {
     return StringResourceToken.StringIdToken(id = id)
@@ -33,3 +34,17 @@ val StringResourceToken.value: String
             args.map { it.value }.toPureString()
         }
     }
+
+fun StringResourceToken.getValue(context: Context): String = when (this) {
+    is StringResourceToken.StringIdToken -> {
+        context.getString(id)
+    }
+
+    is StringResourceToken.StringToken -> {
+        value
+    }
+
+    is StringResourceToken.StringArgsToken -> {
+        args.map { it.getValue(context) }.toPureString()
+    }
+}

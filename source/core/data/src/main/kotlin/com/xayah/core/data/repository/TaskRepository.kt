@@ -26,17 +26,20 @@ class TaskRepository @Inject constructor(
     val tasks = taskDao.queryFlow().distinctUntilChanged()
 
     fun queryTaskFlow(id: Long) = taskDao.queryTaskFlow(id)
+
+    @Suppress("UNCHECKED_CAST")
     fun <T> queryProcessingFlow(taskId: Long, taskType: TaskType): Flow<List<T>> = when (taskType) {
         TaskType.PACKAGE -> taskDao.queryPackageFlow(taskId).map { tasks -> tasks.filter { it.isFinished.not() } }.distinctUntilChanged()
         TaskType.MEDIA -> taskDao.queryMediaFlow(taskId).map { tasks -> tasks.filter { it.isFinished.not() } }.distinctUntilChanged()
     } as Flow<List<T>>
 
+    @Suppress("UNCHECKED_CAST")
     fun <T> querySuccessFlow(taskId: Long, taskType: TaskType): Flow<List<T>> = when (taskType) {
         TaskType.PACKAGE -> taskDao.queryPackageFlow(taskId).map { tasks -> tasks.filter { it.isFinished && it.isSuccess } }
         TaskType.MEDIA -> taskDao.queryMediaFlow(taskId).map { tasks -> tasks.filter { it.isFinished && it.isSuccess } }
     } as Flow<List<T>>
 
-
+    @Suppress("UNCHECKED_CAST")
     fun <T> queryFailureFlow(taskId: Long, taskType: TaskType): Flow<List<T>> = when (taskType) {
         TaskType.PACKAGE -> taskDao.queryPackageFlow(taskId).map { tasks -> tasks.filter { it.isFinished && it.isSuccess.not() } }
         TaskType.MEDIA -> taskDao.queryMediaFlow(taskId).map { tasks -> tasks.filter { it.isFinished && it.isSuccess.not() } }

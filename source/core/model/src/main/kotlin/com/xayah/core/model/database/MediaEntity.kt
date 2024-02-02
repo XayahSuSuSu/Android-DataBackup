@@ -14,6 +14,8 @@ data class MediaIndexInfo(
     var name: String,
     var compressionType: CompressionType,
     var preserveId: Long,
+    var cloud: String,
+    var backupDir: String,
 )
 
 @Serializable

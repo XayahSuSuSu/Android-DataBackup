@@ -12,7 +12,6 @@ data class TaskEntity(
     var taskType: TaskType,
     var startTimestamp: Long,
     var endTimestamp: Long,
-    var backupDir: String,
     var rawBytes: Double,
     var availableBytes: Double,
     var totalBytes: Double,
@@ -20,4 +19,6 @@ data class TaskEntity(
     var successCount: Int,
     var failureCount: Int,
     var isProcessing: Boolean,
+    var cloud: String,
+    var backupDir: String,
 )

@@ -60,6 +60,7 @@ fun ModalActionDropdownMenu(
     expanded: Boolean,
     actionList: List<ActionMenuItem>,
     maxDisplay: Int? = null,
+    onClick: ((index: Int) -> Unit)? = null,
     onDismissRequest: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -106,6 +107,8 @@ fun ModalActionDropdownMenu(
                                     targetList = item.secondaryMenu
                                 } else if (item.title == StringResourceToken.fromStringId(R.string.word_return) && item.onClick == null) {
                                     targetList = actionList
+                                } else if (onClick != null) {
+                                    onClick(index)
                                 } else if (item.onClick != null) {
                                     scope.launch {
                                         processingIndex = index

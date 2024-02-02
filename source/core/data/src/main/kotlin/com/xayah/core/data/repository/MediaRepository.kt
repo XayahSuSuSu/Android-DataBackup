@@ -41,10 +41,15 @@ class MediaRepository @Inject constructor(
         msg
     }
 
-    private val archivesMediumDir by lazy { pathUtil.getLocalBackupArchivesMediumDir() }
+    private val archivesMediumDir get() = pathUtil.getLocalBackupArchivesMediumDir()
+    private val localBackupSaveDir get() = context.localBackupSaveDir()
     val medium = mediaDao.queryFlow().distinctUntilChanged()
     val activatedCount = mediaDao.countActivatedFlow().distinctUntilChanged()
 
+    suspend fun query(opType: OpType, preserveId: Long, cloud: String, backupDir: String) = mediaDao.query(opType, preserveId, cloud, backupDir)
+    suspend fun query(opType: OpType, name: String, cloud: String, backupDir: String) = mediaDao.query(opType, name, cloud, backupDir)
+    suspend fun query(opType: OpType, preserveId: Long, name: String, cloud: String, backupDir: String) = mediaDao.query(opType, preserveId, name, cloud, backupDir)
+    suspend fun query(opType: OpType, preserveId: Long, name: String, ct: CompressionType, cloud: String, backupDir: String) = mediaDao.query(opType, preserveId, name, ct, cloud, backupDir)
     fun queryFlow(name: String, opType: OpType, preserveId: Long) = mediaDao.queryFlow(name = name, opType = opType, preserveId = preserveId)
     fun queryFlow(name: String, opType: OpType) = mediaDao.queryFlow(name = name, opType = opType)
 
@@ -64,9 +69,10 @@ class MediaRepository @Inject constructor(
                 runCatching {
                     val stored = rootService.readProtoBuf<MediaEntity>(it.pathString).also { p ->
                         p?.extraInfo?.activated = false
+                        p?.indexInfo?.backupDir = localBackupSaveDir
                     }
                     if (stored != null) {
-                        mediaDao.query(stored.indexInfo.opType, stored.preserveId, stored.name, stored.indexInfo.compressionType).also { m ->
+                        query(stored.indexInfo.opType, stored.preserveId, stored.name, stored.indexInfo.compressionType, "", localBackupSaveDir).also { m ->
                             if (m == null)
                                 mediaDao.upsert(stored)
                         }
@@ -84,7 +90,7 @@ class MediaRepository @Inject constructor(
                 indeterminate = true
             )
         )
-        val medium = mediaDao.query(opType = OpType.BACKUP, preserveId = 0)
+        val medium = query(opType = OpType.BACKUP, preserveId = 0, "", "")
         medium.forEach { m ->
             mediaDao.upsert(m.copy(mediaInfo = m.mediaInfo.copy(displayBytes = rootService.calculateSize(m.path))))
         }
@@ -115,13 +121,13 @@ class MediaRepository @Inject constructor(
                     return@forEach
                 }
                 var name = PathUtil.getFileName(pathString)
-                mediaDao.query(opType = OpType.BACKUP, preserveId = 0).forEach {
+                query(opType = OpType.BACKUP, preserveId = 0, cloud = "", backupDir = "").forEach {
                     if (it.name == name && it.path != pathString) name = renameDuplicateMedia(name)
                 }
                 customMediaList.forEach {
                     if (it.name == name && it.path != pathString) name = renameDuplicateMedia(name)
                 }
-                val exists = mediaDao.query(opType = OpType.BACKUP, preserveId = 0, name = name) != null
+                val exists = query(opType = OpType.BACKUP, preserveId = 0, name = name, cloud = "", backupDir = "") != null
                 if (exists) {
                     failedCount++
                     log { "$name:${pathString} has already existed." }
@@ -133,6 +139,8 @@ class MediaRepository @Inject constructor(
                             name = name,
                             compressionType = CompressionType.TAR,
                             preserveId = 0,
+                            cloud = "",
+                            backupDir = ""
                         ),
                         mediaInfo = MediaInfo(
                             path = pathString,
@@ -166,10 +174,8 @@ class MediaRepository @Inject constructor(
         else 0
     }
 
-    private suspend fun queryMedium(opType: OpType, name: String) = mediaDao.query(opType, name)
-
-    suspend fun updateMediaDataSize(opType: OpType, preserveId: Long, name: String) {
-        mediaDao.query(opType, preserveId, name).also {
+    suspend fun updateLocalMediaDataSize(opType: OpType, preserveId: Long, name: String) {
+        query(opType, preserveId, name, "", "").also {
             if (it != null) {
                 it.mediaInfo.displayBytes = calculateDataSize(it)
                 upsert(it)
@@ -177,17 +183,18 @@ class MediaRepository @Inject constructor(
         }
     }
 
-    suspend fun updateMediaArchivesSize(opType: OpType, name: String) {
-        queryMedium(opType, name).onEach {
+    suspend fun updateLocalMediaArchivesSize(opType: OpType, name: String) {
+        query(opType, name, "", "").onEach {
             it.mediaInfo.displayBytes = calculateArchiveSize(it)
             upsert(it)
         }
     }
 
     suspend fun preserve(m: MediaEntity) {
+        val parent = archivesMediumDir
         val preserveId = DateUtil.getTimestamp()
-        val src = "${archivesMediumDir}/${m.archivesPreserveRelativeDir}"
-        val dst = "${archivesMediumDir}/${m.archivesRelativeDir}/${preserveId}"
+        val src = "${parent}/${m.archivesPreserveRelativeDir}"
+        val dst = "${parent}/${m.archivesRelativeDir}/${preserveId}"
         rootService.renameTo(src, dst)
         upsert(m.copy(indexInfo = m.indexInfo.copy(preserveId = preserveId)))
     }

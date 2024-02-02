@@ -33,4 +33,6 @@
     <item name="remain" type="string" />
     <item name="time" type="string" />
     <item name="internal_storage" type="string" />
+    <item name="cloud" type="string" />
+    <item name="local" type="string" />
 </resources>

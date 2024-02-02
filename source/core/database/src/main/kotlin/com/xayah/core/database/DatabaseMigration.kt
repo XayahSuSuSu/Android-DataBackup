@@ -200,5 +200,8 @@ object DatabaseMigrations {
     @DeleteTable(
         tableName = "MediaRestoreOperationEntity"
     )
+    @DeleteTable(
+        tableName = "CloudEntity"
+    )
     class Schema3to4 : AutoMigrationSpec
 }

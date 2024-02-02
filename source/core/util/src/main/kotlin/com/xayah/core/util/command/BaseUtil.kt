@@ -8,9 +8,9 @@ import android.graphics.drawable.Drawable
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import com.topjohnwu.superuser.Shell
+import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.common.util.trim
 import com.xayah.core.util.BinArchiveName
-import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.LogUtil.TAG_SHELL_CODE
 import com.xayah.core.util.LogUtil.TAG_SHELL_IN
@@ -168,7 +168,7 @@ object BaseUtil {
     }
 
     @SuppressLint("SetWorldWritable", "SetWorldReadable")
-    private fun File.setAllPermissions(): Boolean = run {
+    fun File.setAllPermissions(): Boolean = run {
         setExecutable(true, false).also {
             if (it.not()) return@run false
         }

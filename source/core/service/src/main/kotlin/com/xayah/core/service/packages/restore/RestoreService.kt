@@ -1,14 +1,12 @@
-package com.xayah.core.service.packages.backup
+package com.xayah.core.service.packages.restore
 
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
-import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.model.OpType
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.PackageEntity
@@ -16,26 +14,22 @@ import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.R
-import com.xayah.core.service.model.BackupPreprocessing
-import com.xayah.core.service.util.CommonBackupUtil
-import com.xayah.core.service.util.PackagesBackupUtil
+import com.xayah.core.service.util.PackagesRestoreUtil
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PreparationUtil
-import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @AndroidEntryPoint
-internal abstract class AbstractService : Service() {
+internal abstract class RestoreService : Service() {
     companion object {
-        private const val TAG = "PackagesBackupServiceImpl"
+        private const val TAG = "PackagesRestoreServiceImpl"
     }
 
     private val binder = OperationLocalBinder()
@@ -46,11 +40,11 @@ internal abstract class AbstractService : Service() {
     }
 
     inner class OperationLocalBinder : Binder() {
-        fun getService(): AbstractService = this@AbstractService
+        fun getService(): RestoreService = this@RestoreService
     }
 
     private val mutex = Mutex()
-    private val context by lazy { applicationContext }
+    internal val context by lazy { applicationContext }
 
     internal fun log(onMsg: () -> String): String = run {
         val msg = onMsg()
@@ -62,60 +56,29 @@ internal abstract class AbstractService : Service() {
     abstract val pathUtil: PathUtil
     abstract val taskDao: TaskDao
     abstract val packageDao: PackageDao
-    abstract val packagesBackupUtil: PackagesBackupUtil
+    abstract val packagesRestoreUtil: PackagesRestoreUtil
     abstract val taskRepository: TaskRepository
-    abstract val commonBackupUtil: CommonBackupUtil
-    abstract val packageRepository: PackageRepository
 
     private val notificationBuilder by lazy { NotificationUtil.getProgressNotificationBuilder(context) }
-    private var startTimestamp: Long = 0
-    private var endTimestamp: Long = 0
-    internal val taskEntity by lazy {
-        TaskEntity(
-            id = 0,
-            opType = OpType.BACKUP,
-            taskType = TaskType.PACKAGE,
-            startTimestamp = startTimestamp,
-            endTimestamp = endTimestamp,
-            backupDir = context.localBackupSaveDir(),
-            rawBytes = 0.toDouble(),
-            availableBytes = 0.toDouble(),
-            totalBytes = 0.toDouble(),
-            totalCount = 0,
-            successCount = 0,
-            failureCount = 0,
-            isProcessing = true,
-        )
-    }
+    internal var startTimestamp: Long = 0
+    internal var endTimestamp: Long = 0
+    abstract val taskEntity: TaskEntity
 
-    suspend fun preprocessing(): BackupPreprocessing = withIOContext {
+    suspend fun preprocessing() = withIOContext {
         mutex.withLock {
             startTimestamp = DateUtil.getTimestamp()
 
-            NotificationUtil.notify(context, notificationBuilder, context.getString(R.string.backing_up), context.getString(R.string.preprocessing))
+            NotificationUtil.notify(context, notificationBuilder, context.getString(R.string.restoring), context.getString(R.string.preprocessing))
             log { "Preprocessing is starting." }
 
-            /**
-             * Somehow the input methods and accessibility services
-             * will be changed after backing up on some devices,
-             * so we restore them manually.
-             */
-            val backupPreprocessing = BackupPreprocessing(inputMethods = "", accessibilityServices = "")
-
-            PreparationUtil.getInputMethods().also { result ->
-                backupPreprocessing.inputMethods = result.outString.trim()
-            }
-            PreparationUtil.getAccessibilityServices().also { result ->
-                backupPreprocessing.accessibilityServices = result.outString.trim()
-            }
-            log { "InputMethods: ${backupPreprocessing.inputMethods}." }
-            log { "AccessibilityServices: ${backupPreprocessing.accessibilityServices}." }
-            backupPreprocessing
+            log { "Trying to enable adb install permissions." }
+            PreparationUtil.setInstallEnv()
         }
     }
 
     abstract suspend fun createTargetDirs()
-    abstract suspend fun backupPackage(p: PackageEntity)
+    abstract suspend fun restorePackage(p: PackageEntity)
+    abstract suspend fun clear()
 
     @ExperimentalSerializationApi
     suspend fun processing() = withIOContext {
@@ -127,8 +90,8 @@ internal abstract class AbstractService : Service() {
             taskEntity.also {
                 it.startTimestamp = startTimestamp
                 it.rawBytes = taskRepository.getRawBytes(TaskType.PACKAGE)
-                it.availableBytes = taskRepository.getAvailableBytes(OpType.BACKUP)
-                it.totalBytes = taskRepository.getTotalBytes(OpType.BACKUP)
+                it.availableBytes = taskRepository.getAvailableBytes(OpType.RESTORE)
+                it.totalBytes = taskRepository.getTotalBytes(OpType.RESTORE)
                 it.id = taskDao.upsert(it)
             }
 
@@ -143,7 +106,7 @@ internal abstract class AbstractService : Service() {
                 NotificationUtil.notify(
                     context,
                     notificationBuilder,
-                    context.getString(R.string.backing_up),
+                    context.getString(R.string.restoring),
                     currentPackage.packageInfo.label,
                     packages.size,
                     index
@@ -154,47 +117,23 @@ internal abstract class AbstractService : Service() {
                 log { "Trying to kill ${currentPackage.packageName}." }
                 BaseUtil.killPackage(userId = currentPackage.userId, packageName = currentPackage.packageName)
 
-                backupPackage(currentPackage)
+                restorePackage(currentPackage)
             }
         }
     }
 
     @ExperimentalSerializationApi
-    suspend fun postProcessing(backupPreprocessing: BackupPreprocessing) = withIOContext {
+    suspend fun postProcessing() = withIOContext {
         mutex.withLock {
             NotificationUtil.notify(
                 context,
                 notificationBuilder,
-                context.getString(R.string.backing_up),
+                context.getString(R.string.restoring),
                 context.getString(R.string.wait_for_remaining_data_processing)
             )
             log { "PostProcessing is starting." }
 
-            // Restore keyboard and services.
-            if (backupPreprocessing.inputMethods.isNotEmpty()) {
-                PreparationUtil.setInputMethods(inputMethods = backupPreprocessing.inputMethods)
-                log { "InputMethods restored: ${backupPreprocessing.inputMethods}." }
-            } else {
-                log { "InputMethods is empty, skip restoring." }
-            }
-            if (backupPreprocessing.accessibilityServices.isNotEmpty()) {
-                PreparationUtil.setAccessibilityServices(accessibilityServices = backupPreprocessing.accessibilityServices)
-                log { "AccessibilityServices restored: ${backupPreprocessing.accessibilityServices}." }
-            } else {
-                log { "AccessibilityServices is empty, skip restoring." }
-            }
-
-            val dstDir = context.localBackupSaveDir()
-            // Backup itself if enabled.
-            if (context.readBackupItself().first()) {
-                log { "Backup itself enabled." }
-                commonBackupUtil.backupItself(dstDir = dstDir)
-            }
-
-            val configsDstDir = pathUtil.getConfigsDir(dstDir)
-            // Backup others.
-            log { "Save icons." }
-            packagesBackupUtil.backupIcons(dstDir = configsDstDir)
+            clear()
 
             packageDao.clearActivated()
             endTimestamp = DateUtil.getTimestamp()
@@ -207,7 +146,7 @@ internal abstract class AbstractService : Service() {
             NotificationUtil.notify(
                 context,
                 notificationBuilder,
-                context.getString(R.string.backup_completed),
+                context.getString(R.string.restore_completed),
                 "${time}, ${taskEntity.successCount} ${context.getString(R.string.succeed)}, ${taskEntity.failureCount} ${context.getString(R.string.failed)}",
                 ongoing = false
             )

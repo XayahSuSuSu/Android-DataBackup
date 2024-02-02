@@ -4,15 +4,23 @@ import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.DataType
+import com.xayah.core.model.OpType
+import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
+import com.xayah.core.model.database.TaskEntity
+import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.service.util.PackagesRestoreUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class LocalImpl @Inject constructor() : AbstractService() {
+internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
+    @Inject
+    override lateinit var rootService: RemoteRootService
+
     @Inject
     override lateinit var pathUtil: PathUtil
 
@@ -27,6 +35,27 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
 
     @Inject
     override lateinit var taskRepository: TaskRepository
+
+    override val taskEntity by lazy {
+        TaskEntity(
+            id = 0,
+            opType = OpType.RESTORE,
+            taskType = TaskType.PACKAGE,
+            startTimestamp = startTimestamp,
+            endTimestamp = endTimestamp,
+            backupDir = context.localBackupSaveDir(),
+            rawBytes = 0.toDouble(),
+            availableBytes = 0.toDouble(),
+            totalBytes = 0.toDouble(),
+            totalCount = 0,
+            successCount = 0,
+            failureCount = 0,
+            isProcessing = true,
+            cloud = "",
+        )
+    }
+
+    override suspend fun createTargetDirs() {}
 
     private val archivesPackagesDir by lazy { pathUtil.getLocalBackupArchivesPackagesDir() }
 
@@ -60,4 +89,6 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
             taskDao.upsert(it)
         }
     }
+
+    override suspend fun clear() {}
 }

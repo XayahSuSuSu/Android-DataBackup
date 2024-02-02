@@ -203,4 +203,8 @@
     <string name="outdated_fs_warning">你正在使用不支持超过4GB单文件的32位或更低的文件系统</string>
     <string name="check_keystore">检查密钥</string>
     <string name="check_keystore_desc">刷新时检查应用是否使用密钥, 这会明显减慢刷新速度</string>
+    <string name="back_up_to_cloud">备份到云端</string>
+    <string name="restore_from_cloud">从云端恢复</string>
+    <string name="no_available_cloud_accounts">无可用云端账户</string>
+    <string name="select_cloud_accounts_to_refresh">选择需要刷新的云端账户</string>
 </resources>

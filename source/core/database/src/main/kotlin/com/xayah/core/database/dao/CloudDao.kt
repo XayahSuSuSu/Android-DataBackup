@@ -15,6 +15,9 @@ interface CloudDao {
     @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
     suspend fun queryByName(name: String): CloudEntity?
 
+    @Query("SELECT * FROM CloudEntity WHERE activated = 1")
+    suspend fun queryActivated(): List<CloudEntity>
+
     @Query("SELECT * FROM CloudEntity")
     fun queryFlow(): Flow<List<CloudEntity>>
 

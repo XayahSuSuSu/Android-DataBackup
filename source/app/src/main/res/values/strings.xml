@@ -210,4 +210,8 @@
     <string name="outdated_fs_warning">You are using a 32-bit or lower file system, which DOES NOT support ONE FILE bigger than 4GB</string>
     <string name="check_keystore">Check keystore</string>
     <string name="check_keystore_desc">Check if the app uses KeyStore while refreshing, this will significantly slow down the process</string>
+    <string name="back_up_to_cloud">Back up to cloud</string>
+    <string name="restore_from_cloud">Restore from cloud</string>
+    <string name="no_available_cloud_accounts">No available cloud accounts</string>
+    <string name="select_cloud_accounts_to_refresh">Select cloud accounts to refresh</string>
 </resources>

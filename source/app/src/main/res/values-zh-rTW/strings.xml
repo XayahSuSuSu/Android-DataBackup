@@ -203,4 +203,8 @@
     <string name="outdated_fs_warning">你正在使用不支援超過4GB單一檔案的32位元或更低的檔案系統</string>
     <string name="check_keystore">检查KeyStore</string>
     <string name="check_keystore_desc">刷新時檢查應用程式是否使用KeyStore, 這會明顯減慢刷新速度</string>
+    <string name="back_up_to_cloud">備份到雲端</string>
+    <string name="restore_from_cloud">從雲端恢復</string>
+    <string name="no_available_cloud_accounts">無可用雲端帳戶</string>
+    <string name="select_cloud_accounts_to_refresh">選擇需要刷新的雲端帳戶</string>
 </resources>

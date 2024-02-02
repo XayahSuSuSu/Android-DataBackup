@@ -3,6 +3,7 @@ package com.xayah.core.service.util
 import android.content.Context
 import android.content.pm.PackageManager
 import com.xayah.core.common.util.toLineString
+import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readCompatibleMode
@@ -12,6 +13,7 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
+import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
@@ -31,7 +33,8 @@ class PackagesBackupUtil @Inject constructor(
     private val rootService: RemoteRootService,
     private val taskDao: TaskDao,
     private val packageRepository: PackageRepository,
-    private val commonBackupUtil: CommonBackupUtil
+    private val commonBackupUtil: CommonBackupUtil,
+    private val cloudRepository: CloudRepository,
 ) {
     companion object {
         private val TAG = this::class.java.simpleName
@@ -134,6 +137,18 @@ class PackagesBackupUtil @Inject constructor(
             else -> {}
         }
         taskDao.upsert(this)
+    }
+
+    private fun TaskDetailPackageEntity.getLog(
+        dataType: DataType,
+    ) = when (dataType) {
+        DataType.PACKAGE_APK -> apkInfo.log
+        DataType.PACKAGE_USER -> userInfo.log
+        DataType.PACKAGE_USER_DE -> userDeInfo.log
+        DataType.PACKAGE_DATA -> dataInfo.log
+        DataType.PACKAGE_OBB -> obbInfo.log
+        DataType.PACKAGE_MEDIA -> mediaInfo.log
+        else -> ""
     }
 
     private val tarCt = CompressionType.TAR
@@ -330,5 +345,15 @@ class PackagesBackupUtil @Inject constructor(
         val ssaid = rootService.getPackageSsaidAsUser(packageName = packageName, uid = uid, userId = userId)
         log { "Ssaid: $ssaid" }
         p.extraInfo.ssaid = ssaid
+    }
+
+    suspend fun upload(client: CloudClient, p: PackageEntity, t: TaskDetailPackageEntity, dataType: DataType, srcDir: String, dstDir: String) = run {
+        val ct = p.indexInfo.compressionType
+        val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
+        t.updateInfo(dataType = dataType, state = OperationState.UPLOADING)
+
+        cloudRepository.upload(client = client, src = src, dstDir = dstDir).apply {
+            t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog(dataType) + "\n${outString}")
+        }
     }
 }

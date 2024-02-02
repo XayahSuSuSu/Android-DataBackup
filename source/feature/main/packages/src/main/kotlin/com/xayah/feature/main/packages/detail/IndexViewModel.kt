@@ -8,13 +8,17 @@ import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.PackageRepository
+import com.xayah.core.datastore.saveRcloneMainAccountName
 import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
+import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.feature.main.packages.PackageDataChipItem
 import com.xayah.feature.main.packages.R
@@ -24,8 +28,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import com.xayah.core.service.packages.backup.LocalService as LocalBackupService
-import com.xayah.core.service.packages.restore.LocalService as LocalRestoreService
+import com.xayah.core.service.packages.backup.CloudProcessingImpl as CloudBackupService
+import com.xayah.core.service.packages.backup.LocalProcessingImpl as LocalBackupService
+import com.xayah.core.service.packages.restore.CloudProcessingImpl as CloudRestoreService
+import com.xayah.core.service.packages.restore.LocalProcessingImpl as LocalRestoreService
 
 data class IndexUiState(
     val isRefreshing: Boolean,
@@ -37,8 +43,12 @@ sealed class IndexUiIntent : UiIntent {
     data object OnRefresh : IndexUiIntent()
     data class UpdatePackage(val packageEntity: PackageEntity) : IndexUiIntent()
     data class BackupToLocal(val packageEntity: PackageEntity, val navController: NavHostController) : IndexUiIntent()
+    data class BackupToCloud(val packageEntity: PackageEntity, val name: String, val navController: NavHostController) : IndexUiIntent()
     data class RestoreFromLocal(val packageEntity: PackageEntity, val navController: NavHostController) : IndexUiIntent()
+    data class RestoreFromCloud(val packageEntity: PackageEntity, val navController: NavHostController) : IndexUiIntent()
     data class Preserve(val packageEntity: PackageEntity) : IndexUiIntent()
+    data class ActiveCloud(val cloudEntity: CloudEntity) : IndexUiIntent()
+
     data class Delete(val packageEntity: PackageEntity) : IndexUiIntent()
 }
 
@@ -47,9 +57,12 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     args: SavedStateHandle,
     private val packageRepo: PackageRepository,
+    private val cloudRepo: CloudRepository,
     rootService: RemoteRootService,
     private val localBackupService: LocalBackupService,
+    private val cloudBackupService: CloudBackupService,
     private val localRestoreService: LocalRestoreService,
+    private val cloudRestoreService: CloudRestoreService,
     private val contextRepository: ContextRepository,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
@@ -72,8 +85,10 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.OnRefresh -> {
                 emitStateSuspend(state.copy(isRefreshing = true))
                 packageRepo.refreshFromLocalPackage(state.packageName)
-                packageRepo.updatePackageDataSize(state.packageName, OpType.BACKUP, state.userId, 0)
-                packageRepo.updatePackageArchivesSize(state.packageName, OpType.RESTORE, state.userId)
+                packageRepo.refreshFromCloudPackage(state.packageName)
+                packageRepo.updateLocalPackageDataSize(state.packageName, OpType.BACKUP, state.userId, 0)
+                packageRepo.updateLocalPackageArchivesSize(state.packageName, OpType.RESTORE, state.userId)
+                packageRepo.updateCloudPackageArchivesSize(state.packageName, OpType.RESTORE, state.userId)
                 emitStateSuspend(state.copy(isRefreshing = false))
             }
 
@@ -101,6 +116,46 @@ class IndexViewModel @Inject constructor(
                     localBackupService.processing()
                     localBackupService.postProcessing(backupPreprocessing = backupPreprocessing)
                     localBackupService.destroyService()
+
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.backup_completed),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Long,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                }
+            }
+
+            is IndexUiIntent.BackupToCloud -> {
+                launchOnGlobal {
+                    contextRepository.withContext {
+                        it.saveRcloneMainAccountName(intent.name)
+                    }
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.task_is_in_progress),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Indefinite,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                    packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
+                    val backupPreprocessing = cloudBackupService.preprocessing()
+                    cloudBackupService.processing()
+                    cloudBackupService.postProcessing(backupPreprocessing = backupPreprocessing)
+                    cloudBackupService.destroyService()
 
                     emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                     emitEffectSuspend(
@@ -155,8 +210,49 @@ class IndexViewModel @Inject constructor(
                 }
             }
 
+            is IndexUiIntent.RestoreFromCloud -> {
+                launchOnGlobal {
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.task_is_in_progress),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Indefinite,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                    packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
+                    cloudRestoreService.preprocessing()
+                    cloudRestoreService.processing()
+                    cloudRestoreService.postProcessing()
+                    cloudRestoreService.destroyService()
+
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.restore_completed),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Long,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                }
+            }
+
             is IndexUiIntent.Preserve -> {
                 packageRepo.preserve(intent.packageEntity)
+            }
+
+            is IndexUiIntent.ActiveCloud -> {
+                cloudRepo.upsert(intent.cloudEntity.copy(activated = intent.cloudEntity.activated.not()))
             }
 
             is IndexUiIntent.Delete -> {
@@ -215,7 +311,7 @@ class IndexViewModel @Inject constructor(
         packageName = uiState.value.packageName,
         opType = OpType.RESTORE,
         userId = uiState.value.userId,
-    ).map { packages -> packages.sortedBy { it.preserveId } }.flowOnIO()
+    ).map { packages -> packages.sortedBy { it.preserveId }.sortedBy { it.indexInfo.cloud } }.flowOnIO()
     val restoreItemsState: StateFlow<List<PackageEntity>> = _restoreItems.stateInScope(listOf())
     private val _restoreChips: Flow<List<List<PackageDataChipItem>>> = _restoreItems.map { items ->
         items.map { p ->
@@ -254,4 +350,10 @@ class IndexViewModel @Inject constructor(
         }
     }.flowOnIO()
     val restoreChipsState: StateFlow<List<List<PackageDataChipItem>>> = _restoreChips.stateInScope(listOf())
+
+    private val _accountMenuItems: Flow<List<ActionMenuItem>> = cloudRepo.cloudsMenuItems.flowOnIO()
+    val accountMenuItemsState: StateFlow<List<ActionMenuItem>> = _accountMenuItems.stateInScope(listOf())
+
+    private val _accounts: Flow<List<CloudEntity>> = cloudRepo.clouds.flowOnIO()
+    val accountsState: StateFlow<List<CloudEntity>> = _accounts.stateInScope(listOf())
 }

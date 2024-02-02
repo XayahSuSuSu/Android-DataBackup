@@ -82,6 +82,7 @@ internal abstract class AbstractService : Service() {
             successCount = 0,
             failureCount = 0,
             isProcessing = true,
+            cloud = "",
         )
     }
 

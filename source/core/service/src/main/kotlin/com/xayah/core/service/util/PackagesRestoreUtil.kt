@@ -2,6 +2,7 @@ package com.xayah.core.service.util
 
 import android.content.Context
 import com.xayah.core.common.util.toLineString
+import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readCleanRestoring
@@ -9,6 +10,7 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
+import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
@@ -27,6 +29,7 @@ class PackagesRestoreUtil @Inject constructor(
     private val rootService: RemoteRootService,
     private val taskDao: TaskDao,
     private val packageRepository: PackageRepository,
+    private val cloudRepository: CloudRepository,
     private val pathUtil: PathUtil,
 ) {
     companion object {
@@ -107,6 +110,18 @@ class PackagesRestoreUtil @Inject constructor(
             else -> {}
         }
         taskDao.upsert(this)
+    }
+
+    private fun TaskDetailPackageEntity.getLog(
+        dataType: DataType,
+    ) = when (dataType) {
+        DataType.PACKAGE_APK -> apkInfo.log
+        DataType.PACKAGE_USER -> userInfo.log
+        DataType.PACKAGE_USER_DE -> userDeInfo.log
+        DataType.PACKAGE_DATA -> dataInfo.log
+        DataType.PACKAGE_OBB -> obbInfo.log
+        DataType.PACKAGE_MEDIA -> mediaInfo.log
+        else -> ""
     }
 
     suspend fun restoreApk(p: PackageEntity, t: TaskDetailPackageEntity, srcDir: String): ShellResult = run {
@@ -364,6 +379,29 @@ class PackagesRestoreUtil @Inject constructor(
             }
         } else {
             log { "Skip." }
+        }
+    }
+
+    suspend fun download(client: CloudClient, p: PackageEntity, t: TaskDetailPackageEntity, dataType: DataType, srcDir: String, dstDir: String, onDownloaded: suspend (path: String) -> Unit) = run {
+        val ct = p.indexInfo.compressionType
+        val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
+
+        if (p.getDataSelected(dataType).not()) {
+            t.updateInfo(dataType = dataType, state = OperationState.SKIP)
+        } else {
+            t.updateInfo(dataType = dataType, state = OperationState.DOWNLOADING)
+
+            if (client.exists(src)) {
+                cloudRepository.download(client = client, src = src, dstDir = dstDir, onDownloaded = onDownloaded).apply {
+                    t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog(dataType) + "\n${outString}")
+                }
+            } else {
+                if (dataType == DataType.PACKAGE_USER || dataType == DataType.PACKAGE_APK) {
+                    t.updateInfo(dataType = dataType, state = OperationState.ERROR, log = log { "Not exist: $src" })
+                } else {
+                    t.updateInfo(dataType = dataType, state = OperationState.SKIP, log = log { "Not exist and skip: $src" })
+                }
+            }
         }
     }
 }

@@ -149,6 +149,10 @@ fun TaskCard(
                             }
                         )
                         RoundChip(
+                            text = if (t.cloud.isEmpty()) StringResourceToken.fromStringId(R.string.local).value
+                            else StringResourceToken.fromStringId(R.string.cloud).value
+                        )
+                        RoundChip(
                             text = StringResourceToken.fromStringArgs(
                                 StringResourceToken.fromString("${t.successCount} "),
                                 StringResourceToken.fromStringId(R.string.succeed)

@@ -18,14 +18,28 @@ interface PackageDao {
     @Upsert(entity = PackageEntity::class)
     suspend fun upsert(item: PackageEntity)
 
-    @Query("SELECT * FROM PackageEntity WHERE indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId AND indexInfo_preserveId = :preserveId LIMIT 1")
-    suspend fun query(packageName: String, opType: OpType, userId: Int, preserveId: Long): PackageEntity?
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId AND indexInfo_preserveId = :preserveId" +
+                " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir" +
+                " LIMIT 1"
+    )
+    suspend fun query(packageName: String, opType: OpType, userId: Int, preserveId: Long, cloud: String, backupDir: String): PackageEntity?
 
-    @Query("SELECT * FROM PackageEntity WHERE indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId")
-    suspend fun query(packageName: String, opType: OpType, userId: Int): List<PackageEntity>
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId" +
+                " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
+    )
+    suspend fun query(packageName: String, opType: OpType, userId: Int, cloud: String, backupDir: String): List<PackageEntity>
 
-    @Query("SELECT * FROM PackageEntity WHERE indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId AND indexInfo_preserveId = :preserveId AND indexInfo_compressionType = :ct LIMIT 1")
-    suspend fun query(packageName: String, opType: OpType, userId: Int, preserveId: Long, ct: CompressionType): PackageEntity?
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId AND indexInfo_preserveId = :preserveId AND indexInfo_compressionType = :ct" +
+                " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir" +
+                " LIMIT 1"
+    )
+    suspend fun query(packageName: String, opType: OpType, userId: Int, preserveId: Long, ct: CompressionType, cloud: String, backupDir: String): PackageEntity?
 
     @Query("SELECT * FROM PackageEntity WHERE extraInfo_activated = 1")
     suspend fun queryActivated(): List<PackageEntity>
@@ -39,10 +53,17 @@ interface PackageDao {
     @Query("UPDATE PackageEntity SET extraInfo_existed = 0 WHERE indexInfo_opType = :opType")
     suspend fun clearExisted(opType: OpType)
 
-    @Query("SELECT * FROM PackageEntity WHERE indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId AND indexInfo_preserveId = :preserveId LIMIT 1")
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId AND indexInfo_preserveId = :preserveId" +
+                " LIMIT 1"
+    )
     fun queryFlow(packageName: String, opType: OpType, userId: Int, preserveId: Long): Flow<PackageEntity?>
 
-    @Query("SELECT * FROM PackageEntity WHERE indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId")
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId"
+    )
     fun queryFlow(packageName: String, opType: OpType, userId: Int): Flow<List<PackageEntity>>
 
     @Query(

@@ -73,17 +73,20 @@ class PathUtil @Inject constructor(
         fun getSsaidPath(userId: Int) = "/data/system/users/$userId/settings_ssaid.xml"
     }
 
+    fun getCloudTmpDir(): String = context.cloudTmpAbsoluteDir()
     fun getPackageIconPath(packageName: String): String = "${context.iconDir()}/${getPackageIconRelativePath(packageName)}"
     fun getConfigsDir(parent: String): String = "${parent}/${getConfigsRelativeDir()}"
     fun getLocalBackupConfigsDir(): String = getConfigsDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreConfigsDir(): String = getConfigsDir(parent = context.localRestoreSaveDir())
     fun getCloudTmpConfigsDir(): String = getConfigsDir(parent = context.cloudTmpAbsoluteDir())
+    fun getCloudRemoteConfigsDir(remote: String): String = getConfigsDir(parent = remote)
     fun getArchivesDir(parent: String): String = "${parent}/${getArchivesRelativeDir()}"
     fun getLocalBackupArchivesDir(): String = getArchivesDir(parent = context.localBackupSaveDir())
     fun getArchivesPackagesDir(parent: String): String = "${parent}/${getArchivesPackagesRelativeDir()}"
     fun getLocalBackupArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localRestoreSaveDir())
     fun getCloudTmpArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.cloudTmpAbsoluteDir())
+    fun getCloudRemoteArchivesPackagesDir(remote: String): String = getArchivesPackagesDir(parent = remote)
     fun getArchivesMediumDir(parent: String): String = "${parent}/${getArchivesMediumRelativeDir()}"
     fun getLocalBackupArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localRestoreSaveDir())

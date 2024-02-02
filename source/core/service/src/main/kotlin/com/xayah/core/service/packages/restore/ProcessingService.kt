@@ -1,4 +1,4 @@
-package com.xayah.core.service.packages.backup
+package com.xayah.core.service.packages.restore
 
 import android.content.ComponentName
 import android.content.Context
@@ -6,26 +6,25 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.os.RemoteException
-import com.xayah.core.service.model.BackupPreprocessing
 import com.xayah.core.util.withMainContext
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.ExperimentalSerializationApi
-import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class LocalService @Inject constructor(@ApplicationContext private val context: Context) {
+abstract class ProcessingService {
     private var mBinder: IBinder? = null
-    private var mService: AbstractService? = null
+    private var mService: RestoreService? = null
     private var mConnection: ServiceConnection? = null
+    abstract val context: Context
+    abstract val intent: Intent
 
-    private suspend fun bindService(): AbstractService = suspendCoroutine { continuation ->
+    private suspend fun bindService(): RestoreService = suspendCoroutine { continuation ->
         if (mService == null) {
             mConnection = object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName, service: IBinder) {
                     mBinder = service
-                    mService = (mBinder as AbstractService.OperationLocalBinder).getService()
+                    mService = (mBinder as RestoreService.OperationLocalBinder).getService()
                     continuation.resume(mService!!)
                 }
 
@@ -53,7 +52,6 @@ class LocalService @Inject constructor(@ApplicationContext private val context: 
                     continuation.resumeWithException(RemoteException(msg))
                 }
             }
-            val intent = Intent(context, LocalImpl::class.java)
             context.bindService(intent, mConnection!!, Context.BIND_AUTO_CREATE)
         } else {
             mService
@@ -71,7 +69,7 @@ class LocalService @Inject constructor(@ApplicationContext private val context: 
         mConnection = null
     }
 
-    private suspend fun getService(): AbstractService = withMainContext {
+    private suspend fun getService(): RestoreService = withMainContext {
         if (mService == null) {
             bindService()
         } else if (mBinder!!.isBinderAlive.not()) {
@@ -88,5 +86,5 @@ class LocalService @Inject constructor(@ApplicationContext private val context: 
     suspend fun processing() = getService().processing()
 
     @OptIn(ExperimentalSerializationApi::class)
-    suspend fun postProcessing(backupPreprocessing: BackupPreprocessing) = getService().postProcessing(backupPreprocessing = backupPreprocessing)
+    suspend fun postProcessing() = getService().postProcessing()
 }

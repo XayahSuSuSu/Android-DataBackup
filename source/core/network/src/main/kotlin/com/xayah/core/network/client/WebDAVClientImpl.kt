@@ -4,6 +4,7 @@ import android.content.Context
 import com.xayah.core.common.util.toPathString
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.network.R
+import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.toPathList
 import com.xayah.core.util.withMainContext
@@ -57,6 +58,11 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
         }
     }
 
+    override fun renameTo(src: String, dst: String) = withClient { client ->
+        log { "renameTo: from ${getPath(src)} to ${getPath(dst)}" }
+        client.move(getPath(src), getPath(dst), false)
+    }
+
     override fun upload(src: String, dst: String) = withClient { client ->
         val name = Paths.get(src).fileName
         val dstPath = "${getPath(dst)}/$name"
@@ -105,6 +111,33 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
         directories.sortBy { it.name }
         return DirChildrenParcelable(files = files, directories = directories)
     }
+
+    private fun walkFileTreeRecursively(src: String): List<PathParcelable> {
+        val pathParcelableList = mutableListOf<PathParcelable>()
+        val files = listFiles(src)
+        for (i in files.files) {
+            pathParcelableList.add(PathParcelable("${src}/${i.name}"))
+        }
+        for (i in files.directories) {
+            pathParcelableList.addAll(walkFileTreeRecursively("${src}/${i.name}"))
+        }
+        return pathParcelableList
+    }
+
+    override fun walkFileTree(src: String): List<PathParcelable> {
+        val pathParcelableList = mutableListOf<PathParcelable>()
+        withClient { client ->
+            val srcFile = client.list(getPath(src))[0]
+            if (srcFile.isDirectory) {
+                pathParcelableList.addAll(walkFileTreeRecursively(src))
+            } else {
+                pathParcelableList.add(PathParcelable(src))
+            }
+        }
+        return pathParcelableList
+    }
+
+    override fun exists(src: String): Boolean = runCatching { withClient { client -> client.list(getPath(src)) } }.isSuccess
 
     private fun sizeRecursively(src: String): Long {
         var size = 0L

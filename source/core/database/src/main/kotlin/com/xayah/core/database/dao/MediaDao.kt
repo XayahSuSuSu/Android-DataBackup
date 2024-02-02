@@ -18,17 +18,35 @@ interface MediaDao {
     @Upsert(entity = MediaEntity::class)
     suspend fun upsert(item: MediaEntity)
 
-    @Query("SELECT * FROM MediaEntity WHERE indexInfo_opType = :opType AND indexInfo_preserveId = :preserveId")
-    suspend fun query(opType: OpType, preserveId: Long): List<MediaEntity>
+    @Query(
+        "SELECT * FROM MediaEntity" +
+                " WHERE indexInfo_opType = :opType AND indexInfo_preserveId = :preserveId" +
+                " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
+    )
+    suspend fun query(opType: OpType, preserveId: Long, cloud: String, backupDir: String): List<MediaEntity>
 
-    @Query("SELECT * FROM MediaEntity WHERE indexInfo_opType = :opType AND indexInfo_name = :name")
-    suspend fun query(opType: OpType, name: String): List<MediaEntity>
+    @Query(
+        "SELECT * FROM MediaEntity" +
+                " WHERE indexInfo_opType = :opType AND indexInfo_name = :name" +
+                " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
+    )
+    suspend fun query(opType: OpType, name: String, cloud: String, backupDir: String): List<MediaEntity>
 
-    @Query("SELECT * FROM MediaEntity WHERE indexInfo_opType = :opType AND indexInfo_preserveId = :preserveId AND indexInfo_name = :name LIMIT 1")
-    suspend fun query(opType: OpType, preserveId: Long, name: String): MediaEntity?
+    @Query(
+        "SELECT * FROM MediaEntity" +
+                " WHERE indexInfo_opType = :opType AND indexInfo_preserveId = :preserveId AND indexInfo_name = :name" +
+                " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir" +
+                " LIMIT 1"
+    )
+    suspend fun query(opType: OpType, preserveId: Long, name: String, cloud: String, backupDir: String): MediaEntity?
 
-    @Query("SELECT * FROM MediaEntity WHERE indexInfo_opType = :opType AND indexInfo_preserveId = :preserveId AND indexInfo_name = :name AND indexInfo_compressionType = :ct LIMIT 1")
-    suspend fun query(opType: OpType, preserveId: Long, name: String, ct: CompressionType): MediaEntity?
+    @Query(
+        "SELECT * FROM MediaEntity WHERE" +
+                " indexInfo_opType = :opType AND indexInfo_preserveId = :preserveId AND indexInfo_name = :name AND indexInfo_compressionType = :ct" +
+                " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir" +
+                " LIMIT 1"
+    )
+    suspend fun query(opType: OpType, preserveId: Long, name: String, ct: CompressionType, cloud: String, backupDir: String): MediaEntity?
 
     @Query("SELECT * FROM MediaEntity WHERE extraInfo_activated = 1")
     suspend fun queryActivated(): List<MediaEntity>

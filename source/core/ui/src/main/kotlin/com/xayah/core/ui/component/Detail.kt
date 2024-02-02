@@ -42,6 +42,17 @@ fun HeaderItem(expand: Boolean, title: StringResourceToken, onClick: () -> Unit)
 }
 
 @Composable
+fun HeaderItem(title: StringResourceToken) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        TitleMediumText(
+            modifier = Modifier.paddingBottom(PaddingTokens.Level1),
+            text = title.value,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
 fun InfoItem(title: StringResourceToken, content: StringResourceToken) {
     Row {
         LabelMediumText(

@@ -11,6 +11,7 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.service.util.CommonBackupUtil
 import com.xayah.core.service.util.MediumBackupUtil
 import com.xayah.core.util.PathUtil
+import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -40,6 +41,7 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
     @Inject
     override lateinit var mediaRepository: MediaRepository
 
+    private val localBackupSaveDir by lazy { localBackupSaveDir() }
     private val archivesMediumDir by lazy { pathUtil.getLocalBackupArchivesMediumDir() }
     private val configsDir by lazy { pathUtil.getLocalBackupConfigsDir() }
 
@@ -61,7 +63,7 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
         ).apply {
             id = taskDao.upsert(this)
         }
-        var restoreEntity = mediaDao.query(OpType.RESTORE, m.preserveId, m.name, m.indexInfo.compressionType)
+        var restoreEntity = mediaRepository.query(OpType.RESTORE, m.preserveId, m.name, m.indexInfo.compressionType, "", localBackupSaveDir)
 
         mediumBackupUtil.backupData(m = m, t = t, r = restoreEntity, dstDir = dstDir)
 
@@ -70,7 +72,7 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
             val id = restoreEntity?.id ?: 0
             restoreEntity = m.copy(
                 id = id,
-                indexInfo = m.indexInfo.copy(opType = OpType.RESTORE),
+                indexInfo = m.indexInfo.copy(opType = OpType.RESTORE, cloud = "", backupDir = localBackupSaveDir),
                 mediaInfo = m.mediaInfo.copy(dataState = restoreEntity?.mediaInfo?.dataState ?: m.mediaInfo.dataState),
                 extraInfo = m.extraInfo.copy(activated = false)
             )
@@ -81,7 +83,7 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
                 mediaEntity = m
                 taskDao.upsert(this)
             }
-            mediaRepository.updateMediaArchivesSize(OpType.RESTORE, m.name)
+            mediaRepository.updateLocalMediaArchivesSize(OpType.RESTORE, m.name)
         }
 
         taskEntity.also {

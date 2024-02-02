@@ -68,8 +68,8 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.OnRefresh -> {
                 emitStateSuspend(state.copy(isRefreshing = true))
                 mediaRepo.refreshFromLocalMedia(state.name)
-                mediaRepo.updateMediaDataSize(OpType.BACKUP, 0, state.name)
-                mediaRepo.updateMediaArchivesSize(OpType.RESTORE, state.name)
+                mediaRepo.updateLocalMediaDataSize(OpType.BACKUP, 0, state.name)
+                mediaRepo.updateLocalMediaArchivesSize(OpType.RESTORE, state.name)
                 emitStateSuspend(state.copy(isRefreshing = false))
             }
 

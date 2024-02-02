@@ -13,6 +13,7 @@ import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.common.SMBRuntimeException
 import com.hierynomus.smbj.io.InputStreamByteChunkProvider
 import com.hierynomus.smbj.session.Session
+import com.hierynomus.smbj.share.Directory
 import com.hierynomus.smbj.share.DiskShare
 import com.hierynomus.smbj.share.Share
 import com.rapid7.client.dcerpc.mssrvs.ServerService
@@ -23,6 +24,7 @@ import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.SMBExtra
 import com.xayah.core.network.R
 import com.xayah.core.network.util.getExtraEntity
+import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.toPathList
@@ -65,7 +67,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         block(session!!)
     }
 
-    private fun withDiskShare(block: (diskShare: DiskShare) -> Unit) = run {
+    private fun <R> withDiskShare(block: (diskShare: DiskShare) -> R) = run {
         if (share == null) throw NullPointerException("Share is null.")
         block(share!! as DiskShare)
     }
@@ -123,7 +125,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         client = null
     }
 
-    private fun exists(src: String): Boolean {
+    override fun exists(src: String): Boolean {
         var exists = false
         withDiskShare { diskShare ->
             if (diskShare.fileExists(src)) {
@@ -153,12 +155,9 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         }
     }
 
-    override fun upload(src: String, dst: String) = withDiskShare { diskShare ->
-        val name = Paths.get(src).fileName
-        val dstPath = "$dst/$name"
-        log { "upload: $src to $dstPath" }
-        val dstFile = diskShare.openFile(
-            dstPath,
+    private fun openDirectory(src: String): Directory = withDiskShare { diskShare ->
+        diskShare.openDirectory(
+            src,
             setOf(
                 AccessMask.FILE_WRITE_DATA,
                 AccessMask.FILE_WRITE_ATTRIBUTES,
@@ -169,6 +168,39 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
             SMB2CreateDisposition.FILE_OVERWRITE_IF,
             setOf(SMB2CreateOptions.FILE_RANDOM_ACCESS)
         )
+    }
+
+    private fun openFile(src: String): com.hierynomus.smbj.share.File = withDiskShare { diskShare ->
+        diskShare.openFile(
+            src,
+            setOf(
+                AccessMask.FILE_WRITE_DATA,
+                AccessMask.FILE_WRITE_ATTRIBUTES,
+                AccessMask.FILE_WRITE_EA,
+            ),
+            setOf(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+            SMB2ShareAccess.ALL,
+            SMB2CreateDisposition.FILE_OVERWRITE_IF,
+            setOf(SMB2CreateOptions.FILE_RANDOM_ACCESS)
+        )
+    }
+
+    override fun renameTo(src: String, dst: String) = withDiskShare { diskShare ->
+        log { "renameTo: from $src to $dst" }
+        if (diskShare.folderExists(src)) {
+            val dir = openDirectory(src)
+            dir.rename(dst, false)
+        } else if (diskShare.fileExists(src)) {
+            val file = openFile(src)
+            file.rename(dst, false)
+        }
+    }
+
+    override fun upload(src: String, dst: String) = run {
+        val name = Paths.get(src).fileName
+        val dstPath = "$dst/$name"
+        log { "upload: $src to $dstPath" }
+        val dstFile = openFile(dstPath)
         val srcFile = File(src)
         val srcInputStream = FileInputStream(srcFile)
         dstFile.write(InputStreamByteChunkProvider(srcInputStream))
@@ -176,23 +208,12 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         dstFile.close()
     }
 
-    override fun download(src: String, dst: String) = withDiskShare { diskShare ->
+    override fun download(src: String, dst: String) = run {
         val name = Paths.get(src).fileName
         val dstPath = "$dst/$name"
         log { "download: $src to $dstPath" }
         val dstOutputStream = File(dstPath).outputStream()
-        val srcFile = diskShare.openFile(
-            src,
-            setOf(
-                AccessMask.FILE_READ_DATA,
-                AccessMask.FILE_READ_ATTRIBUTES,
-                AccessMask.FILE_READ_EA,
-            ),
-            setOf(FileAttributes.FILE_ATTRIBUTE_NORMAL),
-            SMB2ShareAccess.ALL,
-            SMB2CreateDisposition.FILE_OPEN_IF,
-            setOf(SMB2CreateOptions.FILE_RANDOM_ACCESS)
-        )
+        val srcFile = openFile(src)
         srcFile.read(dstOutputStream)
         srcFile.close()
         dstOutputStream.close()
@@ -251,6 +272,24 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         files.sortBy { it.name }
         directories.sortBy { it.name }
         return DirChildrenParcelable(files = files, directories = directories)
+    }
+
+    override fun walkFileTree(src: String): List<PathParcelable> {
+        val pathParcelableList = mutableListOf<PathParcelable>()
+        withDiskShare { diskShare ->
+            if (diskShare.folderExists(src)) {
+                val files = listFiles("/${shareName}/$src")
+                for (i in files.files) {
+                    pathParcelableList.add(PathParcelable("${src}/${i.name}"))
+                }
+                for (i in files.directories) {
+                    pathParcelableList.addAll(walkFileTree("${src}/${i.name}"))
+                }
+            } else if (diskShare.fileExists(src)) {
+                pathParcelableList.add(PathParcelable(src))
+            }
+        }
+        return pathParcelableList
     }
 
     /**

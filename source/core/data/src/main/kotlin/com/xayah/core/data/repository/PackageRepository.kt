@@ -17,6 +17,7 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
+import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.PackageDataStates
 import com.xayah.core.model.database.PackageDataStats
 import com.xayah.core.model.database.PackageEntity
@@ -25,6 +26,7 @@ import com.xayah.core.model.database.PackageExtraInfo
 import com.xayah.core.model.database.PackageIndexInfo
 import com.xayah.core.model.database.PackageInfo
 import com.xayah.core.model.database.PackageStorageStats
+import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
@@ -39,6 +41,7 @@ import com.xayah.core.util.command.PackageUtil
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.iconDir
+import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -49,22 +52,28 @@ import javax.inject.Inject
 class PackageRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
+    private val cloudRepository: CloudRepository,
     private val packageDao: PackageDao,
     private val pathUtil: PathUtil,
 ) {
     val packages = packageDao.queryFlow().distinctUntilChanged()
     val activatedCount = packageDao.countActivatedFlow().distinctUntilChanged()
-    private val archivesPackagesDir by lazy { pathUtil.getLocalBackupArchivesPackagesDir() }
+    private val localBackupSaveDir get() = context.localBackupSaveDir()
+    private val archivesPackagesDir get() = pathUtil.getLocalBackupArchivesPackagesDir()
 
     fun getArchiveDst(dstDir: String, dataType: DataType, ct: CompressionType) = "${dstDir}/${dataType.type}.${ct.suffix}"
 
-    private suspend fun queryPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long) =
-        packageDao.query(packageName, opType, userId, preserveId)
+    private suspend fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long, cloud: String, backupDir: String) =
+        packageDao.query(packageName, opType, userId, preserveId, cloud, backupDir)
 
-    private suspend fun queryPackages(packageName: String, opType: OpType, userId: Int) = packageDao.query(packageName, opType, userId)
+    suspend fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long, ct: CompressionType, cloud: String, backupDir: String) =
+        packageDao.query(packageName, opType, userId, preserveId, ct, cloud, backupDir)
 
-    suspend fun updatePackageDataSize(packageName: String, opType: OpType, userId: Int, preserveId: Long) {
-        queryPackage(packageName, opType, userId, preserveId).also {
+    private suspend fun queryPackages(packageName: String, opType: OpType, userId: Int, cloud: String, backupDir: String) =
+        packageDao.query(packageName, opType, userId, cloud, backupDir)
+
+    suspend fun updateLocalPackageDataSize(packageName: String, opType: OpType, userId: Int, preserveId: Long) {
+        getPackage(packageName, opType, userId, preserveId, "", "").also {
             if (it != null) {
                 it.extraInfo.existed = rootService.queryInstalled(packageName = packageName, userId = userId)
                 if (it.extraInfo.existed) {
@@ -80,14 +89,36 @@ class PackageRepository @Inject constructor(
         }
     }
 
-    suspend fun updatePackageArchivesSize(packageName: String, opType: OpType, userId: Int) {
-        queryPackages(packageName, opType, userId).onEach {
-            it.displayStats.apkBytes = calculateArchiveSize(it, DataType.PACKAGE_APK)
-            it.displayStats.userBytes = calculateArchiveSize(it, DataType.PACKAGE_USER)
-            it.displayStats.userDeBytes = calculateArchiveSize(it, DataType.PACKAGE_USER_DE)
-            it.displayStats.dataBytes = calculateArchiveSize(it, DataType.PACKAGE_DATA)
-            it.displayStats.obbBytes = calculateArchiveSize(it, DataType.PACKAGE_OBB)
-            it.displayStats.mediaBytes = calculateArchiveSize(it, DataType.PACKAGE_MEDIA)
+    suspend fun updateLocalPackageArchivesSize(packageName: String, opType: OpType, userId: Int) {
+        queryPackages(packageName, opType, userId, "", localBackupSaveDir).onEach {
+            it.displayStats.apkBytes = calculateLocalArchiveSize(it, DataType.PACKAGE_APK)
+            it.displayStats.userBytes = calculateLocalArchiveSize(it, DataType.PACKAGE_USER)
+            it.displayStats.userDeBytes = calculateLocalArchiveSize(it, DataType.PACKAGE_USER_DE)
+            it.displayStats.dataBytes = calculateLocalArchiveSize(it, DataType.PACKAGE_DATA)
+            it.displayStats.obbBytes = calculateLocalArchiveSize(it, DataType.PACKAGE_OBB)
+            it.displayStats.mediaBytes = calculateLocalArchiveSize(it, DataType.PACKAGE_MEDIA)
+            upsert(it)
+        }
+    }
+
+    suspend fun updateCloudPackageArchivesSize(packageName: String, opType: OpType, userId: Int) {
+        cloudRepository.withActivatedClients { clients ->
+            clients.forEach { (client, entity) ->
+                updateCloudPackageArchivesSize(packageName, opType, userId, client, entity)
+            }
+        }
+    }
+
+    suspend fun updateCloudPackageArchivesSize(packageName: String, opType: OpType, userId: Int, client: CloudClient, entity: CloudEntity) {
+        val remote = entity.remote
+        val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
+        queryPackages(packageName, opType, userId, entity.name, entity.remote).onEach {
+            runCatching { it.displayStats.apkBytes = calculateCloudArchiveSize(client, it, DataType.PACKAGE_APK, remoteArchivesPackagesDir) }.onFailure(rootService.onFailure)
+            runCatching { it.displayStats.userBytes = calculateCloudArchiveSize(client, it, DataType.PACKAGE_USER, remoteArchivesPackagesDir) }.onFailure(rootService.onFailure)
+            runCatching { it.displayStats.userDeBytes = calculateCloudArchiveSize(client, it, DataType.PACKAGE_USER_DE, remoteArchivesPackagesDir) }.onFailure(rootService.onFailure)
+            runCatching { it.displayStats.dataBytes = calculateCloudArchiveSize(client, it, DataType.PACKAGE_DATA, remoteArchivesPackagesDir) }.onFailure(rootService.onFailure)
+            runCatching { it.displayStats.obbBytes = calculateCloudArchiveSize(client, it, DataType.PACKAGE_OBB, remoteArchivesPackagesDir) }.onFailure(rootService.onFailure)
+            runCatching { it.displayStats.mediaBytes = calculateCloudArchiveSize(client, it, DataType.PACKAGE_MEDIA, remoteArchivesPackagesDir) }.onFailure(rootService.onFailure)
             upsert(it)
         }
     }
@@ -219,9 +250,11 @@ class PackageRepository @Inject constructor(
                     userId = userId,
                     compressionType = context.readCompressionType().first(),
                     preserveId = DefaultPreserveId,
+                    cloud = "",
+                    backupDir = ""
                 )
                 val packageEntity =
-                    packageDao.query(packageName = info.packageName, opType = OpType.BACKUP, userId = userId, preserveId = DefaultPreserveId)
+                    getPackage(packageName = info.packageName, opType = OpType.BACKUP, userId = userId, preserveId = DefaultPreserveId, cloud = "", backupDir = "")
                         ?: PackageEntity(
                             id = 0,
                             indexInfo = indexInfo,
@@ -288,16 +321,57 @@ class PackageRepository @Inject constructor(
         val paths = rootService.walkFileTree(path)
         paths.forEach {
             val fileName = PathUtil.getFileName(it.pathString)
+            val preserveId = PathUtil.getFileName(PathUtil.getParentPath(it.pathString))
             if (fileName == ConfigsPackageRestoreName) {
                 runCatching {
                     val stored = rootService.readProtoBuf<PackageEntity>(it.pathString).also { p ->
                         p?.extraInfo?.existed = true
                         p?.extraInfo?.activated = false
+                        p?.indexInfo?.cloud = ""
+                        p?.indexInfo?.backupDir = localBackupSaveDir
+                        p?.indexInfo?.preserveId = preserveId.toLongOrNull() ?: 0
                     }
                     if (stored != null) {
-                        packageDao.query(stored.packageName, stored.indexInfo.opType, stored.userId, stored.preserveId, stored.indexInfo.compressionType).also { p ->
+                        getPackage(stored.packageName, stored.indexInfo.opType, stored.userId, stored.preserveId, stored.indexInfo.compressionType, "", localBackupSaveDir).also { p ->
                             if (p == null)
                                 packageDao.upsert(stored)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun refreshFromCloud(packageName: String) {
+        cloudRepository.withActivatedClients { clients ->
+            clients.forEach { (client, entity) ->
+                val remote = entity.remote
+                val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
+                val src = "$remoteArchivesPackagesDir/$packageName"
+                if (client.exists(src)) {
+                    val paths = client.walkFileTree(src)
+                    val tmpDir = pathUtil.getCloudTmpDir()
+                    paths.forEach {
+                        val fileName = PathUtil.getFileName(it.pathString)
+                        val preserveId = PathUtil.getFileName(PathUtil.getParentPath(it.pathString))
+                        if (fileName == ConfigsPackageRestoreName) {
+                            runCatching {
+                                cloudRepository.download(client = client, src = it.pathString, dstDir = tmpDir) { path ->
+                                    val stored = rootService.readProtoBuf<PackageEntity>(path).also { p ->
+                                        p?.extraInfo?.existed = true
+                                        p?.extraInfo?.activated = false
+                                        p?.indexInfo?.cloud = entity.name
+                                        p?.indexInfo?.backupDir = remote
+                                        p?.indexInfo?.preserveId = preserveId.toLongOrNull() ?: 0
+                                    }
+                                    if (stored != null) {
+                                        getPackage(stored.packageName, stored.indexInfo.opType, stored.userId, stored.preserveId, stored.indexInfo.compressionType, entity.name, remote).also { p ->
+                                            if (p == null)
+                                                packageDao.upsert(stored)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -309,6 +383,9 @@ class PackageRepository @Inject constructor(
         refreshFromLocal(path = "$archivesPackagesDir/$packageName")
     }
 
+    suspend fun refreshFromCloudPackage(packageName: String) {
+        runCatching { refreshFromCloud(packageName = packageName) }.onFailure(rootService.onFailure)
+    }
 
     private suspend fun getPackageSourceDir(packageName: String, userId: Int) = rootService.getPackageSourceDir(packageName, userId).let { list ->
         if (list.isNotEmpty()) PathUtil.getParentPath(list[0]) else ""
@@ -318,9 +395,15 @@ class PackageRepository @Inject constructor(
 
     fun getDataSrc(srcDir: String, packageName: String) = "$srcDir/$packageName"
 
-    private suspend fun calculateArchiveSize(p: PackageEntity, dataType: DataType) = rootService.calculateSize(
+    private suspend fun calculateLocalArchiveSize(p: PackageEntity, dataType: DataType) = rootService.calculateSize(
         getArchiveDst("${archivesPackagesDir}/${p.archivesPreserveRelativeDir}", dataType, p.indexInfo.compressionType)
     )
+
+    private fun calculateCloudArchiveSize(client: CloudClient, p: PackageEntity, dataType: DataType, archivesPackagesDir: String) = run {
+        val src = getArchiveDst("${archivesPackagesDir}/${p.archivesPreserveRelativeDir}", dataType, p.indexInfo.compressionType)
+        if (client.exists(src)) client.size(src)
+        else 0
+    }
 
     private suspend fun calculateDataSize(p: PackageEntity, dataType: DataType) = run {
         val src = if (dataType == DataType.PACKAGE_APK)
@@ -335,15 +418,40 @@ class PackageRepository @Inject constructor(
 
     suspend fun preserve(p: PackageEntity) {
         val preserveId = DateUtil.getTimestamp()
-        val src = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
-        val dst = "${archivesPackagesDir}/${p.archivesRelativeDir}/${preserveId}"
-        rootService.renameTo(src, dst)
-        upsert(p.copy(indexInfo = p.indexInfo.copy(preserveId = preserveId)))
+        val isSuccess = if (p.indexInfo.cloud.isEmpty()) {
+            val src = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+            val dst = "${archivesPackagesDir}/${p.archivesRelativeDir}/${preserveId}"
+            rootService.renameTo(src, dst)
+        } else {
+            runCatching {
+                cloudRepository.withClient(p.indexInfo.cloud) { client, entity ->
+                    val remote = entity.remote
+                    val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
+                    val src = "${remoteArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+                    val dst = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}/${preserveId}"
+                    client.renameTo(src, dst)
+                }
+            }.onFailure(rootService.onFailure).isSuccess
+        }
+
+        if (isSuccess) upsert(p.copy(indexInfo = p.indexInfo.copy(preserveId = preserveId)))
     }
 
     suspend fun delete(p: PackageEntity) {
-        val src = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
-        rootService.deleteRecursively(src)
-        packageDao.delete(p)
+        val isSuccess = if (p.indexInfo.cloud.isEmpty()) {
+            val src = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+            rootService.deleteRecursively(src)
+        } else {
+            runCatching {
+                cloudRepository.withClient(p.indexInfo.cloud) { client, entity ->
+                    val remote = entity.remote
+                    val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
+                    val src = "${remoteArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+                    client.deleteRecursively(src)
+                }
+            }.onFailure(rootService.onFailure).isSuccess
+        }
+
+        if (isSuccess) packageDao.delete(p)
     }
 }

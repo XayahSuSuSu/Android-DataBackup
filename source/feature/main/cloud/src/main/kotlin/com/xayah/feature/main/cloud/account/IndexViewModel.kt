@@ -137,6 +137,7 @@ internal class IndexViewModel @Inject constructor(
                                 pass = currentConfig.commonTextFields[2].value.value,
                                 remote = "",
                                 extra = extra ?: "",
+                                activated = false,
                             )
                         )
                         withMainContext {

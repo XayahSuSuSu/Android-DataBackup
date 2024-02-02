@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
@@ -255,6 +257,7 @@ fun FilterChip(
     selectedIndex: Int,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
+    onSelectedDismiss: Boolean = false,
     onClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -275,7 +278,10 @@ fun FilterChip(
             selectedIndex = selectedIndex,
             list = list,
             maxDisplay = ModalMenuTokens.DefaultMaxDisplay,
-            onSelected = onSelected,
+            onSelected = { index, selected ->
+                onSelected(index, selected)
+                if (onSelectedDismiss) expanded = false
+            },
             onDismissRequest = { expanded = false }
         )
     }
@@ -290,6 +296,7 @@ fun MultipleSelectionFilterChip(
     selectedIndexList: List<Int>,
     list: List<String>,
     onSelected: (indexList: List<Int>) -> Unit,
+    onSelectedDismiss: Boolean = false,
     onClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -310,7 +317,10 @@ fun MultipleSelectionFilterChip(
             selectedIndexList = selectedIndexList,
             list = list,
             maxDisplay = ModalMenuTokens.DefaultMaxDisplay,
-            onSelected = onSelected,
+            onSelected = { indexList ->
+                onSelected(indexList)
+                if (onSelectedDismiss) expanded = false
+            },
             onDismissRequest = { expanded = false }
         )
     }
@@ -324,6 +334,7 @@ fun FilterChip(
     selectedIndex: Int,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
+    onSelectedDismiss: Boolean = false,
     onClick: () -> Unit,
 ) {
     FilterChip(
@@ -334,6 +345,7 @@ fun FilterChip(
         selectedIndex = selectedIndex,
         list = list,
         onSelected = onSelected,
+        onSelectedDismiss = onSelectedDismiss,
         onClick = onClick
     )
 }
@@ -370,6 +382,33 @@ fun ActionChip(
         } else {
             null
         }
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun FilterChip(
+    enabled: Boolean,
+    selected: Boolean,
+    label: StringResourceToken,
+    onClick: () -> Unit,
+) {
+    FilterChip(
+        enabled = enabled,
+        selected = selected,
+        onClick = onClick,
+        label = { Text(text = label.value) },
+        leadingIcon = if (selected) {
+            {
+                Icon(
+                    imageVector = Icons.Filled.Done,
+                    contentDescription = null,
+                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                )
+            }
+        } else {
+            null
+        },
     )
 }
 

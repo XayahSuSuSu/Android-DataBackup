@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "3408332d30736ba3145b761779fa8ad9",
+    "identityHash": "e5bcec0609b7064f4cd8791afd297072",
     "entities": [
       {
         "tableName": "DirectoryEntity",
@@ -97,68 +97,12 @@
         },
         "indices": [],
         "foreignKeys": []
-      },
-      {
-        "tableName": "CloudEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `type` TEXT NOT NULL, `host` TEXT NOT NULL, `user` TEXT NOT NULL, `pass` TEXT NOT NULL, `remote` TEXT NOT NULL, `extra` TEXT NOT NULL, PRIMARY KEY(`name`))",
-        "fields": [
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "type",
-            "columnName": "type",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "host",
-            "columnName": "host",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "user",
-            "columnName": "user",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pass",
-            "columnName": "pass",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "remote",
-            "columnName": "remote",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "extra",
-            "columnName": "extra",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "name"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3408332d30736ba3145b761779fa8ad9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e5bcec0609b7064f4cd8791afd297072')"
     ]
   }
 }

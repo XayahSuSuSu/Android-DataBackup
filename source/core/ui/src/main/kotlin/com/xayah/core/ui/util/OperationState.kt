@@ -23,6 +23,10 @@ val OperationState.icon: ImageVectorToken
             ImageVectorToken.fromDrawable(R.drawable.ic_rounded_arrow_circle_up)
         }
 
+        OperationState.DOWNLOADING -> {
+            ImageVectorToken.fromDrawable(R.drawable.ic_rounded_arrow_circle_down)
+        }
+
         OperationState.DONE -> {
             ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle)
         }
@@ -38,7 +42,7 @@ val OperationState.color: ColorSchemeKeyTokens
             ColorSchemeKeyTokens.SecondaryContainer
         }
 
-        OperationState.UPLOADING -> {
+        OperationState.UPLOADING, OperationState.DOWNLOADING -> {
             ColorSchemeKeyTokens.SecondaryContainer
         }
 
@@ -59,7 +63,7 @@ val OperationState.containerColor: ColorSchemeKeyTokens
             ColorSchemeKeyTokens.Secondary
         }
 
-        OperationState.UPLOADING -> {
+        OperationState.UPLOADING, OperationState.DOWNLOADING -> {
             ColorSchemeKeyTokens.Secondary
         }
 
