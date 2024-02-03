@@ -22,6 +22,9 @@
 
 -dontwarn com.xayah.**
 -dontwarn android.**
+-dontwarn com.android.**
+-dontwarn dalvik.system.**
+-dontwarn libcore.**
 
 # smbj
 -dontwarn javax.el.**
@@ -32,6 +35,9 @@
 
 -keep class com.xayah.** { *; }
 -keep class android.** { *; }
+-keep class com.android.** { *; }
+-keep class dalvik.system.** { *; }
+-keep class libcore.** { *; }
 
 # smbj
 -keep class javax.el.**
