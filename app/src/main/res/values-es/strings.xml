@@ -57,7 +57,7 @@
     <string name="alphabet">Alfabético</string>
     <string name="install_time">Tiempo de instalación</string>
     <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar las siguientes Condiciones de uso y Política de privacidad antes de empezar a utilizar esta aplicación</string>
-    <string name="welcome_to_use">Bienvenido</string>
+    <string name="welcome_to_use">Bienvenid@ a DataBackup</string>
     <string name="sort">Clasificar</string>
     <string name="cover_desc">Sobrescribir los archivos de copia de seguridad existentes con cada copia de seguridad, u omitir las copias de seguridad si no hay cambios, de modo que pase lo que pase, sólo exista una copia de sus datos</string>
     <string name="by_time_desc">Cada copia de seguridad se considera una nueva copia de seguridad completa y se separa según la hora de la copia de seguridad, por lo que sus datos pueden existir en varias copias</string>
@@ -107,7 +107,7 @@
     <string name="others">Otros</string>
     <string name="start_desc">Todos los datos generados por esta aplicación sólo se utilizan para copias de seguridad/restauración, y sólo se almacenan localmente.</string>
     <string name="network_desc">Se utiliza para obtener información sobre actualizaciones y análisis de aplicaciones</string>
-    <string name="storage">Almacenamiento</string>
+    <string name="storage">Permiso de lectura/escritura en almacenamiento externo</string>
     <string name="storage_desc">Se utiliza para la configuración de copias de seguridad, lectura y escritura de archivos</string>
     <string name="data_size">Tamaño de los datos</string>
     <string name="setting_SELinux">Configuración de SELinux</string>
@@ -153,8 +153,8 @@
     <string name="installed">Instalado</string>
     <string name="not_installed">No instalado</string>
     <string name="retry">Reintentar</string>
-    <string name="succeed">Exitosamente</string>
-    <string name="telephony">Telefonía</string>
+    <string name="succeed">Éxito</string>
+    <string name="telephony">Historial de llamadas</string>
     <string name="card_telephony_subtitle">Copia de seguridad (restauración) de contactos, registro de llamadas o SMS/MMS</string>
     <string name="backed_up">Copia de seguridad</string>
     <string name="restored">Restaurado</string>
@@ -172,7 +172,7 @@
     <string name="reset_restore_list">Restablecer la lista de restauración</string>
     <string name="reset_restore_list_title">Anular la selección después de restaurar</string>
     <string name="backing_up">Retrocediendo…</string>
-    <string name="log">Registro</string>
+    <string name="log">Registros</string>
     <string name="keep_the_screen_on">Mantener la pantalla encendida</string>
     <string name="failed_to_connect_rootservice">Error al conectar con RootService</string>
     <string name="add_list">Añadir a la lista</string>
