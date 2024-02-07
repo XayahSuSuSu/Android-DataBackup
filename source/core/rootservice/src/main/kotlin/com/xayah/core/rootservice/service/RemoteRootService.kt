@@ -40,7 +40,6 @@ class RemoteRootService(private val context: Context) {
     private val intent by lazy {
         Intent().apply {
             component = ComponentName(context.packageName, RemoteRootService::class.java.name)
-            addCategory(RootService.CATEGORY_DAEMON_MODE)
         }
     }
 
