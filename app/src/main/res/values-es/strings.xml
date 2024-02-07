@@ -54,7 +54,7 @@
     <string name="backup_icon_title">Icono de la copia de seguridad para hacer una copia de seguridad de las aplicaciones, se utiliza para mostrar al restaurar</string>
     <string name="confirm_exit">¿Seguro que quieres dejarlo\?</string>
     <string name="not_selected">No seleccionados</string>
-    <string name="alphabet">Alfabético</string>
+    <string name="alphabet">A-Z</string>
     <string name="install_time">Tiempo de instalación</string>
     <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar las siguientes Condiciones de uso y Política de privacidad antes de empezar a utilizar esta aplicación</string>
     <string name="welcome_to_use">Bienvenid@ a DataBackup</string>
