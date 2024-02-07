@@ -28,7 +28,7 @@
     <string name="utilities">Utilities</string>
     <string name="activities">Activities</string>
     <string name="directory">Storage</string>
-    <string name="structure">Structure</string>
+    <string name="structure">File tree</string>
     <string name="log">Logs</string>
     <string name="app_and_data">Apps</string>
     <string name="media">Media</string>
@@ -146,7 +146,7 @@
     <string name="modify">Modify</string>
     <string name="cloud">Cloud</string>
     <string name="settings">Settings</string>
-    <string name="alphabet">Alphabet</string>
+    <string name="alphabet">A-Z</string>
     <string name="installation_time">Installation time</string>
     <string name="data_size">Data size</string>
     <string name="selected">Selected</string>
