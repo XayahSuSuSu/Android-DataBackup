@@ -57,7 +57,7 @@
     <string name="all">All</string>
     <string name="backup_icon">Backup icon</string>
     <string name="backup_icon_title">Backup icon when backing up apps, used to show when restoring</string>
-    <string name="alphabet">Alphabet</string>
+    <string name="alphabet">A-Z</string>
     <string name="install_time">Install time</string>
     <string name="sort">Sort</string>
     <string name="filter">Filter</string>
