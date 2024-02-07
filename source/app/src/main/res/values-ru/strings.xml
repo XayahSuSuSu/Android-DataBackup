@@ -202,4 +202,9 @@
     <string name="notification">Уведомления</string>
     <string name="check_keystore">Отметить хранилище ключей</string>
     <string name="check_keystore_desc">Проверить, использует ли приложение хранилище ключей. Это значительно замедлит процесс</string>
+    <string name="back_up_to_cloud">Бекап в облако</string>
+    <string name="restore_from_cloud">Восстановление из облака</string>
+    <string name="no_available_cloud_accounts">Облако не настроено</string>
+    <string name="select_cloud_accounts_to_refresh">Выберите облако для обновления</string>
+    <string name="preserve">Защищен</string>
 </resources>
