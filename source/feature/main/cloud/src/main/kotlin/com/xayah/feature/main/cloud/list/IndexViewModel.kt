@@ -10,16 +10,13 @@ import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
-import com.xayah.core.datastore.readRcloneMainAccountName
-import com.xayah.core.datastore.saveRcloneMainAccountName
-import com.xayah.core.datastore.saveRcloneMainAccountRemote
+import com.xayah.core.datastore.saveCloudActivatedAccountName
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.network.client.getCloud
 import com.xayah.feature.main.cloud.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 data object IndexUiState : UiState
@@ -58,9 +55,6 @@ class IndexViewModel @Inject constructor(
                         context = context,
                         onSet = { remote, extraString ->
                             cloudRepository.upsert(entity.copy(remote = remote, extra = extraString))
-                            if (context.readRcloneMainAccountName().first() == entity.name) {
-                                context.saveRcloneMainAccountRemote(remote)
-                            }
                             emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                         }
                     )
@@ -100,8 +94,7 @@ class IndexViewModel @Inject constructor(
                 if (entity.remote.isEmpty()) {
                     emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.remote_not_set)))
                 } else {
-                    context.saveRcloneMainAccountName(entity.name)
-                    context.saveRcloneMainAccountRemote(entity.remote)
+                    context.saveCloudActivatedAccountName(entity.name)
                     withMainContext {
                         navController.navigate(route = route)
                     }

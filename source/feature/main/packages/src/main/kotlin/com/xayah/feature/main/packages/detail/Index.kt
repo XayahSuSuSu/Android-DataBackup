@@ -229,7 +229,6 @@ fun PagePackageDetail() {
                                 onBtnClick = {
                                     viewModel.emitIntent(IndexUiIntent.BackupToLocal(backupItemState!!, navController))
                                 },
-
                                 infoContent = {
                                     val ct = backupItemState!!.indexInfo.compressionType
                                     val ctList = remember { listOf(CompressionType.TAR, CompressionType.ZSTD, CompressionType.LZ4).map { it.type } }
@@ -308,7 +307,7 @@ fun PagePackageDetail() {
                                     itemState = restoreItemState,
                                     onBtnClick = {
                                         if (isCloud)
-                                            viewModel.emitIntent(IndexUiIntent.RestoreFromCloud(restoreItemState, navController))
+                                            viewModel.emitIntent(IndexUiIntent.RestoreFromCloud(restoreItemState, restoreItemState.indexInfo.cloud, navController))
                                         else
                                             viewModel.emitIntent(IndexUiIntent.RestoreFromLocal(restoreItemState, navController))
                                     },

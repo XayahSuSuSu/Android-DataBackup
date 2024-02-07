@@ -6,11 +6,13 @@ import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataState
 import com.xayah.core.model.OpType
+import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.MediaEntityWithCount
 import com.xayah.core.model.database.MediaExtraInfo
 import com.xayah.core.model.database.MediaIndexInfo
 import com.xayah.core.model.database.MediaInfo
+import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
@@ -29,6 +31,7 @@ class MediaRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
     private val mediaDao: MediaDao,
+    private val cloudRepository: CloudRepository,
     private val pathUtil: PathUtil,
 ) {
     companion object {
@@ -52,6 +55,8 @@ class MediaRepository @Inject constructor(
     suspend fun query(opType: OpType, preserveId: Long, name: String, ct: CompressionType, cloud: String, backupDir: String) = mediaDao.query(opType, preserveId, name, ct, cloud, backupDir)
     fun queryFlow(name: String, opType: OpType, preserveId: Long) = mediaDao.queryFlow(name = name, opType = opType, preserveId = preserveId)
     fun queryFlow(name: String, opType: OpType) = mediaDao.queryFlow(name = name, opType = opType)
+    suspend fun getMedia(opType: OpType, name: String, preserveId: Long, ct: CompressionType, cloud: String, backupDir: String) =
+        mediaDao.query(opType, preserveId, name, ct, cloud, backupDir)
 
     fun getKeyPredicate(key: String): (MediaEntityWithCount) -> Boolean = { m ->
         m.entity.name.lowercase().contains(key.lowercase()) || m.entity.path.lowercase().contains(key.lowercase())
@@ -59,6 +64,10 @@ class MediaRepository @Inject constructor(
 
     suspend fun refreshFromLocalMedia(name: String) {
         refreshFromLocal(path = "$archivesMediumDir/$name")
+    }
+
+    suspend fun refreshFromCloudMedia(name: String) {
+        runCatching { refreshFromCloud(name = name) }.onFailure(rootService.onFailure)
     }
 
     private suspend fun refreshFromLocal(path: String) {
@@ -75,6 +84,42 @@ class MediaRepository @Inject constructor(
                         query(stored.indexInfo.opType, stored.preserveId, stored.name, stored.indexInfo.compressionType, "", localBackupSaveDir).also { m ->
                             if (m == null)
                                 mediaDao.upsert(stored)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun refreshFromCloud(name: String) {
+        cloudRepository.withActivatedClients { clients ->
+            clients.forEach { (client, entity) ->
+                val remote = entity.remote
+                val remoteArchivesMediumDir = pathUtil.getCloudRemoteArchivesMediumDir(remote)
+                val src = "$remoteArchivesMediumDir/$name"
+                if (client.exists(src)) {
+                    val paths = client.walkFileTree(src)
+                    val tmpDir = pathUtil.getCloudTmpDir()
+                    paths.forEach {
+                        val fileName = PathUtil.getFileName(it.pathString)
+                        val preserveId = PathUtil.getFileName(PathUtil.getParentPath(it.pathString))
+                        if (fileName == ConfigsMediaRestoreName) {
+                            runCatching {
+                                cloudRepository.download(client = client, src = it.pathString, dstDir = tmpDir) { path ->
+                                    val stored = rootService.readProtoBuf<MediaEntity>(path).also { p ->
+                                        p?.extraInfo?.activated = false
+                                        p?.indexInfo?.cloud = entity.name
+                                        p?.indexInfo?.backupDir = remote
+                                        p?.indexInfo?.preserveId = preserveId.toLongOrNull() ?: 0
+                                    }
+                                    if (stored != null) {
+                                        getMedia(stored.indexInfo.opType, stored.name, stored.preserveId, stored.indexInfo.compressionType, entity.name, remote).also { m ->
+                                            if (m == null)
+                                                mediaDao.upsert(stored)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -190,18 +235,66 @@ class MediaRepository @Inject constructor(
         }
     }
 
+    suspend fun updateCloudMediaArchivesSize(opType: OpType, name: String) {
+        cloudRepository.withActivatedClients { clients ->
+            clients.forEach { (client, entity) ->
+                updateCloudMediaArchivesSize(opType, name, client, entity)
+            }
+        }
+    }
+
+    private fun calculateCloudArchiveSize(client: CloudClient, m: MediaEntity, archivesMediumDir: String) = run {
+        val src = getArchiveDst("${archivesMediumDir}/${m.archivesPreserveRelativeDir}", m.indexInfo.compressionType)
+        if (client.exists(src)) client.size(src)
+        else 0
+    }
+
+    suspend fun updateCloudMediaArchivesSize(opType: OpType, name: String, client: CloudClient, entity: CloudEntity) {
+        val remote = entity.remote
+        val remoteArchivesMediumDir = pathUtil.getCloudRemoteArchivesMediumDir(remote)
+        query(opType, name, entity.name, entity.remote).onEach {
+            runCatching { it.mediaInfo.displayBytes = calculateCloudArchiveSize(client, it, remoteArchivesMediumDir) }.onFailure(rootService.onFailure)
+            upsert(it)
+        }
+    }
+
     suspend fun preserve(m: MediaEntity) {
         val parent = archivesMediumDir
         val preserveId = DateUtil.getTimestamp()
-        val src = "${parent}/${m.archivesPreserveRelativeDir}"
-        val dst = "${parent}/${m.archivesRelativeDir}/${preserveId}"
-        rootService.renameTo(src, dst)
-        upsert(m.copy(indexInfo = m.indexInfo.copy(preserveId = preserveId)))
+        val isSuccess = if (m.indexInfo.cloud.isEmpty()) {
+            val src = "${parent}/${m.archivesPreserveRelativeDir}"
+            val dst = "${parent}/${m.archivesRelativeDir}/${preserveId}"
+            rootService.renameTo(src, dst)
+        } else {
+            runCatching {
+                cloudRepository.withClient(m.indexInfo.cloud) { client, entity ->
+                    val remote = entity.remote
+                    val remoteArchivesMediumsDir = pathUtil.getCloudRemoteArchivesMediumDir(remote)
+                    val src = "${remoteArchivesMediumsDir}/${m.archivesPreserveRelativeDir}"
+                    val dst = "${remoteArchivesMediumsDir}/${m.archivesRelativeDir}/${preserveId}"
+                    client.renameTo(src, dst)
+                }
+            }.onFailure(rootService.onFailure).isSuccess
+        }
+
+        if (isSuccess) upsert(m.copy(indexInfo = m.indexInfo.copy(preserveId = preserveId)))
     }
 
     suspend fun delete(m: MediaEntity) {
-        val src = "${archivesMediumDir}/${m.archivesPreserveRelativeDir}"
-        rootService.deleteRecursively(src)
-        mediaDao.delete(m)
+        val isSuccess = if (m.indexInfo.cloud.isEmpty()) {
+            val src = "${archivesMediumDir}/${m.archivesPreserveRelativeDir}"
+            rootService.deleteRecursively(src)
+        } else {
+            runCatching {
+                cloudRepository.withClient(m.indexInfo.cloud) { client, entity ->
+                    val remote = entity.remote
+                    val remoteArchivesMediumDir = pathUtil.getCloudRemoteArchivesMediumDir(remote)
+                    val src = "${remoteArchivesMediumDir}/${m.archivesPreserveRelativeDir}"
+                    client.deleteRecursively(src)
+                }
+            }.onFailure(rootService.onFailure).isSuccess
+        }
+
+        if (isSuccess) mediaDao.delete(m)
     }
 }

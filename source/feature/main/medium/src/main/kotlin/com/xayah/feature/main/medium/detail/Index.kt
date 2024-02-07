@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -28,14 +30,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.util.of
+import com.xayah.core.ui.component.FilledIconTextButton
+import com.xayah.core.ui.component.FilterChip
+import com.xayah.core.ui.component.HeaderItem
 import com.xayah.core.ui.component.IconTextButton
 import com.xayah.core.ui.component.InfoItem
 import com.xayah.core.ui.component.InnerTopSpacer
+import com.xayah.core.ui.component.LabelMediumText
 import com.xayah.core.ui.component.ModalActionDropdownMenu
 import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.TitleLargeText
@@ -57,6 +64,8 @@ import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
+import com.xayah.core.ui.util.getValue
+import com.xayah.core.ui.util.value
 import com.xayah.feature.main.medium.OpItem
 import com.xayah.feature.main.medium.R
 
@@ -66,12 +75,15 @@ import com.xayah.feature.main.medium.R
 @ExperimentalMaterial3Api
 @Composable
 fun PageMediaDetail() {
+    val context = LocalContext.current
     val viewModel = hiltViewModel<IndexViewModel>()
     val navController = LocalNavController.current!!
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val activatedState by viewModel.activatedState.collectAsStateWithLifecycle()
     val backupItemState by viewModel.backupItemState.collectAsStateWithLifecycle()
     val restoreItemsState by viewModel.restoreItemsState.collectAsStateWithLifecycle()
+    val accountMenuItemsState by viewModel.accountMenuItemsState.collectAsStateWithLifecycle()
+    val accountsState by viewModel.accountsState.collectAsStateWithLifecycle()
     val snackbarHostState = viewModel.snackbarHostState
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val isRefreshing = uiState.isRefreshing
@@ -121,6 +133,33 @@ fun PageMediaDetail() {
                         }
                     }
 
+                    if (accountMenuItemsState.isNotEmpty()) {
+                        item {
+                            HeaderItem(title = StringResourceToken.fromStringId(R.string.cloud))
+                            LabelMediumText(
+                                text = StringResourceToken.fromStringId(R.string.select_cloud_accounts_to_refresh).value,
+                                color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
+                            )
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level2),
+                                verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level2),
+                                content = {
+                                    for (account in accountsState) {
+                                        FilterChip(
+                                            enabled = isRefreshing.not(),
+                                            selected = account.activated,
+                                            label = StringResourceToken.fromString(account.name),
+                                        ) {
+                                            viewModel.emitIntent(IndexUiIntent.ActiveCloud(account))
+                                        }
+                                    }
+                                }
+                            )
+
+                        }
+                    }
+
                     if (backupItemState != null) {
                         item {
                             OpItem(
@@ -153,24 +192,77 @@ fun PageMediaDetail() {
                                             )
                                         )
                                     }
+                                },
+                                extraBtnContent = {
+                                    var expanded by remember { mutableStateOf(false) }
+                                    Box(modifier = Modifier.wrapContentSize(Alignment.Center)) {
+                                        FilledIconTextButton(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .paddingBottom(PaddingTokens.Level2),
+                                            text = if (accountMenuItemsState.isEmpty())
+                                                StringResourceToken.fromStringId(R.string.no_available_cloud_accounts)
+                                            else if (activatedState)
+                                                StringResourceToken.fromStringId(R.string.task_is_in_progress)
+                                            else
+                                                StringResourceToken.fromStringId(R.string.back_up_to_cloud),
+                                            colors = ButtonDefaults.buttonColors(containerColor = ColorSchemeKeyTokens.Secondary.toColor()),
+                                            icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cloud_upload),
+                                            enabled = isRefreshing.not() && activatedState.not() && accountMenuItemsState.isNotEmpty(),
+                                            onClick = {
+                                                expanded = true
+                                            }
+                                        )
+
+                                        ModalActionDropdownMenu(
+                                            expanded = expanded,
+                                            actionList = accountMenuItemsState,
+                                            onClick = {
+                                                expanded = false
+                                                viewModel.emitIntent(
+                                                    IndexUiIntent.BackupToCloud(
+                                                        backupItemState!!,
+                                                        accountMenuItemsState[it].title.getValue(context),
+                                                        navController
+                                                    )
+                                                )
+                                            },
+                                            onDismissRequest = { expanded = false })
+                                    }
                                 }
                             )
                         }
                     }
 
                     for (restoreItemState in restoreItemsState) {
+                        val isCloud = restoreItemState.indexInfo.cloud.isNotEmpty()
                         item {
                             OpItem(
                                 title = StringResourceToken.fromStringId(R.string.restore),
-                                btnText = StringResourceToken.fromStringId(R.string.restore_from_local),
-                                btnIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
+                                btnText = if (isCloud) StringResourceToken.fromStringId(R.string.restore_from_cloud) else StringResourceToken.fromStringId(R.string.restore_from_local),
+                                btnIcon = if (isCloud) ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cloud_upload) else ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
+                                btnColors = if (isCloud) ButtonDefaults.buttonColors(containerColor = ColorSchemeKeyTokens.Secondary.toColor()) else ButtonDefaults.buttonColors(),
                                 isRefreshing = isRefreshing,
                                 activatedState = activatedState,
                                 itemState = restoreItemState,
                                 onBtnClick = {
-                                    viewModel.emitIntent(IndexUiIntent.RestoreFromLocal(restoreItemState, navController))
+                                    if (isCloud)
+                                        viewModel.emitIntent(IndexUiIntent.RestoreFromCloud(restoreItemState, restoreItemState.indexInfo.cloud, navController))
+                                    else
+                                        viewModel.emitIntent(IndexUiIntent.RestoreFromLocal(restoreItemState, navController))
                                 },
                                 infoContent = {
+                                    if (isCloud) {
+                                        InfoItem(
+                                            title = StringResourceToken.fromStringId(R.string.account),
+                                            content = StringResourceToken.fromString(restoreItemState.indexInfo.cloud)
+                                        )
+                                    }
+                                    InfoItem(
+                                        title = StringResourceToken.fromStringId(R.string.directory),
+                                        content = StringResourceToken.fromString(restoreItemState.indexInfo.backupDir)
+                                    )
+
                                     val ct = restoreItemState.indexInfo.compressionType
                                     InfoItem(
                                         title = StringResourceToken.fromStringId(R.string.compression_type),

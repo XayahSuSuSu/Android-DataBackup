@@ -11,7 +11,7 @@ import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.PackageRepository
-import com.xayah.core.datastore.saveRcloneMainAccountName
+import com.xayah.core.datastore.saveCloudActivatedAccountName
 import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
@@ -45,7 +45,7 @@ sealed class IndexUiIntent : UiIntent {
     data class BackupToLocal(val packageEntity: PackageEntity, val navController: NavHostController) : IndexUiIntent()
     data class BackupToCloud(val packageEntity: PackageEntity, val name: String, val navController: NavHostController) : IndexUiIntent()
     data class RestoreFromLocal(val packageEntity: PackageEntity, val navController: NavHostController) : IndexUiIntent()
-    data class RestoreFromCloud(val packageEntity: PackageEntity, val navController: NavHostController) : IndexUiIntent()
+    data class RestoreFromCloud(val packageEntity: PackageEntity, val name: String, val navController: NavHostController) : IndexUiIntent()
     data class Preserve(val packageEntity: PackageEntity) : IndexUiIntent()
     data class ActiveCloud(val cloudEntity: CloudEntity) : IndexUiIntent()
 
@@ -136,7 +136,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.BackupToCloud -> {
                 launchOnGlobal {
                     contextRepository.withContext {
-                        it.saveRcloneMainAccountName(intent.name)
+                        it.saveCloudActivatedAccountName(intent.name)
                     }
                     emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                     emitEffectSuspend(
@@ -212,6 +212,9 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.RestoreFromCloud -> {
                 launchOnGlobal {
+                    contextRepository.withContext {
+                        it.saveCloudActivatedAccountName(intent.name)
+                    }
                     emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                     emitEffectSuspend(
                         IndexUiEffect.ShowSnackbar(

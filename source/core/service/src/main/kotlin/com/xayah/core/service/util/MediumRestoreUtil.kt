@@ -2,12 +2,14 @@ package com.xayah.core.service.util
 
 import android.content.Context
 import com.xayah.core.common.util.toLineString
+import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readCleanRestoring
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
+import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
@@ -22,6 +24,7 @@ class MediumRestoreUtil @Inject constructor(
     private val rootService: RemoteRootService,
     private val taskDao: TaskDao,
     private val mediaRepository: MediaRepository,
+    private val cloudRepository: CloudRepository,
 ) {
     companion object {
         private val TAG = this::class.java.simpleName
@@ -90,5 +93,26 @@ class MediumRestoreUtil @Inject constructor(
         }
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    private fun TaskDetailMediaEntity.getLog() = dataInfo.log
+
+    suspend fun download(client: CloudClient, m: MediaEntity, t: TaskDetailMediaEntity, srcDir: String, dstDir: String, onDownloaded: suspend (path: String) -> Unit) = run {
+        val ct = m.indexInfo.compressionType
+        val src = mediaRepository.getArchiveDst(dstDir = srcDir, ct = ct)
+
+        if (m.getDataSelected().not()) {
+            t.updateInfo(state = OperationState.SKIP)
+        } else {
+            t.updateInfo(state = OperationState.DOWNLOADING)
+
+            if (client.exists(src)) {
+                cloudRepository.download(client = client, src = src, dstDir = dstDir, onDownloaded = onDownloaded).apply {
+                    t.updateInfo(state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog() + "\n${outString}")
+                }
+            } else {
+                t.updateInfo(state = OperationState.ERROR, log = log { "Not exist: $src" })
+            }
+        }
     }
 }

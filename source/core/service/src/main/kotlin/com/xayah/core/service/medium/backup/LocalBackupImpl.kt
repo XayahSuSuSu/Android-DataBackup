@@ -5,8 +5,10 @@ import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.OpType
+import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
+import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.service.util.CommonBackupUtil
 import com.xayah.core.service.util.MediumBackupUtil
@@ -16,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class LocalImpl @Inject constructor() : AbstractService() {
+internal class LocalBackupImpl @Inject constructor() : BackupService() {
     @Inject
     override lateinit var rootService: RemoteRootService
 
@@ -40,6 +42,25 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
 
     @Inject
     override lateinit var mediaRepository: MediaRepository
+
+    override val taskEntity by lazy {
+        TaskEntity(
+            id = 0,
+            opType = OpType.BACKUP,
+            taskType = TaskType.MEDIA,
+            startTimestamp = startTimestamp,
+            endTimestamp = endTimestamp,
+            backupDir = context.localBackupSaveDir(),
+            rawBytes = 0.toDouble(),
+            availableBytes = 0.toDouble(),
+            totalBytes = 0.toDouble(),
+            totalCount = 0,
+            successCount = 0,
+            failureCount = 0,
+            isProcessing = true,
+            cloud = "",
+        )
+    }
 
     private val localBackupSaveDir by lazy { localBackupSaveDir() }
     private val archivesMediumDir by lazy { pathUtil.getLocalBackupArchivesMediumDir() }
@@ -91,4 +112,6 @@ internal class LocalImpl @Inject constructor() : AbstractService() {
             taskDao.upsert(it)
         }
     }
+
+    override suspend fun clear() {}
 }

@@ -86,7 +86,9 @@ class PathUtil @Inject constructor(
     fun getLocalBackupArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localRestoreSaveDir())
     fun getCloudTmpArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.cloudTmpAbsoluteDir())
+    fun getCloudTmpArchivesMediumDir(): String = getArchivesMediumDir(parent = context.cloudTmpAbsoluteDir())
     fun getCloudRemoteArchivesPackagesDir(remote: String): String = getArchivesPackagesDir(parent = remote)
+    fun getCloudRemoteArchivesMediumDir(remote: String): String = getArchivesMediumDir(parent = remote)
     fun getArchivesMediumDir(parent: String): String = "${parent}/${getArchivesMediumRelativeDir()}"
     fun getLocalBackupArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localBackupSaveDir())
     fun getLocalRestoreArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localRestoreSaveDir())

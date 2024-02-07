@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -37,7 +39,6 @@ import com.xayah.core.ui.component.InfoItem
 import com.xayah.core.ui.component.LabelSmallText
 import com.xayah.core.ui.component.TitleMediumText
 import com.xayah.core.ui.component.outlinedCardBorder
-import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
@@ -119,12 +120,14 @@ fun OpItem(
     title: StringResourceToken,
     btnText: StringResourceToken,
     btnIcon: ImageVectorToken,
+    btnColors: ButtonColors = ButtonDefaults.buttonColors(),
     isRefreshing: Boolean,
     activatedState: Boolean,
     itemState: MediaEntity,
     onBtnClick: () -> Unit,
     infoContent: @Composable ColumnScope.() -> Unit,
     btnContent: (@Composable ColumnScope.() -> Unit)? = null,
+    extraBtnContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     var expand by remember { mutableStateOf(false) }
     HeaderItem(expand = expand, title = title) {
@@ -155,16 +158,17 @@ fun OpItem(
             }
             FilledIconTextButton(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .paddingBottom(PaddingTokens.Level2),
+                    .fillMaxWidth(),
                 text = if (activatedState)
                     StringResourceToken.fromStringId(R.string.task_is_in_progress)
                 else
                     btnText,
                 icon = btnIcon,
+                colors = btnColors,
                 enabled = isRefreshing.not() && activatedState.not(),
                 onClick = onBtnClick
             )
+            extraBtnContent?.invoke(this)
         }
     }
 }

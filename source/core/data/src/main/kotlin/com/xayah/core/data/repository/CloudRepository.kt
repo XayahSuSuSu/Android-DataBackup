@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import com.xayah.core.database.dao.CloudDao
-import com.xayah.core.datastore.readRcloneMainAccountName
+import com.xayah.core.datastore.readCloudActivatedAccountName
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.network.client.getCloud
@@ -118,7 +118,7 @@ class CloudRepository @Inject constructor(
         }
 
     suspend fun getClient(name: String? = null): Pair<CloudClient, CloudEntity> {
-        val entity = queryByName(name ?: context.readRcloneMainAccountName().first())
+        val entity = queryByName(name ?: context.readCloudActivatedAccountName().first())
         val client = entity?.getCloud()?.apply { connect() } ?: throw NullPointerException("Client is null.")
         return client to entity
     }

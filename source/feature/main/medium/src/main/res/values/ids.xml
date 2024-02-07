@@ -19,4 +19,12 @@
     <item name="backup_completed" type="string" />
     <item name="restore_completed" type="string" />
     <item name="backups" type="plurals" />
+    <item name="cloud" type="string" />
+    <item name="select_cloud_accounts_to_refresh" type="string" />
+    <item name="no_available_cloud_accounts" type="string" />
+    <item name="back_up_to_cloud" type="string" />
+    <item name="ic_rounded_cloud_upload" type="drawable" />
+    <item name="restore_from_cloud" type="string" />
+    <item name="account" type="string" />
+    <item name="directory" type="string" />
 </resources>

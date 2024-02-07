@@ -18,8 +18,7 @@ val KeyRestoreSaveParentPath = stringPreferencesKey("restore_save_parent_path")
 val KeyBackupSortType = stringPreferencesKey("backup_sort_type")
 val KeyRestoreSortType = stringPreferencesKey("restore_sort_type")
 val KeyAppVersionName = stringPreferencesKey("app_version_name")
-val KeyRcloneMainAccountName = stringPreferencesKey("rclone_main_account_name")
-val KeyRcloneMainAccountRemote = stringPreferencesKey("rclone_main_account_remote")
+val KeyCloudActivatedAccountName = stringPreferencesKey("cloud_activated_account_name")
 val KeyLoadedIconMD5 = stringPreferencesKey("loaded_icon_md5")
 
 
@@ -30,8 +29,7 @@ fun Context.readCompressionType() = readStoreString(key = KeyCompressionType, de
 fun Context.readBackupSortType() = readStoreString(key = KeyBackupSortType, defValue = "").map { SortType.of(it) }
 fun Context.readRestoreSortType() = readStoreString(key = KeyRestoreSortType, defValue = "").map { SortType.of(it) }
 fun Context.readAppVersionName() = readStoreString(key = KeyAppVersionName, defValue = "")
-fun Context.readRcloneMainAccountName() = readStoreString(key = KeyRcloneMainAccountName, defValue = "")
-fun Context.readRcloneMainAccountRemote() = readStoreString(key = KeyRcloneMainAccountRemote, defValue = "")
+fun Context.readCloudActivatedAccountName() = readStoreString(key = KeyCloudActivatedAccountName, defValue = "")
 fun Context.readLoadedIconMD5() = readStoreString(key = KeyLoadedIconMD5, defValue = "")
 
 /**
@@ -55,8 +53,7 @@ suspend fun Context.saveCompressionType(value: CompressionType) = saveStoreStrin
 suspend fun Context.saveBackupSortType(value: SortType) = saveStoreString(key = KeyBackupSortType, value = value.name.trim())
 suspend fun Context.saveRestoreSortType(value: SortType) = saveStoreString(key = KeyRestoreSortType, value = value.name.trim())
 suspend fun Context.saveAppVersionName() = saveStoreString(key = KeyAppVersionName, value = getCurrentAppVersionName())
-suspend fun Context.saveRcloneMainAccountName(value: String) = saveStoreString(key = KeyRcloneMainAccountName, value = value.trim())
-suspend fun Context.saveRcloneMainAccountRemote(value: String) = saveStoreString(key = KeyRcloneMainAccountRemote, value = value.trim())
+suspend fun Context.saveCloudActivatedAccountName(value: String) = saveStoreString(key = KeyCloudActivatedAccountName, value = value.trim())
 suspend fun Context.saveLoadedIconMD5(value: String) = saveStoreString(key = KeyLoadedIconMD5, value = value.trim())
 
 /**

@@ -8,12 +8,16 @@ import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.MediaRepository
+import com.xayah.core.datastore.saveCloudActivatedAccountName
 import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
+import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.feature.main.medium.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +26,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import com.xayah.core.service.medium.backup.LocalService as LocalBackupService
-import com.xayah.core.service.medium.restore.LocalService as LocalRestoreService
+import com.xayah.core.service.medium.backup.CloudProcessingImpl as CloudBackupService
+import com.xayah.core.service.medium.backup.LocalProcessingImpl as LocalBackupService
+import com.xayah.core.service.medium.restore.CloudProcessingImpl as CloudRestoreService
+import com.xayah.core.service.medium.restore.LocalProcessingImpl as LocalRestoreService
 
 data class IndexUiState(
     val isRefreshing: Boolean,
@@ -34,7 +40,10 @@ sealed class IndexUiIntent : UiIntent {
     data object OnRefresh : IndexUiIntent()
     data class UpdateMedia(val mediaEntity: MediaEntity) : IndexUiIntent()
     data class BackupToLocal(val mediaEntity: MediaEntity, val navController: NavHostController) : IndexUiIntent()
+    data class BackupToCloud(val mediaEntity: MediaEntity, val name: String, val navController: NavHostController) : IndexUiIntent()
     data class RestoreFromLocal(val mediaEntity: MediaEntity, val navController: NavHostController) : IndexUiIntent()
+    data class RestoreFromCloud(val mediaEntity: MediaEntity, val name: String, val navController: NavHostController) : IndexUiIntent()
+    data class ActiveCloud(val cloudEntity: CloudEntity) : IndexUiIntent()
     data class Preserve(val mediaEntity: MediaEntity) : IndexUiIntent()
     data class Delete(val mediaEntity: MediaEntity) : IndexUiIntent()
 }
@@ -44,9 +53,12 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     args: SavedStateHandle,
     private val mediaRepo: MediaRepository,
+    private val cloudRepo: CloudRepository,
     rootService: RemoteRootService,
     private val localBackupService: LocalBackupService,
+    private val cloudBackupService: CloudBackupService,
     private val localRestoreService: LocalRestoreService,
+    private val cloudRestoreService: CloudRestoreService,
     private val contextRepository: ContextRepository,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
@@ -68,8 +80,10 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.OnRefresh -> {
                 emitStateSuspend(state.copy(isRefreshing = true))
                 mediaRepo.refreshFromLocalMedia(state.name)
+                mediaRepo.refreshFromCloudMedia(state.name)
                 mediaRepo.updateLocalMediaDataSize(OpType.BACKUP, 0, state.name)
                 mediaRepo.updateLocalMediaArchivesSize(OpType.RESTORE, state.name)
+                mediaRepo.updateCloudMediaArchivesSize(OpType.RESTORE, state.name)
                 emitStateSuspend(state.copy(isRefreshing = false))
             }
 
@@ -97,6 +111,46 @@ class IndexViewModel @Inject constructor(
                     localBackupService.processing()
                     localBackupService.postProcessing()
                     localBackupService.destroyService()
+
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.backup_completed),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Long,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                }
+            }
+
+            is IndexUiIntent.BackupToCloud -> {
+                launchOnGlobal {
+                    contextRepository.withContext {
+                        it.saveCloudActivatedAccountName(intent.name)
+                    }
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.task_is_in_progress),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Indefinite,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                    mediaRepo.upsert(intent.mediaEntity.copy(extraInfo = intent.mediaEntity.extraInfo.copy(activated = true)))
+                    cloudBackupService.preprocessing()
+                    cloudBackupService.processing()
+                    cloudBackupService.postProcessing()
+                    cloudBackupService.destroyService()
 
                     emitEffectSuspend(IndexUiEffect.DismissSnackbar)
                     emitEffectSuspend(
@@ -151,6 +205,50 @@ class IndexViewModel @Inject constructor(
                 }
             }
 
+            is IndexUiIntent.RestoreFromCloud -> {
+                launchOnGlobal {
+                    contextRepository.withContext {
+                        it.saveCloudActivatedAccountName(intent.name)
+                    }
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.task_is_in_progress),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Indefinite,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                    mediaRepo.upsert(intent.mediaEntity.copy(extraInfo = intent.mediaEntity.extraInfo.copy(activated = true)))
+                    cloudRestoreService.preprocessing()
+                    cloudRestoreService.processing()
+                    cloudRestoreService.postProcessing()
+                    cloudRestoreService.destroyService()
+
+                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffectSuspend(
+                        IndexUiEffect.ShowSnackbar(
+                            message = contextRepository.getString(R.string.restore_completed),
+                            actionLabel = contextRepository.getString(R.string.details),
+                            duration = SnackbarDuration.Long,
+                            onActionPerformed = {
+                                withMainContext {
+                                    intent.navController.navigate(MainRoutes.TaskList.route)
+                                }
+                            }
+                        )
+                    )
+                }
+            }
+
+            is IndexUiIntent.ActiveCloud -> {
+                cloudRepo.upsert(intent.cloudEntity.copy(activated = intent.cloudEntity.activated.not()))
+            }
+
             is IndexUiIntent.Preserve -> {
                 mediaRepo.preserve(intent.mediaEntity)
             }
@@ -174,6 +272,12 @@ class IndexViewModel @Inject constructor(
     private val _restoreItems: Flow<List<MediaEntity>> = mediaRepo.queryFlow(
         name = uiState.value.name,
         opType = OpType.RESTORE,
-    ).map { medium -> medium.sortedBy { it.preserveId } }.flowOnIO()
+    ).map { medium -> medium.sortedBy { it.preserveId }.sortedBy { it.indexInfo.cloud } }.flowOnIO()
     val restoreItemsState: StateFlow<List<MediaEntity>> = _restoreItems.stateInScope(listOf())
+
+    private val _accountMenuItems: Flow<List<ActionMenuItem>> = cloudRepo.cloudsMenuItems.flowOnIO()
+    val accountMenuItemsState: StateFlow<List<ActionMenuItem>> = _accountMenuItems.stateInScope(listOf())
+
+    private val _accounts: Flow<List<CloudEntity>> = cloudRepo.clouds.flowOnIO()
+    val accountsState: StateFlow<List<CloudEntity>> = _accounts.stateInScope(listOf())
 }
