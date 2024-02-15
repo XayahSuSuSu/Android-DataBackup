@@ -16,8 +16,6 @@
 
 package com.android.internal.util;
 
-import android.util.CharsetUtils;
-
 import androidx.annotation.NonNull;
 
 import java.io.BufferedOutputStream;
@@ -27,11 +25,10 @@ import java.io.DataOutputStream;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-
-import dalvik.system.hidden.VMRuntime;
 
 /**
  * Optimized implementation of {@link DataOutput} which buffers data in memory
@@ -47,10 +44,7 @@ public class FastDataOutput implements DataOutput, Flushable, Closeable {
 
     private static AtomicReference<FastDataOutput> sOutCache = new AtomicReference<>();
 
-    private final VMRuntime mRuntime;
-
     private final byte[] mBuffer;
-    private final long mBufferPtr;
     private final int mBufferCap;
     private final boolean mUse4ByteSequence;
 
@@ -74,13 +68,11 @@ public class FastDataOutput implements DataOutput, Flushable, Closeable {
     }
 
     public FastDataOutput(@NonNull OutputStream out, int bufferSize, boolean use4ByteSequence) {
-        mRuntime = VMRuntime.getRuntime();
         if (bufferSize < 8) {
             throw new IllegalArgumentException();
         }
 
-        mBuffer = (byte[]) mRuntime.newNonMovableArray(byte.class, bufferSize);
-        mBufferPtr = mRuntime.addressOf(mBuffer);
+        mBuffer = new byte[bufferSize];
         mBufferCap = mBuffer.length;
         mUse4ByteSequence = use4ByteSequence;
 
@@ -187,62 +179,20 @@ public class FastDataOutput implements DataOutput, Flushable, Closeable {
         }
     }
 
+    /**
+     * @author <a href="https://github.com/MuntashirAkon">@MuntashirAkon</a>
+     */
     @Override
     public void writeUTF(String s) throws IOException {
-        if (mUse4ByteSequence) {
-            writeUTFUsing4ByteSequences(s);
-        } else {
-            writeUTFUsing3ByteSequences(s);
-        }
-    }
-
-    private void writeUTFUsing4ByteSequences(String s) throws IOException {
         // Attempt to write directly to buffer space if there's enough room,
         // otherwise fall back to chunking into place
         if (mBufferCap - mBufferPos < 2 + s.length()) drain();
 
-        // Magnitude of this returned value indicates the number of bytes
-        // required to encode the string; sign indicates success/failure
-        int len = CharsetUtils.toModifiedUtf8Bytes(s, mBufferPtr, mBufferPos + 2, mBufferCap);
-        if (Math.abs(len) > MAX_UNSIGNED_SHORT) {
-            throw new IOException("Modified UTF-8 length too large: " + len);
-        }
-
-        if (len >= 0) {
-            // Positive value indicates the string was encoded into the buffer
-            // successfully, so we only need to prefix with length
-            writeShort(len);
-            mBufferPos += len;
-        } else {
-            // Negative value indicates buffer was too small and we need to
-            // allocate a temporary buffer for encoding
-            len = -len;
-            final byte[] tmp = (byte[]) mRuntime.newNonMovableArray(byte.class, len + 1);
-            CharsetUtils.toModifiedUtf8Bytes(s, mRuntime.addressOf(tmp), 0, tmp.length);
-            writeShort(len);
-            write(tmp, 0, len);
-        }
-    }
-
-    private void writeUTFUsing3ByteSequences(String s) throws IOException {
-        final int len = (int) ModifiedUtf8.countBytes(s, false);
-        if (len > MAX_UNSIGNED_SHORT) {
-            throw new IOException("Modified UTF-8 length too large: " + len);
-        }
-
-        // Attempt to write directly to buffer space if there's enough room,
-        // otherwise fall back to chunking into place
-        if (mBufferCap >= 2 + len) {
-            if (mBufferCap - mBufferPos < 2 + len) drain();
-            writeShort(len);
-            ModifiedUtf8.encode(mBuffer, mBufferPos, s);
-            mBufferPos += len;
-        } else {
-            final byte[] tmp = (byte[]) mRuntime.newNonMovableArray(byte.class, len + 1);
-            ModifiedUtf8.encode(tmp, 0, s);
-            writeShort(len);
-            write(tmp, 0, len);
-        }
+        // Unfoturnately, we cannot use VMRuntime, so we will take len to be negative as specified below
+        // and insert manually
+        final byte[] tmp = s.getBytes(StandardCharsets.UTF_8);
+        writeShort(tmp.length);
+        write(tmp, 0, tmp.length);
     }
 
     /**

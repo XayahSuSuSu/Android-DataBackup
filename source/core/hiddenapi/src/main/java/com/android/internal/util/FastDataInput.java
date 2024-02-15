@@ -16,8 +16,6 @@
 
 package com.android.internal.util;
 
-import android.util.CharsetUtils;
-
 import androidx.annotation.NonNull;
 
 import java.io.BufferedInputStream;
@@ -27,11 +25,10 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-
-import dalvik.system.hidden.VMRuntime;
 
 /**
  * Optimized implementation of {@link DataInput} which buffers data in memory
@@ -47,10 +44,7 @@ public class FastDataInput implements DataInput, Closeable {
 
     private static AtomicReference<FastDataInput> sInCache = new AtomicReference<>();
 
-    private final VMRuntime mRuntime;
-
     private final byte[] mBuffer;
-    private final long mBufferPtr;
     private final int mBufferCap;
     private final boolean mUse4ByteSequence;
 
@@ -76,14 +70,12 @@ public class FastDataInput implements DataInput, Closeable {
     }
 
     public FastDataInput(@NonNull InputStream in, int bufferSize, boolean use4ByteSequence) {
-        mRuntime = VMRuntime.getRuntime();
         mIn = Objects.requireNonNull(in);
         if (bufferSize < 8) {
             throw new IllegalArgumentException();
         }
 
-        mBuffer = (byte[]) mRuntime.newNonMovableArray(byte.class, bufferSize);
-        mBufferPtr = mRuntime.addressOf(mBuffer);
+        mBuffer = new byte[bufferSize];
         mBufferCap = mBuffer.length;
         mUse4ByteSequence = use4ByteSequence;
     }
@@ -201,45 +193,20 @@ public class FastDataInput implements DataInput, Closeable {
         }
     }
 
+    /**
+     * @author <a href="https://github.com/MuntashirAkon">@MuntashirAkon</a>
+     */
     @Override
     public String readUTF() throws IOException {
-        if (mUse4ByteSequence) {
-            return readUTFUsing4ByteSequences();
-        } else {
-            return readUTFUsing3ByteSequences();
-        }
-    }
-
-    private String readUTFUsing4ByteSequences() throws IOException {
         // Attempt to read directly from buffer space if there's enough room,
         // otherwise fall back to chunking into place
         final int len = readUnsignedShort();
-        if (mBufferCap > len) {
-            if (mBufferLim - mBufferPos < len) fill(len);
-            final String res = CharsetUtils.fromModifiedUtf8Bytes(mBufferPtr, mBufferPos, len);
-            mBufferPos += len;
-            return res;
-        } else {
-            final byte[] tmp = (byte[]) mRuntime.newNonMovableArray(byte.class, len + 1);
-            readFully(tmp, 0, len);
-            return CharsetUtils.fromModifiedUtf8Bytes(mRuntime.addressOf(tmp), 0, len);
-        }
-    }
 
-    private String readUTFUsing3ByteSequences() throws IOException {
-        // Attempt to read directly from buffer space if there's enough room,
-        // otherwise fall back to chunking into place
-        final int len = readUnsignedShort();
-        if (mBufferCap > len) {
-            if (mBufferLim - mBufferPos < len) fill(len);
-            final String res = ModifiedUtf8.decode(mBuffer, new char[len], mBufferPos, len);
-            mBufferPos += len;
-            return res;
-        } else {
-            final byte[] tmp = (byte[]) mRuntime.newNonMovableArray(byte.class, len + 1);
-            readFully(tmp, 0, len);
-            return ModifiedUtf8.decode(tmp, new char[len], 0, len);
-        }
+        // Unfortunately, we can't use VMRuntime right now
+        byte[] tmp = new byte[len];
+        readFully(tmp, 0, len);
+
+        return new String(tmp, StandardCharsets.UTF_8);
     }
 
     /**
