@@ -25,7 +25,7 @@ object LogUtil {
     const val TAG_SHELL_OUT = "SHELL_OUT "
     const val TAG_SHELL_CODE = "SHELL_CODE"
 
-    fun getLogFileName() = "$LOG_FILE_Prefix$timestamp"
+    fun getLogFileName() = "$LOG_FILE_Prefix$timestamp.txt"
 
     fun initialize(cacheDir: String) = runCatching {
         // Clear empty log files.

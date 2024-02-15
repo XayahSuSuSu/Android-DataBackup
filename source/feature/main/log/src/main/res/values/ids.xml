@@ -4,4 +4,5 @@
     <item name="in_use" type="string"/>
     <item name="clear_all" type="string"/>
     <item name="share" type="string"/>
+    <item name="logcat" type="string"/>
 </resources>

@@ -5,8 +5,11 @@ sealed class LogRoutes(val route: String) {
         const val ArgFileName = "fileName"
     }
 
-    object List : LogRoutes(route = "lop_list")
-    object Detail : LogRoutes(route = "lop_detail/{$ArgFileName}") {
-        fun getRoute(name: String) = "lop_detail/$name"
+    data object List : LogRoutes(route = "log_list")
+    data object Detail : LogRoutes(route = "log_detail/{$ArgFileName}") {
+        fun getRoute(name: String) = "log_detail/$name"
     }
+
+    data object Logcat : LogRoutes(route = "log_logcat")
+
 }

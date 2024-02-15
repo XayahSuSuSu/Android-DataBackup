@@ -15,8 +15,12 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:database"))
     implementation(project(":core:model"))
+    implementation(project(":core:data"))
 
     // Compose Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // libsu
+    implementation(libs.libsu.core)
 }

@@ -132,6 +132,7 @@ fun LabelLargeText(
     color: Color = Color.Unspecified,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
+    fontFamily: FontFamily? = null,
     enabled: Boolean = true,
 ) {
     Text(
@@ -141,6 +142,7 @@ fun LabelLargeText(
         color = if (enabled) color else color.copy(alpha = DisabledAlpha),
         textAlign = textAlign,
         fontWeight = fontWeight,
+        fontFamily = fontFamily,
     )
 }
 

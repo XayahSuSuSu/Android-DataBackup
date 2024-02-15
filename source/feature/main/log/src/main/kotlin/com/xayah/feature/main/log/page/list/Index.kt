@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +27,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.xayah.core.ui.component.ExtendedFab
+import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.RoundChip
 import com.xayah.core.ui.component.SecondaryTopBar
@@ -64,7 +66,12 @@ fun PageList(navController: NavHostController) {
         topBar = {
             SecondaryTopBar(
                 scrollBehavior = scrollBehavior,
-                title = StringResourceToken.fromStringId(R.string.log)
+                title = StringResourceToken.fromStringId(R.string.log),
+                actions = {
+                    IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.Adb)) {
+                        navController.navigate(LogRoutes.Logcat.route)
+                    }
+                }
             )
         },
         floatingActionButton = {

@@ -18,7 +18,7 @@ class LogListRepository @Inject constructor(@ApplicationContext private val cont
         FileUtil.listFilePaths(context.logDir()).forEach { path ->
             val name = PathUtil.getFileName(path)
             val sizeBytes = FileUtil.calculateSize(path)
-            val timestamp: Long = runCatching { name.split("_")[1].toLong() }.getOrElse { 0L }
+            val timestamp: Long = runCatching { name.split("_")[1].split(".")[0].toLong() }.getOrElse { 0L }
             items.add(LogCardItem(name = name, sizeBytes = sizeBytes.toDouble(), timestamp = timestamp, path = path))
         }
         items.sortedByDescending { it.timestamp }

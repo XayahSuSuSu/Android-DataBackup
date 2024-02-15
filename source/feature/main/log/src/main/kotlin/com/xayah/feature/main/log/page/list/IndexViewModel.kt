@@ -20,9 +20,9 @@ data class IndexUiState(
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
-    object Update : IndexUiIntent()
+    data object Update : IndexUiIntent()
     data class Delete(val path: String) : IndexUiIntent()
-    object DeleteAll : IndexUiIntent()
+    data object DeleteAll : IndexUiIntent()
     data class ShareLog(val name: String) : IndexUiIntent()
 }
 

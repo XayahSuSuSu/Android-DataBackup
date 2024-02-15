@@ -214,4 +214,5 @@
     <string name="restore_from_cloud">Restore from cloud</string>
     <string name="no_available_cloud_accounts">No available cloud accounts</string>
     <string name="select_cloud_accounts_to_refresh">Select cloud accounts to refresh</string>
+    <string name="logcat">Logcat</string>
 </resources>

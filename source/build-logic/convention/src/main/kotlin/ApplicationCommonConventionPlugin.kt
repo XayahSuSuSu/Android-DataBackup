@@ -32,7 +32,7 @@ private fun Project.configureCommon() {
                 isMinifyEnabled = false
                 isShrinkResources = false
                 proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-                buildConfigField("Boolean", "ENABLE_VERBOSE", "true")
+                buildConfigField("Boolean", "ENABLE_VERBOSE", "false")
             }
         }
 
