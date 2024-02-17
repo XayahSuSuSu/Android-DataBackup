@@ -75,6 +75,9 @@ interface MediaDao {
     )
     fun queryFlow(): Flow<List<MediaEntityWithCount>>
 
+    @Query("SELECT *, 1 AS count FROM MediaEntity WHERE indexInfo_opType = :opType")
+    fun queryFlow(opType: OpType): Flow<List<MediaEntityWithCount>>
+
     @Delete(entity = MediaEntity::class)
     suspend fun delete(item: MediaEntity)
 }

@@ -50,4 +50,7 @@
     <item name="directory" type="string" />
     <item name="cloud" type="string" />
     <item name="select_cloud_accounts_to_refresh" type="string" />
+    <item name="local" type="string" />
+    <item name="overlook" type="string" />
+    <item name="batch" type="string" />
 </resources>

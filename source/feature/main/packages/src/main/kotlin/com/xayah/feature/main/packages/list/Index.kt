@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FactCheck
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -21,6 +23,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -29,7 +33,11 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.viewmodel.IndexUiEffect
+import com.xayah.core.model.ModeState
 import com.xayah.core.model.OpType
+import com.xayah.core.model.getLabel
+import com.xayah.core.ui.component.CheckIconButton
+import com.xayah.core.ui.component.ChipRow
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
@@ -55,7 +63,6 @@ import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
-import com.xayah.feature.main.packages.ChipRow
 import com.xayah.feature.main.packages.PackageCard
 import com.xayah.feature.main.packages.R
 import com.xayah.feature.main.packages.countBackups
@@ -76,6 +83,11 @@ fun PagePackages() {
     val sortIndexState by viewModel.sortIndexState.collectAsStateWithLifecycle()
     val sortTypeState by viewModel.sortTypeState.collectAsStateWithLifecycle()
     val packagesState by viewModel.packagesState.collectAsStateWithLifecycle()
+    val activatedState by viewModel.activatedState.collectAsStateWithLifecycle()
+    val processingCountState by viewModel.processingCountState.collectAsStateWithLifecycle()
+    val locationIndexState by viewModel.locationIndexState.collectAsStateWithLifecycle()
+    val modeState by viewModel.modeState.collectAsStateWithLifecycle()
+    val accountsState by viewModel.accountsState.collectAsStateWithLifecycle()
     val snackbarHostState = viewModel.snackbarHostState
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val isRefreshing = uiState.isRefreshing
@@ -83,7 +95,18 @@ fun PagePackages() {
     val enabled = topBarState.progress == 1f
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { SecondaryTopBar(scrollBehavior = scrollBehavior, topBarState = topBarState) },
+        topBar = {
+            SecondaryTopBar(
+                scrollBehavior = scrollBehavior,
+                topBarState = topBarState,
+                actions = {
+                    if (activatedState && modeState != ModeState.OVERVIEW) {
+                        CheckIconButton {
+                            viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
+                        }
+                    }
+                })
+        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize()) {
@@ -150,10 +173,36 @@ fun PagePackages() {
                                     onClick = {}
                                 )
                             }
+                            ChipRow {
+                                val modes by remember { mutableStateOf(listOf(ModeState.OVERVIEW, ModeState.BATCH_BACKUP, ModeState.BATCH_RESTORE)) }
+                                FilterChip(
+                                    enabled = enabled,
+                                    leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.FactCheck),
+                                    selectedIndex = modes.indexOf(modeState),
+                                    list = modes.map { it.getLabel(context) },
+                                    onSelected = { index, _ ->
+                                        viewModel.emitIntent(IndexUiIntent.SetMode(index = index, mode = modes[index]))
+                                    },
+                                    onClick = {}
+                                )
+                                if (modeState != ModeState.OVERVIEW)
+                                    FilterChip(
+                                        enabled = enabled,
+                                        leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.LocationOn),
+                                        selectedIndex = locationIndexState,
+                                        list = accountsState.map { "${context.getString(R.string.cloud)}: ${it.name}" }.toMutableList().also { it.add(0, context.getString(R.string.local)) },
+                                        onSelected = { index, _ ->
+                                            viewModel.emitIntent(IndexUiIntent.FilterByLocation(index = index))
+                                        },
+                                        onClick = {}
+                                    )
+                            }
                         }
                     }
 
-                    items(items = packagesState, key = { "${it.entity.packageName}: ${it.entity.userId}" }) { item ->
+                    items(
+                        items = packagesState,
+                        key = { "${it.entity.packageName}: ${it.entity.userId}-${it.entity.preserveId}-${it.entity.indexInfo.cloud}-${it.entity.indexInfo.backupDir}" }) { item ->
                         AnimatedContent(
                             modifier = Modifier
                                 .animateItemPlacement()
@@ -163,6 +212,7 @@ fun PagePackages() {
                         ) { targetState ->
                             Row {
                                 val userId = targetState.entity.userId
+                                val preserveId = targetState.entity.preserveId
                                 val packageName = targetState.entity.packageName
                                 val versionName = targetState.entity.packageInfo.versionName
                                 val storageStatsFormat = targetState.entity.storageStatsFormat
@@ -173,25 +223,52 @@ fun PagePackages() {
                                     OpType.BACKUP -> targetState.count - 1
                                     OpType.RESTORE -> targetState.count
                                 }
+                                val itemEnabled = isRefreshing.not() && processingCountState.not()
                                 PackageCard(
                                     label = targetState.entity.packageInfo.label,
                                     packageName = packageName,
-                                    cardSelected = false,
+                                    enabled = itemEnabled,
+                                    cardSelected = if (modeState == ModeState.OVERVIEW) false else targetState.entity.extraInfo.activated,
                                     onCardClick = {
-                                        viewModel.emitIntent(IndexUiIntent.ToPagePackageDetail(navController, targetState.entity))
+                                        when (modeState) {
+                                            ModeState.OVERVIEW -> {
+                                                viewModel.emitIntent(IndexUiIntent.ToPagePackageDetail(navController, targetState.entity))
+                                            }
+
+                                            else -> {
+                                                viewModel.emitIntent(IndexUiIntent.Select(targetState.entity))
+                                            }
+                                        }
+
                                     },
                                     onCardLongClick = {},
                                 ) {
-                                    if (backupsCount > 0) RoundChip(
-                                        text = countBackups(context = context, count = backupsCount),
-                                        color = ColorSchemeKeyTokens.Primary.toColor(),
-                                    ) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                    when (modeState) {
+                                        ModeState.OVERVIEW, ModeState.BATCH_BACKUP -> {
+                                            if (backupsCount > 0) RoundChip(
+                                                enabled = itemEnabled,
+                                                text = countBackups(context = context, count = backupsCount),
+                                                color = ColorSchemeKeyTokens.Primary.toColor(),
+                                            ) {
+                                                viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            }
+                                        }
+
+                                        ModeState.BATCH_RESTORE -> {
+                                            RoundChip(
+                                                enabled = itemEnabled,
+                                                text = "${StringResourceToken.fromStringId(R.string.id).value}: $preserveId",
+                                                color = ColorSchemeKeyTokens.Primary.toColor(),
+                                            ) {
+                                                viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            }
+                                        }
                                     }
                                     RoundChip(
+                                        enabled = itemEnabled,
                                         text = StringResourceToken.fromStringArgs(
                                             StringResourceToken.fromStringId(R.string.user),
-                                            StringResourceToken.fromString(" $userId"),
+                                            StringResourceToken.fromString(": $userId"),
                                         ).value,
                                         color = ColorSchemeKeyTokens.Primary.toColor(),
                                     ) {
@@ -199,6 +276,7 @@ fun PagePackages() {
                                     }
                                     if (item.entity.extraInfo.existed) {
                                         if (ssaid.isNotEmpty()) RoundChip(
+                                            enabled = itemEnabled,
                                             text = StringResourceToken.fromStringId(R.string.ssaid).value,
                                             color = ColorSchemeKeyTokens.Secondary.toColor(),
                                         ) {
@@ -206,22 +284,24 @@ fun PagePackages() {
                                             viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.ssaid)}: $ssaid"))
                                         }
                                         if (hasKeystore) RoundChip(
+                                            enabled = itemEnabled,
                                             text = StringResourceToken.fromStringId(R.string.keystore).value,
                                             color = ColorSchemeKeyTokens.Error.toColor(),
                                         ) {
                                             viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
                                             viewModel.emitEffect(IndexUiEffect.ShowSnackbar(context.getString(R.string.keystore_desc)))
                                         }
-                                        if (versionName.isNotEmpty()) RoundChip(text = versionName) {
+                                        if (versionName.isNotEmpty()) RoundChip(enabled = itemEnabled, text = versionName) {
                                             viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
                                             viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.version)}: $versionName"))
                                         }
-                                        RoundChip(text = storageStatsFormat) {
+                                        RoundChip(enabled = itemEnabled, text = storageStatsFormat) {
                                             viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
                                             viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $storageStatsFormat"))
                                         }
                                     }
                                     RoundChip(
+                                        enabled = itemEnabled,
                                         text = if (isSystemApp) StringResourceToken.fromStringId(R.string.system).value
                                         else StringResourceToken.fromStringId(R.string.third_party).value
                                     ) {

@@ -11,6 +11,7 @@ import com.xayah.core.model.OpType
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.TaskEntity
+import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.service.R
 import com.xayah.core.service.util.MediumRestoreUtil
@@ -50,6 +51,7 @@ internal abstract class RestoreService : Service() {
         msg
     }
 
+    abstract val rootService: RemoteRootService
     abstract val pathUtil: PathUtil
     abstract val taskDao: TaskDao
     abstract val mediaDao: MediaDao
@@ -77,11 +79,16 @@ internal abstract class RestoreService : Service() {
     abstract suspend fun restoreMedia(m: MediaEntity)
     abstract suspend fun clear()
 
+    private suspend fun runCatchingOnService(block: suspend () -> Unit) = runCatching { block() }.onFailure {
+        log { it.message.toString() }
+        rootService.onFailure(it)
+    }
+
     @ExperimentalSerializationApi
     suspend fun processing() = withIOContext {
         mutex.withLock {
             log { "Processing is starting." }
-            createTargetDirs()
+            runCatchingOnService { createTargetDirs() }
 
             // createTargetDirs() before readStatFs().
             taskEntity.also {
@@ -110,7 +117,7 @@ internal abstract class RestoreService : Service() {
                 )
                 log { "Current media: $currentMedia" }
 
-                restoreMedia(currentMedia)
+                runCatchingOnService { restoreMedia(currentMedia) }
             }
         }
     }
@@ -126,7 +133,7 @@ internal abstract class RestoreService : Service() {
             )
             log { "PostProcessing is starting." }
 
-            clear()
+            runCatchingOnService { clear() }
 
             mediaDao.clearActivated()
             endTimestamp = DateUtil.getTimestamp()

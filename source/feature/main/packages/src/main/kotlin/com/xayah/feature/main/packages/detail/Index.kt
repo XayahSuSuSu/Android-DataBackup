@@ -83,7 +83,7 @@ fun PagePackageDetail() {
     val viewModel = hiltViewModel<IndexViewModel>()
     val navController = LocalNavController.current!!
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val activatedState by viewModel.activatedState.collectAsStateWithLifecycle()
+    val processingCountState by viewModel.processingCountState.collectAsStateWithLifecycle()
     val backupItemState by viewModel.backupItemState.collectAsStateWithLifecycle()
     val backupChipsState by viewModel.backupChipsState.collectAsStateWithLifecycle()
     val restoreItemsState by viewModel.restoreItemsState.collectAsStateWithLifecycle()
@@ -223,7 +223,7 @@ fun PagePackageDetail() {
                                 btnText = StringResourceToken.fromStringId(R.string.back_up_to_local),
                                 btnIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
                                 isRefreshing = isRefreshing,
-                                activatedState = activatedState,
+                                activatedState = processingCountState,
                                 chipsState = backupChipsState,
                                 itemState = backupItemState!!,
                                 onBtnClick = {
@@ -259,13 +259,13 @@ fun PagePackageDetail() {
                                                 .paddingBottom(PaddingTokens.Level2),
                                             text = if (accountMenuItemsState.isEmpty())
                                                 StringResourceToken.fromStringId(R.string.no_available_cloud_accounts)
-                                            else if (activatedState)
+                                            else if (processingCountState)
                                                 StringResourceToken.fromStringId(R.string.task_is_in_progress)
                                             else
                                                 StringResourceToken.fromStringId(R.string.back_up_to_cloud),
                                             colors = ButtonDefaults.buttonColors(containerColor = ColorSchemeKeyTokens.Secondary.toColor()),
                                             icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cloud_upload),
-                                            enabled = isRefreshing.not() && activatedState.not() && accountMenuItemsState.isNotEmpty(),
+                                            enabled = isRefreshing.not() && processingCountState.not() && accountMenuItemsState.isNotEmpty(),
                                             onClick = {
                                                 expanded = true
                                             }
@@ -302,7 +302,7 @@ fun PagePackageDetail() {
                                     btnIcon = if (isCloud) ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cloud_upload) else ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
                                     btnColors = if (isCloud) ButtonDefaults.buttonColors(containerColor = ColorSchemeKeyTokens.Secondary.toColor()) else ButtonDefaults.buttonColors(),
                                     isRefreshing = isRefreshing,
-                                    activatedState = activatedState,
+                                    activatedState = processingCountState,
                                     chipsState = restoreChipState,
                                     itemState = restoreItemState,
                                     onBtnClick = {
@@ -332,12 +332,12 @@ fun PagePackageDetail() {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             IconTextButton(
                                                 modifier = Modifier.weight(1f),
-                                                text = if (activatedState)
+                                                text = if (processingCountState)
                                                     StringResourceToken.fromStringId(R.string.task_is_in_progress)
                                                 else
                                                     StringResourceToken.fromStringId(R.string.preserve),
                                                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_shield_locked),
-                                                enabled = isRefreshing.not() && activatedState.not() && restoreItemState.preserveId == 0L,
+                                                enabled = isRefreshing.not() && processingCountState.not() && restoreItemState.preserveId == 0L,
                                                 onClick = {
                                                     viewModel.emitIntent(IndexUiIntent.Preserve(restoreItemState))
                                                 }
@@ -351,12 +351,12 @@ fun PagePackageDetail() {
                                             ) {
                                                 IconTextButton(
                                                     modifier = Modifier.fillMaxWidth(),
-                                                    text = if (activatedState)
+                                                    text = if (processingCountState)
                                                         StringResourceToken.fromStringId(R.string.task_is_in_progress)
                                                     else
                                                         StringResourceToken.fromStringId(R.string.delete),
                                                     leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
-                                                    enabled = isRefreshing.not() && activatedState.not(),
+                                                    enabled = isRefreshing.not() && processingCountState.not(),
                                                     onClick = {
                                                         expanded = true
                                                     }

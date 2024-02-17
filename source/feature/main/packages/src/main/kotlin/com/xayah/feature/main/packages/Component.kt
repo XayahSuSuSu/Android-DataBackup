@@ -3,7 +3,6 @@ package com.xayah.feature.main.packages
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +14,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.rounded.Code
@@ -67,21 +64,6 @@ import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.packages.detail.IndexUiIntent
 import com.xayah.feature.main.packages.detail.IndexViewModel
 
-@Composable
-internal fun ChipRow(chipGroup: @Composable () -> Unit) {
-    Row(
-        modifier = Modifier.horizontalScroll(rememberScrollState()),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
-    ) {
-        Spacer(modifier = Modifier.size(PaddingTokens.Level0))
-
-        chipGroup()
-
-        Spacer(modifier = Modifier.size(PaddingTokens.Level0))
-    }
-}
-
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
@@ -108,7 +90,7 @@ fun PackageCard(
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             onCardLongClick()
         },
-        border = if (cardSelected) outlinedCardBorder(borderColor = ColorSchemeKeyTokens.Primary.toColor()) else null,
+        border = if (cardSelected) outlinedCardBorder(borderColor = ColorSchemeKeyTokens.Primary.toColor(enabled)) else null,
     ) {
         Box(
             modifier = Modifier
@@ -131,7 +113,7 @@ fun PackageCard(
                         imageVector = Icons.Filled.CheckCircle,
                         contentDescription = null,
                         modifier = Modifier.align(Alignment.Top),
-                        tint = ColorSchemeKeyTokens.Primary.toColor(),
+                        tint = ColorSchemeKeyTokens.Primary.toColor(enabled),
                     )
                 }
                 FlowRow(

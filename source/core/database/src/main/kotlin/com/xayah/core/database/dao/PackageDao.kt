@@ -76,6 +76,9 @@ interface PackageDao {
     )
     fun queryFlow(): Flow<List<PackageEntityWithCount>>
 
+    @Query("SELECT *, 1 AS count FROM PackageEntity WHERE indexInfo_opType = :opType")
+    fun queryFlow(opType: OpType): Flow<List<PackageEntityWithCount>>
+
     @Delete(entity = PackageEntity::class)
     suspend fun delete(item: PackageEntity)
 }

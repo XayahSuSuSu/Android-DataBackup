@@ -80,11 +80,16 @@ internal abstract class RestoreService : Service() {
     abstract suspend fun restorePackage(p: PackageEntity)
     abstract suspend fun clear()
 
+    private suspend fun runCatchingOnService(block: suspend () -> Unit) = runCatching { block() }.onFailure {
+        log { it.message.toString() }
+        rootService.onFailure(it)
+    }
+
     @ExperimentalSerializationApi
     suspend fun processing() = withIOContext {
         mutex.withLock {
             log { "Processing is starting." }
-            createTargetDirs()
+            runCatchingOnService { createTargetDirs() }
 
             // createTargetDirs() before readStatFs().
             taskEntity.also {
@@ -117,7 +122,7 @@ internal abstract class RestoreService : Service() {
                 log { "Trying to kill ${currentPackage.packageName}." }
                 BaseUtil.killPackage(userId = currentPackage.userId, packageName = currentPackage.packageName)
 
-                restorePackage(currentPackage)
+                runCatchingOnService { restorePackage(currentPackage) }
             }
         }
     }
@@ -133,7 +138,7 @@ internal abstract class RestoreService : Service() {
             )
             log { "PostProcessing is starting." }
 
-            clear()
+            runCatchingOnService { clear() }
 
             packageDao.clearActivated()
             endTimestamp = DateUtil.getTimestamp()

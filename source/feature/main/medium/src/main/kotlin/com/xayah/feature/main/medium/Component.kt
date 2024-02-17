@@ -74,7 +74,7 @@ fun MediaCard(
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             onCardLongClick()
         },
-        border = if (cardSelected) outlinedCardBorder(borderColor = ColorSchemeKeyTokens.Primary.toColor()) else null,
+        border = if (cardSelected) outlinedCardBorder(borderColor = ColorSchemeKeyTokens.Primary.toColor(enabled)) else null,
     ) {
         Box(
             modifier = Modifier
@@ -96,7 +96,7 @@ fun MediaCard(
                         imageVector = Icons.Filled.CheckCircle,
                         contentDescription = null,
                         modifier = Modifier.align(Alignment.Top),
-                        tint = ColorSchemeKeyTokens.Primary.toColor(),
+                        tint = ColorSchemeKeyTokens.Primary.toColor(enabled),
                     )
                 }
                 FlowRow(

@@ -8,6 +8,7 @@ import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
 import com.xayah.core.model.database.TaskEntity
+import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.service.util.MediumRestoreUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
@@ -30,6 +31,9 @@ internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
 
     @Inject
     override lateinit var taskRepository: TaskRepository
+
+    @Inject
+    override lateinit var rootService: RemoteRootService
 
     override val taskEntity by lazy {
         TaskEntity(

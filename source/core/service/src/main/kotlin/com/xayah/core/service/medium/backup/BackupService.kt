@@ -82,11 +82,16 @@ internal abstract class BackupService : Service() {
     abstract suspend fun backupMedia(m: MediaEntity)
     abstract suspend fun clear()
 
+    private suspend fun runCatchingOnService(block: suspend () -> Unit) = runCatching { block() }.onFailure {
+        log { it.message.toString() }
+        rootService.onFailure(it)
+    }
+
     @ExperimentalSerializationApi
     suspend fun processing() = withIOContext {
         mutex.withLock {
             log { "Processing is starting." }
-            createTargetDirs()
+            runCatchingOnService { createTargetDirs() }
 
             // createTargetDirs() before readStatFs().
             taskEntity.also {
@@ -115,7 +120,7 @@ internal abstract class BackupService : Service() {
                 )
                 log { "Current media: $currentMedia" }
 
-                backupMedia(currentMedia)
+                runCatchingOnService { backupMedia(currentMedia) }
             }
         }
     }
@@ -138,7 +143,7 @@ internal abstract class BackupService : Service() {
                 commonBackupUtil.backupItself(dstDir = dstDir)
             }
 
-            clear()
+            runCatchingOnService { clear() }
 
             mediaDao.clearActivated()
             endTimestamp = DateUtil.getTimestamp()

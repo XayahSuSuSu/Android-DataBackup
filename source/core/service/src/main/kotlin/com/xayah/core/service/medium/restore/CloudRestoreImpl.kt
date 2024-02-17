@@ -36,7 +36,7 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
     override lateinit var taskRepository: TaskRepository
 
     @Inject
-    lateinit var rootService: RemoteRootService
+    override lateinit var rootService: RemoteRootService
 
     @Inject
     lateinit var cloudRepository: CloudRepository

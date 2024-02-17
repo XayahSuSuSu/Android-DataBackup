@@ -56,7 +56,8 @@ class PackageRepository @Inject constructor(
     private val packageDao: PackageDao,
     private val pathUtil: PathUtil,
 ) {
-    val packages = packageDao.queryFlow().distinctUntilChanged()
+    fun getPackages() = packageDao.queryFlow().distinctUntilChanged()
+    fun getPackages(opType: OpType) = packageDao.queryFlow(opType).distinctUntilChanged()
     val activatedCount = packageDao.countActivatedFlow().distinctUntilChanged()
     private val localBackupSaveDir get() = context.localBackupSaveDir()
     private val archivesPackagesDir get() = pathUtil.getLocalBackupArchivesPackagesDir()
@@ -148,6 +149,13 @@ class PackageRepository @Inject constructor(
 
     fun getUserIdPredicate(indexList: List<Int>, userIdList: List<Int>): (PackageEntityWithCount) -> Boolean = { p ->
         runCatching { p.entity.userId in indexList.map { userIdList[it] } }.getOrDefault(p.entity.userId == 0)
+    }
+
+    fun getLocationPredicate(index: Int, accountList: List<CloudEntity>): (PackageEntityWithCount) -> Boolean = { p ->
+        when (index) {
+            0 -> p.entity.indexInfo.cloud.isEmpty()
+            else -> p.entity.indexInfo.cloud == accountList.getOrNull(index - 1)?.name
+        }
     }
 
     private fun sortByInstallTime(type: SortType): Comparator<PackageEntityWithCount> = when (type) {
@@ -415,6 +423,7 @@ class PackageRepository @Inject constructor(
     }
 
     suspend fun upsert(item: PackageEntity) = packageDao.upsert(item)
+    suspend fun clearActivated() = packageDao.clearActivated()
 
     suspend fun preserve(p: PackageEntity) {
         val preserveId = DateUtil.getTimestamp()

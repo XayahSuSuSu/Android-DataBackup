@@ -11,6 +11,7 @@ import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.PackageRepository
+import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.datastore.saveCloudActivatedAccountName
 import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
@@ -58,6 +59,7 @@ class IndexViewModel @Inject constructor(
     args: SavedStateHandle,
     private val packageRepo: PackageRepository,
     private val cloudRepo: CloudRepository,
+    private val taskRepo: TaskRepository,
     rootService: RemoteRootService,
     private val localBackupService: LocalBackupService,
     private val cloudBackupService: CloudBackupService,
@@ -111,6 +113,7 @@ class IndexViewModel @Inject constructor(
                             }
                         )
                     )
+                    packageRepo.clearActivated()
                     packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
                     val backupPreprocessing = localBackupService.preprocessing()
                     localBackupService.processing()
@@ -151,6 +154,7 @@ class IndexViewModel @Inject constructor(
                             }
                         )
                     )
+                    packageRepo.clearActivated()
                     packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
                     val backupPreprocessing = cloudBackupService.preprocessing()
                     cloudBackupService.processing()
@@ -188,6 +192,7 @@ class IndexViewModel @Inject constructor(
                             }
                         )
                     )
+                    packageRepo.clearActivated()
                     packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
                     localRestoreService.preprocessing()
                     localRestoreService.processing()
@@ -228,6 +233,7 @@ class IndexViewModel @Inject constructor(
                             }
                         )
                     )
+                    packageRepo.clearActivated()
                     packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
                     cloudRestoreService.preprocessing()
                     cloudRestoreService.processing()
@@ -264,8 +270,8 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private val _activatedCount: Flow<Long> = packageRepo.activatedCount.flowOnIO()
-    val activatedState: StateFlow<Boolean> = _activatedCount.map { it != 0L }.stateInScope(false)
+    private val _processingCount: Flow<Long> = taskRepo.processingCount.flowOnIO()
+    val processingCountState: StateFlow<Boolean> = _processingCount.map { it != 0L }.stateInScope(false)
 
     private val _backupItem: Flow<PackageEntity?> = packageRepo.queryPackageFlow(
         packageName = uiState.value.packageName,

@@ -19,6 +19,9 @@ interface TaskDao {
     @Upsert(entity = TaskDetailMediaEntity::class)
     suspend fun upsert(item: TaskDetailMediaEntity): Long
 
+    @Query("SELECT COUNT(*) FROM TaskEntity WHERE isProcessing = 1")
+    fun countProcessingFlow(): Flow<Long>
+
     @Query("SELECT * FROM TaskEntity WHERE id = :id LIMIT 1")
     fun queryTaskFlow(id: Long): Flow<TaskEntity?>
 

@@ -24,6 +24,7 @@ class TaskRepository @Inject constructor(
     private val taskDao: TaskDao,
 ) {
     val tasks = taskDao.queryFlow().distinctUntilChanged()
+    val processingCount = taskDao.countProcessingFlow().distinctUntilChanged()
 
     fun queryTaskFlow(id: Long) = taskDao.queryTaskFlow(id)
 

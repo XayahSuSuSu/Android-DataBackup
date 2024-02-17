@@ -101,11 +101,16 @@ internal abstract class BackupService : Service() {
     abstract suspend fun backupIcons()
     abstract suspend fun clear()
 
+    private suspend fun runCatchingOnService(block: suspend () -> Unit) = runCatching { block() }.onFailure {
+        log { it.message.toString() }
+        rootService.onFailure(it)
+    }
+
     @ExperimentalSerializationApi
     suspend fun processing() = withIOContext {
         mutex.withLock {
             log { "Processing is starting." }
-            createTargetDirs()
+            runCatchingOnService { createTargetDirs() }
 
             // createTargetDirs() before readStatFs().
             taskEntity.also {
@@ -138,7 +143,7 @@ internal abstract class BackupService : Service() {
                 log { "Trying to kill ${currentPackage.packageName}." }
                 BaseUtil.killPackage(userId = currentPackage.userId, packageName = currentPackage.packageName)
 
-                backupPackage(currentPackage)
+                runCatchingOnService { backupPackage(currentPackage) }
             }
         }
     }
@@ -168,9 +173,9 @@ internal abstract class BackupService : Service() {
                 log { "AccessibilityServices is empty, skip restoring." }
             }
 
-            backupItself()
-            backupIcons()
-            clear()
+            runCatchingOnService { backupItself() }
+            runCatchingOnService { backupIcons() }
+            runCatchingOnService { clear() }
 
             packageDao.clearActivated()
             endTimestamp = DateUtil.getTimestamp()

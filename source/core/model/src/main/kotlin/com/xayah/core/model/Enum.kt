@@ -1,5 +1,7 @@
 package com.xayah.core.model
 
+import android.content.Context
+
 const val TAR_SUFFIX = "tar"
 const val ZSTD_SUFFIX = "tar.zst"
 const val LZ4_SUFFIX = "tar.lz4"
@@ -95,4 +97,16 @@ enum class DataState {
     Selected,
     NotSelected,
     Disabled,
+}
+
+enum class ModeState {
+    OVERVIEW,
+    BATCH_BACKUP,
+    BATCH_RESTORE,
+}
+
+fun ModeState.getLabel(context: Context) = when (this) {
+    ModeState.OVERVIEW -> context.getString(R.string.overlook)
+    ModeState.BATCH_BACKUP -> "${context.getString(R.string.backup)}(${context.getString(R.string.batch)})"
+    ModeState.BATCH_RESTORE -> "${context.getString(R.string.restore)}(${context.getString(R.string.batch)})"
 }

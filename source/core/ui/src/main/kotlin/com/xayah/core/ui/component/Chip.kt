@@ -3,6 +3,7 @@ package com.xayah.core.ui.component
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -464,5 +466,20 @@ fun DataChip(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ChipRow(chipGroup: @Composable () -> Unit) {
+    Row(
+        modifier = Modifier.horizontalScroll(rememberScrollState()),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
+    ) {
+        Spacer(modifier = Modifier.size(PaddingTokens.Level0))
+
+        chipGroup()
+
+        Spacer(modifier = Modifier.size(PaddingTokens.Level0))
     }
 }

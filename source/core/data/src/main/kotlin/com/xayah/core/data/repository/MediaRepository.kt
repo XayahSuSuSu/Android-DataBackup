@@ -46,7 +46,8 @@ class MediaRepository @Inject constructor(
 
     private val archivesMediumDir get() = pathUtil.getLocalBackupArchivesMediumDir()
     private val localBackupSaveDir get() = context.localBackupSaveDir()
-    val medium = mediaDao.queryFlow().distinctUntilChanged()
+    fun getMedium() = mediaDao.queryFlow().distinctUntilChanged()
+    fun getMedium(opType: OpType) = mediaDao.queryFlow(opType).distinctUntilChanged()
     val activatedCount = mediaDao.countActivatedFlow().distinctUntilChanged()
 
     suspend fun query(opType: OpType, preserveId: Long, cloud: String, backupDir: String) = mediaDao.query(opType, preserveId, cloud, backupDir)
@@ -206,6 +207,7 @@ class MediaRepository @Inject constructor(
     }
 
     suspend fun upsert(item: MediaEntity) = mediaDao.upsert(item)
+    suspend fun clearActivated() = mediaDao.clearActivated()
 
     fun getArchiveDst(dstDir: String, ct: CompressionType) = "${dstDir}/media.${ct.suffix}"
 
@@ -297,4 +299,12 @@ class MediaRepository @Inject constructor(
 
         if (isSuccess) mediaDao.delete(m)
     }
+
+    fun getLocationPredicate(index: Int, accountList: List<CloudEntity>): (MediaEntityWithCount) -> Boolean = { m ->
+        when (index) {
+            0 -> m.entity.indexInfo.cloud.isEmpty()
+            else -> m.entity.indexInfo.cloud == accountList.getOrNull(index - 1)?.name
+        }
+    }
+
 }

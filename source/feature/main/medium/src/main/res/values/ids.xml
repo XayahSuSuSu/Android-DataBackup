@@ -27,4 +27,5 @@
     <item name="restore_from_cloud" type="string" />
     <item name="account" type="string" />
     <item name="directory" type="string" />
+    <item name="local" type="string" />
 </resources>

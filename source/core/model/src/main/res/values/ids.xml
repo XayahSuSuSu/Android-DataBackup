@@ -1,9 +1,13 @@
 <resources>
-    <item name="ic_rounded_adjust_circle" type="drawable"/>
-    <item name="ic_rounded_not_started_circle" type="drawable"/>
-    <item name="ic_rounded_pending_circle" type="drawable"/>
-    <item name="ic_rounded_arrow_circle_up" type="drawable"/>
-    <item name="ic_rounded_arrow_circle_down" type="drawable"/>
-    <item name="ic_rounded_check_circle" type="drawable"/>
-    <item name="ic_rounded_cancel_circle" type="drawable"/>
+    <item name="ic_rounded_adjust_circle" type="drawable" />
+    <item name="ic_rounded_not_started_circle" type="drawable" />
+    <item name="ic_rounded_pending_circle" type="drawable" />
+    <item name="ic_rounded_arrow_circle_up" type="drawable" />
+    <item name="ic_rounded_arrow_circle_down" type="drawable" />
+    <item name="ic_rounded_check_circle" type="drawable" />
+    <item name="ic_rounded_cancel_circle" type="drawable" />
+    <item name="overlook" type="string" />
+    <item name="backup" type="string" />
+    <item name="restore" type="string" />
+    <item name="batch" type="string" />
 </resources>
