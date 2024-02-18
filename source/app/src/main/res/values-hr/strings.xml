@@ -50,8 +50,8 @@
     <string name="url">URL</string>
     <string name="account">Račun</string>
     <string name="keep_screen_on">Ostavi ekran uključen</string>
-    <string name="alphabet">Abeceda</string>
-    <string name="structure">Struktura</string>
+    <string name="alphabet">A-Z</string>
+    <string name="structure">Stablo datoteka</string>
     <string name="apk">APK</string>
     <string name="backup">Sigurnosna kopija</string>
     <string name="network">Mreža</string>
