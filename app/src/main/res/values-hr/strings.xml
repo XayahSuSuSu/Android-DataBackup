@@ -97,7 +97,7 @@
     <string name="select_restore_media">Odaberi obnavljanje medija</string>
     <string name="cancelling">Prekidanje</string>
     <string name="network_desc">Koristi se za dobivanje podataka o aktualiziranju aplikacije, analitiku aplikacije</string>
-    <string name="alphabet">Abeceda</string>
+    <string name="alphabet">A-Z</string>
     <string name="select_all">Odaberi sve</string>
     <string name="install_time">Vrijeme instalacije</string>
     <string name="stable_subtitle">Stabilno ili pouzdano</string>
