@@ -31,7 +31,6 @@
     <string name="save_directory_structure">Guardar estructura de archivos</string>
     <string name="backup_list">Lista de respaldo</string>
     <string name="search_bar_hint_packages">Buscar por nombre o paquete…</string>
-    <string name="apk"></string>
     <string name="data">Datos</string>
     <string name="both">Ambos</string>
     <string name="manifest">Manifiesto</string>
