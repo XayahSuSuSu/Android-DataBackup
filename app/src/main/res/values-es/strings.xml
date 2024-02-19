@@ -7,7 +7,7 @@
     <string name="user">Usuario</string>
     <string name="internal_storage">Almacenamiento interno</string>
     <string name="ready">Listo</string>
-    <string name="release_prebuilt_binaries">Binarios preinstalados actuales</string>
+    <string name="release_prebuilt_binaries">Binarios precompilados</string>
     <string name="unsupported_format">Formato incompatible</string>
     <string name="symbol_question">\?</string>
     <string name="symbol_exclamation">!</string>
@@ -53,10 +53,10 @@
     <string name="installing">Instalando</string>
     <string name="backup_icon_title">Icono de la copia de seguridad para hacer una copia de seguridad de las aplicaciones, se utiliza para mostrar al restaurar</string>
     <string name="confirm_exit">¿Seguro que quieres dejarlo\?</string>
-    <string name="not_selected">No seleccionados</string>
+    <string name="not_selected">No seleccionado</string>
     <string name="alphabet">A-Z</string>
     <string name="install_time">Tiempo de instalación</string>
-    <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar el siguiente Acuerdo de usuario y Política de privacidad antes de comenzar a utilizar esta aplicación.</string>
+    <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar el siguiente Acuerdo de usuario y Política de privacidad antes de comenzar a utilizar esta aplicación</string>
     <string name="welcome_to_use">Bienvenido a DataBackup</string>
     <string name="sort">Clasificar</string>
     <string name="cover_desc">Sobrescribir los archivos de copia de seguridad existentes con cada copia de seguridad, u omitir las copias de seguridad si no hay cambios, de modo que pase lo que pase, sólo exista una copia de sus datos</string>
@@ -69,7 +69,7 @@
     <string name="delete">Borrar</string>
     <string name="select_backup_media">Seleccionar soporte de copia de seguridad</string>
     <string name="link">Enlace</string>
-    <string name="backup_dir_as_media_error">No se puede añadir el directorio de copia de seguridad como soporte</string>
+    <string name="backup_dir_as_media_error">No se puede añadir la carpeta de respaldo como multimedia</string>
     <string name="stable">Estable</string>
     <string name="update_channel">Canal de actualización</string>
     <string name="test">Prueba</string>
@@ -109,10 +109,10 @@
     <string name="network_desc">Se utiliza para obtener información de actualización de aplicaciones y análisis de aplicaciones.</string>
     <string name="storage">Permiso para leer/escribir en almacenamiento externo</string>
     <string name="storage_desc">Se utiliza para configuración de respaldo, lectura y escritura de archivos</string>
-    <string name="data_size">Tamaño de los datos</string>
+    <string name="data_size">Tamaño de datos</string>
     <string name="setting_SELinux">Configuración de SELinux</string>
     <string name="decompressing">Descomprimiendo</string>
-    <string name="finished">Terminado</string>
+    <string name="finished">Completado</string>
     <string name="no_change_and_skip">Sin cambios, omitir</string>
     <string name="loading">Cargando</string>
     <string name="loading_failed">Carga fallida</string>
@@ -120,7 +120,7 @@
     <string name="path_permission_error">Error de permisos, las siguientes rutas requieren los permisos correctos</string>
     <string name="restoring">Restaurando</string>
     <string name="read_icon">Icono de lectura</string>
-    <string name="app_crashed">La aplicación falló</string>
+    <string name="app_crashed">Falló la aplicación</string>
     <string name="cancelling">Cancelando</string>
     <string name="card_app_subtitle">Copia de seguridad (restauración) de aplicaciones de terceros o del sistema</string>
     <string name="settings_backup_user_subtitle">El usuario de destino durante la copia de seguridad</string>
@@ -149,7 +149,7 @@
     <string name="copy_grant_command">Copia de comandos de autorización</string>
     <string name="warning">Advertencia</string>
     <string name="type">Tipo</string>
-    <string name="compatible_mode">Modo compatible</string>
+    <string name="compatible_mode">Modo de compatibilidad</string>
     <string name="installed">Instalado</string>
     <string name="not_installed">No instalado</string>
     <string name="retry">Reintentar</string>
@@ -167,11 +167,11 @@
     <string name="contacts_permission">Permiso de contactos</string>
     <string name="call_log_permission">Permiso de registro de llamadas</string>
     <string name="miui_service_sms_tips">Si estás en MIUI, por favor concede el permiso de Servicio SMS manualmente.</string>
-    <string name="reset_backup_list">Reiniciar lista de copias de seguridad</string>
+    <string name="reset_backup_list">Restablecer lista de respaldo</string>
     <string name="reset_backup_list_title">Desmarcar las selecciones tras la copia de seguridad</string>
-    <string name="reset_restore_list">Restablecer la lista de restauración</string>
+    <string name="reset_restore_list">Restablecer lista de restauración</string>
     <string name="reset_restore_list_title">Anular la selección después de restaurar</string>
-    <string name="backing_up">Haciendo c</string>
+    <string name="backing_up">Respaldando…</string>
     <string name="log">Registros</string>
     <string name="keep_the_screen_on">Mantener la pantalla encendida</string>
     <string name="failed_to_connect_rootservice">Error al conectar con RootService</string>
