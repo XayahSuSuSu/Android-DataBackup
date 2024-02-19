@@ -3,7 +3,7 @@
 </div>
 
 # DataBackup
-[![Download](https://img.shields.io/github/downloads/XayahSuSuSu/Android-DataBackup/total)](https://github.com/XayahSuSuSu/Android-DataBackup/releases) [![GitHub release](https://img.shields.io/github/v/release/XayahSuSuSu/Android-DataBackup?color=orange)](https://github.com/XayahSuSuSu/Android-DataBackup/releases) [![License](https://img.shields.io/github/license/XayahSuSuSu/Android-DataBackup?color=ff69b4)](./LICENSE) [![Telegram](https://img.shields.io/badge/telegram-DataBackup-252850?color=blue&logo=telegram)](https://t.me/+iXhapJkCxAU4MGE9)
+[![Download](https://img.shields.io/github/downloads/XayahSuSuSu/Android-DataBackup/total)](https://github.com/XayahSuSuSu/Android-DataBackup/releases) [![GitHub release](https://img.shields.io/github/v/release/XayahSuSuSu/Android-DataBackup?color=orange)](https://github.com/XayahSuSuSu/Android-DataBackup/releases) [![License](https://img.shields.io/github/license/XayahSuSuSu/Android-DataBackup?color=ff69b4)](./LICENSE) [![Channel](https://img.shields.io/badge/channel-DataBackup-252850?color=blue&logo=telegram)](https://t.me/dabackupchannel) [![Chat](https://img.shields.io/badge/group-DataBackup-252850?color=blue&logo=telegram)](https://t.me/databackupchat)
 
 > :star: Based on [speed-backup](https://github.com/YAWAsau/backup_script) by [CoolApk@落叶凄凉TEL](http://www.coolapk.com/u/2277637)
 >
