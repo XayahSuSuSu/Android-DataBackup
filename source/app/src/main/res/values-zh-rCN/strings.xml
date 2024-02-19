@@ -209,4 +209,5 @@
     <string name="select_cloud_accounts_to_refresh">选择需要刷新的云端账户</string>
     <string name="logcat">日志捕获</string>
     <string name="batch">批量</string>
+    <string name="_default">预设</string>
 </resources>

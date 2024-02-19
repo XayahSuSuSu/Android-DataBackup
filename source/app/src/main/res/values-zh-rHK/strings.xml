@@ -209,4 +209,5 @@
     <string name="select_cloud_accounts_to_refresh">選擇需要刷新的雲端帳戶</string>
     <string name="logcat">日誌捕獲</string>
     <string name="batch">大量</string>
+    <string name="_default">預設</string>
 </resources>

@@ -3,6 +3,7 @@ package com.xayah.core.datastore
 import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.xayah.core.model.CompressionType
+import com.xayah.core.model.SelectionType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.util.of
 import kotlinx.coroutines.flow.map
@@ -20,6 +21,7 @@ val KeyRestoreSortType = stringPreferencesKey("restore_sort_type")
 val KeyAppVersionName = stringPreferencesKey("app_version_name")
 val KeyCloudActivatedAccountName = stringPreferencesKey("cloud_activated_account_name")
 val KeyLoadedIconMD5 = stringPreferencesKey("loaded_icon_md5")
+val KeySelectionType = stringPreferencesKey("selection_type")
 
 
 // -----------------------------------------Read-----------------------------------------
@@ -31,6 +33,7 @@ fun Context.readRestoreSortType() = readStoreString(key = KeyRestoreSortType, de
 fun Context.readAppVersionName() = readStoreString(key = KeyAppVersionName, defValue = "")
 fun Context.readCloudActivatedAccountName() = readStoreString(key = KeyCloudActivatedAccountName, defValue = "")
 fun Context.readLoadedIconMD5() = readStoreString(key = KeyLoadedIconMD5, defValue = "")
+fun Context.readSelectionType() = readStoreString(key = KeySelectionType, defValue = "").map { SelectionType.of(it) }
 
 /**
  * The final path for saving the backup.
@@ -55,6 +58,7 @@ suspend fun Context.saveRestoreSortType(value: SortType) = saveStoreString(key =
 suspend fun Context.saveAppVersionName() = saveStoreString(key = KeyAppVersionName, value = getCurrentAppVersionName())
 suspend fun Context.saveCloudActivatedAccountName(value: String) = saveStoreString(key = KeyCloudActivatedAccountName, value = value.trim())
 suspend fun Context.saveLoadedIconMD5(value: String) = saveStoreString(key = KeyLoadedIconMD5, value = value.trim())
+suspend fun Context.saveSelectionType(value: SelectionType) = saveStoreString(key = KeySelectionType, value = value.name.trim())
 
 /**
  * @see [readBackupSavePath]

@@ -216,4 +216,5 @@
     <string name="select_cloud_accounts_to_refresh">Select cloud accounts to refresh</string>
     <string name="logcat">Logcat</string>
     <string name="batch">Batch</string>
+    <string name="_default">Default</string>
 </resources>

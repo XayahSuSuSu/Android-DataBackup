@@ -355,19 +355,29 @@ fun ModalDropdownMenu(
     }
 }
 
-
 @Composable
-fun ContentWithConfirm(modifier: Modifier = Modifier, content: @Composable (MutableState<Boolean>) -> Unit, onConfirm: suspend () -> Unit) {
+fun ContentWithActions(modifier: Modifier = Modifier, actions: (MutableState<Boolean>) -> List<ActionMenuItem>, content: @Composable (MutableState<Boolean>) -> Unit) {
     val expanded = remember { mutableStateOf(false) }
     Box(modifier = modifier.wrapContentSize(Alignment.Center)) {
         content(expanded)
 
-        ModalActionDropdownMenu(expanded = expanded.value, actionList = listOf(
-            getActionMenuReturnItem { expanded.value = false },
-            getActionMenuConfirmItem {
-                onConfirm()
-                expanded.value = false
-            }
-        ), onDismissRequest = { expanded.value = false })
+        ModalActionDropdownMenu(expanded = expanded.value, actionList = actions(expanded), onDismissRequest = { expanded.value = false })
     }
+}
+
+
+@Composable
+fun ContentWithConfirm(modifier: Modifier = Modifier, content: @Composable (MutableState<Boolean>) -> Unit, onConfirm: suspend () -> Unit) {
+    ContentWithActions(
+        modifier = modifier, actions = { expanded ->
+            listOf(
+                getActionMenuReturnItem { expanded.value = false },
+                getActionMenuConfirmItem {
+                    onConfirm()
+                    expanded.value = false
+                }
+            )
+        },
+        content = content
+    )
 }

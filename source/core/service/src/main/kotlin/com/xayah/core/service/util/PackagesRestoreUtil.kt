@@ -6,8 +6,10 @@ import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readCleanRestoring
+import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
+import com.xayah.core.model.SelectionType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.network.client.CloudClient
@@ -42,14 +44,30 @@ class PackagesRestoreUtil @Inject constructor(
         msg
     }
 
-    private fun PackageEntity.getDataSelected(dataType: DataType) = when (dataType) {
-        DataType.PACKAGE_APK -> apkSelected
-        DataType.PACKAGE_USER -> userSelected
-        DataType.PACKAGE_USER_DE -> userDeSelected
-        DataType.PACKAGE_DATA -> dataSelected
-        DataType.PACKAGE_OBB -> obbSelected
-        DataType.PACKAGE_MEDIA -> mediaSelected
-        else -> false
+    private suspend fun PackageEntity.getDataSelected(dataType: DataType) = when (context.readSelectionType().first()) {
+        SelectionType.DEFAULT -> {
+            when (dataType) {
+                DataType.PACKAGE_APK -> apkSelected
+                DataType.PACKAGE_USER -> userSelected
+                DataType.PACKAGE_USER_DE -> userDeSelected
+                DataType.PACKAGE_DATA -> dataSelected
+                DataType.PACKAGE_OBB -> obbSelected
+                DataType.PACKAGE_MEDIA -> mediaSelected
+                else -> false
+            }
+        }
+
+        SelectionType.APK -> {
+            dataType == DataType.PACKAGE_APK
+        }
+
+        SelectionType.DATA -> {
+            dataType != DataType.PACKAGE_APK
+        }
+
+        SelectionType.BOTH -> {
+            true
+        }
     }
 
     private suspend fun TaskDetailPackageEntity.updateInfo(

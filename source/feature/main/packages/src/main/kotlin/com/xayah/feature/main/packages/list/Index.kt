@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.FactCheck
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Sort
@@ -32,12 +34,15 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.viewmodel.IndexUiEffect
+import com.xayah.core.datastore.saveSelectionType
 import com.xayah.core.model.ModeState
 import com.xayah.core.model.OpType
+import com.xayah.core.model.SelectionType
 import com.xayah.core.model.getLabel
 import com.xayah.core.ui.component.CheckIconButton
 import com.xayah.core.ui.component.ChecklistIconButton
 import com.xayah.core.ui.component.ChipRow
+import com.xayah.core.ui.component.ContentWithActions
 import com.xayah.core.ui.component.ContentWithConfirm
 import com.xayah.core.ui.component.DeleteIconButton
 import com.xayah.core.ui.component.FilterChip
@@ -54,8 +59,10 @@ import com.xayah.core.ui.material3.pullrefresh.pullRefresh
 import com.xayah.core.ui.material3.pullrefresh.rememberPullRefreshState
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
@@ -117,9 +124,63 @@ fun PagePackages() {
                                 }
                             )
                         }
-                        CheckIconButton(enabled = activatedState) {
-                            viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
-                        }
+                        ContentWithActions(
+                            actions = { expanded ->
+                                listOf(
+                                    getActionMenuReturnItem { expanded.value = false },
+                                    ActionMenuItem(
+                                        title = StringResourceToken.fromStringId(R.string._default),
+                                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_palette),
+                                        enabled = true,
+                                        secondaryMenu = listOf(),
+                                        onClick = {
+                                            context.saveSelectionType(SelectionType.DEFAULT)
+                                            viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
+                                            expanded.value = false
+                                        }
+                                    ),
+                                    ActionMenuItem(
+                                        title = StringResourceToken.fromStringId(R.string.apk),
+                                        icon = ImageVectorToken.fromVector(Icons.Rounded.Android),
+                                        enabled = true,
+                                        secondaryMenu = listOf(),
+                                        onClick = {
+                                            context.saveSelectionType(SelectionType.APK)
+                                            viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
+                                            expanded.value = false
+                                        }
+                                    ),
+                                    ActionMenuItem(
+                                        title = StringResourceToken.fromStringId(R.string.data),
+                                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_database),
+                                        enabled = true,
+                                        secondaryMenu = listOf(),
+                                        onClick = {
+                                            context.saveSelectionType(SelectionType.DATA)
+                                            viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
+                                            expanded.value = false
+                                        }
+                                    ),
+                                    ActionMenuItem(
+                                        title = StringResourceToken.fromStringId(R.string.both),
+                                        icon = ImageVectorToken.fromVector(Icons.Rounded.DoneAll),
+                                        enabled = true,
+                                        secondaryMenu = listOf(),
+                                        onClick = {
+                                            context.saveSelectionType(SelectionType.BOTH)
+                                            viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
+                                            expanded.value = false
+                                        }
+                                    )
+                                )
+                            },
+                            content = { expanded ->
+                                CheckIconButton(enabled = activatedState) {
+                                    expanded.value = true
+                                }
+                            }
+                        )
+
                     }
                 })
         },

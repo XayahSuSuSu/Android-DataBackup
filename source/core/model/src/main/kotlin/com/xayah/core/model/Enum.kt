@@ -110,3 +110,12 @@ fun ModeState.getLabel(context: Context) = when (this) {
     ModeState.BATCH_BACKUP -> "${context.getString(R.string.backup)}(${context.getString(R.string.batch)})"
     ModeState.BATCH_RESTORE -> "${context.getString(R.string.restore)}(${context.getString(R.string.batch)})"
 }
+
+enum class SelectionType {
+    DEFAULT,
+    APK,
+    DATA,
+    BOTH;
+
+    companion object
+}

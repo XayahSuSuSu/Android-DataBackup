@@ -8,6 +8,7 @@ import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
+import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.PackageEntity
@@ -25,6 +26,7 @@ import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PreparationUtil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -110,6 +112,8 @@ internal abstract class BackupService : Service() {
     suspend fun processing() = withIOContext {
         mutex.withLock {
             log { "Processing is starting." }
+            val selectionType = context.readSelectionType().first()
+            log { "Selection: $selectionType." }
             runCatchingOnService { createTargetDirs() }
 
             // createTargetDirs() before readStatFs().

@@ -3,6 +3,7 @@ package com.xayah.core.model.util
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.LZ4_SUFFIX
 import com.xayah.core.model.OpType
+import com.xayah.core.model.SelectionType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.TAR_SUFFIX
 import com.xayah.core.model.ZSTD_SUFFIX
@@ -43,3 +44,6 @@ fun CompressionType.Companion.suffixOf(suffix: String): CompressionType? = when 
     LZ4_SUFFIX -> CompressionType.LZ4
     else -> null
 }
+
+fun SelectionType.Companion.of(name: String?): SelectionType =
+    runCatching { SelectionType.valueOf(name!!.uppercase()) }.getOrDefault(SelectionType.DEFAULT)

@@ -13,9 +13,11 @@ import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.datastore.saveCloudActivatedAccountName
+import com.xayah.core.datastore.saveSelectionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
+import com.xayah.core.model.SelectionType
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
@@ -128,6 +130,7 @@ class IndexViewModel @Inject constructor(
                         )
                     )
                     packageRepo.clearActivated()
+                    contextRepository.withContext { it.saveSelectionType(SelectionType.DEFAULT) }
                     packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
                     val backupPreprocessing = localBackupService.preprocessing()
                     localBackupService.processing()
@@ -169,6 +172,7 @@ class IndexViewModel @Inject constructor(
                         )
                     )
                     packageRepo.clearActivated()
+                    contextRepository.withContext { it.saveSelectionType(SelectionType.DEFAULT) }
                     packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
                     val backupPreprocessing = cloudBackupService.preprocessing()
                     cloudBackupService.processing()
@@ -207,6 +211,7 @@ class IndexViewModel @Inject constructor(
                         )
                     )
                     packageRepo.clearActivated()
+                    contextRepository.withContext { it.saveSelectionType(SelectionType.DEFAULT) }
                     packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
                     localRestoreService.preprocessing()
                     localRestoreService.processing()
@@ -248,6 +253,7 @@ class IndexViewModel @Inject constructor(
                         )
                     )
                     packageRepo.clearActivated()
+                    contextRepository.withContext { it.saveSelectionType(SelectionType.DEFAULT) }
                     packageRepo.upsert(intent.packageEntity.copy(extraInfo = intent.packageEntity.extraInfo.copy(activated = true)))
                     cloudRestoreService.preprocessing()
                     cloudRestoreService.processing()
