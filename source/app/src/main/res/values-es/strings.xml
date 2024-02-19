@@ -1,2 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="welcome_to_use">Bienvenido a DataBackup</string>
+    <string name="update_records">Actualizar registros</string>
+    <string name="environment_detection">Detección de entorno</string>
+    <string name="start">Iniciar</string>
+    <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar el siguiente Acuerdo de usuario y Política de privacidad antes de comenzar a utilizar esta aplicación.</string>
+    <string name="network">Red</string>
+    <string name="application">Aplicación</string>
+    <string name="storage">Permiso para leer/escribir en almacenamiento externo</string>
+    <string name="storage_desc">Se utiliza para configuración de respaldo, lectura y escritura de archivos</string>
+    <string name="loading">Cargando</string>
+    <string name="loading_failed">Carga fallida</string>
+    <string name="grant_root_access">Dar acceso de superusuario</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="overlook">Descripción general</string>
+    <string name="last_backup">Última copia de seguridad</string>
+    <string name="utilities">Herramientas</string>
+    <string name="structure">Árbol de ficheros</string>
+    <string name="log">Registros</string>
+    <string name="app_and_data">Aplicaciones</string>
+    <string name="media">Medios</string>
+    <string name="unsupported_format">Formato incompatible</string>
+    <string name="backup_dir">Carpeta de respaldo</string>
+    <string name="external_storage">Almacenamiento externo</string>
+    <string name="directory_structure">Estructura de archivos</string>
+    <string name="copy">Copiar</string>
+    <string name="succeed">Éxito</string>
+    <string name="failed">Falló</string>
+    <string name="save_directory_structure">Guardar estructura de archivos</string>
+    <string name="backup_list">Lista de respaldo</string>
+    <string name="search_bar_hint_packages">Buscar por nombre o paquete…</string>
+    <string name="apk"></string>
+    <string name="data">Datos</string>
+    <string name="both">Ambos</string>
+    <string name="manifest">Manifiesto</string>
+    <string name="selected_apks">APKs seleccionadas</string>
+    <string name="selected_data">Datos seleccionados</string>
+    <string name="app_name">DataBackup</string>
+    <string name="start_desc">Todos los datos generados por esta aplicación solo se utilizan para copia de seguridad/restauración y solo se almacenan localmente.</string>
+    <string name="network_desc">Se utiliza para obtener información de actualización de aplicaciones y análisis de aplicaciones.</string>
+    <string name="application_desc">Obtener información del paquete de la aplicación, utilizada para generar una lista de respaldo y obtener el tamaño de los datos de la aplicación.</string>
+    <string name="activities">Actividades</string>
+    <string name="directory">Almacenamiento</string>
+    <string name="telephony">Historial de llamadas</string>
+    <string name="internal_storage">Almacenamiento interno</string>
+    <string name="save">Guardar</string>
+    <string name="remote_service_err_info">Intente reiniciar el dispositivo o reinstale Magisk.</string>
+    <string name="updating">Actualizando</string>
+    <string name="backing_up">Haciendo c</string>
+</resources>
