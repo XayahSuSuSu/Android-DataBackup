@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">DataBackup</string>
+    <string name="start">Iniciar</string>
+    <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar el siguiente Acuerdo de usuario y Política de privacidad antes de comenzar a utilizar esta aplicación</string>
+    <string name="welcome_to_use">Bienvenido a DataBackup</string>
+    <string name="update_records">Actualizar registros</string>
+    <string name="environment_detection">Detección de entorno</string>
+</resources>
