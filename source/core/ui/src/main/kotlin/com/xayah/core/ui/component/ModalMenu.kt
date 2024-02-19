@@ -3,10 +3,12 @@ package com.xayah.core.ui.component
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
@@ -16,12 +18,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -44,6 +48,8 @@ import com.xayah.core.ui.material3.window.PopupProperties
 import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.model.getActionMenuConfirmItem
+import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.SizeTokens
@@ -346,5 +352,22 @@ fun ModalDropdownMenu(
                 content = content
             )
         }
+    }
+}
+
+
+@Composable
+fun ContentWithConfirm(modifier: Modifier = Modifier, content: @Composable (MutableState<Boolean>) -> Unit, onConfirm: suspend () -> Unit) {
+    val expanded = remember { mutableStateOf(false) }
+    Box(modifier = modifier.wrapContentSize(Alignment.Center)) {
+        content(expanded)
+
+        ModalActionDropdownMenu(expanded = expanded.value, actionList = listOf(
+            getActionMenuReturnItem { expanded.value = false },
+            getActionMenuConfirmItem {
+                onConfirm()
+                expanded.value = false
+            }
+        ), onDismissRequest = { expanded.value = false })
     }
 }

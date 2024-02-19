@@ -4,6 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -23,8 +25,8 @@ import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 
 @Composable
-fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, onClick: () -> Unit) {
-    IconButton(modifier = modifier, onClick = onClick) {
+fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, enabled: Boolean = true, onClick: () -> Unit) {
+    IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
         Icon(
             imageVector = icon.value,
             contentDescription = null
@@ -53,8 +55,18 @@ fun AddIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-fun CheckIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    IconButton(modifier = modifier, icon = ImageVectorToken.fromVector(Icons.Rounded.Check), onClick = onClick)
+fun CheckIconButton(modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
+    IconButton(modifier = modifier, enabled = enabled, icon = ImageVectorToken.fromVector(Icons.Rounded.Check), onClick = onClick)
+}
+
+@Composable
+fun DeleteIconButton(modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
+    IconButton(modifier = modifier, enabled = enabled, icon = ImageVectorToken.fromVector(Icons.Rounded.Delete), onClick = onClick)
+}
+
+@Composable
+fun ChecklistIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    IconButton(modifier = modifier, icon = ImageVectorToken.fromVector(Icons.Rounded.Checklist), onClick = onClick)
 }
 
 @Composable

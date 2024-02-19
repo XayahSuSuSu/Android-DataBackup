@@ -1,6 +1,5 @@
 package com.xayah.feature.main.medium.list
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -37,12 +36,15 @@ import com.xayah.core.model.getLabel
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.AddIconButton
 import com.xayah.core.ui.component.CheckIconButton
+import com.xayah.core.ui.component.ChecklistIconButton
 import com.xayah.core.ui.component.ChipRow
+import com.xayah.core.ui.component.ContentWithConfirm
+import com.xayah.core.ui.component.DeleteIconButton
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.RoundChip
 import com.xayah.core.ui.component.SearchBar
-import com.xayah.core.ui.component.SecondaryTopBar
+import com.xayah.core.ui.component.SecondaryMediumTopBar
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.material3.pullrefresh.PullRefreshIndicator
@@ -52,7 +54,6 @@ import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromStringId
@@ -87,15 +88,30 @@ fun PageMedium() {
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            SecondaryTopBar(
+            SecondaryMediumTopBar(
                 scrollBehavior = scrollBehavior,
                 topBarState = topBarState,
                 actions = {
                     AddIconButton {
                         viewModel.emitIntent(IndexUiIntent.AddMedia(context = context))
                     }
-                    if (activatedState && modeState != ModeState.OVERVIEW) {
-                        CheckIconButton {
+                    if (isRefreshing.not() && modeState != ModeState.OVERVIEW) {
+                        ChecklistIconButton {
+                            viewModel.emitIntent(IndexUiIntent.SelectAll)
+                        }
+                        if (modeState == ModeState.BATCH_RESTORE) {
+                            ContentWithConfirm(
+                                content = { expanded ->
+                                    DeleteIconButton(enabled = activatedState) {
+                                        expanded.value = true
+                                    }
+                                },
+                                onConfirm = {
+                                    viewModel.suspendEmitIntent(IndexUiIntent.DeleteSelected)
+                                }
+                            )
+                        }
+                        CheckIconButton(enabled = activatedState) {
                             viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
                         }
                     }
@@ -155,68 +171,66 @@ fun PageMedium() {
                         }
                     }
 
-                    items(items = mediumState, key = { "${it.entity.name}: ${it.entity.preserveId}-${it.entity.indexInfo.cloud}-${it.entity.indexInfo.backupDir}" }) { item ->
-                        AnimatedContent(
+                    items(
+                        items = mediumState,
+                        key = { "${it.entity.name}: ${it.entity.indexInfo.opType}-${it.entity.preserveId}-${it.entity.indexInfo.cloud}-${it.entity.indexInfo.backupDir}" }) { item ->
+                        Row(
                             modifier = Modifier
                                 .animateItemPlacement()
                                 .paddingHorizontal(PaddingTokens.Level4),
-                            targetState = item,
-                            label = AnimationTokens.AnimatedContentLabel
-                        ) { targetState ->
-                            Row {
-                                val name = targetState.entity.name
-                                val path = targetState.entity.path
-                                val preserveId = targetState.entity.preserveId
-                                val displayStatsFormat = targetState.entity.mediaInfo.displayBytes.toDouble().formatSize()
-                                val backupsCount = when (targetState.entity.indexInfo.opType) {
-                                    OpType.BACKUP -> targetState.count - 1
-                                    OpType.RESTORE -> targetState.count
-                                }
-                                val itemEnabled = isRefreshing.not() && processingCountState.not()
-                                MediaCard(
-                                    name = name,
-                                    path = path,
-                                    enabled = itemEnabled,
-                                    cardSelected = if (modeState == ModeState.OVERVIEW) false else targetState.entity.extraInfo.activated,
-                                    onCardClick = {
-                                        when (modeState) {
-                                            ModeState.OVERVIEW -> {
-                                                viewModel.emitIntent(IndexUiIntent.ToPageMediaDetail(navController, targetState.entity))
-                                            }
-
-                                            else -> {
-                                                viewModel.emitIntent(IndexUiIntent.Select(targetState.entity))
-                                            }
-                                        }
-                                    },
-                                    onCardLongClick = {},
-                                ) {
+                        ) {
+                            val name = item.entity.name
+                            val path = item.entity.path
+                            val preserveId = item.entity.preserveId
+                            val displayStatsFormat = item.entity.mediaInfo.displayBytes.toDouble().formatSize()
+                            val backupsCount = when (item.entity.indexInfo.opType) {
+                                OpType.BACKUP -> item.count - 1
+                                OpType.RESTORE -> item.count
+                            }
+                            val itemEnabled = isRefreshing.not() && processingCountState.not()
+                            MediaCard(
+                                name = name,
+                                path = path,
+                                enabled = itemEnabled,
+                                cardSelected = if (modeState == ModeState.OVERVIEW) false else item.entity.extraInfo.activated,
+                                onCardClick = {
                                     when (modeState) {
-                                        ModeState.OVERVIEW, ModeState.BATCH_BACKUP -> {
-                                            if (backupsCount > 0) RoundChip(
-                                                enabled = itemEnabled,
-                                                text = countBackups(context = context, count = backupsCount),
-                                                color = ColorSchemeKeyTokens.Primary.toColor(),
-                                            ) {
-                                                viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                            }
+                                        ModeState.OVERVIEW -> {
+                                            viewModel.emitIntent(IndexUiIntent.ToPageMediaDetail(navController, item.entity))
                                         }
 
-                                        ModeState.BATCH_RESTORE -> {
-                                            RoundChip(
-                                                enabled = itemEnabled,
-                                                text = "${StringResourceToken.fromStringId(R.string.id).value}: $preserveId",
-                                                color = ColorSchemeKeyTokens.Primary.toColor(),
-                                            ) {
-                                                viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                            }
+                                        else -> {
+                                            viewModel.emitIntent(IndexUiIntent.Select(item.entity))
+                                        }
+                                    }
+                                },
+                                onCardLongClick = {},
+                            ) {
+                                when (modeState) {
+                                    ModeState.OVERVIEW, ModeState.BATCH_BACKUP -> {
+                                        if (backupsCount > 0) RoundChip(
+                                            enabled = itemEnabled,
+                                            text = countBackups(context = context, count = backupsCount),
+                                            color = ColorSchemeKeyTokens.Primary.toColor(),
+                                        ) {
+                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
                                         }
                                     }
 
-                                    RoundChip(enabled = itemEnabled, text = displayStatsFormat) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $displayStatsFormat"))
+                                    ModeState.BATCH_RESTORE -> {
+                                        RoundChip(
+                                            enabled = itemEnabled,
+                                            text = "${StringResourceToken.fromStringId(R.string.id).value}: $preserveId",
+                                            color = ColorSchemeKeyTokens.Primary.toColor(),
+                                        ) {
+                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                        }
                                     }
+                                }
+
+                                RoundChip(enabled = itemEnabled, text = displayStatsFormat) {
+                                    viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                    viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $displayStatsFormat"))
                                 }
                             }
                         }

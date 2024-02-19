@@ -44,6 +44,7 @@ import com.xayah.core.service.medium.restore.LocalProcessingImpl as LocalRestore
 data class IndexUiState(
     val isRefreshing: Boolean,
     val cloud: String,
+    val allSelected: Boolean,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -60,6 +61,9 @@ sealed class IndexUiIntent : UiIntent {
     data class SetMode(val index: Int, val mode: ModeState) : IndexUiIntent()
     data class Select(val entity: MediaEntity) : IndexUiIntent()
     data class Process(val navController: NavHostController) : IndexUiIntent()
+
+    data object SelectAll : IndexUiIntent()
+    data object DeleteSelected : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -74,7 +78,7 @@ class IndexViewModel @Inject constructor(
     private val localRestoreService: LocalRestoreService,
     private val cloudRestoreService: CloudRestoreService,
     private val contextRepository: ContextRepository,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, cloud = "")) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, cloud = "", allSelected = false)) {
     init {
         rootService.onFailure = {
             val msg = it.message
@@ -83,12 +87,28 @@ class IndexViewModel @Inject constructor(
         }
     }
 
+    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
+        when (intent) {
+            is IndexUiIntent.DeleteSelected -> {
+                mediumState.value.filter { it.entity.extraInfo.activated }.forEach {
+                    if (state.cloud.isEmpty()) {
+                        mediaRepo.deleteLocalArchive(it.entity)
+                    } else {
+                        mediaRepo.deleteRemoteArchive(state.cloud, it.entity)
+                    }
+                }
+            }
+
+            else -> {}
+        }
+    }
+
     @DelicateCoroutinesApi
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
                 emitStateSuspend(state.copy(isRefreshing = true))
-                mediaRepo.refresh(topBarState = _topBarState)
+                mediaRepo.refresh(topBarState = _topBarState, modeState = modeState.value, cloud = state.cloud)
                 emitStateSuspend(state.copy(isRefreshing = false))
             }
 
@@ -105,8 +125,8 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.FilterByLocation -> {
                 mediaRepo.clearActivated()
-                if (intent.index == 0) emitState(state.copy(cloud = ""))
-                else emitState(state.copy(cloud = accountsState.value[intent.index - 1].name))
+                if (intent.index == 0) emitState(state.copy(cloud = "", allSelected = false))
+                else emitState(state.copy(cloud = accountsState.value[intent.index - 1].name, allSelected = false))
                 _locationIndexState.value = intent.index
             }
 
@@ -129,6 +149,7 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.SetMode -> {
                 mediaRepo.clearActivated()
+                emitState(state.copy(allSelected = false))
                 emitIntentSuspend(IndexUiIntent.FilterByLocation(0))
                 _modeState.value = intent.mode
             }
@@ -206,6 +227,13 @@ class IndexViewModel @Inject constructor(
                     )
                 }
             }
+
+            is IndexUiIntent.SelectAll -> {
+                mediaRepo.upsert(mediumState.value.map { it.entity }.onEach { it.extraInfo.activated = state.allSelected.not() })
+                emitState(state.copy(allSelected = state.allSelected.not()))
+            }
+
+            else -> {}
         }
     }
 

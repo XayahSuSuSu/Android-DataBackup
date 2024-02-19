@@ -5,6 +5,7 @@ import com.xayah.core.data.R
 import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataState
+import com.xayah.core.model.ModeState
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.MediaEntity
@@ -63,15 +64,16 @@ class MediaRepository @Inject constructor(
         m.entity.name.lowercase().contains(key.lowercase()) || m.entity.path.lowercase().contains(key.lowercase())
     }
 
-    suspend fun refreshFromLocalMedia(name: String) {
-        refreshFromLocal(path = "$archivesMediumDir/$name")
+    suspend fun refreshFromLocalMedia(name: String = "") {
+        refreshFromLocal(name = name)
     }
 
-    suspend fun refreshFromCloudMedia(name: String) {
-        runCatching { refreshFromCloud(name = name) }.onFailure(rootService.onFailure)
+    suspend fun refreshFromCloudMedia(name: String = "", cloud: String = "") {
+        runCatching { refreshFromCloud(name = name, cloud = cloud) }.onFailure(rootService.onFailure)
     }
 
-    private suspend fun refreshFromLocal(path: String) {
+    private suspend fun refreshFromLocal(name: String) {
+        val path = if (name.isEmpty()) archivesMediumDir else "$archivesMediumDir/$name"
         val paths = rootService.walkFileTree(path)
         paths.forEach {
             val fileName = PathUtil.getFileName(it.pathString)
@@ -92,32 +94,30 @@ class MediaRepository @Inject constructor(
         }
     }
 
-    private suspend fun refreshFromCloud(name: String) {
-        cloudRepository.withActivatedClients { clients ->
-            clients.forEach { (client, entity) ->
-                val remote = entity.remote
-                val remoteArchivesMediumDir = pathUtil.getCloudRemoteArchivesMediumDir(remote)
-                val src = "$remoteArchivesMediumDir/$name"
-                if (client.exists(src)) {
-                    val paths = client.walkFileTree(src)
-                    val tmpDir = pathUtil.getCloudTmpDir()
-                    paths.forEach {
-                        val fileName = PathUtil.getFileName(it.pathString)
-                        val preserveId = PathUtil.getFileName(PathUtil.getParentPath(it.pathString))
-                        if (fileName == ConfigsMediaRestoreName) {
-                            runCatching {
-                                cloudRepository.download(client = client, src = it.pathString, dstDir = tmpDir) { path ->
-                                    val stored = rootService.readProtoBuf<MediaEntity>(path).also { p ->
-                                        p?.extraInfo?.activated = false
-                                        p?.indexInfo?.cloud = entity.name
-                                        p?.indexInfo?.backupDir = remote
-                                        p?.indexInfo?.preserveId = preserveId.toLongOrNull() ?: 0
-                                    }
-                                    if (stored != null) {
-                                        getMedia(stored.indexInfo.opType, stored.name, stored.preserveId, stored.indexInfo.compressionType, entity.name, remote).also { m ->
-                                            if (m == null)
-                                                mediaDao.upsert(stored)
-                                        }
+    private suspend fun refreshFromCloud(name: String, cloud: String) {
+        val refresh: suspend (CloudClient, CloudEntity) -> Unit = { client: CloudClient, entity: CloudEntity ->
+            val remote = entity.remote
+            val remoteArchivesMediumDir = pathUtil.getCloudRemoteArchivesMediumDir(remote)
+            val src = if (name.isEmpty()) remoteArchivesMediumDir else "$remoteArchivesMediumDir/$name"
+            if (client.exists(src)) {
+                val paths = client.walkFileTree(src)
+                val tmpDir = pathUtil.getCloudTmpDir()
+                paths.forEach {
+                    val fileName = PathUtil.getFileName(it.pathString)
+                    val preserveId = PathUtil.getFileName(PathUtil.getParentPath(it.pathString))
+                    if (fileName == ConfigsMediaRestoreName) {
+                        runCatching {
+                            cloudRepository.download(client = client, src = it.pathString, dstDir = tmpDir) { path ->
+                                val stored = rootService.readProtoBuf<MediaEntity>(path).also { p ->
+                                    p?.extraInfo?.activated = false
+                                    p?.indexInfo?.cloud = entity.name
+                                    p?.indexInfo?.backupDir = remote
+                                    p?.indexInfo?.preserveId = preserveId.toLongOrNull() ?: 0
+                                }
+                                if (stored != null) {
+                                    getMedia(stored.indexInfo.opType, stored.name, stored.preserveId, stored.indexInfo.compressionType, entity.name, remote).also { m ->
+                                        if (m == null)
+                                            mediaDao.upsert(stored)
                                     }
                                 }
                             }
@@ -126,22 +126,39 @@ class MediaRepository @Inject constructor(
                 }
             }
         }
+        if (cloud.isNotEmpty()) {
+            cloudRepository.withClient(cloud) { client, entity ->
+                refresh(client, entity)
+            }
+        } else {
+            cloudRepository.withActivatedClients { clients ->
+                clients.forEach { (client, entity) ->
+                    refresh(client, entity)
+                }
+            }
+        }
     }
 
-    suspend fun refresh(topBarState: MutableStateFlow<TopBarState>) = run {
+    suspend fun refresh(topBarState: MutableStateFlow<TopBarState>, modeState: ModeState, cloud: String) = run {
         val title = topBarState.value.title
-        topBarState.emit(
-            TopBarState(
-                title = StringResourceToken.fromStringId(R.string.updating),
-                indeterminate = true
+        if (modeState != ModeState.BATCH_RESTORE) {
+            topBarState.emit(
+                TopBarState(
+                    title = StringResourceToken.fromStringId(R.string.updating),
+                    indeterminate = true
+                )
             )
-        )
-        val medium = query(opType = OpType.BACKUP, preserveId = 0, "", "")
-        medium.forEach { m ->
-            mediaDao.upsert(m.copy(mediaInfo = m.mediaInfo.copy(displayBytes = rootService.calculateSize(m.path))))
+            val medium = query(opType = OpType.BACKUP, preserveId = 0, "", "")
+            medium.forEach { m ->
+                mediaDao.upsert(m.copy(mediaInfo = m.mediaInfo.copy(displayBytes = rootService.calculateSize(m.path))))
+            }
         }
         topBarState.emit(TopBarState(progress = 1f, title = StringResourceToken.fromStringId(R.string.updating), indeterminate = true))
-        refreshFromLocal(path = archivesMediumDir)
+        if (cloud.isEmpty()) {
+            refreshFromLocalMedia()
+        } else {
+            refreshFromCloudMedia(cloud = cloud)
+        }
         topBarState.emit(TopBarState(progress = 1f, title = title, indeterminate = false))
     }
 
@@ -207,9 +224,23 @@ class MediaRepository @Inject constructor(
     }
 
     suspend fun upsert(item: MediaEntity) = mediaDao.upsert(item)
+    suspend fun upsert(items: List<MediaEntity>) = mediaDao.upsert(items)
     suspend fun clearActivated() = mediaDao.clearActivated()
 
     fun getArchiveDst(dstDir: String, ct: CompressionType) = "${dstDir}/media.${ct.suffix}"
+
+    suspend fun deleteLocalArchive(m: MediaEntity) = run {
+        if (rootService.deleteRecursively("${archivesMediumDir}/${m.archivesPreserveRelativeDir}")) mediaDao.delete(m)
+    }
+
+    suspend fun deleteRemoteArchive(cloud: String, m: MediaEntity) = runCatching {
+        cloudRepository.withClient(cloud) { client, entity ->
+            val remote = entity.remote
+            val remoteArchivesMediumDir = pathUtil.getCloudRemoteArchivesMediumDir(remote)
+            val src = "${remoteArchivesMediumDir}/${m.archivesPreserveRelativeDir}"
+            client.deleteRecursively(src)
+        }
+    }.onSuccess { mediaDao.delete(m) }
 
     private suspend fun calculateArchiveSize(m: MediaEntity) = rootService.calculateSize(
         getArchiveDst("${archivesMediumDir}/${m.archivesPreserveRelativeDir}", m.indexInfo.compressionType)

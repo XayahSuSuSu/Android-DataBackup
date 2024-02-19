@@ -106,3 +106,35 @@ fun SecondaryTopBar(
 
     }
 }
+
+@ExperimentalMaterial3Api
+@Composable
+fun SecondaryMediumTopBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    topBarState: TopBarState,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    Column {
+        SecondaryMediumTopBar(
+            scrollBehavior = scrollBehavior,
+            title = topBarState.title,
+            actions = actions,
+        )
+        if (topBarState.indeterminate) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        } else {
+            if (topBarState.progress != 1f) {
+                var targetProgress by remember { mutableFloatStateOf(0f) }
+                val animatedProgress = animateFloatAsState(
+                    targetValue = targetProgress,
+                    animationSpec = tween(),
+                    label = AnimationTokens.AnimatedProgressLabel
+                )
+                targetProgress = topBarState.progress
+                if (animatedProgress.value != 1f)
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = animatedProgress.value)
+            }
+        }
+
+    }
+}

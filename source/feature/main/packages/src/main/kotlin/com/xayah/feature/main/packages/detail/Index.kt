@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.util.of
+import com.xayah.core.ui.component.ContentWithConfirm
 import com.xayah.core.ui.component.FilledIconTextButton
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.HeaderItem
@@ -58,8 +59,6 @@ import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.model.getActionMenuConfirmItem
-import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
@@ -330,46 +329,47 @@ fun PagePackageDetail() {
                                     },
                                     btnContent = {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
-                                            IconTextButton(
+                                            ContentWithConfirm(
                                                 modifier = Modifier.weight(1f),
-                                                text = if (processingCountState)
-                                                    StringResourceToken.fromStringId(R.string.task_is_in_progress)
-                                                else
-                                                    StringResourceToken.fromStringId(R.string.preserve),
-                                                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_shield_locked),
-                                                enabled = isRefreshing.not() && processingCountState.not() && restoreItemState.preserveId == 0L,
-                                                onClick = {
-                                                    viewModel.emitIntent(IndexUiIntent.Preserve(restoreItemState))
+                                                content = { expanded ->
+                                                    IconTextButton(
+                                                        modifier = Modifier.weight(1f),
+                                                        text = if (processingCountState)
+                                                            StringResourceToken.fromStringId(R.string.task_is_in_progress)
+                                                        else
+                                                            StringResourceToken.fromStringId(R.string.preserve),
+                                                        leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_shield_locked),
+                                                        enabled = isRefreshing.not() && processingCountState.not() && restoreItemState.preserveId == 0L,
+                                                        onClick = {
+                                                            expanded.value = true
+                                                        }
+                                                    )
+                                                },
+                                                onConfirm = {
+                                                    viewModel.suspendEmitIntent(IndexUiIntent.Preserve(restoreItemState))
                                                 }
                                             )
 
-                                            var expanded by remember { mutableStateOf(false) }
-                                            Box(
-                                                modifier = Modifier
-                                                    .weight(1f)
-                                                    .wrapContentSize(Alignment.Center)
-                                            ) {
-                                                IconTextButton(
-                                                    modifier = Modifier.fillMaxWidth(),
-                                                    text = if (processingCountState)
-                                                        StringResourceToken.fromStringId(R.string.task_is_in_progress)
-                                                    else
-                                                        StringResourceToken.fromStringId(R.string.delete),
-                                                    leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
-                                                    enabled = isRefreshing.not() && processingCountState.not(),
-                                                    onClick = {
-                                                        expanded = true
-                                                    }
-                                                )
-
-                                                ModalActionDropdownMenu(expanded = expanded, actionList = listOf(
-                                                    getActionMenuReturnItem { expanded = false },
-                                                    getActionMenuConfirmItem {
-                                                        viewModel.emitIntent(IndexUiIntent.Delete(restoreItemState))
-                                                        expanded = false
-                                                    }
-                                                ), onDismissRequest = { expanded = false })
-                                            }
+                                            ContentWithConfirm(
+                                                modifier = Modifier.weight(1f),
+                                                content = { expanded ->
+                                                    IconTextButton(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        text = if (processingCountState)
+                                                            StringResourceToken.fromStringId(R.string.task_is_in_progress)
+                                                        else
+                                                            StringResourceToken.fromStringId(R.string.delete),
+                                                        leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
+                                                        enabled = isRefreshing.not() && processingCountState.not(),
+                                                        onClick = {
+                                                            expanded.value = true
+                                                        }
+                                                    )
+                                                },
+                                                onConfirm = {
+                                                    viewModel.suspendEmitIntent(IndexUiIntent.Delete(restoreItemState))
+                                                }
+                                            )
                                         }
                                     }
                                 )

@@ -81,6 +81,20 @@ class IndexViewModel @Inject constructor(
         }
     }
 
+    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
+        when (intent) {
+            is IndexUiIntent.Preserve -> {
+                packageRepo.preserve(intent.packageEntity)
+            }
+
+            is IndexUiIntent.Delete -> {
+                packageRepo.delete(intent.packageEntity)
+            }
+
+            else -> {}
+        }
+    }
+
     @DelicateCoroutinesApi
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
@@ -256,17 +270,11 @@ class IndexViewModel @Inject constructor(
                 }
             }
 
-            is IndexUiIntent.Preserve -> {
-                packageRepo.preserve(intent.packageEntity)
-            }
-
             is IndexUiIntent.ActiveCloud -> {
                 cloudRepo.upsert(intent.cloudEntity.copy(activated = intent.cloudEntity.activated.not()))
             }
 
-            is IndexUiIntent.Delete -> {
-                packageRepo.delete(intent.packageEntity)
-            }
+            else -> {}
         }
     }
 

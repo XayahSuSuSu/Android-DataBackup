@@ -1,6 +1,5 @@
 package com.xayah.feature.main.packages.list
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -37,13 +36,16 @@ import com.xayah.core.model.ModeState
 import com.xayah.core.model.OpType
 import com.xayah.core.model.getLabel
 import com.xayah.core.ui.component.CheckIconButton
+import com.xayah.core.ui.component.ChecklistIconButton
 import com.xayah.core.ui.component.ChipRow
+import com.xayah.core.ui.component.ContentWithConfirm
+import com.xayah.core.ui.component.DeleteIconButton
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
 import com.xayah.core.ui.component.RoundChip
 import com.xayah.core.ui.component.SearchBar
-import com.xayah.core.ui.component.SecondaryTopBar
+import com.xayah.core.ui.component.SecondaryMediumTopBar
 import com.xayah.core.ui.component.SortChip
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
@@ -54,7 +56,6 @@ import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
@@ -96,12 +97,27 @@ fun PagePackages() {
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            SecondaryTopBar(
+            SecondaryMediumTopBar(
                 scrollBehavior = scrollBehavior,
                 topBarState = topBarState,
                 actions = {
-                    if (activatedState && modeState != ModeState.OVERVIEW) {
-                        CheckIconButton {
+                    if (isRefreshing.not() && modeState != ModeState.OVERVIEW) {
+                        ChecklistIconButton {
+                            viewModel.emitIntent(IndexUiIntent.SelectAll)
+                        }
+                        if (modeState == ModeState.BATCH_RESTORE) {
+                            ContentWithConfirm(
+                                content = { expanded ->
+                                    DeleteIconButton(enabled = activatedState) {
+                                        expanded.value = true
+                                    }
+                                },
+                                onConfirm = {
+                                    viewModel.suspendEmitIntent(IndexUiIntent.DeleteSelected)
+                                }
+                            )
+                        }
+                        CheckIconButton(enabled = activatedState) {
                             viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
                         }
                     }
@@ -202,111 +218,107 @@ fun PagePackages() {
 
                     items(
                         items = packagesState,
-                        key = { "${it.entity.packageName}: ${it.entity.userId}-${it.entity.preserveId}-${it.entity.indexInfo.cloud}-${it.entity.indexInfo.backupDir}" }) { item ->
-                        AnimatedContent(
+                        key = { "${it.entity.packageName}: ${it.entity.indexInfo.opType}-${it.entity.userId}-${it.entity.preserveId}-${it.entity.indexInfo.cloud}-${it.entity.indexInfo.backupDir}" }) { item ->
+                        Row(
                             modifier = Modifier
                                 .animateItemPlacement()
                                 .paddingHorizontal(PaddingTokens.Level4),
-                            targetState = item,
-                            label = AnimationTokens.AnimatedContentLabel
-                        ) { targetState ->
-                            Row {
-                                val userId = targetState.entity.userId
-                                val preserveId = targetState.entity.preserveId
-                                val packageName = targetState.entity.packageName
-                                val versionName = targetState.entity.packageInfo.versionName
-                                val storageStatsFormat = targetState.entity.storageStatsFormat
-                                val hasKeystore = targetState.entity.extraInfo.hasKeystore
-                                val ssaid = targetState.entity.extraInfo.ssaid
-                                val isSystemApp = targetState.entity.isSystemApp
-                                val backupsCount = when (targetState.entity.indexInfo.opType) {
-                                    OpType.BACKUP -> targetState.count - 1
-                                    OpType.RESTORE -> targetState.count
-                                }
-                                val itemEnabled = isRefreshing.not() && processingCountState.not()
-                                PackageCard(
-                                    label = targetState.entity.packageInfo.label,
-                                    packageName = packageName,
-                                    enabled = itemEnabled,
-                                    cardSelected = if (modeState == ModeState.OVERVIEW) false else targetState.entity.extraInfo.activated,
-                                    onCardClick = {
-                                        when (modeState) {
-                                            ModeState.OVERVIEW -> {
-                                                viewModel.emitIntent(IndexUiIntent.ToPagePackageDetail(navController, targetState.entity))
-                                            }
-
-                                            else -> {
-                                                viewModel.emitIntent(IndexUiIntent.Select(targetState.entity))
-                                            }
-                                        }
-
-                                    },
-                                    onCardLongClick = {},
-                                ) {
+                        ) {
+                            val userId = item.entity.userId
+                            val preserveId = item.entity.preserveId
+                            val packageName = item.entity.packageName
+                            val versionName = item.entity.packageInfo.versionName
+                            val storageStatsFormat = item.entity.storageStatsFormat
+                            val hasKeystore = item.entity.extraInfo.hasKeystore
+                            val ssaid = item.entity.extraInfo.ssaid
+                            val isSystemApp = item.entity.isSystemApp
+                            val backupsCount = when (item.entity.indexInfo.opType) {
+                                OpType.BACKUP -> item.count - 1
+                                OpType.RESTORE -> item.count
+                            }
+                            val itemEnabled = isRefreshing.not() && processingCountState.not()
+                            PackageCard(
+                                label = item.entity.packageInfo.label,
+                                packageName = packageName,
+                                enabled = itemEnabled,
+                                cardSelected = if (modeState == ModeState.OVERVIEW) false else item.entity.extraInfo.activated,
+                                onCardClick = {
                                     when (modeState) {
-                                        ModeState.OVERVIEW, ModeState.BATCH_BACKUP -> {
-                                            if (backupsCount > 0) RoundChip(
-                                                enabled = itemEnabled,
-                                                text = countBackups(context = context, count = backupsCount),
-                                                color = ColorSchemeKeyTokens.Primary.toColor(),
-                                            ) {
-                                                viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                            }
+                                        ModeState.OVERVIEW -> {
+                                            viewModel.emitIntent(IndexUiIntent.ToPagePackageDetail(navController, item.entity))
                                         }
 
-                                        ModeState.BATCH_RESTORE -> {
-                                            RoundChip(
-                                                enabled = itemEnabled,
-                                                text = "${StringResourceToken.fromStringId(R.string.id).value}: $preserveId",
-                                                color = ColorSchemeKeyTokens.Primary.toColor(),
-                                            ) {
-                                                viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                            }
+                                        else -> {
+                                            viewModel.emitIntent(IndexUiIntent.Select(item.entity))
                                         }
                                     }
-                                    RoundChip(
-                                        enabled = itemEnabled,
-                                        text = StringResourceToken.fromStringArgs(
-                                            StringResourceToken.fromStringId(R.string.user),
-                                            StringResourceToken.fromString(": $userId"),
-                                        ).value,
-                                        color = ColorSchemeKeyTokens.Primary.toColor(),
-                                    ) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                    }
-                                    if (item.entity.extraInfo.existed) {
-                                        if (ssaid.isNotEmpty()) RoundChip(
+
+                                },
+                                onCardLongClick = {},
+                            ) {
+                                when (modeState) {
+                                    ModeState.OVERVIEW, ModeState.BATCH_BACKUP -> {
+                                        if (backupsCount > 0) RoundChip(
                                             enabled = itemEnabled,
-                                            text = StringResourceToken.fromStringId(R.string.ssaid).value,
-                                            color = ColorSchemeKeyTokens.Secondary.toColor(),
+                                            text = countBackups(context = context, count = backupsCount),
+                                            color = ColorSchemeKeyTokens.Primary.toColor(),
                                         ) {
                                             viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.ssaid)}: $ssaid"))
                                         }
-                                        if (hasKeystore) RoundChip(
+                                    }
+
+                                    ModeState.BATCH_RESTORE -> {
+                                        RoundChip(
                                             enabled = itemEnabled,
-                                            text = StringResourceToken.fromStringId(R.string.keystore).value,
-                                            color = ColorSchemeKeyTokens.Error.toColor(),
+                                            text = "${StringResourceToken.fromStringId(R.string.id).value}: $preserveId",
+                                            color = ColorSchemeKeyTokens.Primary.toColor(),
                                         ) {
                                             viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar(context.getString(R.string.keystore_desc)))
-                                        }
-                                        if (versionName.isNotEmpty()) RoundChip(enabled = itemEnabled, text = versionName) {
-                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.version)}: $versionName"))
-                                        }
-                                        RoundChip(enabled = itemEnabled, text = storageStatsFormat) {
-                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $storageStatsFormat"))
                                         }
                                     }
-                                    RoundChip(
+                                }
+                                RoundChip(
+                                    enabled = itemEnabled,
+                                    text = StringResourceToken.fromStringArgs(
+                                        StringResourceToken.fromStringId(R.string.user),
+                                        StringResourceToken.fromString(": $userId"),
+                                    ).value,
+                                    color = ColorSchemeKeyTokens.Primary.toColor(),
+                                ) {
+                                    viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                }
+                                if (item.entity.extraInfo.existed) {
+                                    if (ssaid.isNotEmpty()) RoundChip(
                                         enabled = itemEnabled,
-                                        text = if (isSystemApp) StringResourceToken.fromStringId(R.string.system).value
-                                        else StringResourceToken.fromStringId(R.string.third_party).value
+                                        text = StringResourceToken.fromStringId(R.string.ssaid).value,
+                                        color = ColorSchemeKeyTokens.Secondary.toColor(),
                                     ) {
                                         viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.ssaid)}: $ssaid"))
                                     }
+                                    if (hasKeystore) RoundChip(
+                                        enabled = itemEnabled,
+                                        text = StringResourceToken.fromStringId(R.string.keystore).value,
+                                        color = ColorSchemeKeyTokens.Error.toColor(),
+                                    ) {
+                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar(context.getString(R.string.keystore_desc)))
+                                    }
+                                    if (versionName.isNotEmpty()) RoundChip(enabled = itemEnabled, text = versionName) {
+                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.version)}: $versionName"))
+                                    }
+                                    RoundChip(enabled = itemEnabled, text = storageStatsFormat) {
+                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $storageStatsFormat"))
+                                    }
+                                }
+                                RoundChip(
+                                    enabled = itemEnabled,
+                                    text = if (isSystemApp) StringResourceToken.fromStringId(R.string.system).value
+                                    else StringResourceToken.fromStringId(R.string.third_party).value
+                                ) {
+                                    viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
                                 }
                             }
                         }

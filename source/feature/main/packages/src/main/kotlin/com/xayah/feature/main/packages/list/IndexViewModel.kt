@@ -42,6 +42,7 @@ data class IndexUiState(
     val isRefreshing: Boolean,
     val userIdList: List<Int>,
     val cloud: String,
+    val allSelected: Boolean,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -56,6 +57,8 @@ sealed class IndexUiIntent : UiIntent {
     data class SetMode(val index: Int, val mode: ModeState) : IndexUiIntent()
     data class Select(val entity: PackageEntity) : IndexUiIntent()
     data class Process(val navController: NavHostController) : IndexUiIntent()
+    data object SelectAll : IndexUiIntent()
+    data object DeleteSelected : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -70,7 +73,7 @@ class IndexViewModel @Inject constructor(
     private val localRestoreService: LocalRestoreService,
     private val cloudRestoreService: CloudRestoreService,
     private val contextRepository: ContextRepository,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, userIdList = listOf(), cloud = "")) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, userIdList = listOf(), cloud = "", allSelected = false)) {
     init {
         rootService.onFailure = {
             val msg = it.message
@@ -79,12 +82,28 @@ class IndexViewModel @Inject constructor(
         }
     }
 
+    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
+        when (intent) {
+            is IndexUiIntent.DeleteSelected -> {
+                packagesState.value.filter { it.entity.extraInfo.activated }.forEach {
+                    if (state.cloud.isEmpty()) {
+                        packageRepo.deleteLocalArchive(it.entity)
+                    } else {
+                        packageRepo.deleteRemoteArchive(state.cloud, it.entity)
+                    }
+                }
+            }
+
+            else -> {}
+        }
+    }
+
     @DelicateCoroutinesApi
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
                 emitStateSuspend(state.copy(isRefreshing = true))
-                packageRepo.refresh(topBarState = _topBarState)
+                packageRepo.refresh(topBarState = _topBarState, modeState = modeState.value, cloud = state.cloud)
                 emitStateSuspend(state.copy(isRefreshing = false))
             }
 
@@ -123,13 +142,14 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.FilterByLocation -> {
                 packageRepo.clearActivated()
-                if (intent.index == 0) emitState(state.copy(cloud = ""))
-                else emitState(state.copy(cloud = accountsState.value[intent.index - 1].name))
+                if (intent.index == 0) emitState(state.copy(cloud = "", allSelected = false))
+                else emitState(state.copy(cloud = accountsState.value[intent.index - 1].name, allSelected = false))
                 _locationIndexState.value = intent.index
             }
 
             is IndexUiIntent.SetMode -> {
                 packageRepo.clearActivated()
+                emitState(state.copy(allSelected = false))
                 emitIntentSuspend(IndexUiIntent.FilterByLocation(0))
                 _modeState.value = intent.mode
             }
@@ -207,6 +227,13 @@ class IndexViewModel @Inject constructor(
                     )
                 }
             }
+
+            is IndexUiIntent.SelectAll -> {
+                packageRepo.upsert(packagesState.value.map { it.entity }.onEach { it.extraInfo.activated = state.allSelected.not() })
+                emitState(state.copy(allSelected = state.allSelected.not()))
+            }
+
+            else -> {}
         }
     }
 
