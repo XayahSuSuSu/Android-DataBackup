@@ -5,15 +5,24 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Looper;
 
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 public class HiddenApi {
     public static Context getContext() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Looper.prepare();
+        PrintStream stderr = System.err;
+        try {
+            System.setErr(new PrintStream("/dev/null"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         Object thread = Class.forName("android.app.ActivityThread").getMethod("systemMain").invoke(null);
         Context context = (Context) Class.forName("android.app.ActivityThread").getMethod("getSystemContext").invoke(thread);
         Objects.requireNonNull(Looper.myLooper()).quit();
+        System.setErr(stderr);
         return context;
     }
 
