@@ -23,7 +23,7 @@
     <string name="grant_root_access">Kök erişimi verin</string>
     <string name="release_prebuilt_binaries">Önceden oluşturulmuş ikili dosyaları yayınlayın</string>
     <string name="finish">Bitiş</string>
-    <string name="welcome_to_use">Hoşgeldiniz</string>
+    <string name="welcome_to_use">DataBackup\'a Hoşgeldiniz</string>
     <string name="fetch_failed">Aktarma başarısız</string>
     <string name="latest">Güncel</string>
     <string name="unsupported_format">Desteklenmeyen format</string>
@@ -46,7 +46,7 @@
     <string name="all">Hepsi</string>
     <string name="backup_icon">Uygulama ikonu</string>
     <string name="backup_icon_title">Uygulamaları yedeklerken yedekleme simgesi, geri yükleme sırasında göstermek için kullanılır</string>
-    <string name="alphabet">Abc</string>
+    <string name="alphabet">A-Z</string>
     <string name="install_time">Kurulma zamanı</string>
     <string name="sort">Düzenlemek</string>
     <string name="filter">Filtre</string>
@@ -59,10 +59,10 @@
     <string name="network">Şebeke</string>
     <string name="network_desc">Uygulama güncelleme bilgilerini, uygulama analizlerini almak için kullanılır</string>
     <string name="application_desc">Yedekleme listesi oluşturmak ve uygulama veri boyutunu elde etmek için kullanılan uygulama paketi bilgilerini elde edin</string>
-    <string name="storage">Depolama</string>
+    <string name="storage">Depolamayı okunmaya/yazmaya izni verin</string>
     <string name="compressing">Sıkıştırılıyor</string>
     <string name="decompressing">Parçalanıyor</string>
-    <string name="finished">Bitmiş</string>
+    <string name="finished">Bitti</string>
     <string name="no_change_and_skip">Seçenek yok, geç</string>
     <string name="loading">Yükleniyor</string>
     <string name="backing_up">Yedekleniyor…</string>
@@ -137,7 +137,7 @@
     <string name="miui_service_sms_tips">MIUI kullanıyorsanız, lütfen Servis SMS iznini manuel olarak verin.</string>
     <string name="restored">Kurtarıldı</string>
     <string name="posted_just_now">Şimdilik</string>
-    <string name="telephony">Telefon</string>
+    <string name="telephony">Telefon Geçmişi</string>
     <string name="card_telephony_subtitle">Kişileri , arama kayıtları ya da mesajları kayıt eder</string>
     <string name="backed_up">Yedeklendi</string>
     <string name="posted_now">Şimdi</string>
