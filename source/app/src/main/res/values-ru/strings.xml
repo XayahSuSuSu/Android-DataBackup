@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sooner_or_later">Раньше или позже</string>
-    <string name="storage">Хранилище</string>
+    <string name="storage">Разрешение на чтение/запись на внешнее хранилище</string>
     <string name="clean_restoring">\"Чистое\" восстановление</string>
     <string name="save">Сохранить</string>
     <string name="restoring">Восстановление</string>
@@ -23,16 +23,16 @@
     <string name="date">Дата</string>
     <string name="unsupported_format">Неподдерживаемый формат</string>
     <string name="icon_reload_failed">Не удалось перезагрузить иконку</string>
-    <string name="telephony">Телефония</string>
+    <string name="telephony">История вызовов</string>
     <string name="create_account">Создать аккаунт</string>
-    <string name="confirm_delete_selected_restoring_items">Вы уверены, что хотите удалить выбранные элементы из базы данных и локальных файлов?</string>
-    <string name="abi_validation">Validate ABI</string>
+    <string name="confirm_delete_selected_restoring_items">Удалить выбранные элементы из базы данных и локальных файлов?</string>
+    <string name="abi_validation">Подтвердить ABI</string>
     <string name="storage_desc">Используется для конфигурации резервного копирования, чтения и записи архива</string>
     <string name="simplify">Упрощенно</string>
     <string name="not_installed">Не установленно</string>
     <string name="reset_backup_list">Сброс списка бекапов</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Поддерживается только версия %1$s, на вашем устройстве установлена %2$s. Пожалуйста, установите %3$s или выше.</string>
-    <string name="directory">Папки</string>
+    <string name="directory">Хранилище</string>
     <string name="restore">Восстановление</string>
     <string name="copy">Копировать</string>
     <string name="manifest">Манифест</string>
@@ -41,7 +41,7 @@
     <string name="export">Экспорт</string>
     <string name="confirm_delete">Удалить\?</string>
     <string name="restore_completed">Восстановление завершено</string>
-    <string name="media_target_path_missing">Целевая папка отсутствует, пожалуйста, установите ее вручную</string>
+    <string name="media_target_path_missing">Целевая папка отсутствует. Установите ее вручную.</string>
     <string name="port">Порт</string>
     <string name="update_available">Доступно обновление</string>
     <string name="installed">Установленно</string>
@@ -66,13 +66,13 @@
     <string name="keep_screen_on">Держать экран включенным</string>
     <string name="reset_backup_list_desc">Снять выделение после создания бекапа</string>
     <string name="selected_apks">Выбранные APK</string>
-    <string name="structure">Структура</string>
+    <string name="structure">Дерево файлов</string>
     <string name="apk">APK</string>
-    <string name="backup">Бекап</string>
+    <string name="backup">Резервное копирование</string>
     <string name="network">Сеть</string>
     <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
     <string name="monet_desc">Движок темы Материал You</string>
-    <string name="application">Приложения</string>
+    <string name="application">Приложение</string>
     <string name="updating">Обновление</string>
     <string name="application_desc">Получение всей информации об имени пакетов приложений устройства. Используется для создания списка бекапов и получения размера данных приложений</string>
     <string name="custom_storage">Хранилище, выбранное пользователем</string>
@@ -81,14 +81,14 @@
     <string name="feature">Функции</string>
     <string name="cancel">Отмена</string>
     <string name="last_restore">Последнее восстановление</string>
-    <string name="log">Log</string>
+    <string name="log">Логи</string>
     <string name="loading_failed">Сбой загрузки</string>
     <string name="start_subtitle">Согласно действующей политике, вам необходимо внимательно прочитать и согласиться со следующим Пользовательским соглашением и Политикой конфиденциальности, прежде чем вы начнете использовать это приложение</string>
     <string name="selected_data">Выбранные данные</string>
     <string name="confirm">Подтвердить</string>
     <string name="compatible_mode">Режим совместимости</string>
     <string name="media">Медиа</string>
-    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Используйте канал вместо параметра для ввода tar. Переключите его, когда он скажет \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Невозможно выполнить: нет такого файла или каталога\"</string>
     <string name="supported_format">Поддерживаемый формат</string>
     <string name="architecture">Архитектура</string>
     <string name="restore_list">Список восстановления</string>
@@ -99,7 +99,7 @@
     <string name="backing_up">Бекап…</string>
     <string name="backup_list">Список бекапов</string>
     <string name="compression_type_desc">Влияет как на создание бекапа, так и на восстановление. Настройку рекомендуется изменять только опытными пользователям.</string>
-    <string name="remote_service_err_info">Попробуйте перезапустить устройство или переустановить Magisk</string>
+    <string name="remote_service_err_info">Попробуйте перезагрузить устройство или переустановить Magisk.</string>
     <string name="fetch_failed">Не удалось получить</string>
     <string name="directory_structure">Структура папки</string>
     <string name="loading">Загрузка</string>
@@ -111,7 +111,7 @@
     <string name="compression_type">Тип сжатия</string>
     <string name="backup_dir_as_media_error">Невозможно добавить папку бекапов как медиа</string>
     <string name="backup_user">Пользователь бекапа</string>
-    <string name="keep_screen_on_desc">Держать устройство в активном состоянии во время обработки</string>
+    <string name="keep_screen_on_desc">Не позволяйте устройству спать во время обработки</string>
     <string name="no_browser">Возможно, нет браузера, чтобы открыть</string>
     <string name="environment_detection">Обнаружение окружающей среды</string>
     <string name="succeed">Успешно</string>
@@ -124,12 +124,12 @@
     <string name="welcome_to_use">Добро пожаловать</string>
     <string name="external_storage">Внешнее хранилище</string>
     <string name="save_directory_structure">Сохранить структуру папки</string>
-    <string name="app_and_data">Приложения и данные</string>
+    <string name="app_and_data">Приложения</string>
     <string name="compression_test">Тестирование сжатия</string>
     <string name="failed">Сбои</string>
     <string name="selected_both">Выбрано оба</string>
     <string name="restore_dir">Папка восстановления</string>
-    <string name="set_remote">Облачная настройка</string>
+    <string name="set_remote">Настройка облака</string>
     <string name="mount">Монтирование</string>
     <string name="set_local">Настройка локального хранилища</string>
     <string name="unmount">Размонтировать</string>
@@ -139,7 +139,7 @@
     <string name="installation_time">Время установки</string>
     <string name="edit">Изменить</string>
     <string name="data_size">Размер данных</string>
-    <string name="third_party">Пользовательские</string>
+    <string name="third_party">Установлено</string>
     <string name="selected">Выбрано</string>
     <string name="not_selected">Не выбрано</string>
     <string name="url">Ссылка</string>
@@ -167,11 +167,11 @@
     <string name="clear_all">Очистить все</string>
     <string name="processing">Обработка</string>
     <string name="data_only">Только данные</string>
-    <string name="batching_select">Выбрать все</string>
+    <string name="batching_select">Пакетный выбор</string>
     <string name="in_use">Используется</string>
     <string name="overall_config">Общая конфигурация</string>
     <string name="connection_established">Связь успешно установлена</string>
-    <string name="remote_not_set">Облако не настроено</string>
+    <string name="remote_not_set">Удаленный каталог не установлен</string>
     <string name="test_connection">Проверка соединения</string>
     <string name="main_account_not_set">Главный аккаунт не настроен</string>
     <string name="local">Локально</string>
