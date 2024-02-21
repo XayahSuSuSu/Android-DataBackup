@@ -1,5 +1,6 @@
 package com.xayah.dex;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.HandlerThread;
 import android.os.Process;
@@ -46,18 +47,19 @@ public class SsaidUtil {
         System.out.println("  help");
         System.out.println("    Print this help text.");
         System.out.println();
-        System.out.println("  get USER_ID PACKAGE UID");
+        System.out.println("  get USER_ID PACKAGE");
         System.out.println("    Get ssaid.");
         System.out.println();
-        System.out.println("  set USER_ID PACKAGE UID SSAID");
+        System.out.println("  set USER_ID PACKAGE SSAID");
         System.out.println("    Set ssaid.");
     }
 
     private static void onGet(String[] args) {
         try {
+            Context ctx = HiddenApi.getContext();
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            int uid = Integer.parseInt(args[3]);
+            int uid = HiddenApi.getPackageUid(ctx.getPackageManager(), packageName, 0, userId);
             SettingsState settingsState = getSettingsState(userId);
             System.out.println(settingsState.getSettingLocked(getName(packageName, uid)).getValue());
             System.exit(0);
@@ -70,10 +72,11 @@ public class SsaidUtil {
 
     private static void onSet(String[] args) {
         try {
+            Context ctx = HiddenApi.getContext();
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            int uid = Integer.parseInt(args[3]);
-            String ssaid = args[4];
+            int uid = HiddenApi.getPackageUid(ctx.getPackageManager(), packageName, 0, userId);
+            String ssaid = args[3];
             SettingsState settingsState = getSettingsState(userId);
             settingsState.insertSettingLocked(getName(packageName, uid), ssaid, null, true, packageName);
             System.exit(0);
