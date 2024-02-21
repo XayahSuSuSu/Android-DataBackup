@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">DataBackup</string>
-    <string name="backup">Бекап</string>
+    <string name="backup">Резервное копирование</string>
     <string name="restore">Восстановление</string>
     <string name="error">Ошибка</string>
-    <string name="application">Приложения</string>
+    <string name="application">Приложение</string>
     <string name="data">Данные</string>
     <string name="confirm">Подтвердить</string>
     <string name="backup_finished">Бекап завершен</string>
@@ -73,7 +73,7 @@
     <string name="network">Сеть</string>
     <string name="network_desc">Используется только для получения информации об обновлении приложения, аналитика приложений</string>
     <string name="application_desc">Получение всей информации об имени пакетов приложений устройства. Используется для создания списка бекапов и получения размера данных приложений</string>
-    <string name="storage">Хранилище</string>
+    <string name="storage">Разрешение на чтение/запись на внешнее хранилище</string>
     <string name="storage_desc">Используется для конфигурации резервного копирования, чтения и записи архива</string>
     <string name="data_size">Размер данных</string>
     <string name="setting_SELinux">Установка Selinux</string>
@@ -134,7 +134,7 @@
     <string name="not_installed">Не установленно</string>
     <string name="retry">Retry</string>
     <string name="succeed">Успешно</string>
-    <string name="telephony">Телефония</string>
+    <string name="telephony">История вызовов</string>
     <string name="backed_up">Бекап</string>
     <string name="restored">Восстановлено</string>
     <string name="posted_just_now">Прямо сейчас</string>
@@ -169,7 +169,7 @@
     <string name="reset_backup_list_title">Снять выделение после бекапа</string>
     <string name="reset_restore_list">Сброс списка восстановления</string>
     <string name="reset_restore_list_title">Снять выделение после восстановления</string>
-    <string name="log">Log</string>
+    <string name="log">Логи</string>
     <string name="click_to_clear">Нажать для очистки</string>
     <string name="keep_the_screen_on">Держать экран включенным</string>
     <string name="keep_the_screen_on_help">Держать устройство в активном состоянии во время обработки</string>
