@@ -396,7 +396,7 @@ public class SettingsStateApi31 implements SettingsState {
         // If dirty then we have a write already scheduled.
         if (!mDirty) {
             mDirty = true;
-            writeStateAsyncLocked();
+            doWriteState();
         }
     }
 
