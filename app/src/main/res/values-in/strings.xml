@@ -25,7 +25,7 @@
     <string name="grant_root_access">Berikan akses root</string>
     <string name="release_prebuilt_binaries">Rilis binari bawaan</string>
     <string name="finish">Selesai</string>
-    <string name="welcome_to_use">Selamat menggunakan</string>
+    <string name="welcome_to_use">Selamat di DataBackup</string>
     <string name="start_subtitle">Menurut kebijakan yang relevan, Anda harus membaca dan menyetujui Perjanjian Pengguna dan Kebijakan Privasi berikut ini dengan saksama sebelum Anda mulai menggunakan aplikasi ini</string>
     <string name="internal_storage">Penyimpanan internal</string>
     <string name="support">Dukung</string>
@@ -58,11 +58,20 @@
     <string name="confirm_exit">Yakin ingin keluar?</string>
     <string name="not_selected">Tidak dipilih</string>
     <string name="by_time">Berdasarkan waktu</string>
-    <string name="alphabet">Alphabet</string>
+    <string name="alphabet">A-Z</string>
     <string name="install_time">Waktu instalasi</string>
     <string name="monet_title">Engine tema monet yang dapat diaktifkan dari Material You</string>
     <string name="cover_desc">Timpa file cadangan yang ada dengan setiap cadangan, atau lewatkan cadangan jika tidak ada perubahan, jadi hanya satu salinan data Anda ada</string>
     <string name="backup_itself_title">Ketika mencadangkan aplikasi, secara otomatis mencadangkan paket instalasinya sendiri ke direktori cadangan</string>
     <string name="sort">Urutkan</string>
     <string name="backup_itself">Cadangkan sendiri</string>
+    <string name="backup_test">Tes pencadangan</string>
+    <string name="backup_test_title">Secara otomatis menguji file cadangan selama pencadangan</string>
+    <string name="testing">Pengujian</string>
+    <string name="check_package_usage_stats_permission">Periksa izin statistik penggunaan paket</string>
+    <string name="start_desc">Semua data yang dihasilkan oleh aplikasi ini hanya digunakan untuk pencadangan/pemulihan, dan hanya disimpan secara lokal.</string>
+    <string name="by_time_desc">Setiap pencadangan dianggap sebagai pencadangan penuh baru dan dipisahkan menurut waktu pencadangan, sehingga data Anda mungkin ada dalam beberapa salinan</string>
+    <string name="network">Jaringan</string>
+    <string name="network_desc">Digunakan untuk mendapatkan informasi pembaruan aplikasi, analitik aplikasi</string>
+    <string name="application_desc">Dapatkan informasi paket aplikasi, yang digunakan untuk membuat daftar cadangan dan mendapatkan ukuran data aplikasi</string>
 </resources>
