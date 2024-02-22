@@ -74,4 +74,10 @@
     <string name="network">Jaringan</string>
     <string name="network_desc">Digunakan untuk mendapatkan informasi pembaruan aplikasi, analitik aplikasi</string>
     <string name="application_desc">Dapatkan informasi paket aplikasi, yang digunakan untuk membuat daftar cadangan dan mendapatkan ukuran data aplikasi</string>
+    <string name="storage">Izin untuk membaca/menulis ke penyimpanan eksternal</string>
+    <string name="storage_desc">Digunakan untuk mengkonfigurasi pencadangan, membaca dan menulis arsip</string>
+    <string name="data_size">Ukuran data</string>
+    <string name="setting_SELinux">Pengaturan SELinux</string>
+    <string name="compressing">Mengompres</string>
+    <string name="decompressing">Mendekompres</string>
 </resources>
