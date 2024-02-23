@@ -68,7 +68,7 @@
     <string name="selected_apks">Выбранные APK</string>
     <string name="structure">Дерево файлов</string>
     <string name="apk">APK</string>
-    <string name="backup">Резервное копирование</string>
+    <string name="backup">Бекап</string>
     <string name="network">Сеть</string>
     <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
     <string name="monet_desc">Движок темы Материал You</string>
