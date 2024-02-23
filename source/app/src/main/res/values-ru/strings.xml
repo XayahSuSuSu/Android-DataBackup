@@ -88,7 +88,7 @@
     <string name="confirm">Подтвердить</string>
     <string name="compatible_mode">Режим совместимости</string>
     <string name="media">Медиа</string>
-    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Используйте канал вместо параметра для ввода tar. Переключите его, когда он скажет \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Невозможно выполнить: нет такого файла или каталога\"</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
     <string name="supported_format">Поддерживаемый формат</string>
     <string name="architecture">Архитектура</string>
     <string name="restore_list">Список восстановления</string>
