@@ -49,4 +49,29 @@ enum class ColorSchemeKeyTokens {
     SurfaceVariant,
     Tertiary,
     TertiaryContainer,
+
+    YellowPrimary,
+    YellowPrimaryContainer,
+    YellowOnPrimaryContainer,
+    BluePrimary,
+    BluePrimaryContainer,
+    BlueOnPrimaryContainer,
+    GreenPrimary,
+    GreenPrimaryContainer,
+    GreenOnPrimaryContainer,
+
+    PrimaryL80D20,
+    SecondaryL80D20,
+    TertiaryL80D20,
+    YellowL80D20,
+    GreenL80D20,
+    BlueL80D20,
+
+    // see https://github.com/material-components/material-components-android/blob/6cb921b7dd5d0db1a9f8a9b721cb08019749af42/docs/theming/Color.md#using-the-color-theming-system
+    PrimaryFixed,
+    PrimaryFixedDim,
+    SecondaryFixed,
+    SecondaryFixedDim,
+    TertiaryFixed,
+    TertiaryFixedDim,
 }

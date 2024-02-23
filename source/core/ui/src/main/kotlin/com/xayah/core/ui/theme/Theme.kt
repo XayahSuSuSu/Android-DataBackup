@@ -23,18 +23,6 @@ import com.xayah.core.datastore.readMonet
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.rememberSlotScope
 
-internal val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
-internal val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-)
-
 @Composable
 fun DataBackupTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -48,8 +36,8 @@ fun DataBackupTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> darkColorScheme()
+        else -> lightColorScheme()
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
