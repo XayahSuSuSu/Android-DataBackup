@@ -122,4 +122,7 @@
     <string name="installing">Telepítés</string>
     <string name="data_size">Adat mérete</string>
     <string name="welcome_to_use">Üdvözölünk a DataBackupnál</string>
+    <string name="system_app">Rendszer alkalmazás</string>
+    <string name="installed_app">Telepített app</string>
+    <string name="switch_to_system_app_warning">A legtöbb rendszeralkalmazás nem ajánlott a biztonsági mentéshez, visszaállításuk a telefon bootloopjához vezethet, figyelmeztettük Önt.</string>
 </resources>
