@@ -217,4 +217,22 @@
     <string name="logcat">Logcat</string>
     <string name="batch">Batch</string>
     <string name="_default">Default</string>
+    <string name="grant_all">Grant all</string>
+    <string name="_continue">Continue</string>
+    <string name="app_short_desc">Free and open-source data backup application</string>
+    <string name="required">Required</string>
+    <string name="root_permission">Root permission</string>
+    <string name="root_permission_desc">Backup and restore app data</string>
+    <string name="abi_validation_desc">Validate if your device is supported</string>
+    <string name="optional">Optional</string>
+    <string name="notification_permission">Notification permission</string>
+    <string name="notification_permission_desc">Access to processing information</string>
+    <string name="setup">Setup</string>
+    <string name="finish">Finish</string>
+    <string name="setup_backup_dir_desc">If you have an existing directory, you’ll need to select it in order for the backups inside to appear.</string>
+    <string name="backup_categories">Backup categories</string>
+    <string name="enabled">Enabled</string>
+    <string name="not_enabled">Not enabled</string>
+    <string name="skip_setup">Skip setup</string>
+    <string name="skip_setup_alert">You won’t be able to do any backup or restore operations until you select a backup directory.</string>
 </resources>

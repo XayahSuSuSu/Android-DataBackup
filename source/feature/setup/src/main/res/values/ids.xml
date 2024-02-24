@@ -1,0 +1,31 @@
+<resources>
+    <item name="ic_launcher_foreground_tonal" type="drawable" />
+    <item name="ic_rounded_package_2" type="drawable" />
+    <item name="ic_launcher_background_tonal" type="color" />
+    <item name="this_version_only_supports_but_your_device_is_please_install_version" type="string" />
+    <item name="select_target_directory" type="string" />
+    <item name="grant_all" type="string" />
+    <item name="_continue" type="string" />
+    <item name="welcome_to_use" type="string" />
+    <item name="app_short_desc" type="string" />
+    <item name="required" type="string" />
+    <item name="root_permission" type="string" />
+    <item name="root_permission_desc" type="string" />
+    <item name="abi_validation" type="string" />
+    <item name="abi_validation_desc" type="string" />
+    <item name="optional" type="string" />
+    <item name="notification_permission" type="string" />
+    <item name="notification_permission_desc" type="string" />
+    <item name="setup" type="string" />
+    <item name="finish" type="string" />
+    <item name="backup_dir" type="string" />
+    <item name="not_selected" type="string" />
+    <item name="setup_backup_dir_desc" type="string" />
+    <item name="backup_categories" type="string" />
+    <item name="app_and_data" type="string" />
+    <item name="enabled" type="string" />
+    <item name="not_enabled" type="string" />
+    <item name="media" type="string" />
+    <item name="skip_setup" type="string" />
+    <item name="skip_setup_alert" type="string" />
+</resources>

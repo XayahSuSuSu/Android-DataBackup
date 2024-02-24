@@ -146,7 +146,7 @@ fun ModalActionDropdownMenu(
                         trailingIcon = if (processingIndex != index) null else {
                             {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(SizeTokens.Level3),
+                                    modifier = Modifier.size(SizeTokens.Level18),
                                     color = item.color.toColor(enabled = enabled),
                                     strokeCap = StrokeCap.Round
                                 )

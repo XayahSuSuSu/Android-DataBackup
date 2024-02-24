@@ -193,7 +193,7 @@ fun TaskInfoCard(
         Column(modifier = Modifier.padding(PaddingTokens.Level4), verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level2)) {
             Row(horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level2), verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    modifier = Modifier.size(SizeTokens.Level5),
+                    modifier = Modifier.size(SizeTokens.Level36),
                     imageVector = icon.value,
                     tint = ColorSchemeKeyTokens.Primary.toColor(),
                     contentDescription = null
@@ -340,7 +340,7 @@ fun TaskItemCard(
         title = label,
         subtitle = packageName,
         icon = {
-            PackageIconImage(packageName = packageName, size = SizeTokens.Level5)
+            PackageIconImage(packageName = packageName, size = SizeTokens.Level36)
         },
         isProcessing = isProcessing,
         isSuccess = isSuccess,

@@ -12,7 +12,7 @@ import com.xayah.core.datastore.readAppVersionName
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import com.xayah.feature.flavor.MainActivity as GuideActivity
+import com.xayah.feature.setup.MainActivity as SetupActivity
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -27,7 +27,7 @@ class SplashActivity : ComponentActivity() {
 
         if (getCurrentAppVersionName() > runBlocking { readAppVersionName().first() }) {
             // There is an update
-            startActivity(Intent(this, GuideActivity::class.java))
+            startActivity(Intent(this, SetupActivity::class.java))
         } else {
             startActivity(Intent(this, MainActivity::class.java))
         }

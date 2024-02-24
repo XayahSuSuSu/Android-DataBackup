@@ -38,6 +38,7 @@ fun Context.readSelectionType() = readStoreString(key = KeySelectionType, defVal
 /**
  * The final path for saving the backup.
  */
+fun Context.readBackupSavePathSaved() = readStoreString(key = KeyBackupSavePath, defValue = "").map { it.isNotEmpty() }
 fun Context.readBackupSavePath() = readStoreString(key = KeyBackupSavePath, defValue = ConstantUtil.DefaultPath)
 fun Context.readBackupSaveParentPath() = readStoreString(key = KeyBackupSaveParentPath, defValue = ConstantUtil.DefaultPathParent)
 

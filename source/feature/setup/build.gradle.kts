@@ -1,32 +1,31 @@
 plugins {
     alias(libs.plugins.library.common)
-    alias(libs.plugins.library.compose)
     alias(libs.plugins.library.hilt)
+    alias(libs.plugins.library.compose)
 }
 
 android {
-    namespace = "com.xayah.core.ui"
+    namespace = "com.xayah.feature.setup"
 }
 
 dependencies {
     // Core
     implementation(project(":core:common"))
-    implementation(project(":core:model"))
+    implementation(project(":core:ui"))
     implementation(project(":core:util"))
     implementation(project(":core:datastore"))
+    implementation(project(":core:data"))
 
     // Compose Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // Accompanist
-    implementation(libs.accompanist.systemuicontroller)
-    implementation(libs.accompanist.drawablepainter)
-    implementation(libs.accompanist.placeholder)
-
-    // Coil
-    implementation(libs.coil.compose)
-
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
+
+    // libsu
+    implementation(libs.libsu.core)
+
+    // PickYou
+    implementation(libs.pickyou)
 }

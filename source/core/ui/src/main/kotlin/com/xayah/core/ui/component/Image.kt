@@ -19,7 +19,7 @@ import com.xayah.core.util.iconDir
 import com.xayah.core.util.withIOContext
 
 @Composable
-fun PackageIconImage(packageName: String, size: Dp = SizeTokens.Level5) {
+fun PackageIconImage(packageName: String, size: Dp = SizeTokens.Level36) {
     val context = LocalContext.current
     var icon by remember { mutableStateOf<Any?>(null) }
     LaunchedEffect(null) {

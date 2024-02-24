@@ -1,7 +1,5 @@
 package com.xayah.core.ui.component
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -14,7 +12,6 @@ import com.xayah.core.ui.R
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -85,9 +82,9 @@ class DialogState {
     }
 }
 
-suspend fun DialogState.openConfirm(text: StringResourceToken) = open(
+suspend fun DialogState.openConfirm(title: StringResourceToken, text: StringResourceToken) = open(
     initialState = false,
-    title = StringResourceToken.fromStringId(R.string.prompt),
-    icon = ImageVectorToken.fromVector(Icons.Outlined.Info),
+    title = title,
+    icon = null,
     block = { _ -> Text(text = text.value) }
-)
+).first

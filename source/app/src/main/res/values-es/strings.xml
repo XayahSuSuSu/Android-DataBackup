@@ -141,7 +141,7 @@
     <string name="backup_dir_as_media_error">No se puede añadir la carpeta de respaldo como multimedia</string>
     <string name="media_target_path_missing">No se encuentra la carpeta de destino. Por favor añádela manualmente.</string>
     <string name="not_installed">No instalado</string>
-    <string name="abi_validation">Validar ABI</string>
+    <string name="abi_validation">ABI validation</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Esta versión solo soporta versión %1$s, pero su dispositivo tiene %2$s. Por favor instala %3$s o mayor.</string>
     <string name="account">Cuenta</string>
     <string name="create_account">Crear cuenta</string>

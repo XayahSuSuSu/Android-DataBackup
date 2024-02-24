@@ -41,6 +41,7 @@ object NotificationUtil {
                 intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
                 intent.putExtra(EXTRA_APP_PACKAGE, context.packageName)
                 intent.putExtra(EXTRA_CHANNEL_ID, context.applicationInfo.uid)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
             }.onFailure {
                 Toast.makeText(context, context.getString(R.string.grant_ntfy_perm_manually), Toast.LENGTH_SHORT).show()

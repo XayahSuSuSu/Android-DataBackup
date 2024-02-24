@@ -104,7 +104,7 @@ fun PackageCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level2)
                 ) {
-                    PackageIconImage(packageName = packageName, size = SizeTokens.Level5)
+                    PackageIconImage(packageName = packageName, size = SizeTokens.Level36)
                     Column(modifier = Modifier.weight(1f)) {
                         TitleMediumText(text = label, fontWeight = FontWeight.Bold)
                         LabelSmallText(text = packageName)

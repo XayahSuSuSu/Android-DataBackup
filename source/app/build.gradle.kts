@@ -84,6 +84,7 @@ dependencies {
 
     // Feature
     implementation(project(":feature:crash"))
+    implementation(project(":feature:setup"))
     "fossImplementation"(project(":feature:flavor:foss"))
     "premiumImplementation"(project(":feature:flavor:premium"))
     "alphaImplementation"(project(":feature:flavor:alpha"))

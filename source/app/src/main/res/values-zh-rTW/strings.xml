@@ -210,4 +210,22 @@
     <string name="logcat">日誌捕獲</string>
     <string name="batch">大量</string>
     <string name="_default">預設</string>
+    <string name="grant_all">全部授予</string>
+    <string name="_continue">繼續</string>
+    <string name="app_short_desc">免費開源的資料備份應用程式</string>
+    <string name="required">需要</string>
+    <string name="root_permission">Root權限</string>
+    <string name="root_permission_desc">備份恢復應用程式資料</string>
+    <string name="abi_validation_desc">驗證您的裝置是否受支援</string>
+    <string name="optional">可選</string>
+    <string name="notification_permission">通知權限</string>
+    <string name="notification_permission_desc">取得處理過程中資訊</string>
+    <string name="setup">引導</string>
+    <string name="finish">完成</string>
+    <string name="setup_backup_dir_desc">如果您有一個存在的目錄，你需要選擇它以讀取其中的備份檔案。 </string>
+    <string name="backup_categories">備份類型</string>
+    <string name="enabled">啟用</string>
+    <string name="not_enabled">未啟用</string>
+    <string name="skip_setup">跳過引導</string>
+    <string name="skip_setup_alert">您將無法進行任何備份或還原操作，直到您選擇特定的備份目錄。</string>
 </resources>

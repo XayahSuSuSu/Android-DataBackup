@@ -122,7 +122,7 @@ fun PagePackageDetail() {
                     item {
                         Spacer(modifier = Modifier.height(PaddingTokens.Level4))
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
-                            PackageIconImage(packageName = uiState.packageName, size = SizeTokens.Level8)
+                            PackageIconImage(packageName = uiState.packageName, size = SizeTokens.Level80)
                             Column {
                                 val label = backupItemState?.packageInfo?.label ?: restoreItemsState.firstOrNull { it.packageInfo.label.isNotEmpty() }?.packageInfo?.label ?: ""
                                 TitleLargeText(

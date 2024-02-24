@@ -210,4 +210,22 @@
     <string name="logcat">日志捕获</string>
     <string name="batch">批量</string>
     <string name="_default">预设</string>
+    <string name="grant_all">全部授予</string>
+    <string name="_continue">继续</string>
+    <string name="app_short_desc">免费开源的数据备份应用</string>
+    <string name="required">需要</string>
+    <string name="root_permission">Root权限</string>
+    <string name="root_permission_desc">备份恢复应用数据</string>
+    <string name="abi_validation_desc">验证您的设备是否受支持</string>
+    <string name="optional">可选</string>
+    <string name="notification_permission">通知权限</string>
+    <string name="notification_permission_desc">获取处理过程中信息</string>
+    <string name="setup">引导</string>
+    <string name="finish">完成</string>
+    <string name="setup_backup_dir_desc">如果您有一个存在的目录，你需要选择它以读取其中的备份文件。</string>
+    <string name="backup_categories">备份类型</string>
+    <string name="enabled">启用</string>
+    <string name="not_enabled">未启用</string>
+    <string name="skip_setup">跳过引导</string>
+    <string name="skip_setup_alert">您将无法进行任何备份或恢复操作，直到您选择一个特定的备份目录。</string>
 </resources>
