@@ -43,5 +43,8 @@
 -keep class javax.el.**
 -keep class org.ietf.jgss.**
 
+# SsaidUtil
+-keep class org.xmlpull.**
+
 # smbj-rpc
 -keep class java.rmi.UnmarshalException
