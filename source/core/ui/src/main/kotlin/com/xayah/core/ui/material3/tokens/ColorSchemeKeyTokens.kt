@@ -63,6 +63,7 @@ enum class ColorSchemeKeyTokens {
     PrimaryL80D20,
     SecondaryL80D20,
     TertiaryL80D20,
+    ErrorL80D20,
     YellowL80D20,
     GreenL80D20,
     BlueL80D20,
@@ -74,4 +75,22 @@ enum class ColorSchemeKeyTokens {
     SecondaryFixedDim,
     TertiaryFixed,
     TertiaryFixedDim,
+
+    // see https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/ColorSchemeKeyTokens.kt;l=53;drc=4d53400eca9f3ac90c3a3f6cffcbc5bf492ec536
+    SurfaceBright,
+    SurfaceContainer,
+    SurfaceContainerHigh,
+    SurfaceContainerHighest,
+    SurfaceContainerLow,
+    SurfaceContainerLowest,
+    SurfaceDim,
+
+    // TODO: Incorrect colors above?
+    SurfaceBrightBaselineFixed,
+    SurfaceContainerBaselineFixed,
+    SurfaceContainerHighBaselineFixed,
+    SurfaceContainerHighestBaselineFixed,
+    SurfaceContainerLowBaselineFixed,
+    SurfaceContainerLowestBaselineFixed,
+    SurfaceDimBaselineFixed,
 }

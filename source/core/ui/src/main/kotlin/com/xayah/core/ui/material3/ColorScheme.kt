@@ -107,6 +107,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
         ColorSchemeKeyTokens.PrimaryL80D20 -> if (isDarkTheme) tonalPalette.primary20 else tonalPalette.primary80
         ColorSchemeKeyTokens.SecondaryL80D20 -> if (isDarkTheme) tonalPalette.secondary20 else tonalPalette.secondary80
         ColorSchemeKeyTokens.TertiaryL80D20 -> if (isDarkTheme) tonalPalette.tertiary20 else tonalPalette.tertiary80
+        ColorSchemeKeyTokens.ErrorL80D20 -> if (isDarkTheme) tonalPalette.error20 else tonalPalette.error80
         ColorSchemeKeyTokens.YellowL80D20 -> if (isDarkTheme) Yellow20 else Yellow80
         ColorSchemeKeyTokens.BlueL80D20 -> if (isDarkTheme) Blue20 else Blue80
         ColorSchemeKeyTokens.GreenL80D20 -> if (isDarkTheme) Green20 else Green80
@@ -117,6 +118,22 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
         ColorSchemeKeyTokens.SecondaryFixedDim -> if (isDarkTheme) tonalPalette.secondary80 else tonalPalette.secondary80
         ColorSchemeKeyTokens.TertiaryFixed -> if (isDarkTheme) tonalPalette.tertiary90 else tonalPalette.tertiary90
         ColorSchemeKeyTokens.TertiaryFixedDim -> if (isDarkTheme) tonalPalette.tertiary80 else tonalPalette.tertiary80
+
+        ColorSchemeKeyTokens.SurfaceBright -> if (isDarkTheme) tonalPalette.neutral24 else tonalPalette.neutral98
+        ColorSchemeKeyTokens.SurfaceContainer -> if (isDarkTheme) tonalPalette.neutral12 else tonalPalette.neutral94
+        ColorSchemeKeyTokens.SurfaceContainerHigh -> if (isDarkTheme) tonalPalette.neutral17 else tonalPalette.neutral92
+        ColorSchemeKeyTokens.SurfaceContainerHighest -> if (isDarkTheme) tonalPalette.neutral22 else tonalPalette.neutral90
+        ColorSchemeKeyTokens.SurfaceContainerLow -> if (isDarkTheme) tonalPalette.neutral10 else tonalPalette.neutral96
+        ColorSchemeKeyTokens.SurfaceContainerLowest -> if (isDarkTheme) tonalPalette.neutral4 else tonalPalette.neutral100
+        ColorSchemeKeyTokens.SurfaceDim -> if (isDarkTheme) tonalPalette.neutral6 else tonalPalette.neutral87
+
+        ColorSchemeKeyTokens.SurfaceBrightBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral24 else BaselineTonalPalette.neutral98
+        ColorSchemeKeyTokens.SurfaceContainerBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral12 else BaselineTonalPalette.neutral94
+        ColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral17 else BaselineTonalPalette.neutral92
+        ColorSchemeKeyTokens.SurfaceContainerHighestBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral22 else BaselineTonalPalette.neutral90
+        ColorSchemeKeyTokens.SurfaceContainerLowBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral10 else BaselineTonalPalette.neutral96
+        ColorSchemeKeyTokens.SurfaceContainerLowestBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral4 else BaselineTonalPalette.neutral100
+        ColorSchemeKeyTokens.SurfaceDimBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral6 else BaselineTonalPalette.neutral87
     }
 }
 
