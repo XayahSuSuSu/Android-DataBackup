@@ -207,4 +207,17 @@
     <string name="no_available_cloud_accounts">Nema dostupnih računa u oblaku</string>
     <string name="back_up_to_cloud">Spremi sigurnosnu kopiju u oblak</string>
     <string name="select_cloud_accounts_to_refresh">Odaberi račune u oblaku za osvježavanje</string>
+    <string name="_default">Zadano</string>
+    <string name="app_short_desc">Besplatna aplikacija otvorenog koda za spremanje sigurnosnih kopija podataka</string>
+    <string name="required">Potrebno</string>
+    <string name="optional">Opcionalno</string>
+    <string name="setup">Postavljanje</string>
+    <string name="abi_validation_desc">Provjeri je li tvoj uređaj podržan</string>
+    <string name="skip_setup">Preskoči postavljanje</string>
+    <string name="enabled">Aktivirano</string>
+    <string name="not_enabled">Nije aktivirano</string>
+    <string name="finish">Završi</string>
+    <string name="grant_all">Odobri sve</string>
+    <string name="_continue">Nastavi</string>
+    <string name="root_permission_desc">Spremi sigurnosne kopije i obnovi podatke aplikacije</string>
 </resources>
