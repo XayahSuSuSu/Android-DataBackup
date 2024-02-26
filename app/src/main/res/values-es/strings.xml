@@ -14,14 +14,14 @@
     <string name="success">Éxito</string>
     <string name="restore_finished">Restauración finalizada</string>
     <string name="restore">Restaurar</string>
-    <string name="finish">Finalizado</string>
+    <string name="finish">Finalizar</string>
     <string name="restore_user">Usuario de la restauración</string>
     <string name="start">Iniciar</string>
     <string name="support">Soporte</string>
     <string name="data">Datos</string>
     <string name="selected">Seleccionado</string>
     <string name="monet">Monet</string>
-    <string name="backup">Respaldo</string>
+    <string name="backup">Copia de seguridad</string>
     <string name="application">Aplicación</string>
     <string name="cancel">Cancelar</string>
     <string name="monet_title">Activa el motor Monet de Material You</string>
@@ -42,7 +42,7 @@
     <string name="backup_user">Usuario del respaldo</string>
     <string name="app_name">DataBackup</string>
     <string name="environment_detection">Detección de entorno</string>
-    <string name="backup_itself">Respaldo propio</string>
+    <string name="backup_itself">Copia de seguridad propia</string>
     <string name="speed">Velocidad</string>
     <string name="latest">Más reciente</string>
     <string name="failed">Falló</string>
@@ -135,7 +135,7 @@
     <string name="select_restore_media">Seleccione el medio de restauración</string>
     <string name="add">Añadir</string>
     <string name="select_all">Seleccionar todo</string>
-    <string name="none">Ninguno</string>
+    <string name="none">Ninguna</string>
     <string name="stable_subtitle">Estable y fiable</string>
     <string name="test_subtitle">Mantente siempre actualizado</string>
     <string name="update">Actualizar</string>
