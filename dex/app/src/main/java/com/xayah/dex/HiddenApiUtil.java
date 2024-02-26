@@ -8,6 +8,8 @@ import android.os.UserHandle;
 
 import androidx.core.content.pm.PermissionInfoCompat;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class HiddenApiUtil {
 
     private static void onHelp() {
@@ -18,9 +20,9 @@ public class HiddenApiUtil {
         System.out.println();
         System.out.println("  getRuntimePermissions USER_ID PACKAGE");
         System.out.println();
-        System.out.println("  grantRuntimePermission USER_ID PACKAGE PERM_NAME");
+        System.out.println("  grantRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...");
         System.out.println();
-        System.out.println("  revokeRuntimePermission USER_ID PACKAGE PERM_NAME");
+        System.out.println("  revokeRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...");
     }
 
     private static void onCommand(String cmd, String[] args) {
@@ -97,9 +99,17 @@ public class HiddenApiUtil {
             Context ctx = HiddenApi.getContext();
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            String permName = args[3];
             UserHandle user = HiddenApi.getUserHandle(userId);
-            HiddenApi.grantRuntimePermission(ctx.getPackageManager(), packageName, permName, user);
+            for (int i = 3; i < args.length; i++) {
+                String[] permNames = args[i].split(" ");
+                for (String permName : permNames) {
+                    try {
+                        HiddenApi.grantRuntimePermission(ctx.getPackageManager(), packageName, permName, user);
+                    } catch (InvocationTargetException e) {
+                        System.out.println("Failed, skip: " + permName);
+                    }
+                }
+            }
             System.exit(0);
         } catch (Exception e) {
             System.out.printf("Failed: %s, %s\n", e.getCause(), e.getMessage());
@@ -113,9 +123,17 @@ public class HiddenApiUtil {
             Context ctx = HiddenApi.getContext();
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            String permName = args[3];
             UserHandle user = HiddenApi.getUserHandle(userId);
-            HiddenApi.revokeRuntimePermission(ctx.getPackageManager(), packageName, permName, user);
+            for (int i = 3; i < args.length; i++) {
+                String[] permNames = args[i].split(" ");
+                for (String permName : permNames) {
+                    try {
+                        HiddenApi.revokeRuntimePermission(ctx.getPackageManager(), packageName, permName, user);
+                    } catch (InvocationTargetException e) {
+                        System.out.println("Failed, skip: " + permName);
+                    }
+                }
+            }
             System.exit(0);
         } catch (Exception e) {
             System.out.printf("Failed: %s, %s\n", e.getCause(), e.getMessage());
