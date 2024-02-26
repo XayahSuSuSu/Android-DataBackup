@@ -49,13 +49,13 @@
     <string name="updating">Actualizando</string>
     <string name="backing_up">Respaldando…</string>
     <string name="release_prebuilt_binaries">Binarios precompilados</string>
-    <string name="none">Ninguno</string>
+    <string name="none">Ninguna</string>
     <string name="fetch_failed">Búsqueda fallida</string>
-    <string name="failed_and_terminated">Fallido y terminado</string>
+    <string name="failed_and_terminated">Fallida y terminada</string>
     <string name="not_exist_and_skip">No existe y omitir</string>
     <string name="idle">Desatendido</string>
     <string name="backup_completed">Respaldo completado</string>
-    <string name="time">Tiempo</string>
+    <string name="time">Hora</string>
     <string name="export">Exportar</string>
     <string name="simplify">Simplificar</string>
     <string name="integral">Integral</string>
@@ -118,17 +118,17 @@
     <string name="version">Versión</string>
     <string name="architecture">Arquitectura</string>
     <string name="compression_type_desc">Afecta tanto el respaldo como la restauración. Solo debe ser cambiado por usuarios avanzados.</string>
-    <string name="backup">Respaldo</string>
+    <string name="backup">Copia de seguridad</string>
     <string name="restore_user">Usuario de la restauración</string>
     <string name="compression_test">Test de compresión</string>
-    <string name="backup_itself">Respaldo propio</string>
-    <string name="backup_itself_desc">Copiar el APK a la carpeta de respaldo después de respaldar</string>
+    <string name="backup_itself">Copia de seguridad propia</string>
+    <string name="backup_itself_desc">Copie el APK a la carpeta de respaldo después de realizar la copia de seguridad</string>
     <string name="compression_test_desc">Chequear si los archivos comprimidos funcionan después de creados</string>
     <string name="reset_backup_list">Restablecer lista de respaldo</string>
-    <string name="reset_restore_list_desc">Deshacer la selección después de restaurar</string>
+    <string name="reset_restore_list_desc">Anular la selección después de restaurar</string>
     <string name="reset_backup_list_desc">Deshacer selección después de respaldar</string>
     <string name="reset_restore_list">Restablecer lista de restauración</string>
-    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Usar pipe en vez de un parámetro para la entrada de tar. Cámbialo cuando diga \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Utilice pipe en lugar de parámetro para la entrada de alquitrán. Cámbielo cuando diga \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: No se puede ejecutar: no existe tal archivo o directorio\"</string>
     <string name="clean_restoring">Restauración limpia</string>
     <string name="confirm_delete_selected_restoring_items">¿Borrar los ítems seleccionados de la base de datos y archivos locales?</string>
     <string name="custom_storage">Almacenamiento personalizado</string>
@@ -210,4 +210,22 @@
     <string name="allow_empty">Permitir vacío</string>
     <string name="domain">Dominio</string>
     <string name="home">Inicio</string>
+    <string name="grant_all">Conceder todo</string>
+    <string name="_continue">Continuar</string>
+    <string name="app_short_desc">Aplicación de copia de seguridad de datos gratuita y de código abierto</string>
+    <string name="required">Requerido</string>
+    <string name="root_permission">Permiso root</string>
+    <string name="root_permission_desc">Copia de seguridad y restauración de datos de la aplicación</string>
+    <string name="abi_validation_desc">Verifique que su dispositivo sea compatible</string>
+    <string name="optional">Opcional</string>
+    <string name="notification_permission_desc">Obtener información durante el procesamiento</string>
+    <string name="setup">Configurar</string>
+    <string name="finish">Finalizar</string>
+    <string name="backup_categories">Tipo de las copias de seguridad</string>
+    <string name="enabled">Activado</string>
+    <string name="not_enabled">Desactivado</string>
+    <string name="skip_setup">Omitir la configuración</string>
+    <string name="skip_setup_alert">No podrá realizar ninguna operación de copia de seguridad o restauración hasta que seleccione un directorio de copia de seguridad.</string>
+    <string name="setup_backup_dir_desc">Si tiene un directorio existente, deberá seleccionarlo para que aparezcan las copias de seguridad que contiene.</string>
+    <string name="notification_permission">Permisos de notificación</string>
 </resources>
