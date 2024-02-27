@@ -13,7 +13,8 @@ import java.util.Objects;
 
 public class HiddenApi {
     public static Context getContext() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Looper.prepare();
+        if (Looper.getMainLooper() == null)
+            Looper.prepareMainLooper();
         PrintStream stderr = System.err;
         try {
             System.setErr(new PrintStream("/dev/null"));
@@ -22,7 +23,6 @@ public class HiddenApi {
         }
         Object thread = Class.forName("android.app.ActivityThread").getMethod("systemMain").invoke(null);
         Context context = (Context) Class.forName("android.app.ActivityThread").getMethod("getSystemContext").invoke(thread);
-        Objects.requireNonNull(Looper.myLooper()).quit();
         System.setErr(stderr);
         return context;
     }

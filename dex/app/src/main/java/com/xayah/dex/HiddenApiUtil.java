@@ -35,8 +35,11 @@ public class HiddenApiUtil {
                 grantRuntimePermission(args);
             case "revokeRuntimePermission":
                 revokeRuntimePermission(args);
-            default:
+            case "help":
                 onHelp();
+            default:
+                System.out.println("Unknown command: " + cmd);
+                System.exit(1);
         }
     }
 
@@ -59,8 +62,7 @@ public class HiddenApiUtil {
             System.out.println(HiddenApi.getPackageUid(ctx.getPackageManager(), packageName, 0, userId));
             System.exit(0);
         } catch (Exception e) {
-            System.out.printf("Failed: %s, %s\n", e.getCause(), e.getMessage());
-            onHelp();
+            e.printStackTrace(System.out);
             System.exit(1);
         }
     }
@@ -88,8 +90,7 @@ public class HiddenApiUtil {
             }
             System.exit(0);
         } catch (Exception e) {
-            System.out.printf("Failed: %s, %s\n", e.getCause(), e.getMessage());
-            onHelp();
+            e.printStackTrace(System.out);
             System.exit(1);
         }
     }
@@ -112,8 +113,7 @@ public class HiddenApiUtil {
             }
             System.exit(0);
         } catch (Exception e) {
-            System.out.printf("Failed: %s, %s\n", e.getCause(), e.getMessage());
-            onHelp();
+            e.printStackTrace(System.out);
             System.exit(1);
         }
     }
@@ -136,8 +136,7 @@ public class HiddenApiUtil {
             }
             System.exit(0);
         } catch (Exception e) {
-            System.out.printf("Failed: %s, %s\n", e.getCause(), e.getMessage());
-            onHelp();
+            e.printStackTrace(System.out);
             System.exit(1);
         }
     }
