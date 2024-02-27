@@ -38,8 +38,8 @@
     <string name="selected_data">Datos seleccionados</string>
     <string name="app_name">DataBackup</string>
     <string name="start_desc">Todos los datos generados por esta aplicación solo se utilizan para copia de seguridad/restauración y solo se almacenan localmente.</string>
-    <string name="network_desc">Se utiliza para obtener información de actualización de aplicaciones y análisis de aplicaciones.</string>
-    <string name="application_desc">Obtener información del paquete de la aplicación, utilizada para generar una lista de respaldo y obtener el tamaño de los datos de la aplicación.</string>
+    <string name="network_desc">Se utiliza para obtener información sobre actualizaciones y análisis de aplicaciones</string>
+    <string name="application_desc">Obtener información del paquete de la aplicación, utilizada para generar la lista de copias de seguridad y obtener el tamaño de los datos de la aplicación</string>
     <string name="activities">Actividades</string>
     <string name="directory">Almacenamiento</string>
     <string name="telephony">Historial de llamadas</string>
@@ -86,7 +86,7 @@
     <string name="installed">Instalado</string>
     <string name="sooner_or_later">Tarde o temprano</string>
     <string name="delete">Borrar</string>
-    <string name="app_crashed">Falló la aplicación</string>
+    <string name="app_crashed">Aplicación bloqueada</string>
     <string name="confirm_delete">¿Borrar?</string>
     <string name="media_set_path">Establecer ruta</string>
     <string name="password">Contraseña</string>
@@ -130,7 +130,7 @@
     <string name="reset_restore_list">Restablecer lista de restauración</string>
     <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Utilice pipe en lugar de parámetro para la entrada de alquitrán. Cámbielo cuando diga \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: No se puede ejecutar: no existe tal archivo o directorio\"</string>
     <string name="clean_restoring">Restauración limpia</string>
-    <string name="confirm_delete_selected_restoring_items">¿Borrar los ítems seleccionados de la base de datos y archivos locales?</string>
+    <string name="confirm_delete_selected_restoring_items">¿Borrar los elementos seleccionados de la base de datos y de los archivos locales?</string>
     <string name="custom_storage">Almacenamiento personalizado</string>
     <string name="select_target_directory">Seleccione carpeta de destino</string>
     <string name="no_browser">Quizá no hay un navegador para abrirlo</string>
@@ -141,7 +141,7 @@
     <string name="backup_dir_as_media_error">No se puede añadir la carpeta de respaldo como multimedia</string>
     <string name="media_target_path_missing">No se encuentra la carpeta de destino. Por favor añádela manualmente.</string>
     <string name="not_installed">No instalado</string>
-    <string name="abi_validation">ABI validation</string>
+    <string name="abi_validation">Validar ABI</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Esta versión solo soporta versión %1$s, pero su dispositivo tiene %2$s. Por favor instala %3$s o mayor.</string>
     <string name="account">Cuenta</string>
     <string name="create_account">Crear cuenta</string>
@@ -161,7 +161,7 @@
     <string name="cloud">Nube</string>
     <string name="settings">Ajustes</string>
     <string name="alphabet">A-Z</string>
-    <string name="installation_time">Tiempo de instalación</string>
+    <string name="installation_time">Duración de la instalación</string>
     <string name="data_size">Tamaño de datos</string>
     <string name="selected">Seleccionado</string>
     <string name="details">Detalles</string>
