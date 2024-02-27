@@ -61,7 +61,7 @@
     <string name="sort">Clasificar</string>
     <string name="cover_desc">Sobrescribir los archivos de copia de seguridad existentes con cada copia de seguridad, u omitir las copias de seguridad si no hay cambios, de modo que pase lo que pase, sólo exista una copia de sus datos</string>
     <string name="by_time_desc">Cada copia de seguridad se considera una nueva copia de seguridad completa y se separa según la hora de la copia de seguridad, por lo que sus datos pueden existir en varias copias</string>
-    <string name="application_desc">Obtener información del paquete de la aplicación, utilizada para generar una lista de respaldo y obtener el tamaño de los datos de la aplicación.</string>
+    <string name="application_desc">Obtener información del paquete de la aplicación, utilizada para generar la lista de copias de seguridad y obtener el tamaño de los datos de la aplicación</string>
     <string name="check_storage_management_permission">Comprobar el permiso de gestión de almacenamiento</string>
     <string name="compressing">Comprimiendo</string>
     <string name="read_icon_title">La lectura de iconos requiere mucha memoria, si experimenta fallos durante la restauración, pruebe a desactivar esta opción</string>
@@ -106,7 +106,7 @@
     <string name="exclude_cache">Excluir la caché</string>
     <string name="others">Otros</string>
     <string name="start_desc">Todos los datos generados por esta aplicación solo se utilizan para copia de seguridad/restauración y solo se almacenan localmente.</string>
-    <string name="network_desc">Se utiliza para obtener información de actualización de aplicaciones y análisis de aplicaciones.</string>
+    <string name="network_desc">Se utiliza para obtener información sobre actualizaciones y análisis de aplicaciones</string>
     <string name="storage">Permiso para leer/escribir en almacenamiento externo</string>
     <string name="storage_desc">Se utiliza para configuración de respaldo, lectura y escritura de archivos</string>
     <string name="data_size">Tamaño de datos</string>
@@ -120,7 +120,7 @@
     <string name="path_permission_error">Error de permisos, las siguientes rutas requieren los permisos correctos</string>
     <string name="restoring">Restaurando</string>
     <string name="read_icon">Icono de lectura</string>
-    <string name="app_crashed">Falló la aplicación</string>
+    <string name="app_crashed">Aplicación bloqueada</string>
     <string name="cancelling">Cancelando</string>
     <string name="card_app_subtitle">Copia de seguridad (restauración) de aplicaciones de terceros o del sistema</string>
     <string name="settings_backup_user_subtitle">El usuario de destino durante la copia de seguridad</string>
