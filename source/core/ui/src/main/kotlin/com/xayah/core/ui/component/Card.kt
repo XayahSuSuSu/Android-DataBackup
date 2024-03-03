@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import com.xayah.core.ui.material3.CardColors
 import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.material3.CardElevation
@@ -44,6 +46,7 @@ fun Card(
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    performHapticFeedback: Boolean = false,
     shape: Shape = CardDefaults.shape,
     colors: CardColors = CardDefaults.cardColors(),
     elevation: CardElevation = CardDefaults.cardElevation(),
@@ -51,9 +54,13 @@ fun Card(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     Surface(
         onClick = onClick,
-        onLongClick = onLongClick,
+        onLongClick = {
+            if (performHapticFeedback) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            onLongClick()
+        },
         modifier = modifier,
         enabled = enabled,
         shape = shape,

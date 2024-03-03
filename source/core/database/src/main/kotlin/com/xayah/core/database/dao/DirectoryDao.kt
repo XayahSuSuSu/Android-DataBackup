@@ -4,9 +4,9 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
+import com.xayah.core.model.StorageType
 import com.xayah.core.model.database.DirectoryEntity
 import com.xayah.core.model.database.DirectoryUpsertEntity
-import com.xayah.core.model.StorageType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,11 +17,17 @@ interface DirectoryDao {
     @Upsert(entity = DirectoryEntity::class)
     suspend fun upsert(items: List<DirectoryUpsertEntity>)
 
-    @Query("SELECT * FROM DirectoryEntity WHERE active = 1")
-    fun queryActiveDirectoriesFlow(): Flow<List<DirectoryEntity>>
+    @Query("SELECT * FROM DirectoryEntity WHERE active = 1 AND storageType = :storageType ORDER BY parent")
+    fun queryActiveDirectoriesFlow(storageType: StorageType): Flow<List<DirectoryEntity>>
 
-    @Query("SELECT * FROM DirectoryEntity WHERE active = 1")
+    @Query("SELECT * FROM DirectoryEntity WHERE active = 1 ORDER BY parent")
     suspend fun queryActiveDirectories(): List<DirectoryEntity>
+
+    /**
+     * Get the directory id of the smallest userId
+     */
+    @Query("SELECT id FROM DirectoryEntity WHERE storageType = :storageType ORDER BY parent LIMIT 1")
+    suspend fun queryDefaultDirectoryId(storageType: StorageType): Long?
 
     @Query("SELECT COUNT(*) FROM DirectoryEntity WHERE active = 1")
     suspend fun countActiveDirectories(): Int

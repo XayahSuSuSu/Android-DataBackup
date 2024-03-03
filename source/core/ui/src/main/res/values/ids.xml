@@ -3,5 +3,6 @@
     <item name="confirm" type="string"/>
     <item name="cancel" type="string"/>
     <item name="prompt" type="string"/>
+    <item name="delete" type="string"/>
     <item name="jetbrains_mono_regular" type="font" />
 </resources>

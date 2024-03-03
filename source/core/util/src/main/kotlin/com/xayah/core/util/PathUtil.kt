@@ -51,9 +51,10 @@ class PathUtil @Inject constructor(
         @SuppressLint("SdCardPath")
         fun getPackageUserDir(userId: Int): String = "/data/user/${userId}"
         fun getPackageUserDeDir(userId: Int): String = "/data/user_de/${userId}"
-        fun getPackageDataDir(userId: Int): String = "/data/media/${userId}/Android/data"
-        fun getPackageObbDir(userId: Int): String = "/data/media/${userId}/Android/obb"
-        fun getPackageMediaDir(userId: Int): String = "/data/media/${userId}/Android/media"
+        fun getDataMediaDir(): String = "/data/media"
+        fun getPackageDataDir(userId: Int): String = "${getDataMediaDir()}/${userId}/Android/data"
+        fun getPackageObbDir(userId: Int): String = "${getDataMediaDir()}/${userId}/Android/obb"
+        fun getPackageMediaDir(userId: Int): String = "${getDataMediaDir()}/${userId}/Android/media"
 
         fun getPackageIconRelativePath(packageName: String): String = "${packageName}.png"
         fun getConfigsRelativeDir(): String = ConfigsRelativeDir

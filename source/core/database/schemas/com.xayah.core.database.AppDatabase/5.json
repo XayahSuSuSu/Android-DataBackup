@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "614d19b4d9202049eb0be04eb5e5221e",
+    "identityHash": "b47c480c4120054b6c9d51f5c84c64a0",
     "entities": [
       {
         "tableName": "PackageEntity",
@@ -376,7 +376,7 @@
       },
       {
         "tableName": "DirectoryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `parent` TEXT NOT NULL, `child` TEXT NOT NULL, `tags` TEXT NOT NULL DEFAULT '[]', `error` TEXT NOT NULL DEFAULT '', `availableBytes` INTEGER NOT NULL DEFAULT 0, `totalBytes` INTEGER NOT NULL DEFAULT 0, `storageType` TEXT NOT NULL DEFAULT 'INTERNAL', `selected` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `active` INTEGER NOT NULL DEFAULT 0)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `parent` TEXT NOT NULL, `child` TEXT NOT NULL, `type` TEXT NOT NULL DEFAULT '', `tags` TEXT NOT NULL DEFAULT '[]', `error` TEXT NOT NULL DEFAULT '', `childUsedBytes` INTEGER NOT NULL DEFAULT 0, `availableBytes` INTEGER NOT NULL DEFAULT 0, `totalBytes` INTEGER NOT NULL DEFAULT 0, `storageType` TEXT NOT NULL DEFAULT 'INTERNAL', `selected` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `active` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "id",
@@ -403,6 +403,13 @@
             "notNull": true
           },
           {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
             "fieldPath": "tags",
             "columnName": "tags",
             "affinity": "TEXT",
@@ -415,6 +422,13 @@
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "''"
+          },
+          {
+            "fieldPath": "childUsedBytes",
+            "columnName": "childUsedBytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "availableBytes",
@@ -1220,7 +1234,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '614d19b4d9202049eb0be04eb5e5221e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b47c480c4120054b6c9d51f5c84c64a0')"
     ]
   }
 }

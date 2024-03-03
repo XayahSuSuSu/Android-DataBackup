@@ -228,4 +228,7 @@
     <string name="not_enabled">未啟用</string>
     <string name="skip_setup">跳過引導</string>
     <string name="skip_setup_alert">您將無法進行任何備份或還原操作，直到您選擇特定的備份目錄。</string>
+    <string name="args_used">已使用%1$s%%</string>
+    <string name="args_used_by_backups">備份已使用%1$s%%</string>
+    <string name="pick_custom_directory_desc">輕擊以選擇自訂目錄</string>
 </resources>

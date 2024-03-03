@@ -1,8 +1,12 @@
 <resources>
-    <item name="backup_dir" type="string"/>
+    <item name="backup_dir" type="string" />
     <item name="restore_dir" type="string" />
-    <item name="add" type="string"/>
-    <item name="delete" type="string"/>
-    <item name="select_target_directory" type="string"/>
-    <item name="word_return" type="string"/>
+    <item name="add" type="string" />
+    <item name="delete" type="string" />
+    <item name="select_target_directory" type="string" />
+    <item name="word_return" type="string" />
+    <item name="args_used" type="string" />
+    <item name="args_used_by_backups" type="string" />
+    <item name="custom_storage" type="string" />
+    <item name="pick_custom_directory_desc" type="string" />
 </resources>

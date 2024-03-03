@@ -235,4 +235,7 @@
     <string name="not_enabled">Not enabled</string>
     <string name="skip_setup">Skip setup</string>
     <string name="skip_setup_alert">You won’t be able to do any backup or restore operations until you select a backup directory.</string>
+    <string name="args_used">%1$s%% used</string>
+    <string name="args_used_by_backups">%1$s%% used by backups</string>
+    <string name="pick_custom_directory_desc">Tap to pick a custom directory</string>
 </resources>

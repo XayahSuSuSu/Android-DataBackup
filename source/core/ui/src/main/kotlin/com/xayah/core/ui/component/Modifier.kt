@@ -13,6 +13,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -76,4 +77,16 @@ fun Modifier.limitMaxDisplay(itemHeightPx: Int, maxDisplay: Int? = null, scrollS
 fun Modifier.emphasize(state: Boolean) = composed {
     val offset by emphasizedOffset(targetState = state)
     offset(x = offset)
+}
+
+// See https://stackoverflow.com/a/72428903
+fun Modifier.intrinsicIcon() = layout { measurable, constraints ->
+    if (constraints.maxHeight == Constraints.Infinity) {
+        layout(0, 0) {}
+    } else {
+        val placeable = measurable.measure(constraints)
+        layout(placeable.width, placeable.height) {
+            placeable.place(0, 0)
+        }
+    }
 }

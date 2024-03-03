@@ -1,140 +1,99 @@
 package com.xayah.feature.main.directory
 
 import androidx.activity.ComponentActivity
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.xayah.core.model.StorageType
-import com.xayah.core.ui.component.ExtendedFab
-import com.xayah.core.ui.component.InnerTopSpacer
-import com.xayah.core.ui.component.RoundChip
-import com.xayah.core.ui.component.SecondaryTopBar
-import com.xayah.core.ui.component.paddingBottom
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.ui.component.ContentWithActions
 import com.xayah.core.ui.component.paddingHorizontal
-import com.xayah.core.ui.model.ActionMenuItem
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.model.getActionMenuConfirmItem
+import com.xayah.core.ui.model.getActionMenuDeleteItem
 import com.xayah.core.ui.model.getActionMenuReturnItem
-import com.xayah.core.ui.token.AnimationTokens
-import com.xayah.core.ui.token.PaddingTokens
+import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 
 @ExperimentalFoundationApi
+@ExperimentalLayoutApi
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun PageDirectory() {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     val viewModel = hiltViewModel<IndexViewModel>()
-    val uiState by viewModel.uiState.collectAsState()
-    val directories by uiState.directories.collectAsState(initial = listOf())
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val internalDirectoriesState by viewModel.internalDirectoriesState.collectAsStateWithLifecycle()
+    val externalDirectoriesState by viewModel.externalDirectoriesState.collectAsStateWithLifecycle()
+    val customDirectoriesState by viewModel.customDirectoriesState.collectAsStateWithLifecycle()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     LaunchedEffect(null) {
         viewModel.emitIntent(IndexUiIntent.Update)
     }
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            SecondaryTopBar(
-                scrollBehavior = scrollBehavior,
-                title = StringResourceToken.fromStringId(R.string.backup_dir)
-            )
-        },
-        floatingActionButton = {
-            ExtendedFab(
-                expanded = true,
-                icon = ImageVectorToken.fromVector(Icons.Rounded.Add),
-                text = StringResourceToken.fromStringId(R.string.add),
-                onClick = {
-                    viewModel.emitIntent(IndexUiIntent.AddDir(context = (context as ComponentActivity)))
+    DirectoryScaffold(
+        scrollBehavior = scrollBehavior,
+        title = StringResourceToken.fromStringId(R.string.backup_dir),
+        actions = {}
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .paddingHorizontal(SizeTokens.Level16),
+            verticalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
+        ) {
+            item {
+                Spacer(modifier = Modifier.size(SizeTokens.Level0))
+            }
+
+            items(items = internalDirectoriesState) { item ->
+                DirectoryCard(item = item) {
+                    viewModel.emitIntent(IndexUiIntent.Select(entity = item))
                 }
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center,
-        snackbarHost = { SnackbarHost(hostState = viewModel.snackbarHostState) },
-    ) { innerPadding ->
-        Column {
-            InnerTopSpacer(innerPadding = innerPadding)
+            }
 
-            Box(modifier = Modifier.weight(1f)) {
-                AnimatedContent(
-                    modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
-                    targetState = uiState.updating,
-                    label = AnimationTokens.AnimatedContentLabel
-                ) { targetState ->
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)) {
-                        item {
-                            Spacer(modifier = Modifier.height(PaddingTokens.Level4))
-                        }
+            items(items = externalDirectoriesState) { item ->
+                DirectoryCard(item = item) {
+                    viewModel.emitIntent(IndexUiIntent.Select(entity = item))
+                }
+            }
 
-                        if (targetState) {
-                            items(count = uiState.shimmerCount) { _ ->
-                                Row(Modifier.animateItemPlacement()) {
-                                    DirectoryCardShimmer()
-                                }
+            items(items = customDirectoriesState) { item ->
+                ContentWithActions(
+                    actions = { expanded ->
+                        listOf(
+                            getActionMenuReturnItem { expanded.value = false },
+                            getActionMenuDeleteItem {
+                                viewModel.emitIntentSuspend(IndexUiIntent.Delete(entity = item))
+                                expanded.value = false
                             }
-                        } else {
-                            items(items = directories, key = { it.id }) { item ->
-                                Row(Modifier.animateItemPlacement()) {
-                                    DirectoryCard(
-                                        entity = item,
-                                        actions = listOf(
-                                            ActionMenuItem(
-                                                title = StringResourceToken.fromStringId(R.string.delete),
-                                                icon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
-                                                enabled = item.storageType == StorageType.CUSTOM,
-                                                secondaryMenu = listOf(
-                                                    getActionMenuReturnItem(),
-                                                    getActionMenuConfirmItem {
-                                                        viewModel.emitIntent(IndexUiIntent.DeleteDir(entity = item))
-                                                    }
-                                                ),
-                                                onClick = {}
-                                            )
-                                        ),
-                                        onCardClick = {
-                                            viewModel.emitIntent(IndexUiIntent.SelectDir(entity = item))
-                                        },
-                                        chipGroup = {
-                                            for (tag in item.tags) {
-                                                if (tag.isNotEmpty()) RoundChip(text = tag, enabled = item.enabled)
-                                            }
-                                        },
-                                    )
-                                }
-                            }
-                        }
-
-                        item {
-                            Spacer(modifier = Modifier.paddingBottom(PaddingTokens.Level4))
-                        }
+                        )
+                    },
+                ) {
+                    DirectoryCard(item = item, performHapticFeedback = true, onLongClick = { it.value = true }) {
+                        viewModel.emitIntent(IndexUiIntent.Select(entity = item))
                     }
+                }
+            }
+
+            item {
+                CustomDirectoryCard(enabled = uiState.updating.not()) {
+                    viewModel.emitIntent(IndexUiIntent.Add(context = context as ComponentActivity))
                 }
             }
         }

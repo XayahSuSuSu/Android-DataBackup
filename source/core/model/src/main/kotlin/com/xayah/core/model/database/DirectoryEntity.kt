@@ -12,8 +12,10 @@ data class DirectoryEntity(
     var title: String,
     var parent: String,
     var child: String,
+    @ColumnInfo(defaultValue = "") var type: String,
     @ColumnInfo(defaultValue = "[]") var tags: List<String>,
     @ColumnInfo(defaultValue = "") var error: String,
+    @ColumnInfo(defaultValue = "0") var childUsedBytes: Long,
     @ColumnInfo(defaultValue = "0") var availableBytes: Long,
     @ColumnInfo(defaultValue = "0") var totalBytes: Long,
     @ColumnInfo(defaultValue = "INTERNAL") var storageType: StorageType,
@@ -24,8 +26,11 @@ data class DirectoryEntity(
     val path: String
         get() = "${parent}/${child}"
 
+    val usedBytes: Long
+        get() = totalBytes - availableBytes
+
     val usedBytesDisplay: String
-        get() = (totalBytes - availableBytes).toDouble().formatSize()
+        get() = usedBytes.toDouble().formatSize()
 
     val totalBytesDisplay: String
         get() = totalBytes.toDouble().formatSize()
