@@ -16,10 +16,23 @@ object Pm {
             "-t",
             "$QUOTE$src$QUOTE",
         )
-    } else {
+    } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
         // pm install -i com.android.vending --user "$userId" -r -t "$src"
         execute(
             "install",
+            "-i",
+            "com.android.vending",
+            "--user",
+            "$QUOTE$userId$QUOTE",
+            "-r",
+            "-t",
+            "$QUOTE$src$QUOTE",
+        )
+    } else {
+        // pm install --bypass-low-target-sdk-block -i com.android.vending --user "$userId" -r -t "$src"
+        execute(
+            "install",
+            "--bypass-low-target-sdk-block",
             "-i",
             "com.android.vending",
             "--user",
@@ -41,10 +54,23 @@ object Pm {
                 "|",
                 "grep -E -o '[0-9]+'",
             )
-        } else {
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
             // pm install-create -i com.android.vending --user "$userId" -t | grep -E -o '[0-9]+'
             execute(
                 "install-create",
+                "-i",
+                "com.android.vending",
+                "--user",
+                "$QUOTE$userId$QUOTE",
+                "-t",
+                "|",
+                "grep -E -o '[0-9]+'",
+            )
+        } else {
+            // pm install-create --bypass-low-target-sdk-block -i com.android.vending --user "$userId" -t | grep -E -o '[0-9]+'
+            execute(
+                "install-create",
+                "--bypass-low-target-sdk-block",
                 "-i",
                 "com.android.vending",
                 "--user",
