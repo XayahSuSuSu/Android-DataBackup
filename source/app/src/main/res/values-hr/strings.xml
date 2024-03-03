@@ -200,7 +200,7 @@
     <string name="notification">Obavijest</string>
     <string name="recommend">Preporuči</string>
     <string name="limited_4gb">Ograničeno na 4 GB</string>
-    <string name="outdated_fs_warning">Koristiš 32-bitni ili niži datotečni sustav, koji NE PODRŽAVA JEDNU DATOTEKU veću od 4 GB</string>
+    <string name="outdated_fs_warning">Datotečni sustav ne podržava stvaranje datoteke veću od 4 GB.</string>
     <string name="check_keystore_desc">Provjeri je li aplikacija koristi KeyStore tijekom osvježavanja, to će značajno usporiti proces</string>
     <string name="check_keystore">Provjeri keystore</string>
     <string name="restore_from_cloud">Obnovi iz oblaka</string>
@@ -220,4 +220,10 @@
     <string name="grant_all">Odobri sve</string>
     <string name="_continue">Nastavi</string>
     <string name="root_permission_desc">Spremi sigurnosne kopije i obnovi podatke aplikacije</string>
+    <string name="args_used">%1$s% % korišteno</string>
+    <string name="args_used_by_backups">%1$s% % korišteno za sigurnosne kopije</string>
+    <string name="custom_directory">Prilagođena mapa</string>
+    <string name="pick_custom_directory_desc">Dodirni za biranje prilagođene mape</string>
+    <string name="backup_categories">Kategorije sigurnosnih kopija</string>
+    <string name="skip_setup_alert">Nećeš moći izraditi sigurnosnu kopiju ili obnoviti operacije, sve dok ne odabereš mapu za sigurnosne kopije.</string>
 </resources>
