@@ -40,6 +40,12 @@ import com.xayah.core.ui.theme.Green30
 import com.xayah.core.ui.theme.Green40
 import com.xayah.core.ui.theme.Green80
 import com.xayah.core.ui.theme.Green90
+import com.xayah.core.ui.theme.Red10
+import com.xayah.core.ui.theme.Red20
+import com.xayah.core.ui.theme.Red30
+import com.xayah.core.ui.theme.Red40
+import com.xayah.core.ui.theme.Red80
+import com.xayah.core.ui.theme.Red90
 import com.xayah.core.ui.theme.Yellow10
 import com.xayah.core.ui.theme.Yellow20
 import com.xayah.core.ui.theme.Yellow30
@@ -103,6 +109,9 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
         ColorSchemeKeyTokens.GreenPrimary -> if (isDarkTheme) Green80 else Green40
         ColorSchemeKeyTokens.GreenPrimaryContainer -> if (isDarkTheme) Green30 else Green90
         ColorSchemeKeyTokens.GreenOnPrimaryContainer -> if (isDarkTheme) Green90 else Green10
+        ColorSchemeKeyTokens.RedPrimary -> if (isDarkTheme) Red80 else Red40
+        ColorSchemeKeyTokens.RedPrimaryContainer -> if (isDarkTheme) Red30 else Red90
+        ColorSchemeKeyTokens.RedOnPrimaryContainer -> if (isDarkTheme) Red90 else Red10
 
         ColorSchemeKeyTokens.PrimaryL80D20 -> if (isDarkTheme) tonalPalette.primary20 else tonalPalette.primary80
         ColorSchemeKeyTokens.SecondaryL80D20 -> if (isDarkTheme) tonalPalette.secondary20 else tonalPalette.secondary80
@@ -111,6 +120,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
         ColorSchemeKeyTokens.YellowL80D20 -> if (isDarkTheme) Yellow20 else Yellow80
         ColorSchemeKeyTokens.BlueL80D20 -> if (isDarkTheme) Blue20 else Blue80
         ColorSchemeKeyTokens.GreenL80D20 -> if (isDarkTheme) Green20 else Green80
+        ColorSchemeKeyTokens.RedL80D20 -> if (isDarkTheme) Red20 else Red80
 
         ColorSchemeKeyTokens.PrimaryFixed -> if (isDarkTheme) tonalPalette.primary90 else tonalPalette.primary90
         ColorSchemeKeyTokens.PrimaryFixedDim -> if (isDarkTheme) tonalPalette.primary80 else tonalPalette.primary80

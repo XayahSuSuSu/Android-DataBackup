@@ -59,6 +59,9 @@ enum class ColorSchemeKeyTokens {
     GreenPrimary,
     GreenPrimaryContainer,
     GreenOnPrimaryContainer,
+    RedPrimary,
+    RedPrimaryContainer,
+    RedOnPrimaryContainer,
 
     PrimaryL80D20,
     SecondaryL80D20,
@@ -67,6 +70,7 @@ enum class ColorSchemeKeyTokens {
     YellowL80D20,
     GreenL80D20,
     BlueL80D20,
+    RedL80D20,
 
     // see https://github.com/material-components/material-components-android/blob/6cb921b7dd5d0db1a9f8a9b721cb08019749af42/docs/theming/Color.md#using-the-color-theming-system
     PrimaryFixed,
