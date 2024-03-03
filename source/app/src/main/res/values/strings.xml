@@ -207,7 +207,7 @@
     <string name="ssaid" translatable="false">SSAID</string>
     <string name="recommend">Recommend</string>
     <string name="limited_4gb">4GB limited</string>
-    <string name="outdated_fs_warning">You are using a 32-bit or lower file system, which DOES NOT support ONE FILE bigger than 4GB</string>
+    <string name="outdated_fs_warning">The file system on this device does not support creating a file over 4 GB.</string>
     <string name="check_keystore">Check keystore</string>
     <string name="check_keystore_desc">Check if the app uses KeyStore while refreshing, this will significantly slow down the process</string>
     <string name="back_up_to_cloud">Back up to cloud</string>
@@ -238,4 +238,5 @@
     <string name="args_used">%1$s%% used</string>
     <string name="args_used_by_backups">%1$s%% used by backups</string>
     <string name="pick_custom_directory_desc">Tap to pick a custom directory</string>
+    <string name="custom_directory">Custom directory</string>
 </resources>

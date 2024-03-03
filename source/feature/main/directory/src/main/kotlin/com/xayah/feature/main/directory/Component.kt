@@ -197,7 +197,7 @@ fun CustomDirectoryCard(enabled: Boolean, onClick: () -> Unit) {
         enabled = enabled,
         selected = false,
         title = StringResourceToken.fromStringArgs(
-            StringResourceToken.fromStringId(R.string.custom_storage),
+            StringResourceToken.fromStringId(R.string.custom_directory),
             StringResourceToken.fromString("..."),
         ),
         icon = ImageVectorToken.fromVector(Icons.Rounded.AddCircleOutline),

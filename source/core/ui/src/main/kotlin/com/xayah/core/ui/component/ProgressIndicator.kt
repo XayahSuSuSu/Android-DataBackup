@@ -139,17 +139,18 @@ fun AnimatedMultiColorLinearProgressIndicator(
 @Composable
 fun SegmentProgressIndicator(modifier: Modifier = Modifier, enabled: Boolean = false, progress: Float, color: ColorSchemeKeyTokens, trackColor: ColorSchemeKeyTokens) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level4)) {
-        if (progress != 0.0f)
+        val corrected = if (progress < 0.05f) 0f else if (progress > 0.95f) 1f else progress
+        if (corrected > 0.05f)
             com.xayah.core.ui.component.LinearProgressIndicator(
-                modifier = Modifier.weight(progress),
+                modifier = Modifier.weight(corrected),
                 color = color.toColor(enabled),
                 trackColor = trackColor.toColor(enabled),
                 progress = 1f,
                 strokeCap = StrokeCap.Round
             )
-        if (1 - progress != 0.0f)
+        if (1 - corrected > 0.05f)
             com.xayah.core.ui.component.LinearProgressIndicator(
-                modifier = Modifier.weight(1 - progress),
+                modifier = Modifier.weight(1 - corrected),
                 color = color.toColor(enabled),
                 trackColor = trackColor.toColor(enabled),
                 progress = 0f,

@@ -50,7 +50,7 @@ class DirectoryRepository @Inject constructor(
                 // Custom storage
                 val dir = DirectoryUpsertEntity(
                     id = directoryDao.queryId(parent = parent, child = child),
-                    title = context.getString(R.string.custom_storage),
+                    title = context.getString(R.string.custom_directory),
                     parent = parent,
                     child = child,
                     storageType = StorageType.CUSTOM,
@@ -139,7 +139,7 @@ class DirectoryRepository @Inject constructor(
                     val supported = type.lowercase() in ConstantUtil.SupportedExternalStorageFormat
                     if (supported.not()) {
                         tags.add(context.getString(R.string.limited_4gb))
-                        entity.error = "${context.getString(R.string.outdated_fs_warning)}\n" +
+                        entity.error = "${context.getString(R.string.outdated_fs_warning)}\n\n" +
                                 "${context.getString(R.string.recommend)}: ${ConstantUtil.SupportedExternalStorageFormat.toSpaceString()}"
                         entity.enabled = true
                     } else {

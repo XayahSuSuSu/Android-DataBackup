@@ -200,7 +200,7 @@
     <string name="permissions">权限</string>
     <string name="recommend">推荐</string>
     <string name="limited_4gb">4GB限制</string>
-    <string name="outdated_fs_warning">你正在使用不支持超过4GB单文件的32位或更低的文件系统</string>
+    <string name="outdated_fs_warning">此设备的文件系统不支持创建超过4GB的单文件。</string>
     <string name="check_keystore">检查密钥</string>
     <string name="check_keystore_desc">刷新时检查应用是否使用密钥, 这会明显减慢刷新速度</string>
     <string name="back_up_to_cloud">备份到云端</string>
@@ -231,4 +231,5 @@
     <string name="args_used">已使用%1$s%%</string>
     <string name="args_used_by_backups">备份已使用%1$s%%</string>
     <string name="pick_custom_directory_desc">轻击以选择一个自定义目录</string>
+    <string name="custom_directory">自定义目录</string>
 </resources>
