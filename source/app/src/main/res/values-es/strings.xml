@@ -177,7 +177,7 @@
     <string name="search_bar_hint_medium">Buscar por nombre o ruta…</string>
     <string name="permissions">Permisos</string>
     <string name="recommend">Recomendado</string>
-    <string name="outdated_fs_warning">Estás usando un sistema de archivos de 32-bit o menor, lo QUE NO soporta UN ARCHIVO mayor a 4GB</string>
+    <string name="outdated_fs_warning">El sistema de archivos de este dispositivo no admite la creación de archivos de más de 4 GB.</string>
     <string name="check_keystore_desc">Chequear si la aplicación utiliza el almacén de claves mientras se actualiza, esto retrasará significativamente el proceso</string>
     <string name="back_up_to_cloud">Respaldar en la nube</string>
     <string name="restore_from_cloud">Restaurar desde la nube</string>
@@ -228,4 +228,8 @@
     <string name="skip_setup_alert">No podrá realizar ninguna operación de copia de seguridad o restauración hasta que seleccione un directorio de copia de seguridad.</string>
     <string name="setup_backup_dir_desc">Si tiene un directorio existente, deberá seleccionarlo para que aparezcan las copias de seguridad que contiene.</string>
     <string name="notification_permission">Permisos de notificación</string>
+    <string name="args_used">%1$s%% utilizado</string>
+    <string name="args_used_by_backups">%1$s%% utilizado por las copias de seguridad</string>
+    <string name="pick_custom_directory_desc">Pulse para elegir un directorio personalizado</string>
+    <string name="custom_directory">Directorio personalizado</string>
 </resources>
