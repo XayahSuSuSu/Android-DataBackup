@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="compress">Sıkıştırma</string>
-    <string name="backup_dir">Yedekleme hedefi</string>
+    <string name="backup_dir">Yedekleme dizini</string>
     <string name="data">Veri</string>
     <string name="restore">Geri yükle</string>
     <string name="app_name">DataBackup</string>
@@ -15,12 +15,12 @@
     <string name="tips">Çeşitler</string>
     <string name="success">Başarılı</string>
     <string name="decompress">Çözümleme</string>
-    <string name="environment_detection">Çevresel algılamalar</string>
+    <string name="environment_detection">Medya algılama</string>
     <string name="selected">Seçildi</string>
     <string name="backup_user">Hedef kullanıcı</string>
     <string name="restore_user">Kullanıcı geri yükleme</string>
     <string name="failed">Başarısız</string>
-    <string name="grant_root_access">Kök erişimi verin</string>
+    <string name="grant_root_access">Kök erişim izni verin</string>
     <string name="release_prebuilt_binaries">Önceden oluşturulmuş ikili dosyaları yayınlayın</string>
     <string name="finish">Bitiş</string>
     <string name="welcome_to_use">DataBackup\'a Hoşgeldiniz</string>
@@ -78,9 +78,9 @@
     <string name="backup_storage_method">Yedek depolama yöntemi</string>
     <string name="select_backup_app">Yedeklenecek uygulamaları seçin</string>
     <string name="blacklist">Karaliste</string>
-    <string name="manifest">Manifesto</string>
+    <string name="manifest">Bildiri</string>
     <string name="selected_app">Uygulama seçildi</string>
-    <string name="selected_data">Seçilmiş data</string>
+    <string name="selected_data">Seçilmiş veriler</string>
     <string name="delete">Sil</string>
     <string name="select_backup_media">Yedeklenecek medyayı seç</string>
     <string name="select_restore_app">Kurtarılacak uygulamayı seç</string>
@@ -95,7 +95,7 @@
     <string name="update_channel">Güncelleme kanalı</string>
     <string name="update_channel_subtitle">Güncelleme tipi</string>
     <string name="stable_subtitle">Kararlı ve test</string>
-    <string name="internal_storage">Ana hafıza</string>
+    <string name="internal_storage">Dahili depolama</string>
     <string name="test_subtitle">En yenileri takip edin</string>
     <string name="update">Güncelle</string>
     <string name="current">Seçili</string>
@@ -118,7 +118,7 @@
     <string name="storage_desc">Yedekleme yapılandırması, arşiv okuma ve yazma için kullanılır</string>
     <string name="setting_SELinux">SELinux ayarlanıyor</string>
     <string name="check_storage_management_permission">Depolama yönetimi iznini kontrol edin</string>
-    <string name="loading_failed">Yükleme tamamlanamadı</string>
+    <string name="loading_failed">Yükleme başarısız</string>
     <string name="cover_desc">Her yedeklemede mevcut yedekleme dosyalarının üzerine yazın veya herhangi bir değişiklik yoksa yedeklemeleri atlayın, yani ne olursa olsun verilerinizin yalnızca bir kopyası mevcuttur</string>
     <string name="by_time_desc">Her yedekleme yeni bir tam yedekleme olarak kabul edilir ve yedekleme zamanına göre ayrılır, bu nedenle verileriniz birden fazla kopyada bulunabilir</string>
     <string name="testing">Test ediliyor</string>
@@ -163,7 +163,7 @@
         <item quantity="one"><xliff:g id="count">%d</xliff:g> gün</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> günler</item>
     </plurals>
-    <string name="log">Kayıt günlüğü</string>
+    <string name="log">Günlükler</string>
     <string name="click_to_clear">Temizlemek için tıklayın</string>
     <string name="keep_the_screen_on">Ekran açık kalsın</string>
     <string name="keep_the_screen_on_help">İşlem sırasında cihazı uyanık tutun</string>
