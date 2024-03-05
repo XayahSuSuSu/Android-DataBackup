@@ -94,11 +94,11 @@ fun PageOne() {
                     modifier = Modifier
                         .size(SizeTokens.Level128)
                         .clip(CircleShape)
-                        .background(colorResource(id = R.color.ic_launcher_background_tonal)),
+                        .background(colorResource(id = R.color.ic_launcher_background)),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        modifier = Modifier.size(SizeTokens.Level80),
+                        modifier = Modifier.size(SizeTokens.Level100),
                         imageVector = ImageVectorToken.fromDrawable(R.drawable.ic_launcher_foreground_tonal).value,
                         contentDescription = null
                     )

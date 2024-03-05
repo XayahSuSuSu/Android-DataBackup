@@ -1,7 +1,7 @@
 <resources>
     <item name="ic_launcher_foreground_tonal" type="drawable" />
     <item name="ic_rounded_package_2" type="drawable" />
-    <item name="ic_launcher_background_tonal" type="color" />
+    <item name="ic_launcher_background" type="color" />
     <item name="this_version_only_supports_but_your_device_is_please_install_version" type="string" />
     <item name="select_target_directory" type="string" />
     <item name="grant_all" type="string" />
