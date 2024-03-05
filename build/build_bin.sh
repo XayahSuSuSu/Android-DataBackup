@@ -13,7 +13,7 @@ ZSTD_DEV=false
 
 NDK_VERSION=r25c
 
-BIN_VERSION=1.6
+BIN_VERSION=1.7
 ZLIB_VERSION=1.3.1             # https://github.com/madler/zlib/releases
 XZ_VERSION=5.4.6               # https://github.com/tukaani-project/xz/releases
 LZ4_VERSION=1.9.4              # https://github.com/lz4/lz4/releases
@@ -249,6 +249,7 @@ build_coreutls() {
     make -j8
     make install prefix= DESTDIR=$LOCAL_PATH/coreutls
     $STRIP $LOCAL_PATH/coreutls/bin/df
+    $STRIP $LOCAL_PATH/coreutls/bin/sha1sum
     cd ..
     rm -rf coreutils-$COREUTLS_VERSION
 }
@@ -296,7 +297,7 @@ package_built_in() {
     # Built-in modules
     mkdir -p built_in/$TARGET_ARCH
     echo "$BIN_VERSION" > built_in/version
-    zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df tar/bin/tar zstd/bin/zstd built_in/version tree/tree
+    zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df coreutls/bin/sha1sum tar/bin/tar zstd/bin/zstd built_in/version tree/tree
 }
 
 build() {
