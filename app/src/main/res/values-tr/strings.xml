@@ -6,7 +6,7 @@
     <string name="restore">Geri yükle</string>
     <string name="app_name">DataBackup</string>
     <string name="error">Hata</string>
-    <string name="application">Uygulama</string>
+    <string name="application">uygulama</string>
     <string name="confirm">Onayla</string>
     <string name="backup_finished">Yedekleme tamamlandı</string>
     <string name="restore_finished">Geri yükleme tamamlandı</string>
@@ -22,7 +22,7 @@
     <string name="failed">Başarısız</string>
     <string name="grant_root_access">Kök erişim izni verin</string>
     <string name="release_prebuilt_binaries">Önceden oluşturulmuş ikili dosyaları yayınlayın</string>
-    <string name="finish">Bitiş</string>
+    <string name="finish">Bitirmek</string>
     <string name="welcome_to_use">DataBackup\'a Hoşgeldiniz</string>
     <string name="fetch_failed">Aktarma başarısız</string>
     <string name="latest">Güncel</string>
