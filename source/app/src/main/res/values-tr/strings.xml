@@ -56,7 +56,7 @@
     <string name="network">Şebeke</string>
     <string name="processing_exit_confirmation">Uygulamadan çıkın ve devam eden işlemi yarıda kesin?</string>
     <string name="monet_desc">Material You\'nun tema motoru</string>
-    <string name="application">Uygulama</string>
+    <string name="application">uygulama</string>
     <string name="updating">Güncelleniyor</string>
     <string name="application_desc">Yedekleme listesi oluşturmak ve uygulama veri boyutunu elde etmek için kullanılan uygulama paketi bilgilerini elde edin</string>
     <string name="reset_restore_list">Geri yükleme listesini sıfırla</string>
