@@ -43,6 +43,7 @@ import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.iconDir
 import com.xayah.core.util.localBackupSaveDir
+import com.xayah.core.util.withLog
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -235,8 +236,10 @@ class PackageRepository @Inject constructor(
                     val iconPath = pathUtil.getPackageIconPath(info.packageName)
                     val iconExists = rootService.exists(iconPath)
                     if (iconExists.not() || (iconExists && hasPassedOneDay)) {
-                        val icon = info.applicationInfo.loadIcon(pm)
-                        BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                        runCatching {
+                            val icon = info.applicationInfo.loadIcon(pm)
+                            BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                        }.withLog()
                     }
                     val packageInfo = PackageInfo(
                         label = info.applicationInfo.loadLabel(pm).toString(),

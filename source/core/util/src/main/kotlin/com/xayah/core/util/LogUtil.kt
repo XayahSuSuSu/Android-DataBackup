@@ -11,7 +11,9 @@ import com.xayah.core.util.SymbolUtil.USD
 import com.xayah.core.util.command.BaseUtil
 import kotlinx.coroutines.runBlocking
 import java.io.File
+import java.io.PrintWriter
 import java.io.RandomAccessFile
+import java.io.StringWriter
 import java.nio.channels.FileChannel
 
 object LogUtil {
@@ -83,4 +85,13 @@ object LogUtil {
         }
         context.startActivity(sharingIntent)
     }
+}
+
+fun <T> Result<T>.withLog(): Result<T> {
+    exceptionOrNull()?.let {
+        val stringWriter = StringWriter()
+        it.printStackTrace(PrintWriter(stringWriter))
+        LogUtil.log { "Exception" to stringWriter.toString() }
+    }
+    return this
 }
