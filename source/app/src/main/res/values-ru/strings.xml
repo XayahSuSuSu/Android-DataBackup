@@ -68,7 +68,7 @@
     <string name="selected_apks">Выбранные APK</string>
     <string name="structure">Дерево файлов</string>
     <string name="apk">APK</string>
-    <string name="backup">Бекап</string>
+    <string name="backup">Резервное копирование</string>
     <string name="network">Сеть</string>
     <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
     <string name="monet_desc">Движок темы Материал You</string>
@@ -88,7 +88,7 @@
     <string name="confirm">Подтвердить</string>
     <string name="compatible_mode">Режим совместимости</string>
     <string name="media">Медиа</string>
-    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Используйте канал вместо параметра для ввода tar. Переключите его, когда появится сообщение \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Невозможно выполнить: нет такого файла или каталога\"</string>
     <string name="supported_format">Поддерживаемый формат</string>
     <string name="architecture">Архитектура</string>
     <string name="restore_list">Список восстановления</string>
@@ -210,4 +210,26 @@
     <string name="logcat">Логкат</string>
     <string name="_default">По умолчанию</string>
     <string name="batch">Пакет</string>
+    <string name="args_used">%1$s%% использовано</string>
+    <string name="args_used_by_backups">%1$s%% используется резервными копиями</string>
+    <string name="pick_custom_directory_desc">Нажмите, чтобы выбрать собственный каталог</string>
+    <string name="custom_directory">Пользовательский каталог</string>
+    <string name="grant_all">Предоставить все</string>
+    <string name="_continue">Продолжить</string>
+    <string name="required">Необходимо</string>
+    <string name="root_permission">Разрешение root</string>
+    <string name="root_permission_desc">Резервное копирование и восстановление данных приложений</string>
+    <string name="optional">Необязательно</string>
+    <string name="notification_permission">Разрешение на уведомление</string>
+    <string name="notification_permission_desc">Доступ к обработке информации</string>
+    <string name="setup">Установить</string>
+    <string name="finish">Готово</string>
+    <string name="backup_categories">Категории резервного копирования</string>
+    <string name="enabled">Включено</string>
+    <string name="not_enabled">Не включено</string>
+    <string name="skip_setup">Пропустить настройку</string>
+    <string name="setup_backup_dir_desc">Если у вас есть существующий каталог, вам нужно будет выбрать его, чтобы появились резервные копии внутри.</string>
+    <string name="skip_setup_alert">Вы не сможете выполнять резервное копирование или восстановление, пока не выберете каталог для резервного копирования.</string>
+    <string name="app_short_desc">Бесплатное приложение для резервного копирования данных с открытым исходным кодом</string>
+    <string name="abi_validation_desc">Проверьте, поддерживается ли ваше устройство</string>
 </resources>
