@@ -68,7 +68,7 @@
     <string name="selected_apks">Выбранные APK</string>
     <string name="structure">Дерево файлов</string>
     <string name="apk">APK</string>
-    <string name="backup">Бекап</string>
+    <string name="backup">Резервное копирование</string>
     <string name="network">Сеть</string>
     <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
     <string name="monet_desc">Движок темы Материал You</string>
@@ -88,7 +88,7 @@
     <string name="confirm">Подтвердить</string>
     <string name="compatible_mode">Режим совместимости</string>
     <string name="media">Медиа</string>
-    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Use pipe instead of parameter for input of tar. Switch it when it says \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Используйте канал вместо параметра для ввода tar. Переключите его, когда появится сообщение \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Невозможно выполнить: нет такого файла или каталога\"</string>
     <string name="supported_format">Поддерживаемый формат</string>
     <string name="architecture">Архитектура</string>
     <string name="restore_list">Список восстановления</string>
