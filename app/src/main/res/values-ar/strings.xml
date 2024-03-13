@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="welcome_to_use">مرحباً بك في DataBackup</string>
+    <string name="environment_detection">كشف البيئة</string>
+    <string name="start">البدء</string>
+    <string name="update_records">تحديث التسجيلات</string>
+</resources>
