@@ -95,7 +95,7 @@
     <string name="failed">Falhou</string>
     <string name="grant_root_access">Conceda acesso root</string>
     <string name="release_prebuilt_binaries">Liberar binários pré-construídos</string>
-    <string name="finish">Acabou</string>
+    <string name="finish">Finalizar</string>
     <string name="start_subtitle">De acordo com as políticas relevantes, você precisa ler atentamente e concordar com o seguinte Contrato do Usuário e Política de Privacidade antes de começar a usar este app.</string>
     <string name="internal_storage">Armazenamento interno</string>
     <string name="fetch_failed">Falha ao buscar</string>
