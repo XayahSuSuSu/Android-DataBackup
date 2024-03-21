@@ -3,7 +3,7 @@
     <string name="size">Kích cỡ</string>
     <string name="click_to_clear">Nhấn vào đây để xóa</string>
     <string name="decompress">Giải nén</string>
-    <string name="storage">Bộ nhớ</string>
+    <string name="storage">Quyền đọc/ghi vào bộ nhớ ngoài</string>
     <string name="keep_the_screen_on_help">Giữ thiết bị luôn bật trong khi xử lý</string>
     <string name="backed_up">Hỗ trợ</string>
     <string name="card_telephony_subtitle">Sao lưu (Khôi phục) danh bạ, nhật ký cuộc gọi hoặc SMS/MMS</string>
@@ -32,7 +32,7 @@
     <string name="repeat_to_add">Lặp lại để thêm!</string>
     <string name="all">Tất cả</string>
     <string name="backup_icon">Sao lưu biểu tượng</string>
-    <string name="telephony">Điện thoại</string>
+    <string name="telephony">Lịch sử cuộc gọi</string>
     <string name="backup_test">Kiểm tra sao lưu</string>
     <string name="storage_desc">Được sử dụng cho lưu trữ đọc và ghi bản sao lưu</string>
     <string name="backup_strategy">Kế hoạch sao lưu</string>
@@ -82,7 +82,7 @@
     <string name="select_restore_media">Chọn khôi phục phương tiện</string>
     <string name="cancelling">Đang hủy bỏ</string>
     <string name="network_desc">Được sử dụng để nhận thông tin bản cập nhật ứng dụng, phân tích ứng dụng</string>
-    <string name="alphabet">Theo tên</string>
+    <string name="alphabet">A-Z</string>
     <string name="select_all">Chọn tất cả</string>
     <string name="install_time">Thời gian cài đặt</string>
     <string name="stable_subtitle">Ổn định và đáng tin cậy</string>
@@ -103,7 +103,7 @@
     <string name="cover_desc">Ghi đè lên các tệp sao lưu hiện có với mỗi bản sao lưu hoặc bỏ qua các bản sao lưu nếu không có thay đổi nào, vì vậy dù thế nào đi nữa, chỉ có một bản sao dữ liệu của bạn tồn tại</string>
     <string name="please_wait">Vui lòng đợi</string>
     <string name="add_list">Thêm danh sách</string>
-    <string name="log">Nhật kí</string>
+    <string name="log">Nhật ký</string>
     <string name="loading_failed">Tải không thành công</string>
     <string name="path_permission_error">Lỗi quyền, các đường dẫn sau yêu cầu quyền chính xác</string>
     <string name="select_backup_app">Chọn ứng dụng sao lưu</string>
@@ -144,7 +144,7 @@
     <string name="succeed">Thành công</string>
     <string name="add">Thêm</string>
     <string name="backup_itself">Tự sao lưu</string>
-    <string name="welcome_to_use">Chào mừng bạn người dùng</string>
+    <string name="welcome_to_use">Chào mừng đến với Sao lưu dữ liệu</string>
     <string name="speed">Tốc độ</string>
     <string name="backup_test_title">Tự động kiểm tra các tệp sao lưu trong quá trình sao lưu</string>
     <string name="select_restore_app">Chọn khôi phục ứng dụng</string>
@@ -160,7 +160,7 @@
     <string name="symbol_exclamation">!</string>
     <string name="manifest">Biểu thị</string>
     <string name="monet">Monet</string>
-    <string name="app_name">DataBackup</string>
+    <string name="app_name">Sao lưu dữ liệu</string>
     <string name="environment_detection">Phát hiện môi trường</string>
     <string name="check_package_usage_stats_permission">Kiểm tra quyền thống kê sử dụng gói</string>
     <string name="setting_SELinux">Cài đặt SELinux</string>
