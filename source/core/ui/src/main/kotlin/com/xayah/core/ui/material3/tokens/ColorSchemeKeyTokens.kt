@@ -81,6 +81,7 @@ enum class ColorSchemeKeyTokens {
     TertiaryFixedDim,
 
     // see https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/ColorSchemeKeyTokens.kt;l=53;drc=4d53400eca9f3ac90c3a3f6cffcbc5bf492ec536
+    /**
     SurfaceBright,
     SurfaceContainer,
     SurfaceContainerHigh,
@@ -88,6 +89,7 @@ enum class ColorSchemeKeyTokens {
     SurfaceContainerLow,
     SurfaceContainerLowest,
     SurfaceDim,
+     **/
 
     // TODO: Incorrect colors above?
     SurfaceBrightBaselineFixed,

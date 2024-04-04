@@ -175,7 +175,7 @@ fun OverviewLastBackupCard(nullBackupDir: Boolean, lastBackupTime: Long, onClick
     OverviewCard(
         title = StringResourceToken.fromStringId(R.string.last_backup),
         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_package_2),
-        colorContainer = if (nullBackupDir) ColorSchemeKeyTokens.SurfaceContainerHigh else ColorSchemeKeyTokens.PrimaryContainer,
+        colorContainer = if (nullBackupDir) ColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed else ColorSchemeKeyTokens.PrimaryContainer,
         onColorContainer = if (nullBackupDir) ColorSchemeKeyTokens.OnSurface else ColorSchemeKeyTokens.OnPrimaryContainer,
         content = {
             TitleLargeText(
