@@ -213,8 +213,8 @@
     <string name="custom_directory">Özel dizin</string>
     <string name="optional">Opsiyonel</string>
     <string name="notification_permission">Bildirim izni</string>
-    <string name="args_used">%1 Kullanıldı</string>
-    <string name="args_used_by_backups">Yedekler tarafından kullanılan %1%</string>
+    <string name="args_used">%1$s%% Kullanıldı</string>
+    <string name="args_used_by_backups">Yedekler tarafından kullanılan %1$s%%</string>
     <string name="grant_all">Hepsini bağışlayın</string>
     <string name="_continue">Devam et</string>
     <string name="app_short_desc">Ücretsiz ve açık kaynaklı veri yedekleme uygulaması</string>
