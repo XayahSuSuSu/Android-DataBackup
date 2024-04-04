@@ -129,6 +129,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
         ColorSchemeKeyTokens.TertiaryFixed -> if (isDarkTheme) tonalPalette.tertiary90 else tonalPalette.tertiary90
         ColorSchemeKeyTokens.TertiaryFixedDim -> if (isDarkTheme) tonalPalette.tertiary80 else tonalPalette.tertiary80
 
+        /**
         ColorSchemeKeyTokens.SurfaceBright -> if (isDarkTheme) tonalPalette.neutral24 else tonalPalette.neutral98
         ColorSchemeKeyTokens.SurfaceContainer -> if (isDarkTheme) tonalPalette.neutral12 else tonalPalette.neutral94
         ColorSchemeKeyTokens.SurfaceContainerHigh -> if (isDarkTheme) tonalPalette.neutral17 else tonalPalette.neutral92
@@ -136,6 +137,7 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
         ColorSchemeKeyTokens.SurfaceContainerLow -> if (isDarkTheme) tonalPalette.neutral10 else tonalPalette.neutral96
         ColorSchemeKeyTokens.SurfaceContainerLowest -> if (isDarkTheme) tonalPalette.neutral4 else tonalPalette.neutral100
         ColorSchemeKeyTokens.SurfaceDim -> if (isDarkTheme) tonalPalette.neutral6 else tonalPalette.neutral87
+         **/
 
         ColorSchemeKeyTokens.SurfaceBrightBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral24 else BaselineTonalPalette.neutral98
         ColorSchemeKeyTokens.SurfaceContainerBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral12 else BaselineTonalPalette.neutral94
