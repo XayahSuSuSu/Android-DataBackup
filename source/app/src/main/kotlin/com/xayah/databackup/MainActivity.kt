@@ -3,7 +3,10 @@ package com.xayah.databackup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +26,9 @@ import com.xayah.feature.main.medium.detail.PageMediaDetail
 import com.xayah.feature.main.medium.list.PageMedium
 import com.xayah.feature.main.packages.detail.PagePackageDetail
 import com.xayah.feature.main.packages.list.PagePackages
+import com.xayah.feature.main.settings.redesigned.PageSettings
+import com.xayah.feature.main.settings.redesigned.backup.PageBackupSettings
+import com.xayah.feature.main.settings.redesigned.restore.PageRestoreSettings
 import com.xayah.feature.main.task.detail.medium.PageTaskMediaDetail
 import com.xayah.feature.main.task.detail.packages.PageTaskPackageDetail
 import com.xayah.feature.main.task.list.PageTaskList
@@ -50,9 +56,22 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = MainRoutes.Index.route,
+                        enterTransition = {
+                            fadeIn(animationSpec = tween()) +
+                                    slideIntoContainer(animationSpec = tween(), towards = AnimatedContentTransitionScope.SlideDirection.Start)
+                        },
                     ) {
                         composable(MainRoutes.Index.route) {
                             MainIndexGraph()
+                        }
+                        composable(MainRoutes.Settings.route) {
+                            PageSettings()
+                        }
+                        composable(MainRoutes.BackupSettings.route) {
+                            PageBackupSettings()
+                        }
+                        composable(MainRoutes.RestoreSettings.route) {
+                            PageRestoreSettings()
                         }
                         composable(MainRoutes.Packages.route) {
                             PagePackages()

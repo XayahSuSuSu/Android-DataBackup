@@ -39,6 +39,7 @@ import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
+import com.xayah.core.ui.model.SegmentProgress
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromString

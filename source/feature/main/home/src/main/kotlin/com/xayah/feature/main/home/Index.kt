@@ -45,7 +45,7 @@ fun PageHome() {
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current!!
-    val lastBackupTime by uiState.lastBackupTime.collectAsState(initial = "")
+    val lastBackupTime by uiState.lastBackupTime.collectAsState(initial = 0)
 
     LazyColumn(
         modifier = Modifier.paddingHorizontal(PaddingTokens.Level3),
@@ -56,7 +56,7 @@ fun PageHome() {
             OverLookCard(
                 icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_token),
                 title = StringResourceToken.StringIdToken(R.string.last_backup),
-                content = lastBackupTime
+                content = lastBackupTime.toString()
             )
         }
 

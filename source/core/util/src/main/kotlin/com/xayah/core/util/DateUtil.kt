@@ -18,14 +18,16 @@ object DateUtil {
     private const val HOUR_IN_MILLIS = MINUTE_IN_MILLIS * 60
     private const val DAY_IN_MILLIS = HOUR_IN_MILLIS * 24
     private const val WEEK_IN_MILLIS = DAY_IN_MILLIS * 7
+    const val PATTERN_DEFAULT = "yyyy-MM-dd HH:mm:ss.SSS"
+    const val PATTERN_FINISH = "MMMM dd yyyy HH:mm a"
 
     fun getTimestamp(): Long = System.currentTimeMillis()
 
     /**
      * Format given [timestamp] as date.
      */
-    fun formatTimestamp(timestamp: Long?, pattern: String = "yyyy-MM-dd HH:mm:ss.SSS"): String = runCatching {
-        SimpleDateFormat(pattern, Locale.CHINA).format(Date(timestamp!!))
+    fun formatTimestamp(timestamp: Long?, pattern: String = PATTERN_DEFAULT): String = runCatching {
+        SimpleDateFormat(pattern, Locale.getDefault()).format(Date(timestamp!!))
     }.getOrDefault("Unknown")
 
     /**

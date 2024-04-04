@@ -1,5 +1,6 @@
 package com.xayah.core.ui.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.xayah.core.ui.material3.Surface
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
@@ -37,10 +37,12 @@ fun Section(title: StringResourceToken, content: @Composable ColumnScope.() -> U
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
 fun ActionButton(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     icon: ImageVectorToken,
     colorContainer: ColorSchemeKeyTokens,
     colorL80D20: ColorSchemeKeyTokens,
@@ -52,8 +54,9 @@ fun ActionButton(
     Card(
         modifier = modifier.wrapContentHeight(),
         shape = RoundedCornerShape(SizeTokens.Level18),
-        colors = CardDefaults.cardColors(containerColor = colorContainer.toColor()),
+        colors = CardDefaults.cardColors(containerColor = colorContainer.toColor(enabled)),
         onClick = onClick,
+        enabled = enabled,
     ) {
         Row(
             modifier = Modifier
@@ -62,11 +65,11 @@ fun ActionButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level10)
         ) {
-            Surface(modifier = Modifier.size(SizeTokens.Level36), shape = CircleShape, color = colorL80D20.toColor()) {
+            Surface(modifier = Modifier.size(SizeTokens.Level36), shape = CircleShape, color = colorL80D20.toColor(enabled), enabled = enabled) {
                 Icon(
                     modifier = Modifier.padding(SizeTokens.Level8),
                     imageVector = icon.value,
-                    tint = onColorContainer.toColor(),
+                    tint = onColorContainer.toColor(enabled),
                     contentDescription = null,
                 )
             }
@@ -74,7 +77,7 @@ fun ActionButton(
             if (actionIcon != null)
                 Icon(
                     imageVector = actionIcon.value,
-                    tint = onColorContainer.toColor(),
+                    tint = onColorContainer.toColor(enabled),
                     contentDescription = null
                 )
         }

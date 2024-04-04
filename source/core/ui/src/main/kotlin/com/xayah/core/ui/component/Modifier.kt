@@ -1,7 +1,6 @@
 package com.xayah.core.ui.component
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -21,6 +20,7 @@ import com.google.accompanist.placeholder.fade
 import com.google.accompanist.placeholder.placeholder
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.darkTheme
 
 fun Modifier.paddingStart(start: Dp) = padding(start, 0.dp, 0.dp, 0.dp)
 
@@ -44,8 +44,8 @@ fun Modifier.ignorePaddingHorizontal(horizontal: Dp) = layout { measurable, cons
 }
 
 fun Modifier.shimmer(visible: Boolean = true, colorAlpha: Float = 0.1f, highlightAlpha: Float = 0.3f) = composed {
-    val alphaColor = if (isSystemInDarkTheme()) highlightAlpha else colorAlpha
-    val alphaHighlight = if (isSystemInDarkTheme()) colorAlpha else highlightAlpha
+    val alphaColor = if (darkTheme()) highlightAlpha else colorAlpha
+    val alphaHighlight = if (darkTheme()) colorAlpha else highlightAlpha
     placeholder(
         visible = visible,
         shape = CircleShape,

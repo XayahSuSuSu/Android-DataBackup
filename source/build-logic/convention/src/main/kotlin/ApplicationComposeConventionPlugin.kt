@@ -29,7 +29,8 @@ class ApplicationComposeConventionPlugin : Plugin<Project> {
                     add("implementation", platform(catalogLibs.findLibrary("androidx-compose-bom").get()))
                     add("implementation", catalogLibs.findLibrary("androidx.compose.ui").get())
                     add("implementation", catalogLibs.findLibrary("androidx.compose.ui.graphics").get())
-                    add("implementation", catalogLibs.findLibrary("androidx.compose.ui.tooling.preview").get())
+                    add("debugImplementation", catalogLibs.findLibrary("androidx.compose.ui.tooling.preview").get())
+                    add("debugImplementation", catalogLibs.findLibrary("androidx.compose.ui.tooling").get())
                     add("implementation", catalogLibs.findLibrary("androidx.compose.material3").get())
                     add("implementation", catalogLibs.findLibrary("androidx.compose.material.icons.extended").get())
                 }

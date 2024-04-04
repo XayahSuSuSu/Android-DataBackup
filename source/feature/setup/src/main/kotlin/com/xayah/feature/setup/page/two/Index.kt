@@ -22,9 +22,9 @@ import com.xayah.core.datastore.readBackupSavePathSaved
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.SecondaryLargeTopBar
-import com.xayah.core.ui.component.Switch
+import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
-import com.xayah.core.ui.component.openConfirm
+import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromString
@@ -55,7 +55,7 @@ fun PageTwo() {
                 enabled = backupSavePathSaved.not(),
                 onClick = {
                     viewModel.launchOnIO {
-                        if (dialogState.openConfirm(title = StringResourceToken.fromStringId(R.string.skip_setup), text = StringResourceToken.fromStringId(R.string.skip_setup_alert))) {
+                        if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.skip_setup), text = StringResourceToken.fromStringId(R.string.skip_setup_alert))) {
                             viewModel.emitIntent(IndexUiIntent.ToMain(context = context as ComponentActivity))
                         }
                     }
@@ -85,14 +85,14 @@ fun PageTwo() {
                 viewModel.emitIntent(IndexUiIntent.SelectBackupDir(context = context))
             }
             Title(backupSavePathSaved, StringResourceToken.fromStringId(R.string.backup_categories)) {
-                Switch(
+                Switchable(
                     enabled = backupSavePathSaved,
                     key = KeyAppsEnabled,
                     title = StringResourceToken.fromStringId(R.string.app_and_data),
                     checkedText = StringResourceToken.fromStringId(R.string.enabled),
                     notCheckedText = StringResourceToken.fromStringId(R.string.not_enabled),
                 )
-                Switch(
+                Switchable(
                     enabled = backupSavePathSaved,
                     key = KeyFilesEnabled,
                     title = StringResourceToken.fromStringId(R.string.media),

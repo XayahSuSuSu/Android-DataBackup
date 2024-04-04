@@ -5,11 +5,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.SelectionType
 import com.xayah.core.model.SortType
+import com.xayah.core.model.ThemeType
 import com.xayah.core.model.util.of
 import kotlinx.coroutines.flow.map
 
 // -----------------------------------------Keys-----------------------------------------
-val KeyLastBackupTime = stringPreferencesKey("last_backup_time")
 val KeyLastRestoreTime = stringPreferencesKey("last_restore_time")
 val KeyCompressionType = stringPreferencesKey("compression_type")
 val KeyBackupSavePath = stringPreferencesKey("backup_save_path")
@@ -22,10 +22,10 @@ val KeyAppVersionName = stringPreferencesKey("app_version_name")
 val KeyCloudActivatedAccountName = stringPreferencesKey("cloud_activated_account_name")
 val KeyLoadedIconMD5 = stringPreferencesKey("loaded_icon_md5")
 val KeySelectionType = stringPreferencesKey("selection_type")
+val KeyThemeType = stringPreferencesKey("theme_type")
 
 
 // -----------------------------------------Read-----------------------------------------
-fun Context.readLastBackupTime() = readStoreString(key = KeyLastBackupTime, defValue = "")
 fun Context.readLastRestoreTime() = readStoreString(key = KeyLastRestoreTime, defValue = "")
 fun Context.readCompressionType() = readStoreString(key = KeyCompressionType, defValue = "").map { CompressionType.of(it) }
 fun Context.readBackupSortType() = readStoreString(key = KeyBackupSortType, defValue = "").map { SortType.of(it) }
@@ -34,6 +34,7 @@ fun Context.readAppVersionName() = readStoreString(key = KeyAppVersionName, defV
 fun Context.readCloudActivatedAccountName() = readStoreString(key = KeyCloudActivatedAccountName, defValue = "")
 fun Context.readLoadedIconMD5() = readStoreString(key = KeyLoadedIconMD5, defValue = "")
 fun Context.readSelectionType() = readStoreString(key = KeySelectionType, defValue = "").map { SelectionType.of(it) }
+fun Context.readThemeType() = readStoreString(key = KeyThemeType, defValue = "").map { ThemeType.of(it) }
 
 /**
  * The final path for saving the backup.
@@ -51,7 +52,6 @@ fun Context.readRestoreSavePath() = readStoreString(key = KeyRestoreSavePath, de
 fun Context.readRestoreSaveParentPath() = readStoreString(key = KeyRestoreSaveParentPath, defValue = ConstantUtil.DefaultPathParent)
 
 // -----------------------------------------Write-----------------------------------------
-suspend fun Context.saveLastBackupTime(value: String) = saveStoreString(key = KeyLastBackupTime, value = value.trim())
 suspend fun Context.saveLastRestoreTime(value: String) = saveStoreString(key = KeyLastRestoreTime, value = value.trim())
 suspend fun Context.saveCompressionType(value: CompressionType) = saveStoreString(key = KeyCompressionType, value = value.type.trim())
 suspend fun Context.saveBackupSortType(value: SortType) = saveStoreString(key = KeyBackupSortType, value = value.name.trim())
@@ -60,6 +60,7 @@ suspend fun Context.saveAppVersionName() = saveStoreString(key = KeyAppVersionNa
 suspend fun Context.saveCloudActivatedAccountName(value: String) = saveStoreString(key = KeyCloudActivatedAccountName, value = value.trim())
 suspend fun Context.saveLoadedIconMD5(value: String) = saveStoreString(key = KeyLoadedIconMD5, value = value.trim())
 suspend fun Context.saveSelectionType(value: SelectionType) = saveStoreString(key = KeySelectionType, value = value.name.trim())
+suspend fun Context.saveThemeType(value: ThemeType) = saveStoreString(key = KeyThemeType, value = value.name.trim())
 
 /**
  * @see [readBackupSavePath]

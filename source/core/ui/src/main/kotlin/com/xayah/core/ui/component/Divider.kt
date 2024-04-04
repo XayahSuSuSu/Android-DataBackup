@@ -8,5 +8,5 @@ import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 
 @Composable
-fun Divider(modifier: Modifier = Modifier, color: Color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor().copy(alpha = 0.3f)) =
+fun Divider(modifier: Modifier = Modifier, color: Color = ColorSchemeKeyTokens.OutlineVariant.toColor().copy(alpha = 0.3f)) =
     Divider(modifier = modifier, color = color)

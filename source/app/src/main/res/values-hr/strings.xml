@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sooner_or_later">Prije ili kasnije</string>
-    <string name="storage">Dozvola za čitanje/pisanje u eksternu memoriju</string>
     <string name="save">Spremi</string>
     <string name="installation_time">Vrijeme instalacije</string>
     <string name="restoring">Obnavljanje</string>

@@ -160,5 +160,5 @@ class DirectoryRepository @Inject constructor(
         }
     }
 
-    suspend fun countActiveDirectories() = directoryDao.countActiveDirectories()
+    fun querySelectedByDirectoryTypeFlow() = directoryDao.querySelectedByDirectoryTypeFlow()
 }

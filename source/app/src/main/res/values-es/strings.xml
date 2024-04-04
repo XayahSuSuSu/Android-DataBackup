@@ -7,7 +7,6 @@
     <string name="start_subtitle">De acuerdo con las políticas pertinentes, debe leer atentamente y aceptar el siguiente Acuerdo de usuario y Política de privacidad antes de comenzar a utilizar esta aplicación</string>
     <string name="network">Red</string>
     <string name="application">Aplicación</string>
-    <string name="storage">Permiso para leer/escribir en almacenamiento externo</string>
     <string name="storage_desc">Se utiliza para configuración de respaldo, lectura y escritura de archivos</string>
     <string name="loading">Cargando</string>
     <string name="loading_failed">Carga fallida</string>

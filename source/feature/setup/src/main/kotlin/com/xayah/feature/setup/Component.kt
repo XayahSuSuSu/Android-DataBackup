@@ -1,5 +1,6 @@
 package com.xayah.feature.setup
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,6 +71,7 @@ fun SetupScaffold(topBar: @Composable () -> Unit = {}, actions: @Composable RowS
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
 fun PermissionButton(title: StringResourceToken, desc: StringResourceToken, envState: EnvState, onClick: () -> Unit) {

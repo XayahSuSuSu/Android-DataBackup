@@ -171,7 +171,6 @@
     <string name="batching_select">Seleção de lote</string>
     <string name="welcome_to_use">Bem-vindo ao DataBackup</string>
     <string name="directory">Armazenamento</string>
-    <string name="storage">Permissão para ler/gravar no armazenamento externo</string>
     <string name="log">Logs</string>
     <string name="app_and_data">Apps</string>
     <string name="telephony">Histórico de chamadas</string>

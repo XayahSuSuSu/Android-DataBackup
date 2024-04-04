@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 data class IndexUiState(
-    val lastBackupTime: Flow<String>,
+    val lastBackupTime: Flow<Long>,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {

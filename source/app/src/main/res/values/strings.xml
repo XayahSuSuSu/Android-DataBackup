@@ -13,7 +13,7 @@
     <string name="application">App</string>
     <string name="application_subtitle" translatable="false">android.permission.QUERY_ALL_PACKAGES\nandroid.permission.PACKAGE_USAGE_STATS</string>
     <string name="application_desc">Obtain application package information, used to generate backup list and obtain application data size</string>
-    <string name="storage">Permission to read/write to external storage</string>
+    <string name="storage">Storage</string>
     <string name="storage_subtitle" translatable="false">android.permission.READ_EXTERNAL_STORAGE\nandroid.permission.WRITE_EXTERNAL_STORAGE\nandroid.permission.MANAGE_EXTERNAL_STORAGE</string>
     <string name="storage_desc">Used for backup configuration, archive read and write</string>
     <string name="loading">Loading</string>
@@ -239,4 +239,14 @@
     <string name="args_used_by_backups">%1$s%% used by backups</string>
     <string name="pick_custom_directory_desc">Tap to pick a custom directory</string>
     <string name="custom_directory">Custom directory</string>
+    <string name="never">Never</string>
+    <string name="args_finished_at">Finished at %1$s</string>
+    <string name="setup_required">Setup required, tap to set a directory</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="backup_apps">Backup apps</string>
+    <string name="backup_contacts">Backup contacts</string>
+    <string name="backup_files">Backup files</string>
+    <string name="backup_messages">Backup messages</string>
+    <string name="sync_to_cloud">Sync to cloud</string>
+    <string name="dashboard">Dashboard</string>
 </resources>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sooner_or_later">Раньше или позже</string>
-    <string name="storage">Разрешение на чтение/запись на внешнее хранилище</string>
     <string name="clean_restoring">\"Чистое\" восстановление</string>
     <string name="save">Сохранить</string>
     <string name="restoring">Восстановление</string>

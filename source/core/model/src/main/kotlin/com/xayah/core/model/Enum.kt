@@ -119,3 +119,11 @@ enum class SelectionType {
 
     companion object
 }
+
+enum class ThemeType {
+    AUTO,
+    LIGHT_THEME,
+    DARK_THEME;
+
+    companion object
+}

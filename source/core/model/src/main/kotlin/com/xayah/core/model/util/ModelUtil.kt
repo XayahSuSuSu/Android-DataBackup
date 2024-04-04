@@ -6,6 +6,7 @@ import com.xayah.core.model.OpType
 import com.xayah.core.model.SelectionType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.TAR_SUFFIX
+import com.xayah.core.model.ThemeType
 import com.xayah.core.model.ZSTD_SUFFIX
 import java.text.DecimalFormat
 import kotlin.math.pow
@@ -47,3 +48,6 @@ fun CompressionType.Companion.suffixOf(suffix: String): CompressionType? = when 
 
 fun SelectionType.Companion.of(name: String?): SelectionType =
     runCatching { SelectionType.valueOf(name!!.uppercase()) }.getOrDefault(SelectionType.DEFAULT)
+
+fun ThemeType.Companion.of(name: String?): ThemeType =
+    runCatching { ThemeType.valueOf(name!!.uppercase()) }.getOrDefault(ThemeType.AUTO)

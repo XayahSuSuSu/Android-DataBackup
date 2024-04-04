@@ -1,17 +1,19 @@
 package com.xayah.databackup.index
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material.icons.rounded.Dashboard
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
-import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.databackup.R
 
 internal sealed class MainIndexRoutes(val route: String) {
+    data object Dashboard : MainIndexRoutes(route = "main_index_dashboard")
     data object Home : MainIndexRoutes(route = "main_index_home")
+    data object Local : MainIndexRoutes(route = "main_index_local")
     data object Cloud : MainIndexRoutes(route = "main_index_cloud")
 
     data object Settings : MainIndexRoutes(route = "main_index_settings")
@@ -31,19 +33,19 @@ internal sealed class MainIndexRoutes(val route: String) {
         val BottomBarItemList: List<BottomBarItem>
             get() = listOf(
                 BottomBarItem(
-                    label = StringResourceToken.fromStringId(R.string.home),
-                    iconToken = ImageVectorToken.fromVector(Icons.Rounded.Home),
-                    route = Home.route,
+                    label = StringResourceToken.fromStringId(R.string.dashboard),
+                    iconToken = ImageVectorToken.fromVector(Icons.Rounded.Dashboard),
+                    route = Dashboard.route,
+                ),
+                BottomBarItem(
+                    label = StringResourceToken.fromStringId(R.string.local),
+                    iconToken = ImageVectorToken.fromVector(Icons.Rounded.Circle),
+                    route = Local.route,
                 ),
                 BottomBarItem(
                     label = StringResourceToken.fromStringId(R.string.cloud),
-                    iconToken = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cloud_upload),
+                    iconToken = ImageVectorToken.fromVector(Icons.Rounded.Circle),
                     route = Cloud.route,
-                ),
-                BottomBarItem(
-                    label = StringResourceToken.fromStringId(R.string.settings),
-                    iconToken = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_settings),
-                    route = Settings.route,
                 ),
             )
     }

@@ -232,4 +232,14 @@
     <string name="args_used_by_backups">备份已使用%1$s%%</string>
     <string name="pick_custom_directory_desc">轻击以选择一个自定义目录</string>
     <string name="custom_directory">自定义目录</string>
+    <string name="never">从未</string>
+    <string name="args_finished_at">完成于 %1$s</string>
+    <string name="setup_required">引导未完成, 轻击以选择一个目录</string>
+    <string name="quick_actions">快捷操作</string>
+    <string name="backup_apps">备份应用</string>
+    <string name="backup_contacts">备份联系人</string>
+    <string name="backup_files">备份文件</string>
+    <string name="backup_messages">备份短信</string>
+    <string name="sync_to_cloud">同步至云端</string>
+    <string name="dashboard">仪表盘</string>
 </resources>

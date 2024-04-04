@@ -1,22 +1,24 @@
 <resources>
-    <item name="clean_restoring" type="string"/>
-    <item name="clean_restoring_desc" type="string"/>
-    <item name="backup_itself" type="string"/>
-    <item name="backup_itself_desc" type="string"/>
-    <item name="compatible_mode" type="string"/>
-    <item name="compatible_mode_desc" type="string"/>
-    <item name="follow_symlinks" type="string"/>
-    <item name="follow_symlinks_desc" type="string"/>
-    <item name="monet" type="string"/>
-    <item name="monet_desc" type="string"/>
-    <item name="compression_test" type="string"/>
-    <item name="compression_test_desc" type="string"/>
-    <item name="backup" type="string"/>
-    <item name="restore" type="string"/>
-    <item name="version" type="string"/>
-    <item name="feature" type="string"/>
-    <item name="abi" type="string"/>
-    <item name="architecture" type="string"/>
-    <item name="check_keystore" type="string"/>
-    <item name="check_keystore_desc" type="string"/>
+    <item name="clean_restoring" type="string" />
+    <item name="clean_restoring_desc" type="string" />
+    <item name="backup_itself" type="string" />
+    <item name="backup_itself_desc" type="string" />
+    <item name="compatible_mode" type="string" />
+    <item name="compatible_mode_desc" type="string" />
+    <item name="follow_symlinks" type="string" />
+    <item name="follow_symlinks_desc" type="string" />
+    <item name="monet" type="string" />
+    <item name="monet_desc" type="string" />
+    <item name="compression_test" type="string" />
+    <item name="compression_test_desc" type="string" />
+    <item name="backup" type="string" />
+    <item name="restore" type="string" />
+    <item name="version" type="string" />
+    <item name="feature" type="string" />
+    <item name="abi" type="string" />
+    <item name="architecture" type="string" />
+    <item name="check_keystore" type="string" />
+    <item name="check_keystore_desc" type="string" />
+    <item name="ic_rounded_acute" type="drawable" />
+    <item name="ic_rounded_history" type="drawable" />
 </resources>

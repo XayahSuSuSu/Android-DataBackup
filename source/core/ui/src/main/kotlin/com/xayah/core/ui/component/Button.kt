@@ -1,6 +1,7 @@
 package com.xayah.core.ui.component
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
@@ -67,6 +68,11 @@ fun DeleteIconButton(modifier: Modifier = Modifier, enabled: Boolean = true, onC
 @Composable
 fun ChecklistIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     IconButton(modifier = modifier, icon = ImageVectorToken.fromVector(Icons.Rounded.Checklist), onClick = onClick)
+}
+
+@Composable
+fun SettingsIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    IconButton(modifier = modifier, icon = ImageVectorToken.fromVector(Icons.Outlined.Settings), onClick = onClick)
 }
 
 @Composable

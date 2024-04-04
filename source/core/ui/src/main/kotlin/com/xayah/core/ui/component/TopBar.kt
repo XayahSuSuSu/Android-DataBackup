@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +29,16 @@ import com.xayah.core.ui.util.value
 fun PrimaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: String, actions: @Composable RowScope.() -> Unit = {}) {
     CenterAlignedTopAppBar(
         title = { TopBarTitle(text = title) },
+        scrollBehavior = scrollBehavior,
+        actions = actions,
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun PrimaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: StringResourceToken, actions: @Composable RowScope.() -> Unit = {}) {
+    TopAppBar(
+        title = { Text(text = title.value) },
         scrollBehavior = scrollBehavior,
         actions = actions,
     )

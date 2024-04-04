@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sooner_or_later">Er ya da geç</string>
-    <string name="storage">Depolamayı okunmaya/yazmaya izni verin</string>
     <string name="clean_restoring">Temiz geri yükleme</string>
     <string name="save">Kaydet</string>
     <string name="restoring">Kurtarılıyor</string>

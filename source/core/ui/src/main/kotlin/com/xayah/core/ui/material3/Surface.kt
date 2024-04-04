@@ -17,6 +17,7 @@
 package com.xayah.core.ui.material3
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -215,6 +216,7 @@ fun Surface(
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    indication: Indication? = rememberRipple(),
     content: @Composable () -> Unit,
 ) {
     val absoluteElevation = LocalAbsoluteTonalElevation.current + tonalElevation
@@ -236,7 +238,7 @@ fun Surface(
                 )
                 .clickable(
                     interactionSource = interactionSource,
-                    indication = rememberRipple(),
+                    indication = indication,
                     enabled = enabled,
                     onClick = onClick
                 ),
