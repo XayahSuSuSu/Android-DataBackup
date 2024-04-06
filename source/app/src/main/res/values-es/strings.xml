@@ -231,4 +231,15 @@
     <string name="args_used_by_backups">%1$s%% utilizado por las copias de seguridad</string>
     <string name="pick_custom_directory_desc">Pulse para elegir un directorio personalizado</string>
     <string name="custom_directory">Directorio personalizado</string>
+    <string name="storage">Almacenamiento</string>
+    <string name="never">Nunca</string>
+    <string name="args_finished_at">Completado en %1$s</string>
+    <string name="setup_required">Se requiere configuración, toque para configurar un directorio</string>
+    <string name="quick_actions">Acciones rápidas</string>
+    <string name="backup_apps">Aplicaciones de copia de seguridad</string>
+    <string name="backup_contacts">Los contactos de la copia de seguridad</string>
+    <string name="sync_to_cloud">Sincronizar con la nube</string>
+    <string name="dashboard">Panel</string>
+    <string name="backup_files">Archivos de copia de seguridad</string>
+    <string name="backup_messages">Mensajes de copia de seguridad</string>
 </resources>
