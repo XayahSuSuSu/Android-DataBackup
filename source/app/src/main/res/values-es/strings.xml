@@ -242,4 +242,10 @@
     <string name="dashboard">Panel</string>
     <string name="backup_files">Archivos de copia de seguridad</string>
     <string name="backup_messages">Mensajes de copia de seguridad</string>
+    <string name="pull_down_to_refresh">Tire hacia abajo para refrescar</string>
+    <string name="sort">Clasificar</string>
+    <string name="select_apps">Seleccionar aplicaciones</string>
+    <string name="select_all">Seleccionar todo</string>
+    <string name="filters">Filtros</string>
+    <string name="args_loading_from_user">Cargando desde usuario %1$s</string>
 </resources>
