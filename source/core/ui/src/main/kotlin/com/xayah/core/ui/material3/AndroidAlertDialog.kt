@@ -161,7 +161,7 @@ fun AlertDialog(
         onDismissRequest = onDismissRequest,
         properties = properties,
     ) {
-        val dialogPaneDescription = stringResource(id = R.string.dialog)
+        val dialogPaneDescription = stringResource(id = R.string.m3c_dialog)
         Box(
             modifier = modifier
                 .sizeIn(minWidth = DialogMinWidth, maxWidth = DialogMaxWidth)
