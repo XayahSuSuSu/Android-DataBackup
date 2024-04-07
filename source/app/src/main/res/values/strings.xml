@@ -249,4 +249,10 @@
     <string name="backup_messages">Backup messages</string>
     <string name="sync_to_cloud">Sync to cloud</string>
     <string name="dashboard">Dashboard</string>
+    <string name="select_apps">Select apps</string>
+    <string name="pull_down_to_refresh">Pull down to refresh</string>
+    <string name="select_all">Select all</string>
+    <string name="filters">Filters</string>
+    <string name="sort">Sort</string>
+    <string name="args_loading_from_user">Loading from user %1$s</string>
 </resources>

@@ -105,7 +105,9 @@ fun PageDashboard() {
                         colorContainer = ColorSchemeKeyTokens.RedPrimaryContainer,
                         colorL80D20 = ColorSchemeKeyTokens.RedL80D20,
                         onColorContainer = ColorSchemeKeyTokens.RedOnPrimaryContainer
-                    )
+                    ) {
+                        navController.navigate(MainRoutes.PackagesBackupList.route)
+                    }
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
                         enabled = nullBackupDir.not(),

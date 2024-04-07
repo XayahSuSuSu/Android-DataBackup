@@ -7,3 +7,9 @@ data class TopBarState(
     val title: StringResourceToken = StringResourceToken.fromString(""),
     val indeterminate: Boolean = false
 )
+
+data class RefreshState(
+    val progress: Float = 0f,
+    val user: String = "",
+    val pkg: String = "",
+)

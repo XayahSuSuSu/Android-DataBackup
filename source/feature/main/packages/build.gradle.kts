@@ -28,4 +28,7 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // dotLottie
+    implementation(libs.dotlottie.android)
 }

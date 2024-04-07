@@ -53,8 +53,8 @@ fun SecondaryTopBar(
     onBackClick: (() -> Unit)? = null
 ) {
     val navController = LocalNavController.current!!
-    CenterAlignedTopAppBar(
-        title = { TopBarTitle(text = title.value) },
+    TopAppBar(
+        title = { Text(text = title.value) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             ArrowBackButton {
@@ -76,7 +76,7 @@ fun SecondaryMediumTopBar(
 ) {
     val navController = LocalNavController.current!!
     MediumTopAppBar(
-        title = { TopBarTitle(text = title.value) },
+        title = { Text(text = title.value) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             ArrowBackButton {
@@ -170,6 +170,5 @@ fun SecondaryMediumTopBar(
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = animatedProgress.value)
             }
         }
-
     }
 }

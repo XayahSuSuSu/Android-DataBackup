@@ -56,4 +56,9 @@
     <item name="ic_rounded_palette" type="drawable" />
     <item name="_default" type="string" />
     <item name="both" type="string" />
+    <item name="select_apps" type="string" />
+    <item name="pull_down_to_refresh" type="string" />
+    <item name="select_all" type="string" />
+    <item name="filters" type="string" />
+    <item name="sort" type="string" />
 </resources>

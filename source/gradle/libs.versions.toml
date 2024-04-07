@@ -33,6 +33,7 @@ zip4j = "2.11.5"
 kotlinx-coroutines-core-jvm = "1.7.1"
 room = "2.6.1"
 coil-compose = "2.4.0"
+dotlottie-android = "0.2.0"
 hiddenapibypass = "4.3"
 palette = "1.0.0"
 google-services = "4.3.15" # Pinned: https://github.com/firebase/firebase-android-sdk/issues/4693#issuecomment-1765778239
@@ -82,6 +83,7 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
+dotlottie-android = { module = "com.github.LottieFiles:dotlottie-android", version.ref = "dotlottie-android" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }

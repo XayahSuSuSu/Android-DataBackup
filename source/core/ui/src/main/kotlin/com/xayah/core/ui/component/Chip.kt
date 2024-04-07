@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import com.xayah.core.model.SortType
 import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.material3.DisabledAlpha
@@ -51,6 +52,7 @@ import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.ChipTokens
 import com.xayah.core.ui.token.ModalMenuTokens
 import com.xayah.core.ui.token.PaddingTokens
+import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
@@ -470,11 +472,11 @@ fun DataChip(
 }
 
 @Composable
-fun ChipRow(chipGroup: @Composable () -> Unit) {
+fun ChipRow(horizontalSpace: Dp = SizeTokens.Level16, chipGroup: @Composable () -> Unit) {
     Row(
         modifier = Modifier.horizontalScroll(rememberScrollState()),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
+        horizontalArrangement = Arrangement.spacedBy(horizontalSpace)
     ) {
         Spacer(modifier = Modifier.size(PaddingTokens.Level0))
 

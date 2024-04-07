@@ -33,6 +33,9 @@
 # smbj-rpc
 -dontwarn java.rmi.UnmarshalException
 
+# awt
+-dontwarn java.awt.**
+
 -keep class com.xayah.** { *; }
 -keep class android.** { *; }
 -keep class com.android.** { *; }
@@ -48,3 +51,6 @@
 
 # smbj-rpc
 -keep class java.rmi.UnmarshalException
+
+# awt
+-keep class java.awt.**

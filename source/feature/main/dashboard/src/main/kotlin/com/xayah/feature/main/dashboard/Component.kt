@@ -204,9 +204,19 @@ fun QuickActionsButton(
     colorContainer: ColorSchemeKeyTokens,
     colorL80D20: ColorSchemeKeyTokens,
     onColorContainer: ColorSchemeKeyTokens,
-    actionIcon: ImageVectorToken? = null
+    actionIcon: ImageVectorToken? = null,
+    onClick: () -> Unit = {},
 ) {
-    ActionButton(modifier = modifier, enabled = enabled, icon = icon, colorContainer = colorContainer, colorL80D20 = colorL80D20, onColorContainer = onColorContainer, actionIcon = actionIcon) {
+    ActionButton(
+        modifier = modifier,
+        enabled = enabled,
+        icon = icon,
+        colorContainer = colorContainer,
+        colorL80D20 = colorL80D20,
+        onColorContainer = onColorContainer,
+        actionIcon = actionIcon,
+        onClick = onClick
+    ) {
         AutoLabelLargeText(modifier = Modifier.weight(1f), text = title.value, color = onColorContainer.toColor(enabled), enabled = enabled)
     }
 }

@@ -26,6 +26,7 @@ import com.xayah.feature.main.medium.detail.PageMediaDetail
 import com.xayah.feature.main.medium.list.PageMedium
 import com.xayah.feature.main.packages.detail.PagePackageDetail
 import com.xayah.feature.main.packages.list.PagePackages
+import com.xayah.feature.main.packages.redesigned.backup.PageBackupList
 import com.xayah.feature.main.settings.redesigned.PageSettings
 import com.xayah.feature.main.settings.redesigned.backup.PageBackupSettings
 import com.xayah.feature.main.settings.redesigned.restore.PageRestoreSettings
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
         runCatching {
             BaseUtil.initializeEnvironment(context = this)
         }
-
+        getString(R.string.args_loading_from_user)
         setContent {
             DataBackupTheme {
                 val navController = rememberNavController()
@@ -63,6 +64,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(MainRoutes.Index.route) {
                             MainIndexGraph()
+                        }
+                        composable(MainRoutes.PackagesBackupList.route) {
+                            PageBackupList()
                         }
                         composable(MainRoutes.Settings.route) {
                             PageSettings()
