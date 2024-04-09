@@ -231,4 +231,21 @@
     <string name="outdated_fs_warning">O sistema de arquivos neste dispositivo não suporta a criação de arquivos com mais de 4 GB.</string>
     <string name="check_keystore">Verificar keystore</string>
     <string name="check_keystore_desc">Verifique se o app usa KeyStore durante a atualização, isso retardará significativamente o processo.</string>
+    <string name="select_apps">Selecionar apps</string>
+    <string name="pull_down_to_refresh">Puxe para baixo para atualizar</string>
+    <string name="select_all">Selecionar tudo</string>
+    <string name="args_loading_from_user">Carregando do usuário %1$s</string>
+    <string name="storage">Armazenamento</string>
+    <string name="args_finished_at">Concluído em %1$s</string>
+    <string name="setup_required">Configuração necessária, toque para definir um diretório.</string>
+    <string name="quick_actions">Ações rápidas</string>
+    <string name="backup_apps">Backup de apps</string>
+    <string name="filters">Filtros</string>
+    <string name="sort">Ordenar</string>
+    <string name="never">Nunca</string>
+    <string name="backup_contacts">Backup de contatos</string>
+    <string name="backup_files">Backup de arquivos</string>
+    <string name="backup_messages">Backup de mensagens</string>
+    <string name="sync_to_cloud">Sincronizar com a nuvem</string>
+    <string name="dashboard">Painel</string>
 </resources>
