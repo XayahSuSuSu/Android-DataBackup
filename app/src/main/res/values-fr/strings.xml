@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="backup">Sauvegarde</string>
-    <string name="application">App</string>
+    <string name="application">Application</string>
     <string name="data">Données</string>
-    <string name="confirm">Confirmer</string>
+    <string name="confirm">Valider</string>
     <string name="backup_finished">Sauvegarde terminée</string>
     <string name="restore_finished">Restauration terminée</string>
     <string name="compression_type">Type de compression</string>
@@ -12,21 +12,35 @@
     <string name="success">Succès</string>
     <string name="compress">Compresser</string>
     <string name="decompress">Décompresser</string>
-    <string name="environment_detection">Détection d\'environnement</string>
+    <string name="environment_detection">Détection de l\'environnement</string>
     <string name="selected">Sélection</string>
     <string name="backup_user">Sauvegarde utilisateur</string>
     <string name="restore_user">Restaurer l\'utilisateur</string>
     <string name="failed">Échec</string>
     <string name="finish">Terminer</string>
-    <string name="welcome_to_use">Bienvenue sur DataBackup</string>
+    <string name="welcome_to_use">Bienvenue dans DataBackup</string>
     <string name="internal_storage">Stockage interne</string>
     <string name="support">Support</string>
-    <string name="fetch_failed">Échec de la recherche</string>
-    <string name="unsupported_format">Format non supporté</string>
+    <string name="fetch_failed">Échec de la récupération</string>
+    <string name="unsupported_format">Format non pris en charge</string>
     <string name="start">Commencer</string>
     <string name="app_name">DataBackup</string>
     <string name="restore">Restaurer</string>
     <string name="error">Erreur</string>
-    <string name="backup_dir">Répertoire de sauvegarde</string>
+    <string name="backup_dir">Dossier de sauvegarde</string>
     <string name="compression_type_help">Choisissez le type de compression des applications et des données, qui affecte à la fois la sauvegarde et la restauration. Si vous ne savez pas à quoi sert cette option, ne la modifiez pas</string>
+    <string name="backing_up">Sauvegarde…</string>
+    <string name="network">Réseau</string>
+    <string name="network_desc">Utilisé pour obtenir des informations sur les mises à jour de l\'application et pour les statistiques</string>
+    <string name="loading">Chargement</string>
+    <string name="loading_failed">Échec du chargement</string>
+    <string name="none">Aucune</string>
+    <string name="grant_root_access">Autoriser l\'accès root</string>
+    <string name="media">Médias</string>
+    <string name="manifest">Manifeste</string>
+    <string name="selected_data">Données sélectionnées</string>
+    <string name="restoring">Restoration</string>
+    <string name="log">Journaux</string>
+    <string name="telephony">Historique d\'appel</string>
+    <string name="succeed">Succès</string>
 </resources>
