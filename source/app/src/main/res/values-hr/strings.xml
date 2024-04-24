@@ -225,5 +225,11 @@
     <string name="pick_custom_directory_desc">Dodirni za biranje prilagođene mape</string>
     <string name="backup_categories">Kategorije sigurnosnih kopija</string>
     <string name="skip_setup_alert">Nećeš moći izraditi sigurnosnu kopiju ili obnoviti operacije, sve dok ne odabereš mapu za sigurnosne kopije.</string>
-    <string name="notification_permission_desc">Pristup obradi informacija</string>
+    <string name="notification_permission_desc">Pristup podacima obrade</string>
+    <string name="select_all">Odaberi sve</string>
+    <string name="sort">Razvrstaj</string>
+    <string name="args_loading_from_user">Učitavanje od korisnika %1$s</string>
+    <string name="storage">Memorija</string>
+    <string name="root_permission">Dozvola za administratora</string>
+    <string name="notification_permission">Dozvola za obavijesti</string>
 </resources>
