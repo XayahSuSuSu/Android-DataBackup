@@ -11,7 +11,9 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.atomic.AtomicLong
 
 object FileUtil {
-    fun listFilePaths(path: String): List<String> = runCatching { File(path).listFiles()!!.map { it.path } }.getOrElse { listOf() }
+    fun listFilePaths(path: String, listFiles: Boolean = true, listDirs: Boolean = true): List<String> = runCatching {
+        File(path).listFiles()!!.filter { (it.isFile && listFiles) || (it.isDirectory && listDirs) }.map { it.path }
+    }.getOrElse { listOf() }
 
     fun calculateSize(path: String): Long = run {
         val size = AtomicLong(0)

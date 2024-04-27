@@ -96,6 +96,10 @@ fun PageDirectory() {
                     viewModel.emitIntent(IndexUiIntent.Add(context = context as ComponentActivity))
                 }
             }
+
+            item {
+                Spacer(modifier = Modifier.size(SizeTokens.Level0))
+            }
         }
     }
 }

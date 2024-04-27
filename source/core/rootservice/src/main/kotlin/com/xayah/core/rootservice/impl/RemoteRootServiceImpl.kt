@@ -122,8 +122,8 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         tryOn(block = { File(path).deleteRecursively() }, onException = { false })
     }
 
-    override fun listFilePaths(path: String): List<String> = synchronized(lock) {
-        FileUtil.listFilePaths(path = path)
+    override fun listFilePaths(path: String, listFiles: Boolean, listDirs: Boolean): List<String> = synchronized(lock) {
+        FileUtil.listFilePaths(path = path, listFiles = listFiles, listDirs = listDirs)
     }
 
     private fun writeToParcel(onWrite: (Parcel) -> Unit) = run {

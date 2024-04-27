@@ -11,7 +11,7 @@ interface IRemoteRootService {
     boolean exists(String path);
     boolean createNewFile(String path);
     boolean deleteRecursively(String path);
-    List<String> listFilePaths(String path);
+    List<String> listFilePaths(String path, boolean listFiles, boolean listDirs);
     ParcelFileDescriptor readText(String path);
     ParcelFileDescriptor readBytes(String path);
     long calculateSize(String path);

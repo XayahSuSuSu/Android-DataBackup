@@ -80,7 +80,7 @@ class DirectoryRepository @Inject constructor(
             directoryDao.updateActive(active = false)
 
             // Internal storage
-            val internalList = rootService.listFilePaths(PathUtil.getDataMediaDir())
+            val internalList = rootService.listFilePaths(PathUtil.getDataMediaDir(), listFiles = false)
             val internalDirs = mutableListOf<DirectoryUpsertEntity>()
             for (storageItem in internalList) {
                 // e.g. /data/media/0

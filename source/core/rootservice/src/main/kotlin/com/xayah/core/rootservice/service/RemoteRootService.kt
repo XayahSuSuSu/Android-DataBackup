@@ -183,7 +183,8 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun deleteRecursively(path: String): Boolean = runCatching { getService().deleteRecursively(path) }.onFailure(onFailure).getOrElse { false }
 
-    suspend fun listFilePaths(path: String): List<String> = runCatching { getService().listFilePaths(path) }.onFailure(onFailure).getOrElse { listOf() }
+    suspend fun listFilePaths(path: String, listFiles: Boolean = true, listDirs: Boolean = true): List<String> =
+        runCatching { getService().listFilePaths(path, listFiles, listDirs) }.onFailure(onFailure).getOrElse { listOf() }
 
     private fun readFromParcel(pfd: ParcelFileDescriptor, onRead: (Parcel) -> Unit) = run {
         val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
