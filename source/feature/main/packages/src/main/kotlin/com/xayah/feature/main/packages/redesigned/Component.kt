@@ -41,6 +41,7 @@ import com.xayah.core.ui.component.AnimatedLinearProgressIndicator
 import com.xayah.core.ui.component.BodyLargeText
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.BodySmallText
+import com.xayah.core.ui.component.CheckIconButton
 import com.xayah.core.ui.component.ChipRow
 import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.FilterChip
@@ -66,8 +67,8 @@ import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 import com.xayah.feature.main.packages.R
-import com.xayah.feature.main.packages.redesigned.backup.IndexUiIntent
-import com.xayah.feature.main.packages.redesigned.backup.IndexViewModel
+import com.xayah.feature.main.packages.redesigned.backup.list.IndexUiIntent
+import com.xayah.feature.main.packages.redesigned.backup.list.IndexViewModel
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -134,7 +135,7 @@ fun PackageItem(item: PackageEntity, onCheckedChange: ((Boolean) -> Unit)?, onCl
             PackageIconImage(packageName = item.packageName, label = "${item.packageInfo.label.firstOrNull() ?: ""}")
             Column(modifier = Modifier.weight(1f)) {
                 TitleLargeText(text = item.packageInfo.label, color = ColorSchemeKeyTokens.OnSurface.toColor())
-                BodyMediumText(text = "${item.packageName} (${item.packageInfo.versionName})", color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+                BodyMediumText(text = item.packageName, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
             }
             Divider(
                 modifier = Modifier
@@ -142,7 +143,7 @@ fun PackageItem(item: PackageEntity, onCheckedChange: ((Boolean) -> Unit)?, onCl
                     .width(SizeTokens.Level1)
                     .fillMaxHeight()
             )
-            Checkbox(checked = item.extraInfo.activated, onCheckedChange = onCheckedChange)
+            CheckIconButton(checked = item.extraInfo.activated, onCheckedChange = onCheckedChange)
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.xayah.feature.setup.page.two
 
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import com.xayah.core.ui.util.value
 import com.xayah.feature.setup.R
 import com.xayah.feature.setup.SetupScaffold
 
+@ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable

@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -14,23 +15,30 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import com.xayah.core.ui.R
+import com.xayah.core.ui.material3.toColor
+import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.PaddingTokens
+import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 
 @Composable
-fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, enabled: Boolean = true, onClick: () -> Unit) {
+fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, tint: Color = LocalContentColor.current, enabled: Boolean = true, onClick: () -> Unit) {
     IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
         Icon(
             imageVector = icon.value,
-            contentDescription = null
+            contentDescription = null,
+            tint = tint,
         )
     }
 }
@@ -148,4 +156,15 @@ fun IconTextButton(
             )
         }
     )
+}
+
+@Composable
+fun CheckIconButton(modifier: Modifier = Modifier, checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?) {
+    IconButton(
+        modifier = modifier,
+        icon = if (checked) ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle) else ImageVectorToken.fromVector(Icons.Rounded.Circle),
+        tint = if (checked) ColorSchemeKeyTokens.Primary.toColor() else ColorSchemeKeyTokens.SurfaceVariant.toColor()
+    ) {
+        onCheckedChange?.invoke(checked)
+    }
 }

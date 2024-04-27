@@ -15,6 +15,10 @@ sealed class MainRoutes(val route: String) {
     data object RestoreSettings : MainRoutes(route = "main_restore_settings")
     data object Packages : MainRoutes(route = "main_packages")
     data object PackagesBackupList : MainRoutes(route = "main_packages_backup_list")
+    data object PackagesBackupDetail : MainRoutes(route = "main_packages_backup_detail/{$ArgPackageName}/{$ArgUserId}") {
+        fun getRoute(packageName: String, userId: Int) = "main_packages_backup_detail/${packageName}/${userId}"
+    }
+
     data object PackageDetail : MainRoutes(route = "main_package_detail/{$ArgPackageName}/{$ArgUserId}") {
         fun getRoute(packageName: String, userId: Int) = "main_package_detail/${packageName}/${userId}"
     }

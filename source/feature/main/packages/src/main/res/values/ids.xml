@@ -1,6 +1,6 @@
 <resources>
-    <item name="app_and_data" type="string"/>
-    <item name="search_bar_hint_packages" type="string"/>
+    <item name="app_and_data" type="string" />
+    <item name="search_bar_hint_packages" type="string" />
     <item name="backup_sort_type_items" type="array" />
     <item name="ic_rounded_deployed_code" type="drawable" />
     <item name="flag_type_items" type="array" />
@@ -13,9 +13,13 @@
     <item name="user" type="string" />
     <item name="system" type="string" />
     <item name="third_party" type="string" />
+    <item name="ic_rounded_android" type="drawable" />
     <item name="ic_rounded_person" type="drawable" />
+    <item name="ic_rounded_manage_accounts" type="drawable" />
     <item name="ic_rounded_history" type="drawable" />
     <item name="ic_rounded_database" type="drawable" />
+    <item name="ic_rounded_stadia_controller" type="drawable" />
+    <item name="ic_rounded_image" type="drawable" />
     <item name="ic_rounded_check_circle" type="drawable" />
     <item name="ic_rounded_error" type="drawable" />
     <item name="backup" type="string" />
@@ -61,4 +65,6 @@
     <item name="select_all" type="string" />
     <item name="filters" type="string" />
     <item name="sort" type="string" />
+    <item name="none" type="string" />
+    <item name="backup_parts" type="string" />
 </resources>

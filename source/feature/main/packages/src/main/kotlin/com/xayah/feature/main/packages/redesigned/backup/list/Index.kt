@@ -1,4 +1,4 @@
-package com.xayah.feature.main.packages.redesigned.backup
+package com.xayah.feature.main.packages.redesigned.backup.list
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.component.IconButton
@@ -55,8 +54,7 @@ import com.xayah.feature.main.packages.redesigned.PackageItem
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun PageBackupList() {
-    val context = LocalContext.current
+fun PagePackagesBackupList() {
     val navController = LocalNavController.current!!
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -120,7 +118,9 @@ fun PageBackupList() {
                         PackageItem(
                             item = item,
                             onCheckedChange = { viewModel.emitIntent(IndexUiIntent.Select(item)) },
-                            onClick = {}
+                            onClick = {
+                                viewModel.emitIntent(IndexUiIntent.ToPageDetail(navController, item))
+                            }
                         )
                     }
                 }

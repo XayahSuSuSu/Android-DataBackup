@@ -61,6 +61,7 @@ class PackageRepository @Inject constructor(
     private val pathUtil: PathUtil,
 ) {
     fun getPackages() = packageDao.queryFlow().distinctUntilChanged()
+    fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long) = packageDao.queryFlow(packageName, opType, userId, preserveId).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType) = packageDao.queryPackagesFlow(opType).distinctUntilChanged()
     fun getPackages(opType: OpType) = packageDao.queryFlow(opType).distinctUntilChanged()
     val activatedCount = packageDao.countActivatedFlow().distinctUntilChanged()

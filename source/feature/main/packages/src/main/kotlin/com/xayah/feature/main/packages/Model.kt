@@ -79,6 +79,41 @@ fun PackageEntity.reverseSsaid() = if (ssaidSelected)
 else
     copy(dataStates = dataStates.copy(ssaidState = DataState.Selected))
 
+
+fun PackageEntity.reversedPackage(dataType: DataType): PackageEntity = when (dataType) {
+    DataType.PACKAGE_APK -> if (apkSelected)
+        copy(dataStates = dataStates.copy(apkState = DataState.NotSelected))
+    else
+        copy(dataStates = dataStates.copy(apkState = DataState.Selected))
+
+    DataType.PACKAGE_USER -> if (userSelected)
+        copy(dataStates = dataStates.copy(userState = DataState.NotSelected))
+    else
+        copy(dataStates = dataStates.copy(userState = DataState.Selected))
+
+    DataType.PACKAGE_USER_DE -> if (userDeSelected)
+        copy(dataStates = dataStates.copy(userDeState = DataState.NotSelected))
+    else
+        copy(dataStates = dataStates.copy(userDeState = DataState.Selected))
+
+    DataType.PACKAGE_DATA -> if (dataSelected)
+        copy(dataStates = dataStates.copy(dataState = DataState.NotSelected))
+    else
+        copy(dataStates = dataStates.copy(dataState = DataState.Selected))
+
+    DataType.PACKAGE_OBB -> if (obbSelected)
+        copy(dataStates = dataStates.copy(obbState = DataState.NotSelected))
+    else
+        copy(dataStates = dataStates.copy(obbState = DataState.Selected))
+
+    DataType.PACKAGE_MEDIA -> if (mediaSelected)
+        copy(dataStates = dataStates.copy(mediaState = DataState.NotSelected))
+    else
+        copy(dataStates = dataStates.copy(mediaState = DataState.Selected))
+
+    else -> this
+}
+
 data class PackageDataChipItem(
     val dataType: DataType,
     val dataBytes: Long?,

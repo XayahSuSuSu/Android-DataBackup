@@ -26,7 +26,8 @@ import com.xayah.feature.main.medium.detail.PageMediaDetail
 import com.xayah.feature.main.medium.list.PageMedium
 import com.xayah.feature.main.packages.detail.PagePackageDetail
 import com.xayah.feature.main.packages.list.PagePackages
-import com.xayah.feature.main.packages.redesigned.backup.PageBackupList
+import com.xayah.feature.main.packages.redesigned.backup.detail.PagePackagesBackupDetail
+import com.xayah.feature.main.packages.redesigned.backup.list.PagePackagesBackupList
 import com.xayah.feature.main.settings.redesigned.PageSettings
 import com.xayah.feature.main.settings.redesigned.backup.PageBackupSettings
 import com.xayah.feature.main.settings.redesigned.restore.PageRestoreSettings
@@ -66,7 +67,10 @@ class MainActivity : ComponentActivity() {
                             MainIndexGraph()
                         }
                         composable(MainRoutes.PackagesBackupList.route) {
-                            PageBackupList()
+                            PagePackagesBackupList()
+                        }
+                        composable(MainRoutes.PackagesBackupDetail.route) {
+                            PagePackagesBackupDetail()
                         }
                         composable(MainRoutes.Settings.route) {
                             PageSettings()

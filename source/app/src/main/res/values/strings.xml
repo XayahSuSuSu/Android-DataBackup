@@ -255,4 +255,5 @@
     <string name="filters">Filters</string>
     <string name="sort">Sort</string>
     <string name="args_loading_from_user">Loading from user %1$s</string>
+    <string name="backup_parts">Backup parts</string>
 </resources>

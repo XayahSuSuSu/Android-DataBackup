@@ -1,6 +1,7 @@
-package com.xayah.feature.main.packages.redesigned.backup
+package com.xayah.feature.main.packages.redesigned.backup.list
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.navigation.NavHostController
 import com.xayah.core.common.viewmodel.BaseViewModel
 import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
@@ -11,6 +12,7 @@ import com.xayah.core.model.SortType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.RefreshState
+import com.xayah.core.ui.route.MainRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +38,7 @@ sealed class IndexUiIntent : UiIntent {
     data class FilterByKey(val key: String) : IndexUiIntent()
     data class Select(val entity: PackageEntity) : IndexUiIntent()
     data class SelectAll(val selected: Boolean) : IndexUiIntent()
+    data class ToPageDetail(val navController: NavHostController, val packageEntity: PackageEntity) : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -94,6 +97,13 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.SelectAll -> {
                 packageRepo.upsert(packagesState.value.onEach { it.extraInfo.activated = intent.selected })
+            }
+
+            is IndexUiIntent.ToPageDetail -> {
+                val entity = intent.packageEntity
+                withMainContext {
+                    intent.navController.navigate(MainRoutes.PackagesBackupDetail.getRoute(entity.packageName, entity.userId))
+                }
             }
         }
     }

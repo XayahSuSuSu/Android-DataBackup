@@ -248,4 +248,5 @@
     <string name="filters">过滤</string>
     <string name="sort">排序</string>
     <string name="args_loading_from_user">正在加载用户 %1$s</string>
+    <string name="backup_parts">备份内容</string>
 </resources>
