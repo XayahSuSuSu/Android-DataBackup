@@ -83,7 +83,7 @@ fun Clickable(
                     TitleLargeText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurface.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
                 AnimatedTextContainer(targetState = value.value) { text ->
-                    TitleSmallText(enabled = enabled, text = value.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled), fontWeight = FontWeight.Normal)
+                    TitleSmallText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
             }
             if (trailingContent != null) trailingContent()

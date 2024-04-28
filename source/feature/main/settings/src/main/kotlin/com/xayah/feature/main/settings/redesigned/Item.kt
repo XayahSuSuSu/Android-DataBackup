@@ -1,5 +1,6 @@
 package com.xayah.feature.main.settings.redesigned
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -16,6 +17,7 @@ import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromString
 
+@ExperimentalAnimationApi
 @Composable
 fun DarkThemeSelectable() {
     val context = LocalContext.current
