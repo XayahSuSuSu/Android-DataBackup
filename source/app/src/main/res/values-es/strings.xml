@@ -248,4 +248,5 @@
     <string name="select_all">Seleccionar todo</string>
     <string name="filters">Filtros</string>
     <string name="args_loading_from_user">Cargando desde usuario %1$s</string>
+    <string name="backup_parts">Contenido de copia de seguridad</string>
 </resources>
