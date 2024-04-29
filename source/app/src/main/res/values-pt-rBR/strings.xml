@@ -248,4 +248,5 @@
     <string name="backup_messages">Backup de mensagens</string>
     <string name="sync_to_cloud">Sincronizar com a nuvem</string>
     <string name="dashboard">Painel</string>
+    <string name="backup_parts">Partes do backup</string>
 </resources>
