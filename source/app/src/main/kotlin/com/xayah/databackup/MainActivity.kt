@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,6 +62,10 @@ class MainActivity : ComponentActivity() {
                         enterTransition = {
                             fadeIn(animationSpec = tween()) +
                                     slideIntoContainer(animationSpec = tween(), towards = AnimatedContentTransitionScope.SlideDirection.Start)
+                        },
+                        popExitTransition = {
+                            fadeOut(animationSpec = tween()) +
+                                    slideOutOfContainer(animationSpec = tween(), towards = AnimatedContentTransitionScope.SlideDirection.Start)
                         },
                     ) {
                         composable(MainRoutes.Index.route) {

@@ -114,7 +114,7 @@ fun PackageItem(item: PackageEntity, onCheckedChange: ((Boolean) -> Unit)?, onCl
             PackageIconImage(packageName = item.packageName, label = "${item.packageInfo.label.firstOrNull() ?: ""}")
             Column(modifier = Modifier.weight(1f)) {
                 TitleLargeText(text = item.packageInfo.label, color = ColorSchemeKeyTokens.OnSurface.toColor())
-                BodyMediumText(text = item.packageName, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+                BodyMediumText(text = item.packageName, color = ColorSchemeKeyTokens.Outline.toColor())
             }
             Divider(
                 modifier = Modifier
