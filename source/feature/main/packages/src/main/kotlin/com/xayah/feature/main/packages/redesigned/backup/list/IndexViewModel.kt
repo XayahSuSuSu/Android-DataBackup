@@ -27,6 +27,7 @@ data class IndexUiState(
     val isRefreshing: Boolean,
     val selectAll: Boolean,
     val userIdList: List<Int>,
+    val filterMode: Boolean,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -36,6 +37,7 @@ sealed class IndexUiIntent : UiIntent {
     data class FilterByFlag(val index: Int) : IndexUiIntent()
     data class Sort(val index: Int, val type: SortType) : IndexUiIntent()
     data class FilterByKey(val key: String) : IndexUiIntent()
+    data object ClearKey : IndexUiIntent()
     data class Select(val entity: PackageEntity) : IndexUiIntent()
     data class SelectAll(val selected: Boolean) : IndexUiIntent()
     data class ToPageDetail(val navController: NavHostController, val packageEntity: PackageEntity) : IndexUiIntent()
@@ -46,7 +48,7 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     private val packageRepo: PackageRepository,
     private val rootService: RemoteRootService,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, selectAll = false, userIdList = listOf())) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, selectAll = false, userIdList = listOf(), filterMode = true)) {
     init {
         rootService.onFailure = {
             val msg = it.message
@@ -91,6 +93,10 @@ class IndexViewModel @Inject constructor(
                 _keyState.value = intent.key
             }
 
+            is IndexUiIntent.ClearKey -> {
+                _keyState.value = ""
+            }
+
             is IndexUiIntent.Select -> {
                 packageRepo.upsert(intent.entity.copy(extraInfo = intent.entity.extraInfo.copy(activated = intent.entity.extraInfo.activated.not())))
             }
@@ -125,8 +131,10 @@ class IndexViewModel @Inject constructor(
             packages.filter(packageRepo.getUserIdPredicateNew(indexList = userIdIndexList, userIdList = uiState.value.userIdList))
         }.flowOnIO()
     private val _srcPackagesEmptyState: Flow<Boolean> = _packages.map { packages -> packages.isEmpty() }.flowOnIO()
+    private val _packagesSelectedState: Flow<Int> = _packagesState.map { packages -> packages.count { it.extraInfo.activated } }.flowOnIO()
 
     val packagesState: StateFlow<List<PackageEntity>> = _packagesState.stateInScope(listOf())
+    val packagesSelectedState: StateFlow<Int> = _packagesSelectedState.stateInScope(0)
     val refreshState: StateFlow<RefreshState> = _refreshState.asStateFlow()
     val flagIndexState: StateFlow<Int> = _flagIndexState.stateInScope(1)
     val userIdIndexListState: StateFlow<List<Int>> = _userIdIndexListState.stateInScope(listOf(0))

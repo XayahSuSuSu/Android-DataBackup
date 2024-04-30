@@ -126,6 +126,7 @@ fun AssistChip(
     shape: Shape = AssistChipDefaults.shape,
     color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
     containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Transparent,
+    border: BorderStroke? = AssistChipDefaults.assistChipBorder(enabled),
     onClick: () -> Unit,
 ) {
     AssistChip(
@@ -158,6 +159,7 @@ fun AssistChip(
         },
         shape = shape,
         colors = AssistChipDefaults.assistChipColors(labelColor = color.toColor(), containerColor = containerColor.toColor()),
+        border = border
     )
 }
 
@@ -237,7 +239,10 @@ fun SortChip(
             },
             label = StringResourceToken.fromString(list[selectedIndex]),
             leadingIcon = leadingIcon,
-            trailingIcon = selectedIcon
+            trailingIcon = selectedIcon,
+            color = ColorSchemeKeyTokens.Primary,
+            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+            border = null,
         )
 
         ModalStringListDropdownMenu(

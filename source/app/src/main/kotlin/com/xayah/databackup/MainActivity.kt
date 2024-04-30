@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
         runCatching {
             BaseUtil.initializeEnvironment(context = this)
         }
-        getString(R.string.args_loading_from_user)
+
         setContent {
             DataBackupTheme {
                 val navController = rememberNavController()
