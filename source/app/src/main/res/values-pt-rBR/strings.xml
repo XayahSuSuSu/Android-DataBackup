@@ -249,4 +249,9 @@
     <string name="sync_to_cloud">Sincronizar com a nuvem</string>
     <string name="dashboard">Painel</string>
     <string name="backup_parts">Partes do backup</string>
+    <string name="necessary_preparations">Preparativos necessários</string>
+    <string name="save_icons">Salvar ícones</string>
+    <string name="necessary_remaining_data_processing">Processamento de dados restantes necessário</string>
+    <string name="args_backup">Backup %1$s</string>
+    <string name="post_processing">Pós-processamento</string>
 </resources>
