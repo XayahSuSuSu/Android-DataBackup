@@ -249,4 +249,9 @@
     <string name="sort">排序</string>
     <string name="args_loading_from_user">正在載入使用者 %1$s</string>
     <string name="backup_parts">備份內容</string>
+    <string name="necessary_preparations">必要準備</string>
+    <string name="necessary_remaining_data_processing">必要的餘下資料處理</string>
+    <string name="save_icons">保存圖標</string>
+    <string name="args_backup">備份 %1$s</string>
+    <string name="post_processing">後處理</string>
 </resources>

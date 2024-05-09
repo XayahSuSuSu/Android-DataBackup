@@ -99,4 +99,6 @@ enum class ColorSchemeKeyTokens {
     SurfaceContainerLowBaselineFixed,
     SurfaceContainerLowestBaselineFixed,
     SurfaceDimBaselineFixed,
+
+    SurfaceVariantDim,
 }

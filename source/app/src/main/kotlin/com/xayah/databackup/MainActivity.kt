@@ -8,6 +8,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +31,7 @@ import com.xayah.feature.main.packages.detail.PagePackageDetail
 import com.xayah.feature.main.packages.list.PagePackages
 import com.xayah.feature.main.packages.redesigned.backup.detail.PagePackagesBackupDetail
 import com.xayah.feature.main.packages.redesigned.backup.list.PagePackagesBackupList
+import com.xayah.feature.main.packages.redesigned.backup.processing.PagePackagesBackupProcessing
 import com.xayah.feature.main.settings.redesigned.PageSettings
 import com.xayah.feature.main.settings.redesigned.backup.PageBackupSettings
 import com.xayah.feature.main.settings.redesigned.restore.PageRestoreSettings
@@ -60,13 +63,17 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = MainRoutes.Index.route,
                         enterTransition = {
-                            fadeIn(animationSpec = tween()) +
-                                    slideIntoContainer(animationSpec = tween(), towards = AnimatedContentTransitionScope.SlideDirection.Start)
+                            slideInHorizontally(initialOffsetX = { it })
+                        },
+                        exitTransition = {
+                            slideOutHorizontally()
+                        },
+                        popEnterTransition = {
+                            slideInHorizontally()
                         },
                         popExitTransition = {
-                            fadeOut(animationSpec = tween()) +
-                                    slideOutOfContainer(animationSpec = tween(), towards = AnimatedContentTransitionScope.SlideDirection.Start)
-                        },
+                            slideOutHorizontally(targetOffsetX = { it })
+                        }
                     ) {
                         composable(MainRoutes.Index.route) {
                             MainIndexGraph()
@@ -76,6 +83,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.PackagesBackupDetail.route) {
                             PagePackagesBackupDetail()
+                        }
+                        composable(MainRoutes.PackagesBackupProcessing.route) {
+                            PagePackagesBackupProcessing()
                         }
                         composable(MainRoutes.Settings.route) {
                             PageSettings()

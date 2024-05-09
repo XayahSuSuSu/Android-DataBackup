@@ -146,6 +146,8 @@ internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
         ColorSchemeKeyTokens.SurfaceContainerLowBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral10 else BaselineTonalPalette.neutral96
         ColorSchemeKeyTokens.SurfaceContainerLowestBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral4 else BaselineTonalPalette.neutral100
         ColorSchemeKeyTokens.SurfaceDimBaselineFixed -> if (isDarkTheme) BaselineTonalPalette.neutral6 else BaselineTonalPalette.neutral87
+
+        ColorSchemeKeyTokens.SurfaceVariantDim -> if (isDarkTheme) tonalPalette.neutral20 else tonalPalette.neutral95
     }
 }
 

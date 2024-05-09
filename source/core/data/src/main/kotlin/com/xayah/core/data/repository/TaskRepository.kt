@@ -28,6 +28,10 @@ class TaskRepository @Inject constructor(
 
     fun queryTaskFlow(id: Long) = taskDao.queryTaskFlow(id)
 
+    fun queryPackagePreFlow(taskId: Long) = taskDao.queryPackagePreFlow(taskId)
+    fun queryPackagePostFlow(taskId: Long) = taskDao.queryPackagePostFlow(taskId)
+    fun queryPackageFlow(taskId: Long) = taskDao.queryPackageFlow(taskId)
+
     @Suppress("UNCHECKED_CAST")
     fun <T> queryProcessingFlow(taskId: Long, taskType: TaskType): Flow<List<T>> = when (taskType) {
         TaskType.PACKAGE -> taskDao.queryPackageFlow(taskId).map { tasks -> tasks.filter { it.isFinished.not() } }.distinctUntilChanged()

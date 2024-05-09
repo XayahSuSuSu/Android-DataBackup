@@ -81,6 +81,8 @@ abstract class ProcessingService {
         }
     }
 
+    suspend fun initialize() = getService().initialize()
+
     suspend fun preprocessing() = getService().preprocessing()
 
     @OptIn(ExperimentalSerializationApi::class)

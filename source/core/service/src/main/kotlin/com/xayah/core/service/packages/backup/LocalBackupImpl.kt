@@ -7,8 +7,8 @@ import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
+import com.xayah.core.model.OperationState
 import com.xayah.core.model.TaskType
-import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
@@ -76,17 +76,16 @@ internal class LocalBackupImpl @Inject constructor() : BackupService() {
         rootService.mkdirs(configsDir)
     }
 
-    override suspend fun backupPackage(p: PackageEntity) {
+    override suspend fun backupPackage(t: TaskDetailPackageEntity) {
+        t.apply {
+            state = OperationState.PROCESSING
+            taskDao.upsert(this)
+        }
+
+        val p = t.packageEntity
         val dstDir = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
         rootService.mkdirs(dstDir)
 
-        val t = TaskDetailPackageEntity(
-            id = 0,
-            taskId = taskEntity.id,
-            packageEntity = p,
-        ).apply {
-            id = taskDao.upsert(this)
-        }
         var restoreEntity = packageDao.query(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, "", localBackupSaveDir)
 
         packagesBackupUtil.backupApk(p = p, t = t, r = restoreEntity, dstDir = dstDir)
@@ -118,24 +117,49 @@ internal class LocalBackupImpl @Inject constructor() : BackupService() {
         }
 
         taskEntity.also {
+            t.apply {
+                state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                taskDao.upsert(this)
+            }
             if (t.isSuccess) it.successCount++ else it.failureCount++
             taskDao.upsert(it)
         }
     }
 
     override suspend fun backupItself() {
+        postEntity.also {
+            it.backupItselfInfo.state = OperationState.PROCESSING
+            taskDao.upsert(it)
+        }
+
         val dstDir = context.localBackupSaveDir()
+        val backupItself = context.readBackupItself().first()
         // Backup itself if enabled.
-        if (context.readBackupItself().first()) {
+        if (backupItself) {
             log { "Backup itself enabled." }
             commonBackupUtil.backupItself(dstDir = dstDir)
+        }
+
+        postEntity.also {
+            it.backupItselfInfo.state = if (backupItself) OperationState.DONE else OperationState.SKIP
+            taskDao.upsert(it)
         }
     }
 
     override suspend fun backupIcons() {
+        postEntity.also {
+            it.saveIconsInfo.state = OperationState.PROCESSING
+            taskDao.upsert(it)
+        }
+
         // Backup others.
         log { "Save icons." }
         packagesBackupUtil.backupIcons(dstDir = configsDir)
+
+        postEntity.also {
+            it.saveIconsInfo.state = OperationState.DONE
+            taskDao.upsert(it)
+        }
     }
 
     override suspend fun clear() {}

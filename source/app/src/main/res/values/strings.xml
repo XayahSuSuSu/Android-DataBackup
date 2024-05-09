@@ -256,4 +256,9 @@
     <string name="sort">Sort</string>
     <string name="args_loading_from_user">Loading from user %1$s</string>
     <string name="backup_parts">Backup parts</string>
+    <string name="necessary_preparations">Necessary preparations</string>
+    <string name="necessary_remaining_data_processing">Necessary remaining data processing</string>
+    <string name="save_icons">Save icons</string>
+    <string name="args_backup">Backup %1$s</string>
+    <string name="post_processing">Post-processing</string>
 </resources>

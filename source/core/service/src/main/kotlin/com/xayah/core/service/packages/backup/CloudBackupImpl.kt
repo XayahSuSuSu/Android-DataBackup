@@ -10,7 +10,6 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.CloudEntity
-import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.network.client.CloudClient
@@ -104,20 +103,14 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
         client.mkdirRecursively(remoteConfigsDir)
     }
 
-    override suspend fun backupPackage(p: PackageEntity) {
+    override suspend fun backupPackage(t: TaskDetailPackageEntity) {
+        val p = t.packageEntity
         val tmpDstDir = "${tmpArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
         rootService.mkdirs(tmpDstDir)
 
         val remoteDstDir = "${remoteArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
         client.mkdirRecursively(remoteDstDir)
 
-        val t = TaskDetailPackageEntity(
-            id = 0,
-            taskId = taskEntity.id,
-            packageEntity = p,
-        ).apply {
-            id = taskDao.upsert(this)
-        }
         var restoreEntity = packageRepository.getPackage(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, cloudEntity.name, remote)
 
         packagesBackupUtil.backupApk(p = p, t = t, r = restoreEntity, dstDir = tmpDstDir).apply {

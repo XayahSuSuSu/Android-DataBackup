@@ -1,6 +1,7 @@
 package com.xayah.core.ui.component
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -19,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.token.AnimationTokens.AnimatedOffsetYLabel
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.ScrollBarTokens
 import kotlinx.coroutines.delay
@@ -38,14 +41,22 @@ import kotlin.math.roundToInt
 
 @ExperimentalFoundationApi
 @Composable
-fun ScrollBar(modifier: Modifier = Modifier, state: LazyListState, listSize: Int) {
+fun ScrollBar(modifier: Modifier = Modifier, state: LazyListState) {
     with(LocalDensity.current) {
         var isDragging by remember { mutableStateOf(false) }
         val isScrollInProgress = state.isScrollInProgress
         var offsetY by remember { mutableFloatStateOf(0f) }
+        val animatedOffsetY: Float by animateFloatAsState(offsetY, label = AnimatedOffsetYLabel)
         var barSize by remember { mutableStateOf(IntSize.Zero) }
         val rSize by remember(barSize) { mutableFloatStateOf(barSize.height - (ScrollBarTokens.BarHeight.toPx())) }
         val ratio by remember(offsetY, rSize) { mutableFloatStateOf(offsetY / rSize) }
+        val totalItemsCount by remember(state.layoutInfo.totalItemsCount) { mutableIntStateOf(state.layoutInfo.totalItemsCount) }
+        var visibleItemsCount by remember(totalItemsCount) { mutableIntStateOf(totalItemsCount) }
+        LaunchedEffect(state.layoutInfo.visibleItemsInfo.size, totalItemsCount) {
+            if (visibleItemsCount > state.layoutInfo.visibleItemsInfo.size && state.layoutInfo.visibleItemsInfo.isNotEmpty()) visibleItemsCount = state.layoutInfo.visibleItemsInfo.size
+        }
+        val scrollableItemsCount by remember(totalItemsCount, visibleItemsCount) { mutableIntStateOf((totalItemsCount - visibleItemsCount).coerceAtLeast(1)) }
+        val perItemBarHeight by remember(rSize, scrollableItemsCount) { mutableFloatStateOf(rSize / scrollableItemsCount) }
         val firstVisibleItemIndex by remember { derivedStateOf { state.firstVisibleItemIndex } }
         var isExpand by remember { mutableStateOf(false) }
         LaunchedEffect(isScrollInProgress, isDragging) {
@@ -65,13 +76,10 @@ fun ScrollBar(modifier: Modifier = Modifier, state: LazyListState, listSize: Int
         ) {
             val dp: Dp by animateDpAsState(if (isExpand) ScrollBarTokens.Width else PaddingTokens.Level0, label = ScrollBarTokens.AnimationLabel)
             LaunchedEffect(ratio) {
-                if (isScrollInProgress.not()) state.scrollToItem(runCatching { (listSize * ratio).roundToInt() }.getOrElse { 0 })
+                if (isScrollInProgress.not()) state.scrollToItem(runCatching { (scrollableItemsCount * ratio).roundToInt() }.getOrElse { 0 })
             }
-            LaunchedEffect(firstVisibleItemIndex) {
-                if (isDragging.not()) offsetY = (state.firstVisibleItemIndex.toFloat() / listSize) * rSize
-            }
-            LaunchedEffect(listSize) {
-                if (rSize - offsetY <= 50) state.animateScrollToItem(listSize)
+            LaunchedEffect(firstVisibleItemIndex, perItemBarHeight) {
+                if (isDragging.not()) offsetY = firstVisibleItemIndex * perItemBarHeight
             }
 
             // Background
@@ -88,7 +96,7 @@ fun ScrollBar(modifier: Modifier = Modifier, state: LazyListState, listSize: Int
                 Box(modifier = Modifier
                     .height(ScrollBarTokens.BarHeight)
                     .fillMaxWidth()
-                    .offset { IntOffset(0, runCatching { offsetY.roundToInt() }.getOrElse { 0 }) }
+                    .offset { IntOffset(0, runCatching { animatedOffsetY.roundToInt() }.getOrElse { 0 }) }
                     .draggable(
                         orientation = Orientation.Vertical,
                         state = rememberDraggableState { delta ->
@@ -98,7 +106,9 @@ fun ScrollBar(modifier: Modifier = Modifier, state: LazyListState, listSize: Int
                             }
                         },
                         onDragStarted = { isDragging = true },
-                        onDragStopped = { isDragging = false }
+                        onDragStopped = {
+                            isDragging = false
+                        }
                     ),
                     contentAlignment = Alignment.CenterEnd
                 ) {

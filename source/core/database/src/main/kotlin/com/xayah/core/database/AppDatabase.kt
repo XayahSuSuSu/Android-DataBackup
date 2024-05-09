@@ -18,6 +18,8 @@ import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
+import com.xayah.core.model.database.TaskDetailPackagePostEntity
+import com.xayah.core.model.database.TaskDetailPackagePreEntity
 import com.xayah.core.model.database.TaskEntity
 
 @Database(
@@ -30,6 +32,8 @@ import com.xayah.core.model.database.TaskEntity
         CloudEntity::class,
         TaskEntity::class,
         TaskDetailPackageEntity::class,
+        TaskDetailPackagePreEntity::class,
+        TaskDetailPackagePostEntity::class,
         TaskDetailMediaEntity::class,
         LogcatEntity::class,
     ],

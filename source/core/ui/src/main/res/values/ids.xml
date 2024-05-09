@@ -6,4 +6,6 @@
     <item name="delete" type="string" />
     <item name="jetbrains_mono_regular" type="font" />
     <item name="ic_rounded_check_circle" type="drawable" />
+    <item name="ic_rounded_cancel" type="drawable" />
+    <item name="ic_rounded_not_started" type="drawable" />
 </resources>

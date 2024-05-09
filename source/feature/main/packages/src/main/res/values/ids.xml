@@ -22,9 +22,14 @@
     <item name="ic_rounded_image" type="drawable" />
     <item name="ic_rounded_check_circle" type="drawable" />
     <item name="ic_rounded_error" type="drawable" />
+    <item name="ic_rounded_expand_content" type="drawable" />
+    <item name="ic_rounded_collapse_content" type="drawable" />
     <item name="backup" type="string" />
+    <item name="preprocessing" type="string" />
+    <item name="post_processing" type="string" />
     <item name="back_up_to_local" type="string" />
     <item name="details" type="string" />
+    <item name="processing" type="string" />
     <item name="restore" type="string" />
     <item name="restore_from_local" type="string" />
     <item name="task_is_in_progress" type="string" />
@@ -67,4 +72,6 @@
     <item name="sort" type="string" />
     <item name="none" type="string" />
     <item name="backup_parts" type="string" />
+    <item name="processing_exit_confirmation" type="string" />
+    <item name="prompt" type="string" />
 </resources>

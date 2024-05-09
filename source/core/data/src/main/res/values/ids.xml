@@ -20,4 +20,5 @@
     <item name="outdated_fs_warning" type="string" />
     <item name="custom_directory" type="string" />
     <item name="args_loading_from_user" type="string" />
+    <item name="args_backup" type="string"/>
 </resources>

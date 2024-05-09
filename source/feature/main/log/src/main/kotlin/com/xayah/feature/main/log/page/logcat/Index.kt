@@ -137,7 +137,7 @@ fun PageLogcat(navController: NavHostController) {
                             Spacer(modifier = Modifier.size(PaddingTokens.Level0))
                         }
                     }
-                    ScrollBar(modifier = Modifier.align(Alignment.TopEnd), state = scrollState, listSize = contentItems.size)
+                    ScrollBar(modifier = Modifier.align(Alignment.TopEnd), state = scrollState)
                 }
             }
         }

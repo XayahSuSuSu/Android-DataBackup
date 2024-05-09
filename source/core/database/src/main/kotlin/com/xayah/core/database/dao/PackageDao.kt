@@ -47,6 +47,9 @@ interface PackageDao {
     @Query("SELECT COUNT(*) FROM PackageEntity WHERE extraInfo_activated = 1")
     fun countActivatedFlow(): Flow<Long>
 
+    @Query("SELECT * FROM PackageEntity WHERE extraInfo_activated = 1")
+    fun queryActivatedFlow(): Flow<List<PackageEntity>>
+
     @Query("UPDATE PackageEntity SET extraInfo_activated = 0")
     suspend fun clearActivated()
 
