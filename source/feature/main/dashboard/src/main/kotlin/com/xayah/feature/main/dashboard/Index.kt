@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,10 @@ fun PageDashboard() {
     val lastBackupTime by viewModel.lastBackupTimeState.collectAsStateWithLifecycle()
     val directoryState by viewModel.directoryState.collectAsStateWithLifecycle()
     val nullBackupDir by remember(directoryState) { mutableStateOf(directoryState == null) }
+
+    LaunchedEffect(null) {
+        viewModel.emitIntent(IndexUiIntent.Update)
+    }
 
     MainIndexSubScaffold(
         scrollBehavior = scrollBehavior,

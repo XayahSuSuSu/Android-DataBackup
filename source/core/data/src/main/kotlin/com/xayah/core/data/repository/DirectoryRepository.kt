@@ -160,5 +160,17 @@ class DirectoryRepository @Inject constructor(
         }
     }
 
+    suspend fun updateSelected() {
+        withIOContext {
+            directoryDao.querySelectedByDirectoryType()?.apply {
+                val statFs = rootService.readStatFs(parent)
+                childUsedBytes = rootService.calculateSize(path)
+                availableBytes = statFs.availableBytes
+                totalBytes = statFs.totalBytes
+                directoryDao.upsert(this)
+            }
+        }
+    }
+
     fun querySelectedByDirectoryTypeFlow() = directoryDao.querySelectedByDirectoryTypeFlow()
 }

@@ -17,15 +17,23 @@ import javax.inject.Inject
 
 data object IndexUiState : UiState
 
-sealed class IndexUiIntent : UiIntent
+sealed class IndexUiIntent : UiIntent {
+    data object Update : IndexUiIntent()
+}
 
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     @ApplicationContext context: Context,
-    directoryRepo: DirectoryRepository,
+    private val directoryRepo: DirectoryRepository,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState) {
-    override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {}
+    override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
+        when (intent) {
+            is IndexUiIntent.Update -> {
+                directoryRepo.updateSelected()
+            }
+        }
+    }
 
     private val _lastBackupTime: Flow<Long> = context.readLastBackupTime().flowOnIO()
     val lastBackupTimeState: StateFlow<Long> = _lastBackupTime.stateInScope(0)
