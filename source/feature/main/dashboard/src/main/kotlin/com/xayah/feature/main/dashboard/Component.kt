@@ -56,7 +56,7 @@ fun OverviewCard(
     colorContainer: ColorSchemeKeyTokens,
     onColorContainer: ColorSchemeKeyTokens,
     content: @Composable ColumnScope.() -> Unit,
-    actionIcon: ImageVectorToken,
+    actionIcon: ImageVectorToken?,
     onClick: () -> Unit = {},
 ) {
     Card(
@@ -96,11 +96,12 @@ fun OverviewCard(
                 content()
             }
 
-            Icon(
-                imageVector = actionIcon.value,
-                tint = onColorContainer.toColor(),
-                contentDescription = null
-            )
+            if (actionIcon != null)
+                Icon(
+                    imageVector = actionIcon.value,
+                    tint = onColorContainer.toColor(),
+                    contentDescription = null
+                )
         }
     }
 }
@@ -188,7 +189,7 @@ fun OverviewLastBackupCard(nullBackupDir: Boolean, lastBackupTime: Long, onClick
                     color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
                 )
         },
-        actionIcon = ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight),
+        actionIcon = if (nullBackupDir) ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight) else null,
         onClick = onClick,
     )
 }

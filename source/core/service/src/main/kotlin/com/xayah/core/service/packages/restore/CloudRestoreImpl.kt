@@ -61,7 +61,7 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
         )
     }
 
-    private val tmpArchivesPackagesDir by lazy { pathUtil.getCloudTmpArchivesPackagesDir() }
+    private val tmpArchivesPackagesDir by lazy { pathUtil.getCloudTmpAppsDir() }
     private val tmpDir by lazy { pathUtil.getCloudTmpDir() }
 
     private lateinit var cloudEntity: CloudEntity
@@ -75,7 +75,7 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
         cloudEntity = pair.second
         client = pair.first
         remote = cloudEntity.remote
-        remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
+        remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
         remoteConfigsDir = pathUtil.getCloudRemoteConfigsDir(remote)
         taskEntity.also {
             it.cloud = cloudEntity.name
@@ -84,8 +84,8 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
     }
 
     override suspend fun restorePackage(p: PackageEntity) {
-        val tmpDstDir = "${tmpArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
-        val remoteSrcDir = "${remoteArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+        val tmpDstDir = "${tmpArchivesPackagesDir}/${p.archivesRelativeDir}"
+        val remoteSrcDir = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
 
         val t = TaskDetailPackageEntity(
             id = 0,

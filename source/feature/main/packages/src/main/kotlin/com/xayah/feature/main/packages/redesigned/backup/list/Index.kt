@@ -226,7 +226,8 @@ fun PagePackagesBackupList() {
                                 onClick = {
                                     if (uiState.filterMode) viewModel.emitIntent(IndexUiIntent.ToPageDetail(navController, item))
                                     else viewModel.emitIntent(IndexUiIntent.Select(item))
-                                }
+                                },
+                                filterMode = uiState.filterMode
                             )
                         }
                     }
@@ -249,6 +250,7 @@ fun PagePackagesBackupList() {
         }
 
         PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
-        ScrollBar(modifier = Modifier.align(Alignment.TopEnd), state = scrollState)
+        // TODO Issues of ScrollBar
+        // ScrollBar(modifier = Modifier.align(Alignment.TopEnd), state = scrollState)
     }
 }

@@ -67,7 +67,7 @@ class PackageRepository @Inject constructor(
     fun getPackages(opType: OpType) = packageDao.queryFlow(opType).distinctUntilChanged()
     val activatedCount = packageDao.countActivatedFlow().distinctUntilChanged()
     private val localBackupSaveDir get() = context.localBackupSaveDir()
-    private val archivesPackagesDir get() = pathUtil.getLocalBackupArchivesPackagesDir()
+    private val archivesPackagesDir get() = pathUtil.getLocalBackupAppsDir()
 
     fun getArchiveDst(dstDir: String, dataType: DataType, ct: CompressionType) = "${dstDir}/${dataType.type}.${ct.suffix}"
 
@@ -119,7 +119,7 @@ class PackageRepository @Inject constructor(
 
     suspend fun updateCloudPackageArchivesSize(packageName: String, opType: OpType, userId: Int, client: CloudClient, entity: CloudEntity) {
         val remote = entity.remote
-        val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
+        val remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
         queryPackages(packageName, opType, userId, entity.name, entity.remote).onEach {
             runCatching { it.displayStats.apkBytes = calculateCloudArchiveSize(client, it, DataType.PACKAGE_APK, remoteArchivesPackagesDir) }.onFailure(rootService.onFailure)
             runCatching { it.displayStats.userBytes = calculateCloudArchiveSize(client, it, DataType.PACKAGE_USER, remoteArchivesPackagesDir) }.onFailure(rootService.onFailure)
@@ -558,7 +558,7 @@ class PackageRepository @Inject constructor(
     private suspend fun refreshFromCloud(packageName: String, cloud: String) {
         val refresh: suspend (CloudClient, CloudEntity) -> Unit = { client: CloudClient, entity: CloudEntity ->
             val remote = entity.remote
-            val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
+            val remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
             val src = if (packageName.isEmpty()) remoteArchivesPackagesDir else "$remoteArchivesPackagesDir/$packageName"
             if (client.exists(src)) {
                 val paths = client.walkFileTree(src)
@@ -618,24 +618,24 @@ class PackageRepository @Inject constructor(
     fun getDataSrc(srcDir: String, packageName: String) = "$srcDir/$packageName"
 
     suspend fun deleteLocalArchive(p: PackageEntity) = run {
-        if (rootService.deleteRecursively("${archivesPackagesDir}/${p.archivesPreserveRelativeDir}")) packageDao.delete(p)
+        if (rootService.deleteRecursively("${archivesPackagesDir}/${p.archivesRelativeDir}")) packageDao.delete(p)
     }
 
     suspend fun deleteRemoteArchive(cloud: String, p: PackageEntity) = runCatching {
         cloudRepository.withClient(cloud) { client, entity ->
             val remote = entity.remote
-            val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
-            val src = "${remoteArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+            val remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
+            val src = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
             client.deleteRecursively(src)
         }
     }.onSuccess { packageDao.delete(p) }
 
     private suspend fun calculateLocalArchiveSize(p: PackageEntity, dataType: DataType) = rootService.calculateSize(
-        getArchiveDst("${archivesPackagesDir}/${p.archivesPreserveRelativeDir}", dataType, p.indexInfo.compressionType)
+        getArchiveDst("${archivesPackagesDir}/${p.archivesRelativeDir}", dataType, p.indexInfo.compressionType)
     )
 
     private fun calculateCloudArchiveSize(client: CloudClient, p: PackageEntity, dataType: DataType, archivesPackagesDir: String) = run {
-        val src = getArchiveDst("${archivesPackagesDir}/${p.archivesPreserveRelativeDir}", dataType, p.indexInfo.compressionType)
+        val src = getArchiveDst("${archivesPackagesDir}/${p.archivesRelativeDir}", dataType, p.indexInfo.compressionType)
         if (client.exists(src)) client.size(src)
         else 0
     }
@@ -656,15 +656,15 @@ class PackageRepository @Inject constructor(
     suspend fun preserve(p: PackageEntity) {
         val preserveId = DateUtil.getTimestamp()
         val isSuccess = if (p.indexInfo.cloud.isEmpty()) {
-            val src = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+            val src = "${archivesPackagesDir}/${p.archivesRelativeDir}"
             val dst = "${archivesPackagesDir}/${p.archivesRelativeDir}/${preserveId}"
             rootService.renameTo(src, dst)
         } else {
             runCatching {
                 cloudRepository.withClient(p.indexInfo.cloud) { client, entity ->
                     val remote = entity.remote
-                    val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
-                    val src = "${remoteArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+                    val remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
+                    val src = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
                     val dst = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}/${preserveId}"
                     client.renameTo(src, dst)
                 }
@@ -676,14 +676,14 @@ class PackageRepository @Inject constructor(
 
     suspend fun delete(p: PackageEntity) {
         val isSuccess = if (p.indexInfo.cloud.isEmpty()) {
-            val src = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+            val src = "${archivesPackagesDir}/${p.archivesRelativeDir}"
             rootService.deleteRecursively(src)
         } else {
             runCatching {
                 cloudRepository.withClient(p.indexInfo.cloud) { client, entity ->
                     val remote = entity.remote
-                    val remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
-                    val src = "${remoteArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+                    val remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
+                    val src = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
                     client.deleteRecursively(src)
                 }
             }.onFailure(rootService.onFailure).isSuccess

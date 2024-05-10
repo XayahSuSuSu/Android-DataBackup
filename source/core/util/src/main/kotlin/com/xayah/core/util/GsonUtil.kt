@@ -1,13 +1,14 @@
 package com.xayah.core.util
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
 @Singleton
 class GsonUtil @Inject constructor() {
-    private val gson = Gson()
+    private val gson = GsonBuilder().setPrettyPrinting().create()
 
     fun toJson(src: Any): String = gson.toJson(src)
 

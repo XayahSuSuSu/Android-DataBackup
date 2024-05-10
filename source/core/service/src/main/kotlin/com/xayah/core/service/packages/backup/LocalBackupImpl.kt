@@ -66,13 +66,13 @@ internal class LocalBackupImpl @Inject constructor() : BackupService() {
     }
 
     private val localBackupSaveDir by lazy { context.localBackupSaveDir() }
-    private val archivesPackagesDir by lazy { pathUtil.getLocalBackupArchivesPackagesDir() }
+    private val appsDir by lazy { pathUtil.getLocalBackupAppsDir() }
     private val configsDir by lazy { pathUtil.getLocalBackupConfigsDir() }
 
     override suspend fun createTargetDirs() {
-        log { "Trying to create: $archivesPackagesDir." }
+        log { "Trying to create: $appsDir." }
         log { "Trying to create: $configsDir." }
-        rootService.mkdirs(archivesPackagesDir)
+        rootService.mkdirs(appsDir)
         rootService.mkdirs(configsDir)
     }
 
@@ -83,7 +83,7 @@ internal class LocalBackupImpl @Inject constructor() : BackupService() {
         }
 
         val p = t.packageEntity
-        val dstDir = "${archivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+        val dstDir = "${appsDir}/${p.archivesRelativeDir}"
         rootService.mkdirs(dstDir)
 
         var restoreEntity = packageDao.query(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, "", localBackupSaveDir)
@@ -106,7 +106,7 @@ internal class LocalBackupImpl @Inject constructor() : BackupService() {
                 dataStates = restoreEntity?.dataStates?.copy() ?: p.dataStates.copy(),
                 extraInfo = p.extraInfo.copy(existed = true, activated = false)
             )
-            rootService.writeProtoBuf(data = restoreEntity, dst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir))
+            rootService.writeJson(data = restoreEntity, dst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir))
             packageDao.upsert(restoreEntity)
             packageDao.upsert(p)
             t.apply {

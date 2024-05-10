@@ -10,6 +10,7 @@ import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readSelectionType
+import com.xayah.core.datastore.saveLastBackupTime
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.OperationState
@@ -265,6 +266,7 @@ internal abstract class BackupService : Service() {
                 taskDao.upsert(it)
             }
             val time = DateUtil.getShortRelativeTimeSpanString(context = context, time1 = startTimestamp, time2 = endTimestamp)
+            context.saveLastBackupTime(endTimestamp)
             NotificationUtil.notify(
                 context,
                 notificationBuilder,

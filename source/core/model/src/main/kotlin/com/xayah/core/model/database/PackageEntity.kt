@@ -104,9 +104,6 @@ data class PackageEntity(
     val preserveId: Long
         get() = indexInfo.preserveId
 
-    private val ctName: String
-        get() = indexInfo.compressionType.type
-
     val apkSelected: Boolean
         get() = dataStates.apkState == DataState.Selected
 
@@ -141,10 +138,7 @@ data class PackageEntity(
         get() = (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
     val archivesRelativeDir: String
-        get() = "${packageName}/${userId}/${ctName}"
-
-    val archivesPreserveRelativeDir: String
-        get() = "${archivesRelativeDir}/${preserveId}"
+        get() = "${packageName}/user_${userId}"
 }
 
 data class PackageEntityWithCount(

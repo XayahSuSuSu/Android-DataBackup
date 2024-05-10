@@ -20,9 +20,10 @@ const val ApksRelativeDir = "apks"
 const val MountsRelativeDir = "mounts"
 const val ArchivesRelativeDir = "archives"
 const val PackagesRelativeDir = "packages"
+const val AppsRelativeDir = "apps"
 const val MediumRelativeDir = "medium"
 const val ConfigsRelativeDir = "configs"
-const val ConfigsPackageRestoreName = "package_restore_config.pb"
+const val ConfigsPackageRestoreName = "package_restore_config.json"
 const val ConfigsMediaRestoreName = "media_restore_config.pb"
 const val BinArchiveName = "bin.zip"
 const val CloudTmpTestFileName = "DataBackupCloudTmpTest"
@@ -59,7 +60,9 @@ class PathUtil @Inject constructor(
         fun getPackageIconRelativePath(packageName: String): String = "${packageName}.png"
         fun getConfigsRelativeDir(): String = ConfigsRelativeDir
         fun getArchivesRelativeDir(): String = ArchivesRelativeDir
-        fun getArchivesPackagesRelativeDir(): String = "$ArchivesRelativeDir/$PackagesRelativeDir"
+
+        fun getAppsRelativeDir(): String = AppsRelativeDir
+
         fun getArchivesMediumRelativeDir(): String = "$ArchivesRelativeDir/$MediumRelativeDir"
 
         fun getMediaRestoreConfigDst(dstDir: String): String = "${dstDir}/$ConfigsMediaRestoreName"
@@ -83,12 +86,13 @@ class PathUtil @Inject constructor(
     fun getCloudRemoteConfigsDir(remote: String): String = getConfigsDir(parent = remote)
     fun getArchivesDir(parent: String): String = "${parent}/${getArchivesRelativeDir()}"
     fun getLocalBackupArchivesDir(): String = getArchivesDir(parent = context.localBackupSaveDir())
-    fun getArchivesPackagesDir(parent: String): String = "${parent}/${getArchivesPackagesRelativeDir()}"
-    fun getLocalBackupArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localBackupSaveDir())
-    fun getLocalRestoreArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.localRestoreSaveDir())
-    fun getCloudTmpArchivesPackagesDir(): String = getArchivesPackagesDir(parent = context.cloudTmpAbsoluteDir())
+
+    fun getAppsDir(parent: String): String = "${parent}/${getAppsRelativeDir()}"
+    fun getLocalBackupAppsDir(): String = getAppsDir(parent = context.localBackupSaveDir())
+    fun getCloudTmpAppsDir(): String = getAppsDir(parent = context.cloudTmpAbsoluteDir())
+    fun getCloudRemoteAppsDir(remote: String): String = getAppsDir(parent = remote)
+
     fun getCloudTmpArchivesMediumDir(): String = getArchivesMediumDir(parent = context.cloudTmpAbsoluteDir())
-    fun getCloudRemoteArchivesPackagesDir(remote: String): String = getArchivesPackagesDir(parent = remote)
     fun getCloudRemoteArchivesMediumDir(remote: String): String = getArchivesMediumDir(parent = remote)
     fun getArchivesMediumDir(parent: String): String = "${parent}/${getArchivesMediumRelativeDir()}"
     fun getLocalBackupArchivesMediumDir(): String = getArchivesMediumDir(parent = context.localBackupSaveDir())

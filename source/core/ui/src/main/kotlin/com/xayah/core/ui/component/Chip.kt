@@ -127,7 +127,7 @@ fun AssistChip(
     color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
     containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Transparent,
     border: BorderStroke? = AssistChipDefaults.assistChipBorder(enabled),
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     AssistChip(
         enabled = enabled,

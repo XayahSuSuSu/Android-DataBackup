@@ -70,7 +70,7 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
         )
     }
 
-    private val tmpArchivesPackagesDir by lazy { pathUtil.getCloudTmpArchivesPackagesDir() }
+    private val tmpArchivesPackagesDir by lazy { pathUtil.getCloudTmpAppsDir() }
     private val tmpConfigsDir by lazy { pathUtil.getCloudTmpConfigsDir() }
     private val tmpDir by lazy { pathUtil.getCloudTmpDir() }
 
@@ -85,7 +85,7 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
         cloudEntity = pair.second
         client = pair.first
         remote = cloudEntity.remote
-        remoteArchivesPackagesDir = pathUtil.getCloudRemoteArchivesPackagesDir(remote)
+        remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
         remoteConfigsDir = pathUtil.getCloudRemoteConfigsDir(remote)
         taskEntity.also {
             it.cloud = cloudEntity.name
@@ -105,10 +105,10 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
 
     override suspend fun backupPackage(t: TaskDetailPackageEntity) {
         val p = t.packageEntity
-        val tmpDstDir = "${tmpArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+        val tmpDstDir = "${tmpArchivesPackagesDir}/${p.archivesRelativeDir}"
         rootService.mkdirs(tmpDstDir)
 
-        val remoteDstDir = "${remoteArchivesPackagesDir}/${p.archivesPreserveRelativeDir}"
+        val remoteDstDir = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
         client.mkdirRecursively(remoteDstDir)
 
         var restoreEntity = packageRepository.getPackage(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, cloudEntity.name, remote)
