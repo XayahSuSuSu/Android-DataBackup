@@ -254,4 +254,12 @@
     <string name="necessary_remaining_data_processing">Processamento de dados restantes necessário</string>
     <string name="args_backup">Backup %1$s</string>
     <string name="post_processing">Pós-processamento</string>
+    <string name="args_apps_backed_up">%1$s apps armazenados em backup</string>
+    <string name="reload_desc">Recarregue backups locais ou na nuvem</string>
+    <string name="backed_up_apps">Apps de backup</string>
+    <string name="no_backups_found_warning">Nenhum backup encontrado, talvez você possa voltar e tentar recarregar.</string>
+    <string name="args_restore">Restaurar %1$s</string>
+    <string name="apps">Apps</string>
+    <string name="advanced">Avançado</string>
+    <string name="set_up_inst_env">Configurar ambiente de instalação</string>
 </resources>
