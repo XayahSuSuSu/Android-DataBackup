@@ -159,7 +159,9 @@ fun PageDashboard() {
                         colorL80D20 = ColorSchemeKeyTokens.SecondaryL80D20,
                         onColorContainer = ColorSchemeKeyTokens.OnSecondaryContainer,
                         actionIcon = ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight)
-                    )
+                    ) {
+                        navController.navigate(MainRoutes.Restore.route)
+                    }
                 }
             }
         }

@@ -254,4 +254,12 @@
     <string name="save_icons">保存圖標</string>
     <string name="args_backup">備份 %1$s</string>
     <string name="post_processing">後處理</string>
+    <string name="apps">應用</string>
+    <string name="args_apps_backed_up">已備份%1$s個應用</string>
+    <string name="advanced">高級</string>
+    <string name="reload_desc">從本機或雲端重新載入備份</string>
+    <string name="backed_up_apps">已備份應用</string>
+    <string name="no_backups_found_warning">沒有找到備份，也許你可以返回並嘗試重載</string>
+    <string name="args_restore">恢復 %1$s</string>
+    <string name="set_up_inst_env">設置安裝環境</string>
 </resources>

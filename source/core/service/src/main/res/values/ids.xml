@@ -11,4 +11,5 @@
     <item name="necessary_remaining_data_processing" type="string"/>
     <item name="backup_itself" type="string"/>
     <item name="save_icons" type="string"/>
+    <item name="set_up_inst_env" type="string"/>
 </resources>

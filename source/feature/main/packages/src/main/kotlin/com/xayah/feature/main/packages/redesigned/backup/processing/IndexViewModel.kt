@@ -7,8 +7,9 @@ import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.model.OperationState
+import com.xayah.core.model.ProcessingType
 import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.service.packages.backup.LocalProcessingImpl
+import com.xayah.core.service.packages.backup.impl.LocalProcessingImpl
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.addInfo
@@ -86,24 +87,22 @@ class IndexViewModel @Inject constructor(
 
     private val _taskId: MutableStateFlow<Long> = MutableStateFlow(-1)
     private var _preItems: Flow<List<ProcessingCardItem>> = _taskId.flatMapLatest { id ->
-        taskRepo.queryPackagePreFlow(id)
-            .map {
+        taskRepo.queryProcessingInfoFlow(id, ProcessingType.PREPROCESSING)
+            .map { infoList ->
                 val items = mutableListOf<ProcessingCardItem>()
-                it?.apply {
-                    items.addInfo(preInfo)
+                infoList.forEach {
+                    items.addInfo(it)
                 }
                 items
             }
             .flowOnIO()
     }
     private val _postItems: Flow<List<ProcessingCardItem>> = _taskId.flatMapLatest { id ->
-        taskRepo.queryPackagePostFlow(id)
-            .map {
+        taskRepo.queryProcessingInfoFlow(id, ProcessingType.POST_PROCESSING)
+            .map { infoList ->
                 val items = mutableListOf<ProcessingCardItem>()
-                it?.apply {
-                    items.addInfo(postInfo)
-                    items.addInfo(backupItselfInfo)
-                    items.addInfo(saveIconsInfo)
+                infoList.forEach {
+                    items.addInfo(it)
                 }
                 items
             }

@@ -6,6 +6,7 @@ import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.model.OpType
+import com.xayah.core.model.ProcessingType
 import com.xayah.core.model.TaskType
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.DateUtil
@@ -28,8 +29,7 @@ class TaskRepository @Inject constructor(
 
     fun queryTaskFlow(id: Long) = taskDao.queryTaskFlow(id)
 
-    fun queryPackagePreFlow(taskId: Long) = taskDao.queryPackagePreFlow(taskId)
-    fun queryPackagePostFlow(taskId: Long) = taskDao.queryPackagePostFlow(taskId)
+    fun queryProcessingInfoFlow(taskId: Long, type: ProcessingType) = taskDao.queryProcessingInfoFlow(taskId, type)
     fun queryPackageFlow(taskId: Long) = taskDao.queryPackageFlow(taskId)
 
     @Suppress("UNCHECKED_CAST")
@@ -57,7 +57,7 @@ class TaskRepository @Inject constructor(
         var total = 0.0
         when (taskType) {
             TaskType.PACKAGE -> {
-                val packages = packageDao.queryActivated()
+                val packages = packageDao.queryActivated(OpType.BACKUP)
                 packages.forEach {
                     if (it.apkSelected) total += it.dataStats.apkBytes
                     if (it.userSelected) total += it.dataStats.userBytes

@@ -8,10 +8,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
@@ -37,6 +40,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.font.FontWeight
 import com.xayah.core.model.OperationState
 import com.xayah.core.ui.material3.CardColors
 import com.xayah.core.ui.material3.CardDefaults
@@ -45,6 +49,7 @@ import com.xayah.core.ui.material3.ShapeDefaults
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.material3.tokens.OutlinedCardTokens
+import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
@@ -260,6 +265,65 @@ fun ProcessingCard(
                     }
                 }
             }
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun OverviewCard(
+    modifier: Modifier = Modifier,
+    title: StringResourceToken,
+    icon: ImageVectorToken,
+    colorContainer: ColorSchemeKeyTokens,
+    onColorContainer: ColorSchemeKeyTokens,
+    content: @Composable ColumnScope.() -> Unit,
+    actionIcon: ImageVectorToken?,
+    onClick: () -> Unit = {},
+) {
+    androidx.compose.material3.Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = colorContainer.toColor()),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(SizeTokens.Level16)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    modifier = Modifier
+                        .paddingBottom(SizeTokens.Level8)
+                        .height(IntrinsicSize.Min),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level6)
+                ) {
+                    Icon(
+                        modifier = Modifier.intrinsicIcon(),
+                        imageVector = icon.value,
+                        tint = onColorContainer.toColor(),
+                        contentDescription = null,
+                    )
+                    LabelLargeText(
+                        text = title.value,
+                        color = onColorContainer.toColor(),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                content()
+            }
+
+            if (actionIcon != null)
+                Icon(
+                    imageVector = actionIcon.value,
+                    tint = onColorContainer.toColor(),
+                    contentDescription = null
+                )
         }
     }
 }

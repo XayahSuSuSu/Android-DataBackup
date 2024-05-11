@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.style.TextAlign
 import com.dotlottie.dlplayer.Mode
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
@@ -90,6 +91,7 @@ fun ListScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     innerBottomSpacer: Boolean = false,
+    onBackClick: (() -> Unit)? = null,
     content: @Composable (BoxScope.(innerPadding: PaddingValues) -> Unit)
 ) {
     Scaffold(
@@ -99,7 +101,8 @@ fun ListScaffold(
                 SecondaryTopBar(
                     scrollBehavior = scrollBehavior,
                     title = title,
-                    actions = actions
+                    actions = actions,
+                    onBackClick = onBackClick,
                 )
                 var targetProgress by remember { mutableFloatStateOf(0f) }
                 val animatedProgress = animateFloatAsState(
@@ -144,10 +147,26 @@ fun DotLottieView(isRefreshing: Boolean, refreshState: RefreshState) {
             progress = refreshState.progress,
             strokeCap = StrokeCap.Round
         )
-        BodySmallText(text = refreshState.pkg, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+        BodySmallText(text = refreshState.pkg, textAlign = TextAlign.Center, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
     } else {
-        BodyLargeText(text = StringResourceToken.fromStringId(R.string.pull_down_to_refresh).value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+        BodyLargeText(text = StringResourceToken.fromStringId(R.string.pull_down_to_refresh).value, textAlign = TextAlign.Center, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
     }
+}
+
+@Composable
+fun DotLottieView() {
+    DotLottieAnimation(
+        source = DotLottieSource.Asset("bear.lottie"),
+        autoplay = true,
+        loop = true,
+        playMode = Mode.FORWARD,
+        modifier = Modifier.background(Color.Transparent)
+    )
+    BodyLargeText(
+        text = StringResourceToken.fromStringId(R.string.no_backups_found_warning).value,
+        color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+        textAlign = TextAlign.Center
+    )
 }
 
 @ExperimentalLayoutApi

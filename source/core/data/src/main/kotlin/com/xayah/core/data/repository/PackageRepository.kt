@@ -63,11 +63,13 @@ class PackageRepository @Inject constructor(
     fun getPackages() = packageDao.queryFlow().distinctUntilChanged()
     fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long) = packageDao.queryFlow(packageName, opType, userId, preserveId).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType) = packageDao.queryPackagesFlow(opType).distinctUntilChanged()
+    suspend fun queryUserIds(opType: OpType) = packageDao.queryUserIds(opType)
+    suspend fun queryPackages(opType: OpType) = packageDao.queryPackages(opType)
     fun queryActivatedFlow() = packageDao.queryActivatedFlow().distinctUntilChanged()
     fun getPackages(opType: OpType) = packageDao.queryFlow(opType).distinctUntilChanged()
     val activatedCount = packageDao.countActivatedFlow().distinctUntilChanged()
     private val localBackupSaveDir get() = context.localBackupSaveDir()
-    private val archivesPackagesDir get() = pathUtil.getLocalBackupAppsDir()
+    private val backupAppsDir get() = pathUtil.getLocalBackupAppsDir()
 
     fun getArchiveDst(dstDir: String, dataType: DataType, ct: CompressionType) = "${dstDir}/${dataType.type}.${ct.suffix}"
 
@@ -530,7 +532,7 @@ class PackageRepository @Inject constructor(
     }.onFailure(rootService.onFailure)
 
     private suspend fun refreshFromLocal(packageName: String) {
-        val path = if (packageName.isEmpty()) archivesPackagesDir else "$archivesPackagesDir/$packageName"
+        val path = if (packageName.isEmpty()) backupAppsDir else "$backupAppsDir/$packageName"
         val paths = rootService.walkFileTree(path)
         paths.forEach {
             val fileName = PathUtil.getFileName(it.pathString)
@@ -551,6 +553,51 @@ class PackageRepository @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    suspend fun loadPackagesFromLocal() {
+        val path = backupAppsDir
+        val paths = rootService.walkFileTree(path)
+        paths.forEach {
+            val fileName = PathUtil.getFileName(it.pathString)
+            if (fileName == ConfigsPackageRestoreName) {
+                runCatching {
+                    val stored = rootService.readJson<PackageEntity>(it.pathString).also { p ->
+                        p?.extraInfo?.existed = true
+                        p?.extraInfo?.activated = false
+                        p?.indexInfo?.cloud = ""
+                        p?.indexInfo?.backupDir = localBackupSaveDir
+                    }
+                    if (stored != null) {
+                        getPackage(
+                            packageName = stored.packageName,
+                            opType = stored.indexInfo.opType,
+                            userId = stored.userId,
+                            preserveId = stored.preserveId,
+                            ct = stored.indexInfo.compressionType,
+                            cloud = stored.indexInfo.cloud,
+                            backupDir = localBackupSaveDir
+                        ).also { p ->
+                            if (p == null)
+                                packageDao.upsert(stored)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    suspend fun loadIconsFromLocal() {
+        val archivePath = "${pathUtil.getLocalBackupConfigsDir()}/$IconRelativeDir.${CompressionType.TAR.suffix}"
+        if (rootService.exists(archivePath)) {
+            val loadedIconMD5 = context.readLoadedIconMD5().first()
+            val iconMD5 = rootService.calculateMD5(archivePath) ?: ""
+            if (loadedIconMD5 != iconMD5) {
+                Tar.decompress(src = archivePath, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
+                PathUtil.setFilesDirSELinux(context)
+                context.saveLoadedIconMD5(iconMD5)
             }
         }
     }
@@ -618,7 +665,7 @@ class PackageRepository @Inject constructor(
     fun getDataSrc(srcDir: String, packageName: String) = "$srcDir/$packageName"
 
     suspend fun deleteLocalArchive(p: PackageEntity) = run {
-        if (rootService.deleteRecursively("${archivesPackagesDir}/${p.archivesRelativeDir}")) packageDao.delete(p)
+        if (rootService.deleteRecursively("${backupAppsDir}/${p.archivesRelativeDir}")) packageDao.delete(p)
     }
 
     suspend fun deleteRemoteArchive(cloud: String, p: PackageEntity) = runCatching {
@@ -631,7 +678,7 @@ class PackageRepository @Inject constructor(
     }.onSuccess { packageDao.delete(p) }
 
     private suspend fun calculateLocalArchiveSize(p: PackageEntity, dataType: DataType) = rootService.calculateSize(
-        getArchiveDst("${archivesPackagesDir}/${p.archivesRelativeDir}", dataType, p.indexInfo.compressionType)
+        getArchiveDst("${backupAppsDir}/${p.archivesRelativeDir}", dataType, p.indexInfo.compressionType)
     )
 
     private fun calculateCloudArchiveSize(client: CloudClient, p: PackageEntity, dataType: DataType, archivesPackagesDir: String) = run {
@@ -656,8 +703,8 @@ class PackageRepository @Inject constructor(
     suspend fun preserve(p: PackageEntity) {
         val preserveId = DateUtil.getTimestamp()
         val isSuccess = if (p.indexInfo.cloud.isEmpty()) {
-            val src = "${archivesPackagesDir}/${p.archivesRelativeDir}"
-            val dst = "${archivesPackagesDir}/${p.archivesRelativeDir}/${preserveId}"
+            val src = "${backupAppsDir}/${p.archivesRelativeDir}"
+            val dst = "${backupAppsDir}/${p.archivesRelativeDir}/${preserveId}"
             rootService.renameTo(src, dst)
         } else {
             runCatching {
@@ -676,7 +723,7 @@ class PackageRepository @Inject constructor(
 
     suspend fun delete(p: PackageEntity) {
         val isSuccess = if (p.indexInfo.cloud.isEmpty()) {
-            val src = "${archivesPackagesDir}/${p.archivesRelativeDir}"
+            val src = "${backupAppsDir}/${p.archivesRelativeDir}"
             rootService.deleteRecursively(src)
         } else {
             runCatching {

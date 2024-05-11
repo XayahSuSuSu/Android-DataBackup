@@ -1,4 +1,4 @@
-package com.xayah.core.service.packages.restore
+package com.xayah.core.service.packages.restore.impl
 
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.TaskRepository
@@ -8,11 +8,11 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.CloudEntity
-import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.service.packages.restore.RestoreService
 import com.xayah.core.service.util.PackagesRestoreUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
@@ -83,17 +83,10 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
         }
     }
 
-    override suspend fun restorePackage(p: PackageEntity) {
+    override suspend fun restorePackage(t: TaskDetailPackageEntity) {
+        val p = t.packageEntity
         val tmpDstDir = "${tmpArchivesPackagesDir}/${p.archivesRelativeDir}"
         val remoteSrcDir = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
-
-        val t = TaskDetailPackageEntity(
-            id = 0,
-            taskId = taskEntity.id,
-            packageEntity = p,
-        ).apply {
-            id = taskDao.upsert(this)
-        }
 
         packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_APK, srcDir = remoteSrcDir, dstDir = tmpDstDir) {
             packagesRestoreUtil.restoreApk(p = p, t = t, srcDir = tmpDstDir)

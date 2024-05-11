@@ -52,7 +52,6 @@ import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
-import com.xayah.core.ui.component.ScrollBar
 import com.xayah.core.ui.component.SearchBar
 import com.xayah.core.ui.component.SortChip
 import com.xayah.core.ui.component.paddingHorizontal
@@ -139,7 +138,7 @@ fun PagePackagesBackupList() {
                         .verticalScroll(rememberScrollState()),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(modifier = Modifier.paddingHorizontal(SizeTokens.Level16), horizontalAlignment = Alignment.CenterHorizontally) {
                         DotLottieView(isRefreshing = isRefreshing, refreshState = refreshState)
                     }
                 }

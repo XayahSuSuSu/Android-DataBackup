@@ -41,7 +41,7 @@ import com.xayah.core.ui.util.value
 import kotlinx.coroutines.launch
 
 @Composable
-private fun Clickable(enabled: Boolean = true, desc: StringResourceToken? = null, onClick: () -> Unit, indication: Indication? = rememberRipple(), content: @Composable BoxScope.() -> Unit) {
+fun Clickable(enabled: Boolean = true, desc: StringResourceToken? = null, onClick: () -> Unit, indication: Indication? = rememberRipple(), content: @Composable BoxScope.() -> Unit) {
     Column {
         Surface(enabled = enabled, modifier = Modifier.fillMaxWidth(), onClick = onClick, indication = indication) {
             Box(

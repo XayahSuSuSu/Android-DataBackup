@@ -65,6 +65,11 @@ enum class OperationState {
     ERROR
 }
 
+enum class ProcessingType {
+    PREPROCESSING,
+    POST_PROCESSING,
+}
+
 enum class ProcessingState {
     Idle,
     Processing,

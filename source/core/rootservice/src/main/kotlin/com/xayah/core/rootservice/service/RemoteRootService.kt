@@ -12,6 +12,7 @@ import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.os.UserHandle
+import com.google.gson.reflect.TypeToken
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.impl.RemoteRootServiceImpl
@@ -43,7 +44,7 @@ class RemoteRootService(private val context: Context) {
             component = ComponentName(context.packageName, RemoteRootService::class.java.name)
         }
     }
-    private val gsonUtil by lazy { GsonUtil() }
+    val gsonUtil by lazy { GsonUtil() }
 
     // TODO: Will this cause memory leak? It needs to test.
     var onFailure: (Throwable) -> Unit = {}
@@ -302,6 +303,11 @@ class RemoteRootService(private val context: Context) {
 
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }.onFailure(onFailure).getOrElse { ShellResult(code = -1, input = listOf(), out = listOf()) }
+
+    suspend inline fun <reified T> readJson(src: String): T? = runCatching<T?> {
+        val json = readText(path = src)
+        gsonUtil.fromJson<T>(json, object : TypeToken<T>() {}.type)
+    }.onFailure(onFailure).getOrNull()
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend inline fun <reified T> writeProtoBuf(data: T, dst: String): ShellResult = runCatching {

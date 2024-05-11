@@ -254,4 +254,12 @@
     <string name="save_icons">保存图标</string>
     <string name="args_backup">备份 %1$s</string>
     <string name="post_processing">后处理</string>
+    <string name="apps">应用</string>
+    <string name="args_apps_backed_up">已备份%1$s个应用</string>
+    <string name="advanced">高级</string>
+    <string name="reload_desc">从本地或云端重新加载备份</string>
+    <string name="backed_up_apps">已备份应用</string>
+    <string name="no_backups_found_warning">没有找到备份，也许你可以返回并尝试重载</string>
+    <string name="args_restore">恢复 %1$s</string>
+    <string name="set_up_inst_env">设置安装环境</string>
 </resources>

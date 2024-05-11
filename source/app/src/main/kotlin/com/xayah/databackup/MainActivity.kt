@@ -3,21 +3,15 @@ package com.xayah.databackup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.xayah.core.ui.component.AnimatedNavHost
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.theme.DataBackupTheme
 import com.xayah.core.ui.util.LocalNavController
@@ -32,6 +26,10 @@ import com.xayah.feature.main.packages.list.PagePackages
 import com.xayah.feature.main.packages.redesigned.backup.detail.PagePackagesBackupDetail
 import com.xayah.feature.main.packages.redesigned.backup.list.PagePackagesBackupList
 import com.xayah.feature.main.packages.redesigned.backup.processing.PagePackagesBackupProcessing
+import com.xayah.feature.main.packages.redesigned.restore.detail.PagePackagesRestoreDetail
+import com.xayah.feature.main.packages.redesigned.restore.list.PagePackagesRestoreList
+import com.xayah.feature.main.packages.redesigned.restore.processing.PagePackagesRestoreProcessing
+import com.xayah.feature.main.restore.PageRestore
 import com.xayah.feature.main.settings.redesigned.PageSettings
 import com.xayah.feature.main.settings.redesigned.backup.PageBackupSettings
 import com.xayah.feature.main.settings.redesigned.restore.PageRestoreSettings
@@ -59,21 +57,9 @@ class MainActivity : ComponentActivity() {
             DataBackupTheme {
                 val navController = rememberNavController()
                 CompositionLocalProvider(LocalNavController provides navController) {
-                    NavHost(
+                    AnimatedNavHost(
                         navController = navController,
                         startDestination = MainRoutes.Index.route,
-                        enterTransition = {
-                            slideInHorizontally(initialOffsetX = { it })
-                        },
-                        exitTransition = {
-                            slideOutHorizontally()
-                        },
-                        popEnterTransition = {
-                            slideInHorizontally()
-                        },
-                        popExitTransition = {
-                            slideOutHorizontally(targetOffsetX = { it })
-                        }
                     ) {
                         composable(MainRoutes.Index.route) {
                             MainIndexGraph()
@@ -87,8 +73,20 @@ class MainActivity : ComponentActivity() {
                         composable(MainRoutes.PackagesBackupProcessing.route) {
                             PagePackagesBackupProcessing()
                         }
+                        composable(MainRoutes.PackagesRestoreList.route) {
+                            PagePackagesRestoreList()
+                        }
+                        composable(MainRoutes.PackagesRestoreDetail.route) {
+                            PagePackagesRestoreDetail()
+                        }
+                        composable(MainRoutes.PackagesRestoreProcessing.route) {
+                            PagePackagesRestoreProcessing()
+                        }
                         composable(MainRoutes.Settings.route) {
                             PageSettings()
+                        }
+                        composable(MainRoutes.Restore.route) {
+                            PageRestore()
                         }
                         composable(MainRoutes.BackupSettings.route) {
                             PageBackupSettings()

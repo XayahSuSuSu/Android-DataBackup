@@ -1,15 +1,16 @@
-package com.xayah.core.service.packages.restore
+package com.xayah.core.service.packages.restore.impl
 
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
+import com.xayah.core.model.OperationState
 import com.xayah.core.model.TaskType
-import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.service.packages.restore.RestoreService
 import com.xayah.core.service.util.PackagesRestoreUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
@@ -59,16 +60,14 @@ internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
 
     private val archivesPackagesDir by lazy { pathUtil.getLocalBackupAppsDir() }
 
-    override suspend fun restorePackage(p: PackageEntity) {
-        val srcDir = "${archivesPackagesDir}/${p.archivesRelativeDir}"
-
-        val t = TaskDetailPackageEntity(
-            id = 0,
-            taskId = taskEntity.id,
-            packageEntity = p,
-        ).apply {
-            id = taskDao.upsert(this)
+    override suspend fun restorePackage(t: TaskDetailPackageEntity) {
+        t.apply {
+            state = OperationState.PROCESSING
+            taskDao.upsert(this)
         }
+
+        val p = t.packageEntity
+        val srcDir = "${archivesPackagesDir}/${p.archivesRelativeDir}"
 
         packagesRestoreUtil.restoreApk(p = p, t = t, srcDir = srcDir)
         packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = srcDir)
@@ -81,6 +80,10 @@ internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
         packagesRestoreUtil.restoreSsaid(p = p)
 
         t.apply {
+            t.apply {
+                state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                taskDao.upsert(this)
+            }
             packageEntity = p
             taskDao.upsert(this)
         }

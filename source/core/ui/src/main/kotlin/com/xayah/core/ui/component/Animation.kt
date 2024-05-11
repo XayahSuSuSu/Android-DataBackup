@@ -11,13 +11,20 @@ import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import com.xayah.core.ui.token.AnimationTokens
 
 @ExperimentalAnimationApi
@@ -71,4 +78,35 @@ fun <T> emphasizedOffset(targetState: T): State<Dp> {
             0.dp at 300 with FastOutSlowInEasing
         }
     }, label = AnimationTokens.EmphasizedOffsetLabel, targetValueByState = { _ -> 0.dp })
+}
+
+@Composable
+fun AnimatedNavHost(
+    navController: NavHostController,
+    startDestination: String,
+    modifier: Modifier = Modifier,
+    contentAlignment: Alignment = Alignment.Center,
+    route: String? = null,
+    builder: NavGraphBuilder.() -> Unit
+) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = modifier,
+        contentAlignment = contentAlignment,
+        route = route,
+        enterTransition = {
+            slideInHorizontally(initialOffsetX = { it })
+        },
+        exitTransition = {
+            slideOutHorizontally()
+        },
+        popEnterTransition = {
+            slideInHorizontally()
+        },
+        popExitTransition = {
+            slideOutHorizontally(targetOffsetX = { it })
+        },
+        builder = builder,
+    )
 }

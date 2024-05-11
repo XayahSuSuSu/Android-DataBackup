@@ -64,6 +64,7 @@ abstract class ProcessingService {
     fun destroyService() {
         if (mConnection != null)
             context.unbindService(mConnection!!)
+        mService?.stopSelf()
         mBinder = null
         mService = null
         mConnection = null
@@ -79,6 +80,8 @@ abstract class ProcessingService {
             mService!!
         }
     }
+
+    suspend fun initialize() = getService().initialize()
 
     suspend fun preprocessing() = getService().preprocessing()
 

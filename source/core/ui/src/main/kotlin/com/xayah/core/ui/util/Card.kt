@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.database.Info
+import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CircularProgressIndicator
 import com.xayah.core.ui.material3.toColor
@@ -83,6 +84,19 @@ val Info.toProcessingCardItem: ProcessingCardItem
         )
     }
 
+val ProcessingInfoEntity.toProcessingCardItem: ProcessingCardItem
+    get() {
+        return ProcessingCardItem(
+            state = state,
+            progress = progress,
+            title = StringResourceToken.fromString(title),
+        )
+    }
+
 fun MutableList<ProcessingCardItem>.addInfo(info: Info) {
+    add(info.toProcessingCardItem)
+}
+
+fun MutableList<ProcessingCardItem>.addInfo(info: ProcessingInfoEntity) {
     add(info.toProcessingCardItem)
 }

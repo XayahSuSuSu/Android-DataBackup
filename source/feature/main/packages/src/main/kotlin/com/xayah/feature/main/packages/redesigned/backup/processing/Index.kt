@@ -71,20 +71,31 @@ fun PagePackagesBackupProcessing() {
         viewModel.emitIntent(IndexUiIntent.Initialize)
     }
 
-    BackHandler {
-        if (uiState.state == OperationState.PROCESSING) {
-            viewModel.launchOnIO {
-                if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.processing_exit_confirmation))) {
-                    BaseUtil.kill("tar", "root")
+    val onBack: () -> Unit = remember {
+        {
+            if (uiState.state == OperationState.PROCESSING) {
+                viewModel.launchOnIO {
+                    if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.processing_exit_confirmation))) {
+                        BaseUtil.kill("tar", "root")
+                        viewModel.suspendEmitIntent(IndexUiIntent.DestroyService)
+                        withMainContext {
+                            navController.popBackStack()
+                        }
+                    }
+                }
+            } else {
+                viewModel.launchOnIO {
                     viewModel.suspendEmitIntent(IndexUiIntent.DestroyService)
                     withMainContext {
                         navController.popBackStack()
                     }
                 }
             }
-        } else {
-            navController.popBackStack()
         }
+    }
+
+    BackHandler {
+        onBack()
     }
 
     ListScaffold(
@@ -105,6 +116,9 @@ fun PagePackagesBackupProcessing() {
                     Icon(imageVector = if (uiState.state == OperationState.DONE) Icons.Filled.ChevronLeft else Icons.Filled.PlayArrow, contentDescription = null)
                 }
             }
+        },
+        onBackClick = {
+            onBack()
         }
     ) {
         var _expanded by remember { mutableStateOf(false) }

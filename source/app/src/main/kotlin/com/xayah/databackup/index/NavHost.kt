@@ -8,14 +8,15 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.xayah.core.ui.component.AnimatedNavHost
 import com.xayah.core.ui.component.LocalActionsState
 import com.xayah.core.ui.component.rememberActionsState
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.feature.main.cloud.account.PageCloudAccount
 import com.xayah.feature.main.dashboard.PageDashboard
+import com.xayah.feature.main.restore.PageRestore
 import com.xayah.feature.main.settings.PageSettings
 
 @ExperimentalLayoutApi
@@ -30,7 +31,7 @@ fun MainIndexGraph() {
 
     CompositionLocalProvider(LocalActionsState provides actionsState) {
         MainIndexScaffold(navController = navController, snackbarHostState = snackbarHostState) {
-            NavHost(
+            AnimatedNavHost(
                 navController = navController,
                 startDestination = MainIndexRoutes.Dashboard.route,
             ) {

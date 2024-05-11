@@ -1,0 +1,14 @@
+<resources>
+    <item name="restore" type="string" />
+    <item name="never" type="string" />
+    <item name="last_backup" type="string" />
+    <item name="args_finished_at" type="string" />
+    <item name="apps" type="string" />
+    <item name="args_apps_backed_up" type="string" />
+    <item name="reload" type="string" />
+    <item name="reload_desc" type="string" />
+    <item name="advanced" type="string" />
+
+    <item name="ic_rounded_package_2" type="drawable" />
+    <item name="ic_rounded_apps" type="drawable" />
+</resources>

@@ -261,4 +261,12 @@
     <string name="save_icons">Save icons</string>
     <string name="args_backup">Backup %1$s</string>
     <string name="post_processing">Post-processing</string>
+    <string name="apps">Apps</string>
+    <string name="args_apps_backed_up">%1$s apps backed up</string>
+    <string name="advanced">Advanced</string>
+    <string name="reload_desc">Reload backups from local or cloud</string>
+    <string name="backed_up_apps">Backed up apps</string>
+    <string name="no_backups_found_warning">No backups found, maybe you can go back and try reloading</string>
+    <string name="args_restore">Restore %1$s</string>
+    <string name="set_up_inst_env">Set up the installation environment</string>
 </resources>

@@ -11,14 +11,22 @@ sealed class MainRoutes(val route: String) {
 
     data object Index : MainRoutes(route = "main_index")
     data object Settings : MainRoutes(route = "main_settings")
+    data object Restore : MainRoutes(route = "main_restore")
     data object BackupSettings : MainRoutes(route = "main_backup_settings")
     data object RestoreSettings : MainRoutes(route = "main_restore_settings")
     data object Packages : MainRoutes(route = "main_packages")
+
     data object PackagesBackupList : MainRoutes(route = "main_packages_backup_list")
     data object PackagesBackupDetail : MainRoutes(route = "main_packages_backup_detail/{$ArgPackageName}/{$ArgUserId}") {
         fun getRoute(packageName: String, userId: Int) = "main_packages_backup_detail/${packageName}/${userId}"
     }
     data object PackagesBackupProcessing : MainRoutes(route = "main_packages_backup_processing")
+
+    data object PackagesRestoreList : MainRoutes(route = "main_packages_restore_list")
+    data object PackagesRestoreDetail : MainRoutes(route = "main_packages_restore_detail/{$ArgPackageName}/{$ArgUserId}") {
+        fun getRoute(packageName: String, userId: Int) = "main_packages_restore_detail/${packageName}/${userId}"
+    }
+    data object PackagesRestoreProcessing : MainRoutes(route = "main_packages_restore_processing")
 
     data object PackageDetail : MainRoutes(route = "main_package_detail/{$ArgPackageName}/{$ArgUserId}") {
         fun getRoute(packageName: String, userId: Int) = "main_package_detail/${packageName}/${userId}"

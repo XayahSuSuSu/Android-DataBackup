@@ -14,11 +14,11 @@ import com.xayah.core.datastore.saveLastBackupTime
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.OperationState
+import com.xayah.core.model.ProcessingType
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.Info
+import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
-import com.xayah.core.model.database.TaskDetailPackagePostEntity
-import com.xayah.core.model.database.TaskDetailPackagePreEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
@@ -78,9 +78,11 @@ internal abstract class BackupService : Service() {
     internal var endTimestamp: Long = 0
     abstract val taskEntity: TaskEntity
 
-    internal lateinit var preEntity: TaskDetailPackagePreEntity
-    internal lateinit var postEntity: TaskDetailPackagePostEntity
-    internal val pkgEntities: MutableList<TaskDetailPackageEntity> = mutableListOf()
+    private lateinit var prePreparationsEntity: ProcessingInfoEntity
+    private lateinit var postDataProcessingEntity: ProcessingInfoEntity
+    internal lateinit var postBackupItselfEntity: ProcessingInfoEntity
+    internal lateinit var postSaveIconsEntity: ProcessingInfoEntity
+    private val pkgEntities: MutableList<TaskDetailPackageEntity> = mutableListOf()
 
     private var isInitialized: Boolean = false
 
@@ -91,24 +93,40 @@ internal abstract class BackupService : Service() {
                 taskEntity.also {
                     it.id = taskDao.upsert(it)
                 }
-                preEntity = TaskDetailPackagePreEntity(
+                prePreparationsEntity = ProcessingInfoEntity(
                     id = 0,
                     taskId = taskEntity.id,
-                    preInfo = Info(title = context.getString(R.string.necessary_preparations))
+                    title = context.getString(R.string.necessary_preparations),
+                    type = ProcessingType.PREPROCESSING,
                 ).apply {
                     id = taskDao.upsert(this)
                 }
-                postEntity = TaskDetailPackagePostEntity(
+                postDataProcessingEntity = ProcessingInfoEntity(
                     id = 0,
                     taskId = taskEntity.id,
-                    postInfo = Info(title = context.getString(R.string.necessary_remaining_data_processing)),
-                    backupItselfInfo = Info(title = context.getString(R.string.backup_itself)),
-                    saveIconsInfo = Info(title = context.getString(R.string.save_icons)),
+                    title = context.getString(R.string.necessary_remaining_data_processing),
+                    type = ProcessingType.POST_PROCESSING,
+                ).apply {
+                    id = taskDao.upsert(this)
+                }
+                postBackupItselfEntity = ProcessingInfoEntity(
+                    id = 0,
+                    taskId = taskEntity.id,
+                    title = context.getString(R.string.backup_itself),
+                    type = ProcessingType.POST_PROCESSING,
+                ).apply {
+                    id = taskDao.upsert(this)
+                }
+                postSaveIconsEntity = ProcessingInfoEntity(
+                    id = 0,
+                    taskId = taskEntity.id,
+                    title = context.getString(R.string.save_icons),
+                    type = ProcessingType.POST_PROCESSING,
                 ).apply {
                     id = taskDao.upsert(this)
                 }
 
-                val packages = packageDao.queryActivated()
+                val packages = packageDao.queryActivated(OpType.BACKUP)
                 packages.forEach { pkg ->
                     pkgEntities.add(TaskDetailPackageEntity(
                         id = 0,
@@ -132,8 +150,8 @@ internal abstract class BackupService : Service() {
 
     suspend fun preprocessing(): BackupPreprocessing = withIOContext {
         mutex.withLock {
-            preEntity.also {
-                it.preInfo.state = OperationState.PROCESSING
+            prePreparationsEntity.also {
+                it.state = OperationState.PROCESSING
                 taskDao.upsert(it)
             }
             startTimestamp = DateUtil.getTimestamp()
@@ -157,8 +175,8 @@ internal abstract class BackupService : Service() {
             log { "InputMethods: ${backupPreprocessing.inputMethods}." }
             log { "AccessibilityServices: ${backupPreprocessing.accessibilityServices}." }
 
-            preEntity.also {
-                it.preInfo.state = OperationState.DONE
+            prePreparationsEntity.also {
+                it.state = OperationState.DONE
                 taskDao.upsert(it)
             }
 
@@ -230,8 +248,8 @@ internal abstract class BackupService : Service() {
             )
             log { "PostProcessing is starting." }
 
-            postEntity.also {
-                it.postInfo.state = OperationState.PROCESSING
+            postDataProcessingEntity.also {
+                it.state = OperationState.PROCESSING
                 taskDao.upsert(it)
             }
 
@@ -249,8 +267,8 @@ internal abstract class BackupService : Service() {
                 log { "AccessibilityServices is empty, skip restoring." }
             }
 
-            postEntity.also {
-                it.postInfo.state = OperationState.DONE
+            postDataProcessingEntity.also {
+                it.state = OperationState.DONE
                 taskDao.upsert(it)
             }
 

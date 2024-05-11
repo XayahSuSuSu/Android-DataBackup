@@ -25,4 +25,7 @@ dependencies {
 
     // libsu
     implementation(libs.libsu.service)
+
+    // Gson
+    implementation(libs.gson)
 }

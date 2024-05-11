@@ -41,8 +41,8 @@ interface PackageDao {
     )
     suspend fun query(packageName: String, opType: OpType, userId: Int, preserveId: Long, ct: CompressionType, cloud: String, backupDir: String): PackageEntity?
 
-    @Query("SELECT * FROM PackageEntity WHERE extraInfo_activated = 1")
-    suspend fun queryActivated(): List<PackageEntity>
+    @Query("SELECT * FROM PackageEntity WHERE extraInfo_activated = 1 AND indexInfo_opType = :opType")
+    suspend fun queryActivated(opType: OpType): List<PackageEntity>
 
     @Query("SELECT COUNT(*) FROM PackageEntity WHERE extraInfo_activated = 1")
     fun countActivatedFlow(): Flow<Long>
@@ -74,6 +74,18 @@ interface PackageDao {
                 " indexInfo_opType = :opType"
     )
     fun queryPackagesFlow(opType: OpType): Flow<List<PackageEntity>>
+
+    @Query(
+        "SELECT DISTINCT indexInfo_userId FROM PackageEntity WHERE" +
+                " indexInfo_opType = :opType"
+    )
+    suspend fun queryUserIds(opType: OpType): List<Int>
+
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_opType = :opType"
+    )
+    suspend fun queryPackages(opType: OpType): List<PackageEntity>
 
     @Query(
         "SELECT r.*, l.count FROM " +

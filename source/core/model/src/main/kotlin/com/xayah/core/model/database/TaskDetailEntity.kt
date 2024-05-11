@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.xayah.core.model.OperationState
+import com.xayah.core.model.ProcessingType
 
 data class Info(
     var bytes: Long = 0,
@@ -122,3 +123,16 @@ data class TaskDetailMediaEntity(
             return isOpFinished(dataInfo.state)
         }
 }
+
+@Entity
+data class ProcessingInfoEntity(
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    var taskId: Long,
+    var type: ProcessingType,
+    var bytes: Long = 0,
+    var log: String = "",
+    var title: String = "",
+    var progress: Float = -1f,
+    var state: OperationState = OperationState.IDLE,
+)
+

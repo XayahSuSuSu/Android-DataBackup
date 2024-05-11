@@ -65,6 +65,7 @@ abstract class ProcessingService {
     fun destroyService() {
         if (mConnection != null)
             context.unbindService(mConnection!!)
+        mService?.stopSelf()
         mBinder = null
         mService = null
         mConnection = null

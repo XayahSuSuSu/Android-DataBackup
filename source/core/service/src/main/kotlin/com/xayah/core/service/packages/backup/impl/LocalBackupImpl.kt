@@ -1,4 +1,4 @@
-package com.xayah.core.service.packages.backup
+package com.xayah.core.service.packages.backup.impl
 
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
@@ -12,6 +12,7 @@ import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.service.packages.backup.BackupService
 import com.xayah.core.service.util.CommonBackupUtil
 import com.xayah.core.service.util.PackagesBackupUtil
 import com.xayah.core.util.PathUtil
@@ -127,8 +128,8 @@ internal class LocalBackupImpl @Inject constructor() : BackupService() {
     }
 
     override suspend fun backupItself() {
-        postEntity.also {
-            it.backupItselfInfo.state = OperationState.PROCESSING
+        postBackupItselfEntity.also {
+            it.state = OperationState.PROCESSING
             taskDao.upsert(it)
         }
 
@@ -140,15 +141,15 @@ internal class LocalBackupImpl @Inject constructor() : BackupService() {
             commonBackupUtil.backupItself(dstDir = dstDir)
         }
 
-        postEntity.also {
-            it.backupItselfInfo.state = if (backupItself) OperationState.DONE else OperationState.SKIP
+        postBackupItselfEntity.also {
+            it.state = if (backupItself) OperationState.DONE else OperationState.SKIP
             taskDao.upsert(it)
         }
     }
 
     override suspend fun backupIcons() {
-        postEntity.also {
-            it.saveIconsInfo.state = OperationState.PROCESSING
+        postSaveIconsEntity.also {
+            it.state = OperationState.PROCESSING
             taskDao.upsert(it)
         }
 
@@ -156,8 +157,8 @@ internal class LocalBackupImpl @Inject constructor() : BackupService() {
         log { "Save icons." }
         packagesBackupUtil.backupIcons(dstDir = configsDir)
 
-        postEntity.also {
-            it.saveIconsInfo.state = OperationState.DONE
+        postSaveIconsEntity.also {
+            it.state = OperationState.DONE
             taskDao.upsert(it)
         }
     }
