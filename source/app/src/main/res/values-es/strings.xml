@@ -254,4 +254,12 @@
     <string name="necessary_remaining_data_processing">Procesamiento de datos restantes necesarios</string>
     <string name="args_backup">Copia de seguridad %1$s</string>
     <string name="post_processing">Tratamiento posterior</string>
+    <string name="apps">Aplicaciones</string>
+    <string name="args_apps_backed_up">%1$s aplicaciones respaldadas</string>
+    <string name="advanced">Avanzado</string>
+    <string name="reload_desc">Recarga de copias de seguridad locales o en la nube</string>
+    <string name="backed_up_apps">Copia de seguridad de las aplicaciones</string>
+    <string name="args_restore">Restaurar %1$s</string>
+    <string name="no_backups_found_warning">No se encontraron copias de seguridad, tal vez usted puede volver atrás y tratar de recargar</string>
+    <string name="set_up_inst_env">Configurar el entorno de instalación</string>
 </resources>
