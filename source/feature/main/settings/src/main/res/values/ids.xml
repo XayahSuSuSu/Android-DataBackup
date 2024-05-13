@@ -19,6 +19,8 @@
     <item name="architecture" type="string" />
     <item name="check_keystore" type="string" />
     <item name="check_keystore_desc" type="string" />
+    <item name="load_system_apps" type="string" />
+
     <item name="ic_rounded_acute" type="drawable" />
     <item name="ic_rounded_history" type="drawable" />
 </resources>

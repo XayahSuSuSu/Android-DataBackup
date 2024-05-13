@@ -42,10 +42,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.readLoadSystemApps
 import com.xayah.core.ui.component.ChipRow
 import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.FilterChip
@@ -81,6 +83,7 @@ import com.xayah.feature.main.packages.redesigned.PackageItem
 @ExperimentalMaterial3Api
 @Composable
 fun PagePackagesBackupList() {
+    val context = LocalContext.current
     val navController = LocalNavController.current!!
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -93,6 +96,7 @@ fun PagePackagesBackupList() {
     val isRefreshing = uiState.isRefreshing
     val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.emitIntent(IndexUiIntent.OnRefresh) })
     var fabHeight: Float by remember { mutableFloatStateOf(0F) }
+    val loadSystemApps by context.readLoadSystemApps().collectAsStateWithLifecycle(initialValue = false)
 
     ListScaffold(
         scrollBehavior = scrollBehavior,
@@ -193,16 +197,18 @@ fun PagePackagesBackupList() {
                                 }
                             )
 
-                            FilterChip(
-                                enabled = true,
-                                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_deployed_code),
-                                selectedIndex = flagIndexState,
-                                list = stringArrayResource(id = R.array.flag_type_items).toList(),
-                                onSelected = { index, _ ->
-                                    viewModel.emitIntent(IndexUiIntent.FilterByFlag(index = index))
-                                },
-                                onClick = {}
-                            )
+                            AnimatedVisibility(visible = loadSystemApps) {
+                                FilterChip(
+                                    enabled = true,
+                                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_deployed_code),
+                                    selectedIndex = flagIndexState,
+                                    list = stringArrayResource(id = R.array.flag_type_items).toList(),
+                                    onSelected = { index, _ ->
+                                        viewModel.emitIntent(IndexUiIntent.FilterByFlag(index = index))
+                                    },
+                                    onClick = {}
+                                )
+                            }
                         }
 
                         Divider(modifier = Modifier

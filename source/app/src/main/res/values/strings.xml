@@ -269,4 +269,6 @@
     <string name="no_backups_found_warning">No backups found, maybe you can go back and try reloading</string>
     <string name="args_restore">Restore %1$s</string>
     <string name="set_up_inst_env">Set up the installation environment</string>
+    <string name="load_system_apps">Load system apps</string>
+    <string name="set_them_later_in_settings">You can set them later in settings</string>
 </resources>

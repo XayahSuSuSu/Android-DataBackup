@@ -1,5 +1,6 @@
 package com.xayah.core.service.packages.restore.impl
 
+import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
@@ -36,6 +37,9 @@ internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
 
     @Inject
     override lateinit var taskRepository: TaskRepository
+
+    @Inject
+    override lateinit var packageRepository: PackageRepository
 
     override val taskEntity by lazy {
         TaskEntity(

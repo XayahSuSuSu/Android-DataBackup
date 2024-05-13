@@ -1,6 +1,7 @@
 package com.xayah.core.service.packages.restore.impl
 
 import com.xayah.core.data.repository.CloudRepository
+import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
@@ -41,6 +42,9 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
 
     @Inject
     lateinit var cloudRepository: CloudRepository
+
+    @Inject
+    override lateinit var packageRepository: PackageRepository
 
     override val taskEntity by lazy {
         TaskEntity(

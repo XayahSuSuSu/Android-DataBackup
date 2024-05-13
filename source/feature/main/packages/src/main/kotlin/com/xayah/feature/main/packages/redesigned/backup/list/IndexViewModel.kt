@@ -1,5 +1,6 @@
 package com.xayah.feature.main.packages.redesigned.backup.list
 
+import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
 import com.xayah.core.common.viewmodel.BaseViewModel
@@ -7,6 +8,7 @@ import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
+import com.xayah.core.datastore.saveBackupFilterFlagIndex
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.database.PackageEntity
@@ -14,6 +16,7 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.RefreshState
 import com.xayah.core.ui.route.MainRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +49,7 @@ sealed class IndexUiIntent : UiIntent {
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val packageRepo: PackageRepository,
     private val rootService: RemoteRootService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, selectAll = false, userIdList = listOf(), filterMode = true)) {
@@ -76,6 +80,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.FilterByFlag -> {
+                context.saveBackupFilterFlagIndex(intent.index)
                 _flagIndexState.value = intent.index
             }
 

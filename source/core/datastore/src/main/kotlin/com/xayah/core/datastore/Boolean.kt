@@ -14,9 +14,7 @@ val KeyFollowSymlinks = booleanPreferencesKey("follow_symlinks")
 val KeyCleanRestoring = booleanPreferencesKey("clean_restoring")
 val KeyResetRestoreList = booleanPreferencesKey("reset_restore_list")
 val KeyCheckKeystore = booleanPreferencesKey("check_keystore")
-val KeyAppsEnabled = booleanPreferencesKey("apps_enabled")
-val KeyFilesEnabled = booleanPreferencesKey("files_enabled")
-
+val KeyLoadSystemApps = booleanPreferencesKey("load_system_apps")
 
 // -----------------------------------------Read-----------------------------------------
 fun Context.readMonet() = readStoreBoolean(key = KeyMonet, defValue = true)
@@ -29,9 +27,7 @@ fun Context.readFollowSymlinks() = readStoreBoolean(key = KeyFollowSymlinks, def
 fun Context.readCleanRestoring() = readStoreBoolean(key = KeyCleanRestoring, defValue = false)
 fun Context.readResetRestoreList() = readStoreBoolean(key = KeyResetRestoreList, defValue = false)
 fun Context.readCheckKeystore() = readStoreBoolean(key = KeyCheckKeystore, defValue = true)
-fun Context.readAppsEnabled() = readStoreBoolean(key = KeyAppsEnabled, defValue = true)
-fun Context.readFilesEnabled() = readStoreBoolean(key = KeyFilesEnabled, defValue = true)
-
+fun Context.readLoadSystemApps() = readStoreBoolean(key = KeyLoadSystemApps, defValue = false)
 
 // -----------------------------------------Write-----------------------------------------
 suspend fun Context.saveMonet(value: Boolean) = saveStoreBoolean(key = KeyMonet, value = value)
@@ -44,5 +40,4 @@ suspend fun Context.saveFollowSymlinks(value: Boolean) = saveStoreBoolean(key = 
 suspend fun Context.saveCleanRestoring(value: Boolean) = saveStoreBoolean(key = KeyCleanRestoring, value = value)
 suspend fun Context.saveResetRestoreList(value: Boolean) = saveStoreBoolean(key = KeyResetRestoreList, value = value)
 suspend fun Context.saveCheckKeystore(value: Boolean) = saveStoreBoolean(key = KeyCheckKeystore, value = value)
-suspend fun Context.saveAppsEnabled(value: Boolean) = saveStoreBoolean(key = KeyAppsEnabled, value = value)
-suspend fun Context.saveFilesEnabled(value: Boolean) = saveStoreBoolean(key = KeyFilesEnabled, value = value)
+suspend fun Context.saveLoadSystemApps(value: Boolean) = saveStoreBoolean(key = KeyLoadSystemApps, value = value)

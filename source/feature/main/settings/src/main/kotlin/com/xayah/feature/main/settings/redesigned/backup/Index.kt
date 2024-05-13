@@ -17,6 +17,7 @@ import com.xayah.core.datastore.KeyCheckKeystore
 import com.xayah.core.datastore.KeyCompatibleMode
 import com.xayah.core.datastore.KeyCompressionTest
 import com.xayah.core.datastore.KeyFollowSymlinks
+import com.xayah.core.datastore.KeyLoadSystemApps
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
@@ -44,6 +45,12 @@ fun PageBackupSettings() {
             verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
         ) {
             Column {
+                Switchable(
+                    key = KeyLoadSystemApps,
+                    title = StringResourceToken.fromStringId(R.string.load_system_apps),
+                    checkedText = StringResourceToken.fromStringId(com.xayah.feature.setup.R.string.enabled),
+                    notCheckedText = StringResourceToken.fromStringId(com.xayah.feature.setup.R.string.not_enabled),
+                )
                 Switchable(
                     key = KeyCheckKeystore,
                     title = StringResourceToken.fromStringId(R.string.check_keystore),

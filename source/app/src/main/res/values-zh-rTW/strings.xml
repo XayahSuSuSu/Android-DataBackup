@@ -262,4 +262,6 @@
     <string name="no_backups_found_warning">沒有找到備份，也許你可以返回並嘗試重載</string>
     <string name="args_restore">恢復 %1$s</string>
     <string name="set_up_inst_env">設置安裝環境</string>
+    <string name="load_system_apps">加載系統應用</string>
+    <string name="set_them_later_in_settings">你可以稍後在設定中找到它們</string>
 </resources>

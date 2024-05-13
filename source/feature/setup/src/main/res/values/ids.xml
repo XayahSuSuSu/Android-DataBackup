@@ -28,4 +28,7 @@
     <item name="media" type="string" />
     <item name="skip_setup" type="string" />
     <item name="skip_setup_alert" type="string" />
+    <item name="check_keystore" type="string" />
+    <item name="load_system_apps" type="string" />
+    <item name="set_them_later_in_settings" type="string" />
 </resources>

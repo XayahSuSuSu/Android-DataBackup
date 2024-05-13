@@ -1,5 +1,6 @@
 package com.xayah.feature.setup.page.one
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,17 +64,18 @@ fun PageOne() {
 
     SetupScaffold(
         actions = {
-            OutlinedButton(
-                enabled = allRequiredValidated.not() || allOptionalValidated.not(),
-                onClick = {
-                    viewModel.launchOnIO {
-                        viewModel.suspendEmitIntent(IndexUiIntent.ValidateRoot)
-                        viewModel.suspendEmitIntent(IndexUiIntent.ValidateAbi)
-                        viewModel.suspendEmitIntent(IndexUiIntent.ValidateNotification(context = context))
+            AnimatedVisibility(visible = allRequiredValidated.not() || allOptionalValidated.not()) {
+                OutlinedButton(
+                    onClick = {
+                        viewModel.launchOnIO {
+                            viewModel.suspendEmitIntent(IndexUiIntent.ValidateRoot)
+                            viewModel.suspendEmitIntent(IndexUiIntent.ValidateAbi)
+                            viewModel.suspendEmitIntent(IndexUiIntent.ValidateNotification(context = context))
+                        }
                     }
+                ) {
+                    Text(text = StringResourceToken.fromStringId(R.string.grant_all).value)
                 }
-            ) {
-                Text(text = StringResourceToken.fromStringId(R.string.grant_all).value)
             }
             Button(enabled = allRequiredValidated, onClick = { navController.navigate(SetupRoutes.Two.route) }) {
                 Text(text = StringResourceToken.fromStringId(R.string._continue).value)

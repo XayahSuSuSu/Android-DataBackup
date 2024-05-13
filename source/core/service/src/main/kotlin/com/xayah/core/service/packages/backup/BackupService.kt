@@ -9,6 +9,7 @@ import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
+import com.xayah.core.datastore.readBackupFilterFlagIndex
 import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.datastore.saveLastBackupTime
 import com.xayah.core.model.DataType
@@ -126,7 +127,7 @@ internal abstract class BackupService : Service() {
                     id = taskDao.upsert(this)
                 }
 
-                val packages = packageDao.queryActivated(OpType.BACKUP)
+                val packages = packageDao.queryActivated(OpType.BACKUP).filter(packageRepository.getFlagPredicateNew(index = context.readBackupFilterFlagIndex().first()))
                 packages.forEach { pkg ->
                     pkgEntities.add(TaskDetailPackageEntity(
                         id = 0,

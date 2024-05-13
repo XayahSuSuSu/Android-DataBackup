@@ -5,9 +5,11 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
+import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
@@ -66,6 +68,7 @@ internal abstract class RestoreService : Service() {
     abstract val packageDao: PackageDao
     abstract val packagesRestoreUtil: PackagesRestoreUtil
     abstract val taskRepository: TaskRepository
+    abstract val packageRepository: PackageRepository
 
     private val notificationBuilder by lazy { NotificationUtil.getProgressNotificationBuilder(context) }
     internal var startTimestamp: Long = 0
@@ -102,7 +105,7 @@ internal abstract class RestoreService : Service() {
                     id = taskDao.upsert(this)
                 }
 
-                val packages = packageDao.queryActivated(OpType.RESTORE)
+                val packages = packageDao.queryActivated(OpType.RESTORE).filter(packageRepository.getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
                 packages.forEach { pkg ->
                     pkgEntities.add(TaskDetailPackageEntity(
                         id = 0,
