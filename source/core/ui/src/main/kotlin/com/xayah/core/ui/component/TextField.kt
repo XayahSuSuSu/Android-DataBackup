@@ -71,7 +71,6 @@ fun RoundedTextField(
     prefix: String?,
     onValueChange: (String) -> Unit,
 ) {
-
     OutlinedTextField(
         modifier = modifier,
         shape = CircleShape,
@@ -86,9 +85,13 @@ fun RoundedTextField(
         keyboardOptions = keyboardOptions,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = ColorSchemeKeyTokens.SurfaceVariant.toColor(),
-            unfocusedContainerColor = ColorSchemeKeyTokens.SurfaceVariant.toColor(),
-            disabledContainerColor = ColorSchemeKeyTokens.SurfaceVariant.toColor(),
+            unfocusedContainerColor = ColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed.toColor(),
+            disabledContainerColor = ColorSchemeKeyTokens.SurfaceVariant.toColor(false),
             errorContainerColor = ColorSchemeKeyTokens.SurfaceVariant.toColor(),
+            unfocusedBorderColor = ColorSchemeKeyTokens.Transparent.toColor(),
+            disabledBorderColor = ColorSchemeKeyTokens.Transparent.toColor(),
+            focusedBorderColor = ColorSchemeKeyTokens.Transparent.toColor(),
+            errorBorderColor = ColorSchemeKeyTokens.Transparent.toColor(),
         ),
         prefix = if (prefix != null) {
             { Text(prefix) }
