@@ -14,8 +14,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.KeyMonet
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.Switchable
@@ -27,6 +30,7 @@ import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.setup.MainActivity as SetupActivity
 
@@ -37,11 +41,13 @@ import com.xayah.feature.setup.MainActivity as SetupActivity
 fun PageSettings() {
     val context = LocalContext.current
     val navController = LocalNavController.current!!
+    val viewModel = hiltViewModel<IndexViewModel>()
+    val directoryState by viewModel.directoryState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromString("Settings"),
+        title = StringResourceToken.fromStringId(R.string.settings),
         actions = {}
     ) {
         Column(
@@ -53,44 +59,39 @@ fun PageSettings() {
             Column {
                 Clickable(
                     icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
-                    title = StringResourceToken.fromString("Backup settings"),
-                    value = StringResourceToken.fromString("Manage backups, compression method, backup user, encryption method"),
+                    title = StringResourceToken.fromStringId(R.string.backup_settings),
                 ) {
                     navController.navigate(MainRoutes.BackupSettings.route)
                 }
                 Clickable(
                     icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
-                    title = StringResourceToken.fromString("Restore settings"),
-                    value = StringResourceToken.fromString("Restore SSAID, target user, restore method"),
+                    title = StringResourceToken.fromStringId(R.string.restore_settings),
                 ) {
                     navController.navigate(MainRoutes.RestoreSettings.route)
                 }
                 Clickable(
-                    title = StringResourceToken.fromString("Setup"),
-                    value = StringResourceToken.fromString("Enter the setup page again"),
+                    title = StringResourceToken.fromStringId(R.string.setup),
+                    value = StringResourceToken.fromStringId(R.string.enter_the_setup_page_again),
                 ) {
                     (context as ComponentActivity).finish()
                     context.startActivity(Intent(context, SetupActivity::class.java))
                 }
             }
-            Title(title = StringResourceToken.fromString("Manage backups")) {
+            Title(title = StringResourceToken.fromStringId(R.string.manage_backups)) {
                 Clickable(
-                    title = StringResourceToken.fromString("Backup directory"),
-                    value = StringResourceToken.fromString("Internal storage (30 GB / 100 GB)"),
+                    icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+                    title = StringResourceToken.fromStringId(R.string.backup_dir),
+                    value = if (directoryState != null) StringResourceToken.fromString(directoryState!!.title) else null,
                 ) {
                     navController.navigate(MainRoutes.Directory.route)
                 }
-                Clickable(
-                    title = StringResourceToken.fromString("All backups"),
-                    value = StringResourceToken.fromString("3 backups found (10 GB)"),
-                )
             }
-            Title(title = StringResourceToken.fromString("Appearance")) {
+            Title(title = StringResourceToken.fromStringId(R.string.appearance)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     Switchable(
                         key = KeyMonet,
-                        title = StringResourceToken.fromString("Monet"),
-                        checkedText = StringResourceToken.fromString("Generate colors from wallpaper"),
+                        title = StringResourceToken.fromStringId(R.string.monet),
+                        checkedText = StringResourceToken.fromStringId(R.string.monet_desc),
                     )
                 }
                 DarkThemeSelectable()

@@ -21,7 +21,6 @@ import com.xayah.core.datastore.KeyLoadSystemApps
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.redesigned.SettingsScaffold
@@ -35,7 +34,7 @@ fun PageBackupSettings() {
 
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromString("Backup settings"),
+        title = StringResourceToken.fromStringId(R.string.backup_settings),
         actions = {}
     ) {
         Column(

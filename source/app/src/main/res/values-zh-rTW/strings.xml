@@ -80,7 +80,7 @@
     <string name="feature">特性</string>
     <string name="architecture">架構</string>
     <string name="monet">莫奈</string>
-    <string name="monet_desc">Material You莫奈主題引擎</string>
+    <string name="monet_desc">從壁紙中動態取色</string>
     <string name="premium_for_this_feature">請下載Premium版本以獲取此功能</string>
     <string name="keep_screen_on">保持屏幕常亮</string>
     <string name="keep_screen_on_desc">在備份/恢復時保持設備處於喚醒狀態</string>
@@ -264,4 +264,16 @@
     <string name="set_up_inst_env">設置安裝環境</string>
     <string name="load_system_apps">加載系統應用</string>
     <string name="set_them_later_in_settings">你可以稍後在設定中找到它們</string>
+    <string name="backup_settings">備份設置</string>
+    <string name="restore_settings">恢復設置</string>
+    <string name="enter_the_setup_page_again">再次進入引導頁面</string>
+    <string name="manage_backups">管理備份</string>
+    <string name="appearance">外觀</string>
+    <string name="theme_auto">自動</string>
+    <string name="theme_auto_desc">跟隨系統自動開啟</string>
+    <string name="theme_light">亮色</string>
+    <string name="theme_light_desc">總是處於亮色模式</string>
+    <string name="theme_dark">深色</string>
+    <string name="theme_dark_desc">總是處於深色模式</string>
+    <string name="dark_theme">深色模式</string>
 </resources>

@@ -70,7 +70,6 @@
     <string name="backup">Резервное копирование</string>
     <string name="network">Сеть</string>
     <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
-    <string name="monet_desc">Движок темы Материал You</string>
     <string name="application">Приложение</string>
     <string name="updating">Обновление</string>
     <string name="application_desc">Получение всей информации об имени пакетов приложений устройства. Используется для создания списка бекапов и получения размера данных приложений</string>

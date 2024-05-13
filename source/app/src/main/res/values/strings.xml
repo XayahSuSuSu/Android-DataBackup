@@ -84,7 +84,7 @@
     <string name="abi" translatable="false">ABI</string>
     <string name="architecture">Architecture</string>
     <string name="monet">Monet</string>
-    <string name="monet_desc">Theme engine of Material You</string>
+    <string name="monet_desc">Generate colors from wallpaper</string>
     <string name="premium_for_this_feature">Please download premium version for this feature</string>
     <string name="keep_screen_on">Keep screen on</string>
     <string name="keep_screen_on_desc">Keep device awake while processing</string>
@@ -271,4 +271,16 @@
     <string name="set_up_inst_env">Set up the installation environment</string>
     <string name="load_system_apps">Load system apps</string>
     <string name="set_them_later_in_settings">You can set them later in settings</string>
+    <string name="backup_settings">Backup settings</string>
+    <string name="restore_settings">Restore settings</string>
+    <string name="enter_the_setup_page_again">Enter the setup page again</string>
+    <string name="manage_backups">Manage backups</string>
+    <string name="appearance">Appearance</string>
+    <string name="theme_auto">Auto</string>
+    <string name="theme_auto_desc">Will turn on automatically</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_light_desc">Always in light mode</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_dark_desc">Always in dark mode</string>
+    <string name="dark_theme">Dark theme</string>
 </resources>

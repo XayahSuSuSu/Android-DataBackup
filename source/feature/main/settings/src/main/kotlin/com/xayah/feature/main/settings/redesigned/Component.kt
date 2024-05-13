@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.xayah.core.ui.component.InnerTopSpacer
-import com.xayah.core.ui.component.PrimaryTopBar
 import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.model.StringResourceToken
 

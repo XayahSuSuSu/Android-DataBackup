@@ -71,7 +71,6 @@
     <string name="prompt">Instrucción</string>
     <string name="feature">Característica</string>
     <string name="monet">Monet</string>
-    <string name="monet_desc">Motor de temas Material You</string>
     <string name="keep_screen_on">Mantener la pantalla encendida</string>
     <string name="keep_screen_on_desc">Mantener el dispositivo encendido mientras se trabaja</string>
     <string name="compression_type">Tipo de compresión</string>

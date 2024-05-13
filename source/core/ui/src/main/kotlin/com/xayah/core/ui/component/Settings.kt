@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Checkbox
@@ -51,11 +52,20 @@ fun Clickable(
     content: @Composable BoxScope.() -> Unit
 ) {
     Column {
-        Surface(enabled = enabled, modifier = Modifier.fillMaxWidth(), onClick = onClick, indication = indication, interactionSource = interactionSource) {
+        Surface(
+            enabled = enabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = SizeTokens.Level80),
+            onClick = onClick,
+            indication = indication,
+            interactionSource = interactionSource
+        ) {
             Box(
                 modifier = Modifier
                     .paddingHorizontal(SizeTokens.Level24)
-                    .paddingVertical(SizeTokens.Level16)
+                    .paddingVertical(SizeTokens.Level16),
+                contentAlignment = Alignment.Center
             ) {
                 content()
             }
@@ -77,7 +87,7 @@ fun Clickable(
     enabled: Boolean = true,
     readOnly: Boolean = false,
     title: StringResourceToken,
-    value: StringResourceToken,
+    value: StringResourceToken? = null,
     desc: StringResourceToken? = null,
     leadingContent: (@Composable RowScope.() -> Unit)? = null,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
@@ -90,7 +100,7 @@ fun Clickable(
                 AnimatedTextContainer(targetState = title.value) { text ->
                     TitleLargeText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurface.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
-                AnimatedTextContainer(targetState = value.value) { text ->
+                if (value != null) AnimatedTextContainer(targetState = value.value) { text ->
                     TitleSmallText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.Outline.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
             }
@@ -105,7 +115,7 @@ fun Clickable(
     enabled: Boolean = true,
     icon: ImageVectorToken? = null,
     title: StringResourceToken,
-    value: StringResourceToken,
+    value: StringResourceToken? = null,
     desc: StringResourceToken? = null,
     onClick: () -> Unit = {}
 ) {

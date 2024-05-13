@@ -15,7 +15,8 @@ import com.xayah.core.ui.component.Selectable
 import com.xayah.core.ui.component.select
 import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringId
+import com.xayah.feature.main.settings.R
 
 @ExperimentalAnimationApi
 @Composable
@@ -26,30 +27,30 @@ fun DarkThemeSelectable() {
         listOf(
             DialogRadioItem(
                 enum = ThemeType.AUTO,
-                title = StringResourceToken.fromString("Auto"),
-                desc = StringResourceToken.fromString("Will turn on automatically"),
+                title = StringResourceToken.fromStringId(R.string.theme_auto),
+                desc = StringResourceToken.fromStringId(R.string.theme_auto_desc),
             ),
             DialogRadioItem(
                 enum = ThemeType.LIGHT_THEME,
-                title = StringResourceToken.fromString("Light"),
-                desc = StringResourceToken.fromString("Always in light mode"),
+                title = StringResourceToken.fromStringId(R.string.theme_light),
+                desc = StringResourceToken.fromStringId(R.string.theme_light_desc),
             ),
             DialogRadioItem(
                 enum = ThemeType.DARK_THEME,
-                title = StringResourceToken.fromString("Dark"),
-                desc = StringResourceToken.fromString("Always in dark mode"),
+                title = StringResourceToken.fromStringId(R.string.theme_dark),
+                desc = StringResourceToken.fromStringId(R.string.theme_dark_desc),
             ),
         )
     }
     val currentType by context.readThemeType().collectAsStateWithLifecycle(initialValue = ThemeType.AUTO)
     val currentIndex by remember(currentType) { mutableIntStateOf(items.indexOfFirst { it.enum == currentType }) }
     Selectable(
-        title = StringResourceToken.fromString("Dark theme"),
+        title = StringResourceToken.fromStringId(R.string.dark_theme),
         value = items[currentIndex].desc,
         current = items[currentIndex].title
     ) {
         val selectedIndex = dialogState.select(
-            title = StringResourceToken.fromString("Dark theme"),
+            title = StringResourceToken.fromStringId(R.string.dark_theme),
             defIndex = currentIndex,
             items = items
         )

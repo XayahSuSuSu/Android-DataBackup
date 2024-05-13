@@ -88,7 +88,6 @@
     <string name="structure">Struktur</string>
     <string name="backup">Sikkerhetskopi</string>
     <string name="processing_exit_confirmation">Avslutt programmet og forstyrr pågående operasjon\?</string>
-    <string name="monet_desc">Draktmotor for Materiell Deig</string>
     <string name="updating">Oppdaterer …</string>
     <string name="application_desc">Henting av pakkeinfo, brukt til generering av sikkerhetskopieringsliste og innhenting av programdatastørrelse</string>
     <string name="custom_storage">Egendefinert lagring</string>

@@ -4,7 +4,6 @@
     <string name="databases_reload_failed">Impossible de recharger les bases de données</string>
     <string name="icon_reload_failed">Impossible de recharger l\'icône</string>
     <string name="architecture">Architecture</string>
-    <string name="monet_desc">Moteur de thème Material You</string>
     <string name="premium_for_this_feature">Veuillez télécharger la version premium pour cette fonctionnalité</string>
     <string name="keep_screen_on">Garder l\'écran actif</string>
     <string name="keep_screen_on_desc">Conserve l\'écran allumé lors du traitement</string>

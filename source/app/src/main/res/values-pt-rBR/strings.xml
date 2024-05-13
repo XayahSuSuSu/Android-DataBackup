@@ -139,7 +139,6 @@
     <string name="feature">Recurso</string>
     <string name="architecture">Arquitetura</string>
     <string name="monet">Monet</string>
-    <string name="monet_desc">Mecanismo de tema do Material You</string>
     <string name="premium_for_this_feature">Por favor, baixe a versão premium para usar este recurso.</string>
     <string name="keep_screen_on_desc">Mantenha o dispositivo ativo durante o processamento</string>
     <string name="backup_user">Backup do usuário</string>

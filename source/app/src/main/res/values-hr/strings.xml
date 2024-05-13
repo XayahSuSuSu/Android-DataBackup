@@ -135,7 +135,6 @@
     <string name="icon_reload_failed">Neuspjelo ponovno učitavanje ikone</string>
     <string name="prompt">Naredba</string>
     <string name="processing_exit_confirmation">Zatvoriti aplikaciju i prekinuti aktualnu radnju?</string>
-    <string name="monet_desc">Pokretač tema od Material You</string>
     <string name="premium_for_this_feature">Za ovu značajku preuzmi premium verziju</string>
     <string name="backup_user_desc">Odredi korisnika tijekom učitavanja popisa sigurnosnih kopija ili spremanja sigurnosnih kopija</string>
     <string name="restore_user_desc">Odredi korisnika tijekom učitavanja popisa obnavljanja ili obnavljanja</string>
