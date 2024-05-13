@@ -40,7 +40,6 @@
     <string name="supported_format">Formato suportado</string>
     <string name="custom_storage">Armazenamento personalizado</string>
     <string name="select_target_directory">Selecionar pasta de destino</string>
-    <string name="confirm_delete">Excluir?</string>
     <string name="please_set_up_backup_dir">Por favor, configure o diretório de backup.</string>
     <string name="media_set_path">Definir caminho</string>
     <string name="update_available">Atualização disponível</string>

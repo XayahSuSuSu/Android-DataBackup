@@ -109,7 +109,6 @@
     <string name="reset_backup_list">Перезапустити список бекапу</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Ця версія підтримує лише версію %1$s, але ваш пристрій має %2$s. Установіть %3$s або вище.</string>
     <string name="edit">Редагувати</string>
-    <string name="confirm_delete">Видалити\?</string>
     <string name="restore_completed">Відновлення завершено</string>
     <string name="media_target_path_missing">Відсутня цільова папка, встановіть її вручну.</string>
     <string name="update_available">Доступне оновлення</string>

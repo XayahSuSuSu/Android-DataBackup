@@ -62,7 +62,7 @@ internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
 
     override suspend fun createTargetDirs() {}
 
-    private val archivesPackagesDir by lazy { pathUtil.getLocalBackupAppsDir() }
+    private val appsDir by lazy { pathUtil.getLocalBackupAppsDir() }
 
     override suspend fun restorePackage(t: TaskDetailPackageEntity) {
         t.apply {
@@ -71,7 +71,7 @@ internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
         }
 
         val p = t.packageEntity
-        val srcDir = "${archivesPackagesDir}/${p.archivesRelativeDir}"
+        val srcDir = "${appsDir}/${p.archivesRelativeDir}"
 
         packagesRestoreUtil.restoreApk(p = p, t = t, srcDir = srcDir)
         packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = srcDir)

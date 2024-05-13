@@ -67,11 +67,12 @@ class PackageRepository @Inject constructor(
     fun queryPackagesFlow(opType: OpType) = packageDao.queryPackagesFlow(opType).distinctUntilChanged()
     suspend fun queryUserIds(opType: OpType) = packageDao.queryUserIds(opType)
     suspend fun queryPackages(opType: OpType) = packageDao.queryPackages(opType)
+    suspend fun queryActivated(opType: OpType) = packageDao.queryActivated(opType)
     fun queryActivatedFlow() = packageDao.queryActivatedFlow().distinctUntilChanged()
     fun getPackages(opType: OpType) = packageDao.queryFlow(opType).distinctUntilChanged()
     val activatedCount = packageDao.countActivatedFlow().distinctUntilChanged()
     private val localBackupSaveDir get() = context.localBackupSaveDir()
-    private val backupAppsDir get() = pathUtil.getLocalBackupAppsDir()
+    val backupAppsDir get() = pathUtil.getLocalBackupAppsDir()
 
     fun getArchiveDst(dstDir: String, dataType: DataType, ct: CompressionType) = "${dstDir}/${dataType.type}.${ct.suffix}"
 
@@ -729,8 +730,9 @@ class PackageRepository @Inject constructor(
     }
 
     suspend fun delete(p: PackageEntity) {
+        val appsDir = pathUtil.getLocalBackupAppsDir()
         val isSuccess = if (p.indexInfo.cloud.isEmpty()) {
-            val src = "${backupAppsDir}/${p.archivesRelativeDir}"
+            val src = "${appsDir}/${p.archivesRelativeDir}"
             rootService.deleteRecursively(src)
         } else {
             runCatching {

@@ -65,7 +65,6 @@
     <string name="manifest">Manifest</string>
     <string name="search_bar_hint_packages">Søk etter navn eller pakke …</string>
     <string name="export">Eksporter</string>
-    <string name="confirm_delete">Slett\?</string>
     <string name="restore_completed">Gjenopprettet</string>
     <string name="media_target_path_missing">Målmappen mangler. Velg den manuelt.</string>
     <string name="port">Port</string>

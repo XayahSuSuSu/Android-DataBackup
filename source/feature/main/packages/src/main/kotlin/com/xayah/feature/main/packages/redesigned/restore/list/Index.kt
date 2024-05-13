@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.outlined.Checklist
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,9 +53,11 @@ import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.InnerBottomSpacer
+import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
 import com.xayah.core.ui.component.SearchBar
 import com.xayah.core.ui.component.SortChip
+import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
@@ -80,6 +83,7 @@ import com.xayah.feature.main.packages.redesigned.PackageItem
 @Composable
 fun PagePackagesRestoreList() {
     val navController = LocalNavController.current!!
+    val dialogState = LocalSlotScope.current!!.dialogSlot
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val packagesState by viewModel.packagesState.collectAsStateWithLifecycle()
@@ -101,6 +105,15 @@ fun PagePackagesRestoreList() {
         ),
         actions = {
             if (srcPackagesEmptyState.not()) {
+                AnimatedVisibility(visible = packagesSelectedState != 0) {
+                    IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Delete)) {
+                        viewModel.launchOnIO {
+                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.confirm_delete))) {
+                                viewModel.emitIntent(IndexUiIntent.DeleteSelected)
+                            }
+                        }
+                    }
+                }
                 IconButton(icon = ImageVectorToken.fromVector(if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt)) {
                     viewModel.emitState(uiState.copy(filterMode = uiState.filterMode.not()))
                     viewModel.emitIntent(IndexUiIntent.ClearKey)

@@ -8,6 +8,7 @@ import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
+import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveRestoreFilterFlagIndex
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.UUID
 import javax.inject.Inject
@@ -43,6 +45,7 @@ sealed class IndexUiIntent : UiIntent {
     data class Select(val entity: PackageEntity) : IndexUiIntent()
     data class SelectAll(val selected: Boolean) : IndexUiIntent()
     data class ToPageDetail(val navController: NavHostController, val packageEntity: PackageEntity) : IndexUiIntent()
+    data object DeleteSelected : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -50,7 +53,7 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val packageRepo: PackageRepository,
-    rootService: RemoteRootService,
+    private val rootService: RemoteRootService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(selectAll = false, userIdList = listOf(), filterMode = true, uuid = UUID.randomUUID())) {
     init {
         rootService.onFailure = {
@@ -113,6 +116,14 @@ class IndexViewModel @Inject constructor(
                 withMainContext {
                     intent.navController.navigate(MainRoutes.PackagesRestoreDetail.getRoute(entity.packageName, entity.userId))
                 }
+            }
+
+            is IndexUiIntent.DeleteSelected -> {
+                val packages = packageRepo.queryActivated(OpType.RESTORE).filter(packageRepo.getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
+                packages.forEach {
+                    packageRepo.delete(it)
+                }
+                rootService.clearEmptyDirectoriesRecursively(packageRepo.backupAppsDir)
             }
         }
     }

@@ -40,7 +40,6 @@
     <string name="search_bar_hint_packages">പേരോ പാക്കേജോ സെർച്ചെയ്യുക</string>
     <string name="none">ഒന്നുമില്ല</string>
     <string name="export">എക്സ്പോർട്ട്</string>
-    <string name="confirm_delete">ഡിലീറ്റ്\?</string>
     <string name="restore_completed">റീസ്റ്റോറിംഗ് കഴിഞ്ഞു</string>
     <string name="media_target_path_missing">ടാർഗറ്റ് ഫോൾഡർ ഇല്ല. ദയവായി മാനുവലി സെറ്റ് ചെയ്യുക.</string>
     <string name="port">പോർട്ട്</string>

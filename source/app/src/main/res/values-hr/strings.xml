@@ -28,7 +28,6 @@
     <string name="search_bar_hint_packages">Traži ime ili paket …</string>
     <string name="none">Nepoznat</string>
     <string name="export">Izvezi</string>
-    <string name="confirm_delete">Izbrisati?</string>
     <string name="port">Priključak</string>
     <string name="update_available">Dostupna je nova verzija</string>
     <string name="installed">Instalirano</string>

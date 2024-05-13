@@ -38,7 +38,6 @@
     <string name="search_bar_hint_packages">Поиск имени пакета…</string>
     <string name="none">Нет</string>
     <string name="export">Экспорт</string>
-    <string name="confirm_delete">Удалить\?</string>
     <string name="restore_completed">Восстановление завершено</string>
     <string name="media_target_path_missing">Целевая папка отсутствует. Установите ее вручную.</string>
     <string name="port">Порт</string>

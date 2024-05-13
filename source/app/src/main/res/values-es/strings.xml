@@ -85,7 +85,6 @@
     <string name="sooner_or_later">Tarde o temprano</string>
     <string name="delete">Borrar</string>
     <string name="app_crashed">Aplicación bloqueada</string>
-    <string name="confirm_delete">¿Borrar?</string>
     <string name="media_set_path">Establecer ruta</string>
     <string name="password">Contraseña</string>
     <string name="recursive_mode">Modo recursivo</string>

@@ -76,4 +76,5 @@
     <item name="backup_parts" type="string" />
     <item name="processing_exit_confirmation" type="string" />
     <item name="prompt" type="string" />
+    <item name="confirm_delete" type="string" />
 </resources>
