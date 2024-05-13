@@ -209,7 +209,7 @@ fun PagePackagesRestoreList() {
                 }
 
                 LazyColumn(modifier = Modifier.fillMaxSize(), state = scrollState) {
-                    items(items = packagesState, key = { it.id }) { item ->
+                    items(items = packagesState, key = { "${uiState.uuid}-${it.id}" }) { item ->
                         Row(modifier = Modifier.animateItemPlacement()) {
                             PackageItem(
                                 item = item,

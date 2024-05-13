@@ -223,7 +223,7 @@ fun PagePackagesBackupList() {
                         .pullRefresh(pullRefreshState),
                     state = scrollState,
                 ) {
-                    items(items = packagesState, key = { it.id }) { item ->
+                    items(items = packagesState, key = { "${uiState.uuid}-${it.id}" }) { item ->
                         Row(modifier = Modifier.animateItemPlacement()) {
                             PackageItem(
                                 item = item,

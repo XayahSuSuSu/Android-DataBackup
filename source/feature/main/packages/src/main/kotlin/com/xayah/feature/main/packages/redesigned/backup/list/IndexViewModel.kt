@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import java.util.UUID
 import javax.inject.Inject
 
 data class IndexUiState(
@@ -31,6 +32,7 @@ data class IndexUiState(
     val selectAll: Boolean,
     val userIdList: List<Int>,
     val filterMode: Boolean,
+    val uuid: UUID,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -52,7 +54,7 @@ class IndexViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val packageRepo: PackageRepository,
     private val rootService: RemoteRootService,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, selectAll = false, userIdList = listOf(), filterMode = true)) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, selectAll = false, userIdList = listOf(), filterMode = true, uuid = UUID.randomUUID())) {
     init {
         rootService.onFailure = {
             val msg = it.message
@@ -68,7 +70,7 @@ class IndexViewModel @Inject constructor(
                 _refreshState.value = RefreshState()
                 emitStateSuspend(state.copy(isRefreshing = true))
                 packageRepo.refresh(refreshState = _refreshState)
-                emitStateSuspend(state.copy(isRefreshing = false))
+                emitStateSuspend(state.copy(isRefreshing = false, uuid = UUID.randomUUID()))
             }
 
             is IndexUiIntent.GetUserIds -> {
