@@ -2,6 +2,7 @@ package com.xayah.core.ui.component
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -22,6 +23,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,9 +43,15 @@ import com.xayah.core.ui.util.value
 import kotlinx.coroutines.launch
 
 @Composable
-fun Clickable(enabled: Boolean = true, desc: StringResourceToken? = null, onClick: () -> Unit, indication: Indication? = rememberRipple(), content: @Composable BoxScope.() -> Unit) {
+fun Clickable(
+    enabled: Boolean = true,
+    desc: StringResourceToken? = null,
+    onClick: () -> Unit, indication: Indication? = rememberRipple(),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    content: @Composable BoxScope.() -> Unit
+) {
     Column {
-        Surface(enabled = enabled, modifier = Modifier.fillMaxWidth(), onClick = onClick, indication = indication) {
+        Surface(enabled = enabled, modifier = Modifier.fillMaxWidth(), onClick = onClick, indication = indication, interactionSource = interactionSource) {
             Box(
                 modifier = Modifier
                     .paddingHorizontal(SizeTokens.Level24)

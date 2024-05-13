@@ -1,6 +1,7 @@
 package com.xayah.core.ui.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -17,6 +18,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -51,12 +53,14 @@ fun ActionButton(
     onClick: () -> Unit = {},
     content: @Composable RowScope.() -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Card(
         modifier = modifier.wrapContentHeight(),
         shape = RoundedCornerShape(SizeTokens.Level18),
         colors = CardDefaults.cardColors(containerColor = colorContainer.toColor(enabled)),
         onClick = onClick,
         enabled = enabled,
+        interactionSource = interactionSource,
     ) {
         Row(
             modifier = Modifier
@@ -65,7 +69,15 @@ fun ActionButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level10)
         ) {
-            Surface(modifier = Modifier.size(SizeTokens.Level36), shape = CircleShape, color = colorL80D20.toColor(enabled), enabled = enabled) {
+            Surface(
+                modifier = Modifier.size(SizeTokens.Level36),
+                shape = CircleShape,
+                color = colorL80D20.toColor(enabled),
+                enabled = enabled,
+                onClick = onClick,
+                indication = null,
+                interactionSource = interactionSource
+            ) {
                 Icon(
                     modifier = Modifier.padding(SizeTokens.Level8),
                     imageVector = icon.value,

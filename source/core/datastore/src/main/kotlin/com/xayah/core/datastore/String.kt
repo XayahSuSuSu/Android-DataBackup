@@ -10,7 +10,6 @@ import com.xayah.core.model.util.of
 import kotlinx.coroutines.flow.map
 
 // -----------------------------------------Keys-----------------------------------------
-val KeyLastRestoreTime = stringPreferencesKey("last_restore_time")
 val KeyCompressionType = stringPreferencesKey("compression_type")
 val KeyBackupSavePath = stringPreferencesKey("backup_save_path")
 val KeyBackupSaveParentPath = stringPreferencesKey("backup_save_parent_path")
@@ -26,7 +25,6 @@ val KeyThemeType = stringPreferencesKey("theme_type")
 
 
 // -----------------------------------------Read-----------------------------------------
-fun Context.readLastRestoreTime() = readStoreString(key = KeyLastRestoreTime, defValue = "")
 fun Context.readCompressionType() = readStoreString(key = KeyCompressionType, defValue = "").map { CompressionType.of(it) }
 fun Context.readBackupSortType() = readStoreString(key = KeyBackupSortType, defValue = "").map { SortType.of(it) }
 fun Context.readRestoreSortType() = readStoreString(key = KeyRestoreSortType, defValue = "").map { SortType.of(it) }
@@ -52,7 +50,6 @@ fun Context.readRestoreSavePath() = readStoreString(key = KeyRestoreSavePath, de
 fun Context.readRestoreSaveParentPath() = readStoreString(key = KeyRestoreSaveParentPath, defValue = ConstantUtil.DefaultPathParent)
 
 // -----------------------------------------Write-----------------------------------------
-suspend fun Context.saveLastRestoreTime(value: String) = saveStoreString(key = KeyLastRestoreTime, value = value.trim())
 suspend fun Context.saveCompressionType(value: CompressionType) = saveStoreString(key = KeyCompressionType, value = value.type.trim())
 suspend fun Context.saveBackupSortType(value: SortType) = saveStoreString(key = KeyBackupSortType, value = value.name.trim())
 suspend fun Context.saveRestoreSortType(value: SortType) = saveStoreString(key = KeyRestoreSortType, value = value.name.trim())

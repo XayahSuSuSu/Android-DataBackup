@@ -3,6 +3,7 @@ package com.xayah.feature.main.restore
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,7 +47,7 @@ fun PageRestore() {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val lastBackupTime by viewModel.lastBackupTimeState.collectAsStateWithLifecycle()
+    val lastRestoreTime by viewModel.lastRestoreTimeState.collectAsStateWithLifecycle()
 
     LaunchedEffect(null) {
         viewModel.emitIntent(IndexUiIntent.UpdateApps)
@@ -61,19 +63,25 @@ fun PageRestore() {
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            OverviewLastBackupCard(
+            OverviewLastRestoreCard(
                 modifier = Modifier.padding(SizeTokens.Level16),
-                lastBackupTime = lastBackupTime
+                lastRestoreTime = lastRestoreTime
             )
 
+            val interactionSource = remember { MutableInteractionSource() }
             Clickable(
                 title = StringResourceToken.fromStringId(R.string.apps),
-                value = StringResourceToken.fromString(
+                value = if (uiState.packages.isEmpty()) null else StringResourceToken.fromString(
                     "${context.getString(R.string.args_apps_backed_up, uiState.packages.size)}${if (uiState.packagesSize.isNotEmpty()) " (${uiState.packagesSize})" else ""}"
                 ),
                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_apps),
-                content = {
-                    PackageIcons(modifier = Modifier.paddingTop(SizeTokens.Level8), packages = uiState.packages)
+                interactionSource = interactionSource,
+                content = if (uiState.packages.isEmpty()) null else {
+                    {
+                        PackageIcons(modifier = Modifier.paddingTop(SizeTokens.Level8), packages = uiState.packages, interactionSource = interactionSource) {
+                            navController.navigate(MainRoutes.PackagesRestoreList.route)
+                        }
+                    }
                 }
             ) {
                 navController.navigate(MainRoutes.PackagesRestoreList.route)

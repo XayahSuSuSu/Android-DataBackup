@@ -2,6 +2,7 @@
     <item name="restore" type="string" />
     <item name="never" type="string" />
     <item name="last_backup" type="string" />
+    <item name="last_restore" type="string" />
     <item name="args_finished_at" type="string" />
     <item name="apps" type="string" />
     <item name="args_apps_backed_up" type="string" />

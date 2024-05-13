@@ -7,7 +7,7 @@ import com.xayah.core.common.viewmodel.IndexUiEffect
 import com.xayah.core.common.viewmodel.UiIntent
 import com.xayah.core.common.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
-import com.xayah.core.datastore.readLastBackupTime
+import com.xayah.core.datastore.readLastRestoreTime
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.util.formatSize
@@ -50,6 +50,6 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private val _lastBackupTime: Flow<Long> = context.readLastBackupTime().flowOnIO()
-    val lastBackupTimeState: StateFlow<Long> = _lastBackupTime.stateInScope(0)
+    private val _lastRestoreTime: Flow<Long> = context.readLastRestoreTime().flowOnIO()
+    val lastRestoreTimeState: StateFlow<Long> = _lastRestoreTime.stateInScope(0)
 }

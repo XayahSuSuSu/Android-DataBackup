@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -86,26 +87,26 @@ fun RestoreScaffold(scrollBehavior: TopAppBarScrollBehavior, title: StringResour
 @SuppressLint("StringFormatInvalid")
 @ExperimentalMaterial3Api
 @Composable
-fun OverviewLastBackupCard(modifier: Modifier, lastBackupTime: Long) {
+fun OverviewLastRestoreCard(modifier: Modifier, lastRestoreTime: Long) {
     val context = LocalContext.current
-    val relativeTime by remember(lastBackupTime) {
-        mutableStateOf(DateUtil.getShortRelativeTimeSpanString(context = context, time1 = lastBackupTime, time2 = DateUtil.getTimestamp()))
+    val relativeTime by remember(lastRestoreTime) {
+        mutableStateOf(DateUtil.getShortRelativeTimeSpanString(context = context, time1 = lastRestoreTime, time2 = DateUtil.getTimestamp()))
     }
-    val finishTime by remember(lastBackupTime) {
-        mutableStateOf(context.getString(R.string.args_finished_at, DateUtil.formatTimestamp(lastBackupTime, DateUtil.PATTERN_FINISH)))
+    val finishTime by remember(lastRestoreTime) {
+        mutableStateOf(context.getString(R.string.args_finished_at, DateUtil.formatTimestamp(lastRestoreTime, DateUtil.PATTERN_FINISH)))
     }
     OverviewCard(
         modifier = modifier,
-        title = StringResourceToken.fromStringId(R.string.last_backup),
+        title = StringResourceToken.fromStringId(R.string.last_restore),
         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_package_2),
         colorContainer = ColorSchemeKeyTokens.PrimaryContainer,
         onColorContainer = ColorSchemeKeyTokens.OnPrimaryContainer,
         content = {
             TitleLargeText(
-                text = (if (lastBackupTime == 0L) StringResourceToken.fromStringId(R.string.never) else StringResourceToken.fromString(relativeTime)).value,
+                text = (if (lastRestoreTime == 0L) StringResourceToken.fromStringId(R.string.never) else StringResourceToken.fromString(relativeTime)).value,
                 color = ColorSchemeKeyTokens.OnSurface.toColor()
             )
-            if (lastBackupTime != 0L)
+            if (lastRestoreTime != 0L)
                 BodyMediumText(
                     text = StringResourceToken.fromString(finishTime).value,
                     color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
@@ -119,14 +120,14 @@ fun OverviewLastBackupCard(modifier: Modifier, lastBackupTime: Long) {
 @Composable
 fun Clickable(
     enabled: Boolean = true,
-    title: StringResourceToken,
-    value: StringResourceToken,
+    title: StringResourceToken, value: StringResourceToken? = null,
     desc: StringResourceToken? = null,
     leadingIcon: ImageVectorToken? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable (ColumnScope.() -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
-    com.xayah.core.ui.component.Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple()) {
+    com.xayah.core.ui.component.Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingIcon != null) {
                 Icon(imageVector = leadingIcon.value, contentDescription = null)
@@ -135,7 +136,7 @@ fun Clickable(
                 AnimatedTextContainer(targetState = title.value) { text ->
                     TitleLargeText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurface.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
-                AnimatedTextContainer(targetState = value.value) { text ->
+                if (value != null) AnimatedTextContainer(targetState = value.value) { text ->
                     TitleSmallText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.Outline.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
                 content?.invoke(this)
@@ -146,7 +147,14 @@ fun Clickable(
 
 @ExperimentalFoundationApi
 @Composable
-fun PackageIcons(modifier: Modifier, packages: List<PackageEntity>, maxDisplayNum: Int = 6, size: Dp = SizeTokens.Level24) {
+fun PackageIcons(
+    modifier: Modifier,
+    packages: List<PackageEntity>,
+    maxDisplayNum: Int = 6,
+    size: Dp = SizeTokens.Level24,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit,
+) {
     val context = LocalContext.current
     var icons by remember { mutableStateOf(listOf<Drawable?>()) }
     LaunchedEffect(packages) {
@@ -164,7 +172,14 @@ fun PackageIcons(modifier: Modifier, packages: List<PackageEntity>, maxDisplayNu
         for ((index, icon) in icons.withIndex()) {
             if (index == icons.size - 1) break
             if (icon == null) {
-                Surface(modifier = Modifier.size(size), shape = ClippedCircleShape, color = ColorSchemeKeyTokens.PrimaryContainer.toColor()) {
+                Surface(
+                    modifier = Modifier.size(size),
+                    shape = ClippedCircleShape,
+                    color = ColorSchemeKeyTokens.PrimaryContainer.toColor(),
+                    onClick = onClick,
+                    indication = null,
+                    interactionSource = interactionSource
+                ) {
                     Box(contentAlignment = Alignment.Center) {
                         LabelMediumText(text = "${packages[index].packageInfo.label.firstOrNull() ?: ""}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
                     }
@@ -186,7 +201,14 @@ fun PackageIcons(modifier: Modifier, packages: List<PackageEntity>, maxDisplayNu
         if (packages.size <= maxDisplayNum && icons.isNotEmpty()) {
             val last = icons.last()
             if (last == null) {
-                Surface(modifier = Modifier.size(size), shape = CircleShape, color = ColorSchemeKeyTokens.PrimaryContainer.toColor()) {
+                Surface(
+                    modifier = Modifier.size(size),
+                    shape = CircleShape,
+                    color = ColorSchemeKeyTokens.PrimaryContainer.toColor(),
+                    onClick = onClick,
+                    indication = null,
+                    interactionSource = interactionSource
+                ) {
                     Box(contentAlignment = Alignment.Center) {
                         LabelMediumText(text = "${packages[icons.lastIndex].packageInfo.label.firstOrNull() ?: ""}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
                     }
@@ -204,7 +226,14 @@ fun PackageIcons(modifier: Modifier, packages: List<PackageEntity>, maxDisplayNu
                 )
             }
         } else if (packages.size - maxDisplayNum > 0) {
-            Surface(modifier = Modifier.size(size), shape = CircleShape, color = ColorSchemeKeyTokens.PrimaryContainer.toColor()) {
+            Surface(
+                modifier = Modifier.size(size),
+                shape = CircleShape,
+                color = ColorSchemeKeyTokens.PrimaryContainer.toColor(),
+                onClick = onClick,
+                indication = null,
+                interactionSource = interactionSource
+            ) {
                 Box(contentAlignment = Alignment.Center) {
                     LabelMediumText(text = "+${packages.size - maxDisplayNum}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
                 }

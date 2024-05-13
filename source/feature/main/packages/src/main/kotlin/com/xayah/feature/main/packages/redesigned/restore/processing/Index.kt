@@ -145,7 +145,7 @@ fun PagePackagesRestoreProcessing() {
                     .then(if (_expanded) Modifier.fillMaxHeight() else Modifier)
                     .fillMaxWidth(),
                 progress = -1f,
-                title = StringResourceToken.fromStringId(R.string.backup),
+                title = StringResourceToken.fromStringId(R.string.restore),
                 flagExpanded = _expanded,
                 maxDisplayNum = if (_expanded) -1 else 5,
                 defExpanded = true,

@@ -98,13 +98,13 @@ fun PageTwo() {
                     title = StringResourceToken.fromStringId(R.string.load_system_apps),
                     checkedText = StringResourceToken.fromStringId(R.string.enabled),
                     notCheckedText = StringResourceToken.fromStringId(R.string.not_enabled),
-                    desc = StringResourceToken.fromStringId(R.string.set_them_later_in_settings)
                 )
                 Switchable(
                     key = KeyCheckKeystore,
                     title = StringResourceToken.fromStringId(R.string.check_keystore),
                     checkedText = StringResourceToken.fromStringId(R.string.enabled),
                     notCheckedText = StringResourceToken.fromStringId(R.string.not_enabled),
+                    desc = StringResourceToken.fromStringId(R.string.set_them_later_in_settings)
                 )
             }
         }
