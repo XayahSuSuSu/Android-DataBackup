@@ -285,4 +285,5 @@
     <string name="remote_path">远程路径</string>
     <string name="delete_account">删除账户</string>
     <string name="remote_path_desc">备份读取或保存的路径</string>
+    <string name="delete_account_desc">此账户将被删除</string>
 </resources>

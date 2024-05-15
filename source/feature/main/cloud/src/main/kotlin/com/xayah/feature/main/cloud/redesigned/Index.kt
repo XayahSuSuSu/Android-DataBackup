@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.Title
+import com.xayah.core.ui.material3.DisabledAlpha
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
@@ -47,11 +49,13 @@ import com.xayah.feature.main.cloud.R
 fun PageCloud() {
     val navController = LocalNavController.current!!
     val viewModel = hiltViewModel<IndexViewModel>()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val accounts by viewModel.accounts.collectAsStateWithLifecycle()
 
     CloudScaffold(
         scrollBehavior = scrollBehavior,
+        snackbarHostState = viewModel.snackbarHostState,
         title = StringResourceToken.fromStringId(R.string.cloud),
         actions = {}
     ) {
@@ -64,10 +68,15 @@ fun PageCloud() {
             Title(title = StringResourceToken.fromStringId(R.string.account)) {
                 accounts.forEach {
                     Clickable(
+                        enabled = uiState.isProcessing.not(),
                         title = StringResourceToken.fromString(it.name),
                         value = StringResourceToken.fromString(it.user),
                         leadingContent = {
-                            Icon(imageVector = it.type.icon.value, contentDescription = null)
+                            Icon(
+                                imageVector = it.type.icon.value,
+                                contentDescription = null,
+                                tint = if (uiState.isProcessing.not()) LocalContentColor.current else LocalContentColor.current.copy(alpha = DisabledAlpha)
+                            )
                         },
                         trailingContent = {
                             Divider(
@@ -91,7 +100,7 @@ fun PageCloud() {
                             )
                         },
                         onClick = {
-
+                            viewModel.emitIntentOnIO(IndexUiIntent.TestConnection(it))
                         }
                     )
                 }

@@ -292,4 +292,5 @@
     <string name="remote_path">Remote path</string>
     <string name="delete_account">Delete account</string>
     <string name="remote_path_desc">Where the backup is read or saved</string>
+    <string name="delete_account_desc">This account will be deleted</string>
 </resources>

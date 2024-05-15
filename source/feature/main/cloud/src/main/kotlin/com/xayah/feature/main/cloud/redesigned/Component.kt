@@ -43,7 +43,6 @@ import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingEnd
 import com.xayah.core.ui.component.paddingStart
-import com.xayah.core.ui.material3.Snackbar
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
 import com.xayah.core.ui.model.ImageVectorToken
@@ -55,7 +54,13 @@ import com.xayah.core.ui.util.value
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun CloudScaffold(scrollBehavior: TopAppBarScrollBehavior, title: StringResourceToken, actions: @Composable RowScope.() -> Unit = {}, content: @Composable (BoxScope.() -> Unit)) {
+fun CloudScaffold(
+    scrollBehavior: TopAppBarScrollBehavior,
+    snackbarHostState: SnackbarHostState? = null,
+    title: StringResourceToken,
+    actions: @Composable RowScope.() -> Unit = {},
+    content: @Composable (BoxScope.() -> Unit)
+) {
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -64,6 +69,10 @@ fun CloudScaffold(scrollBehavior: TopAppBarScrollBehavior, title: StringResource
                 title = title,
                 actions = actions
             )
+        },
+        snackbarHost = {
+            if (snackbarHostState != null)
+                SnackbarHost(hostState = snackbarHostState)
         },
     ) { innerPadding ->
         Column {

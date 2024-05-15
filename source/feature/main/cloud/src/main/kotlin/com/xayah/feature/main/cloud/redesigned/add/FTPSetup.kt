@@ -32,7 +32,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.database.FTPExtra
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.ui.component.Clickable
+import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.Title
+import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
@@ -56,6 +58,7 @@ import com.xayah.feature.main.cloud.redesigned.SetupTextField
 @ExperimentalMaterial3Api
 @Composable
 fun PageFTPSetup() {
+    val dialogState = LocalSlotScope.current!!.dialogSlot
     val context = LocalContext.current
     val navController = LocalNavController.current!!
     val viewModel = hiltViewModel<IndexViewModel>()
@@ -199,7 +202,11 @@ fun PageFTPSetup() {
                             .paddingTop(SizeTokens.Level12),
                         enabled = uiState.isProcessing.not(),
                         onClick = {
-                            viewModel.emitIntentOnIO(IndexUiIntent.DeleteAccount(navController = navController))
+                            viewModel.launchOnIO {
+                                if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.delete_account), text = StringResourceToken.fromStringId(R.string.delete_account_desc))) {
+                                    viewModel.emitIntent(IndexUiIntent.DeleteAccount(navController = navController))
+                                }
+                            }
                         }
                     ) {
                         Text(

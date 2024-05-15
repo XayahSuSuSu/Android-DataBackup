@@ -27,6 +27,7 @@
     <item name="advanced" type="string"/>
     <item name="remote_path" type="string"/>
     <item name="delete_account" type="string"/>
+    <item name="delete_account_desc" type="string"/>
     <item name="not_selected" type="string"/>
     <item name="remote_path_desc" type="string"/>
 
