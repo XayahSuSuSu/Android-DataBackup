@@ -1,7 +1,7 @@
 package com.xayah.databackup.index
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Dashboard
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
@@ -13,7 +13,6 @@ import com.xayah.databackup.R
 internal sealed class MainIndexRoutes(val route: String) {
     data object Dashboard : MainIndexRoutes(route = "main_index_dashboard")
     data object Home : MainIndexRoutes(route = "main_index_home")
-    data object Local : MainIndexRoutes(route = "main_index_local")
     data object Cloud : MainIndexRoutes(route = "main_index_cloud")
 
     data object Settings : MainIndexRoutes(route = "main_index_settings")
@@ -38,13 +37,8 @@ internal sealed class MainIndexRoutes(val route: String) {
                     route = Dashboard.route,
                 ),
                 BottomBarItem(
-                    label = StringResourceToken.fromStringId(R.string.local),
-                    iconToken = ImageVectorToken.fromVector(Icons.Rounded.Circle),
-                    route = Local.route,
-                ),
-                BottomBarItem(
                     label = StringResourceToken.fromStringId(R.string.cloud),
-                    iconToken = ImageVectorToken.fromVector(Icons.Rounded.Circle),
+                    iconToken = ImageVectorToken.fromVector(Icons.Rounded.Cloud),
                     route = Cloud.route,
                 ),
             )

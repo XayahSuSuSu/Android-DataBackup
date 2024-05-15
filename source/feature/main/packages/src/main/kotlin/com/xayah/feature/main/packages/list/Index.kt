@@ -20,7 +20,7 @@ import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import com.xayah.core.ui.material3.SnackbarHost
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,7 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.core.common.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.datastore.saveSelectionType
 import com.xayah.core.model.ModeState
 import com.xayah.core.model.OpType
@@ -99,7 +99,7 @@ fun PagePackages() {
     val snackbarHostState = viewModel.snackbarHostState
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val isRefreshing = uiState.isRefreshing
-    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.emitIntent(IndexUiIntent.OnRefresh) })
+    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh) })
     val enabled = topBarState.progress == 1f
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -110,7 +110,7 @@ fun PagePackages() {
                 actions = {
                     if (isRefreshing.not() && modeState != ModeState.OVERVIEW) {
                         ChecklistIconButton {
-                            viewModel.emitIntent(IndexUiIntent.SelectAll)
+                            viewModel.emitIntentOnIO(IndexUiIntent.SelectAll)
                         }
                         if (modeState == ModeState.BATCH_RESTORE) {
                             ContentWithConfirm(
@@ -120,7 +120,7 @@ fun PagePackages() {
                                     }
                                 },
                                 onConfirm = {
-                                    viewModel.suspendEmitIntent(IndexUiIntent.DeleteSelected)
+                                    viewModel.emitIntent(IndexUiIntent.DeleteSelected)
                                 }
                             )
                         }
@@ -203,7 +203,7 @@ fun PagePackages() {
                             enabled = enabled,
                             placeholder = StringResourceToken.fromStringId(R.string.search_bar_hint_packages),
                             onTextChange = {
-                                viewModel.emitIntent(IndexUiIntent.FilterByKey(key = it))
+                                viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
                             }
                         )
                     }
@@ -218,7 +218,7 @@ fun PagePackages() {
                                     type = sortTypeState,
                                     list = stringArrayResource(id = R.array.backup_sort_type_items).toList(),
                                     onSelected = { index, _ ->
-                                        viewModel.emitIntent(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                        viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
                                     },
                                     onClick = {}
                                 )
@@ -231,11 +231,11 @@ fun PagePackages() {
                                     list = uiState.userIdList.map { it.toString() },
                                     onSelected = { indexList ->
                                         if (indexList.isNotEmpty()) {
-                                            viewModel.emitIntent(IndexUiIntent.SetUserIdIndexList(indexList))
+                                            viewModel.emitIntentOnIO(IndexUiIntent.SetUserIdIndexList(indexList))
                                         }
                                     },
                                     onClick = {
-                                        viewModel.emitIntent(IndexUiIntent.GetUserIds)
+                                        viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
                                     }
                                 )
 
@@ -245,7 +245,7 @@ fun PagePackages() {
                                     selectedIndex = flagIndexState,
                                     list = stringArrayResource(id = R.array.flag_type_items).toList(),
                                     onSelected = { index, _ ->
-                                        viewModel.emitIntent(IndexUiIntent.FilterByFlag(index = index))
+                                        viewModel.emitIntentOnIO(IndexUiIntent.FilterByFlag(index = index))
                                     },
                                     onClick = {}
                                 )
@@ -258,7 +258,7 @@ fun PagePackages() {
                                     selectedIndex = modes.indexOf(modeState),
                                     list = modes.map { it.getLabel(context) },
                                     onSelected = { index, _ ->
-                                        viewModel.emitIntent(IndexUiIntent.SetMode(index = index, mode = modes[index]))
+                                        viewModel.emitIntentOnIO(IndexUiIntent.SetMode(index = index, mode = modes[index]))
                                     },
                                     onClick = {}
                                 )
@@ -269,7 +269,7 @@ fun PagePackages() {
                                         selectedIndex = locationIndexState,
                                         list = accountsState.map { "${context.getString(R.string.cloud)}: ${it.name}" }.toMutableList().also { it.add(0, context.getString(R.string.local)) },
                                         onSelected = { index, _ ->
-                                            viewModel.emitIntent(IndexUiIntent.FilterByLocation(index = index))
+                                            viewModel.emitIntentOnIO(IndexUiIntent.FilterByLocation(index = index))
                                         },
                                         onClick = {}
                                     )
@@ -306,11 +306,11 @@ fun PagePackages() {
                                 onCardClick = {
                                     when (modeState) {
                                         ModeState.OVERVIEW -> {
-                                            viewModel.emitIntent(IndexUiIntent.ToPagePackageDetail(navController, item.entity))
+                                            viewModel.emitIntentOnIO(IndexUiIntent.ToPagePackageDetail(navController, item.entity))
                                         }
 
                                         else -> {
-                                            viewModel.emitIntent(IndexUiIntent.Select(item.entity))
+                                            viewModel.emitIntentOnIO(IndexUiIntent.Select(item.entity))
                                         }
                                     }
 
@@ -324,7 +324,7 @@ fun PagePackages() {
                                             text = countBackups(context = context, count = backupsCount),
                                             color = ColorSchemeKeyTokens.Primary.toColor(),
                                         ) {
-                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
                                         }
                                     }
 
@@ -334,7 +334,7 @@ fun PagePackages() {
                                             text = "${StringResourceToken.fromStringId(R.string.id).value}: $preserveId",
                                             color = ColorSchemeKeyTokens.Primary.toColor(),
                                         ) {
-                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
                                         }
                                     }
                                 }
@@ -346,7 +346,7 @@ fun PagePackages() {
                                     ).value,
                                     color = ColorSchemeKeyTokens.Primary.toColor(),
                                 ) {
-                                    viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                    viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
                                 }
                                 if (item.entity.extraInfo.existed) {
                                     if (ssaid.isNotEmpty()) RoundChip(
@@ -354,24 +354,24 @@ fun PagePackages() {
                                         text = StringResourceToken.fromStringId(R.string.ssaid).value,
                                         color = ColorSchemeKeyTokens.Secondary.toColor(),
                                     ) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.ssaid)}: $ssaid"))
+                                        viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffectOnIO(IndexUiEffect.ShowSnackbar("${context.getString(R.string.ssaid)}: $ssaid"))
                                     }
                                     if (hasKeystore) RoundChip(
                                         enabled = itemEnabled,
                                         text = StringResourceToken.fromStringId(R.string.keystore).value,
                                         color = ColorSchemeKeyTokens.Error.toColor(),
                                     ) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar(context.getString(R.string.keystore_desc)))
+                                        viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffectOnIO(IndexUiEffect.ShowSnackbar(context.getString(R.string.keystore_desc)))
                                     }
                                     if (versionName.isNotEmpty()) RoundChip(enabled = itemEnabled, text = versionName) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.version)}: $versionName"))
+                                        viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffectOnIO(IndexUiEffect.ShowSnackbar("${context.getString(R.string.version)}: $versionName"))
                                     }
                                     RoundChip(enabled = itemEnabled, text = storageStatsFormat) {
-                                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                        viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $storageStatsFormat"))
+                                        viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
+                                        viewModel.emitEffectOnIO(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $storageStatsFormat"))
                                     }
                                 }
                                 RoundChip(
@@ -379,7 +379,7 @@ fun PagePackages() {
                                     text = if (isSystemApp) StringResourceToken.fromStringId(R.string.system).value
                                     else StringResourceToken.fromStringId(R.string.third_party).value
                                 ) {
-                                    viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                    viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
                                 }
                             }
                         }

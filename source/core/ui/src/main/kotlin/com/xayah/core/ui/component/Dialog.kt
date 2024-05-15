@@ -111,7 +111,13 @@ suspend fun DialogState.confirm(title: StringResourceToken, text: StringResource
 @Composable
 fun RadioItem(enabled: Boolean = true, selected: Boolean, title: StringResourceToken, desc: StringResourceToken, onClick: () -> Unit) {
     Surface(enabled = true, modifier = Modifier.fillMaxWidth(), onClick = onClick, color = ColorSchemeKeyTokens.Transparent.toColor()) {
-        Row(modifier = Modifier.paddingVertical(SizeTokens.Level8), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8)) {
+        Row(
+            modifier = Modifier
+                .paddingVertical(SizeTokens.Level8)
+                .paddingStart(SizeTokens.Level12),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8)
+        ) {
             RadioButton(
                 selected = selected,
                 onClick = onClick,

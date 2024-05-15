@@ -17,6 +17,12 @@ import com.xayah.core.ui.theme.DataBackupTheme
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.databackup.index.MainIndexGraph
+import com.xayah.feature.main.cloud.redesigned.PageCloud
+import com.xayah.feature.main.cloud.redesigned.add.PageCloudAddAccount
+import com.xayah.feature.main.cloud.redesigned.add.PageFTPSetup
+import com.xayah.feature.main.cloud.redesigned.add.PageSMBSetup
+import com.xayah.feature.main.cloud.redesigned.add.PageWebDAVSetup
+import com.xayah.feature.main.dashboard.PageDashboard
 import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.log.LogGraph
 import com.xayah.feature.main.medium.detail.PageMediaDetail
@@ -59,10 +65,28 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(LocalNavController provides navController) {
                     AnimatedNavHost(
                         navController = navController,
-                        startDestination = MainRoutes.Index.route,
+                        startDestination = MainRoutes.Dashboard.route,
                     ) {
                         composable(MainRoutes.Index.route) {
                             MainIndexGraph()
+                        }
+                        composable(MainRoutes.Dashboard.route) {
+                            PageDashboard()
+                        }
+                        composable(MainRoutes.Cloud.route) {
+                            PageCloud()
+                        }
+                        composable(MainRoutes.CloudAddAccount.route) {
+                            PageCloudAddAccount()
+                        }
+                        composable(MainRoutes.FTPSetup.route) {
+                            PageFTPSetup()
+                        }
+                        composable(MainRoutes.WebDAVSetup.route) {
+                            PageWebDAVSetup()
+                        }
+                        composable(MainRoutes.SMBSetup.route) {
+                            PageSMBSetup()
                         }
                         composable(MainRoutes.PackagesBackupList.route) {
                             PagePackagesBackupList()

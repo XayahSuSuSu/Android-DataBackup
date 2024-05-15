@@ -2,10 +2,10 @@ package com.xayah.feature.main.packages.redesigned.backup.detail
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.PackageEntity
@@ -45,7 +45,7 @@ class IndexViewModel @Inject constructor(
         rootService.onFailure = {
             val msg = it.message
             if (msg != null)
-                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
+                emitEffectOnIO(IndexUiEffect.ShowSnackbar(message = msg))
         }
     }
 

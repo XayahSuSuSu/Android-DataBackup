@@ -16,7 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarHostState
+import com.xayah.core.ui.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,7 +54,7 @@ fun PageCloudAccount(navController: NavHostController, snackbarHostState: Snackb
     val actions = LocalActionsState.current
     actions?.setActions {
         CheckIconButton {
-            viewModel.emitIntent(IndexUiIntent.Confirm(navController = navController))
+            viewModel.emitIntentOnIO(IndexUiIntent.Confirm(navController = navController))
         }
     }
 
@@ -85,7 +85,7 @@ fun PageCloudAccount(navController: NavHostController, snackbarHostState: Snackb
                     selectedIndex = uiState.typeIndex,
                     list = uiState.typeList.map { it.typeDisplay },
                     onSelected = { index, _ ->
-                        viewModel.emitIntent(IndexUiIntent.SetTypeIndex(index = index))
+                        viewModel.emitIntentOnIO(IndexUiIntent.SetTypeIndex(index = index))
                     },
                     onSelectedDismiss = true,
                     onClick = {}

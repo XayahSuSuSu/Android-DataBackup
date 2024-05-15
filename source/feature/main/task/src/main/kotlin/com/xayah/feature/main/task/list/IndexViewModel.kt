@@ -2,10 +2,10 @@ package com.xayah.feature.main.task.list
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.TaskEntity

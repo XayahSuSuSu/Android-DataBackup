@@ -80,7 +80,7 @@ fun PageList(navController: NavHostController) {
                 icon = ImageVectorToken.fromVector(Icons.Rounded.Delete),
                 text = StringResourceToken.fromStringId(R.string.clear_all),
                 onClick = {
-                    viewModel.emitIntent(IndexUiIntent.DeleteAll)
+                    viewModel.emitIntentOnIO(IndexUiIntent.DeleteAll)
                 }
             )
         },

@@ -10,6 +10,18 @@ sealed class MainRoutes(val route: String) {
     }
 
     data object Index : MainRoutes(route = "main_index")
+    data object Dashboard : MainRoutes(route = "main_dashboard")
+    data object Cloud : MainRoutes(route = "main_cloud")
+    data object CloudAddAccount : MainRoutes(route = "main_cloud_add_account")
+    data object FTPSetup : MainRoutes(route = "main_ftp_setup/{$ArgAccountName}") {
+        fun getRoute(name: String) = "main_ftp_setup/$name"
+    }
+    data object WebDAVSetup : MainRoutes(route = "main_webdav_setup/{$ArgAccountName}") {
+        fun getRoute(name: String) = "main_webdav_setup/$name"
+    }
+    data object SMBSetup : MainRoutes(route = "main_smb_setup/{$ArgAccountName}") {
+        fun getRoute(name: String) = "main_smb_setup/$name"
+    }
     data object Settings : MainRoutes(route = "main_settings")
     data object Restore : MainRoutes(route = "main_restore")
     data object BackupSettings : MainRoutes(route = "main_backup_settings")

@@ -17,7 +17,7 @@ import androidx.compose.material.icons.rounded.FactCheck
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import com.xayah.core.ui.material3.SnackbarHost
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +29,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.core.common.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.model.ModeState
 import com.xayah.core.model.OpType
 import com.xayah.core.model.getLabel
@@ -83,7 +83,7 @@ fun PageMedium() {
     val snackbarHostState = viewModel.snackbarHostState
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val isRefreshing = uiState.isRefreshing
-    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.emitIntent(IndexUiIntent.OnRefresh) })
+    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh) })
     val enabled = topBarState.progress == 1f
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -93,11 +93,11 @@ fun PageMedium() {
                 topBarState = topBarState,
                 actions = {
                     AddIconButton {
-                        viewModel.emitIntent(IndexUiIntent.AddMedia(context = context))
+                        viewModel.emitIntentOnIO(IndexUiIntent.AddMedia(context = context))
                     }
                     if (isRefreshing.not() && modeState != ModeState.OVERVIEW) {
                         ChecklistIconButton {
-                            viewModel.emitIntent(IndexUiIntent.SelectAll)
+                            viewModel.emitIntentOnIO(IndexUiIntent.SelectAll)
                         }
                         if (modeState == ModeState.BATCH_RESTORE) {
                             ContentWithConfirm(
@@ -107,12 +107,12 @@ fun PageMedium() {
                                     }
                                 },
                                 onConfirm = {
-                                    viewModel.suspendEmitIntent(IndexUiIntent.DeleteSelected)
+                                    viewModel.emitIntent(IndexUiIntent.DeleteSelected)
                                 }
                             )
                         }
                         CheckIconButton(enabled = activatedState) {
-                            viewModel.emitIntent(IndexUiIntent.Process(navController = navController))
+                            viewModel.emitIntentOnIO(IndexUiIntent.Process(navController = navController))
                         }
                     }
                 }
@@ -137,7 +137,7 @@ fun PageMedium() {
                             enabled = enabled,
                             placeholder = StringResourceToken.fromStringId(R.string.search_bar_hint_medium),
                             onTextChange = {
-                                viewModel.emitIntent(IndexUiIntent.FilterByKey(key = it))
+                                viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
                             }
                         )
                     }
@@ -152,7 +152,7 @@ fun PageMedium() {
                                     selectedIndex = modes.indexOf(modeState),
                                     list = modes.map { it.getLabel(context) },
                                     onSelected = { index, _ ->
-                                        viewModel.emitIntent(IndexUiIntent.SetMode(index = index, mode = modes[index]))
+                                        viewModel.emitIntentOnIO(IndexUiIntent.SetMode(index = index, mode = modes[index]))
                                     },
                                     onClick = {}
                                 )
@@ -163,7 +163,7 @@ fun PageMedium() {
                                         selectedIndex = locationIndexState,
                                         list = accountsState.map { "${context.getString(R.string.cloud)}: ${it.name}" }.toMutableList().also { it.add(0, context.getString(R.string.local)) },
                                         onSelected = { index, _ ->
-                                            viewModel.emitIntent(IndexUiIntent.FilterByLocation(index = index))
+                                            viewModel.emitIntentOnIO(IndexUiIntent.FilterByLocation(index = index))
                                         },
                                         onClick = {}
                                     )
@@ -196,11 +196,11 @@ fun PageMedium() {
                                 onCardClick = {
                                     when (modeState) {
                                         ModeState.OVERVIEW -> {
-                                            viewModel.emitIntent(IndexUiIntent.ToPageMediaDetail(navController, item.entity))
+                                            viewModel.emitIntentOnIO(IndexUiIntent.ToPageMediaDetail(navController, item.entity))
                                         }
 
                                         else -> {
-                                            viewModel.emitIntent(IndexUiIntent.Select(item.entity))
+                                            viewModel.emitIntentOnIO(IndexUiIntent.Select(item.entity))
                                         }
                                     }
                                 },
@@ -213,7 +213,7 @@ fun PageMedium() {
                                             text = countBackups(context = context, count = backupsCount),
                                             color = ColorSchemeKeyTokens.Primary.toColor(),
                                         ) {
-                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
                                         }
                                     }
 
@@ -223,14 +223,14 @@ fun PageMedium() {
                                             text = "${StringResourceToken.fromStringId(R.string.id).value}: $preserveId",
                                             color = ColorSchemeKeyTokens.Primary.toColor(),
                                         ) {
-                                            viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                                            viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
                                         }
                                     }
                                 }
 
                                 RoundChip(enabled = itemEnabled, text = displayStatsFormat) {
-                                    viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
-                                    viewModel.emitEffect(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $displayStatsFormat"))
+                                    viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
+                                    viewModel.emitEffectOnIO(IndexUiEffect.ShowSnackbar("${context.getString(R.string.data_size)}: $displayStatsFormat"))
                                 }
                             }
                         }

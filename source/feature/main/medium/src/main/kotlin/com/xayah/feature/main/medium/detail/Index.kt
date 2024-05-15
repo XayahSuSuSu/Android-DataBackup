@@ -19,7 +19,7 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import com.xayah.core.ui.material3.SnackbarHost
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -86,7 +86,7 @@ fun PageMediaDetail() {
     val snackbarHostState = viewModel.snackbarHostState
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val isRefreshing = uiState.isRefreshing
-    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.emitIntent(IndexUiIntent.OnRefresh) })
+    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh) })
 
     LaunchedEffect(null) {
         viewModel.emitIntent(IndexUiIntent.OnRefresh)
@@ -150,7 +150,7 @@ fun PageMediaDetail() {
                                             selected = account.activated,
                                             label = StringResourceToken.fromString(account.name),
                                         ) {
-                                            viewModel.emitIntent(IndexUiIntent.ActiveCloud(account))
+                                            viewModel.emitIntentOnIO(IndexUiIntent.ActiveCloud(account))
                                         }
                                     }
                                 }
@@ -169,7 +169,7 @@ fun PageMediaDetail() {
                                 activatedState = processingCountState,
                                 itemState = backupItemState!!,
                                 onBtnClick = {
-                                    viewModel.emitIntent(IndexUiIntent.BackupToLocal(backupItemState!!, navController))
+                                    viewModel.emitIntentOnIO(IndexUiIntent.BackupToLocal(backupItemState!!, navController))
                                 },
                                 infoContent = {
                                     val ct = backupItemState!!.indexInfo.compressionType
@@ -181,7 +181,7 @@ fun PageMediaDetail() {
                                         selectedIndex = ctIndex,
                                         list = ctList,
                                     ) { _, selected ->
-                                        viewModel.emitIntent(
+                                        viewModel.emitIntentOnIO(
                                             IndexUiIntent.UpdateMedia(
                                                 backupItemState!!.copy(
                                                     indexInfo = backupItemState!!.indexInfo.copy(
@@ -218,7 +218,7 @@ fun PageMediaDetail() {
                                             actionList = accountMenuItemsState,
                                             onClick = {
                                                 expanded = false
-                                                viewModel.emitIntent(
+                                                viewModel.emitIntentOnIO(
                                                     IndexUiIntent.BackupToCloud(
                                                         backupItemState!!,
                                                         accountMenuItemsState[it].title.getValue(context),
@@ -246,9 +246,9 @@ fun PageMediaDetail() {
                                 itemState = restoreItemState,
                                 onBtnClick = {
                                     if (isCloud)
-                                        viewModel.emitIntent(IndexUiIntent.RestoreFromCloud(restoreItemState, restoreItemState.indexInfo.cloud, navController))
+                                        viewModel.emitIntentOnIO(IndexUiIntent.RestoreFromCloud(restoreItemState, restoreItemState.indexInfo.cloud, navController))
                                     else
-                                        viewModel.emitIntent(IndexUiIntent.RestoreFromLocal(restoreItemState, navController))
+                                        viewModel.emitIntentOnIO(IndexUiIntent.RestoreFromLocal(restoreItemState, navController))
                                 },
                                 infoContent = {
                                     if (isCloud) {
@@ -287,7 +287,7 @@ fun PageMediaDetail() {
                                                 )
                                             },
                                             onConfirm = {
-                                                viewModel.suspendEmitIntent(IndexUiIntent.Preserve(restoreItemState))
+                                                viewModel.emitIntent(IndexUiIntent.Preserve(restoreItemState))
                                             }
                                         )
 
@@ -308,7 +308,7 @@ fun PageMediaDetail() {
                                                 )
                                             },
                                             onConfirm = {
-                                                viewModel.suspendEmitIntent(IndexUiIntent.Delete(restoreItemState))
+                                                viewModel.emitIntent(IndexUiIntent.Delete(restoreItemState))
                                             }
                                         )
                                     }

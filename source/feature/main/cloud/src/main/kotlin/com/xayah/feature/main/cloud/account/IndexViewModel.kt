@@ -5,10 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.model.CloudType
 import com.xayah.core.model.database.CloudEntity
@@ -56,7 +56,7 @@ internal class IndexViewModel @Inject constructor(
                         val typeList = uiState.value.typeList.map { it.type }
                         val index = typeList.indexOf(cloudEntity.type)
                         if (index != -1) {
-                            emitStateSuspend(
+                            emitState(
                                 uiState.value.copy(
                                     typeIndex = index,
                                     typeList = listOf(
@@ -72,7 +72,7 @@ internal class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.SetTypeIndex -> {
-                emitStateSuspend(state.copy(typeIndex = intent.index))
+                emitState(state.copy(typeIndex = intent.index))
             }
 
             is IndexUiIntent.Confirm -> {

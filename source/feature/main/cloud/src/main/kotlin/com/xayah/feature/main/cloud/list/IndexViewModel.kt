@@ -3,12 +3,12 @@ package com.xayah.feature.main.cloud.list
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarDuration
+import com.xayah.core.ui.material3.SnackbarDuration
 import androidx.navigation.NavHostController
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.datastore.saveCloudActivatedAccountName
 import com.xayah.core.model.database.CloudEntity
@@ -42,8 +42,8 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.SetRemote -> {
                 val context = intent.context
                 val entity = intent.entity
-                emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                emitEffect(
+                emitEffect(IndexUiEffect.DismissSnackbar)
+                emitEffectOnIO(
                     IndexUiEffect.ShowSnackbar(
                         message = "${cloudRepository.getString(R.string.processing)}...",
                         duration = SnackbarDuration.Indefinite
@@ -55,19 +55,19 @@ class IndexViewModel @Inject constructor(
                         context = context,
                         onSet = { remote, extraString ->
                             cloudRepository.upsert(entity.copy(remote = remote, extra = extraString))
-                            emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                            emitEffect(IndexUiEffect.DismissSnackbar)
                         }
                     )
                 }.onFailure {
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffect(IndexUiEffect.DismissSnackbar)
                     if (it.localizedMessage != null)
-                        emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = it.localizedMessage!!, duration = SnackbarDuration.Long))
+                        emitEffect(IndexUiEffect.ShowSnackbar(message = it.localizedMessage!!, duration = SnackbarDuration.Long))
                 }
             }
 
             is IndexUiIntent.TestConnection -> {
                 val entity = intent.entity
-                emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                emitEffect(IndexUiEffect.DismissSnackbar)
                 emitEffect(
                     IndexUiEffect.ShowSnackbar(
                         message = "${cloudRepository.getString(R.string.processing)}...",
@@ -77,12 +77,12 @@ class IndexViewModel @Inject constructor(
                 runCatching {
                     val client = entity.getCloud()
                     client.testConnection()
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.connection_established)))
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.connection_established)))
                 }.onFailure {
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
+                    emitEffect(IndexUiEffect.DismissSnackbar)
                     if (it.localizedMessage != null)
-                        emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = it.localizedMessage!!, duration = SnackbarDuration.Long))
+                        emitEffect(IndexUiEffect.ShowSnackbar(message = it.localizedMessage!!, duration = SnackbarDuration.Long))
                 }
             }
 
@@ -92,7 +92,7 @@ class IndexViewModel @Inject constructor(
                 val navController = intent.navController
                 val route = intent.route
                 if (entity.remote.isEmpty()) {
-                    emitEffectSuspend(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.remote_not_set)))
+                    emitEffect(IndexUiEffect.ShowSnackbar(message = cloudRepository.getString(R.string.remote_not_set)))
                 } else {
                     context.saveCloudActivatedAccountName(entity.name)
                     withMainContext {

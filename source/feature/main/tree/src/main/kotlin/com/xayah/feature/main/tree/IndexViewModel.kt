@@ -1,10 +1,10 @@
 package com.xayah.feature.main.tree
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

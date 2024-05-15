@@ -72,13 +72,13 @@ fun PageLogcat(navController: NavHostController) {
                 },
                 actions = {
                     IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.Delete)) {
-                        viewModel.emitIntent(IndexUiIntent.Clear)
+                        viewModel.emitIntentOnIO(IndexUiIntent.Clear)
                     }
                     IconButton(icon = ImageVectorToken.fromVector(Icons.Rounded.Share)) {
-                        viewModel.emitIntent(IndexUiIntent.Share)
+                        viewModel.emitIntentOnIO(IndexUiIntent.Share)
                     }
                     IconButton(icon = ImageVectorToken.fromVector(if (isRunning) Icons.Rounded.Stop else Icons.Rounded.PlayArrow)) {
-                        if (isRunning) viewModel.emitIntent(IndexUiIntent.Stop) else viewModel.emitIntent(IndexUiIntent.Start)
+                        if (isRunning) viewModel.emitIntentOnIO(IndexUiIntent.Stop) else viewModel.emitIntentOnIO(IndexUiIntent.Start)
                     }
                 }
             )

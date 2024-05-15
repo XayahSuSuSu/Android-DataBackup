@@ -2,10 +2,10 @@ package com.xayah.feature.main.directory
 
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.DirectoryRepository
 import com.xayah.core.model.StorageType
 import com.xayah.core.model.database.DirectoryEntity
@@ -39,16 +39,16 @@ class IndexViewModel @Inject constructor(
         rootService.onFailure = {
             val msg = it.message
             if (msg != null)
-                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
+                emitEffectOnIO(IndexUiEffect.ShowSnackbar(message = msg))
         }
     }
 
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Update -> {
-                emitStateSuspend(uiState.value.copy(updating = true))
+                emitState(uiState.value.copy(updating = true))
                 directoryRepo.update()
-                emitStateSuspend(uiState.value.copy(updating = false))
+                emitState(uiState.value.copy(updating = false))
             }
 
             is IndexUiIntent.Select -> {

@@ -84,10 +84,10 @@ enum class EmojiString(val emoji: String) {
     SWEAT_DROPLETS("💦"),
 }
 
-enum class CloudType {
-    FTP,
-    WEBDAV,
-    SMB,
+enum class CloudType(val title: String) {
+    FTP("FTP"),
+    WEBDAV("WebDAV"),
+    SMB("SMB / CIFS"),
 }
 
 enum class SmbVersion(val text: String) {

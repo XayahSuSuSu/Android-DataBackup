@@ -11,7 +11,7 @@
     <item name="backup_contacts" type="string" />
     <item name="backup_files" type="string" />
     <item name="backup_messages" type="string" />
-    <item name="sync_to_cloud" type="string" />
+    <item name="cloud" type="string" />
     <item name="restore" type="string" />
     <item name="args_used_by_backups" type="string" />
     <item name="args_finished_at" type="string" />

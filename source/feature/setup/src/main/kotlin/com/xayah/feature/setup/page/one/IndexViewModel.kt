@@ -6,10 +6,10 @@ import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.util.BuildConfigUtil
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.command.BaseUtil
@@ -41,8 +41,19 @@ class IndexViewModel @Inject constructor(
     private val contextRepo: ContextRepository
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(abiErr = "")) {
     @SuppressLint("StringFormatInvalid")
-    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
+    override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
+            is IndexUiIntent.OnResume -> {
+                mutex.withLock {
+                    contextRepo.withContext { context ->
+                        val isNotificationPermissionGranted = NotificationUtil.checkPermission(context)
+                        if (isNotificationPermissionGranted) {
+                            _notificationState.value = EnvState.Succeed
+                        }
+                    }
+                }
+            }
+
             is IndexUiIntent.ValidateRoot -> {
                 mutex.withLock {
                     if (rootState.value == EnvState.Idle || rootState.value == EnvState.Failed) {
@@ -97,25 +108,6 @@ class IndexViewModel @Inject constructor(
                         NotificationUtil.requestPermissions(intent.context)
                 }
             }
-
-            else -> {}
-        }
-    }
-
-    override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
-        when (intent) {
-            is IndexUiIntent.OnResume -> {
-                mutex.withLock {
-                    contextRepo.withContext { context ->
-                        val isNotificationPermissionGranted = NotificationUtil.checkPermission(context)
-                        if (isNotificationPermissionGranted) {
-                            _notificationState.value = EnvState.Succeed
-                        }
-                    }
-                }
-            }
-
-            else -> {}
         }
     }
 

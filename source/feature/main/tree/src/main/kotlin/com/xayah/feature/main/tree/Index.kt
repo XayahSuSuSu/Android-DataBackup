@@ -89,8 +89,8 @@ fun PageTree() {
                                 list = uiState.filterList,
                                 onSelected = { index, _ ->
                                     viewModel.launchOnIO {
-                                        viewModel.emitStateSuspend(uiState.copy(filterIndex = index))
-                                        viewModel.emitIntentSuspend(IndexUiIntent.Refresh)
+                                        viewModel.emitState(uiState.copy(filterIndex = index))
+                                        viewModel.emitIntent(IndexUiIntent.Refresh)
                                     }
                                 },
                                 onClick = {}

@@ -2,10 +2,10 @@ package com.xayah.feature.main.log.page.logcat
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.core.common.util.toLineString
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.database.dao.LogcatDao
 import com.xayah.core.model.database.LogcatEntity

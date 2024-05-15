@@ -4,7 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarHostState
+import com.xayah.core.ui.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -38,7 +38,6 @@ fun MainIndexGraph() {
                 composable(MainIndexRoutes.Dashboard.route) {
                     PageDashboard()
                 }
-                composable(MainIndexRoutes.Local.route) {}
                 composable(MainIndexRoutes.Cloud.route) {}
                 composable(MainRoutes.CloudAccount.route) {
                     PageCloudAccount(navController = navController, snackbarHostState = snackbarHostState)

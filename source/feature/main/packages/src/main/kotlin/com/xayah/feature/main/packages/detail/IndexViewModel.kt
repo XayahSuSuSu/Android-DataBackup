@@ -1,13 +1,13 @@
 package com.xayah.feature.main.packages.detail
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarDuration
+import com.xayah.core.ui.material3.SnackbarDuration
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.PackageRepository
@@ -79,21 +79,7 @@ class IndexViewModel @Inject constructor(
         rootService.onFailure = {
             val msg = it.message
             if (msg != null)
-                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
-        }
-    }
-
-    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
-        when (intent) {
-            is IndexUiIntent.Preserve -> {
-                packageRepo.preserve(intent.packageEntity)
-            }
-
-            is IndexUiIntent.Delete -> {
-                packageRepo.delete(intent.packageEntity)
-            }
-
-            else -> {}
+                emitEffectOnIO(IndexUiEffect.ShowSnackbar(message = msg))
         }
     }
 
@@ -101,13 +87,13 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
-                emitStateSuspend(state.copy(isRefreshing = true))
+                emitState(state.copy(isRefreshing = true))
                 packageRepo.refreshFromLocalPackage(state.packageName)
                 packageRepo.refreshFromCloudPackage(state.packageName)
                 packageRepo.updateLocalPackageDataSize(state.packageName, OpType.BACKUP, state.userId, 0)
                 packageRepo.updateLocalPackageArchivesSize(state.packageName, OpType.RESTORE, state.userId)
                 packageRepo.updateCloudPackageArchivesSize(state.packageName, OpType.RESTORE, state.userId)
-                emitStateSuspend(state.copy(isRefreshing = false))
+                emitState(state.copy(isRefreshing = false))
             }
 
             is IndexUiIntent.UpdatePackage -> {
@@ -116,8 +102,8 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.BackupToLocal -> {
                 launchOnGlobal {
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.task_is_in_progress),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -137,8 +123,8 @@ class IndexViewModel @Inject constructor(
                     localBackupService.postProcessing(backupPreprocessing = backupPreprocessing)
                     localBackupService.destroyService()
 
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.backup_completed),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -158,8 +144,8 @@ class IndexViewModel @Inject constructor(
                     contextRepository.withContext {
                         it.saveCloudActivatedAccountName(intent.name)
                     }
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.task_is_in_progress),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -179,8 +165,8 @@ class IndexViewModel @Inject constructor(
                     cloudBackupService.postProcessing(backupPreprocessing = backupPreprocessing)
                     cloudBackupService.destroyService()
 
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.backup_completed),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -197,8 +183,8 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.RestoreFromLocal -> {
                 launchOnGlobal {
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.task_is_in_progress),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -218,8 +204,8 @@ class IndexViewModel @Inject constructor(
                     localRestoreService.postProcessing()
                     localRestoreService.destroyService()
 
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.restore_completed),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -239,8 +225,8 @@ class IndexViewModel @Inject constructor(
                     contextRepository.withContext {
                         it.saveCloudActivatedAccountName(intent.name)
                     }
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.task_is_in_progress),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -260,8 +246,8 @@ class IndexViewModel @Inject constructor(
                     cloudRestoreService.postProcessing()
                     cloudRestoreService.destroyService()
 
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.restore_completed),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -280,7 +266,13 @@ class IndexViewModel @Inject constructor(
                 cloudRepo.upsert(intent.cloudEntity.copy(activated = intent.cloudEntity.activated.not()))
             }
 
-            else -> {}
+            is IndexUiIntent.Preserve -> {
+                packageRepo.preserve(intent.packageEntity)
+            }
+
+            is IndexUiIntent.Delete -> {
+                packageRepo.delete(intent.packageEntity)
+            }
         }
     }
 

@@ -285,7 +285,7 @@ fun OpItem(
                             enabled = isRefreshing.not(),
                             item = apkItem,
                         ) {
-                            viewModel.emitIntent(IndexUiIntent.UpdatePackage(apkItem.reversedPackage(itemState)))
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(apkItem.reversedPackage(itemState)))
                         }
                         val items = chipsState.filter { it.dataType != DataType.PACKAGE_APK }
                         PackageDataChip(
@@ -293,7 +293,7 @@ fun OpItem(
                             enabled = isRefreshing.not(),
                             items = items,
                         ) {
-                            viewModel.emitIntent(IndexUiIntent.UpdatePackage(items.dataReversedPackage(itemState)))
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(items.dataReversedPackage(itemState)))
                         }
                     }
                 } else {
@@ -303,7 +303,7 @@ fun OpItem(
                             enabled = isRefreshing.not(),
                             item = item,
                         ) {
-                            viewModel.emitIntent(IndexUiIntent.UpdatePackage(item.reversedPackage(itemState)))
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(item.reversedPackage(itemState)))
                         }
                     }
                 }
@@ -313,14 +313,14 @@ fun OpItem(
                         enabled = isRefreshing.not(),
                         item = itemState,
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(itemState.reversePermission()))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(itemState.reversePermission()))
                     }
                     if (itemState.extraInfo.ssaid.isNotEmpty()) PackageSsaidChip(
                         modifier = Modifier.weight(1f),
                         enabled = isRefreshing.not(),
                         item = itemState,
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(itemState.reverseSsaid()))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(itemState.reverseSsaid()))
                     }
                     else Spacer(modifier = Modifier.weight(1f))
                 }

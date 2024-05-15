@@ -73,7 +73,7 @@ fun PageTwo() {
             Button(
                 enabled = backupSavePathSaved,
                 onClick = {
-                    viewModel.emitIntent(IndexUiIntent.ToMain(context = context as ComponentActivity))
+                    viewModel.emitIntentOnIO(IndexUiIntent.ToMain(context = context as ComponentActivity))
                 }
             ) {
                 Text(text = StringResourceToken.fromStringId(R.string.finish).value)

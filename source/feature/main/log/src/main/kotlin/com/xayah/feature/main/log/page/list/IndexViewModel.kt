@@ -1,10 +1,10 @@
 package com.xayah.feature.main.log.page.list
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.FileUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.feature.main.log.LogCardItem

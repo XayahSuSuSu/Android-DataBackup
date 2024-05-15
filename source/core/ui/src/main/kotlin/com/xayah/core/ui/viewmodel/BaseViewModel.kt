@@ -1,23 +1,20 @@
-package com.xayah.core.common.viewmodel
+package com.xayah.core.ui.viewmodel
 
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xayah.core.ui.material3.SnackbarDuration
+import com.xayah.core.ui.material3.SnackbarHostState
+import com.xayah.core.ui.material3.SnackbarResult
+import com.xayah.core.ui.material3.SnackbarType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -28,15 +25,14 @@ interface UiIntent
 interface UiEffect
 
 interface IBaseViewModel<S : UiState, I : UiIntent, E : UiEffect> {
-
     suspend fun onEvent(state: S, intent: I)
-    suspend fun onSuspendEvent(state: S, intent: I)
     suspend fun onEffect(effect: E)
 }
 
 sealed class IndexUiEffect : UiEffect {
     data class ShowSnackbar(
         val message: String,
+        val type: SnackbarType? = null,
         val actionLabel: String? = null,
         val withDismissAction: Boolean = false,
         val duration: SnackbarDuration = if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
@@ -48,17 +44,16 @@ sealed class IndexUiEffect : UiEffect {
 }
 
 abstract class BaseViewModel<S : UiState, I : UiIntent, E : IndexUiEffect>(state: S) : IBaseViewModel<S, I, IndexUiEffect>, ViewModel() {
-    private val intentChannel = Channel<I>(Channel.UNLIMITED)
-    private val effectChannel = Channel<E>(Channel.UNLIMITED)
-
     private val _uiState = MutableStateFlow(state)
     val uiState: StateFlow<S> = _uiState.asStateFlow()
     var snackbarHostState: SnackbarHostState = SnackbarHostState()
 
+    override suspend fun onEvent(state: S, intent: I) {}
+
     override suspend fun onEffect(effect: IndexUiEffect) {
         when (effect) {
             is IndexUiEffect.ShowSnackbar -> {
-                when (snackbarHostState.showSnackbar(effect.message, effect.actionLabel, effect.withDismissAction, effect.duration)) {
+                when (snackbarHostState.showSnackbar(effect.message, effect.type, effect.actionLabel, effect.withDismissAction, effect.duration)) {
                     SnackbarResult.ActionPerformed -> {
                         effect.onActionPerformed?.invoke()
                     }
@@ -75,52 +70,17 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : IndexUiEffect>(state
         }
     }
 
-    override suspend fun onSuspendEvent(state: S, intent: I) {}
+    suspend fun emitState(state: S) = withMainContext { _uiState.emit(state) }
 
-    init {
-        launchOnIO {
-            intentChannel.consumeAsFlow().collect {
-                launchOnIO {
-                    onEvent(state = uiState.value, intent = it)
-                }
-            }
-        }
-        launchOnIO {
-            effectChannel.consumeAsFlow().collect {
-                launchOnIO {
-                    onEffect(effect = it)
-                }
-            }
-        }
-    }
+    fun emitStateOnMain(state: S) = launchOnMain { emitState(state) }
 
-    fun emitState(state: S) = launchOnMain {
-        _uiState.emit(state)
-    }
+    suspend fun emitIntent(intent: I) = onEvent(state = uiState.value, intent = intent)
 
-    fun emitIntent(intent: I) = launchOnIO {
-        intentChannel.send(intent)
-    }
+    fun emitIntentOnIO(intent: I) = launchOnIO { emitIntent(intent) }
 
-    fun emitEffect(effect: E) = launchOnIO {
-        effectChannel.send(effect)
-    }
+    suspend fun emitEffect(effect: E) = onEffect(effect = effect)
 
-    suspend fun emitStateSuspend(state: S) = withMainContext {
-        _uiState.emit(state)
-    }
-
-    suspend fun emitIntentSuspend(intent: I) = withIOContext {
-        intentChannel.send(intent)
-    }
-
-    suspend fun emitEffectSuspend(effect: E) = withIOContext {
-        effectChannel.send(effect)
-    }
-
-    suspend fun suspendEmitIntent(intent: I) = withIOContext {
-        onSuspendEvent(state = uiState.value, intent = intent)
-    }
+    fun emitEffectOnIO(effect: E) = launchOnIO { emitEffect(effect) }
 
     suspend fun withIOContext(block: suspend CoroutineScope.() -> Unit) = withContext(Dispatchers.IO, block = block)
 
@@ -140,7 +100,4 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : IndexUiEffect>(state
     )
 
     fun <T> Flow<T>.flowOnIO(): Flow<T> = flowOn(Dispatchers.IO)
-
-    @ExperimentalCoroutinesApi
-    fun <R> flatMapLatestUiState(transform: suspend (value: S) -> Flow<R>) = _uiState.flatMapLatest(transform)
 }

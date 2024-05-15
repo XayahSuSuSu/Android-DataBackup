@@ -30,8 +30,6 @@ import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -75,6 +73,8 @@ import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.CircularProgressIndicator
+import com.xayah.core.ui.material3.SnackbarHost
+import com.xayah.core.ui.material3.SnackbarHostState
 import com.xayah.core.ui.material3.VerticalDivider
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens

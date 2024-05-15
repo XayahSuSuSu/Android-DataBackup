@@ -67,14 +67,14 @@ fun PageHome() {
                         label = StringResourceToken.fromStringId(R.string.app_and_data),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_palette),
                         onClick = {
-                            viewModel.emitIntent(IndexUiIntent.ToPagePackages(navController))
+                            viewModel.emitIntentOnIO(IndexUiIntent.ToPagePackages(navController))
                         },
                     ),
                     ActivityCardItem(
                         label = StringResourceToken.fromStringId(R.string.media),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_image),
                         onClick = {
-                            viewModel.emitIntent(IndexUiIntent.ToPageMedium(navController))
+                            viewModel.emitIntentOnIO(IndexUiIntent.ToPageMedium(navController))
                         },
                     ),
                     /**
@@ -110,28 +110,28 @@ fun PageHome() {
                         label = StringResourceToken.fromStringId(R.string.task),
                         icon = ImageVectorToken.fromVector(Icons.Rounded.TaskAlt),
                         onClick = {
-                            viewModel.emitIntent(IndexUiIntent.ToPageTaskList(navController))
+                            viewModel.emitIntentOnIO(IndexUiIntent.ToPageTaskList(navController))
                         }
                     ),
                     UtilityChipItem(
                         label = StringResourceToken.fromStringId(R.string.directory),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_folder_open),
                         onClick = {
-                            viewModel.emitIntent(IndexUiIntent.ToPageDirectory(navController))
+                            viewModel.emitIntentOnIO(IndexUiIntent.ToPageDirectory(navController))
                         }
                     ),
                     UtilityChipItem(
                         label = StringResourceToken.fromStringId(R.string.structure),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_account_tree),
                         onClick = {
-                            viewModel.emitIntent(IndexUiIntent.ToPageTree(navController))
+                            viewModel.emitIntentOnIO(IndexUiIntent.ToPageTree(navController))
                         }
                     ),
                     UtilityChipItem(
                         label = StringResourceToken.fromStringId(R.string.log),
                         icon = ImageVectorToken.fromDrawable(UiR.drawable.ic_rounded_bug_report),
                         onClick = {
-                            viewModel.emitIntent(IndexUiIntent.ToPageLog(navController))
+                            viewModel.emitIntentOnIO(IndexUiIntent.ToPageLog(navController))
                         }
                     )
                 )

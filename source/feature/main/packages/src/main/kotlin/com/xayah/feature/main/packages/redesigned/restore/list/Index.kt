@@ -115,12 +115,12 @@ fun PagePackagesRestoreList() {
                     }
                 }
                 IconButton(icon = ImageVectorToken.fromVector(if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt)) {
-                    viewModel.emitState(uiState.copy(filterMode = uiState.filterMode.not()))
-                    viewModel.emitIntent(IndexUiIntent.ClearKey)
+                    viewModel.emitStateOnMain(uiState.copy(filterMode = uiState.filterMode.not()))
+                    viewModel.emitIntentOnIO(IndexUiIntent.ClearKey)
                 }
                 IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Checklist)) {
-                    viewModel.emitIntent(IndexUiIntent.SelectAll(uiState.selectAll.not()))
-                    viewModel.emitState(uiState.copy(selectAll = uiState.selectAll.not()))
+                    viewModel.emitIntentOnIO(IndexUiIntent.SelectAll(uiState.selectAll.not()))
+                    viewModel.emitStateOnMain(uiState.copy(selectAll = uiState.selectAll.not()))
                 }
             }
         },
@@ -168,7 +168,7 @@ fun PagePackagesRestoreList() {
                             enabled = true,
                             placeholder = StringResourceToken.fromStringId(R.string.search_bar_hint_packages),
                             onTextChange = {
-                                viewModel.emitIntent(IndexUiIntent.FilterByKey(key = it))
+                                viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
                             }
                         )
 
@@ -180,7 +180,7 @@ fun PagePackagesRestoreList() {
                                 type = sortTypeState,
                                 list = stringArrayResource(id = R.array.backup_sort_type_items).toList(),
                                 onSelected = { index, _ ->
-                                    viewModel.emitIntent(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                    viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
                                 },
                                 onClick = {}
                             )
@@ -193,11 +193,11 @@ fun PagePackagesRestoreList() {
                                 list = uiState.userIdList.map { it.toString() },
                                 onSelected = { indexList ->
                                     if (indexList.isNotEmpty()) {
-                                        viewModel.emitIntent(IndexUiIntent.SetUserIdIndexList(indexList))
+                                        viewModel.emitIntentOnIO(IndexUiIntent.SetUserIdIndexList(indexList))
                                     }
                                 },
                                 onClick = {
-                                    viewModel.emitIntent(IndexUiIntent.GetUserIds)
+                                    viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
                                 }
                             )
 
@@ -207,7 +207,7 @@ fun PagePackagesRestoreList() {
                                 selectedIndex = flagIndexState,
                                 list = stringArrayResource(id = R.array.flag_type_items).toList(),
                                 onSelected = { index, _ ->
-                                    viewModel.emitIntent(IndexUiIntent.FilterByFlag(index = index))
+                                    viewModel.emitIntentOnIO(IndexUiIntent.FilterByFlag(index = index))
                                 },
                                 onClick = {}
                             )
@@ -226,10 +226,10 @@ fun PagePackagesRestoreList() {
                         Row(modifier = Modifier.animateItemPlacement()) {
                             PackageItem(
                                 item = item,
-                                onCheckedChange = { viewModel.emitIntent(IndexUiIntent.Select(item)) },
+                                onCheckedChange = { viewModel.emitIntentOnIO(IndexUiIntent.Select(item)) },
                                 onClick = {
-                                    if (uiState.filterMode) viewModel.emitIntent(IndexUiIntent.ToPageDetail(navController, item))
-                                    else viewModel.emitIntent(IndexUiIntent.Select(item))
+                                    if (uiState.filterMode) viewModel.emitIntentOnIO(IndexUiIntent.ToPageDetail(navController, item))
+                                    else viewModel.emitIntentOnIO(IndexUiIntent.Select(item))
                                 },
                                 filterMode = uiState.filterMode
                             )

@@ -3,10 +3,10 @@ package com.xayah.feature.main.packages.redesigned.backup.list
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.datastore.saveBackupFilterFlagIndex
 import com.xayah.core.model.OpType
@@ -59,7 +59,7 @@ class IndexViewModel @Inject constructor(
         rootService.onFailure = {
             val msg = it.message
             if (msg != null)
-                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
+                emitEffectOnIO(IndexUiEffect.ShowSnackbar(message = msg))
         }
     }
 
@@ -68,9 +68,9 @@ class IndexViewModel @Inject constructor(
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
                 _refreshState.value = RefreshState()
-                emitStateSuspend(state.copy(isRefreshing = true))
+                emitState(state.copy(isRefreshing = true))
                 packageRepo.refresh(refreshState = _refreshState)
-                emitStateSuspend(state.copy(isRefreshing = false, uuid = UUID.randomUUID()))
+                emitState(state.copy(isRefreshing = false, uuid = UUID.randomUUID()))
             }
 
             is IndexUiIntent.GetUserIds -> {

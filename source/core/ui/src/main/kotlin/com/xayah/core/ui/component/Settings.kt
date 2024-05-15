@@ -269,7 +269,12 @@ fun Checkable(
 }
 
 @Composable
-fun Title(enabled: Boolean = true, title: StringResourceToken, content: @Composable ColumnScope.() -> Unit) {
+fun Title(
+    enabled: Boolean = true,
+    title: StringResourceToken,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    content: @Composable ColumnScope.() -> Unit
+) {
     Column {
         TitleSmallText(
             modifier = Modifier
@@ -280,6 +285,8 @@ fun Title(enabled: Boolean = true, title: StringResourceToken, content: @Composa
             color = ColorSchemeKeyTokens.Primary.toColor(),
             fontWeight = FontWeight.Medium
         )
-        content()
+        Column(verticalArrangement = verticalArrangement) {
+            content()
+        }
     }
 }

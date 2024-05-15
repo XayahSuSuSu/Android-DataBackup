@@ -15,6 +15,21 @@
     <item name="port" type="string"/>
     <item name="version" type="string"/>
     <item name="name" type="string"/>
+    <item name="cloud" type="string"/>
+    <item name="account" type="string"/>
+    <item name="_continue" type="string"/>
+    <item name="ftp_setup" type="string"/>
+    <item name="webdav_setup" type="string"/>
+    <item name="smb_setup" type="string"/>
+    <item name="server" type="string"/>
+    <item name="add_account" type="string"/>
+    <item name="provider" type="string"/>
+    <item name="advanced" type="string"/>
+    <item name="remote_path" type="string"/>
+    <item name="delete_account" type="string"/>
+    <item name="not_selected" type="string"/>
+    <item name="remote_path_desc" type="string"/>
+
     <item name="ic_rounded_link" type="drawable"/>
     <item name="ic_rounded_key" type="drawable"/>
     <item name="ic_rounded_folder_open" type="drawable"/>

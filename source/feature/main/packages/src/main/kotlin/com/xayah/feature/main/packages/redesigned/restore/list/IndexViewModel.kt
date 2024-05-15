@@ -3,10 +3,10 @@ package com.xayah.feature.main.packages.redesigned.restore.list
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveRestoreFilterFlagIndex
@@ -59,7 +59,7 @@ class IndexViewModel @Inject constructor(
         rootService.onFailure = {
             val msg = it.message
             if (msg != null)
-                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
+                emitEffectOnIO(IndexUiEffect.ShowSnackbar(message = msg))
         }
     }
 
@@ -69,7 +69,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.OnRefresh -> {
                 packageRepo.loadIconsFromLocal()
                 packageRepo.loadPackagesFromLocal()
-                emitStateSuspend(state.copy(uuid = UUID.randomUUID()))
+                emitState(state.copy(uuid = UUID.randomUUID()))
             }
 
             is IndexUiIntent.GetUserIds -> {

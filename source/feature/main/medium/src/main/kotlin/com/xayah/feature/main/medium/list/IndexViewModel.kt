@@ -2,12 +2,12 @@ package com.xayah.feature.main.medium.list
 
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarDuration
+import com.xayah.core.ui.material3.SnackbarDuration
 import androidx.navigation.NavHostController
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.data.repository.MediaRepository
@@ -83,23 +83,7 @@ class IndexViewModel @Inject constructor(
         rootService.onFailure = {
             val msg = it.message
             if (msg != null)
-                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
-        }
-    }
-
-    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
-        when (intent) {
-            is IndexUiIntent.DeleteSelected -> {
-                mediumState.value.filter { it.entity.extraInfo.activated }.forEach {
-                    if (state.cloud.isEmpty()) {
-                        mediaRepo.deleteLocalArchive(it.entity)
-                    } else {
-                        mediaRepo.deleteRemoteArchive(state.cloud, it.entity)
-                    }
-                }
-            }
-
-            else -> {}
+                emitEffectOnIO(IndexUiEffect.ShowSnackbar(message = msg))
         }
     }
 
@@ -107,9 +91,9 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
-                emitStateSuspend(state.copy(isRefreshing = true))
+                emitState(state.copy(isRefreshing = true))
                 mediaRepo.refresh(topBarState = _topBarState, modeState = modeState.value, cloud = state.cloud)
-                emitStateSuspend(state.copy(isRefreshing = false))
+                emitState(state.copy(isRefreshing = false))
             }
 
             is IndexUiIntent.ToPageMediaDetail -> {
@@ -150,7 +134,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.SetMode -> {
                 mediaRepo.clearActivated()
                 emitState(state.copy(allSelected = false))
-                emitIntentSuspend(IndexUiIntent.FilterByLocation(0))
+                emitIntent(IndexUiIntent.FilterByLocation(0))
                 _modeState.value = intent.mode
             }
 
@@ -160,8 +144,8 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.Process -> {
                 launchOnGlobal {
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.task_is_in_progress),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -212,8 +196,8 @@ class IndexViewModel @Inject constructor(
                         else -> {}
                     }
 
-                    emitEffectSuspend(IndexUiEffect.DismissSnackbar)
-                    emitEffectSuspend(
+                    emitEffect(IndexUiEffect.DismissSnackbar)
+                    emitEffect(
                         IndexUiEffect.ShowSnackbar(
                             message = contextRepository.getString(R.string.backup_completed),
                             actionLabel = contextRepository.getString(R.string.details),
@@ -233,7 +217,15 @@ class IndexViewModel @Inject constructor(
                 emitState(state.copy(allSelected = state.allSelected.not()))
             }
 
-            else -> {}
+            is IndexUiIntent.DeleteSelected -> {
+                mediumState.value.filter { it.entity.extraInfo.activated }.forEach {
+                    if (state.cloud.isEmpty()) {
+                        mediaRepo.deleteLocalArchive(it.entity)
+                    } else {
+                        mediaRepo.deleteRemoteArchive(state.cloud, it.entity)
+                    }
+                }
+            }
         }
     }
 

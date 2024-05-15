@@ -1,10 +1,10 @@
 package com.xayah.feature.main.packages.redesigned.backup.processing
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.xayah.core.common.viewmodel.BaseViewModel
-import com.xayah.core.common.viewmodel.IndexUiEffect
-import com.xayah.core.common.viewmodel.UiIntent
-import com.xayah.core.common.viewmodel.UiState
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.ProcessingType
@@ -50,19 +50,7 @@ class IndexViewModel @Inject constructor(
         rootService.onFailure = {
             val msg = it.message
             if (msg != null)
-                emitEffect(IndexUiEffect.ShowSnackbar(message = msg))
-        }
-    }
-
-    override suspend fun onSuspendEvent(state: IndexUiState, intent: IndexUiIntent) {
-        when (intent) {
-            is IndexUiIntent.DestroyService -> {
-                localBackupService.destroyService()
-            }
-
-            else -> {
-
-            }
+                emitEffectOnIO(IndexUiEffect.ShowSnackbar(message = msg))
         }
     }
 
@@ -73,15 +61,17 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.Backup -> {
-                emitStateSuspend(state.copy(state = OperationState.PROCESSING))
+                emitState(state.copy(state = OperationState.PROCESSING))
                 val backupPreprocessing = localBackupService.preprocessing()
                 localBackupService.processing()
                 localBackupService.postProcessing(backupPreprocessing = backupPreprocessing)
                 localBackupService.destroyService()
-                emitStateSuspend(state.copy(state = OperationState.DONE))
+                emitState(state.copy(state = OperationState.DONE))
             }
 
-            else -> {}
+            is IndexUiIntent.DestroyService -> {
+                localBackupService.destroyService()
+            }
         }
     }
 

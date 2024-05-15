@@ -94,7 +94,7 @@ fun PagePackagesBackupDetail() {
                     IconButton(
                         icon = ImageVectorToken.fromVector(if (uiState.infoExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown),
                     ) {
-                        viewModel.emitState(uiState.copy(infoExpanded = uiState.infoExpanded.not()))
+                        viewModel.emitStateOnMain(uiState.copy(infoExpanded = uiState.infoExpanded.not()))
                     }
                 }
                 AnimatedVisibility(uiState.infoExpanded) {
@@ -128,7 +128,7 @@ fun PagePackagesBackupDetail() {
                         title = StringResourceToken.fromStringId(R.string.permissions),
                         checkedText = StringResourceToken.fromString(countItems(context, pkg.extraInfo.permissions.size)),
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(pkg.reversePermission()))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversePermission()))
                     }
                     Switchable(
                         enabled = pkg.extraInfo.ssaid.isNotEmpty(),
@@ -136,7 +136,7 @@ fun PagePackagesBackupDetail() {
                         title = StringResourceToken.fromStringId(R.string.ssaid),
                         checkedText = if (pkg.extraInfo.ssaid.isNotEmpty()) StringResourceToken.fromString(pkg.extraInfo.ssaid) else StringResourceToken.fromStringId(R.string.none),
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(pkg.reverseSsaid()))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reverseSsaid()))
                     }
                     Switchable(
                         checked = pkg.apkSelected,
@@ -144,7 +144,7 @@ fun PagePackagesBackupDetail() {
                         title = StringResourceToken.fromString(DataType.PACKAGE_APK.type.uppercase()),
                         checkedText = StringResourceToken.fromString(pkg.displayStats.apkBytes.toDouble().formatSize()),
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_APK)))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_APK)))
                     }
                     Switchable(
                         checked = pkg.userSelected,
@@ -152,7 +152,7 @@ fun PagePackagesBackupDetail() {
                         title = StringResourceToken.fromString(DataType.PACKAGE_USER.type.uppercase()),
                         checkedText = StringResourceToken.fromString(pkg.displayStats.userBytes.toDouble().formatSize()),
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER)))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER)))
                     }
                     Switchable(
                         checked = pkg.userDeSelected,
@@ -160,7 +160,7 @@ fun PagePackagesBackupDetail() {
                         title = StringResourceToken.fromString(DataType.PACKAGE_USER_DE.type.uppercase()),
                         checkedText = StringResourceToken.fromString(pkg.displayStats.userDeBytes.toDouble().formatSize()),
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER_DE)))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER_DE)))
                     }
                     Switchable(
                         checked = pkg.dataSelected,
@@ -168,7 +168,7 @@ fun PagePackagesBackupDetail() {
                         title = StringResourceToken.fromString(DataType.PACKAGE_DATA.type.uppercase()),
                         checkedText = StringResourceToken.fromString(pkg.displayStats.dataBytes.toDouble().formatSize()),
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_DATA)))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_DATA)))
                     }
                     Switchable(
                         checked = pkg.obbSelected,
@@ -176,7 +176,7 @@ fun PagePackagesBackupDetail() {
                         title = StringResourceToken.fromString(DataType.PACKAGE_OBB.type.uppercase()),
                         checkedText = StringResourceToken.fromString(pkg.displayStats.obbBytes.toDouble().formatSize()),
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_OBB)))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_OBB)))
                     }
                     Switchable(
                         checked = pkg.mediaSelected,
@@ -184,7 +184,7 @@ fun PagePackagesBackupDetail() {
                         title = StringResourceToken.fromString(DataType.PACKAGE_MEDIA.type.uppercase()),
                         checkedText = StringResourceToken.fromString(pkg.displayStats.mediaBytes.toDouble().formatSize()),
                     ) {
-                        viewModel.emitIntent(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_MEDIA)))
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_MEDIA)))
                     }
                 }
             }

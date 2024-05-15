@@ -77,7 +77,7 @@ fun PagePackagesBackupProcessing() {
                 viewModel.launchOnIO {
                     if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.processing_exit_confirmation))) {
                         BaseUtil.kill("tar", "root")
-                        viewModel.suspendEmitIntent(IndexUiIntent.DestroyService)
+                        viewModel.emitIntent(IndexUiIntent.DestroyService)
                         withMainContext {
                             navController.popBackStack()
                         }
@@ -85,7 +85,7 @@ fun PagePackagesBackupProcessing() {
                 }
             } else {
                 viewModel.launchOnIO {
-                    viewModel.suspendEmitIntent(IndexUiIntent.DestroyService)
+                    viewModel.emitIntent(IndexUiIntent.DestroyService)
                     withMainContext {
                         navController.popBackStack()
                     }
@@ -109,7 +109,7 @@ fun PagePackagesBackupProcessing() {
             AnimatedVisibility(visible = uiState.state == OperationState.IDLE || uiState.state == OperationState.DONE, enter = scaleIn(), exit = scaleOut()) {
                 FloatingActionButton(
                     onClick = {
-                        if (uiState.state == OperationState.IDLE) viewModel.emitIntent(IndexUiIntent.Backup)
+                        if (uiState.state == OperationState.IDLE) viewModel.emitIntentOnIO(IndexUiIntent.Backup)
                         else navController.popBackStack()
                     },
                 ) {

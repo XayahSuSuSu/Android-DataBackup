@@ -276,4 +276,13 @@
     <string name="theme_dark">深色</string>
     <string name="theme_dark_desc">总是处于深色模式</string>
     <string name="dark_theme">深色模式</string>
+    <string name="ftp_setup">FTP配置</string>
+    <string name="webdav_setup">WebDAV配置</string>
+    <string name="smb_setup">SMB / CIFS配置</string>
+    <string name="server">服务器</string>
+    <string name="add_account">添加账户</string>
+    <string name="provider">供应商</string>
+    <string name="remote_path">远程路径</string>
+    <string name="delete_account">删除账户</string>
+    <string name="remote_path_desc">备份读取或保存的路径</string>
 </resources>

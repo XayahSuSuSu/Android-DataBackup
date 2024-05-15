@@ -59,7 +59,7 @@ fun PageOne() {
     val allOptionalValidated by viewModel.allOptionalValidated.collectAsStateWithLifecycle()
 
     SetOnResume {
-        viewModel.emitIntent(IndexUiIntent.OnResume)
+        viewModel.emitIntentOnIO(IndexUiIntent.OnResume)
     }
 
     SetupScaffold(
@@ -68,9 +68,9 @@ fun PageOne() {
                 OutlinedButton(
                     onClick = {
                         viewModel.launchOnIO {
-                            viewModel.suspendEmitIntent(IndexUiIntent.ValidateRoot)
-                            viewModel.suspendEmitIntent(IndexUiIntent.ValidateAbi)
-                            viewModel.suspendEmitIntent(IndexUiIntent.ValidateNotification(context = context))
+                            viewModel.emitIntent(IndexUiIntent.ValidateRoot)
+                            viewModel.emitIntent(IndexUiIntent.ValidateAbi)
+                            viewModel.emitIntent(IndexUiIntent.ValidateNotification(context = context))
                         }
                     }
                 ) {
@@ -118,7 +118,7 @@ fun PageOne() {
                     envState = rootState
                 ) {
                     viewModel.launchOnIO {
-                        viewModel.suspendEmitIntent(IndexUiIntent.ValidateRoot)
+                        viewModel.emitIntent(IndexUiIntent.ValidateRoot)
                     }
                 }
                 PermissionButton(
@@ -127,7 +127,7 @@ fun PageOne() {
                     envState = abiState,
                 ) {
                     viewModel.launchOnIO {
-                        viewModel.suspendEmitIntent(IndexUiIntent.ValidateAbi)
+                        viewModel.emitIntent(IndexUiIntent.ValidateAbi)
                     }
                 }
             }
@@ -139,7 +139,7 @@ fun PageOne() {
                     envState = notificationState,
                 ) {
                     viewModel.launchOnIO {
-                        viewModel.suspendEmitIntent(IndexUiIntent.ValidateNotification(context = context))
+                        viewModel.emitIntent(IndexUiIntent.ValidateNotification(context = context))
                     }
                 }
             }
