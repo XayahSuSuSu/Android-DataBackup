@@ -179,7 +179,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.SetRemotePath -> {
-                emitState(state.copy(isProcessing = true))
+                emitState(uiState.value.copy(isProcessing = true))
                 val context = intent.context
                 emitEffect(IndexUiEffect.DismissSnackbar)
                 emitEffectOnIO(
@@ -190,11 +190,11 @@ class IndexViewModel @Inject constructor(
                     )
                 )
                 runCatching {
-                    val client = state.cloudEntity!!.getCloud()
+                    val client = uiState.value.cloudEntity!!.getCloud()
                     client.setRemote(
                         context = context,
                         onSet = { remote, extraString ->
-                            emitState(state.copy(cloudEntity = state.cloudEntity.copy(remote = remote, extra = extraString)))
+                            emitState(uiState.value.copy(cloudEntity = uiState.value.cloudEntity!!.copy(remote = remote, extra = extraString)))
                             emitEffect(IndexUiEffect.DismissSnackbar)
                         }
                     )
@@ -203,7 +203,7 @@ class IndexViewModel @Inject constructor(
                     if (it.localizedMessage != null)
                         emitEffectOnIO(IndexUiEffect.ShowSnackbar(type = SnackbarType.Error, message = it.localizedMessage!!, duration = SnackbarDuration.Long))
                 }
-                emitState(state.copy(isProcessing = false))
+                emitState(uiState.value.copy(isProcessing = false))
             }
         }
     }
