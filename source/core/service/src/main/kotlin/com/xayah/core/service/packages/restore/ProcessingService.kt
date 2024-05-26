@@ -81,7 +81,7 @@ abstract class ProcessingService {
         }
     }
 
-    suspend fun initialize() = getService().initialize()
+    suspend fun initialize(cloudName: String, cloudRemote: String) = getService().initialize(cloudName, cloudRemote)
 
     suspend fun preprocessing() = getService().preprocessing()
 

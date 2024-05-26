@@ -63,6 +63,7 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
             totalCount = 0,
             successCount = 0,
             failureCount = 0,
+            processingIndex = 0,
             isProcessing = true,
             cloud = "",
         )

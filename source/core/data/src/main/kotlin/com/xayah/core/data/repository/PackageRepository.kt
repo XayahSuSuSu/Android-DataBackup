@@ -8,11 +8,15 @@ import android.os.Build
 import com.xayah.core.data.R
 import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.PackageDao
+import com.xayah.core.datastore.readBackupFilterFlagIndex
+import com.xayah.core.datastore.readBackupUserIdIndex
 import com.xayah.core.datastore.readCheckKeystore
 import com.xayah.core.datastore.readCompressionType
 import com.xayah.core.datastore.readIconUpdateTime
 import com.xayah.core.datastore.readLoadSystemApps
 import com.xayah.core.datastore.readLoadedIconMD5
+import com.xayah.core.datastore.readRestoreFilterFlagIndex
+import com.xayah.core.datastore.readRestoreUserIdIndex
 import com.xayah.core.datastore.saveIconUpdateTime
 import com.xayah.core.datastore.saveLoadedIconMD5
 import com.xayah.core.model.CompressionType
@@ -65,9 +69,12 @@ class PackageRepository @Inject constructor(
     fun getPackages() = packageDao.queryFlow().distinctUntilChanged()
     fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long) = packageDao.queryFlow(packageName, opType, userId, preserveId).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType) = packageDao.queryPackagesFlow(opType).distinctUntilChanged()
+    fun queryPackagesFlow(opType: OpType, cloud: String, backupDir: String) = packageDao.queryPackagesFlow(opType, cloud, backupDir).distinctUntilChanged()
     suspend fun queryUserIds(opType: OpType) = packageDao.queryUserIds(opType)
     suspend fun queryPackages(opType: OpType) = packageDao.queryPackages(opType)
+    suspend fun queryPackages(opType: OpType, cloud: String, backupDir: String) = packageDao.queryPackages(opType, cloud, backupDir)
     suspend fun queryActivated(opType: OpType) = packageDao.queryActivated(opType)
+    suspend fun queryActivated(opType: OpType, cloud: String, backupDir: String) = packageDao.queryActivated(opType, cloud, backupDir)
     fun queryActivatedFlow() = packageDao.queryActivatedFlow().distinctUntilChanged()
     fun getPackages(opType: OpType) = packageDao.queryFlow(opType).distinctUntilChanged()
     val activatedCount = packageDao.countActivatedFlow().distinctUntilChanged()
@@ -185,6 +192,12 @@ class PackageRepository @Inject constructor(
             else -> p.entity.indexInfo.cloud == accountList.getOrNull(index - 1)?.name
         }
     }
+
+    suspend fun filterBackup(packages: List<PackageEntity>) = packages.filter(getFlagPredicateNew(index = context.readBackupFilterFlagIndex().first()))
+        .filter(getUserIdPredicateNew(indexList = context.readBackupUserIdIndex().first(), userIdList = rootService.getUsers().map { it.id }))
+
+    suspend fun filterRestore(packages: List<PackageEntity>) = packages.filter(getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
+        .filter(getUserIdPredicateNew(indexList = context.readRestoreUserIdIndex().first(), userIdList = queryUserIds(OpType.RESTORE)))
 
     private fun sortByInstallTime(type: SortType): Comparator<PackageEntityWithCount> = when (type) {
         SortType.ASCENDING -> {
@@ -597,6 +610,46 @@ class PackageRepository @Inject constructor(
         }
     }
 
+    suspend fun loadPackagesFromCloud(cloud: String) {
+        cloudRepository.withClient(cloud) { client, entity ->
+            val remote = entity.remote
+            val src = pathUtil.getCloudRemoteAppsDir(remote)
+            if (client.exists(src)) {
+                val paths = client.walkFileTree(src)
+                val tmpDir = pathUtil.getCloudTmpDir()
+                paths.forEach {
+                    val fileName = PathUtil.getFileName(it.pathString)
+                    if (fileName == ConfigsPackageRestoreName) {
+                        runCatching {
+                            cloudRepository.download(client = client, src = it.pathString, dstDir = tmpDir) { path ->
+                                val stored = rootService.readJson<PackageEntity>(path).also { p ->
+                                    p?.extraInfo?.existed = true
+                                    p?.extraInfo?.activated = false
+                                    p?.indexInfo?.cloud = entity.name
+                                    p?.indexInfo?.backupDir = remote
+                                }
+                                if (stored != null) {
+                                    getPackage(
+                                        packageName = stored.packageName,
+                                        opType = stored.indexInfo.opType,
+                                        userId = stored.userId,
+                                        preserveId = stored.preserveId,
+                                        ct = stored.indexInfo.compressionType,
+                                        cloud = entity.name,
+                                        backupDir = remote
+                                    ).also { p ->
+                                        if (p == null)
+                                            packageDao.upsert(stored)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     suspend fun loadIconsFromLocal() {
         val archivePath = "${pathUtil.getLocalBackupConfigsDir()}/$IconRelativeDir.${CompressionType.TAR.suffix}"
         if (rootService.exists(archivePath)) {
@@ -609,6 +662,24 @@ class PackageRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun loadIconsFromCloud(cloud: String) = runCatching {
+        cloudRepository.withClient(cloud) { client, entity ->
+            val archivePath = "${pathUtil.getCloudRemoteConfigsDir(entity.remote)}/$IconRelativeDir.${CompressionType.TAR.suffix}"
+            if (client.exists(archivePath)) {
+                val tmpDir = pathUtil.getCloudTmpDir()
+                cloudRepository.download(client = client, src = archivePath, dstDir = tmpDir) { path ->
+                    val loadedIconMD5 = context.readLoadedIconMD5().first()
+                    val iconMD5 = rootService.calculateMD5(path) ?: ""
+                    if (loadedIconMD5 != iconMD5) {
+                        Tar.decompress(src = path, dst = context.filesDir(), extra = CompressionType.TAR.decompressPara)
+                        PathUtil.setFilesDirSELinux(context)
+                        context.saveLoadedIconMD5(iconMD5)
+                    }
+                }
+            }
+        }
+    }.onFailure(rootService.onFailure)
 
     private suspend fun refreshFromCloud(packageName: String, cloud: String) {
         val refresh: suspend (CloudClient, CloudEntity) -> Unit = { client: CloudClient, entity: CloudEntity ->

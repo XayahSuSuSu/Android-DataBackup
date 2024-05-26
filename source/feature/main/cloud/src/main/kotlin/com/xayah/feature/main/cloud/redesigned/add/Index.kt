@@ -23,7 +23,7 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.cloud.R
 import com.xayah.feature.main.cloud.redesigned.CloudScaffold
-import com.xayah.feature.main.cloud.redesigned.icon
+import com.xayah.core.ui.util.icon
 
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi

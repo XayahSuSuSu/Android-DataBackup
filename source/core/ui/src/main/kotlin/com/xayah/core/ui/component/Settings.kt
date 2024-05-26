@@ -133,8 +133,43 @@ fun Clickable(
 
 @ExperimentalAnimationApi
 @Composable
+fun Clickable(
+    enabled: Boolean = true,
+    title: StringResourceToken, value: StringResourceToken? = null,
+    desc: StringResourceToken? = null,
+    leadingIcon: ImageVectorToken? = null,
+    trailingIcon: ImageVectorToken? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    content: @Composable (ColumnScope.() -> Unit)? = null,
+    onClick: () -> Unit = {}
+) {
+    Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
+            if (leadingIcon != null) {
+                Icon(imageVector = leadingIcon.value, contentDescription = null)
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                AnimatedTextContainer(targetState = title.value) { text ->
+                    TitleLargeText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurface.toColor(enabled), fontWeight = FontWeight.Normal)
+                }
+                if (value != null) AnimatedTextContainer(targetState = value.value) { text ->
+                    TitleSmallText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.Outline.toColor(enabled), fontWeight = FontWeight.Normal)
+                }
+                content?.invoke(this)
+            }
+            if (trailingIcon != null) {
+                Icon(imageVector = trailingIcon.value, contentDescription = null)
+            }
+        }
+    }
+}
+
+
+@ExperimentalAnimationApi
+@Composable
 fun Selectable(
     enabled: Boolean = true,
+    leadingIcon: ImageVectorToken? = null,
     title: StringResourceToken,
     value: StringResourceToken,
     desc: StringResourceToken? = null,
@@ -147,6 +182,9 @@ fun Selectable(
         title = title,
         value = value,
         desc = desc,
+        leadingContent = if (leadingIcon == null) null else {
+            { Icon(imageVector = leadingIcon.value, contentDescription = null) }
+        },
         trailingContent = {
             FilledTonalButton(onClick = { scope.launch { onClick() } }) {
 

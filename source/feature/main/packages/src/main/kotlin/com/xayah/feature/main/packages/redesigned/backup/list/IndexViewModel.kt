@@ -3,18 +3,19 @@ package com.xayah.feature.main.packages.redesigned.backup.list
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
-import com.xayah.core.ui.viewmodel.BaseViewModel
-import com.xayah.core.ui.viewmodel.IndexUiEffect
-import com.xayah.core.ui.viewmodel.UiIntent
-import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.datastore.saveBackupFilterFlagIndex
+import com.xayah.core.datastore.saveBackupUserIdIndex
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.RefreshState
 import com.xayah.core.ui.route.MainRoutes
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -78,6 +79,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.SetUserIdIndexList -> {
+                context.saveBackupUserIdIndex(intent.list)
                 _userIdIndexListState.value = intent.list
             }
 

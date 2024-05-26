@@ -9,7 +9,7 @@ import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
-import com.xayah.core.datastore.readBackupFilterFlagIndex
+import com.xayah.core.datastore.readResetBackupList
 import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.datastore.saveLastBackupTime
 import com.xayah.core.model.DataType
@@ -127,7 +127,8 @@ internal abstract class BackupService : Service() {
                     id = taskDao.upsert(this)
                 }
 
-                val packages = packageDao.queryActivated(OpType.BACKUP).filter(packageRepository.getFlagPredicateNew(index = context.readBackupFilterFlagIndex().first()))
+                val packages = packageRepository.filterBackup(packageRepository.queryActivated(OpType.BACKUP))
+
                 packages.forEach { pkg ->
                     pkgEntities.add(TaskDetailPackageEntity(
                         id = 0,
@@ -176,8 +177,15 @@ internal abstract class BackupService : Service() {
             log { "InputMethods: ${backupPreprocessing.inputMethods}." }
             log { "AccessibilityServices: ${backupPreprocessing.accessibilityServices}." }
 
+            runCatchingOnService { createTargetDirs() }
+
             prePreparationsEntity.also {
                 it.state = OperationState.DONE
+                taskDao.upsert(it)
+            }
+
+            taskEntity.also {
+                it.processingIndex++
                 taskDao.upsert(it)
             }
 
@@ -202,7 +210,6 @@ internal abstract class BackupService : Service() {
             log { "Processing is starting." }
             val selectionType = context.readSelectionType().first()
             log { "Selection: $selectionType." }
-            runCatchingOnService { createTargetDirs() }
 
             // createTargetDirs() before readStatFs().
             taskEntity.also {
@@ -234,6 +241,11 @@ internal abstract class BackupService : Service() {
                 BaseUtil.killPackage(userId = pkg.packageEntity.userId, packageName = pkg.packageEntity.packageName)
 
                 runCatchingOnService { backupPackage(pkg) }
+
+                taskEntity.also {
+                    it.processingIndex++
+                    taskDao.upsert(it)
+                }
             }
         }
     }
@@ -277,7 +289,7 @@ internal abstract class BackupService : Service() {
             runCatchingOnService { backupIcons() }
             runCatchingOnService { clear() }
 
-            packageDao.clearActivated()
+            if (context.readResetBackupList().first()) packageDao.clearActivated()
             endTimestamp = DateUtil.getTimestamp()
             taskEntity.also {
                 it.endTimestamp = endTimestamp

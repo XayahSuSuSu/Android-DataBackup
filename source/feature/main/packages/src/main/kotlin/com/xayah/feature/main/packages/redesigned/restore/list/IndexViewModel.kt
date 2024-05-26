@@ -2,19 +2,21 @@ package com.xayah.feature.main.packages.redesigned.restore.list
 
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
-import com.xayah.core.ui.viewmodel.BaseViewModel
-import com.xayah.core.ui.viewmodel.IndexUiEffect
-import com.xayah.core.ui.viewmodel.UiIntent
-import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveRestoreFilterFlagIndex
+import com.xayah.core.datastore.saveRestoreUserIdIndex
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.route.MainRoutes
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -24,10 +26,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.UUID
 import javax.inject.Inject
 
 data class IndexUiState(
+    val cloudName: String,
+    val cloudRemote: String,
     val selectAll: Boolean,
     val userIdList: List<Int>,
     val filterMode: Boolean,
@@ -45,6 +51,7 @@ sealed class IndexUiIntent : UiIntent {
     data class Select(val entity: PackageEntity) : IndexUiIntent()
     data class SelectAll(val selected: Boolean) : IndexUiIntent()
     data class ToPageDetail(val navController: NavHostController, val packageEntity: PackageEntity) : IndexUiIntent()
+    data class ToPageSetup(val navController: NavHostController) : IndexUiIntent()
     data object DeleteSelected : IndexUiIntent()
 }
 
@@ -54,7 +61,17 @@ class IndexViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val packageRepo: PackageRepository,
     private val rootService: RemoteRootService,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(selectAll = false, userIdList = listOf(), filterMode = true, uuid = UUID.randomUUID())) {
+    args: SavedStateHandle,
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
+    IndexUiState(
+        cloudName = args.get<String>(MainRoutes.ArgAccountName)?.trim() ?: "",
+        cloudRemote = args.get<String>(MainRoutes.ArgAccountRemote)?.trim() ?: "",
+        selectAll = false,
+        userIdList = listOf(),
+        filterMode = true,
+        uuid = UUID.randomUUID()
+    )
+) {
     init {
         rootService.onFailure = {
             val msg = it.message
@@ -67,8 +84,17 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
-                packageRepo.loadIconsFromLocal()
-                packageRepo.loadPackagesFromLocal()
+                withIOContext {
+                    if (state.cloudName.isEmpty()) {
+                        // Local
+                        packageRepo.loadIconsFromLocal()
+                        packageRepo.loadPackagesFromLocal()
+                    } else {
+                        packageRepo.loadIconsFromCloud(state.cloudName)
+                        packageRepo.loadPackagesFromCloud(state.cloudName)
+                    }
+                }
+
                 emitState(state.copy(uuid = UUID.randomUUID()))
             }
 
@@ -77,6 +103,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.SetUserIdIndexList -> {
+                context.saveRestoreUserIdIndex(intent.list)
                 _userIdIndexListState.value = intent.list
             }
 
@@ -118,6 +145,17 @@ class IndexViewModel @Inject constructor(
                 }
             }
 
+            is IndexUiIntent.ToPageSetup -> {
+                withMainContext {
+                    intent.navController.navigate(
+                        MainRoutes.PackagesRestoreProcessingGraph.getRoute(
+                            state.cloudName.ifEmpty { " " },
+                            URLEncoder.encode(state.cloudRemote, StandardCharsets.UTF_8.toString())
+                        )
+                    )
+                }
+            }
+
             is IndexUiIntent.DeleteSelected -> {
                 val packages = packageRepo.queryActivated(OpType.RESTORE).filter(packageRepo.getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
                 packages.forEach {
@@ -128,7 +166,7 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(OpType.RESTORE).flowOnIO()
+    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(OpType.RESTORE, uiState.value.cloudName, uiState.value.cloudRemote).flowOnIO()
     private var _keyState: MutableStateFlow<String> = MutableStateFlow("")
     private var _flagIndexState: MutableStateFlow<Int> = MutableStateFlow(1)
     private var _userIdIndexListState: MutableStateFlow<List<Int>> = MutableStateFlow(listOf(0))

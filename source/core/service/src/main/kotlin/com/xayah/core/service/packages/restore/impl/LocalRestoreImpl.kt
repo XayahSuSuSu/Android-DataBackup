@@ -49,14 +49,7 @@ internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
             startTimestamp = startTimestamp,
             endTimestamp = endTimestamp,
             backupDir = context.localBackupSaveDir(),
-            rawBytes = 0.toDouble(),
-            availableBytes = 0.toDouble(),
-            totalBytes = 0.toDouble(),
-            totalCount = 0,
-            successCount = 0,
-            failureCount = 0,
             isProcessing = true,
-            cloud = "",
         )
     }
 

@@ -293,4 +293,6 @@
     <string name="delete_account">Delete account</string>
     <string name="remote_path_desc">Where the backup is read or saved</string>
     <string name="delete_account_desc">This account will be deleted</string>
+    <string name="choose_an_account">Choose an account</string>
+    <string name="no_available_account">There\'s no available account</string>
 </resources>

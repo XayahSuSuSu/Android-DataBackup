@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "7b77d6089f7a41e97a7268ee0506afee",
+    "identityHash": "18789075350d234dc70c00b7ab0ed271",
     "entities": [
       {
         "tableName": "PackageEntity",
@@ -546,7 +546,7 @@
       },
       {
         "tableName": "TaskEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `opType` TEXT NOT NULL, `taskType` TEXT NOT NULL, `startTimestamp` INTEGER NOT NULL, `endTimestamp` INTEGER NOT NULL, `rawBytes` REAL NOT NULL, `availableBytes` REAL NOT NULL, `totalBytes` REAL NOT NULL, `totalCount` INTEGER NOT NULL, `successCount` INTEGER NOT NULL, `failureCount` INTEGER NOT NULL, `isProcessing` INTEGER NOT NULL, `cloud` TEXT NOT NULL, `backupDir` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `opType` TEXT NOT NULL, `taskType` TEXT NOT NULL, `startTimestamp` INTEGER NOT NULL, `endTimestamp` INTEGER NOT NULL, `rawBytes` REAL NOT NULL, `availableBytes` REAL NOT NULL, `totalBytes` REAL NOT NULL, `totalCount` INTEGER NOT NULL, `successCount` INTEGER NOT NULL, `failureCount` INTEGER NOT NULL, `processingIndex` INTEGER NOT NULL, `isProcessing` INTEGER NOT NULL, `cloud` TEXT NOT NULL, `backupDir` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -611,6 +611,12 @@
           {
             "fieldPath": "failureCount",
             "columnName": "failureCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "processingIndex",
+            "columnName": "processingIndex",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -1386,7 +1392,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b77d6089f7a41e97a7268ee0506afee')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '18789075350d234dc70c00b7ab0ed271')"
     ]
   }
 }

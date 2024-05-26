@@ -1,4 +1,4 @@
-package com.xayah.feature.main.cloud.redesigned
+package com.xayah.core.ui.util
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Language
@@ -6,7 +6,6 @@ import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Web
 import com.xayah.core.model.CloudType
 import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.util.fromVector
 
 val CloudType.icon: ImageVectorToken
     get() {

@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":core:rootservice"))
     implementation(project(":core:data"))
     implementation(project(":core:network"))
+    implementation(project(":core:hiddenapi"))
 
     // Gson
     implementation(libs.gson)

@@ -1,11 +1,6 @@
 <resources>
     <item name="app_and_data" type="string" />
     <item name="search_bar_hint_packages" type="string" />
-    <item name="backup_sort_type_items" type="array" />
-    <item name="ic_rounded_deployed_code" type="drawable" />
-    <item name="flag_type_items" type="array" />
-    <item name="ic_rounded_acute" type="drawable" />
-    <item name="ic_rounded_counter_5" type="drawable" />
     <item name="keystore" type="string" />
     <item name="keystore_desc" type="string" />
     <item name="version" type="string" />
@@ -13,17 +8,6 @@
     <item name="user" type="string" />
     <item name="system" type="string" />
     <item name="third_party" type="string" />
-    <item name="ic_rounded_android" type="drawable" />
-    <item name="ic_rounded_person" type="drawable" />
-    <item name="ic_rounded_manage_accounts" type="drawable" />
-    <item name="ic_rounded_history" type="drawable" />
-    <item name="ic_rounded_database" type="drawable" />
-    <item name="ic_rounded_stadia_controller" type="drawable" />
-    <item name="ic_rounded_image" type="drawable" />
-    <item name="ic_rounded_check_circle" type="drawable" />
-    <item name="ic_rounded_error" type="drawable" />
-    <item name="ic_rounded_expand_content" type="drawable" />
-    <item name="ic_rounded_collapse_content" type="drawable" />
     <item name="backup" type="string" />
     <item name="preprocessing" type="string" />
     <item name="post_processing" type="string" />
@@ -34,7 +18,6 @@
     <item name="restore_from_local" type="string" />
     <item name="task_is_in_progress" type="string" />
     <item name="backup_completed" type="string" />
-    <item name="ic_rounded_bolt" type="drawable" />
     <item name="uid" type="string" />
     <item name="type" type="string" />
     <item name="first_install" type="string" />
@@ -44,7 +27,6 @@
     <item name="compression_type" type="string" />
     <item name="items" type="plurals" />
     <item name="id" type="string" />
-    <item name="ic_rounded_shield_locked" type="drawable" />
     <item name="preserve" type="string" />
     <item name="delete" type="string" />
     <item name="restore_completed" type="string" />
@@ -53,7 +35,6 @@
     <item name="backups" type="plurals" />
     <item name="back_up_to_cloud" type="string" />
     <item name="restore_from_cloud" type="string" />
-    <item name="ic_rounded_cloud_upload" type="drawable" />
     <item name="no_available_cloud_accounts" type="string" />
     <item name="account" type="string" />
     <item name="directory" type="string" />
@@ -62,7 +43,6 @@
     <item name="local" type="string" />
     <item name="overlook" type="string" />
     <item name="batch" type="string" />
-    <item name="ic_rounded_palette" type="drawable" />
     <item name="_default" type="string" />
     <item name="both" type="string" />
     <item name="select_apps" type="string" />
@@ -77,4 +57,42 @@
     <item name="processing_exit_confirmation" type="string" />
     <item name="prompt" type="string" />
     <item name="confirm_delete" type="string" />
+    <item name="setup" type="string" />
+    <item name="_continue" type="string" />
+    <item name="finish" type="string" />
+    <item name="storage" type="string" />
+    <item name="backup_list" type="string" />
+    <item name="reset_backup_list" type="string" />
+    <item name="reset_backup_list_desc" type="string" />
+    <item name="restore_list" type="string" />
+    <item name="reset_restore_list" type="string" />
+    <item name="reset_restore_list_desc" type="string" />
+    <item name="apps" type="string" />
+    <item name="choose_an_account" type="string" />
+    <item name="not_selected" type="string" />
+    <item name="no_available_account" type="string" />
+
+    <item name="backup_sort_type_items" type="array" />
+    <item name="flag_type_items" type="array" />
+
+    <item name="ic_rounded_apps" type="drawable" />
+    <item name="ic_rounded_person" type="drawable" />
+    <item name="ic_rounded_cancel_circle" type="drawable" />
+    <item name="ic_rounded_android" type="drawable" />
+    <item name="ic_rounded_manage_accounts" type="drawable" />
+    <item name="ic_rounded_history" type="drawable" />
+    <item name="ic_rounded_database" type="drawable" />
+    <item name="ic_rounded_stadia_controller" type="drawable" />
+    <item name="ic_rounded_image" type="drawable" />
+    <item name="ic_rounded_check_circle" type="drawable" />
+    <item name="ic_rounded_error" type="drawable" />
+    <item name="ic_rounded_expand_content" type="drawable" />
+    <item name="ic_rounded_collapse_content" type="drawable" />
+    <item name="ic_rounded_deployed_code" type="drawable" />
+    <item name="ic_rounded_acute" type="drawable" />
+    <item name="ic_rounded_counter_5" type="drawable" />
+    <item name="ic_rounded_bolt" type="drawable" />
+    <item name="ic_rounded_shield_locked" type="drawable" />
+    <item name="ic_rounded_palette" type="drawable" />
+    <item name="ic_rounded_cloud_upload" type="drawable" />
 </resources>

@@ -42,6 +42,11 @@ enum class TaskType {
     companion object
 }
 
+enum class StorageMode {
+    Local,
+    Cloud
+}
+
 enum class StorageType {
     INTERNAL,
     EXTERNAL,

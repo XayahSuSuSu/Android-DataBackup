@@ -7,6 +7,7 @@ import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
+import com.xayah.core.model.OperationState
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
@@ -54,24 +55,17 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
             startTimestamp = startTimestamp,
             endTimestamp = endTimestamp,
             backupDir = context.localBackupSaveDir(),
-            rawBytes = 0.toDouble(),
-            availableBytes = 0.toDouble(),
-            totalBytes = 0.toDouble(),
-            totalCount = 0,
-            successCount = 0,
-            failureCount = 0,
             isProcessing = true,
-            cloud = "",
         )
     }
 
-    private val tmpArchivesPackagesDir by lazy { pathUtil.getCloudTmpAppsDir() }
+    private val tmpAppsDir by lazy { pathUtil.getCloudTmpAppsDir() }
     private val tmpDir by lazy { pathUtil.getCloudTmpDir() }
 
     private lateinit var cloudEntity: CloudEntity
     private lateinit var client: CloudClient
     private lateinit var remote: String
-    private lateinit var remoteArchivesPackagesDir: String
+    private lateinit var remoteAppsDir: String
     private lateinit var remoteConfigsDir: String
 
     override suspend fun createTargetDirs() {
@@ -79,18 +73,24 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
         cloudEntity = pair.second
         client = pair.first
         remote = cloudEntity.remote
-        remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
+        remoteAppsDir = pathUtil.getCloudRemoteAppsDir(remote)
         remoteConfigsDir = pathUtil.getCloudRemoteConfigsDir(remote)
         taskEntity.also {
             it.cloud = cloudEntity.name
             it.backupDir = remote
+            taskDao.upsert(it)
         }
     }
 
     override suspend fun restorePackage(t: TaskDetailPackageEntity) {
+        t.apply {
+            state = OperationState.PROCESSING
+            taskDao.upsert(this)
+        }
+
         val p = t.packageEntity
-        val tmpDstDir = "${tmpArchivesPackagesDir}/${p.archivesRelativeDir}"
-        val remoteSrcDir = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
+        val tmpDstDir = "${tmpAppsDir}/${p.archivesRelativeDir}"
+        val remoteSrcDir = "${remoteAppsDir}/${p.archivesRelativeDir}"
 
         packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_APK, srcDir = remoteSrcDir, dstDir = tmpDstDir) {
             packagesRestoreUtil.restoreApk(p = p, t = t, srcDir = tmpDstDir)
@@ -125,6 +125,10 @@ internal class CloudRestoreImpl @Inject constructor() : RestoreService() {
             taskDao.upsert(this)
         }
         taskEntity.also {
+            t.apply {
+                state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                taskDao.upsert(this)
+            }
             if (t.isSuccess) it.successCount++ else it.failureCount++
             taskDao.upsert(it)
         }

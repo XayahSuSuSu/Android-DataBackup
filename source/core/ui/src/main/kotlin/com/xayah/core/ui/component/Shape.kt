@@ -1,4 +1,4 @@
-package com.xayah.feature.main.restore
+package com.xayah.core.ui.component
 
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.ui.geometry.CornerRadius

@@ -8,6 +8,7 @@ import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
+import com.xayah.core.model.OperationState
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
@@ -60,25 +61,18 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
             startTimestamp = startTimestamp,
             endTimestamp = endTimestamp,
             backupDir = context.localBackupSaveDir(),
-            rawBytes = 0.toDouble(),
-            availableBytes = 0.toDouble(),
-            totalBytes = 0.toDouble(),
-            totalCount = 0,
-            successCount = 0,
-            failureCount = 0,
             isProcessing = true,
-            cloud = "",
         )
     }
 
-    private val tmpArchivesPackagesDir by lazy { pathUtil.getCloudTmpAppsDir() }
+    private val tmpAppsDir by lazy { pathUtil.getCloudTmpAppsDir() }
     private val tmpConfigsDir by lazy { pathUtil.getCloudTmpConfigsDir() }
     private val tmpDir by lazy { pathUtil.getCloudTmpDir() }
 
     private lateinit var cloudEntity: CloudEntity
     private lateinit var client: CloudClient
     private lateinit var remote: String
-    private lateinit var remoteArchivesPackagesDir: String
+    private lateinit var remoteAppsDir: String
     private lateinit var remoteConfigsDir: String
 
     override suspend fun createTargetDirs() {
@@ -86,30 +80,36 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
         cloudEntity = pair.second
         client = pair.first
         remote = cloudEntity.remote
-        remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
+        remoteAppsDir = pathUtil.getCloudRemoteAppsDir(remote)
         remoteConfigsDir = pathUtil.getCloudRemoteConfigsDir(remote)
         taskEntity.also {
             it.cloud = cloudEntity.name
             it.backupDir = remote
+            taskDao.upsert(it)
         }
 
-        log { "Trying to create: $tmpArchivesPackagesDir." }
+        log { "Trying to create: $tmpAppsDir." }
         log { "Trying to create: $tmpConfigsDir." }
-        rootService.mkdirs(tmpArchivesPackagesDir)
+        rootService.mkdirs(tmpAppsDir)
         rootService.mkdirs(tmpConfigsDir)
 
-        log { "Trying to create: $remoteArchivesPackagesDir." }
+        log { "Trying to create: $remoteAppsDir." }
         log { "Trying to create: $remoteConfigsDir." }
-        client.mkdirRecursively(remoteArchivesPackagesDir)
+        client.mkdirRecursively(remoteAppsDir)
         client.mkdirRecursively(remoteConfigsDir)
     }
 
     override suspend fun backupPackage(t: TaskDetailPackageEntity) {
+        t.apply {
+            state = OperationState.PROCESSING
+            taskDao.upsert(this)
+        }
+
         val p = t.packageEntity
-        val tmpDstDir = "${tmpArchivesPackagesDir}/${p.archivesRelativeDir}"
+        val tmpDstDir = "${tmpAppsDir}/${p.archivesRelativeDir}"
         rootService.mkdirs(tmpDstDir)
 
-        val remoteDstDir = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
+        val remoteDstDir = "${remoteAppsDir}/${p.archivesRelativeDir}"
         client.mkdirRecursively(remoteDstDir)
 
         var restoreEntity = packageRepository.getPackage(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, cloudEntity.name, remote)
@@ -157,7 +157,7 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
                 extraInfo = p.extraInfo.copy(existed = true, activated = false)
             )
             val dst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpDstDir)
-            rootService.writeProtoBuf(data = restoreEntity, dst = dst)
+            rootService.writeJson(data = restoreEntity, dst = dst)
             cloudRepository.upload(client = client, src = dst, dstDir = remoteDstDir)
 
             packageDao.upsert(restoreEntity)
@@ -170,25 +170,50 @@ internal class CloudBackupImpl @Inject constructor() : BackupService() {
         }
 
         taskEntity.also {
+            t.apply {
+                state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                taskDao.upsert(this)
+            }
             if (t.isSuccess) it.successCount++ else it.failureCount++
             taskDao.upsert(it)
         }
     }
 
     override suspend fun backupItself() {
+        postBackupItselfEntity.also {
+            it.state = OperationState.PROCESSING
+            taskDao.upsert(it)
+        }
+
+        val backupItself = context.readBackupItself().first()
         // Backup itself if enabled.
         if (context.readBackupItself().first()) {
             log { "Backup itself enabled." }
             commonBackupUtil.backupItself(dstDir = tmpDir)
             cloudRepository.upload(client = client, src = commonBackupUtil.getItselfDst(tmpDir), dstDir = remote)
         }
+
+        postBackupItselfEntity.also {
+            it.state = if (backupItself) OperationState.DONE else OperationState.SKIP
+            taskDao.upsert(it)
+        }
     }
 
     override suspend fun backupIcons() {
+        postSaveIconsEntity.also {
+            it.state = OperationState.PROCESSING
+            taskDao.upsert(it)
+        }
+
         // Backup others.
         log { "Save icons." }
         packagesBackupUtil.backupIcons(dstDir = tmpConfigsDir)
         cloudRepository.upload(client = client, src = packagesBackupUtil.getIconsDst(tmpConfigsDir), dstDir = remoteConfigsDir)
+
+        postSaveIconsEntity.also {
+            it.state = OperationState.DONE
+            taskDao.upsert(it)
+        }
     }
 
     override suspend fun clear() {

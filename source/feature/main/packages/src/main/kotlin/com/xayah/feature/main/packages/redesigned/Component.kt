@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
@@ -35,6 +36,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,7 +44,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import com.dotlottie.dlplayer.Mode
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
@@ -58,6 +63,7 @@ import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.LinearProgressIndicator
 import com.xayah.core.ui.component.PackageIconImage
+import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.component.paddingBottom
@@ -65,6 +71,8 @@ import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
+import com.xayah.core.ui.material3.SnackbarHost
+import com.xayah.core.ui.material3.SnackbarHostState
 import com.xayah.core.ui.material3.Surface
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
@@ -127,6 +135,77 @@ fun ListScaffold(
             })
 
             if (innerBottomSpacer) InnerBottomSpacer(innerPadding = innerPadding)
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@Composable
+fun ProcessingSetupScaffold(
+    scrollBehavior: TopAppBarScrollBehavior, title: StringResourceToken,
+    snackbarHostState: SnackbarHostState,
+    onBackClick: (() -> Unit)? = null,
+    progress: Float = -1f,
+    actions: @Composable RowScope.() -> Unit = {},
+    content: @Composable (BoxScope.() -> Unit)
+) {
+    var bottomBarSize by remember { mutableStateOf(IntSize.Zero) }
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            Column {
+                SecondaryLargeTopBar(
+                    scrollBehavior = scrollBehavior,
+                    title = title,
+                    onBackClick = onBackClick,
+                )
+                if (progress != -1f) {
+                    var targetProgress by remember { mutableFloatStateOf(0f) }
+                    val animatedProgress = animateFloatAsState(
+                        targetValue = targetProgress,
+                        animationSpec = tween(),
+                        label = AnimationTokens.AnimatedProgressLabel
+                    )
+                    targetProgress = if (progress.isNaN()) 0f else progress
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = animatedProgress.value)
+                }
+            }
+        },
+        snackbarHost = {
+            with(LocalDensity.current) {
+                SnackbarHost(
+                    modifier = Modifier
+                        .paddingBottom(bottomBarSize.height.toDp() + SizeTokens.Level24 + SizeTokens.Level4),
+                    hostState = snackbarHostState,
+                )
+            }
+        },
+    ) { innerPadding ->
+        Column {
+            InnerTopSpacer(innerPadding = innerPadding)
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                content()
+            }
+
+            Divider()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(SizeTokens.Level16)
+                    .onSizeChanged { bottomBarSize = it },
+                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level12, Alignment.End),
+            ) {
+                actions()
+            }
+
+            InnerBottomSpacer(innerPadding = innerPadding)
         }
     }
 }

@@ -22,6 +22,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.io.PrintWriter
+import java.io.StringWriter
 import javax.inject.Inject
 
 class CloudRepository @Inject constructor(
@@ -66,8 +68,11 @@ class CloudRepository @Inject constructor(
             out.add("Upload succeed.")
         }.onFailure {
             isSuccess = false
+            val stringWriter = StringWriter()
+            val printWriter = PrintWriter(stringWriter)
+            it.printStackTrace(printWriter)
             if (it.localizedMessage != null)
-                out.add(log { it.localizedMessage!! })
+                out.add(log { stringWriter.toString() })
         }
 
         rootService.deleteRecursively(src).also { result ->

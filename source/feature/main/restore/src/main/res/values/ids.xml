@@ -9,7 +9,15 @@
     <item name="reload" type="string" />
     <item name="reload_desc" type="string" />
     <item name="advanced" type="string" />
+    <item name="local" type="string" />
+    <item name="cloud" type="string" />
+    <item name="account" type="string" />
+    <item name="no_available_account" type="string" />
+    <item name="choose_an_account" type="string" />
+    <item name="not_selected" type="string" />
 
     <item name="ic_rounded_package_2" type="drawable" />
     <item name="ic_rounded_apps" type="drawable" />
+    <item name="ic_rounded_cancel_circle" type="drawable" />
+    <item name="ic_rounded_person" type="drawable" />
 </resources>

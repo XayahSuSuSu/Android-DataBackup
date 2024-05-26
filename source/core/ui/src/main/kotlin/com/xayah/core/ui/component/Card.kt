@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.core.model.OperationState
@@ -54,6 +54,7 @@ import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.StateView
+import com.xayah.core.ui.util.getValue
 import com.xayah.core.ui.util.value
 
 @Composable
@@ -119,23 +120,18 @@ fun ProcessingCard(
     enabled: Boolean = true,
     progress: Float,
     title: StringResourceToken,
+    packageName: String? = null,
     defExpanded: Boolean = false,
-    flagExpanded: Boolean = false,
+    expandable: Boolean = false,
     maxDisplayNum: Int = -1,
     items: List<ProcessingCardItem>,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    var _expanded by remember(flagExpanded) { mutableStateOf(defExpanded || flagExpanded) }
-    var secondary by remember { mutableStateOf(false) }
-    var _secondaryIndex by remember { mutableIntStateOf(0) }
-    var _secondaryStartIndex by remember { mutableIntStateOf(0) }
-    val _secondaryItems by remember(items, _secondaryIndex) { mutableStateOf(if (items.size <= _secondaryIndex) listOf() else items[_secondaryIndex].secondaryItems) }
-    val _items by remember(items, secondary, _secondaryItems) { mutableStateOf(if (secondary) _secondaryItems else items) }
-    var _title by remember(title) { mutableStateOf(title) }
-    var _maxDisplayNum by remember(maxDisplayNum) { mutableIntStateOf(maxDisplayNum) }
-    val successCount by remember(_items) { mutableIntStateOf(_items.count { it.state == OperationState.DONE }) }
-    val failedCount by remember(_items) { mutableIntStateOf(_items.count { it.state == OperationState.ERROR }) }
-    val totalCount by remember(_items.size) { mutableIntStateOf(_items.size) }
+    val context = LocalContext.current
+    var _expanded by remember { mutableStateOf(defExpanded || expandable.not()) }
+    val successCount by remember(items) { mutableIntStateOf(items.count { it.state == OperationState.DONE || it.state == OperationState.SKIP }) }
+    val failedCount by remember(items) { mutableIntStateOf(items.count { it.state == OperationState.ERROR }) }
+    val totalCount by remember(items.size) { mutableIntStateOf(items.size) }
     val _state by remember(successCount, failedCount, totalCount) {
         mutableStateOf(
             if (failedCount != 0) OperationState.ERROR
@@ -144,38 +140,28 @@ fun ProcessingCard(
             else OperationState.PROCESSING
         )
     }
-    val displayItems by remember(_maxDisplayNum, _items) {
+    val displayItems by remember(maxDisplayNum, items) {
         mutableStateOf(
-            if (_maxDisplayNum == -1 || _items.size <= _maxDisplayNum) {
-                _secondaryStartIndex = 0
-                _items
+            if (maxDisplayNum == -1 || items.size <= maxDisplayNum) {
+                items
             } else {
-                val processingIndex = _items.indexOfFirst { it.state == OperationState.PROCESSING }
-                val halfCount = (_maxDisplayNum - 1) / 2
+                val processingIndex = items.indexOfFirst { it.state == OperationState.PROCESSING }
+                val halfCount = (maxDisplayNum - 1) / 2
                 val startIndex: Int
                 val endIndex: Int
                 if (processingIndex - halfCount < 0) {
                     startIndex = 0
-                    endIndex = _maxDisplayNum
-                } else if (processingIndex + halfCount > _items.size - 1) {
-                    startIndex = _items.size - _maxDisplayNum
-                    endIndex = _items.size
+                    endIndex = maxDisplayNum
+                } else if (processingIndex + halfCount > items.size - 1) {
+                    startIndex = items.size - maxDisplayNum
+                    endIndex = items.size
                 } else {
                     startIndex = processingIndex - halfCount
-                    endIndex = processingIndex + _maxDisplayNum / 2 + 1
+                    endIndex = processingIndex + maxDisplayNum / 2 + 1
                 }
-                _secondaryStartIndex = startIndex
-                _items.subList(startIndex, endIndex)
+                items.subList(startIndex, endIndex)
             }
         )
-    }
-
-    val backToPrimary: () -> Unit = remember(maxDisplayNum, items, title) {
-        {
-            secondary = false
-            _maxDisplayNum = maxDisplayNum
-            _title = title
-        }
     }
 
     Card(
@@ -192,30 +178,27 @@ fun ProcessingCard(
                     color = (if (_expanded) ColorSchemeKeyTokens.SurfaceVariant else ColorSchemeKeyTokens.Surface).toColor(enabled),
                     shape = ShapeDefaults.Medium,
                     onClick = {
-                        if (totalCount != 0 && flagExpanded.not()) {
+                        if (totalCount != 0 && expandable) {
                             _expanded = _expanded.not()
-                            backToPrimary()
                         }
                     }
                 ) {
                     Row(modifier = Modifier.padding(SizeTokens.Level16), horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16), verticalAlignment = Alignment.CenterVertically) {
-                        if (secondary) {
-                            ArrowBackButton {
-                                backToPrimary()
-                            }
-                        } else {
-                            _state.StateView(enabled = enabled, expanded = _expanded, progress = progress)
-                        }
+                        _state.StateView(enabled = enabled, expanded = _expanded, progress = progress)
 
                         TitleMediumText(
                             modifier = Modifier.weight(1f),
-                            text = _title.value,
+                            text = title.value,
                             color = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
                         )
+
+                        if (packageName != null)
+                            PackageIconImage(packageName = packageName, label = title.value, size = SizeTokens.Level24)
+
                         actions()
                         if (totalCount != 0) {
                             LabelSmallText(text = "${successCount + failedCount}/${totalCount}", color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
-                            Icon(
+                            if (expandable) Icon(
                                 imageVector = if (_expanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
                                 contentDescription = null,
                                 tint = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
@@ -229,6 +212,8 @@ fun ProcessingCard(
                     ) {
                         items(count = displayItems.size, key = { "$it-${displayItems[it].title}" }) {
                             val item = displayItems[it]
+                            var logExpanded by remember { mutableStateOf(false) }
+                            val log = item.log.getValue(context = context)
                             Surface(
                                 modifier = Modifier
                                     .animateItemPlacement()
@@ -236,12 +221,8 @@ fun ProcessingCard(
                                 enabled = enabled,
                                 color = ColorSchemeKeyTokens.Transparent.toColor(enabled),
                                 onClick = {
-                                    if (item.secondaryItems.isNotEmpty()) {
-                                        _secondaryIndex = _secondaryStartIndex + it
-                                        _maxDisplayNum = -1
-                                        secondary = true
-                                        _title = item.title
-                                    }
+                                    if (log.isNotEmpty())
+                                        logExpanded = logExpanded.not()
                                 }
                             ) {
                                 Row(
@@ -252,14 +233,16 @@ fun ProcessingCard(
                                     item.state.StateView(enabled = enabled, expanded = false, progress = item.progress)
                                     TitleSmallText(modifier = Modifier.weight(1f), text = item.title.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
                                     LabelSmallText(text = item.content.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
-                                    if (item.secondaryItems.isNotEmpty()) {
+                                    if (log.isNotEmpty())
                                         Icon(
-                                            imageVector = Icons.Rounded.KeyboardArrowRight,
+                                            imageVector = if (logExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
                                             contentDescription = null,
                                             tint = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
                                         )
-                                    }
                                 }
+                            }
+                            AnimatedVisibility(logExpanded) {
+                                LabelSmallText(modifier = Modifier.paddingHorizontal(SizeTokens.Level56), text = item.log.value, color = ColorSchemeKeyTokens.Outline.toColor(enabled))
                             }
                         }
                     }

@@ -12,4 +12,7 @@ dependencies {
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
+
+    // Gson
+    implementation(libs.gson)
 }

@@ -7,6 +7,7 @@ sealed class MainRoutes(val route: String) {
         const val ArgUserId = "userId"
         const val ArgTaskId = "taskId"
         const val ArgAccountName = "accountName"
+        const val ArgAccountRemote = "accountRemote"
     }
 
     data object Index : MainRoutes(route = "main_index")
@@ -32,13 +33,21 @@ sealed class MainRoutes(val route: String) {
     data object PackagesBackupDetail : MainRoutes(route = "main_packages_backup_detail/{$ArgPackageName}/{$ArgUserId}") {
         fun getRoute(packageName: String, userId: Int) = "main_packages_backup_detail/${packageName}/${userId}"
     }
+    data object PackagesBackupProcessingGraph : MainRoutes(route = "main_packages_backup_processing_graph")
     data object PackagesBackupProcessing : MainRoutes(route = "main_packages_backup_processing")
+    data object PackagesBackupProcessingSetup : MainRoutes(route = "main_packages_backup_processing_setup")
 
-    data object PackagesRestoreList : MainRoutes(route = "main_packages_restore_list")
+    data object PackagesRestoreList : MainRoutes(route = "main_packages_restore_list/{$ArgAccountName}/{$ArgAccountRemote}") {
+        fun getRoute(name: String, remote: String) = "main_packages_restore_list/${name}/${remote}"
+    }
     data object PackagesRestoreDetail : MainRoutes(route = "main_packages_restore_detail/{$ArgPackageName}/{$ArgUserId}") {
         fun getRoute(packageName: String, userId: Int) = "main_packages_restore_detail/${packageName}/${userId}"
     }
+    data object PackagesRestoreProcessingGraph : MainRoutes(route = "main_packages_restore_processing_graph/{$ArgAccountName}/{$ArgAccountRemote}") {
+        fun getRoute(name: String, remote: String) = "main_packages_restore_processing_graph/${name}/${remote}"
+    }
     data object PackagesRestoreProcessing : MainRoutes(route = "main_packages_restore_processing")
+    data object PackagesRestoreProcessingSetup : MainRoutes(route = "main_packages_restore_processing_setup")
 
     data object PackageDetail : MainRoutes(route = "main_package_detail/{$ArgPackageName}/{$ArgUserId}") {
         fun getRoute(packageName: String, userId: Int) = "main_package_detail/${packageName}/${userId}"

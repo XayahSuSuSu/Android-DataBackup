@@ -286,4 +286,6 @@
     <string name="delete_account">刪除賬戶</string>
     <string name="remote_path_desc">備份讀取或保存的路徑</string>
     <string name="delete_account_desc">此賬戶將被刪除</string>
+    <string name="choose_an_account">選擇一個賬戶</string>
+    <string name="no_available_account">沒有可用賬戶</string>
 </resources>

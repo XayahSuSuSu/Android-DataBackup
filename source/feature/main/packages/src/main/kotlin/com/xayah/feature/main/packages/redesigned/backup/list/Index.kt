@@ -122,7 +122,7 @@ fun PagePackagesBackupList() {
                 FloatingActionButton(
                     modifier = Modifier.onSizeChanged { fabHeight = it.height * 1.5f },
                     onClick = {
-                        navController.navigate(MainRoutes.PackagesBackupProcessing.route)
+                        navController.navigate(MainRoutes.PackagesBackupProcessingGraph.route)
                     },
                 ) {
                     Icon(Icons.Filled.ChevronRight, null)

@@ -9,7 +9,7 @@ import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
-import com.xayah.core.datastore.readRestoreFilterFlagIndex
+import com.xayah.core.datastore.readResetRestoreList
 import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.datastore.saveLastRestoreTime
 import com.xayah.core.model.DataType
@@ -31,6 +31,7 @@ import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PreparationUtil
+import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
@@ -83,7 +84,7 @@ internal abstract class RestoreService : Service() {
     private var isInitialized: Boolean = false
 
     @SuppressLint("StringFormatInvalid")
-    suspend fun initialize(): Long {
+    suspend fun initialize(cloudName: String, cloudRemote: String): Long {
         mutex.withLock {
             if (isInitialized.not()) {
                 taskEntity.also {
@@ -106,7 +107,12 @@ internal abstract class RestoreService : Service() {
                     id = taskDao.upsert(this)
                 }
 
-                val packages = packageDao.queryActivated(OpType.RESTORE).filter(packageRepository.getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
+                val packages = packageRepository.filterRestore(
+                    if (cloudName.isEmpty())
+                        packageRepository.queryActivated(OpType.RESTORE, "", context.localBackupSaveDir())
+                    else
+                        packageRepository.queryActivated(OpType.RESTORE, cloudName, cloudRemote)
+                )
                 packages.forEach { pkg ->
                     pkgEntities.add(TaskDetailPackageEntity(
                         id = 0,
@@ -142,8 +148,15 @@ internal abstract class RestoreService : Service() {
             log { "Trying to enable adb install permissions." }
             PreparationUtil.setInstallEnv()
 
+            runCatchingOnService { createTargetDirs() }
+
             preSetUpInstEnvEntity.also {
                 it.state = OperationState.DONE
+                taskDao.upsert(it)
+            }
+
+            taskEntity.also {
+                it.processingIndex++
                 taskDao.upsert(it)
             }
         }
@@ -164,7 +177,6 @@ internal abstract class RestoreService : Service() {
             log { "Processing is starting." }
             val selectionType = context.readSelectionType().first()
             log { "Selection: $selectionType." }
-            runCatchingOnService { createTargetDirs() }
 
             // createTargetDirs() before readStatFs().
             taskEntity.also {
@@ -196,6 +208,11 @@ internal abstract class RestoreService : Service() {
                 BaseUtil.killPackage(userId = pkg.packageEntity.userId, packageName = pkg.packageEntity.packageName)
 
                 runCatchingOnService { restorePackage(pkg) }
+
+                taskEntity.also {
+                    it.processingIndex++
+                    taskDao.upsert(it)
+                }
             }
         }
     }
@@ -223,7 +240,7 @@ internal abstract class RestoreService : Service() {
                 taskDao.upsert(it)
             }
 
-            packageDao.clearActivated()
+            if (context.readResetRestoreList().first()) packageDao.clearActivated()
             endTimestamp = DateUtil.getTimestamp()
             taskEntity.also {
                 it.endTimestamp = endTimestamp

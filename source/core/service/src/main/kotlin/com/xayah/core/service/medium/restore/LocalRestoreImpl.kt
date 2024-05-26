@@ -49,6 +49,7 @@ internal class LocalRestoreImpl @Inject constructor() : RestoreService() {
             totalCount = 0,
             successCount = 0,
             failureCount = 0,
+            processingIndex = 0,
             isProcessing = true,
             cloud = "",
         )

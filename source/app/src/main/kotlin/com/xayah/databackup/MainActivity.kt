@@ -31,10 +31,10 @@ import com.xayah.feature.main.packages.detail.PagePackageDetail
 import com.xayah.feature.main.packages.list.PagePackages
 import com.xayah.feature.main.packages.redesigned.backup.detail.PagePackagesBackupDetail
 import com.xayah.feature.main.packages.redesigned.backup.list.PagePackagesBackupList
-import com.xayah.feature.main.packages.redesigned.backup.processing.PagePackagesBackupProcessing
+import com.xayah.feature.main.packages.redesigned.backup.processing.PackagesBackupProcessingGraph
 import com.xayah.feature.main.packages.redesigned.restore.detail.PagePackagesRestoreDetail
 import com.xayah.feature.main.packages.redesigned.restore.list.PagePackagesRestoreList
-import com.xayah.feature.main.packages.redesigned.restore.processing.PagePackagesRestoreProcessing
+import com.xayah.feature.main.packages.redesigned.restore.processing.PackagesRestoreProcessingGraph
 import com.xayah.feature.main.restore.PageRestore
 import com.xayah.feature.main.settings.redesigned.PageSettings
 import com.xayah.feature.main.settings.redesigned.backup.PageBackupSettings
@@ -94,8 +94,8 @@ class MainActivity : ComponentActivity() {
                         composable(MainRoutes.PackagesBackupDetail.route) {
                             PagePackagesBackupDetail()
                         }
-                        composable(MainRoutes.PackagesBackupProcessing.route) {
-                            PagePackagesBackupProcessing()
+                        composable(MainRoutes.PackagesBackupProcessingGraph.route) {
+                            PackagesBackupProcessingGraph()
                         }
                         composable(MainRoutes.PackagesRestoreList.route) {
                             PagePackagesRestoreList()
@@ -103,8 +103,8 @@ class MainActivity : ComponentActivity() {
                         composable(MainRoutes.PackagesRestoreDetail.route) {
                             PagePackagesRestoreDetail()
                         }
-                        composable(MainRoutes.PackagesRestoreProcessing.route) {
-                            PagePackagesRestoreProcessing()
+                        composable(MainRoutes.PackagesRestoreProcessingGraph.route) {
+                            PackagesRestoreProcessingGraph()
                         }
                         composable(MainRoutes.Settings.route) {
                             PageSettings()
