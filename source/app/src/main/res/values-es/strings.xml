@@ -286,4 +286,6 @@
     <string name="theme_light_desc">Siempre en modo claro</string>
     <string name="theme_dark">Oscuro</string>
     <string name="theme_dark_desc">Siempre en modo oscuro</string>
+    <string name="choose_an_account">Elige una cuenta</string>
+    <string name="no_available_account">No hay ninguna cuenta disponible</string>
 </resources>
