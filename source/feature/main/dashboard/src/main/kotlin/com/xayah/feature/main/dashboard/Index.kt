@@ -116,7 +116,7 @@ fun PageDashboard() {
                     }
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
-                        enabled = nullBackupDir.not(),
+                        enabled = false,
                         title = StringResourceToken.fromStringId(R.string.backup_files),
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
                         colorContainer = ColorSchemeKeyTokens.YellowPrimaryContainer,
@@ -125,7 +125,7 @@ fun PageDashboard() {
                     )
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
-                        enabled = nullBackupDir.not(),
+                        enabled = false,
                         title = StringResourceToken.fromStringId(R.string.backup_messages),
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
                         colorContainer = ColorSchemeKeyTokens.BluePrimaryContainer,
@@ -134,7 +134,7 @@ fun PageDashboard() {
                     )
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
-                        enabled = nullBackupDir.not(),
+                        enabled = false,
                         title = StringResourceToken.fromStringId(R.string.backup_contacts),
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
                         colorContainer = ColorSchemeKeyTokens.GreenPrimaryContainer,
