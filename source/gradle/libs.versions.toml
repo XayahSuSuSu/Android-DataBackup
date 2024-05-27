@@ -6,7 +6,7 @@ targetSdk = "34"
 # __(API)_(feature)___(version)_(abi)
 # TODO: Feature bit is no longer useful, drop when next api releases
 versionCode = "3411040"
-versionCodeAlpha = "8"
+versionCodeAlpha = "9"
 versionName = "1.1.0-alpha06"
 compose-compiler = "1.5.12" # https://androidx.dev/storage/compose-compiler/repository
 
