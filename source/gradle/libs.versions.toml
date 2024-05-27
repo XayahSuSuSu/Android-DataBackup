@@ -49,7 +49,7 @@ guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
 sardine-next = "1.0.2"
 
 # plugins
-android-gradle-plugin = "8.4.1"
+android-gradle-plugin = "8.2.2"
 kotlin = "1.9.23"
 hilt = "2.48"
 ksp-kotlin = "1.9.23-1.0.20"
