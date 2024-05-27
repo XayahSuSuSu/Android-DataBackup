@@ -25,25 +25,5 @@
             android:name=".packages.restore.RestoreServiceCloudImpl"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
-
-        <service
-            android:name=".medium.backup.LocalBackupImpl"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
-
-        <service
-            android:name=".medium.backup.CloudBackupImpl"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
-
-        <service
-            android:name=".medium.restore.LocalRestoreImpl"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
-
-        <service
-            android:name=".medium.restore.CloudRestoreImpl"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
     </application>
 </manifest>
