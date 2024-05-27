@@ -1,10 +1,6 @@
 <resources>
     <item name="internal_storage" type="string" />
     <item name="external_storage" type="string" />
-    <item name="unsupported_format" type="string" />
-    <item name="supported_format" type="string" />
-    <item name="custom_storage" type="string" />
-    <item name="updating" type="string" />
     <item name="backup_list" type="string" />
     <item name="restore_list" type="string" />
     <item name="select_target_directory" type="string" />
@@ -12,7 +8,6 @@
     <item name="local" type="string" />
     <item name="ic_rounded_database" type="drawable" />
     <item name="ic_rounded_stadia_controller" type="drawable" />
-    <item name="backup_dir_as_media_error" type="string" />
     <item name="succeed" type="string" />
     <item name="failed" type="string" />
     <item name="recommend" type="string" />

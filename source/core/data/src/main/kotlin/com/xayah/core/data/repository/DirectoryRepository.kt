@@ -5,7 +5,6 @@ import com.xayah.core.common.util.toSpaceString
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.DirectoryDao
 import com.xayah.core.datastore.ConstantUtil
-import com.xayah.core.datastore.saveBackupSaveParentPath
 import com.xayah.core.datastore.saveBackupSavePath
 import com.xayah.core.model.StorageType
 import com.xayah.core.model.database.DirectoryEntity
@@ -29,8 +28,7 @@ class DirectoryRepository @Inject constructor(
     fun queryActiveDirectoriesFlow(storageType: StorageType) = directoryDao.queryActiveDirectoriesFlow(storageType).distinctUntilChanged()
 
     private suspend fun resetDir() = selectDir(
-        parent = ConstantUtil.DefaultPathParent,
-        path = ConstantUtil.DefaultPath,
+        path = ConstantUtil.DEFAULT_PATH,
         id = directoryDao.queryDefaultDirectoryId(StorageType.INTERNAL),
     )
 
@@ -63,12 +61,11 @@ class DirectoryRepository @Inject constructor(
     }
 
     suspend fun selectDir(entity: DirectoryEntity) = run {
-        selectDir(entity.parent, entity.path, entity.id)
+        selectDir(entity.path, entity.id)
     }
 
-    private suspend fun selectDir(parent: String, path: String, id: Long?) = run {
+    private suspend fun selectDir(path: String, id: Long?) = run {
         if (id != null) {
-            context.saveBackupSaveParentPath(parent)
             context.saveBackupSavePath(path)
             directoryDao.select(id = id)
         }
@@ -85,7 +82,7 @@ class DirectoryRepository @Inject constructor(
             for (storageItem in internalList) {
                 // e.g. /data/media/0
                 runCatching {
-                    val child = ConstantUtil.DefaultPathChild
+                    val child = ConstantUtil.DEFAULT_PATH_CHILD
                     internalDirs.add(
                         DirectoryUpsertEntity(
                             id = directoryDao.queryId(parent = storageItem, child = child),
@@ -105,7 +102,7 @@ class DirectoryRepository @Inject constructor(
             for (storageItem in externalList) {
                 // e.g. /mnt/media_rw/E7F9-FA61
                 runCatching {
-                    val child = ConstantUtil.DefaultPathChild
+                    val child = ConstantUtil.DEFAULT_PATH_CHILD
                     externalDirs.add(
                         DirectoryUpsertEntity(
                             id = directoryDao.queryId(parent = storageItem, child = child),

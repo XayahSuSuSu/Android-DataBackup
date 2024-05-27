@@ -41,7 +41,7 @@ fun LinearProgressIndicator(
     enabled: Boolean = true,
 ) {
     LinearProgressIndicator(
-        progress = progress,
+        progress = { progress },
         modifier = modifier,
         color = if (enabled) color else color.copy(alpha = DisabledAlpha),
         trackColor = if (enabled) trackColor else trackColor.copy(alpha = DisabledAlpha),

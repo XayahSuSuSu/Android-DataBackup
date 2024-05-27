@@ -1,10 +1,7 @@
 <resources>
     <item name="processing" type="string"/>
     <item name="connection_established" type="string"/>
-    <item name="remote_not_set" type="string"/>
     <item name="test_connection" type="string"/>
-    <item name="set_remote" type="string"/>
-    <item name="edit" type="string"/>
     <item name="delete" type="string"/>
     <item name="url" type="string"/>
     <item name="username" type="string"/>

@@ -48,8 +48,6 @@ import com.xayah.core.ui.material3.window.PopupProperties
 import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.model.getActionMenuConfirmItem
-import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.SizeTokens
@@ -363,21 +361,4 @@ fun ContentWithActions(modifier: Modifier = Modifier, actions: (MutableState<Boo
 
         ModalActionDropdownMenu(expanded = expanded.value, actionList = actions(expanded), onDismissRequest = { expanded.value = false })
     }
-}
-
-
-@Composable
-fun ContentWithConfirm(modifier: Modifier = Modifier, content: @Composable (MutableState<Boolean>) -> Unit, onConfirm: suspend () -> Unit) {
-    ContentWithActions(
-        modifier = modifier, actions = { expanded ->
-            listOf(
-                getActionMenuReturnItem { expanded.value = false },
-                getActionMenuConfirmItem {
-                    onConfirm()
-                    expanded.value = false
-                }
-            )
-        },
-        content = content
-    )
 }

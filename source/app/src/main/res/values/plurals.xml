@@ -23,8 +23,4 @@
         <item quantity="one"><xliff:g id="count">%d</xliff:g> item</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> items</item>
     </plurals>
-    <plurals name="backups">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> backup</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> backups</item>
-    </plurals>
 </resources>

@@ -1,8 +1,6 @@
 <resources>
-    <item name="app_and_data" type="string" />
     <item name="search_bar_hint_packages" type="string" />
     <item name="keystore" type="string" />
-    <item name="keystore_desc" type="string" />
     <item name="version" type="string" />
     <item name="data_size" type="string" />
     <item name="user" type="string" />
@@ -11,47 +9,28 @@
     <item name="backup" type="string" />
     <item name="preprocessing" type="string" />
     <item name="post_processing" type="string" />
-    <item name="back_up_to_local" type="string" />
     <item name="details" type="string" />
     <item name="processing" type="string" />
     <item name="restore" type="string" />
-    <item name="restore_from_local" type="string" />
-    <item name="task_is_in_progress" type="string" />
     <item name="backup_completed" type="string" />
     <item name="uid" type="string" />
-    <item name="type" type="string" />
     <item name="first_install" type="string" />
     <item name="info" type="string" />
-    <item name="apk" type="string" />
-    <item name="data" type="string" />
-    <item name="compression_type" type="string" />
     <item name="items" type="plurals" />
-    <item name="id" type="string" />
-    <item name="preserve" type="string" />
     <item name="delete" type="string" />
     <item name="restore_completed" type="string" />
     <item name="permissions" type="string" />
     <item name="ssaid" type="string" />
-    <item name="backups" type="plurals" />
-    <item name="back_up_to_cloud" type="string" />
-    <item name="restore_from_cloud" type="string" />
-    <item name="no_available_cloud_accounts" type="string" />
     <item name="account" type="string" />
-    <item name="directory" type="string" />
     <item name="cloud" type="string" />
-    <item name="select_cloud_accounts_to_refresh" type="string" />
     <item name="local" type="string" />
     <item name="overlook" type="string" />
     <item name="batch" type="string" />
-    <item name="_default" type="string" />
     <item name="both" type="string" />
     <item name="select_apps" type="string" />
     <item name="backed_up_apps" type="string" />
     <item name="pull_down_to_refresh" type="string" />
     <item name="no_backups_found_warning" type="string" />
-    <item name="select_all" type="string" />
-    <item name="filters" type="string" />
-    <item name="sort" type="string" />
     <item name="none" type="string" />
     <item name="backup_parts" type="string" />
     <item name="processing_exit_confirmation" type="string" />
@@ -85,14 +64,6 @@
     <item name="ic_rounded_stadia_controller" type="drawable" />
     <item name="ic_rounded_image" type="drawable" />
     <item name="ic_rounded_check_circle" type="drawable" />
-    <item name="ic_rounded_error" type="drawable" />
-    <item name="ic_rounded_expand_content" type="drawable" />
-    <item name="ic_rounded_collapse_content" type="drawable" />
     <item name="ic_rounded_deployed_code" type="drawable" />
     <item name="ic_rounded_acute" type="drawable" />
-    <item name="ic_rounded_counter_5" type="drawable" />
-    <item name="ic_rounded_bolt" type="drawable" />
-    <item name="ic_rounded_shield_locked" type="drawable" />
-    <item name="ic_rounded_palette" type="drawable" />
-    <item name="ic_rounded_cloud_upload" type="drawable" />
 </resources>

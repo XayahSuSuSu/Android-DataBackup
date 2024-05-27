@@ -1,7 +1,0 @@
-<resources>
-    <item name="simplify" type="string"/>
-    <item name="integral" type="string"/>
-    <item name="directory_structure" type="string"/>
-    <item name="backup_dir" type="string"/>
-    <item name="restore_dir" type="string"/>
-</resources>

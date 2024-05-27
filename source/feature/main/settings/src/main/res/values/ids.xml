@@ -14,9 +14,6 @@
     <item name="backup" type="string" />
     <item name="restore" type="string" />
     <item name="version" type="string" />
-    <item name="feature" type="string" />
-    <item name="abi" type="string" />
-    <item name="architecture" type="string" />
     <item name="check_keystore" type="string" />
     <item name="check_keystore_desc" type="string" />
     <item name="load_system_apps" type="string" />

@@ -42,7 +42,7 @@ class PackagesBackupUtil @Inject constructor(
         private val TAG = this::class.java.simpleName
     }
 
-    internal fun log(onMsg: () -> String): String = run {
+    private fun log(onMsg: () -> String): String = run {
         val msg = onMsg()
         LogUtil.log { TAG to msg }
         msg
@@ -198,7 +198,7 @@ class PackagesBackupUtil @Inject constructor(
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
 
-    suspend fun getPackageSourceDir(packageName: String, userId: Int) = rootService.getPackageSourceDir(packageName, userId).let { list ->
+    private suspend fun getPackageSourceDir(packageName: String, userId: Int) = rootService.getPackageSourceDir(packageName, userId).let { list ->
         if (list.isNotEmpty()) PathUtil.getParentPath(list[0]) else ""
     }
 

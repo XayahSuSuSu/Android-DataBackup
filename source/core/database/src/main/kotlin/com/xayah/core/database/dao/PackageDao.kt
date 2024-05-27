@@ -7,7 +7,6 @@ import androidx.room.Upsert
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.PackageEntity
-import com.xayah.core.model.database.PackageEntityWithCount
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -47,12 +46,6 @@ interface PackageDao {
     @Query("SELECT * FROM PackageEntity WHERE extraInfo_activated = 1 AND extraInfo_existed = 1 AND indexInfo_opType = :opType AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir")
     suspend fun queryActivated(opType: OpType, cloud: String, backupDir: String): List<PackageEntity>
 
-    @Query("SELECT COUNT(*) FROM PackageEntity WHERE extraInfo_activated = 1 AND extraInfo_existed = 1")
-    fun countActivatedFlow(): Flow<Long>
-
-    @Query("SELECT * FROM PackageEntity WHERE extraInfo_activated = 1 AND extraInfo_existed = 1")
-    fun queryActivatedFlow(): Flow<List<PackageEntity>>
-
     @Query("UPDATE PackageEntity SET extraInfo_activated = 0")
     suspend fun clearActivated()
 
@@ -65,12 +58,6 @@ interface PackageDao {
                 " LIMIT 1"
     )
     fun queryFlow(packageName: String, opType: OpType, userId: Int, preserveId: Long): Flow<PackageEntity?>
-
-    @Query(
-        "SELECT * FROM PackageEntity WHERE" +
-                " indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId"
-    )
-    fun queryFlow(packageName: String, opType: OpType, userId: Int): Flow<List<PackageEntity>>
 
     @Query(
         "SELECT * FROM PackageEntity WHERE" +
@@ -92,28 +79,9 @@ interface PackageDao {
 
     @Query(
         "SELECT * FROM PackageEntity WHERE" +
-                " indexInfo_opType = :opType AND extraInfo_existed = 1"
-    )
-    suspend fun queryPackages(opType: OpType): List<PackageEntity>
-
-    @Query(
-        "SELECT * FROM PackageEntity WHERE" +
                 " indexInfo_opType = :opType AND extraInfo_existed = 1 AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
     )
     suspend fun queryPackages(opType: OpType, cloud: String, backupDir: String): List<PackageEntity>
-
-    @Query(
-        "SELECT r.*, l.count FROM " +
-                "(SELECT indexInfo_packageName, indexInfo_userId, MIN(indexInfo_opType) AS opType, COUNT(*) AS count FROM PackageEntity" +
-                " GROUP BY indexInfo_packageName, indexInfo_userId) AS l" +
-                " LEFT JOIN PackageEntity AS r ON l.indexInfo_packageName = r.indexInfo_packageName AND l.indexInfo_userId = r.indexInfo_userId AND l.opType = r.indexInfo_opType" +
-                " AND r.id = (SELECT MAX(id) FROM PackageEntity WHERE indexInfo_packageName = l.indexInfo_packageName AND indexInfo_userId = l.indexInfo_userId AND indexInfo_opType = l.opType)" +
-                " ORDER BY indexInfo_opType"
-    )
-    fun queryFlow(): Flow<List<PackageEntityWithCount>>
-
-    @Query("SELECT *, 1 AS count FROM PackageEntity WHERE indexInfo_opType = :opType")
-    fun queryFlow(opType: OpType): Flow<List<PackageEntityWithCount>>
 
     @Delete(entity = PackageEntity::class)
     suspend fun delete(item: PackageEntity)

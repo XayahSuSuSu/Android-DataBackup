@@ -31,7 +31,7 @@ import com.xayah.core.ui.token.AnimationTokens
 @Composable
 fun AnimatedTextContainer(
     targetState: String,
-    content: @Composable() AnimatedVisibilityScope.(targetState: String) -> Unit,
+    content: @Composable AnimatedVisibilityScope.(targetState: String) -> Unit,
 ) {
     AnimatedContent(
         targetState = targetState,

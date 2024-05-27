@@ -21,13 +21,13 @@ object LogUtil {
     private lateinit var logFile: RandomAccessFile
     private val timestamp: Long = DateUtil.getTimestamp()
     private const val SEPARATOR = "    "
-    const val LOG_FILE_Prefix = "log_"
+    private const val LOG_FILE_PREFIX = "log_"
     private const val TAG_COMMON = "Common    "
     const val TAG_SHELL_IN = "SHELL_IN  "
     const val TAG_SHELL_OUT = "SHELL_OUT "
     const val TAG_SHELL_CODE = "SHELL_CODE"
 
-    fun getLogFileName() = "$LOG_FILE_Prefix$timestamp.txt"
+    private fun getLogFileName() = "$LOG_FILE_PREFIX$timestamp.txt"
 
     fun initialize(cacheDir: String) = runCatching {
         // Clear empty log files.

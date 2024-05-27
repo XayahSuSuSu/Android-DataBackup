@@ -1,9 +1,9 @@
 package com.xayah.core.datastore
 
 object ConstantUtil {
-    const val DefaultPathParent = "/storage/emulated/0"
-    const val DefaultPathChild = "DataBackup"
-    const val DefaultPath = "${DefaultPathParent}/${DefaultPathChild}"
+    const val DEFAULT_PATH_PARENT = "/storage/emulated/0"
+    const val DEFAULT_PATH_CHILD = "DataBackup"
+    const val DEFAULT_PATH = "${DEFAULT_PATH_PARENT}/${DEFAULT_PATH_CHILD}"
     val SupportedExternalStorageFormat = listOf(
         "sdfat",
         "fuseblk",
@@ -12,11 +12,5 @@ object ConstantUtil {
         "ext4",
         "f2fs",
         "texfat",
-    )
-    val DefaultMediaList = listOf(
-        "Pictures" to "/storage/emulated/0/Pictures",
-        "Music" to "/storage/emulated/0/Music",
-        "DCIM" to "/storage/emulated/0/DCIM",
-        "Download" to "/storage/emulated/0/Download",
     )
 }

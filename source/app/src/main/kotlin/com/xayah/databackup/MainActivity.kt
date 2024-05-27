@@ -16,33 +16,23 @@ import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.theme.DataBackupTheme
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.util.command.BaseUtil
-import com.xayah.databackup.index.MainIndexGraph
-import com.xayah.feature.main.cloud.redesigned.PageCloud
-import com.xayah.feature.main.cloud.redesigned.add.PageCloudAddAccount
-import com.xayah.feature.main.cloud.redesigned.add.PageFTPSetup
-import com.xayah.feature.main.cloud.redesigned.add.PageSMBSetup
-import com.xayah.feature.main.cloud.redesigned.add.PageWebDAVSetup
+import com.xayah.feature.main.cloud.PageCloud
+import com.xayah.feature.main.cloud.add.PageCloudAddAccount
+import com.xayah.feature.main.cloud.add.PageFTPSetup
+import com.xayah.feature.main.cloud.add.PageSMBSetup
+import com.xayah.feature.main.cloud.add.PageWebDAVSetup
 import com.xayah.feature.main.dashboard.PageDashboard
 import com.xayah.feature.main.directory.PageDirectory
-import com.xayah.feature.main.log.LogGraph
-import com.xayah.feature.main.medium.detail.PageMediaDetail
-import com.xayah.feature.main.medium.list.PageMedium
-import com.xayah.feature.main.packages.detail.PagePackageDetail
-import com.xayah.feature.main.packages.list.PagePackages
-import com.xayah.feature.main.packages.redesigned.backup.detail.PagePackagesBackupDetail
-import com.xayah.feature.main.packages.redesigned.backup.list.PagePackagesBackupList
-import com.xayah.feature.main.packages.redesigned.backup.processing.PackagesBackupProcessingGraph
-import com.xayah.feature.main.packages.redesigned.restore.detail.PagePackagesRestoreDetail
-import com.xayah.feature.main.packages.redesigned.restore.list.PagePackagesRestoreList
-import com.xayah.feature.main.packages.redesigned.restore.processing.PackagesRestoreProcessingGraph
+import com.xayah.feature.main.packages.backup.detail.PagePackagesBackupDetail
+import com.xayah.feature.main.packages.backup.list.PagePackagesBackupList
+import com.xayah.feature.main.packages.backup.processing.PackagesBackupProcessingGraph
+import com.xayah.feature.main.packages.restore.detail.PagePackagesRestoreDetail
+import com.xayah.feature.main.packages.restore.list.PagePackagesRestoreList
+import com.xayah.feature.main.packages.restore.processing.PackagesRestoreProcessingGraph
 import com.xayah.feature.main.restore.PageRestore
-import com.xayah.feature.main.settings.redesigned.PageSettings
-import com.xayah.feature.main.settings.redesigned.backup.PageBackupSettings
-import com.xayah.feature.main.settings.redesigned.restore.PageRestoreSettings
-import com.xayah.feature.main.task.detail.medium.PageTaskMediaDetail
-import com.xayah.feature.main.task.detail.packages.PageTaskPackageDetail
-import com.xayah.feature.main.task.list.PageTaskList
-import com.xayah.feature.main.tree.PageTree
+import com.xayah.feature.main.settings.PageSettings
+import com.xayah.feature.main.settings.backup.PageBackupSettings
+import com.xayah.feature.main.settings.restore.PageRestoreSettings
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -67,9 +57,6 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = MainRoutes.Dashboard.route,
                     ) {
-                        composable(MainRoutes.Index.route) {
-                            MainIndexGraph()
-                        }
                         composable(MainRoutes.Dashboard.route) {
                             PageDashboard()
                         }
@@ -117,33 +104,6 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.RestoreSettings.route) {
                             PageRestoreSettings()
-                        }
-                        composable(MainRoutes.Packages.route) {
-                            PagePackages()
-                        }
-                        composable(MainRoutes.PackageDetail.route) {
-                            PagePackageDetail()
-                        }
-                        composable(MainRoutes.Medium.route) {
-                            PageMedium()
-                        }
-                        composable(MainRoutes.MediumDetail.route) {
-                            PageMediaDetail()
-                        }
-                        composable(MainRoutes.TaskList.route) {
-                            PageTaskList()
-                        }
-                        composable(MainRoutes.TaskPackageDetail.route) {
-                            PageTaskPackageDetail()
-                        }
-                        composable(MainRoutes.TaskMediaDetail.route) {
-                            PageTaskMediaDetail()
-                        }
-                        composable(route = MainRoutes.Log.route) {
-                            LogGraph()
-                        }
-                        composable(route = MainRoutes.Tree.route) {
-                            PageTree()
                         }
                         composable(route = MainRoutes.Directory.route) {
                             PageDirectory()

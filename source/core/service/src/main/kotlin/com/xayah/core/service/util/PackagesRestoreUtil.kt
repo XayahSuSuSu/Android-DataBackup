@@ -38,7 +38,7 @@ class PackagesRestoreUtil @Inject constructor(
         private val TAG = this::class.java.simpleName
     }
 
-    internal fun log(onMsg: () -> String): String = run {
+    private fun log(onMsg: () -> String): String = run {
         val msg = onMsg()
         LogUtil.log { TAG to msg }
         msg

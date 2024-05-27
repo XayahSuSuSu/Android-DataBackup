@@ -10,7 +10,6 @@ import androidx.core.graphics.drawable.toDrawable
 import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.common.util.trim
-import com.xayah.core.model.database.LogcatEntity
 import com.xayah.core.util.BinArchiveName
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.LogUtil.TAG_SHELL_CODE
@@ -26,17 +25,12 @@ import com.xayah.core.util.logDir
 import com.xayah.core.util.model.ShellResult
 import com.xayah.core.util.withIOContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import net.lingala.zip4j.ZipFile
-import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
 
 private class EnvInitializer : Shell.Initializer() {
@@ -146,48 +140,6 @@ object BaseUtil {
             done
         """.trimIndent()
         execute(cmd, shell = getNewShell(), timeout = 3)
-    }
-
-    suspend fun logcat(timestamp: Long, mutex: Mutex, isRunning: MutableStateFlow<Boolean>, onCached: suspend (cached: List<LogcatEntity>) -> Unit) = withIOContext {
-        getNewShell().also { shell ->
-            shell.execTask { stdin, stdout, _ ->
-                val tmpContents = mutableListOf<LogcatEntity>()
-                launch {
-                    while (true) {
-                        delay(1000)
-                        mutex.withLock {
-                            onCached(tmpContents)
-                            tmpContents.clear()
-                        }
-                        if (isRunning.value.not()) break
-                    }
-                }
-                launch {
-                    BufferedReader(InputStreamReader(stdout, Charsets.UTF_8)).use {
-                        while (true) {
-                            if (isRunning.value.not()) {
-                                shell.close()
-                                break
-                            } else {
-                                val raw = it.readLine().split("\\s+".toRegex(), limit = 6)
-                                if (raw.size == 6) {
-                                    val info = raw[5].split(":", limit = 2)
-                                    if (info.size == 2) {
-                                        val tag = info[0].trim()
-                                        val msg = info[1].trim()
-                                        mutex.withLock {
-                                            tmpContents.add(LogcatEntity(0, "$timestamp", raw[0], raw[1], raw[2], raw[3], raw[4], tag, msg))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stdin.write("logcat\n".toByteArray(Charsets.UTF_8))
-                stdin.flush()
-            }
-        }
     }
 
     suspend fun mkdirs(dst: String) = withIOContext {

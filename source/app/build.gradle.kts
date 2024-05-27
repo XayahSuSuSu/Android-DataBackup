@@ -91,15 +91,10 @@ dependencies {
     "alphaImplementation"(project(":feature:flavor:foss"))
     implementation(project(":feature:main:dashboard"))
     implementation(project(":feature:main:restore"))
-    implementation(project(":feature:main:home"))
     implementation(project(":feature:main:cloud"))
     implementation(project(":feature:main:settings"))
     implementation(project(":feature:main:packages"))
-    implementation(project(":feature:main:medium"))
     implementation(project(":feature:main:directory"))
-    implementation(project(":feature:main:log"))
-    implementation(project(":feature:main:tree"))
-    implementation(project(":feature:main:task"))
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)

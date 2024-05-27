@@ -21,11 +21,8 @@
     <item name="backup_dir" type="string" />
     <item name="not_selected" type="string" />
     <item name="setup_backup_dir_desc" type="string" />
-    <item name="backup_categories" type="string" />
-    <item name="app_and_data" type="string" />
     <item name="enabled" type="string" />
     <item name="not_enabled" type="string" />
-    <item name="media" type="string" />
     <item name="skip_setup" type="string" />
     <item name="skip_setup_alert" type="string" />
     <item name="check_keystore" type="string" />

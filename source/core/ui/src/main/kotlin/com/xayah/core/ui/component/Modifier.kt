@@ -39,15 +39,6 @@ fun Modifier.paddingHorizontal(horizontal: Dp) = padding(horizontal, 0.dp)
 
 fun Modifier.paddingVertical(vertical: Dp) = padding(0.dp, vertical)
 
-fun Modifier.ignorePaddingHorizontal(horizontal: Dp) = layout { measurable, constraints ->
-    if (constraints.maxWidth == Int.MAX_VALUE) throw IllegalArgumentException("The measuring failed, maybe you placed this modifier after horizontalScroll(), please place it at the first place.")
-    val placeable = measurable.measure(constraints.copy(maxWidth = constraints.maxWidth + (horizontal * 2).roundToPx()))
-    val x = if (constraints.maxWidth < placeable.width) 0 else -horizontal.roundToPx()
-    layout(placeable.width, placeable.height) {
-        placeable.place(x, 0)
-    }
-}
-
 fun Modifier.shimmer(visible: Boolean = true, colorAlpha: Float = 0.1f, highlightAlpha: Float = 0.3f) = composed {
     val alphaColor = if (darkTheme()) highlightAlpha else colorAlpha
     val alphaHighlight = if (darkTheme()) colorAlpha else highlightAlpha

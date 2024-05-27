@@ -29,9 +29,6 @@ interface DirectoryDao {
     @Query("SELECT id FROM DirectoryEntity WHERE storageType = :storageType ORDER BY parent LIMIT 1")
     suspend fun queryDefaultDirectoryId(storageType: StorageType): Long?
 
-    @Query("SELECT COUNT(*) FROM DirectoryEntity WHERE active = 1")
-    suspend fun countActiveDirectories(): Int
-
     @Query("SELECT * FROM DirectoryEntity WHERE selected = 1 LIMIT 1")
     suspend fun querySelectedByDirectoryType(): DirectoryEntity?
 

@@ -42,19 +42,6 @@ class CloudRepository @Inject constructor(
 
     val clouds = cloudDao.queryFlow().distinctUntilChanged()
 
-    val cloudsMenuItems = clouds.map { c ->
-        c.map {
-            ActionMenuItem(
-                title = StringResourceToken.fromString(it.name),
-                icon = ImageVectorToken.fromVector(Icons.Rounded.AccountCircle),
-                enabled = true,
-                secondaryMenu = listOf(),
-                dismissOnClick = true,
-                onClick = null
-            )
-        }
-    }
-
     suspend fun delete(entity: CloudEntity) = cloudDao.delete(entity)
 
     suspend fun upload(client: CloudClient, src: String, dstDir: String): ShellResult = run {
