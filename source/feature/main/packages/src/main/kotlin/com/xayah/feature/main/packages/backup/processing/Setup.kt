@@ -158,6 +158,7 @@ fun PagePackagesBackupProcessingSetup(localNavController: NavHostController, vie
             Title(title = StringResourceToken.fromStringId(R.string.backup_list)) {
                 Switchable(
                     key = KeyResetBackupList,
+                    defValue = false,
                     title = StringResourceToken.fromStringId(R.string.reset_backup_list),
                     checkedText = StringResourceToken.fromStringId(R.string.reset_backup_list_desc),
                 )

@@ -212,11 +212,11 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
         withClient { client ->
             val srcFile = listFile(src)
             if (srcFile.isDirectory.not()) {
-                size += client.getSize(src).toLong()
+                size += client.getSize(src)?.toLongOrNull() ?: 0
             } else {
                 val files = listFiles(src)
                 for (i in files.files) {
-                    size += client.getSize("${src}/${i.name}").toLong()
+                    size += client.getSize("${src}/${i.name}")?.toLongOrNull() ?: 0
                 }
                 for (i in files.directories) {
                     size("${src}/${i.name}")

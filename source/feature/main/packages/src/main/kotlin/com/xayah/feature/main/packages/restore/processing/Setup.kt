@@ -82,6 +82,7 @@ fun PagePackagesRestoreProcessingSetup(localNavController: NavHostController, vi
             Title(title = StringResourceToken.fromStringId(R.string.restore_list)) {
                 Switchable(
                     key = KeyResetRestoreList,
+                    defValue = false,
                     title = StringResourceToken.fromStringId(R.string.reset_restore_list),
                     checkedText = StringResourceToken.fromStringId(R.string.reset_restore_list_desc),
                 )
