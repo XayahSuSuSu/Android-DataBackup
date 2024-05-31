@@ -128,6 +128,9 @@ fun PageRestore() {
                 } else {
                     val dialogState = LocalSlotScope.current!!.dialogSlot
                     var currentIndex by remember { mutableIntStateOf(if (uiState.cloudEntity == null) 0 else accounts.indexOfFirst { it.title.getValue(context) == uiState.cloudEntity!!.name }) }
+                    LaunchedEffect(currentIndex) {
+                        viewModel.emitIntent(IndexUiIntent.SetCloudEntity(name = accounts[currentIndex].title.getValue(context)))
+                    }
                     Selectable(
                         title = StringResourceToken.fromStringId(R.string.account),
                         leadingIcon = uiState.cloudEntity?.type?.icon ?: ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
@@ -136,13 +139,14 @@ fun PageRestore() {
                         current = if (uiState.cloudEntity == null) StringResourceToken.fromStringId(R.string.not_selected) else accounts[currentIndex].title
                     ) {
                         viewModel.launchOnIO {
-                            val selectedIndex = dialogState.select(
+                            val (state, selectedIndex) = dialogState.select(
                                 title = StringResourceToken.fromStringId(R.string.account),
                                 defIndex = currentIndex,
                                 items = accounts
                             )
-                            currentIndex = selectedIndex
-                            viewModel.emitIntent(IndexUiIntent.SetCloudEntity(name = accounts[currentIndex].title.getValue(context)))
+                            if (state) {
+                                currentIndex = selectedIndex
+                            }
                         }
                     }
                 }

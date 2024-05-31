@@ -151,7 +151,7 @@ suspend inline fun <reified T> DialogState.select(title: StringResourceToken, de
             }
         }
     }
-).second
+)
 
 suspend fun DialogState.edit(
     title: StringResourceToken,

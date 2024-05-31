@@ -48,11 +48,13 @@ fun DarkThemeSelectable() {
         value = items[currentIndex].desc,
         current = items[currentIndex].title
     ) {
-        val selectedIndex = dialogState.select(
+        val (state, selectedIndex) = dialogState.select(
             title = StringResourceToken.fromStringId(R.string.dark_theme),
             defIndex = currentIndex,
             items = items
         )
-        context.saveThemeType(items[selectedIndex].enum!!)
+        if (state) {
+            context.saveThemeType(items[selectedIndex].enum!!)
+        }
     }
 }

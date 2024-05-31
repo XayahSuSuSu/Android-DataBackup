@@ -94,12 +94,14 @@ fun PageReload() {
                         value = StringResourceToken.fromStringId(R.string.reload_version_desc),
                         current = uiState.versionList[currentIndex].title
                     ) {
-                        val selectedIndex = dialogState.select(
+                        val (state, selectedIndex) = dialogState.select(
                             title = StringResourceToken.fromStringId(R.string.version),
                             defIndex = currentIndex,
                             items = uiState.versionList
                         )
-                        viewModel.emitState(uiState.copy(versionIndex = selectedIndex))
+                        if (state) {
+                            viewModel.emitState(uiState.copy(versionIndex = selectedIndex))
+                        }
                     }
                 }
                 Divider()
