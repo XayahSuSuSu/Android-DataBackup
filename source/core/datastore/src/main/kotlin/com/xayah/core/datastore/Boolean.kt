@@ -15,6 +15,7 @@ val KeyCleanRestoring = booleanPreferencesKey("clean_restoring")
 val KeyResetRestoreList = booleanPreferencesKey("reset_restore_list")
 val KeyCheckKeystore = booleanPreferencesKey("check_keystore")
 val KeyLoadSystemApps = booleanPreferencesKey("load_system_apps")
+val KeyReloadDumpApk = booleanPreferencesKey("reload_dump_apk")
 
 // -----------------------------------------Read-----------------------------------------
 fun Context.readMonet() = readStoreBoolean(key = KeyMonet, defValue = true)
@@ -28,6 +29,7 @@ fun Context.readCleanRestoring() = readStoreBoolean(key = KeyCleanRestoring, def
 fun Context.readResetRestoreList() = readStoreBoolean(key = KeyResetRestoreList, defValue = false)
 fun Context.readCheckKeystore() = readStoreBoolean(key = KeyCheckKeystore, defValue = true)
 fun Context.readLoadSystemApps() = readStoreBoolean(key = KeyLoadSystemApps, defValue = false)
+fun Context.readReloadDumpApk() = readStoreBoolean(key = KeyReloadDumpApk, defValue = true)
 
 // -----------------------------------------Write-----------------------------------------
 suspend fun Context.saveMonet(value: Boolean) = saveStoreBoolean(key = KeyMonet, value = value)
@@ -41,3 +43,4 @@ suspend fun Context.saveCleanRestoring(value: Boolean) = saveStoreBoolean(key = 
 suspend fun Context.saveResetRestoreList(value: Boolean) = saveStoreBoolean(key = KeyResetRestoreList, value = value)
 suspend fun Context.saveCheckKeystore(value: Boolean) = saveStoreBoolean(key = KeyCheckKeystore, value = value)
 suspend fun Context.saveLoadSystemApps(value: Boolean) = saveStoreBoolean(key = KeyLoadSystemApps, value = value)
+suspend fun Context.saveReloadDumpApk(value: Boolean) = saveStoreBoolean(key = KeyReloadDumpApk, value = value)

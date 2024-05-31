@@ -138,10 +138,5 @@ data class PackageEntity(
         get() = (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
     val archivesRelativeDir: String
-        get() = "${packageName}/user_${userId}"
+        get() = "${packageName}/user_${userId}${if (preserveId == 0L) "" else "@$preserveId"}"
 }
-
-data class PackageEntityWithCount(
-    @Embedded val entity: PackageEntity,
-    val count: Int
-)

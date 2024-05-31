@@ -30,6 +30,7 @@ import com.xayah.feature.main.packages.restore.detail.PagePackagesRestoreDetail
 import com.xayah.feature.main.packages.restore.list.PagePackagesRestoreList
 import com.xayah.feature.main.packages.restore.processing.PackagesRestoreProcessingGraph
 import com.xayah.feature.main.restore.PageRestore
+import com.xayah.feature.main.restore.reload.PageReload
 import com.xayah.feature.main.settings.PageSettings
 import com.xayah.feature.main.settings.backup.PageBackupSettings
 import com.xayah.feature.main.settings.restore.PageRestoreSettings
@@ -101,6 +102,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.Restore.route) {
                             PageRestore()
+                        }
+                        composable(MainRoutes.Reload.route) {
+                            PageReload()
                         }
                         composable(MainRoutes.BackupSettings.route) {
                             PageBackupSettings()

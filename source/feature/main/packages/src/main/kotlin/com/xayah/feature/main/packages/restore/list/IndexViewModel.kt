@@ -141,7 +141,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.ToPageDetail -> {
                 val entity = intent.packageEntity
                 withMainContext {
-                    intent.navController.navigate(MainRoutes.PackagesRestoreDetail.getRoute(entity.packageName, entity.userId))
+                    intent.navController.navigate(MainRoutes.PackagesRestoreDetail.getRoute(entity.packageName, entity.userId, entity.preserveId))
                 }
             }
 

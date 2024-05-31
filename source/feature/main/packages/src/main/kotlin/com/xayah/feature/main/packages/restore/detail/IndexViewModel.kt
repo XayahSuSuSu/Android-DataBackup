@@ -20,6 +20,7 @@ import javax.inject.Inject
 data class IndexUiState(
     val packageName: String,
     val userId: Int,
+    val preserveId: Long,
     val infoExpanded: Boolean,
 ) : UiState
 
@@ -33,11 +34,12 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     args: SavedStateHandle,
     private val packageRepo: PackageRepository,
-    private val rootService: RemoteRootService,
+    rootService: RemoteRootService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
         packageName = args.get<String>(MainRoutes.ARG_PACKAGE_NAME) ?: "",
         userId = args.get<String>(MainRoutes.ARG_USER_ID)?.toIntOrNull() ?: 0,
+        preserveId = args.get<String>(MainRoutes.ARG_PRESERVE_ID)?.toLongOrNull() ?: 0,
         infoExpanded = false,
     )
 ) {
@@ -53,7 +55,7 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
-                packageRepo.updateLocalPackageDataSize(state.packageName, OpType.RESTORE, state.userId, 0)
+                packageRepo.updateLocalPackageArchivesSize(state.packageName, OpType.RESTORE, state.userId)
             }
 
             is IndexUiIntent.UpdatePackage -> {
@@ -62,6 +64,6 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private val _package: Flow<PackageEntity?> = packageRepo.getPackage(uiState.value.packageName, OpType.RESTORE, uiState.value.userId, 0).flowOnIO()
+    private val _package: Flow<PackageEntity?> = packageRepo.getPackage(uiState.value.packageName, OpType.RESTORE, uiState.value.userId, uiState.value.preserveId).flowOnIO()
     val packageState: StateFlow<PackageEntity?> = _package.stateInScope(null)
 }

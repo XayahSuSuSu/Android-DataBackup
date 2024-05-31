@@ -146,7 +146,7 @@ fun Clickable(
     Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingIcon != null) {
-                Icon(imageVector = leadingIcon.value, contentDescription = null)
+                Icon(imageVector = leadingIcon.value, contentDescription = null, tint = ColorSchemeKeyTokens.LocalContent.toColor(enabled))
             }
             Column(modifier = Modifier.weight(1f)) {
                 AnimatedTextContainer(targetState = title.value) { text ->
@@ -158,7 +158,7 @@ fun Clickable(
                 content?.invoke(this)
             }
             if (trailingIcon != null) {
-                Icon(imageVector = trailingIcon.value, contentDescription = null)
+                Icon(imageVector = trailingIcon.value, contentDescription = null, tint = ColorSchemeKeyTokens.LocalContent.toColor(enabled))
             }
         }
     }
@@ -171,7 +171,7 @@ fun Selectable(
     enabled: Boolean = true,
     leadingIcon: ImageVectorToken? = null,
     title: StringResourceToken,
-    value: StringResourceToken,
+    value: StringResourceToken? = null,
     desc: StringResourceToken? = null,
     current: StringResourceToken,
     onClick: suspend () -> Unit = suspend {}
@@ -186,7 +186,7 @@ fun Selectable(
             { Icon(imageVector = leadingIcon.value, contentDescription = null) }
         },
         trailingContent = {
-            FilledTonalButton(onClick = { scope.launch { onClick() } }) {
+            FilledTonalButton(enabled = enabled, onClick = { scope.launch { onClick() } }) {
 
                 Text(text = current.value)
             }

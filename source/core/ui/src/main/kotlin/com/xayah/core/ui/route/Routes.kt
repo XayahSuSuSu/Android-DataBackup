@@ -4,6 +4,7 @@ sealed class MainRoutes(val route: String) {
     companion object {
         const val ARG_PACKAGE_NAME = "pkgName"
         const val ARG_USER_ID = "userId"
+        const val ARG_PRESERVE_ID = "preserveId"
         const val ARG_ACCOUNT_NAME = "accountName"
         const val ARG_ACCOUNT_REMOTE = "accountRemote"
     }
@@ -24,6 +25,9 @@ sealed class MainRoutes(val route: String) {
     }
     data object Settings : MainRoutes(route = "main_settings")
     data object Restore : MainRoutes(route = "main_restore")
+    data object Reload : MainRoutes(route = "main_reload/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
+        fun getRoute(name: String, remote: String) = "main_reload/${name}/${remote}"
+    }
     data object BackupSettings : MainRoutes(route = "main_backup_settings")
     data object RestoreSettings : MainRoutes(route = "main_restore_settings")
 
@@ -39,8 +43,8 @@ sealed class MainRoutes(val route: String) {
         fun getRoute(name: String, remote: String) = "main_packages_restore_list/${name}/${remote}"
     }
 
-    data object PackagesRestoreDetail : MainRoutes(route = "main_packages_restore_detail/{$ARG_PACKAGE_NAME}/{$ARG_USER_ID}") {
-        fun getRoute(packageName: String, userId: Int) = "main_packages_restore_detail/${packageName}/${userId}"
+    data object PackagesRestoreDetail : MainRoutes(route = "main_packages_restore_detail/{$ARG_PACKAGE_NAME}/{$ARG_USER_ID}/{$ARG_PRESERVE_ID}") {
+        fun getRoute(packageName: String, userId: Int, preserveId: Long) = "main_packages_restore_detail/${packageName}/${userId}/${preserveId}"
     }
 
     data object PackagesRestoreProcessingGraph : MainRoutes(route = "main_packages_restore_processing_graph/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {

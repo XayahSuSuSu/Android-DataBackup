@@ -77,7 +77,6 @@ fun PageRestore() {
     RestoreScaffold(
         scrollBehavior = scrollBehavior,
         title = StringResourceToken.fromStringId(R.string.restore),
-        actions = {}
     ) {
         Column(
             modifier = Modifier
@@ -132,7 +131,8 @@ fun PageRestore() {
                     Selectable(
                         title = StringResourceToken.fromStringId(R.string.account),
                         leadingIcon = uiState.cloudEntity?.type?.icon ?: ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
-                        value = if (uiState.cloudEntity == null) StringResourceToken.fromStringId(R.string.choose_an_account) else accounts[currentIndex].desc,
+                        value = if (uiState.cloudEntity == null) StringResourceToken.fromStringId(R.string.choose_an_account) else accounts[currentIndex].desc
+                            ?: StringResourceToken.fromStringId(R.string.unknown),
                         current = if (uiState.cloudEntity == null) StringResourceToken.fromStringId(R.string.not_selected) else accounts[currentIndex].title
                     ) {
                         viewModel.launchOnIO {
@@ -172,7 +172,9 @@ fun PageRestore() {
                     title = StringResourceToken.fromStringId(R.string.reload),
                     value = StringResourceToken.fromStringId(R.string.reload_desc),
                     leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.ManageSearch),
-                )
+                ) {
+                    viewModel.emitIntentOnIO(IndexUiIntent.ToReload(navController))
+                }
             }
         }
     }

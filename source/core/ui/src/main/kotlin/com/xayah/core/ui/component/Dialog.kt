@@ -110,7 +110,7 @@ suspend fun DialogState.confirm(title: StringResourceToken, text: StringResource
 ).first
 
 @Composable
-fun RadioItem(enabled: Boolean = true, selected: Boolean, title: StringResourceToken, desc: StringResourceToken, onClick: () -> Unit) {
+fun RadioItem(enabled: Boolean = true, selected: Boolean, title: StringResourceToken, desc: StringResourceToken?, onClick: () -> Unit) {
     Surface(enabled = true, modifier = Modifier.fillMaxWidth(), onClick = onClick, color = ColorSchemeKeyTokens.Transparent.toColor()) {
         Row(
             modifier = Modifier
@@ -126,7 +126,8 @@ fun RadioItem(enabled: Boolean = true, selected: Boolean, title: StringResourceT
             )
             Column {
                 BodyLargeText(text = title.value, color = ColorSchemeKeyTokens.OnSurface.toColor(), fontWeight = FontWeight.Normal, enabled = enabled)
-                BodyMediumText(text = desc.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(), fontWeight = FontWeight.Normal, enabled = enabled)
+                if (desc != null)
+                    BodyMediumText(text = desc.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(), fontWeight = FontWeight.Normal, enabled = enabled)
             }
         }
     }

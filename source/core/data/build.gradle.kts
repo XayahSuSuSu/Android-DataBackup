@@ -30,4 +30,7 @@ dependencies {
 
     // libsu
     implementation(libs.libsu.core)
+
+    // PickYou
+    implementation(libs.pickyou)
 }

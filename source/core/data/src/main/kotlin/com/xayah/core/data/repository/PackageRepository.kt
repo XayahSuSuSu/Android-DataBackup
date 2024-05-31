@@ -16,11 +16,13 @@ import com.xayah.core.datastore.readCustomSUFile
 import com.xayah.core.datastore.readIconUpdateTime
 import com.xayah.core.datastore.readLoadSystemApps
 import com.xayah.core.datastore.readLoadedIconMD5
+import com.xayah.core.datastore.readReloadDumpApk
 import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.readRestoreUserIdIndex
 import com.xayah.core.datastore.saveIconUpdateTime
 import com.xayah.core.datastore.saveLoadedIconMD5
 import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataState
 import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
@@ -33,12 +35,14 @@ import com.xayah.core.model.database.PackageExtraInfo
 import com.xayah.core.model.database.PackageIndexInfo
 import com.xayah.core.model.database.PackageInfo
 import com.xayah.core.model.database.PackageStorageStats
+import com.xayah.core.model.util.suffixOf
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.model.RefreshState
 import com.xayah.core.util.ConfigsPackageRestoreName
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.IconRelativeDir
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.PermissionUtil
 import com.xayah.core.util.command.BaseUtil
@@ -62,6 +66,16 @@ class PackageRepository @Inject constructor(
     private val packageDao: PackageDao,
     private val pathUtil: PathUtil,
 ) {
+    companion object {
+        private const val TAG = "PackageRepository"
+    }
+
+    private fun log(onMsg: () -> String): String = run {
+        val msg = onMsg()
+        LogUtil.log { TAG to msg }
+        msg
+    }
+
     fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long) = packageDao.queryFlow(packageName, opType, userId, preserveId).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType) = packageDao.queryPackagesFlow(opType).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType, cloud: String, backupDir: String) = packageDao.queryPackagesFlow(opType, cloud, backupDir).distinctUntilChanged()
@@ -315,6 +329,7 @@ class PackageRepository @Inject constructor(
             if (fileName == ConfigsPackageRestoreName) {
                 runCatching {
                     val stored = rootService.readJson<PackageEntity>(it.pathString).also { p ->
+                        p?.id = 0
                         p?.extraInfo?.existed = true
                         p?.extraInfo?.activated = false
                         p?.indexInfo?.cloud = ""
@@ -352,6 +367,7 @@ class PackageRepository @Inject constructor(
                         runCatching {
                             cloudRepository.download(client = client, src = it.pathString, dstDir = tmpDir) { path ->
                                 val stored = rootService.readJson<PackageEntity>(path).also { p ->
+                                    p?.id = 0
                                     p?.extraInfo?.existed = true
                                     p?.extraInfo?.activated = false
                                     p?.indexInfo?.cloud = entity.name
@@ -478,5 +494,578 @@ class PackageRepository @Inject constructor(
         }
 
         if (isSuccess) packageDao.delete(p)
+    }
+
+    /**
+     * Modify directory structure from local.
+     *        /.../DataBackup/backup/$userId/data/$packageName/$coverOrTimestamp/${dataType}.tar.*
+     * --->   /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
+     */
+    suspend fun modifyAppsStructureFromLocal10x(onMsgUpdate: suspend (String) -> Unit) {
+        onMsgUpdate(log { "Modifying directory structure..." })
+        val backupDir = "${context.localBackupSaveDir()}/backup"
+        val dstDir = pathUtil.getLocalBackupAppsDir()
+        var serialTimestamp: Long
+        BaseUtil.mkdirs(context.iconDir())
+
+        rootService.listFilePaths(backupDir).forEach { userPath ->
+            // Timestamp serial for "Cover".
+            serialTimestamp = DateUtil.getTimestamp()
+            val userId = userPath.split("/").lastOrNull()?.toIntOrNull() ?: 0
+            val packagesDir = "${userPath}/data"
+            rootService.listFilePaths(packagesDir).forEach { pkg ->
+                rootService.listFilePaths(pkg).forEach { path ->
+                    val list = path.split("/")
+                    runCatching {
+                        // Skip icon.png
+                        if (list.last() != "icon.png") {
+                            val pathListSize = list.size
+                            val packageName = list[pathListSize - 2]
+                            val timestampName = list[pathListSize - 1]
+
+                            /**
+                             * In old versions, the timestamp may be named as "Cover" or something else,
+                             * we need to convert it to number.
+                             */
+                            val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
+                            val dst = "${dstDir}/${packageName}/user_${userId}@${timestamp}"
+                            onMsgUpdate(log { "Trying to move $path to $dst." })
+                            rootService.mkdirs(path = PathUtil.getParentPath(dst))
+                            rootService.renameTo(src = path, dst = dst)
+                        }
+                    }.withLog()
+                }
+            }
+        }
+    }
+
+    /**
+     * Modify directory structure from cloud.
+     *        /.../DataBackup/backup/$userId/data/$packageName/$coverOrTimestamp/${dataType}.tar.*
+     * --->   /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
+     */
+    suspend fun modifyAppsStructureFromCloud10x(cloud: String, onMsgUpdate: suspend (String) -> Unit) {
+        runCatching {
+            cloudRepository.withClient(cloud) { client, entity ->
+                onMsgUpdate(log { "Modifying directory structure..." })
+                val backupDir = "${entity.remote}/backup"
+                val dstDir = pathUtil.getCloudRemoteAppsDir(entity.remote)
+                var serialTimestamp: Long
+                BaseUtil.mkdirs(context.iconDir())
+
+                client.listFiles(backupDir).directories.forEach { fileParcelable ->
+                    val userPath = "${backupDir}/${fileParcelable.name}"
+                    // Timestamp serial for "Cover".
+                    serialTimestamp = DateUtil.getTimestamp()
+                    val userId = userPath.split("/").lastOrNull()?.toIntOrNull() ?: 0
+                    val packagesDir = "${userPath}/data"
+                    client.listFiles(packagesDir).directories.forEach { pkg ->
+                        val pkgPath = "${packagesDir}/${pkg.name}"
+                        client.listFiles(pkgPath).directories.forEach { pathParcelable ->
+                            val path = "${pkgPath}/${pathParcelable.name}"
+                            val list = path.split("/")
+                            runCatching {
+                                // Skip icon.png
+                                if (list.last() != "icon.png") {
+                                    val pathListSize = list.size
+                                    val packageName = list[pathListSize - 2]
+                                    val timestampName = list[pathListSize - 1]
+
+                                    /**
+                                     * In old versions, the timestamp may be named as "Cover" or something else,
+                                     * we need to convert it to number.
+                                     */
+                                    val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
+                                    val dst = "${dstDir}/${packageName}/user_${userId}@${timestamp}"
+                                    onMsgUpdate(log { "Trying to move $path to $dst." })
+                                    client.mkdirRecursively(dst = PathUtil.getParentPath(dst))
+                                    client.renameTo(src = path, dst = dst)
+                                }
+                            }.withLog()
+                        }
+                    }
+                }
+            }
+        }.onFailure(rootService.onFailure)
+    }
+
+    /**
+     * Modify directory structure from local.
+     *        /.../DataBackup/archives/packages/$packageName/$timestamp/${dataType}.tar.*
+     * --->   /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
+     */
+    suspend fun modifyAppsStructureFromLocal11x(onMsgUpdate: suspend (String) -> Unit) {
+        onMsgUpdate(log { "Modifying directory structure..." })
+        val packagesDir = "${context.localBackupSaveDir()}/archives/packages"
+        val dstDir = pathUtil.getLocalBackupAppsDir()
+        val serialTimestamp: Long = DateUtil.getTimestamp()
+        val userId = 0
+        BaseUtil.mkdirs(context.iconDir())
+
+        rootService.listFilePaths(packagesDir).forEach { pkgPath ->
+            rootService.listFilePaths(pkgPath).forEach { path ->
+                val list = path.split("/")
+                runCatching {
+                    val pathListSize = list.size
+                    val packageName = list[pathListSize - 2]
+                    val timestampName = list[pathListSize - 1]
+                    val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
+                    val dst = "${dstDir}/${packageName}/user_${userId}@${timestamp}"
+                    onMsgUpdate(log { "Trying to move $path to $dst." })
+                    rootService.mkdirs(path = PathUtil.getParentPath(dst))
+                    rootService.renameTo(src = path, dst = dst)
+                }.withLog()
+            }
+        }
+    }
+
+    /**
+     * Modify directory structure from cloud.
+     *        /.../DataBackup/archives/packages/$packageName/$timestamp/${dataType}.tar.*
+     * --->   /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
+     */
+    suspend fun modifyAppsStructureFromCloud11x(cloud: String, onMsgUpdate: suspend (String) -> Unit) {
+        runCatching {
+            cloudRepository.withClient(cloud) { client, entity ->
+                onMsgUpdate(log { "Modifying directory structure..." })
+                val packagesDir = "${entity.remote}/archives/packages"
+                val dstDir = pathUtil.getCloudRemoteAppsDir(entity.remote)
+                val serialTimestamp: Long = DateUtil.getTimestamp()
+                val userId = 0
+                BaseUtil.mkdirs(context.iconDir())
+
+                client.listFiles(packagesDir).directories.forEach { pkg ->
+                    val pkgPath = "${packagesDir}/${pkg.name}"
+                    client.listFiles(pkgPath).directories.forEach { pathParcelable ->
+                        val path = "${pkgPath}/${pathParcelable.name}"
+                        val list = path.split("/")
+                        runCatching {
+                            val pathListSize = list.size
+                            val packageName = list[pathListSize - 2]
+                            val timestampName = list[pathListSize - 1]
+                            val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
+                            val dst = "${dstDir}/${packageName}/user_${userId}@${timestamp}"
+                            onMsgUpdate(log { "Trying to move $path to $dst." })
+                            client.mkdirRecursively(dst = PathUtil.getParentPath(dst))
+                            client.renameTo(src = path, dst = dst)
+                        }.withLog()
+                    }
+                }
+            }
+        }.onFailure(rootService.onFailure)
+    }
+
+    /**
+     * Reload directory structure from local.
+     *        /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
+     */
+    suspend fun reloadAppsFromLocal12x(onMsgUpdate: suspend (String) -> Unit) {
+        onMsgUpdate(log { "Reloading..." })
+        val packageManager = context.packageManager
+        val appsDir = pathUtil.getLocalBackupAppsDir()
+        val pathList = rootService.walkFileTree(appsDir)
+        val typedPathSet = mutableSetOf<String>()
+        BaseUtil.mkdirs(context.iconDir())
+        log { "Total paths count: ${pathList.size}" }
+
+        // Classify the paths
+        pathList.forEach { path ->
+            log { "Classifying: ${path.pathString}" }
+            runCatching {
+                val pathListSize = path.pathList.size
+                val packageName = path.pathList[pathListSize - 3]
+                val userIdWithPreserveId = path.pathList[pathListSize - 2].split("@")
+                val preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
+                val userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
+                typedPathSet.add("$packageName@$preserveId@$userId")
+                log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" }
+            }.withLog()
+        }
+
+        log { "Apps count: ${typedPathSet.size}" }
+        typedPathSet.forEach { typed ->
+            runCatching {
+                // For each $packageName@$preserveId@$userId
+                val split = typed.split("@")
+                val packageName = split[0]
+                var preserveId = split[1].toLong()
+                val userId = split[2].toInt()
+                var dir = "${appsDir}/${packageName}/user_${userId}@${preserveId}"
+                onMsgUpdate(log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" })
+                if (preserveId < 1000000000000) {
+                    // Diff from main backup (without preserveId)
+                    val timestamp = DateUtil.getTimestamp()
+                    val newDir = "${appsDir}/${packageName}/user_${userId}@${timestamp}"
+                    onMsgUpdate(log { "$dir move to $newDir" })
+                    rootService.mkdirs(path = PathUtil.getParentPath(newDir))
+                    rootService.renameTo(dir, newDir)
+                    preserveId = timestamp
+                    dir = newDir
+                }
+                val jsonPath = PathUtil.getPackageRestoreConfigDst(dir)
+
+                val dataStates = PackageDataStates(
+                    apkState = DataState.Disabled,
+                    userState = DataState.Disabled,
+                    userDeState = DataState.Disabled,
+                    dataState = DataState.Disabled,
+                    obbState = DataState.Disabled,
+                    mediaState = DataState.Disabled,
+                    permissionState = DataState.Disabled,
+                    ssaidState = DataState.Disabled
+                )
+                val packageEntity = runCatching {
+                    val entity = rootService.readJson<PackageEntity>(jsonPath).also { p ->
+                        p?.indexInfo?.packageName = packageName
+                        p?.indexInfo?.userId = userId
+                        p?.indexInfo?.preserveId = preserveId
+                        p?.extraInfo?.existed = true
+                        p?.extraInfo?.activated = false
+                        p?.indexInfo?.cloud = ""
+                        p?.indexInfo?.backupDir = localBackupSaveDir
+                        p?.dataStates = dataStates
+                    }
+                    onMsgUpdate(log { "Config is reloaded from json." })
+                    entity
+                }.getOrNull() ?: PackageEntity(
+                    id = 0,
+                    indexInfo = PackageIndexInfo(
+                        opType = OpType.RESTORE,
+                        packageName = packageName,
+                        userId = userId,
+                        compressionType = context.readCompressionType().first(),
+                        preserveId = preserveId,
+                        cloud = "",
+                        backupDir = localBackupSaveDir
+                    ),
+                    packageInfo = PackageInfo(
+                        label = "",
+                        versionName = "",
+                        versionCode = 0,
+                        flags = 0,
+                        firstInstallTime = 0,
+                    ),
+                    extraInfo = PackageExtraInfo(
+                        uid = -1,
+                        labels = listOf(),
+                        hasKeystore = false,
+                        permissions = listOf(),
+                        ssaid = "",
+                        activated = false,
+                        existed = true,
+                    ),
+                    dataStates = dataStates,
+                    storageStats = PackageStorageStats(),
+                    dataStats = PackageDataStats(),
+                    displayStats = PackageDataStats()
+                )
+
+                val archives = rootService.walkFileTree(dir)
+
+                archives.forEach { archivePath ->
+                    // For each archive
+                    log { "Package archive: ${archivePath.pathString}" }
+                    runCatching {
+                        when (archivePath.nameWithoutExtension) {
+                            DataType.PACKAGE_APK.type -> {
+                                onMsgUpdate(log { "Dumping apk..." })
+                                val type = CompressionType.suffixOf(archivePath.extension)
+                                if (type != null) {
+                                    log { "Archive compression type: ${type.type}" }
+                                    packageEntity.indexInfo.compressionType = type
+                                    packageEntity.dataStates.apkState = DataState.Selected
+
+                                    if (context.readReloadDumpApk().first()) {
+                                        val tmpApkPath = pathUtil.getTmpApkPath(packageName = packageName)
+                                        rootService.deleteRecursively(tmpApkPath)
+                                        rootService.mkdirs(tmpApkPath)
+                                        Tar.decompress(src = archivePath.pathString, dst = tmpApkPath, extra = type.decompressPara)
+                                        rootService.listFilePaths(tmpApkPath).also { pathList ->
+                                            if (pathList.isNotEmpty()) {
+                                                rootService.getPackageArchiveInfo(pathList.first())?.apply {
+                                                    packageEntity.packageInfo.label = applicationInfo.loadLabel(packageManager).toString()
+                                                    packageEntity.packageInfo.versionName = versionName ?: ""
+                                                    packageEntity.packageInfo.versionCode = longVersionCode
+                                                    packageEntity.packageInfo.flags = applicationInfo.flags
+                                                    val iconPath = pathUtil.getPackageIconPath(packageName)
+                                                    val iconExists = rootService.exists(iconPath)
+                                                    if (iconExists.not()) {
+                                                        val icon = applicationInfo.loadIcon(packageManager)
+                                                        BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                    }
+                                                    log { "Icon and config updated." }
+                                                }
+                                            } else {
+                                                log { "Archive is empty." }
+                                            }
+                                        }
+                                        rootService.deleteRecursively(tmpApkPath)
+                                    } else {
+                                        log { "Skip dumping." }
+                                    }
+                                } else {
+                                    log { "Failed to parse compression type: ${archivePath.extension}" }
+                                }
+                            }
+
+                            DataType.PACKAGE_USER.type -> {
+                                onMsgUpdate(log { "Dumping user..." })
+                                val type = CompressionType.suffixOf(archivePath.extension)
+                                if (type != null) {
+                                    log { "Archive compression type: ${type.type}" }
+                                    packageEntity.indexInfo.compressionType = type
+                                    packageEntity.dataStates.userState = DataState.Selected
+                                } else {
+                                    log { "Failed to parse compression type: ${archivePath.extension}" }
+                                }
+                            }
+
+                            DataType.PACKAGE_USER_DE.type, DataType.PACKAGE_DATA.type, DataType.PACKAGE_OBB.type, DataType.PACKAGE_MEDIA.type -> {
+                                onMsgUpdate(log { "Dumping ${archivePath.nameWithoutExtension}..." })
+                                when (archivePath.nameWithoutExtension) {
+                                    DataType.PACKAGE_USER_DE.type -> {
+                                        dataStates.userDeState = DataState.Selected
+                                    }
+
+                                    DataType.PACKAGE_DATA.type -> {
+                                        dataStates.dataState = DataState.Selected
+                                    }
+
+                                    DataType.PACKAGE_OBB.type -> {
+                                        dataStates.obbState = DataState.Selected
+                                    }
+
+                                    DataType.PACKAGE_MEDIA.type -> {
+                                        dataStates.mediaState = DataState.Selected
+                                    }
+
+                                    else -> {}
+                                }
+                            }
+
+                            else -> {}
+                        }
+                    }.withLog()
+                }
+
+                // Write config
+                rootService.writeJson(data = packageEntity, dst = jsonPath)
+            }.withLog()
+        }
+    }
+
+    /**
+     * Reload directory structure from cloud.
+     *        /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
+     */
+    suspend fun reloadAppsFromCloud12x(cloud: String, onMsgUpdate: suspend (String) -> Unit) {
+        runCatching {
+            cloudRepository.withClient(cloud) { client, cloudEntity ->
+                onMsgUpdate(log { "Reloading..." })
+                val packageManager = context.packageManager
+                val appsDir = pathUtil.getCloudRemoteAppsDir(cloudEntity.remote)
+                val pathList = client.walkFileTree(appsDir)
+                val typedPathSet = mutableSetOf<String>()
+                BaseUtil.mkdirs(context.iconDir())
+                log { "Total paths count: ${pathList.size}" }
+
+                // Classify the paths
+                pathList.forEach { path ->
+                    log { "Classifying: ${path.pathString}" }
+                    runCatching {
+                        val pathListSize = path.pathList.size
+                        val packageName = path.pathList[pathListSize - 3]
+                        val userIdWithPreserveId = path.pathList[pathListSize - 2].split("@")
+                        val preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
+                        val userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
+                        typedPathSet.add("$packageName@$preserveId@$userId")
+                        log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" }
+                    }.withLog()
+                }
+
+                log { "Apps count: ${typedPathSet.size}" }
+                typedPathSet.forEach { typed ->
+                    runCatching {
+                        // For each $packageName@$preserveId@$userId
+                        val split = typed.split("@")
+                        val packageName = split[0]
+                        var preserveId = split[1].toLong()
+                        val userId = split[2].toInt()
+                        var dir = "${appsDir}/${packageName}/user_${userId}@${preserveId}"
+                        onMsgUpdate(log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" })
+                        if (preserveId < 1000000000000) {
+                            // Diff from main backup (without preserveId)
+                            val timestamp = DateUtil.getTimestamp()
+                            val newDir = "${appsDir}/${packageName}/user_${userId}@${timestamp}"
+                            onMsgUpdate(log { "$dir move to $newDir" })
+                            client.mkdirRecursively(dst = PathUtil.getParentPath(newDir))
+                            client.renameTo(dir, newDir)
+                            preserveId = timestamp
+                            dir = newDir
+                        }
+                        val jsonPath = PathUtil.getPackageRestoreConfigDst(dir)
+
+                        val dataStates = PackageDataStates(
+                            apkState = DataState.Disabled,
+                            userState = DataState.Disabled,
+                            userDeState = DataState.Disabled,
+                            dataState = DataState.Disabled,
+                            obbState = DataState.Disabled,
+                            mediaState = DataState.Disabled,
+                            permissionState = DataState.Disabled,
+                            ssaidState = DataState.Disabled
+                        )
+                        val packageEntity = runCatching {
+                            val tmpDir = pathUtil.getCloudTmpDir()
+                            var entity: PackageEntity? = null
+                            cloudRepository.download(client = client, src = jsonPath, dstDir = tmpDir) { path ->
+                                entity = rootService.readJson<PackageEntity>(path).also { p ->
+                                    p?.indexInfo?.packageName = packageName
+                                    p?.indexInfo?.userId = userId
+                                    p?.indexInfo?.preserveId = preserveId
+                                    p?.extraInfo?.existed = true
+                                    p?.extraInfo?.activated = false
+                                    p?.indexInfo?.cloud = ""
+                                    p?.indexInfo?.backupDir = localBackupSaveDir
+                                    p?.dataStates = dataStates
+                                }
+                                onMsgUpdate(log { "Config is reloaded from json." })
+                            }
+                            entity!!
+                        }.getOrNull() ?: PackageEntity(
+                            id = 0,
+                            indexInfo = PackageIndexInfo(
+                                opType = OpType.RESTORE,
+                                packageName = packageName,
+                                userId = userId,
+                                compressionType = context.readCompressionType().first(),
+                                preserveId = preserveId,
+                                cloud = "",
+                                backupDir = localBackupSaveDir
+                            ),
+                            packageInfo = PackageInfo(
+                                label = "",
+                                versionName = "",
+                                versionCode = 0,
+                                flags = 0,
+                                firstInstallTime = 0,
+                            ),
+                            extraInfo = PackageExtraInfo(
+                                uid = -1,
+                                labels = listOf(),
+                                hasKeystore = false,
+                                permissions = listOf(),
+                                ssaid = "",
+                                activated = false,
+                                existed = true,
+                            ),
+                            dataStates = dataStates,
+                            storageStats = PackageStorageStats(),
+                            dataStats = PackageDataStats(),
+                            displayStats = PackageDataStats()
+                        )
+
+                        val archives = client.walkFileTree(dir)
+
+                        archives.forEach { archivePath ->
+                            // For each archive
+                            log { "Package archive: ${archivePath.pathString}" }
+                            runCatching {
+                                when (archivePath.nameWithoutExtension) {
+                                    DataType.PACKAGE_APK.type -> {
+                                        onMsgUpdate(log { "Dumping apk..." })
+                                        val type = CompressionType.suffixOf(archivePath.extension)
+                                        if (type != null) {
+                                            log { "Archive compression type: ${type.type}" }
+                                            packageEntity.indexInfo.compressionType = type
+                                            packageEntity.dataStates.apkState = DataState.Selected
+
+                                            if (context.readReloadDumpApk().first()) {
+                                                val tmpApkPath = pathUtil.getTmpApkPath(packageName = packageName)
+                                                rootService.deleteRecursively(tmpApkPath)
+                                                rootService.mkdirs(tmpApkPath)
+                                                val tmpDir = pathUtil.getCloudTmpDir()
+                                                cloudRepository.download(client = client, src = archivePath.pathString, dstDir = tmpDir) { path ->
+                                                    Tar.decompress(src = path, dst = tmpApkPath, extra = type.decompressPara)
+                                                    rootService.listFilePaths(tmpApkPath).also { pathList ->
+                                                        if (pathList.isNotEmpty()) {
+                                                            rootService.getPackageArchiveInfo(pathList.first())?.apply {
+                                                                packageEntity.packageInfo.label = applicationInfo.loadLabel(packageManager).toString()
+                                                                packageEntity.packageInfo.versionName = versionName ?: ""
+                                                                packageEntity.packageInfo.versionCode = longVersionCode
+                                                                packageEntity.packageInfo.flags = applicationInfo.flags
+                                                                val iconPath = pathUtil.getPackageIconPath(packageName)
+                                                                val iconExists = rootService.exists(iconPath)
+                                                                if (iconExists.not()) {
+                                                                    val icon = applicationInfo.loadIcon(packageManager)
+                                                                    BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                                }
+                                                                log { "Icon and config updated." }
+                                                            }
+                                                        } else {
+                                                            log { "Archive is empty." }
+                                                        }
+                                                    }
+                                                }
+                                                rootService.deleteRecursively(tmpApkPath)
+                                            } else {
+                                                log { "Skip dumping." }
+                                            }
+                                        } else {
+                                            log { "Failed to parse compression type: ${archivePath.extension}" }
+                                        }
+                                    }
+
+                                    DataType.PACKAGE_USER.type -> {
+                                        onMsgUpdate(log { "Dumping user..." })
+                                        val type = CompressionType.suffixOf(archivePath.extension)
+                                        if (type != null) {
+                                            log { "Archive compression type: ${type.type}" }
+                                            packageEntity.indexInfo.compressionType = type
+                                            packageEntity.dataStates.userState = DataState.Selected
+                                        } else {
+                                            log { "Failed to parse compression type: ${archivePath.extension}" }
+                                        }
+                                    }
+
+                                    DataType.PACKAGE_USER_DE.type, DataType.PACKAGE_DATA.type, DataType.PACKAGE_OBB.type, DataType.PACKAGE_MEDIA.type -> {
+                                        onMsgUpdate(log { "Dumping ${archivePath.nameWithoutExtension}..." })
+
+                                        when (archivePath.nameWithoutExtension) {
+                                            DataType.PACKAGE_USER_DE.type -> {
+                                                dataStates.userDeState = DataState.Selected
+                                            }
+
+                                            DataType.PACKAGE_DATA.type -> {
+                                                dataStates.dataState = DataState.Selected
+                                            }
+
+                                            DataType.PACKAGE_OBB.type -> {
+                                                dataStates.obbState = DataState.Selected
+                                            }
+
+                                            DataType.PACKAGE_MEDIA.type -> {
+                                                dataStates.mediaState = DataState.Selected
+                                            }
+
+                                            else -> {}
+                                        }
+                                    }
+
+                                    else -> {}
+                                }
+                            }.withLog()
+                        }
+
+                        // Write config
+                        val tmpDir = pathUtil.getCloudTmpDir()
+                        val tmpJsonPath = PathUtil.getPackageRestoreConfigDst(tmpDir)
+                        rootService.writeJson(data = packageEntity, dst = tmpJsonPath)
+                        cloudRepository.upload(client = client, src = tmpJsonPath, dstDir = PathUtil.getParentPath(jsonPath))
+                        rootService.deleteRecursively(tmpDir)
+                    }.withLog()
+                }
+            }
+        }.onFailure(rootService.onFailure)
     }
 }
