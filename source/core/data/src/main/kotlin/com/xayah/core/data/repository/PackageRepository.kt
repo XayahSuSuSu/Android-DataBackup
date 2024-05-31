@@ -12,6 +12,7 @@ import com.xayah.core.datastore.readBackupFilterFlagIndex
 import com.xayah.core.datastore.readBackupUserIdIndex
 import com.xayah.core.datastore.readCheckKeystore
 import com.xayah.core.datastore.readCompressionType
+import com.xayah.core.datastore.readCustomSUFile
 import com.xayah.core.datastore.readIconUpdateTime
 import com.xayah.core.datastore.readLoadSystemApps
 import com.xayah.core.datastore.readLoadedIconMD5
@@ -226,7 +227,7 @@ class PackageRepository @Inject constructor(
                 if (loadSystemApps || isSystemApp.not()) {
                     val permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
                     val uid = info.applicationInfo.uid
-                    val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(uid) else false
+                    val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid) else false
                     val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
                     val iconPath = pathUtil.getPackageIconPath(info.packageName)
                     val iconExists = rootService.exists(iconPath)

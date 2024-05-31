@@ -20,6 +20,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.OperationState
 import com.xayah.core.ui.component.AnimatedTextContainer
@@ -44,6 +45,7 @@ import com.xayah.feature.main.packages.R
 @ExperimentalMaterial3Api
 @Composable
 fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val task by viewModel.task.collectAsStateWithLifecycle()
     val preItems by viewModel.preItems.collectAsStateWithLifecycle()
@@ -70,7 +72,7 @@ fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
             if (uiState.state == OperationState.PROCESSING) {
                 viewModel.launchOnIO {
                     if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.processing_exit_confirmation))) {
-                        BaseUtil.kill("tar", "root")
+                        BaseUtil.kill(context, "tar", "root")
                         viewModel.emitIntent(IndexUiIntent.DestroyService)
                         withMainContext {
                             navController.popBackStack()

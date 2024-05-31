@@ -34,6 +34,7 @@ import com.xayah.feature.main.settings.PageSettings
 import com.xayah.feature.main.settings.backup.PageBackupSettings
 import com.xayah.feature.main.settings.restore.PageRestoreSettings
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -45,8 +46,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        runCatching {
-            BaseUtil.initializeEnvironment(context = this)
+        runBlocking {
+            runCatching {
+                BaseUtil.initializeEnvironment(context = this@MainActivity)
+            }
         }
 
         setContent {

@@ -28,4 +28,7 @@
     <item name="check_keystore" type="string" />
     <item name="load_system_apps" type="string" />
     <item name="set_them_later_in_settings" type="string" />
+    <item name="custom_su_file" type="string" />
+    <item name="name" type="string" />
+    <item name="restart_to_take_effect" type="string" />
 </resources>

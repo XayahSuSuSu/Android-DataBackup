@@ -18,6 +18,6 @@ class UnitTest {
         Shell.cmd("su $uid -c keystore_cli_v2 list").exec().apply {
             println(out)
         }
-        println(runBlocking { PackageUtil.hasKeystore(uid) })
+        println(runBlocking { PackageUtil.hasKeystore("su", uid) })
     }
 }

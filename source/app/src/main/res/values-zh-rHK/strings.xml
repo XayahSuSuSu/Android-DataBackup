@@ -288,4 +288,6 @@
     <string name="delete_account_desc">此賬戶將被刪除</string>
     <string name="choose_an_account">選擇一個賬戶</string>
     <string name="no_available_account">沒有可用賬戶</string>
+    <string name="custom_su_file">自定義SU文件</string>
+    <string name="restart_to_take_effect">重啓應用以生效</string>
 </resources>

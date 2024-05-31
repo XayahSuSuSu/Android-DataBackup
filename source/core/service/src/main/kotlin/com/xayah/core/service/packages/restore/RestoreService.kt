@@ -205,7 +205,7 @@ internal abstract class RestoreService : Service() {
 
                 // Kill the package.
                 log { "Trying to kill ${pkg.packageEntity.packageName}." }
-                BaseUtil.killPackage(userId = pkg.packageEntity.userId, packageName = pkg.packageEntity.packageName)
+                BaseUtil.killPackage(context = context, userId = pkg.packageEntity.userId, packageName = pkg.packageEntity.packageName)
 
                 runCatchingOnService { restorePackage(pkg) }
 

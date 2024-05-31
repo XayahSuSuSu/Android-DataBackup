@@ -295,4 +295,6 @@
     <string name="delete_account_desc">This account will be deleted</string>
     <string name="choose_an_account">Choose an account</string>
     <string name="no_available_account">There\'s no available account</string>
+    <string name="custom_su_file">Custom SU file</string>
+    <string name="restart_to_take_effect">Restart app to take effect</string>
 </resources>

@@ -24,10 +24,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.readCustomSUFile
+import com.xayah.core.datastore.saveCustomSUFile
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.HeadlineMediumText
+import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.Section
 import com.xayah.core.ui.component.SetOnResume
+import com.xayah.core.ui.component.edit
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
@@ -43,6 +47,7 @@ import com.xayah.feature.setup.PermissionButton
 import com.xayah.feature.setup.R
 import com.xayah.feature.setup.SetupRoutes
 import com.xayah.feature.setup.SetupScaffold
+import kotlinx.coroutines.flow.first
 
 @ExperimentalFoundationApi
 @ExperimentalMaterial3Api
@@ -57,6 +62,7 @@ fun PageOne() {
     val notificationState by viewModel.notificationState.collectAsStateWithLifecycle()
     val allRequiredValidated by viewModel.allRequiredValidated.collectAsStateWithLifecycle()
     val allOptionalValidated by viewModel.allOptionalValidated.collectAsStateWithLifecycle()
+    val dialogState = LocalSlotScope.current!!.dialogSlot
 
     SetOnResume {
         viewModel.emitIntentOnIO(IndexUiIntent.OnResume)
@@ -115,7 +121,20 @@ fun PageOne() {
                 PermissionButton(
                     title = StringResourceToken.fromStringId(R.string.root_permission),
                     desc = StringResourceToken.fromStringId(R.string.root_permission_desc),
-                    envState = rootState
+                    envState = rootState,
+                    onSetting = {
+                        viewModel.launchOnIO {
+                            val (state, su) = dialogState.edit(
+                                title = StringResourceToken.fromStringId(R.string.custom_su_file),
+                                defValue = context.readCustomSUFile().first(),
+                                label = StringResourceToken.fromStringId(R.string.name),
+                                desc = StringResourceToken.fromStringId(R.string.restart_to_take_effect)
+                            )
+                            if (state) {
+                                context.saveCustomSUFile(su)
+                            }
+                        }
+                    }
                 ) {
                     viewModel.launchOnIO {
                         viewModel.emitIntent(IndexUiIntent.ValidateRoot)

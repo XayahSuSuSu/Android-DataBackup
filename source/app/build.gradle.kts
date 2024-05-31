@@ -20,6 +20,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // TODO Force enable the latest libsu
+    configurations.all {
+        resolutionStrategy.force("com.github.topjohnwu.libsu:core:PR182-SNAPSHOT")
+        resolutionStrategy.force("com.github.topjohnwu.libsu:service:PR182-SNAPSHOT")
+    }
+
     lint {
         disable += "MissingTranslation"
     }

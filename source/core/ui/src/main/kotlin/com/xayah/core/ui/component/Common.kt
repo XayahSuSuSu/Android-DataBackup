@@ -66,7 +66,7 @@ fun ActionButton(
     colorContainer: ColorSchemeKeyTokens,
     colorL80D20: ColorSchemeKeyTokens,
     onColorContainer: ColorSchemeKeyTokens,
-    actionIcon: ImageVectorToken? = null,
+    trailingIcon: @Composable (RowScope.() -> Unit)? = null,
     onClick: () -> Unit = {},
     content: @Composable RowScope.() -> Unit
 ) {
@@ -103,12 +103,7 @@ fun ActionButton(
                 )
             }
             content()
-            if (actionIcon != null)
-                Icon(
-                    imageVector = actionIcon.value,
-                    tint = onColorContainer.toColor(enabled),
-                    contentDescription = null
-                )
+            trailingIcon?.invoke(this)
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -150,3 +151,35 @@ suspend inline fun <reified T> DialogState.select(title: StringResourceToken, de
         }
     }
 ).second
+
+suspend fun DialogState.edit(
+    title: StringResourceToken,
+    defValue: String = "",
+    label: StringResourceToken? = null,
+    desc: StringResourceToken? = null,
+) = open(
+    initialState = defValue,
+    title = title,
+    icon = null,
+    block = { uiState ->
+        Column {
+            OutlinedTextField(
+                modifier = Modifier.paddingTop(SizeTokens.Level8),
+                value = uiState.value,
+                onValueChange = {
+                    uiState.value = it
+                },
+                label = if (label == null) {
+                    null
+                } else {
+                    { Text(text = label.value) }
+                },
+                supportingText = if (desc == null) {
+                    null
+                } else {
+                    { Text(text = desc.value) }
+                },
+            )
+        }
+    }
+)

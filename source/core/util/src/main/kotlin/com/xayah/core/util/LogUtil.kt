@@ -6,9 +6,11 @@ import android.os.Build
 import android.util.Log
 import androidx.core.content.FileProvider.getUriForFile
 import com.xayah.core.common.util.BuildConfigUtil
+import com.xayah.core.datastore.readCustomSUFile
 import com.xayah.core.util.SymbolUtil.LF
 import com.xayah.core.util.SymbolUtil.USD
 import com.xayah.core.util.command.BaseUtil
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.PrintWriter
@@ -29,7 +31,7 @@ object LogUtil {
 
     private fun getLogFileName() = "$LOG_FILE_PREFIX$timestamp.txt"
 
-    fun initialize(cacheDir: String) = runCatching {
+    fun initialize(context: Context, cacheDir: String) = runCatching {
         // Clear empty log files.
         FileUtil.listFilePaths(cacheDir).forEach { path ->
             File(path).apply {
@@ -48,7 +50,7 @@ object LogUtil {
         log("SDK:        ${Build.VERSION.SDK_INT}")
         log("Global Namespace:     ${runBlocking { BaseUtil.readLink("1") }}")
         log("Namespace:            ${runBlocking { BaseUtil.readLink("self") }}")
-        log("SU:                   ${runBlocking { BaseUtil.readSuVersion() }}")
+        log("SU:                   ${runBlocking { BaseUtil.readSuVersion(context.readCustomSUFile().first()) }}")
         log("${USD}PATH:                ${runBlocking { BaseUtil.readVariable("PATH").trim() }}")
         log("${USD}HOME:                ${runBlocking { BaseUtil.readVariable("HOME").trim() }}")
     }

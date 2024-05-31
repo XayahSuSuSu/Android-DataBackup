@@ -20,6 +20,7 @@ val KeySelectionType = stringPreferencesKey("selection_type")
 val KeyThemeType = stringPreferencesKey("theme_type")
 val KeyBackupUserIdIndex = stringPreferencesKey("backup_user_id_index")
 val KeyRestoreUserIdIndex = stringPreferencesKey("restore_user_id_index")
+val KeyCustomSUFile = stringPreferencesKey("custom_su_file")
 
 
 // -----------------------------------------Read-----------------------------------------
@@ -37,6 +38,7 @@ fun Context.readRestoreUserIdIndex() = readStoreString(key = KeyRestoreUserIdInd
  */
 fun Context.readBackupSavePathSaved() = readStoreString(key = KeyBackupSavePath, defValue = "").map { it.isNotEmpty() }
 fun Context.readBackupSavePath() = readStoreString(key = KeyBackupSavePath, defValue = ConstantUtil.DEFAULT_PATH)
+fun Context.readCustomSUFile() = readStoreString(key = KeyCustomSUFile, defValue = "su")
 
 
 // -----------------------------------------Write-----------------------------------------
@@ -49,3 +51,4 @@ suspend fun Context.saveThemeType(value: ThemeType) = saveStoreString(key = KeyT
 suspend fun Context.saveBackupUserIdIndex(value: List<Int>) = saveStoreString(key = KeyBackupUserIdIndex, value = Gson().toJson(value))
 suspend fun Context.saveRestoreUserIdIndex(value: List<Int>) = saveStoreString(key = KeyRestoreUserIdIndex, value = Gson().toJson(value))
 suspend fun Context.saveBackupSavePath(value: String) = saveStoreString(key = KeyBackupSavePath, value = value.trim())
+suspend fun Context.saveCustomSUFile(value: String) = saveStoreString(key = KeyCustomSUFile, value = value.trim())

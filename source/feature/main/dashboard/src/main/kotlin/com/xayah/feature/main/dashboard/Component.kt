@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -142,7 +143,14 @@ fun QuickActionsButton(
         colorContainer = colorContainer,
         colorL80D20 = colorL80D20,
         onColorContainer = onColorContainer,
-        actionIcon = actionIcon,
+        trailingIcon = {
+            if (actionIcon != null)
+                Icon(
+                    imageVector = actionIcon.value,
+                    tint = onColorContainer.toColor(enabled),
+                    contentDescription = null
+                )
+        },
         onClick = onClick
     ) {
         AutoLabelLargeText(modifier = Modifier.weight(1f), text = title.value, color = onColorContainer.toColor(enabled), enabled = enabled)
