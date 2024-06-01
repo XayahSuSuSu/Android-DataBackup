@@ -294,4 +294,6 @@
     <string name="dump_apk">Analizar el paquete de instalación</string>
     <string name="custom_su_file">Archivo SU personalizado</string>
     <string name="dump_apk_desc">Intenta analizar el apk para obtener información más detallada</string>
+    <string name="calculating">Calculando</string>
+    <string name="_protected">Protegido</string>
 </resources>
