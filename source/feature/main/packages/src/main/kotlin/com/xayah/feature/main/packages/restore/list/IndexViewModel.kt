@@ -38,6 +38,7 @@ data class IndexUiState(
     val userIdList: List<Int>,
     val filterMode: Boolean,
     val uuid: UUID,
+    val isLoading: Boolean,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -69,7 +70,8 @@ class IndexViewModel @Inject constructor(
         selectAll = false,
         userIdList = listOf(),
         filterMode = true,
-        uuid = UUID.randomUUID()
+        uuid = UUID.randomUUID(),
+        isLoading = false
     )
 ) {
     init {
@@ -84,6 +86,7 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
+                emitState(state.copy(isLoading = true))
                 withIOContext {
                     if (state.cloudName.isEmpty()) {
                         // Local
@@ -94,8 +97,7 @@ class IndexViewModel @Inject constructor(
                         packageRepo.loadPackagesFromCloud(state.cloudName)
                     }
                 }
-
-                emitState(state.copy(uuid = UUID.randomUUID()))
+                emitState(state.copy(isLoading = false, uuid = UUID.randomUUID()))
             }
 
             is IndexUiIntent.GetUserIds -> {

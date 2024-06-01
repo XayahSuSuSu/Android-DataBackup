@@ -247,10 +247,13 @@ fun PagePackagesBackupList() {
                                                 .fillMaxWidth()
                                                 .height(fabHeight.toDp())
                                         )
-                                        InnerBottomSpacer(innerPadding = it)
                                     }
                                 }
                             }
+
+                        item {
+                            InnerBottomSpacer(innerPadding = it)
+                        }
                     }
                     PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
                 }

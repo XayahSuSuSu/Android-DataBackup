@@ -116,15 +116,19 @@ fun ListScaffold(
                     actions = actions,
                     onBackClick = onBackClick,
                 )
-                var targetProgress by remember { mutableFloatStateOf(0f) }
-                val animatedProgress = animateFloatAsState(
-                    targetValue = targetProgress,
-                    animationSpec = tween(),
-                    label = AnimationTokens.AnimatedProgressLabel
-                )
-                if (progress != null) {
-                    targetProgress = progress
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = animatedProgress.value)
+                if (progress == -1F) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                } else {
+                    var targetProgress by remember { mutableFloatStateOf(0f) }
+                    val animatedProgress = animateFloatAsState(
+                        targetValue = targetProgress,
+                        animationSpec = tween(),
+                        label = AnimationTokens.AnimatedProgressLabel
+                    )
+                    if (progress != null) {
+                        targetProgress = progress
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = animatedProgress.value)
+                    }
                 }
             }
         },
@@ -237,7 +241,7 @@ fun DotLottieView(isRefreshing: Boolean, refreshState: RefreshState) {
 }
 
 @Composable
-fun DotLottieView() {
+fun DotLottieView(isLoading: Boolean) {
     DotLottieAnimation(
         source = DotLottieSource.Asset("bear.lottie"),
         autoplay = true,
@@ -246,7 +250,12 @@ fun DotLottieView() {
         modifier = Modifier.background(Color.Transparent)
     )
     BodyLargeText(
-        text = StringResourceToken.fromStringId(R.string.no_backups_found_warning).value,
+        text = (
+                if (isLoading)
+                    StringResourceToken.fromStringId(R.string.loading)
+                else
+                    StringResourceToken.fromStringId(R.string.no_backups_found_warning)
+                ).value,
         color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
         textAlign = TextAlign.Center
     )

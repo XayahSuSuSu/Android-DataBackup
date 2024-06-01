@@ -97,6 +97,7 @@ fun PagePackagesRestoreList() {
 
     ListScaffold(
         scrollBehavior = scrollBehavior,
+        progress = if (uiState.isLoading) -1F else null,
         title = StringResourceToken.fromStringArgs(
             StringResourceToken.fromStringId(R.string.backed_up_apps),
             StringResourceToken.fromString(if (packagesSelectedState != 0) " (${packagesSelectedState}/${packagesState.size})" else ""),
@@ -145,7 +146,7 @@ fun PagePackagesRestoreList() {
                     contentAlignment = Alignment.Center
                 ) {
                     Column(modifier = Modifier.paddingHorizontal(SizeTokens.Level16), horizontalAlignment = Alignment.CenterHorizontally) {
-                        DotLottieView()
+                        DotLottieView(uiState.isLoading)
                     }
                 }
                 InnerBottomSpacer(innerPadding = it)
@@ -243,10 +244,13 @@ fun PagePackagesRestoreList() {
                                             .fillMaxWidth()
                                             .height(fabHeight.toDp())
                                     )
-                                    InnerBottomSpacer(innerPadding = it)
                                 }
                             }
                         }
+
+                    item {
+                        InnerBottomSpacer(innerPadding = it)
+                    }
                 }
             }
         }

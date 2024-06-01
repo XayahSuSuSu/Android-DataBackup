@@ -29,6 +29,7 @@ import com.xayah.core.model.database.DirectoryEntity
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.Card
 import com.xayah.core.ui.component.InnerTopSpacer
+import com.xayah.core.ui.component.LinearProgressIndicator
 import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.SegmentProgressIndicator
 import com.xayah.core.ui.component.TitleLargeText
@@ -51,15 +52,26 @@ import com.xayah.core.ui.util.value
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun DirectoryScaffold(scrollBehavior: TopAppBarScrollBehavior, title: StringResourceToken, actions: @Composable RowScope.() -> Unit = {}, content: @Composable (BoxScope.() -> Unit)) {
+fun DirectoryScaffold(
+    scrollBehavior: TopAppBarScrollBehavior,
+    title: StringResourceToken,
+    isLoading: Boolean = false,
+    actions: @Composable RowScope.() -> Unit = {},
+    content: @Composable (BoxScope.() -> Unit)
+) {
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            SecondaryLargeTopBar(
-                scrollBehavior = scrollBehavior,
-                title = title,
-                actions = actions
-            )
+            Column {
+                SecondaryLargeTopBar(
+                    scrollBehavior = scrollBehavior,
+                    title = title,
+                    actions = actions
+                )
+                if (isLoading)
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+
         },
     ) { innerPadding ->
         Column {

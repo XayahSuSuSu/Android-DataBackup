@@ -48,6 +48,7 @@ fun PageDirectory() {
 
     DirectoryScaffold(
         scrollBehavior = scrollBehavior,
+        isLoading = uiState.updating,
         title = StringResourceToken.fromStringId(R.string.backup_dir),
         actions = {}
     ) {
