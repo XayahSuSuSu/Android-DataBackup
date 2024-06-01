@@ -674,11 +674,14 @@ class PackageRepository @Inject constructor(
             runCatching {
                 val pathListSize = path.pathList.size
                 val packageName = path.pathList[pathListSize - 3]
-                val userIdWithPreserveId = path.pathList[pathListSize - 2].split("@")
-                val preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
-                val userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
-                typedPathSet.add("$packageName@$preserveId@$userId")
-                log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" }
+                // Skip main backup
+                if (path.pathList[pathListSize - 2].contains("@")) {
+                    val userIdWithPreserveId = path.pathList[pathListSize - 2].split("@")
+                    val preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
+                    val userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
+                    typedPathSet.add("$packageName@$preserveId@$userId")
+                    log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" }
+                }
             }.withLog()
         }
 

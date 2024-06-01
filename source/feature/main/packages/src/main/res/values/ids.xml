@@ -50,6 +50,10 @@
     <item name="choose_an_account" type="string" />
     <item name="not_selected" type="string" />
     <item name="no_available_account" type="string" />
+    <item name="id" type="string" />
+    <item name="unknown" type="string" />
+    <item name="_protected" type="string" />
+    <item name="calculating" type="string" />
 
     <item name="backup_sort_type_items" type="array" />
     <item name="flag_type_items" type="array" />

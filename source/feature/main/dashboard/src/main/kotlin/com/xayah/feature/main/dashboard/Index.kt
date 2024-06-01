@@ -55,7 +55,7 @@ fun PageDashboard() {
     val nullBackupDir by remember(directoryState) { mutableStateOf(directoryState == null) }
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.Update)
+        viewModel.emitIntentOnIO(IndexUiIntent.Update)
     }
 
     MainIndexSubScaffold(

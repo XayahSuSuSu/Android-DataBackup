@@ -90,10 +90,10 @@ data class PackageEntity(
     @Embedded(prefix = "indexInfo_") var indexInfo: PackageIndexInfo,
     @Embedded(prefix = "packageInfo_") var packageInfo: PackageInfo,
     @Embedded(prefix = "extraInfo_") var extraInfo: PackageExtraInfo,
-    @Embedded(prefix = "dataStates_") var dataStates: PackageDataStates,
-    @Embedded(prefix = "storageStats_") var storageStats: PackageStorageStats,
-    @Embedded(prefix = "dataStats_") var dataStats: PackageDataStats,
-    @Embedded(prefix = "displayStats_") var displayStats: PackageDataStats,
+    @Embedded(prefix = "dataStates_") var dataStates: PackageDataStates,         // Selections
+    @Embedded(prefix = "storageStats_") var storageStats: PackageStorageStats,   // Storage stats from system api
+    @Embedded(prefix = "dataStats_") var dataStats: PackageDataStats,            // Storage stats for backing up
+    @Embedded(prefix = "displayStats_") var displayStats: PackageDataStats,      // Storage stats for display
 ) {
     val packageName: String
         get() = indexInfo.packageName
@@ -131,8 +131,14 @@ data class PackageEntity(
     val storageStatsBytes: Double
         get() = (storageStats.appBytes + storageStats.dataBytes).toDouble()
 
+    val displayStatsBytes: Double
+        get() = (displayStats.apkBytes + displayStats.userBytes + displayStats.userDeBytes + displayStats.dataBytes + displayStats.obbBytes + displayStats.mediaBytes).toDouble()
+
     val storageStatsFormat: String
         get() = storageStatsBytes.formatSize()
+
+    val displayStatsFormat: String
+        get() = displayStatsBytes.formatSize()
 
     val isSystemApp: Boolean
         get() = (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0

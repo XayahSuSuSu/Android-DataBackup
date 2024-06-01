@@ -84,7 +84,7 @@ fun PageSMBSetup() {
     ) { mutableStateOf(name.isNotEmpty() && url.isNotEmpty() && port.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty()) }
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.Initialize)
+        viewModel.emitIntentOnIO(IndexUiIntent.Initialize)
     }
 
     AccountSetupScaffold(

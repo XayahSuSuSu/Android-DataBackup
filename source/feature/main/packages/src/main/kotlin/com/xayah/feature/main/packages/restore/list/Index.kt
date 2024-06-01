@@ -34,7 +34,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -87,13 +86,13 @@ fun PagePackagesRestoreList() {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val packagesState by viewModel.packagesState.collectAsStateWithLifecycle()
     val packagesSelectedState by viewModel.packagesSelectedState.collectAsStateWithLifecycle()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(canScroll = { false })
     val scrollState = rememberLazyListState()
     val srcPackagesEmptyState by viewModel.srcPackagesEmptyState.collectAsStateWithLifecycle()
     var fabHeight: Float by remember { mutableFloatStateOf(0F) }
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.OnRefresh)
+        viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh)
     }
 
     ListScaffold(

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
@@ -45,13 +46,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import com.dotlottie.dlplayer.Mode
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
+import com.xayah.core.model.OpType
 import com.xayah.core.model.database.PackageEntity
+import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.AnimatedLinearProgressIndicator
 import com.xayah.core.ui.component.AssistChip
 import com.xayah.core.ui.component.BodyLargeText
@@ -85,6 +89,7 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
+import com.xayah.core.ui.util.getValue
 import com.xayah.core.ui.util.value
 
 @ExperimentalAnimationApi
@@ -251,6 +256,7 @@ fun DotLottieView() {
 @ExperimentalFoundationApi
 @Composable
 fun PackageItem(item: PackageEntity, onCheckedChange: ((Boolean) -> Unit)?, filterMode: Boolean, onClick: () -> Unit) {
+    val context = LocalContext.current
     Surface(onClick = onClick) {
         Column {
             Row(
@@ -264,14 +270,31 @@ fun PackageItem(item: PackageEntity, onCheckedChange: ((Boolean) -> Unit)?, filt
             ) {
                 PackageIconImage(packageName = item.packageName, label = "${item.packageInfo.label.firstOrNull() ?: ""}", size = SizeTokens.Level32)
                 Column(modifier = Modifier.weight(1f)) {
-                    TitleLargeText(text = item.packageInfo.label, color = ColorSchemeKeyTokens.OnSurface.toColor())
+                    TitleLargeText(
+                        text = item.packageInfo.label.ifEmpty { StringResourceToken.fromStringId(R.string.unknown).getValue(context) },
+                        color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor()
+                    )
                     BodyMediumText(
-                        text = StringResourceToken.fromStringArgs(
-                            StringResourceToken.fromString("${item.packageName} ("),
-                            StringResourceToken.fromStringId(R.string.user),
-                            StringResourceToken.fromString(" ${item.userId})"),
-                        ).value,
+                        text = StringResourceToken.fromString(item.packageName).value,
                         color = ColorSchemeKeyTokens.Outline.toColor()
+                    )
+                    BodyMediumText(
+                        text = (
+                                if (item.preserveId == 0L) {
+                                    StringResourceToken.fromStringArgs(
+                                        StringResourceToken.fromStringId(R.string.user),
+                                        StringResourceToken.fromString(": ${item.userId}"),
+                                    )
+                                } else {
+                                    StringResourceToken.fromStringArgs(
+                                        StringResourceToken.fromStringId(R.string.user),
+                                        StringResourceToken.fromString(": ${item.userId}, "),
+                                        StringResourceToken.fromStringId(R.string.id),
+                                        StringResourceToken.fromString(": ${item.preserveId}"),
+                                    )
+                                }
+                                ).value,
+                        color = ColorSchemeKeyTokens.OnSurface.toColor()
                     )
                 }
 
@@ -295,17 +318,33 @@ fun PackageItem(item: PackageEntity, onCheckedChange: ((Boolean) -> Unit)?, filt
                     content = {
                         val ssaid = item.extraInfo.ssaid
                         val hasKeystore = item.extraInfo.hasKeystore
-                        val storageStatsFormat = item.storageStatsFormat
+                        val storageStatsFormat = when (item.indexInfo.opType) {
+                            OpType.BACKUP -> item.storageStatsBytes
+                            OpType.RESTORE -> item.displayStatsBytes
+                        }
 
-                        AssistChip(
-                            enabled = true,
-                            label = StringResourceToken.fromString(storageStatsFormat),
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Folder),
-                            trailingIcon = null,
-                            color = ColorSchemeKeyTokens.Primary,
-                            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
-                            border = null,
-                        )
+                        if (item.preserveId != 0L) {
+                            AssistChip(
+                                enabled = true,
+                                label = StringResourceToken.fromStringId(R.string._protected),
+                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
+                                trailingIcon = null,
+                                color = ColorSchemeKeyTokens.YellowPrimary,
+                                containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
+                                border = null,
+                            )
+                        }
+                        if (storageStatsFormat != (0).toDouble()) {
+                            AssistChip(
+                                enabled = true,
+                                label = StringResourceToken.fromString(storageStatsFormat.formatSize()),
+                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Folder),
+                                trailingIcon = null,
+                                color = ColorSchemeKeyTokens.Primary,
+                                containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                                border = null,
+                            )
+                        }
                         if (ssaid.isNotEmpty()) AssistChip(
                             enabled = true,
                             label = StringResourceToken.fromStringId(R.string.ssaid),

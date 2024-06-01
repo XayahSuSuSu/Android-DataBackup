@@ -22,6 +22,7 @@ data class IndexUiState(
     val userId: Int,
     val preserveId: Long,
     val infoExpanded: Boolean,
+    val isCalculating: Boolean,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -41,6 +42,7 @@ class IndexViewModel @Inject constructor(
         userId = args.get<String>(MainRoutes.ARG_USER_ID)?.toIntOrNull() ?: 0,
         preserveId = args.get<String>(MainRoutes.ARG_PRESERVE_ID)?.toLongOrNull() ?: 0,
         infoExpanded = false,
+        isCalculating = false,
     )
 ) {
     init {
@@ -55,7 +57,9 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
+                emitState(state.copy(isCalculating = true))
                 packageRepo.updateLocalPackageArchivesSize(state.packageName, OpType.RESTORE, state.userId)
+                emitState(state.copy(isCalculating = false))
             }
 
             is IndexUiIntent.UpdatePackage -> {

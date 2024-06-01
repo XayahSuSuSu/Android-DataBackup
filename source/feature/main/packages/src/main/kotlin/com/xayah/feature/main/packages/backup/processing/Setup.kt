@@ -69,7 +69,7 @@ fun PagePackagesBackupProcessingSetup(localNavController: NavHostController, vie
     val accounts by viewModel.accounts.collectAsStateWithLifecycle()
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.UpdateApps)
+        viewModel.emitIntentOnIO(IndexUiIntent.UpdateApps)
     }
 
     ProcessingSetupScaffold(
@@ -126,7 +126,7 @@ fun PagePackagesBackupProcessingSetup(localNavController: NavHostController, vie
                         val dialogState = LocalSlotScope.current!!.dialogSlot
                         var currentIndex by remember { mutableIntStateOf(if (uiState.cloudEntity == null) 0 else accounts.indexOfFirst { it.title.getValue(context) == uiState.cloudEntity!!.name }) }
                         LaunchedEffect(currentIndex) {
-                            viewModel.emitIntent(IndexUiIntent.SetCloudEntity(name = accounts[currentIndex].title.getValue(context)))
+                            viewModel.emitIntentOnIO(IndexUiIntent.SetCloudEntity(name = accounts[currentIndex].title.getValue(context)))
                         }
                         Selectable(
                             title = StringResourceToken.fromStringId(R.string.account),

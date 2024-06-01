@@ -33,7 +33,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -90,7 +89,7 @@ fun PagePackagesBackupList() {
     val refreshState by viewModel.refreshState.collectAsStateWithLifecycle()
     val packagesState by viewModel.packagesState.collectAsStateWithLifecycle()
     val packagesSelectedState by viewModel.packagesSelectedState.collectAsStateWithLifecycle()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(canScroll = { false })
     val scrollState = rememberLazyListState()
     val srcPackagesEmptyState by viewModel.srcPackagesEmptyState.collectAsStateWithLifecycle()
     val isRefreshing = uiState.isRefreshing
@@ -148,6 +147,7 @@ fun PagePackagesBackupList() {
                 }
                 InnerBottomSpacer(innerPadding = it)
             }
+            PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
         } else {
             Column {
                 val flagIndexState by viewModel.flagIndexState.collectAsStateWithLifecycle()
@@ -217,44 +217,46 @@ fun PagePackagesBackupList() {
                     }
                 }
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pullRefresh(pullRefreshState),
-                    state = scrollState,
-                ) {
-                    items(items = packagesState, key = { "${uiState.uuid}-${it.id}" }) { item ->
-                        Row(modifier = Modifier.animateItemPlacement()) {
-                            PackageItem(
-                                item = item,
-                                onCheckedChange = { viewModel.emitIntentOnIO(IndexUiIntent.Select(item)) },
-                                onClick = {
-                                    if (uiState.filterMode) viewModel.emitIntentOnIO(IndexUiIntent.ToPageDetail(navController, item))
-                                    else viewModel.emitIntentOnIO(IndexUiIntent.Select(item))
-                                },
-                                filterMode = uiState.filterMode
-                            )
-                        }
-                    }
-
-                    if (packagesSelectedState != 0)
-                        item {
-                            with(LocalDensity.current) {
-                                Column {
-                                    Spacer(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(fabHeight.toDp())
-                                    )
-                                    InnerBottomSpacer(innerPadding = it)
-                                }
+                Box {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState),
+                        state = scrollState,
+                    ) {
+                        items(items = packagesState, key = { "${uiState.uuid}-${it.id}" }) { item ->
+                            Row(modifier = Modifier.animateItemPlacement()) {
+                                PackageItem(
+                                    item = item,
+                                    onCheckedChange = { viewModel.emitIntentOnIO(IndexUiIntent.Select(item)) },
+                                    onClick = {
+                                        if (uiState.filterMode) viewModel.emitIntentOnIO(IndexUiIntent.ToPageDetail(navController, item))
+                                        else viewModel.emitIntentOnIO(IndexUiIntent.Select(item))
+                                    },
+                                    filterMode = uiState.filterMode
+                                )
                             }
                         }
+
+                        if (packagesSelectedState != 0)
+                            item {
+                                with(LocalDensity.current) {
+                                    Column {
+                                        Spacer(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(fabHeight.toDp())
+                                        )
+                                        InnerBottomSpacer(innerPadding = it)
+                                    }
+                                }
+                            }
+                    }
+                    PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
                 }
             }
         }
 
-        PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
         // TODO Issues of ScrollBar
         // ScrollBar(modifier = Modifier.align(Alignment.TopEnd), state = scrollState)
     }

@@ -21,6 +21,7 @@ data class IndexUiState(
     val packageName: String,
     val userId: Int,
     val infoExpanded: Boolean,
+    val isCalculating: Boolean,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -33,12 +34,13 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     args: SavedStateHandle,
     private val packageRepo: PackageRepository,
-    private val rootService: RemoteRootService,
+    rootService: RemoteRootService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
         packageName = args.get<String>(MainRoutes.ARG_PACKAGE_NAME) ?: "",
         userId = args.get<String>(MainRoutes.ARG_USER_ID)?.toIntOrNull() ?: 0,
         infoExpanded = false,
+        isCalculating = false,
     )
 ) {
     init {
@@ -53,7 +55,9 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
+                emitState(state.copy(isCalculating = true))
                 packageRepo.updateLocalPackageDataSize(state.packageName, OpType.BACKUP, state.userId, 0)
+                emitState(state.copy(isCalculating = false))
             }
 
             is IndexUiIntent.UpdatePackage -> {

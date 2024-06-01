@@ -199,7 +199,7 @@ fun PackageIcons(
                 interactionSource = interactionSource
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    LabelMediumText(text = "+${packages.size - maxDisplayNum}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
+                    LabelMediumText(text = "+${packages.size - maxDisplayNum + 1}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
                 }
             }
         }

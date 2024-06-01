@@ -42,9 +42,11 @@ import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.util.DateUtil
+import com.xayah.core.util.SymbolUtil
 import com.xayah.feature.main.packages.ListScaffold
 import com.xayah.feature.main.packages.R
 import com.xayah.feature.main.packages.countItems
@@ -65,7 +67,7 @@ fun PagePackagesBackupDetail() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.OnRefresh)
+        viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh)
     }
 
     ListScaffold(
@@ -142,7 +144,14 @@ fun PagePackagesBackupDetail() {
                         checked = pkg.apkSelected,
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_android),
                         title = StringResourceToken.fromString(DataType.PACKAGE_APK.type.uppercase()),
-                        checkedText = StringResourceToken.fromString(pkg.displayStats.apkBytes.toDouble().formatSize()),
+                        checkedText = if (uiState.isCalculating)
+                            StringResourceToken.fromStringArgs(
+                                StringResourceToken.fromString(pkg.displayStats.apkBytes.toDouble().formatSize()),
+                                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                                StringResourceToken.fromStringId(R.string.calculating),
+                            )
+                        else
+                            StringResourceToken.fromString(pkg.displayStats.apkBytes.toDouble().formatSize()),
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_APK)))
                     }
@@ -150,7 +159,14 @@ fun PagePackagesBackupDetail() {
                         checked = pkg.userSelected,
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
                         title = StringResourceToken.fromString(DataType.PACKAGE_USER.type.uppercase()),
-                        checkedText = StringResourceToken.fromString(pkg.displayStats.userBytes.toDouble().formatSize()),
+                        checkedText = if (uiState.isCalculating)
+                            StringResourceToken.fromStringArgs(
+                                StringResourceToken.fromString(pkg.displayStats.userBytes.toDouble().formatSize()),
+                                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                                StringResourceToken.fromStringId(R.string.calculating),
+                            )
+                        else
+                            StringResourceToken.fromString(pkg.displayStats.userBytes.toDouble().formatSize()),
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER)))
                     }
@@ -158,7 +174,14 @@ fun PagePackagesBackupDetail() {
                         checked = pkg.userDeSelected,
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_manage_accounts),
                         title = StringResourceToken.fromString(DataType.PACKAGE_USER_DE.type.uppercase()),
-                        checkedText = StringResourceToken.fromString(pkg.displayStats.userDeBytes.toDouble().formatSize()),
+                        checkedText = if (uiState.isCalculating)
+                            StringResourceToken.fromStringArgs(
+                                StringResourceToken.fromString(pkg.displayStats.userDeBytes.toDouble().formatSize()),
+                                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                                StringResourceToken.fromStringId(R.string.calculating),
+                            )
+                        else
+                            StringResourceToken.fromString(pkg.displayStats.userDeBytes.toDouble().formatSize()),
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER_DE)))
                     }
@@ -166,7 +189,14 @@ fun PagePackagesBackupDetail() {
                         checked = pkg.dataSelected,
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_database),
                         title = StringResourceToken.fromString(DataType.PACKAGE_DATA.type.uppercase()),
-                        checkedText = StringResourceToken.fromString(pkg.displayStats.dataBytes.toDouble().formatSize()),
+                        checkedText = if (uiState.isCalculating)
+                            StringResourceToken.fromStringArgs(
+                                StringResourceToken.fromString(pkg.displayStats.dataBytes.toDouble().formatSize()),
+                                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                                StringResourceToken.fromStringId(R.string.calculating),
+                            )
+                        else
+                            StringResourceToken.fromString(pkg.displayStats.dataBytes.toDouble().formatSize()),
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_DATA)))
                     }
@@ -174,7 +204,14 @@ fun PagePackagesBackupDetail() {
                         checked = pkg.obbSelected,
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_stadia_controller),
                         title = StringResourceToken.fromString(DataType.PACKAGE_OBB.type.uppercase()),
-                        checkedText = StringResourceToken.fromString(pkg.displayStats.obbBytes.toDouble().formatSize()),
+                        checkedText = if (uiState.isCalculating)
+                            StringResourceToken.fromStringArgs(
+                                StringResourceToken.fromString(pkg.displayStats.obbBytes.toDouble().formatSize()),
+                                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                                StringResourceToken.fromStringId(R.string.calculating),
+                            )
+                        else
+                            StringResourceToken.fromString(pkg.displayStats.obbBytes.toDouble().formatSize()),
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_OBB)))
                     }
@@ -182,7 +219,14 @@ fun PagePackagesBackupDetail() {
                         checked = pkg.mediaSelected,
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_image),
                         title = StringResourceToken.fromString(DataType.PACKAGE_MEDIA.type.uppercase()),
-                        checkedText = StringResourceToken.fromString(pkg.displayStats.mediaBytes.toDouble().formatSize()),
+                        checkedText = if (uiState.isCalculating)
+                            StringResourceToken.fromStringArgs(
+                                StringResourceToken.fromString(pkg.displayStats.mediaBytes.toDouble().formatSize()),
+                                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
+                                StringResourceToken.fromStringId(R.string.calculating),
+                            )
+                        else
+                            StringResourceToken.fromString(pkg.displayStats.mediaBytes.toDouble().formatSize()),
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_MEDIA)))
                     }

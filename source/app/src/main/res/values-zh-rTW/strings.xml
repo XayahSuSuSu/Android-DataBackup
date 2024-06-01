@@ -294,4 +294,6 @@
     <string name="reload_version_desc">你的備份版本為？</string>
     <string name="dump_apk">解析安裝包</string>
     <string name="dump_apk_desc">嘗試解析安裝包以獲取更詳細的信息</string>
+    <string name="_protected">受保護</string>
+    <string name="calculating">計算中</string>
 </resources>

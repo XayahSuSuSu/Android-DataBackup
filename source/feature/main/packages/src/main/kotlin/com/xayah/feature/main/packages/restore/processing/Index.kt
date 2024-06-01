@@ -64,7 +64,7 @@ fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
     }
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.Initialize)
+        viewModel.emitIntentOnIO(IndexUiIntent.Initialize)
     }
 
     val onBack: () -> Unit = remember {

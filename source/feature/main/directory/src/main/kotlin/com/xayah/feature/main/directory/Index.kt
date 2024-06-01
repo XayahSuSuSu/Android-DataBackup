@@ -43,7 +43,7 @@ fun PageDirectory() {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.Update)
+        viewModel.emitIntentOnIO(IndexUiIntent.Update)
     }
 
     DirectoryScaffold(

@@ -46,7 +46,7 @@ fun PagePackagesRestoreProcessingSetup(localNavController: NavHostController, vi
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     LaunchedEffect(null) {
-        viewModel.emitIntent(IndexUiIntent.UpdateApps)
+        viewModel.emitIntentOnIO(IndexUiIntent.UpdateApps)
     }
 
     ProcessingSetupScaffold(
