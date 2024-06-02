@@ -33,6 +33,7 @@ import com.xayah.feature.main.restore.PageRestore
 import com.xayah.feature.main.restore.reload.PageReload
 import com.xayah.feature.main.settings.PageSettings
 import com.xayah.feature.main.settings.backup.PageBackupSettings
+import com.xayah.feature.main.settings.blacklist.PageBlackList
 import com.xayah.feature.main.settings.restore.PageRestoreSettings
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
@@ -111,6 +112,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.RestoreSettings.route) {
                             PageRestoreSettings()
+                        }
+                        composable(MainRoutes.BlackList.route) {
+                            PageBlackList()
                         }
                         composable(route = MainRoutes.Directory.route) {
                             PageDirectory()

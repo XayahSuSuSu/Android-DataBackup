@@ -35,6 +35,7 @@ data class PackageExtraInfo(
     var hasKeystore: Boolean,
     var permissions: List<PackagePermission>,
     var ssaid: String,
+    var blocked: Boolean,
     var activated: Boolean,
     var existed: Boolean,
 )

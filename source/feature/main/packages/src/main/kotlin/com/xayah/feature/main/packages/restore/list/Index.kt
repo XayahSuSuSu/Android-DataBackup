@@ -54,6 +54,7 @@ import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
+import com.xayah.core.ui.component.PackageItem
 import com.xayah.core.ui.component.SearchBar
 import com.xayah.core.ui.component.SortChip
 import com.xayah.core.ui.component.confirm
@@ -71,7 +72,6 @@ import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.packages.DotLottieView
 import com.xayah.feature.main.packages.ListScaffold
-import com.xayah.feature.main.packages.PackageItem
 import com.xayah.feature.main.packages.R
 
 @ExperimentalFoundationApi

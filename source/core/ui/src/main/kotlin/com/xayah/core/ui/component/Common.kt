@@ -1,20 +1,36 @@
 package com.xayah.core.ui.component
 
 import android.graphics.drawable.Drawable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Key
+import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,12 +49,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.xayah.core.model.OpType
 import com.xayah.core.model.database.PackageEntity
+import com.xayah.core.model.util.formatSize
+import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
+import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringArgs
+import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.fromVector
+import com.xayah.core.ui.util.getValue
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
@@ -201,6 +225,125 @@ fun PackageIcons(
                 Box(contentAlignment = Alignment.Center) {
                     LabelMediumText(text = "+${packages.size - maxDisplayNum + 1}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
                 }
+            }
+        }
+    }
+}
+
+
+@ExperimentalLayoutApi
+@ExperimentalFoundationApi
+@Composable
+fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: ((Boolean) -> Unit)?, filterMode: Boolean, onClick: () -> Unit) {
+    val context = LocalContext.current
+    com.xayah.core.ui.material3.Surface(onClick = onClick) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .height(IntrinsicSize.Min)
+                    .paddingTop(SizeTokens.Level16)
+                    .paddingHorizontal(SizeTokens.Level16)
+                    .then(if (filterMode.not()) Modifier.paddingBottom(SizeTokens.Level16) else Modifier),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
+            ) {
+                PackageIconImage(packageName = item.packageName, label = "${item.packageInfo.label.firstOrNull() ?: ""}", size = SizeTokens.Level32)
+                Column(modifier = Modifier.weight(1f)) {
+                    TitleLargeText(
+                        text = item.packageInfo.label.ifEmpty { StringResourceToken.fromStringId(R.string.unknown).getValue(context) },
+                        color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor()
+                    )
+                    BodyMediumText(
+                        text = StringResourceToken.fromString(item.packageName).value,
+                        color = ColorSchemeKeyTokens.Outline.toColor()
+                    )
+                    BodyMediumText(
+                        text = (
+                                if (item.preserveId == 0L) {
+                                    StringResourceToken.fromStringArgs(
+                                        StringResourceToken.fromStringId(R.string.user),
+                                        StringResourceToken.fromString(": ${item.userId}"),
+                                    )
+                                } else {
+                                    StringResourceToken.fromStringArgs(
+                                        StringResourceToken.fromStringId(R.string.user),
+                                        StringResourceToken.fromString(": ${item.userId}, "),
+                                        StringResourceToken.fromStringId(R.string.id),
+                                        StringResourceToken.fromString(": ${item.preserveId}"),
+                                    )
+                                }
+                                ).value,
+                        color = ColorSchemeKeyTokens.OnSurface.toColor()
+                    )
+                }
+
+                Divider(
+                    modifier = Modifier
+                        .height(SizeTokens.Level36)
+                        .width(SizeTokens.Level1)
+                        .fillMaxHeight()
+                )
+                CheckIconButton(checked = checked ?: item.extraInfo.activated, onCheckedChange = onCheckedChange)
+            }
+
+            AnimatedVisibility(visible = filterMode, enter = fadeIn() + slideInVertically(), exit = slideOutVertically() + fadeOut()) {
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .paddingStart(SizeTokens.Level64)
+                        .paddingBottom(SizeTokens.Level16),
+                    horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                    verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                    content = {
+                        val ssaid = item.extraInfo.ssaid
+                        val hasKeystore = item.extraInfo.hasKeystore
+                        val storageStatsFormat = when (item.indexInfo.opType) {
+                            OpType.BACKUP -> item.storageStatsBytes
+                            OpType.RESTORE -> item.displayStatsBytes
+                        }
+
+                        if (item.preserveId != 0L) {
+                            AssistChip(
+                                enabled = true,
+                                label = StringResourceToken.fromStringId(R.string._protected),
+                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
+                                trailingIcon = null,
+                                color = ColorSchemeKeyTokens.YellowPrimary,
+                                containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
+                                border = null,
+                            )
+                        }
+                        if (storageStatsFormat != (0).toDouble()) {
+                            AssistChip(
+                                enabled = true,
+                                label = StringResourceToken.fromString(storageStatsFormat.formatSize()),
+                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Folder),
+                                trailingIcon = null,
+                                color = ColorSchemeKeyTokens.Primary,
+                                containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                                border = null,
+                            )
+                        }
+                        if (ssaid.isNotEmpty()) AssistChip(
+                            enabled = true,
+                            label = StringResourceToken.fromStringId(R.string.ssaid),
+                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Pin),
+                            trailingIcon = null,
+                            color = ColorSchemeKeyTokens.Primary,
+                            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                            border = null,
+                        )
+                        if (hasKeystore) AssistChip(
+                            enabled = true,
+                            label = StringResourceToken.fromStringId(R.string.keystore),
+                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Key),
+                            trailingIcon = null,
+                            color = ColorSchemeKeyTokens.Primary,
+                            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                            border = null,
+                        )
+                    }
+                )
             }
         }
     }

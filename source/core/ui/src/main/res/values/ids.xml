@@ -3,6 +3,13 @@
     <item name="confirm" type="string" />
     <item name="cancel" type="string" />
     <item name="delete" type="string" />
+    <item name="unknown" type="string" />
+    <item name="user" type="string" />
+    <item name="id" type="string" />
+    <item name="_protected" type="string" />
+    <item name="ssaid" type="string" />
+    <item name="keystore" type="string" />
+
     <item name="jetbrains_mono_regular" type="font" />
     <item name="ic_rounded_check_circle" type="drawable" />
     <item name="ic_rounded_cancel" type="drawable" />

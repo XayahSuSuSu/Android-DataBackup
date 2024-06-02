@@ -78,11 +78,13 @@ class PackageRepository @Inject constructor(
 
     fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long) = packageDao.queryFlow(packageName, opType, userId, preserveId).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType) = packageDao.queryPackagesFlow(opType).distinctUntilChanged()
+    fun queryPackagesFlow(opType: OpType, blocked: Boolean) = packageDao.queryPackagesFlow(opType, blocked).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType, cloud: String, backupDir: String) = packageDao.queryPackagesFlow(opType, cloud, backupDir).distinctUntilChanged()
     suspend fun queryUserIds(opType: OpType) = packageDao.queryUserIds(opType)
     suspend fun queryPackages(opType: OpType, cloud: String, backupDir: String) = packageDao.queryPackages(opType, cloud, backupDir)
     suspend fun queryActivated(opType: OpType) = packageDao.queryActivated(opType)
     suspend fun queryActivated(opType: OpType, cloud: String, backupDir: String) = packageDao.queryActivated(opType, cloud, backupDir)
+    suspend fun setBlocked(id: Long, blocked: Boolean) = packageDao.setBlocked(id, blocked)
     private val localBackupSaveDir get() = context.localBackupSaveDir()
     val backupAppsDir get() = pathUtil.getLocalBackupAppsDir()
 
@@ -264,6 +266,7 @@ class PackageRepository @Inject constructor(
                         hasKeystore = hasKeystore,
                         permissions = permissions,
                         ssaid = ssaid,
+                        blocked = false,
                         activated = false,
                         existed = true,
                     )
@@ -754,6 +757,7 @@ class PackageRepository @Inject constructor(
                         hasKeystore = false,
                         permissions = listOf(),
                         ssaid = "",
+                        blocked = false,
                         activated = false,
                         existed = true,
                     ),
@@ -959,6 +963,7 @@ class PackageRepository @Inject constructor(
                                 hasKeystore = false,
                                 permissions = listOf(),
                                 ssaid = "",
+                                blocked = false,
                                 activated = false,
                                 existed = true,
                             ),

@@ -46,6 +46,7 @@ sealed class IndexUiIntent : UiIntent {
     data object ClearKey : IndexUiIntent()
     data class Select(val entity: PackageEntity) : IndexUiIntent()
     data class SelectAll(val selected: Boolean) : IndexUiIntent()
+    data object BlockSelected : IndexUiIntent()
     data class ToPageDetail(val navController: NavHostController, val packageEntity: PackageEntity) : IndexUiIntent()
 }
 
@@ -120,12 +121,21 @@ class IndexViewModel @Inject constructor(
                     intent.navController.navigate(MainRoutes.PackagesBackupDetail.getRoute(entity.packageName, entity.userId))
                 }
             }
+
+            is IndexUiIntent.BlockSelected -> {
+                val packages = packageRepo.filterBackup(packageRepo.queryActivated(OpType.BACKUP))
+                packages.forEach {
+                    it.extraInfo.blocked = true
+                    it.extraInfo.activated = false
+                }
+                packageRepo.upsert(packages)
+            }
         }
     }
 
     private val _refreshState: MutableStateFlow<RefreshState> =
         MutableStateFlow(RefreshState())
-    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(OpType.BACKUP).flowOnIO()
+    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(OpType.BACKUP, false).flowOnIO()
     private var _keyState: MutableStateFlow<String> = MutableStateFlow("")
     private var _flagIndexState: MutableStateFlow<Int> = MutableStateFlow(1)
     private var _userIdIndexListState: MutableStateFlow<List<Int>> = MutableStateFlow(listOf(0))

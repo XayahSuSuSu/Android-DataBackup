@@ -296,4 +296,9 @@
     <string name="dump_apk_desc">嘗試解析安裝包以獲取更詳細的信息</string>
     <string name="_protected">受保護</string>
     <string name="calculating">計算中</string>
+    <string name="blacklist">黑名單</string>
+    <string name="blacklist_desc">管理被禁用的條目</string>
+    <string name="confirm_add_to_blacklist">加入到黑名單中？</string>
+    <string name="confirm_remove_from_blacklist">從黑名單中移除？</string>
+    <string name="it_is_empty">空空如也</string>
 </resources>

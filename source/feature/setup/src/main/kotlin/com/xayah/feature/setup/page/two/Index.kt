@@ -101,6 +101,7 @@ fun PageTwo() {
                 )
                 Switchable(
                     key = KeyCheckKeystore,
+                    defValue = true,
                     title = StringResourceToken.fromStringId(R.string.check_keystore),
                     checkedText = StringResourceToken.fromStringId(R.string.enabled),
                     notCheckedText = StringResourceToken.fromStringId(R.string.not_enabled),

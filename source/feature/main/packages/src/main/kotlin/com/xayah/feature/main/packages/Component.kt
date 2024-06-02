@@ -1,35 +1,18 @@
 package com.xayah.feature.main.packages
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Folder
-import androidx.compose.material.icons.outlined.Key
-import androidx.compose.material.icons.outlined.Pin
-import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
@@ -46,50 +29,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import com.dotlottie.dlplayer.Mode
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
 import com.lottiefiles.dotlottie.core.util.DotLottieSource
-import com.xayah.core.model.OpType
-import com.xayah.core.model.database.PackageEntity
-import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.AnimatedLinearProgressIndicator
-import com.xayah.core.ui.component.AssistChip
 import com.xayah.core.ui.component.BodyLargeText
-import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.BodySmallText
-import com.xayah.core.ui.component.CheckIconButton
 import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.LinearProgressIndicator
-import com.xayah.core.ui.component.PackageIconImage
 import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.SecondaryTopBar
-import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.component.paddingBottom
-import com.xayah.core.ui.component.paddingHorizontal
-import com.xayah.core.ui.component.paddingStart
-import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.material3.Surface
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.RefreshState
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.getValue
 import com.xayah.core.ui.util.value
 
 @ExperimentalAnimationApi
@@ -259,122 +224,4 @@ fun DotLottieView(isLoading: Boolean) {
         color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
         textAlign = TextAlign.Center
     )
-}
-
-@ExperimentalLayoutApi
-@ExperimentalFoundationApi
-@Composable
-fun PackageItem(item: PackageEntity, onCheckedChange: ((Boolean) -> Unit)?, filterMode: Boolean, onClick: () -> Unit) {
-    val context = LocalContext.current
-    Surface(onClick = onClick) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .height(IntrinsicSize.Min)
-                    .paddingTop(SizeTokens.Level16)
-                    .paddingHorizontal(SizeTokens.Level16)
-                    .then(if (filterMode.not()) Modifier.paddingBottom(SizeTokens.Level16) else Modifier),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
-            ) {
-                PackageIconImage(packageName = item.packageName, label = "${item.packageInfo.label.firstOrNull() ?: ""}", size = SizeTokens.Level32)
-                Column(modifier = Modifier.weight(1f)) {
-                    TitleLargeText(
-                        text = item.packageInfo.label.ifEmpty { StringResourceToken.fromStringId(R.string.unknown).getValue(context) },
-                        color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor()
-                    )
-                    BodyMediumText(
-                        text = StringResourceToken.fromString(item.packageName).value,
-                        color = ColorSchemeKeyTokens.Outline.toColor()
-                    )
-                    BodyMediumText(
-                        text = (
-                                if (item.preserveId == 0L) {
-                                    StringResourceToken.fromStringArgs(
-                                        StringResourceToken.fromStringId(R.string.user),
-                                        StringResourceToken.fromString(": ${item.userId}"),
-                                    )
-                                } else {
-                                    StringResourceToken.fromStringArgs(
-                                        StringResourceToken.fromStringId(R.string.user),
-                                        StringResourceToken.fromString(": ${item.userId}, "),
-                                        StringResourceToken.fromStringId(R.string.id),
-                                        StringResourceToken.fromString(": ${item.preserveId}"),
-                                    )
-                                }
-                                ).value,
-                        color = ColorSchemeKeyTokens.OnSurface.toColor()
-                    )
-                }
-
-                Divider(
-                    modifier = Modifier
-                        .height(SizeTokens.Level36)
-                        .width(SizeTokens.Level1)
-                        .fillMaxHeight()
-                )
-                CheckIconButton(checked = item.extraInfo.activated, onCheckedChange = onCheckedChange)
-            }
-
-            AnimatedVisibility(visible = filterMode, enter = fadeIn() + slideInVertically(), exit = slideOutVertically() + fadeOut()) {
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .paddingStart(SizeTokens.Level64)
-                        .paddingBottom(SizeTokens.Level16),
-                    horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
-                    verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
-                    content = {
-                        val ssaid = item.extraInfo.ssaid
-                        val hasKeystore = item.extraInfo.hasKeystore
-                        val storageStatsFormat = when (item.indexInfo.opType) {
-                            OpType.BACKUP -> item.storageStatsBytes
-                            OpType.RESTORE -> item.displayStatsBytes
-                        }
-
-                        if (item.preserveId != 0L) {
-                            AssistChip(
-                                enabled = true,
-                                label = StringResourceToken.fromStringId(R.string._protected),
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
-                                trailingIcon = null,
-                                color = ColorSchemeKeyTokens.YellowPrimary,
-                                containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
-                                border = null,
-                            )
-                        }
-                        if (storageStatsFormat != (0).toDouble()) {
-                            AssistChip(
-                                enabled = true,
-                                label = StringResourceToken.fromString(storageStatsFormat.formatSize()),
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Folder),
-                                trailingIcon = null,
-                                color = ColorSchemeKeyTokens.Primary,
-                                containerColor = ColorSchemeKeyTokens.PrimaryContainer,
-                                border = null,
-                            )
-                        }
-                        if (ssaid.isNotEmpty()) AssistChip(
-                            enabled = true,
-                            label = StringResourceToken.fromStringId(R.string.ssaid),
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Pin),
-                            trailingIcon = null,
-                            color = ColorSchemeKeyTokens.Primary,
-                            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
-                            border = null,
-                        )
-                        if (hasKeystore) AssistChip(
-                            enabled = true,
-                            label = StringResourceToken.fromStringId(R.string.keystore),
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Key),
-                            trailingIcon = null,
-                            color = ColorSchemeKeyTokens.Primary,
-                            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
-                            border = null,
-                        )
-                    }
-                )
-            }
-        }
-    }
 }

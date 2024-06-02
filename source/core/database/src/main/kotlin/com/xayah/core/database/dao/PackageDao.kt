@@ -67,6 +67,12 @@ interface PackageDao {
 
     @Query(
         "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_opType = :opType AND extraInfo_existed = 1 AND extraInfo_blocked = :blocked"
+    )
+    fun queryPackagesFlow(opType: OpType, blocked: Boolean): Flow<List<PackageEntity>>
+
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
                 " indexInfo_opType = :opType AND extraInfo_existed = 1 AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
     )
     fun queryPackagesFlow(opType: OpType, cloud: String, backupDir: String): Flow<List<PackageEntity>>
@@ -82,6 +88,13 @@ interface PackageDao {
                 " indexInfo_opType = :opType AND extraInfo_existed = 1 AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
     )
     suspend fun queryPackages(opType: OpType, cloud: String, backupDir: String): List<PackageEntity>
+
+    @Query(
+        "UPDATE PackageEntity" +
+                " SET extraInfo_blocked = :blocked" +
+                " WHERE id = :id"
+    )
+    suspend fun setBlocked(id: Long, blocked: Boolean)
 
     @Delete(entity = PackageEntity::class)
     suspend fun delete(item: PackageEntity)

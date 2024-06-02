@@ -303,4 +303,9 @@
     <string name="dump_apk_desc">Try to dump apk to get detailed information</string>
     <string name="_protected">Protected</string>
     <string name="calculating">Calculating</string>
+    <string name="blacklist">Blacklist</string>
+    <string name="blacklist_desc">Managing blocked entries</string>
+    <string name="confirm_add_to_blacklist">Add to blacklist?</string>
+    <string name="confirm_remove_from_blacklist">Remove from blacklist?</string>
+    <string name="it_is_empty">It\'s empty</string>
 </resources>

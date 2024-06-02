@@ -32,6 +32,12 @@
     <item name="theme_dark" type="string" />
     <item name="theme_dark_desc" type="string" />
     <item name="dark_theme" type="string" />
+    <item name="blacklist" type="string" />
+    <item name="blacklist_desc" type="string" />
+    <item name="apps" type="string" />
+    <item name="prompt" type="string" />
+    <item name="confirm_remove_from_blacklist" type="string" />
+    <item name="it_is_empty" type="string" />
 
     <item name="ic_rounded_acute" type="drawable" />
     <item name="ic_rounded_history" type="drawable" />

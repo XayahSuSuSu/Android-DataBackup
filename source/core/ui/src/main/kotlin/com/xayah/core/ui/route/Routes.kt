@@ -30,6 +30,7 @@ sealed class MainRoutes(val route: String) {
     }
     data object BackupSettings : MainRoutes(route = "main_backup_settings")
     data object RestoreSettings : MainRoutes(route = "main_restore_settings")
+    data object BlackList : MainRoutes(route = "main_blacklist")
 
     data object PackagesBackupList : MainRoutes(route = "main_packages_backup_list")
     data object PackagesBackupDetail : MainRoutes(route = "main_packages_backup_detail/{$ARG_PACKAGE_NAME}/{$ARG_USER_ID}") {

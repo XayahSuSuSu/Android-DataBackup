@@ -5,7 +5,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.xayah.core.data.repository.PackageRepository
-import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveRestoreUserIdIndex
 import com.xayah.core.model.OpType
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -159,7 +157,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.DeleteSelected -> {
-                val packages = packageRepo.queryActivated(OpType.RESTORE).filter(packageRepo.getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
+                val packages = packageRepo.filterRestore(packageRepo.queryActivated(OpType.RESTORE))
                 packages.forEach {
                     packageRepo.delete(it)
                 }

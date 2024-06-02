@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -21,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.KeyMonet
 import com.xayah.core.ui.component.Clickable
+import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.model.ImageVectorToken
@@ -31,6 +34,7 @@ import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.setup.MainActivity as SetupActivity
 
 @ExperimentalLayoutApi
@@ -78,6 +82,13 @@ fun PageSettings() {
             }
             Title(title = StringResourceToken.fromStringId(R.string.manage_backups)) {
                 Clickable(
+                    icon = ImageVectorToken.fromVector(Icons.Outlined.Block),
+                    title = StringResourceToken.fromStringId(R.string.blacklist),
+                    value = StringResourceToken.fromStringId(R.string.blacklist_desc),
+                ) {
+                    navController.navigate(MainRoutes.BlackList.route)
+                }
+                Clickable(
                     icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
                     title = StringResourceToken.fromStringId(R.string.backup_dir),
                     value = if (directoryState != null) StringResourceToken.fromString(directoryState!!.title) else null,
@@ -95,6 +106,7 @@ fun PageSettings() {
                 }
                 DarkThemeSelectable()
             }
+            InnerBottomSpacer(innerPadding = it)
         }
     }
 }

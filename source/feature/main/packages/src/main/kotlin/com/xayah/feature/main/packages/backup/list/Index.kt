@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.rounded.Sort
@@ -52,9 +53,12 @@ import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.FilterChip
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.InnerBottomSpacer
+import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
+import com.xayah.core.ui.component.PackageItem
 import com.xayah.core.ui.component.SearchBar
 import com.xayah.core.ui.component.SortChip
+import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
@@ -73,7 +77,6 @@ import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.packages.DotLottieView
 import com.xayah.feature.main.packages.ListScaffold
-import com.xayah.feature.main.packages.PackageItem
 import com.xayah.feature.main.packages.R
 
 @ExperimentalFoundationApi
@@ -84,6 +87,7 @@ import com.xayah.feature.main.packages.R
 fun PagePackagesBackupList() {
     val context = LocalContext.current
     val navController = LocalNavController.current!!
+    val dialogState = LocalSlotScope.current!!.dialogSlot
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val refreshState by viewModel.refreshState.collectAsStateWithLifecycle()
@@ -105,6 +109,15 @@ fun PagePackagesBackupList() {
         ),
         actions = {
             if (isRefreshing.not() && srcPackagesEmptyState.not()) {
+                AnimatedVisibility(visible = packagesSelectedState != 0) {
+                    IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Block)) {
+                        viewModel.launchOnIO {
+                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.confirm_add_to_blacklist))) {
+                                viewModel.emitIntentOnIO(IndexUiIntent.BlockSelected)
+                            }
+                        }
+                    }
+                }
                 IconButton(icon = ImageVectorToken.fromVector(if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt)) {
                     viewModel.emitStateOnMain(uiState.copy(filterMode = uiState.filterMode.not()))
                     viewModel.emitIntentOnIO(IndexUiIntent.ClearKey)

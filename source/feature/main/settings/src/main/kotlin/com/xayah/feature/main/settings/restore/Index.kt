@@ -13,6 +13,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.xayah.core.datastore.KeyCleanRestoring
+import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
@@ -41,10 +42,12 @@ fun PageRestoreSettings() {
             Column {
                 Switchable(
                     key = KeyCleanRestoring,
+                    defValue = false,
                     title = StringResourceToken.fromStringId(R.string.clean_restoring),
                     checkedText = StringResourceToken.fromStringId(R.string.clean_restoring_desc),
                 )
             }
+            InnerBottomSpacer(innerPadding = it)
         }
     }
 }
