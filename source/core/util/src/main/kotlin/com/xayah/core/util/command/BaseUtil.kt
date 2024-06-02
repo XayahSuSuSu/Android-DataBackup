@@ -39,7 +39,7 @@ private class EnvInitializer : Shell.Initializer() {
     companion object {
         fun initShell(shell: Shell, context: Context) {
             shell.newJob()
-                .add("nsenter -t 1 -m ${runBlocking { context.readCustomSUFile().first() }}") // Switch to global namespace
+                .add("nsenter --mount=/proc/1/ns/mnt sh") // Switch to global namespace
                 .add("export PATH=${context.binDir()}:${USD}PATH")
                 .add("export HOME=${context.filesDir()}")
                 .add("set -o pipefail") // Ensure that the exit code of each command is correct.
