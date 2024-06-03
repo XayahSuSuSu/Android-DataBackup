@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,19 +27,23 @@ import com.xayah.core.model.OperationState
 import com.xayah.core.ui.component.AnimatedTextContainer
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.ProcessingCard
+import com.xayah.core.ui.component.ReportCard
 import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.component.pagerAnimation
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
+import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.withMainContext
 import com.xayah.feature.main.packages.ProcessingSetupScaffold
 import com.xayah.feature.main.packages.R
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
@@ -51,6 +56,10 @@ fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
     val preItems by viewModel.preItems.collectAsStateWithLifecycle()
     val postItems by viewModel.postItems.collectAsStateWithLifecycle()
     val packageItems by viewModel.packageItems.collectAsStateWithLifecycle()
+    val packageSize by viewModel.packageSize.collectAsStateWithLifecycle()
+    val packageSucceed by viewModel.packageSucceed.collectAsStateWithLifecycle()
+    val packageFailed by viewModel.packageFailed.collectAsStateWithLifecycle()
+    val timer by viewModel.timer.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val navController = LocalNavController.current!!
     val dialogState = LocalSlotScope.current!!.dialogSlot
@@ -97,7 +106,13 @@ fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
     ProcessingSetupScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.processing),
+        title = StringResourceToken.fromStringId(
+            when (uiState.state) {
+                OperationState.PROCESSING -> R.string.processing
+                OperationState.DONE -> R.string.restore_completed
+                else -> R.string.restore
+            }
+        ),
         progress = progress,
         actions = {
             Button(enabled = uiState.state == OperationState.IDLE || uiState.state == OperationState.DONE, onClick = {
@@ -118,7 +133,8 @@ fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
                 .fillMaxSize()
                 .paddingVertical(SizeTokens.Level12)
         ) {
-            val pagerState = key(packageItems.size) { rememberPagerState(pageCount = { packageItems.size + 2 }) }
+            val scope = rememberCoroutineScope()
+            val pagerState = key(packageItems.size) { rememberPagerState(pageCount = { packageItems.size + 3 }) }
 
             LaunchedEffect(task, preItems) {
                 if (task != null) pagerState.animateScrollToPage(task!!.processingIndex)
@@ -136,7 +152,7 @@ fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
                         items = preItems
                     )
 
-                    pagerState.pageCount - 1 -> ProcessingCard(
+                    pagerState.pageCount - 2 -> ProcessingCard(
                         modifier = Modifier
                             .fillMaxSize()
                             .pagerAnimation(pagerState, page),
@@ -144,6 +160,20 @@ fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
                         title = StringResourceToken.fromStringId(R.string.post_processing),
                         defExpanded = true,
                         items = postItems
+                    )
+
+
+                    pagerState.pageCount - 1 -> ReportCard(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pagerAnimation(pagerState, page),
+                        scope = scope,
+                        pagerState = pagerState,
+                        title = StringResourceToken.fromStringId(R.string.report),
+                        timer = StringResourceToken.fromString(timer),
+                        packageSize = StringResourceToken.fromString(packageSize),
+                        succeed = packageSucceed,
+                        failed = packageFailed,
                     )
 
                     else -> ProcessingCard(

@@ -9,6 +9,9 @@
     <item name="_protected" type="string" />
     <item name="ssaid" type="string" />
     <item name="keystore" type="string" />
+    <item name="time" type="string" />
+    <item name="succeed" type="string" />
+    <item name="failed" type="string" />
 
     <item name="jetbrains_mono_regular" type="font" />
     <item name="ic_rounded_check_circle" type="drawable" />

@@ -56,6 +56,7 @@
     <item name="calculating" type="string" />
     <item name="loading" type="string" />
     <item name="confirm_add_to_blacklist" type="string" />
+    <item name="report" type="string" />
 
     <item name="backup_sort_type_items" type="array" />
     <item name="flag_type_items" type="array" />

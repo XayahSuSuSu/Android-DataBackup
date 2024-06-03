@@ -24,6 +24,7 @@ import com.xayah.core.ui.material3.SnackbarType
 import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.ProcessingPackageCardItem
+import com.xayah.core.ui.model.ReportAppItemInfo
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.util.addInfo
@@ -33,9 +34,11 @@ import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
+import com.xayah.core.util.DateUtil
 import com.xayah.feature.main.packages.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -62,6 +65,7 @@ sealed class IndexUiIntent : UiIntent {
     data object DestroyService : IndexUiIntent()
 }
 
+@ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
@@ -225,12 +229,49 @@ class IndexViewModel @Inject constructor(
             }
             .flowOnIO()
     }
-
-    var task: StateFlow<TaskEntity?> = _task.stateInScope(null)
-    var preItems: StateFlow<List<ProcessingCardItem>> = _preItems.stateInScope(listOf())
-    val postItems: StateFlow<List<ProcessingCardItem>> = _postItems.stateInScope(listOf())
-    val packageItems: StateFlow<List<ProcessingPackageCardItem>> = _packageItems.stateInScope(listOf())
-
+    private val _packageSize: Flow<String> = _taskId.flatMapLatest { id ->
+        taskRepo.queryPackageFlow(id)
+            .map { packages ->
+                var bytes = 0.0
+                packages.forEach {
+                    bytes += it.packageEntity.storageStatsBytes
+                }
+                bytes.formatSize()
+            }
+            .flowOnIO()
+    }
+    private val _packageSucceed: Flow<List<ReportAppItemInfo>> = _taskId.flatMapLatest { id ->
+        taskRepo.queryPackageFlow(id)
+            .map { packages ->
+                val firstIndex = packages.firstOrNull()?.id ?: 0
+                packages.filter { it.state == OperationState.DONE }
+                    .map {
+                        ReportAppItemInfo(
+                            packageName = it.packageEntity.packageName,
+                            index = (it.id - firstIndex).toInt(),
+                            label = it.packageEntity.packageInfo.label.ifEmpty { context.getString(R.string.unknown) },
+                            user = "${context.getString(R.string.user)}: ${it.packageEntity.userId}"
+                        )
+                    }
+            }
+            .flowOnIO()
+    }
+    private val _packageFailed: Flow<List<ReportAppItemInfo>> = _taskId.flatMapLatest { id ->
+        taskRepo.queryPackageFlow(id)
+            .map { packages ->
+                val firstIndex = packages.firstOrNull()?.id ?: 0
+                packages.filter { it.state == OperationState.ERROR }
+                    .map {
+                        ReportAppItemInfo(
+                            packageName = it.packageEntity.packageName,
+                            index = (it.id - firstIndex).toInt(),
+                            label = it.packageEntity.packageInfo.label.ifEmpty { context.getString(R.string.unknown) },
+                            user = "${context.getString(R.string.user)}: ${it.packageEntity.userId}"
+                        )
+                    }
+            }
+            .flowOnIO()
+    }
     private val _accounts: Flow<List<DialogRadioItem<Any>>> = cloudRepo.clouds.map { entities ->
         entities.map {
             DialogRadioItem(
@@ -241,5 +282,20 @@ class IndexViewModel @Inject constructor(
         }
 
     }.flowOnIO()
+    private val _timer: Flow<String> = _task.map { cur ->
+        if (cur != null && cur.startTimestamp != 0L && cur.endTimestamp != 0L)
+            DateUtil.getShortRelativeTimeSpanString(context, cur.startTimestamp, cur.endTimestamp)
+        else
+            DateUtil.getShortRelativeTimeSpanString(context, 0, 0)
+    }.flowOnIO()
+
+    var task: StateFlow<TaskEntity?> = _task.stateInScope(null)
+    var preItems: StateFlow<List<ProcessingCardItem>> = _preItems.stateInScope(listOf())
+    val postItems: StateFlow<List<ProcessingCardItem>> = _postItems.stateInScope(listOf())
+    val packageItems: StateFlow<List<ProcessingPackageCardItem>> = _packageItems.stateInScope(listOf())
+    val packageSize: StateFlow<String> = _packageSize.stateInScope("")
+    val packageSucceed: StateFlow<List<ReportAppItemInfo>> = _packageSucceed.stateInScope(listOf())
+    val packageFailed: StateFlow<List<ReportAppItemInfo>> = _packageFailed.stateInScope(listOf())
     val accounts: StateFlow<List<DialogRadioItem<Any>>> = _accounts.stateInScope(listOf())
+    val timer: StateFlow<String> = _timer.stateInScope(DateUtil.getShortRelativeTimeSpanString(context, 0, 0))
 }

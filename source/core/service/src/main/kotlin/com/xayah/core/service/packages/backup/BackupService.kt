@@ -305,6 +305,11 @@ internal abstract class BackupService : Service() {
                 "${time}, ${taskEntity.successCount} ${context.getString(R.string.succeed)}, ${taskEntity.failureCount} ${context.getString(R.string.failed)}",
                 ongoing = false
             )
+
+            taskEntity.also {
+                it.processingIndex++
+                taskDao.upsert(it)
+            }
         }
     }
 }

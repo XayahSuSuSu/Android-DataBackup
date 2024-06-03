@@ -308,4 +308,5 @@
     <string name="confirm_add_to_blacklist">Add to blacklist?</string>
     <string name="confirm_remove_from_blacklist">Remove from blacklist?</string>
     <string name="it_is_empty">It\'s empty</string>
+    <string name="report">Report</string>
 </resources>

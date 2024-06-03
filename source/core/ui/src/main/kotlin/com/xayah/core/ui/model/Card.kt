@@ -18,3 +18,10 @@ data class ProcessingPackageCardItem(
     val packageName: String = "",
     val items: List<ProcessingCardItem> = listOf(),
 )
+
+data class ReportAppItemInfo(
+    val packageName: String,
+    val index: Int,
+    val label: String,
+    val user: String,
+)

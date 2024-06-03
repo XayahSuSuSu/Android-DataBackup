@@ -11,12 +11,17 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.ripple.rememberRipple
@@ -42,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.core.model.OperationState
+import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CardColors
 import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.material3.CardElevation
@@ -51,11 +57,18 @@ import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.material3.tokens.OutlinedCardTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.ProcessingCardItem
+import com.xayah.core.ui.model.ReportAppItemInfo
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.StateView
+import com.xayah.core.ui.util.fromDrawable
+import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.getValue
 import com.xayah.core.ui.util.value
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun outlinedCardBorder(enabled: Boolean = true, borderColor: Color? = null): BorderStroke {
@@ -246,6 +259,179 @@ fun ProcessingCard(
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun ReportItem(
+    enabled: Boolean = true,
+    icon: ImageVectorToken,
+    iconTint: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnSurfaceVariant,
+    title: StringResourceToken,
+    titleTint: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnSurfaceVariant,
+    content: StringResourceToken,
+    expandedContent: (@Composable () -> Unit)? = null
+) {
+    val expandable by remember(expandedContent) { mutableStateOf(expandedContent != null) }
+    var expanded by remember { mutableStateOf(true) }
+
+    Column {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true,
+            color = ColorSchemeKeyTokens.Transparent.toColor(enabled),
+            onClick = {
+                if (expandable)
+                    expanded = expanded.not()
+            }
+        ) {
+            Row(
+                modifier = Modifier.padding(SizeTokens.Level16),
+                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(SizeTokens.Level24),
+                    imageVector = icon.value,
+                    contentDescription = null,
+                    tint = iconTint.toColor(enabled)
+                )
+                TitleSmallText(modifier = Modifier.weight(1f), text = title.value, color = titleTint.toColor(enabled))
+                LabelSmallText(text = content.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                if (expandable)
+                    Icon(
+                        imageVector = if (expanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                    )
+            }
+        }
+        AnimatedVisibility(expanded) {
+            expandedContent?.invoke()
+        }
+    }
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun ReportAppItem(enabled: Boolean, color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnSurfaceVariant, item: ReportAppItemInfo, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        enabled = true,
+        color = ColorSchemeKeyTokens.Transparent.toColor(enabled),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(SizeTokens.Level16),
+            horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.size(SizeTokens.Level24))
+            LabelMediumText(modifier = Modifier.weight(1f), text = item.label, color = color.toColor(enabled))
+            LabelSmallText(text = item.user, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+            PackageIconImage(enabled = enabled, packageName = item.packageName, size = SizeTokens.Level24)
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
+@Composable
+fun ReportCard(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    scope: CoroutineScope,
+    pagerState: PagerState,
+    title: StringResourceToken,
+    timer: StringResourceToken,
+    packageSize: StringResourceToken,
+    succeed: List<ReportAppItemInfo>,
+    failed: List<ReportAppItemInfo>,
+) {
+    Card(
+        modifier = modifier,
+        enabled = enabled,
+        colors = CardDefaults.cardColors(containerColor = ColorSchemeKeyTokens.SurfaceVariantDim.toColor(enabled)),
+        indication = null,
+    ) {
+        Column {
+            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = enabled,
+                    color = ColorSchemeKeyTokens.SurfaceVariant.toColor(enabled),
+                    shape = ShapeDefaults.Medium,
+                    onClick = {}
+                ) {
+                    Row(modifier = Modifier.padding(SizeTokens.Level16), horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            modifier = Modifier.size(SizeTokens.Level24),
+                            imageVector = ImageVectorToken.fromVector(Icons.Outlined.Description).value,
+                            contentDescription = null,
+                            tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled)
+                        )
+
+                        TitleMediumText(
+                            modifier = Modifier.weight(1f),
+                            text = title.value,
+                            color = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                        )
+
+                        LabelSmallText(text = packageSize.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                    }
+                }
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    ReportItem(
+                        icon = ImageVectorToken.fromVector(Icons.Filled.Timer),
+                        iconTint = ColorSchemeKeyTokens.Primary,
+                        title = StringResourceToken.fromStringId(R.string.time),
+                        titleTint = ColorSchemeKeyTokens.Primary,
+                        content = timer
+                    )
+                    ReportItem(
+                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel_circle),
+                        iconTint = ColorSchemeKeyTokens.Error,
+                        title = StringResourceToken.fromStringId(R.string.failed),
+                        titleTint = ColorSchemeKeyTokens.Error,
+                        content = StringResourceToken.fromString(failed.size.toString()),
+                        expandedContent = if (failed.isEmpty()) null else {
+                            {
+                                Column {
+                                    failed.forEach {
+                                        ReportAppItem(enabled = enabled, color = ColorSchemeKeyTokens.Error, item = it) {
+                                            scope.launch {
+                                                pagerState.animateScrollToPage(it.index)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    )
+                    ReportItem(
+                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle),
+                        iconTint = ColorSchemeKeyTokens.GreenPrimary,
+                        title = StringResourceToken.fromStringId(R.string.succeed),
+                        titleTint = ColorSchemeKeyTokens.GreenPrimary,
+                        content = StringResourceToken.fromString(succeed.size.toString()),
+                        expandedContent = if (succeed.isEmpty()) null else {
+                            {
+                                Column {
+                                    succeed.forEach {
+                                        ReportAppItem(enabled = enabled, color = ColorSchemeKeyTokens.GreenPrimary, item = it) {
+                                            scope.launch {
+                                                pagerState.animateScrollToPage(it.index)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
