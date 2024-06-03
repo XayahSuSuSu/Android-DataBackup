@@ -296,4 +296,9 @@
     <string name="dump_apk_desc">Intenta analizar el apk para obtener información más detallada</string>
     <string name="calculating">Calculando</string>
     <string name="_protected">Protegido</string>
+    <string name="blacklist_desc">Gestionar entradas bloqueadas</string>
+    <string name="confirm_remove_from_blacklist">¿Eliminar de la lista negra?</string>
+    <string name="it_is_empty">Esta vacía</string>
+    <string name="blacklist">Lista negra</string>
+    <string name="confirm_add_to_blacklist">¿Añadir a la lista negra?</string>
 </resources>
