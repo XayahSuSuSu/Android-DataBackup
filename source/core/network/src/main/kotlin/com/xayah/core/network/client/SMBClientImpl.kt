@@ -23,6 +23,8 @@ import com.xayah.core.model.SmbVersion
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.SMBExtra
 import com.xayah.core.network.R
+import com.xayah.core.network.io.CountingInputStreamImpl
+import com.xayah.core.network.io.CountingOutputStreamImpl
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.util.GsonUtil
@@ -202,8 +204,10 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         log { "upload: $src to $dstPath" }
         val dstFile = openFile(dstPath)
         val srcFile = File(src)
+        val srcFileSize = srcFile.length()
         val srcInputStream = FileInputStream(srcFile)
-        dstFile.write(InputStreamByteChunkProvider(srcInputStream))
+        val countingStream = CountingInputStreamImpl(srcInputStream, srcFileSize) { read, total -> log { "upload: $read / $total" }}
+        dstFile.write(InputStreamByteChunkProvider(countingStream))
         srcInputStream.close()
         dstFile.close()
     }
@@ -214,7 +218,8 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         log { "download: $src to $dstPath" }
         val dstOutputStream = File(dstPath).outputStream()
         val srcFile = openFile(src)
-        srcFile.read(dstOutputStream)
+        val countingStream = CountingOutputStreamImpl(dstOutputStream, -1) { written, total -> log { "download: $written / $total" }}
+        srcFile.read(countingStream)
         srcFile.close()
         dstOutputStream.close()
     }

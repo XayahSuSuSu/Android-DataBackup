@@ -5,6 +5,8 @@ import com.xayah.core.common.util.toPathString
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.FTPExtra
 import com.xayah.core.network.R
+import com.xayah.core.network.io.CountingInputStreamImpl
+import com.xayah.core.network.io.CountingOutputStreamImpl
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.util.GsonUtil
@@ -90,8 +92,10 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
         val srcFile = File(src)
+        val srcFileSize = srcFile.length()
         val srcInputStream = FileInputStream(srcFile)
-        client.storeFile(dstPath, srcInputStream)
+        val countingStream = CountingInputStreamImpl(srcInputStream, srcFileSize) { read, total -> log { "upload: $read / $total" }}
+        client.storeFile(dstPath, countingStream)
         srcInputStream.close()
     }
 
@@ -102,7 +106,8 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
         val dstFile = File(dstPath)
         val srcInputStream: InputStream = client.retrieveFileStream(src)
         val dstOutPutStream: OutputStream = dstFile.outputStream()
-        srcInputStream.copyTo(dstOutPutStream)
+        val countingStream = CountingOutputStreamImpl(dstOutPutStream, -1) { written, total -> log { "download: $written / $total" }}
+        srcInputStream.copyTo(countingStream)
         srcInputStream.close()
         dstOutPutStream.close()
         client.completePendingCommand()
