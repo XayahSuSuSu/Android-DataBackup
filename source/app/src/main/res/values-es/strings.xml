@@ -301,4 +301,5 @@
     <string name="it_is_empty">Esta vacía</string>
     <string name="blacklist">Lista negra</string>
     <string name="confirm_add_to_blacklist">¿Añadir a la lista negra?</string>
+    <string name="report">Informar</string>
 </resources>
