@@ -85,6 +85,7 @@ val Info.toProcessingCardItem: ProcessingCardItem
             progress = progress,
             title = StringResourceToken.fromString(title),
             log = StringResourceToken.fromString(log),
+            content = StringResourceToken.fromString(content)
         )
     }
 
@@ -95,6 +96,7 @@ val ProcessingInfoEntity.toProcessingCardItem: ProcessingCardItem
             progress = progress,
             title = StringResourceToken.fromString(title),
             log = StringResourceToken.fromString(log),
+            content = StringResourceToken.fromString(content)
         )
     }
 

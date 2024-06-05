@@ -20,8 +20,14 @@ import com.xayah.core.service.util.PackagesBackupUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import java.io.PrintWriter
+import java.io.StringWriter
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
 @AndroidEntryPoint
 internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
@@ -109,63 +115,81 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
         rootService.mkdirs(tmpDstDir)
 
         val remoteDstDir = "${remoteAppsDir}/${p.archivesRelativeDir}"
-        client.mkdirRecursively(remoteDstDir)
+        runCatching { client.mkdirRecursively(remoteDstDir) }.onSuccess {
+            var restoreEntity = packageRepository.getPackage(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, cloudEntity.name, remote)
 
-        var restoreEntity = packageRepository.getPackage(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, cloudEntity.name, remote)
-
-        packagesBackupUtil.backupApk(p = p, t = t, r = restoreEntity, dstDir = tmpDstDir).apply {
-            if (isSuccess)
-                packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_APK, srcDir = tmpDstDir, dstDir = remoteDstDir)
-        }
-
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_USER, dstDir = tmpDstDir).apply {
-            if (isSuccess)
-                packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = tmpDstDir, dstDir = remoteDstDir)
-        }
-
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_USER_DE, dstDir = tmpDstDir).apply {
-            if (isSuccess)
-                packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER_DE, srcDir = tmpDstDir, dstDir = remoteDstDir)
-        }
-
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_DATA, dstDir = tmpDstDir).apply {
-            if (isSuccess)
-                packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = tmpDstDir, dstDir = remoteDstDir)
-        }
-
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_OBB, dstDir = tmpDstDir).apply {
-            if (isSuccess)
-                packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = tmpDstDir, dstDir = remoteDstDir)
-        }
-
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_MEDIA, dstDir = tmpDstDir).apply {
-            if (isSuccess)
-                packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = tmpDstDir, dstDir = remoteDstDir)
-        }
-
-        packagesBackupUtil.backupPermissions(p = p)
-        packagesBackupUtil.backupSsaid(p = p)
-
-        if (t.isSuccess) {
-            // Save config
-            val id = restoreEntity?.id ?: 0
-            restoreEntity = p.copy(
-                id = id,
-                indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = cloudEntity.name, backupDir = remote),
-                dataStates = restoreEntity?.dataStates?.copy() ?: p.dataStates.copy(),
-                extraInfo = p.extraInfo.copy(existed = true, activated = false)
-            )
-            val dst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpDstDir)
-            rootService.writeJson(data = restoreEntity, dst = dst)
-            cloudRepository.upload(client = client, src = dst, dstDir = remoteDstDir)
-
-            packageDao.upsert(restoreEntity)
-            packageDao.upsert(p)
-            t.apply {
-                packageEntity = p
-                taskDao.upsert(this)
+            packagesBackupUtil.backupApk(p = p, t = t, r = restoreEntity, dstDir = tmpDstDir).apply {
+                if (isSuccess)
+                    packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_APK, srcDir = tmpDstDir, dstDir = remoteDstDir)
             }
-            packageRepository.updateCloudPackageArchivesSize(restoreEntity.packageName, OpType.RESTORE, restoreEntity.userId, client, cloudEntity)
+
+            packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_USER, dstDir = tmpDstDir).apply {
+                if (isSuccess)
+                    packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = tmpDstDir, dstDir = remoteDstDir)
+            }
+
+            packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_USER_DE, dstDir = tmpDstDir).apply {
+                if (isSuccess)
+                    packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER_DE, srcDir = tmpDstDir, dstDir = remoteDstDir)
+            }
+
+            packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_DATA, dstDir = tmpDstDir).apply {
+                if (isSuccess)
+                    packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = tmpDstDir, dstDir = remoteDstDir)
+            }
+
+            packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_OBB, dstDir = tmpDstDir).apply {
+                if (isSuccess)
+                    packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = tmpDstDir, dstDir = remoteDstDir)
+            }
+
+            packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_MEDIA, dstDir = tmpDstDir).apply {
+                if (isSuccess)
+                    packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = tmpDstDir, dstDir = remoteDstDir)
+            }
+
+            packagesBackupUtil.backupPermissions(p = p)
+            packagesBackupUtil.backupSsaid(p = p)
+
+            if (t.isSuccess) {
+                // Save config
+                val id = restoreEntity?.id ?: 0
+                restoreEntity = p.copy(
+                    id = id,
+                    indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = cloudEntity.name, backupDir = remote),
+                    dataStates = restoreEntity?.dataStates?.copy() ?: p.dataStates.copy(),
+                    extraInfo = p.extraInfo.copy(existed = true, activated = false)
+                )
+                val dst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpDstDir)
+                rootService.writeJson(data = restoreEntity, dst = dst)
+                cloudRepository.upload(client = client, src = dst, dstDir = remoteDstDir)
+
+                packageDao.upsert(restoreEntity)
+                packageDao.upsert(p)
+                t.apply {
+                    packageEntity = p
+                    taskDao.upsert(this)
+                }
+                packageRepository.updateCloudPackageArchivesSize(restoreEntity.packageName, OpType.RESTORE, restoreEntity.userId, client, cloudEntity)
+            }
+        }.onFailure {
+            val stringWriter = StringWriter()
+            val printWriter = PrintWriter(stringWriter)
+            it.printStackTrace(printWriter)
+            val log = log { stringWriter.toString() }
+            t.apkInfo.state = OperationState.ERROR
+            t.userInfo.state = OperationState.ERROR
+            t.userDeInfo.state = OperationState.ERROR
+            t.dataInfo.state = OperationState.ERROR
+            t.obbInfo.state = OperationState.ERROR
+            t.mediaInfo.state = OperationState.ERROR
+            t.apkInfo.log = log
+            t.userInfo.log = log
+            t.userDeInfo.log = log
+            t.dataInfo.log = log
+            t.obbInfo.log = log
+            t.mediaInfo.log = log
+            taskDao.upsert(t)
         }
 
         taskEntity.also {
@@ -189,11 +213,30 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
         if (context.readBackupItself().first()) {
             log { "Backup itself enabled." }
             commonBackupUtil.backupItself(dstDir = tmpDir)
-            cloudRepository.upload(client = client, src = commonBackupUtil.getItselfDst(tmpDir), dstDir = remote)
+            postBackupItselfEntity.also {
+                it.state = OperationState.UPLOADING
+                taskDao.upsert(it)
+            }
+            var flag = true
+            var progress = 0f
+            with(CoroutineScope(coroutineContext)) {
+                launch {
+                    while (flag) {
+                        postBackupItselfEntity.also {
+                            it.content = "${(progress * 100).toInt()}%"
+                            taskDao.upsert(it)
+                        }
+                        delay(500)
+                    }
+                }
+            }
+            cloudRepository.upload(client = client, src = commonBackupUtil.getItselfDst(tmpDir), dstDir = remote, onUploading = { read, total -> progress = read.toFloat() / total })
+            flag = false
         }
 
         postBackupItselfEntity.also {
             it.state = if (backupItself) OperationState.DONE else OperationState.SKIP
+            it.content = "100%"
             taskDao.upsert(it)
         }
     }
@@ -207,10 +250,29 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
         // Backup others.
         log { "Save icons." }
         packagesBackupUtil.backupIcons(dstDir = tmpConfigsDir)
-        cloudRepository.upload(client = client, src = packagesBackupUtil.getIconsDst(tmpConfigsDir), dstDir = remoteConfigsDir)
+        postSaveIconsEntity.also {
+            it.state = OperationState.UPLOADING
+            taskDao.upsert(it)
+        }
+        var flag = true
+        var progress = 0f
+        with(CoroutineScope(coroutineContext)) {
+            launch {
+                while (flag) {
+                    postSaveIconsEntity.also {
+                        it.content = "${(progress * 100).toInt()}%"
+                        taskDao.upsert(it)
+                    }
+                    delay(500)
+                }
+            }
+        }
+        cloudRepository.upload(client = client, src = packagesBackupUtil.getIconsDst(tmpConfigsDir), dstDir = remoteConfigsDir, onUploading = { read, total -> progress = read.toFloat() / total })
+        flag = false
 
         postSaveIconsEntity.also {
             it.state = OperationState.DONE
+            it.content = "100%"
             taskDao.upsert(it)
         }
     }

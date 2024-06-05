@@ -87,30 +87,34 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
         if (client.rename(src, dst).not()) throw IOException("Failed to rename file from $src to $dst.")
     }
 
-    override fun upload(src: String, dst: String) = withClient { client ->
+    override fun upload(src: String, dst: String, onUploading: (read: Long, total: Long) -> Unit) = withClient { client ->
         val name = Paths.get(src).fileName
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
         val srcFile = File(src)
         val srcFileSize = srcFile.length()
         val srcInputStream = FileInputStream(srcFile)
-        val countingStream = CountingInputStreamImpl(srcInputStream, srcFileSize) { read, total -> log { "upload: $read / $total" }}
+        val countingStream = CountingInputStreamImpl(srcInputStream, srcFileSize) { read, total -> onUploading(read, total) }
         client.storeFile(dstPath, countingStream)
         srcInputStream.close()
+        countingStream.close()
+        onUploading(countingStream.byteCount, countingStream.byteCount)
     }
 
-    override fun download(src: String, dst: String) = withClient { client ->
+    override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) = withClient { client ->
         val name = Paths.get(src).fileName
         val dstPath = "$dst/$name"
         log { "download: $src to $dstPath" }
         val dstFile = File(dstPath)
         val srcInputStream: InputStream = client.retrieveFileStream(src)
         val dstOutPutStream: OutputStream = dstFile.outputStream()
-        val countingStream = CountingOutputStreamImpl(dstOutPutStream, -1) { written, total -> log { "download: $written / $total" }}
+        val countingStream = CountingOutputStreamImpl(dstOutPutStream, -1) { written, total -> onDownloading(written, total) }
         srcInputStream.copyTo(countingStream)
+        client.completePendingCommand()
         srcInputStream.close()
         dstOutPutStream.close()
-        client.completePendingCommand()
+        countingStream.close()
+        onDownloading(countingStream.byteCount, countingStream.byteCount)
     }
 
     override fun deleteFile(src: String) = withClient { client ->

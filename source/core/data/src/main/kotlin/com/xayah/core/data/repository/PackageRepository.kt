@@ -357,7 +357,7 @@ class PackageRepository @Inject constructor(
         }
     }
 
-    suspend fun loadPackagesFromCloud(cloud: String) {
+    suspend fun loadPackagesFromCloud(cloud: String) = runCatching {
         cloudRepository.withClient(cloud) { client, entity ->
             val remote = entity.remote
             val src = pathUtil.getCloudRemoteAppsDir(remote)
@@ -396,7 +396,7 @@ class PackageRepository @Inject constructor(
                 }
             }
         }
-    }
+    }.onFailure(rootService.onFailure)
 
     suspend fun loadIconsFromLocal() {
         val archivePath = "${pathUtil.getLocalBackupConfigsDir()}/$IconRelativeDir.${CompressionType.TAR.suffix}"

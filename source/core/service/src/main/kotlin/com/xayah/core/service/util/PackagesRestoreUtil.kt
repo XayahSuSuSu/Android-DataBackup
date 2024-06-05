@@ -12,6 +12,7 @@ import com.xayah.core.model.OperationState
 import com.xayah.core.model.SelectionType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
+import com.xayah.core.model.util.formatSize
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.LogUtil
@@ -23,8 +24,12 @@ import com.xayah.core.util.command.SELinux
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.model.ShellResult
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
 class PackagesRestoreUtil @Inject constructor(
     @ApplicationContext val context: Context,
@@ -75,6 +80,7 @@ class PackagesRestoreUtil @Inject constructor(
         state: OperationState? = null,
         bytes: Long? = null,
         log: String? = null,
+        content: String? = null,
     ) = run {
         when (dataType) {
             DataType.PACKAGE_APK -> {
@@ -82,6 +88,7 @@ class PackagesRestoreUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -90,6 +97,7 @@ class PackagesRestoreUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -98,6 +106,7 @@ class PackagesRestoreUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -106,6 +115,7 @@ class PackagesRestoreUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -114,6 +124,7 @@ class PackagesRestoreUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -122,6 +133,7 @@ class PackagesRestoreUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -410,14 +422,31 @@ class PackagesRestoreUtil @Inject constructor(
             t.updateInfo(dataType = dataType, state = OperationState.DOWNLOADING)
 
             if (client.exists(src)) {
-                cloudRepository.download(client = client, src = src, dstDir = dstDir, onDownloaded = onDownloaded).apply {
-                    t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog(dataType) + "\n${outString}")
+                var flag = true
+                var progress = 0.0
+                with(CoroutineScope(coroutineContext)) {
+                    launch {
+                        while (flag) {
+                            t.updateInfo(dataType = dataType, content = progress.formatSize())
+                            delay(500)
+                        }
+                    }
+                }
+
+                cloudRepository.download(client = client, src = src, dstDir = dstDir, onDownloading = { written, _ -> progress = written.toDouble() }, onDownloaded = onDownloaded).apply {
+                    flag = false
+                    t.updateInfo(
+                        dataType = dataType,
+                        state = if (isSuccess) OperationState.DONE else OperationState.ERROR,
+                        log = t.getLog(dataType) + "\n${outString}",
+                        content = progress.formatSize()
+                    )
                 }
             } else {
                 if (dataType == DataType.PACKAGE_USER || dataType == DataType.PACKAGE_APK) {
-                    t.updateInfo(dataType = dataType, state = OperationState.ERROR, log = log { "Not exist: $src" })
+                    t.updateInfo(dataType = dataType, state = OperationState.ERROR, log = log { "Failed to connect to cloud or file not exist: $src" })
                 } else {
-                    t.updateInfo(dataType = dataType, state = OperationState.SKIP, log = log { "Not exist and skip: $src" })
+                    t.updateInfo(dataType = dataType, state = OperationState.SKIP, log = log { "Failed to connect to cloud or file not exist, skip: $src" })
                 }
             }
         }

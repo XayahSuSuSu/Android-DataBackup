@@ -10,6 +10,7 @@ data class Info(
     var bytes: Long = 0,
     var log: String = "",
     var title: String = "",
+    var content: String = "",
     var progress: Float = -1f,
     var state: OperationState = OperationState.IDLE,
 )
@@ -59,6 +60,7 @@ data class ProcessingInfoEntity(
     var bytes: Long = 0,
     var log: String = "",
     var title: String = "",
+    var content: String = "",
     var progress: Float = -1f,
     var state: OperationState = OperationState.IDLE,
 )

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "481ef87b0584c66574cd274c1354b031",
+    "identityHash": "11ab01aea2aab71067f7a3986d82063f",
     "entities": [
       {
         "tableName": "PackageEntity",
@@ -564,7 +564,7 @@
       },
       {
         "tableName": "TaskDetailPackageEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `state` TEXT NOT NULL, `packageEntity_id` INTEGER NOT NULL, `packageEntity_indexInfo_opType` TEXT NOT NULL, `packageEntity_indexInfo_packageName` TEXT NOT NULL, `packageEntity_indexInfo_userId` INTEGER NOT NULL, `packageEntity_indexInfo_compressionType` TEXT NOT NULL, `packageEntity_indexInfo_preserveId` INTEGER NOT NULL, `packageEntity_indexInfo_cloud` TEXT NOT NULL, `packageEntity_indexInfo_backupDir` TEXT NOT NULL, `packageEntity_packageInfo_label` TEXT NOT NULL, `packageEntity_packageInfo_versionName` TEXT NOT NULL, `packageEntity_packageInfo_versionCode` INTEGER NOT NULL, `packageEntity_packageInfo_flags` INTEGER NOT NULL, `packageEntity_packageInfo_firstInstallTime` INTEGER NOT NULL, `packageEntity_extraInfo_uid` INTEGER NOT NULL, `packageEntity_extraInfo_labels` TEXT NOT NULL, `packageEntity_extraInfo_hasKeystore` INTEGER NOT NULL, `packageEntity_extraInfo_permissions` TEXT NOT NULL, `packageEntity_extraInfo_ssaid` TEXT NOT NULL, `packageEntity_extraInfo_blocked` INTEGER NOT NULL, `packageEntity_extraInfo_activated` INTEGER NOT NULL, `packageEntity_extraInfo_existed` INTEGER NOT NULL, `packageEntity_dataStates_apkState` TEXT NOT NULL, `packageEntity_dataStates_userState` TEXT NOT NULL, `packageEntity_dataStates_userDeState` TEXT NOT NULL, `packageEntity_dataStates_dataState` TEXT NOT NULL, `packageEntity_dataStates_obbState` TEXT NOT NULL, `packageEntity_dataStates_mediaState` TEXT NOT NULL, `packageEntity_dataStates_permissionState` TEXT NOT NULL, `packageEntity_dataStates_ssaidState` TEXT NOT NULL, `packageEntity_storageStats_appBytes` INTEGER NOT NULL, `packageEntity_storageStats_cacheBytes` INTEGER NOT NULL, `packageEntity_storageStats_dataBytes` INTEGER NOT NULL, `packageEntity_storageStats_externalCacheBytes` INTEGER NOT NULL, `packageEntity_dataStats_apkBytes` INTEGER NOT NULL, `packageEntity_dataStats_userBytes` INTEGER NOT NULL, `packageEntity_dataStats_userDeBytes` INTEGER NOT NULL, `packageEntity_dataStats_dataBytes` INTEGER NOT NULL, `packageEntity_dataStats_obbBytes` INTEGER NOT NULL, `packageEntity_dataStats_mediaBytes` INTEGER NOT NULL, `packageEntity_displayStats_apkBytes` INTEGER NOT NULL, `packageEntity_displayStats_userBytes` INTEGER NOT NULL, `packageEntity_displayStats_userDeBytes` INTEGER NOT NULL, `packageEntity_displayStats_dataBytes` INTEGER NOT NULL, `packageEntity_displayStats_obbBytes` INTEGER NOT NULL, `packageEntity_displayStats_mediaBytes` INTEGER NOT NULL, `apk_bytes` INTEGER NOT NULL, `apk_log` TEXT NOT NULL, `apk_title` TEXT NOT NULL, `apk_progress` REAL NOT NULL, `apk_state` TEXT NOT NULL, `user_bytes` INTEGER NOT NULL, `user_log` TEXT NOT NULL, `user_title` TEXT NOT NULL, `user_progress` REAL NOT NULL, `user_state` TEXT NOT NULL, `userDe_bytes` INTEGER NOT NULL, `userDe_log` TEXT NOT NULL, `userDe_title` TEXT NOT NULL, `userDe_progress` REAL NOT NULL, `userDe_state` TEXT NOT NULL, `data_bytes` INTEGER NOT NULL, `data_log` TEXT NOT NULL, `data_title` TEXT NOT NULL, `data_progress` REAL NOT NULL, `data_state` TEXT NOT NULL, `obb_bytes` INTEGER NOT NULL, `obb_log` TEXT NOT NULL, `obb_title` TEXT NOT NULL, `obb_progress` REAL NOT NULL, `obb_state` TEXT NOT NULL, `media_bytes` INTEGER NOT NULL, `media_log` TEXT NOT NULL, `media_title` TEXT NOT NULL, `media_progress` REAL NOT NULL, `media_state` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `state` TEXT NOT NULL, `packageEntity_id` INTEGER NOT NULL, `packageEntity_indexInfo_opType` TEXT NOT NULL, `packageEntity_indexInfo_packageName` TEXT NOT NULL, `packageEntity_indexInfo_userId` INTEGER NOT NULL, `packageEntity_indexInfo_compressionType` TEXT NOT NULL, `packageEntity_indexInfo_preserveId` INTEGER NOT NULL, `packageEntity_indexInfo_cloud` TEXT NOT NULL, `packageEntity_indexInfo_backupDir` TEXT NOT NULL, `packageEntity_packageInfo_label` TEXT NOT NULL, `packageEntity_packageInfo_versionName` TEXT NOT NULL, `packageEntity_packageInfo_versionCode` INTEGER NOT NULL, `packageEntity_packageInfo_flags` INTEGER NOT NULL, `packageEntity_packageInfo_firstInstallTime` INTEGER NOT NULL, `packageEntity_extraInfo_uid` INTEGER NOT NULL, `packageEntity_extraInfo_labels` TEXT NOT NULL, `packageEntity_extraInfo_hasKeystore` INTEGER NOT NULL, `packageEntity_extraInfo_permissions` TEXT NOT NULL, `packageEntity_extraInfo_ssaid` TEXT NOT NULL, `packageEntity_extraInfo_blocked` INTEGER NOT NULL, `packageEntity_extraInfo_activated` INTEGER NOT NULL, `packageEntity_extraInfo_existed` INTEGER NOT NULL, `packageEntity_dataStates_apkState` TEXT NOT NULL, `packageEntity_dataStates_userState` TEXT NOT NULL, `packageEntity_dataStates_userDeState` TEXT NOT NULL, `packageEntity_dataStates_dataState` TEXT NOT NULL, `packageEntity_dataStates_obbState` TEXT NOT NULL, `packageEntity_dataStates_mediaState` TEXT NOT NULL, `packageEntity_dataStates_permissionState` TEXT NOT NULL, `packageEntity_dataStates_ssaidState` TEXT NOT NULL, `packageEntity_storageStats_appBytes` INTEGER NOT NULL, `packageEntity_storageStats_cacheBytes` INTEGER NOT NULL, `packageEntity_storageStats_dataBytes` INTEGER NOT NULL, `packageEntity_storageStats_externalCacheBytes` INTEGER NOT NULL, `packageEntity_dataStats_apkBytes` INTEGER NOT NULL, `packageEntity_dataStats_userBytes` INTEGER NOT NULL, `packageEntity_dataStats_userDeBytes` INTEGER NOT NULL, `packageEntity_dataStats_dataBytes` INTEGER NOT NULL, `packageEntity_dataStats_obbBytes` INTEGER NOT NULL, `packageEntity_dataStats_mediaBytes` INTEGER NOT NULL, `packageEntity_displayStats_apkBytes` INTEGER NOT NULL, `packageEntity_displayStats_userBytes` INTEGER NOT NULL, `packageEntity_displayStats_userDeBytes` INTEGER NOT NULL, `packageEntity_displayStats_dataBytes` INTEGER NOT NULL, `packageEntity_displayStats_obbBytes` INTEGER NOT NULL, `packageEntity_displayStats_mediaBytes` INTEGER NOT NULL, `apk_bytes` INTEGER NOT NULL, `apk_log` TEXT NOT NULL, `apk_title` TEXT NOT NULL, `apk_content` TEXT NOT NULL, `apk_progress` REAL NOT NULL, `apk_state` TEXT NOT NULL, `user_bytes` INTEGER NOT NULL, `user_log` TEXT NOT NULL, `user_title` TEXT NOT NULL, `user_content` TEXT NOT NULL, `user_progress` REAL NOT NULL, `user_state` TEXT NOT NULL, `userDe_bytes` INTEGER NOT NULL, `userDe_log` TEXT NOT NULL, `userDe_title` TEXT NOT NULL, `userDe_content` TEXT NOT NULL, `userDe_progress` REAL NOT NULL, `userDe_state` TEXT NOT NULL, `data_bytes` INTEGER NOT NULL, `data_log` TEXT NOT NULL, `data_title` TEXT NOT NULL, `data_content` TEXT NOT NULL, `data_progress` REAL NOT NULL, `data_state` TEXT NOT NULL, `obb_bytes` INTEGER NOT NULL, `obb_log` TEXT NOT NULL, `obb_title` TEXT NOT NULL, `obb_content` TEXT NOT NULL, `obb_progress` REAL NOT NULL, `obb_state` TEXT NOT NULL, `media_bytes` INTEGER NOT NULL, `media_log` TEXT NOT NULL, `media_title` TEXT NOT NULL, `media_content` TEXT NOT NULL, `media_progress` REAL NOT NULL, `media_state` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -873,6 +873,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "apkInfo.content",
+            "columnName": "apk_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "apkInfo.progress",
             "columnName": "apk_progress",
             "affinity": "REAL",
@@ -899,6 +905,12 @@
           {
             "fieldPath": "userInfo.title",
             "columnName": "user_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userInfo.content",
+            "columnName": "user_content",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -933,6 +945,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "userDeInfo.content",
+            "columnName": "userDe_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "userDeInfo.progress",
             "columnName": "userDe_progress",
             "affinity": "REAL",
@@ -959,6 +977,12 @@
           {
             "fieldPath": "dataInfo.title",
             "columnName": "data_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.content",
+            "columnName": "data_content",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -993,6 +1017,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "obbInfo.content",
+            "columnName": "obb_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "obbInfo.progress",
             "columnName": "obb_progress",
             "affinity": "REAL",
@@ -1023,6 +1053,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "mediaInfo.content",
+            "columnName": "media_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "mediaInfo.progress",
             "columnName": "media_progress",
             "affinity": "REAL",
@@ -1046,7 +1082,7 @@
       },
       {
         "tableName": "ProcessingInfoEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `type` TEXT NOT NULL, `bytes` INTEGER NOT NULL, `log` TEXT NOT NULL, `title` TEXT NOT NULL, `progress` REAL NOT NULL, `state` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `type` TEXT NOT NULL, `bytes` INTEGER NOT NULL, `log` TEXT NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `progress` REAL NOT NULL, `state` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1085,6 +1121,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "progress",
             "columnName": "progress",
             "affinity": "REAL",
@@ -1110,7 +1152,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '481ef87b0584c66574cd274c1354b031')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '11ab01aea2aab71067f7a3986d82063f')"
     ]
   }
 }

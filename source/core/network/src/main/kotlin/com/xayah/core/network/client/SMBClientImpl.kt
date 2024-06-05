@@ -198,7 +198,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         }
     }
 
-    override fun upload(src: String, dst: String) = run {
+    override fun upload(src: String, dst: String, onUploading: (read: Long, total: Long) -> Unit) = run {
         val name = Paths.get(src).fileName
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
@@ -206,22 +206,26 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         val srcFile = File(src)
         val srcFileSize = srcFile.length()
         val srcInputStream = FileInputStream(srcFile)
-        val countingStream = CountingInputStreamImpl(srcInputStream, srcFileSize) { read, total -> log { "upload: $read / $total" }}
+        val countingStream = CountingInputStreamImpl(srcInputStream, srcFileSize) { read, total -> onUploading(read, total) }
         dstFile.write(InputStreamByteChunkProvider(countingStream))
         srcInputStream.close()
+        countingStream.close()
         dstFile.close()
+        onUploading(countingStream.byteCount, countingStream.byteCount)
     }
 
-    override fun download(src: String, dst: String) = run {
+    override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) = run {
         val name = Paths.get(src).fileName
         val dstPath = "$dst/$name"
         log { "download: $src to $dstPath" }
         val dstOutputStream = File(dstPath).outputStream()
         val srcFile = openFile(src)
-        val countingStream = CountingOutputStreamImpl(dstOutputStream, -1) { written, total -> log { "download: $written / $total" }}
+        val countingStream = CountingOutputStreamImpl(dstOutputStream, -1) { written, total -> onDownloading(written, total) }
         srcFile.read(countingStream)
         srcFile.close()
         dstOutputStream.close()
+        countingStream.close()
+        onDownloading(countingStream.byteCount, countingStream.byteCount)
     }
 
     override fun deleteFile(src: String) = withDiskShare { diskShare ->

@@ -26,9 +26,13 @@ import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
 import com.xayah.core.util.model.ShellResult
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
 class PackagesBackupUtil @Inject constructor(
     @ApplicationContext val context: Context,
@@ -102,6 +106,7 @@ class PackagesBackupUtil @Inject constructor(
         state: OperationState? = null,
         bytes: Long? = null,
         log: String? = null,
+        content: String? = null,
     ) = run {
         when (dataType) {
             DataType.PACKAGE_APK -> {
@@ -109,6 +114,7 @@ class PackagesBackupUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -117,6 +123,7 @@ class PackagesBackupUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -125,6 +132,7 @@ class PackagesBackupUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -133,6 +141,7 @@ class PackagesBackupUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -141,6 +150,7 @@ class PackagesBackupUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -149,6 +159,7 @@ class PackagesBackupUtil @Inject constructor(
                     if (state != null) it.state = state
                     if (bytes != null) it.bytes = bytes
                     if (log != null) it.log = log
+                    if (content != null) it.content = content
                 }
             }
 
@@ -370,8 +381,20 @@ class PackagesBackupUtil @Inject constructor(
         val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
         t.updateInfo(dataType = dataType, state = OperationState.UPLOADING)
 
-        cloudRepository.upload(client = client, src = src, dstDir = dstDir).apply {
-            t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog(dataType) + "\n${outString}")
+        var flag = true
+        var progress = 0f
+        with(CoroutineScope(coroutineContext)) {
+            launch {
+                while (flag) {
+                    t.updateInfo(dataType = dataType, content = "${(progress * 100).toInt()}%")
+                    delay(500)
+                }
+            }
+        }
+
+        cloudRepository.upload(client = client, src = src, dstDir = dstDir, onUploading = { read, total -> progress = read.toFloat() / total }).apply {
+            flag = false
+            t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog(dataType) + "\n${outString}", content = "100%")
         }
     }
 }

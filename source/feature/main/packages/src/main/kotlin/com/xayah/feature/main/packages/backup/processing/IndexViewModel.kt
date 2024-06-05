@@ -248,7 +248,7 @@ class IndexViewModel @Inject constructor(
                     .map {
                         ReportAppItemInfo(
                             packageName = it.packageEntity.packageName,
-                            index = (it.id - firstIndex).toInt(),
+                            index = (it.id - firstIndex + 1).toInt(),
                             label = it.packageEntity.packageInfo.label.ifEmpty { context.getString(R.string.unknown) },
                             user = "${context.getString(R.string.user)}: ${it.packageEntity.userId}"
                         )
@@ -264,7 +264,7 @@ class IndexViewModel @Inject constructor(
                     .map {
                         ReportAppItemInfo(
                             packageName = it.packageEntity.packageName,
-                            index = (it.id - firstIndex).toInt(),
+                            index = (it.id - firstIndex + 1).toInt(),
                             label = it.packageEntity.packageInfo.label.ifEmpty { context.getString(R.string.unknown) },
                             user = "${context.getString(R.string.user)}: ${it.packageEntity.userId}"
                         )
