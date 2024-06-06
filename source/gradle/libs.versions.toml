@@ -33,7 +33,6 @@ kotlinx-coroutines-core-jvm = "1.8.0"
 room = "2.6.1"
 coil-compose = "2.4.0"
 dotlottie-android = "0.2.0"
-hiddenapibypass = "4.3"
 palette = "1.0.0"
 google-services = "4.3.15" # Pinned: https://github.com/firebase/firebase-android-sdk/issues/4693#issuecomment-1765778239
 firebase-crashlytics-gradle = "2.9.9" # Workaround: https://github.com/xamarin/GooglePlayServicesComponents/issues/642#issuecomment-1221520982
@@ -53,6 +52,7 @@ android-gradle-plugin = "8.2.2"
 kotlin = "1.9.23"
 hilt = "2.48"
 ksp-kotlin = "1.9.23-1.0.20"
+refine = "4.4.0"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
@@ -79,12 +79,13 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+refine-annotation = { module = "dev.rikka.tools.refine:annotation", version.ref = "refine" }
+refine-annotation-processor = { module = "dev.rikka.tools.refine:annotation-processor", version.ref = "refine" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 dotlottie-android = { module = "com.github.LottieFiles:dotlottie-android", version.ref = "dotlottie-android" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
-hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-android-compiler" }
 kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core-jvm" }
@@ -124,6 +125,7 @@ com-android-library = { id = "com.android.library", version.ref = "android-gradl
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-kotlin" }
 gms-google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }
+refine = { id = "dev.rikka.tools.refine", version.ref = "refine" }
 
 application-common = { id = "application.common", version = "unspecified" }
 application-compose = { id = "application.compose", version = "unspecified" }

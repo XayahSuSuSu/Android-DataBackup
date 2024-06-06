@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.application.common)
     alias(libs.plugins.application.hilt)
     alias(libs.plugins.application.compose)
+    alias(libs.plugins.refine)
 }
 
 android {
@@ -85,7 +86,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:datastore"))
     implementation(project(":core:util"))
-    implementation(project(":core:hiddenapi"))
+    compileOnly(project(":core:hiddenapi"))
     implementation(project(":core:rootservice"))
 
     // Feature

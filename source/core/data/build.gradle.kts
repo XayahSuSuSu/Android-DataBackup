@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.library.protobuf)
     alias(libs.plugins.library.androidTest)
     alias(libs.plugins.library.compose)
+    alias(libs.plugins.refine)
 }
 
 android {
@@ -20,7 +21,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:rootservice"))
     implementation(project(":core:network"))
-    implementation(project(":core:hiddenapi"))
+    compileOnly(project(":core:hiddenapi"))
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.library.common)
     alias(libs.plugins.library.hilt)
     alias(libs.plugins.library.compose)
+    alias(libs.plugins.refine)
 }
 
 android {
@@ -17,7 +18,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:util"))
     implementation(project(":core:rootservice"))
-    implementation(project(":core:hiddenapi"))
+    compileOnly(project(":core:hiddenapi"))
     implementation(project(":core:service"))
     implementation(project(":core:network"))
 

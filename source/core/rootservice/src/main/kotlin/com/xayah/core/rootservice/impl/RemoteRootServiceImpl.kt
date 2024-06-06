@@ -1,6 +1,6 @@
 package com.xayah.core.rootservice.impl
 
-import android.app.ActivityThreadHidden
+import android.app.ActivityThread
 import android.app.usage.StorageStats
 import android.app.usage.StorageStatsManager
 import android.content.Context
@@ -15,10 +15,9 @@ import android.os.ParcelFileDescriptor
 import android.os.StatFs
 import android.os.UserHandle
 import android.os.UserHandleHidden
-import android.os.UserManager
 import android.os.UserManagerHidden
 import com.topjohnwu.superuser.ShellUtils
-import com.xayah.core.hiddenapi.HiddenApiBypassUtil
+import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.rootservice.parcelables.StatFsParcelable
@@ -46,14 +45,16 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     private val lock = Any()
     private var systemContext: Context
+    private var packageManager: PackageManager
+    private var packageManagerHidden: PackageManagerHidden
     private var storageStatsManager: StorageStatsManager
-    private var userManager: UserManager
+    private var userManager: UserManagerHidden
 
-    private fun getSystemContext(): Context = ActivityThreadHidden.getSystemContext(ActivityThreadHidden.systemMain())
+    private fun getSystemContext(): Context = ActivityThread.systemMain().systemContext
 
     private fun getStorageStatsManager(): StorageStatsManager = systemContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
 
-    private fun getUserManager(): UserManager = UserManagerHidden.get(systemContext)
+    private fun getUserManager(): UserManagerHidden = UserManagerHidden.get(systemContext).castTo()
 
     init {
         /**
@@ -75,8 +76,9 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
             """.trimIndent()
         )
 
-        HiddenApiBypassUtil.addHiddenApiExemptions("")
         systemContext = getSystemContext()
+        packageManager = systemContext.packageManager
+        packageManagerHidden = packageManager.castTo()
         storageStatsManager = getStorageStatsManager()
         userManager = getUserManager()
     }
@@ -204,32 +206,32 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
      */
     override fun getInstalledPackagesAsUser(flags: Int, userId: Int): ParcelFileDescriptor = synchronized(lock) {
         writeToParcel { parcel ->
-            val packages = PackageManagerHidden.getInstalledPackagesAsUser(systemContext.packageManager, flags, userId)
+            val packages = packageManagerHidden.getInstalledPackagesAsUser(flags, userId)
             parcel.writeTypedList(packages)
         }
     }
 
     override fun getPackageInfoAsUser(packageName: String, flags: Int, userId: Int): PackageInfo =
-        synchronized(lock) { PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, flags, userId) }
+        synchronized(lock) { packageManagerHidden.getPackageInfoAsUser(packageName, flags, userId) }
 
     override fun grantRuntimePermission(packageName: String, permName: String, user: UserHandle) {
         synchronized(lock) {
-            PackageManagerHidden.grantRuntimePermission(systemContext.packageManager, packageName, permName, user)
+            packageManagerHidden.grantRuntimePermission(packageName, permName, user)
         }
     }
 
     override fun revokeRuntimePermission(packageName: String, permName: String, user: UserHandle) {
         synchronized(lock) {
-            PackageManagerHidden.revokeRuntimePermission(systemContext.packageManager, packageName, permName, user)
+            packageManagerHidden.revokeRuntimePermission(packageName, permName, user)
         }
     }
 
     override fun getPermissionFlags(packageName: String, permName: String, user: UserHandle) =
-        synchronized(lock) { PackageManagerHidden.getPermissionFlags(systemContext.packageManager, packageName, permName, user) }
+        synchronized(lock) { packageManagerHidden.getPermissionFlags(permName, packageName, user) }
 
     override fun updatePermissionFlags(packageName: String, permName: String, user: UserHandle, flagMask: Int, flagValues: Int) {
         synchronized(lock) {
-            PackageManagerHidden.updatePermissionFlags(systemContext.packageManager, packageName, permName, user, flagMask, flagValues)
+            packageManagerHidden.updatePermissionFlags(permName, packageName, flagMask, flagValues, user)
         }
     }
 
@@ -237,7 +239,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         tryOn(
             block = {
                 val sourceDirList = mutableListOf<String>()
-                val packageInfo = PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+                val packageInfo = packageManagerHidden.getPackageInfoAsUser(packageName, 0, userId)
                 sourceDirList.add(packageInfo.applicationInfo.sourceDir)
                 val splitSourceDirs = packageInfo.applicationInfo.splitSourceDirs
                 if (!splitSourceDirs.isNullOrEmpty()) for (i in splitSourceDirs) sourceDirList.add(i)
@@ -249,14 +251,14 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun queryInstalled(packageName: String, userId: Int): Boolean = synchronized(lock) {
         tryWithBoolean {
-            PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+            packageManagerHidden.getPackageInfoAsUser(packageName, 0, userId)
         }
     }
 
     override fun getPackageUid(packageName: String, userId: Int): Int = synchronized(lock) {
         tryOn(
             block = {
-                PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId).applicationInfo.uid
+                packageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo.uid
             },
             onException = {
                 -1
@@ -282,7 +284,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     override fun getUsers(): List<UserInfo> = synchronized(lock) {
         tryOn(
             block = {
-                UserManagerHidden.getUsers(userManager = userManager)
+                userManager.users
             },
             onException = {
                 listOf()

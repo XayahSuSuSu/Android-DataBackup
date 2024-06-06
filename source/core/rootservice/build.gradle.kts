@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.library.common)
     alias(libs.plugins.library.protobuf)
+    alias(libs.plugins.refine)
 }
 
 android {
@@ -18,7 +19,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:hiddenapi"))
+    compileOnly(project(":core:hiddenapi"))
+    implementation(project(":core:systemapi"))
     implementation(project(":core:util"))
 
     implementation(libs.kotlinx.coroutines.core.jvm)
