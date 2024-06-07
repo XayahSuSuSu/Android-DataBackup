@@ -294,7 +294,7 @@ build_gawk() {
     if [ -d $LOCAL_PATH/gawk-$GAWK_VERSION ]; then
         rm -rf gawk-$GAWK_VERSION
     fi
-    tar xf gawk-$GAWK_VERSION.tar.xz
+    tar xf gawk-$GAWK_VERSION.tar.gz
     cd gawk-$GAWK_VERSION
 
     ./configure --host=$TARGET LDFLAGS="$BUILD_LDFLAGS_STATIC" CFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" CXXFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" $DISABLE_YEAR2038_PARA
