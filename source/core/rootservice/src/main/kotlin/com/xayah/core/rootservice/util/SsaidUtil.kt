@@ -2,12 +2,12 @@
 
 package com.xayah.core.rootservice.util
 
+import android.os.Build
 import android.os.HandlerThread
 import android.os.Process
 import com.android.providers.settings.SettingsState
 import com.android.providers.settings.SettingsStateApi26
 import com.android.providers.settings.SettingsStateApi31
-import com.xayah.core.common.util.valueGeSdk31
 import com.xayah.core.util.PathUtil
 import java.io.File
 
@@ -21,7 +21,7 @@ class SsaidUtil(userId: Int) {
         it.start()
         val file = File(PathUtil.getSsaidPath(userId))
         val key = SettingsState.makeKey(SettingsState.SETTINGS_TYPE_SSAID, userId)
-        valueGeSdk31(ge = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             SettingsStateApi31(
                 lock,
                 file,
@@ -29,7 +29,7 @@ class SsaidUtil(userId: Int) {
                 SettingsState.MAX_BYTES_PER_APP_PACKAGE_UNLIMITED,
                 it.looper
             )
-        }, otherwise = {
+        } else {
             SettingsStateApi26(
                 lock,
                 file,
@@ -37,7 +37,7 @@ class SsaidUtil(userId: Int) {
                 SettingsState.MAX_BYTES_PER_APP_PACKAGE_UNLIMITED,
                 it.looper
             )
-        })
+        }
     }
 
     fun getSsaid(packageName: String, uid: Int): String? = settingsState.getSettingLocked(getName(packageName, uid)).value

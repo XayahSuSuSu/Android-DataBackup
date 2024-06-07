@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PackageInfoFlags
 import android.content.pm.PackageManagerHidden
 import android.content.pm.UserInfo
+import android.os.Build
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.StatFs
@@ -16,7 +17,6 @@ import android.os.UserHandle
 import android.os.UserHandleHidden
 import android.os.UserManagerHidden
 import com.topjohnwu.superuser.ShellUtils
-import com.xayah.core.common.util.valueGeSdk33
 import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.parcelables.PathParcelable
@@ -329,17 +329,17 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun getPackageArchiveInfo(path: String): PackageInfo? = synchronized(lock) {
-        valueGeSdk33(ge = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             systemContext.packageManager.getPackageArchiveInfo(path, PackageInfoFlags.of(PackageManager.GET_ACTIVITIES.toLong()))?.apply {
                 applicationInfo?.sourceDir = path
                 applicationInfo?.publicSourceDir = path
             }
-        }, otherwise = {
+        } else {
             systemContext.packageManager.getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES)?.apply {
                 applicationInfo?.sourceDir = path
                 applicationInfo?.publicSourceDir = path
             }
-        })
+        }
     }
 
     override fun getPackageSsaidAsUser(packageName: String, uid: Int, userId: Int): String? = synchronized(lock) { SsaidUtil(userId).getSsaid(packageName, uid) }

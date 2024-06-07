@@ -1,8 +1,8 @@
 package com.xayah.core.service.util
 
 import android.content.Context
+import android.os.Build
 import com.xayah.core.common.util.BuildConfigUtil
-import com.xayah.core.common.util.valueGeSdk28
 import com.xayah.core.datastore.readCompressionTest
 import com.xayah.core.model.CompressionType
 import com.xayah.core.rootservice.service.RemoteRootService
@@ -44,7 +44,11 @@ class CommonBackupUtil @Inject constructor(
 
             if (rootService.exists(targetPath) && (rootService.getPackageArchiveInfo(targetPath)
                     ?.let {
-                        BuildConfigUtil.VERSION_CODE == valueGeSdk28(ge = { it.longVersionCode }, otherwise = { it.versionCode.toLong() })
+                        BuildConfigUtil.VERSION_CODE == if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            it.longVersionCode
+                        } else {
+                            it.versionCode.toLong()
+                        }
                     } == true)
             ) {
                 isSuccess = true

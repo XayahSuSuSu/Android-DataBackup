@@ -5,6 +5,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.xayah.core.data.repository.PackageRepository
+import com.xayah.core.datastore.readRestoreFilterFlagIndex
+import com.xayah.core.datastore.readRestoreUserIdIndex
 import com.xayah.core.datastore.saveRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveRestoreUserIdIndex
 import com.xayah.core.model.OpType
@@ -104,12 +106,10 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.SetUserIdIndexList -> {
                 context.saveRestoreUserIdIndex(intent.list)
-                _userIdIndexListState.value = intent.list
             }
 
             is IndexUiIntent.FilterByFlag -> {
                 context.saveRestoreFilterFlagIndex(intent.index)
-                _flagIndexState.value = intent.index
             }
 
             is IndexUiIntent.Sort -> {
@@ -168,16 +168,16 @@ class IndexViewModel @Inject constructor(
 
     private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(OpType.RESTORE, uiState.value.cloudName, uiState.value.cloudRemote).flowOnIO()
     private var _keyState: MutableStateFlow<String> = MutableStateFlow("")
-    private var _flagIndexState: MutableStateFlow<Int> = MutableStateFlow(1)
-    private var _userIdIndexListState: MutableStateFlow<List<Int>> = MutableStateFlow(listOf(0))
+    private var _flagIndex: Flow<Int> = context.readRestoreFilterFlagIndex().flowOnIO()
+    private var _userIdIndexList: Flow<List<Int>> = context.readRestoreUserIdIndex().flowOnIO()
     private var _sortIndexState: MutableStateFlow<Int> = MutableStateFlow(0)
     private var _sortTypeState: MutableStateFlow<SortType> = MutableStateFlow(SortType.ASCENDING)
     private val _packagesState: Flow<List<PackageEntity>> =
-        combine(_packages, _keyState, _flagIndexState, _sortIndexState, _sortTypeState) { packages, key, flagIndex, sortIndex, sortType ->
+        combine(_packages, _keyState, _flagIndex, _sortIndexState, _sortTypeState) { packages, key, flagIndex, sortIndex, sortType ->
             packages.filter(packageRepo.getKeyPredicateNew(key = key))
                 .filter(packageRepo.getFlagPredicateNew(index = flagIndex))
                 .sortedWith(packageRepo.getSortComparatorNew(sortIndex = sortIndex, sortType = sortType))
-        }.combine(_userIdIndexListState) { packages, userIdIndexList ->
+        }.combine(_userIdIndexList) { packages, userIdIndexList ->
             packages.filter(packageRepo.getUserIdPredicateNew(indexList = userIdIndexList, userIdList = uiState.value.userIdList))
         }.flowOnIO()
     private val _srcPackagesEmptyState: Flow<Boolean> = _packages.map { packages -> packages.isEmpty() }.flowOnIO()
@@ -185,8 +185,8 @@ class IndexViewModel @Inject constructor(
 
     val packagesState: StateFlow<List<PackageEntity>> = _packagesState.stateInScope(listOf())
     val packagesSelectedState: StateFlow<Int> = _packagesSelectedState.stateInScope(0)
-    val flagIndexState: StateFlow<Int> = _flagIndexState.stateInScope(1)
-    val userIdIndexListState: StateFlow<List<Int>> = _userIdIndexListState.stateInScope(listOf(0))
+    val flagIndexState: StateFlow<Int> = _flagIndex.stateInScope(1)
+    val userIdIndexListState: StateFlow<List<Int>> = _userIdIndexList.stateInScope(listOf(0))
     val sortIndexState: StateFlow<Int> = _sortIndexState.stateInScope(0)
     val sortTypeState: StateFlow<SortType> = _sortTypeState.stateInScope(SortType.ASCENDING)
     val srcPackagesEmptyState: StateFlow<Boolean> = _srcPackagesEmptyState.stateInScope(true)

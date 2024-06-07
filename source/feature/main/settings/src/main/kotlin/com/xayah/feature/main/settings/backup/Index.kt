@@ -1,5 +1,6 @@
 package com.xayah.feature.main.settings.backup
 
+import android.os.Build
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.xayah.core.common.util.valueGeSdk28
 import com.xayah.core.datastore.KeyBackupItself
 import com.xayah.core.datastore.KeyCheckKeystore
 import com.xayah.core.datastore.KeyCompatibleMode
@@ -73,7 +73,7 @@ fun PageBackupSettings() {
                 )
                 Switchable(
                     key = KeyCompatibleMode,
-                    defValue = valueGeSdk28(ge = { false }, otherwise = { true }),
+                    defValue = Build.VERSION.SDK_INT < Build.VERSION_CODES.P,
                     title = StringResourceToken.fromStringId(R.string.compatible_mode),
                     checkedText = StringResourceToken.fromStringId(R.string.compatible_mode_desc),
                 )

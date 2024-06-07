@@ -1,6 +1,7 @@
 package com.xayah.feature.main.settings
 
 import android.content.Intent
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.core.common.util.IfGeSdk31
 import com.xayah.core.datastore.KeyMonet
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.InnerBottomSpacer
@@ -97,7 +97,7 @@ fun PageSettings() {
                 }
             }
             Title(title = StringResourceToken.fromStringId(R.string.appearance)) {
-                IfGeSdk31 {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     Switchable(
                         key = KeyMonet,
                         title = StringResourceToken.fromStringId(R.string.monet),
