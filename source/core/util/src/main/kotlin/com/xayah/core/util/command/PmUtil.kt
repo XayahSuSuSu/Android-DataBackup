@@ -1,12 +1,13 @@
 package com.xayah.core.util.command
 
-import android.os.Build
+import com.xayah.core.common.util.leSdk33
+import com.xayah.core.common.util.ltSdk30
 import com.xayah.core.util.SymbolUtil.QUOTE
 import com.xayah.core.util.model.ShellResult
 
 object Pm {
     private suspend fun execute(vararg args: String): ShellResult = BaseUtil.execute("pm", *args)
-    suspend fun install(userId: Int, src: String): ShellResult = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+    suspend fun install(userId: Int, src: String): ShellResult = if (ltSdk30) {
         // pm install --user "$userId" -r -t "$src"
         execute(
             "install",
@@ -16,7 +17,7 @@ object Pm {
             "-t",
             "$QUOTE$src$QUOTE",
         )
-    } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
+    } else if (leSdk33) {
         // pm install -i com.android.vending --user "$userId" -r -t "$src"
         execute(
             "install",
@@ -44,7 +45,7 @@ object Pm {
     }
 
     object Install {
-        suspend fun create(userId: Int): ShellResult = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        suspend fun create(userId: Int): ShellResult = if (ltSdk30) {
             // pm install-create --user "$userId" -t | grep -E -o '[0-9]+'
             execute(
                 "install-create",
@@ -54,7 +55,7 @@ object Pm {
                 "|",
                 "grep -E -o '[0-9]+'",
             )
-        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU) {
+        } else if (leSdk33) {
             // pm install-create -i com.android.vending --user "$userId" -t | grep -E -o '[0-9]+'
             execute(
                 "install-create",

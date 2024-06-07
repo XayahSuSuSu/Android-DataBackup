@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.os.Build
+import com.xayah.core.common.util.ifGeSdk31
+import com.xayah.core.common.util.valueGeSdk28
 import com.xayah.core.data.R
 import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.PackageDao
@@ -256,7 +257,7 @@ class PackageRepository @Inject constructor(
                     val packageInfo = PackageInfo(
                         label = info.applicationInfo.loadLabel(pm).toString(),
                         versionName = info.versionName ?: "",
-                        versionCode = info.longVersionCode,
+                        versionCode = valueGeSdk28(ge = { info.longVersionCode }, otherwise = { info.versionCode.toLong() }),
                         flags = info.applicationInfo.flags,
                         firstInstallTime = info.firstInstallTime,
                     )
@@ -307,7 +308,7 @@ class PackageRepository @Inject constructor(
                                     this.storageStats.appBytes = stats.appBytes
                                     this.storageStats.cacheBytes = stats.cacheBytes
                                     this.storageStats.dataBytes = stats.dataBytes
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) this.storageStats.externalCacheBytes = stats.externalCacheBytes
+                                    ifGeSdk31 { this.storageStats.externalCacheBytes = stats.externalCacheBytes }
                                 }
                             }
                         }
@@ -792,7 +793,7 @@ class PackageRepository @Inject constructor(
                                                 rootService.getPackageArchiveInfo(pathList.first())?.apply {
                                                     packageEntity.packageInfo.label = applicationInfo.loadLabel(packageManager).toString()
                                                     packageEntity.packageInfo.versionName = versionName ?: ""
-                                                    packageEntity.packageInfo.versionCode = longVersionCode
+                                                    packageEntity.packageInfo.versionCode = valueGeSdk28(ge = { longVersionCode }, otherwise = { versionCode.toLong() })
                                                     packageEntity.packageInfo.flags = applicationInfo.flags
                                                     val iconPath = pathUtil.getPackageIconPath(packageName)
                                                     val iconExists = rootService.exists(iconPath)
@@ -1000,7 +1001,7 @@ class PackageRepository @Inject constructor(
                                                             rootService.getPackageArchiveInfo(pathList.first())?.apply {
                                                                 packageEntity.packageInfo.label = applicationInfo.loadLabel(packageManager).toString()
                                                                 packageEntity.packageInfo.versionName = versionName ?: ""
-                                                                packageEntity.packageInfo.versionCode = longVersionCode
+                                                                packageEntity.packageInfo.versionCode = valueGeSdk28(ge = { longVersionCode }, otherwise = { versionCode.toLong() })
                                                                 packageEntity.packageInfo.flags = applicationInfo.flags
                                                                 val iconPath = pathUtil.getPackageIconPath(packageName)
                                                                 val iconExists = rootService.exists(iconPath)

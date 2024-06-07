@@ -22,6 +22,7 @@ dependencies {
     compileOnly(project(":core:hiddenapi"))
     implementation(project(":core:systemapi"))
     implementation(project(":core:util"))
+    implementation(project(":core:common"))
 
     implementation(libs.kotlinx.coroutines.core.jvm)
 

@@ -2,6 +2,7 @@ package com.xayah.core.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import com.xayah.core.common.util.valueGeSdk28
 
 // -----------------------------------------Keys-----------------------------------------
 val KeyMonet = booleanPreferencesKey("monet")
@@ -23,7 +24,7 @@ fun Context.readKeepScreenOn() = readStoreBoolean(key = KeyKeepScreenOn, defValu
 fun Context.readBackupItself() = readStoreBoolean(key = KeyBackupItself, defValue = true)
 fun Context.readCompressionTest() = readStoreBoolean(key = KeyCompressionTest, defValue = true)
 fun Context.readResetBackupList() = readStoreBoolean(key = KeyResetBackupList, defValue = false)
-fun Context.readCompatibleMode() = readStoreBoolean(key = KeyCompatibleMode, defValue = false)
+fun Context.readCompatibleMode() = readStoreBoolean(key = KeyCompatibleMode, defValue = valueGeSdk28(ge = { false }, otherwise = { true }))
 fun Context.readFollowSymlinks() = readStoreBoolean(key = KeyFollowSymlinks, defValue = false)
 fun Context.readCleanRestoring() = readStoreBoolean(key = KeyCleanRestoring, defValue = false)
 fun Context.readResetRestoreList() = readStoreBoolean(key = KeyResetRestoreList, defValue = false)

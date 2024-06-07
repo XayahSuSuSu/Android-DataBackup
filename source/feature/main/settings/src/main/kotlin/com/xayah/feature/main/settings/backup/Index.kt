@@ -12,6 +12,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.xayah.core.common.util.valueGeSdk28
 import com.xayah.core.datastore.KeyBackupItself
 import com.xayah.core.datastore.KeyCheckKeystore
 import com.xayah.core.datastore.KeyCompatibleMode
@@ -72,7 +73,7 @@ fun PageBackupSettings() {
                 )
                 Switchable(
                     key = KeyCompatibleMode,
-                    defValue = false,
+                    defValue = valueGeSdk28(ge = { false }, otherwise = { true }),
                     title = StringResourceToken.fromStringId(R.string.compatible_mode),
                     checkedText = StringResourceToken.fromStringId(R.string.compatible_mode_desc),
                 )

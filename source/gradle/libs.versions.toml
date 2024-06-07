@@ -1,7 +1,7 @@
 [versions]
 # config
 compileSdk = "34"
-minSdk = "28"
+minSdk = "26"
 targetSdk = "34"
 # __(API)_(feature)___(version)_(abi)
 # TODO: Feature bit is no longer useful, drop when next api releases

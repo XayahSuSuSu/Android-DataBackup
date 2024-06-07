@@ -1,7 +1,6 @@
 package com.xayah.core.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -20,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.xayah.core.common.util.geSdk31
 import com.xayah.core.datastore.readMonet
 import com.xayah.core.datastore.readThemeType
 import com.xayah.core.model.ThemeType
@@ -45,7 +45,7 @@ fun DataBackupTheme(
     // Dynamic color is available on Android 12+
     val dynamicColor by context.readMonet().collectAsState(initial = true)
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        dynamicColor && geSdk31 -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
