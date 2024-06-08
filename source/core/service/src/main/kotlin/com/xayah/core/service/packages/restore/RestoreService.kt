@@ -5,13 +5,18 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import android.view.SurfaceControlHidden
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
+import com.xayah.core.datastore.readAutoScreenOff
 import com.xayah.core.datastore.readResetRestoreList
+import com.xayah.core.datastore.readScreenOffTimeout
 import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.datastore.saveLastRestoreTime
+import com.xayah.core.datastore.saveScreenOffCountDown
+import com.xayah.core.datastore.saveScreenOffTimeout
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
 import com.xayah.core.model.OperationState
@@ -86,6 +91,9 @@ internal abstract class RestoreService : Service() {
     @SuppressLint("StringFormatInvalid")
     suspend fun initialize(cloudName: String, cloudRemote: String): Long {
         mutex.withLock {
+            if (rootService.getScreenOffTimeout() != Int.MAX_VALUE) {
+                context.saveScreenOffTimeout(rootService.getScreenOffTimeout())
+            }
             if (isInitialized.not()) {
                 taskEntity.also {
                     it.id = taskDao.upsert(it)
@@ -136,6 +144,9 @@ internal abstract class RestoreService : Service() {
 
     suspend fun preprocessing() = withIOContext {
         mutex.withLock {
+            if (context.readAutoScreenOff().first()) {
+                context.saveScreenOffCountDown(3)
+            }
             preSetUpInstEnvEntity.also {
                 it.state = OperationState.PROCESSING
                 taskDao.upsert(it)
@@ -261,6 +272,9 @@ internal abstract class RestoreService : Service() {
                 it.processingIndex++
                 taskDao.upsert(it)
             }
+
+            rootService.setScreenOffTimeout(context.readScreenOffTimeout().first())
+            rootService.setDisplayPowerMode(SurfaceControlHidden.POWER_MODE_NORMAL)
         }
     }
 }

@@ -1,12 +1,14 @@
 package com.xayah.feature.main.packages.restore.processing
 
 import android.content.Context
+import android.view.SurfaceControlHidden
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
+import com.xayah.core.datastore.readScreenOffCountDown
 import com.xayah.core.model.OpType
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.ProcessingType
@@ -58,6 +60,7 @@ sealed class IndexUiIntent : UiIntent {
     data object Restore : IndexUiIntent()
     data object Initialize : IndexUiIntent()
     data object DestroyService : IndexUiIntent()
+    data object TurnOffScreen : IndexUiIntent()
 }
 
 @ExperimentalCoroutinesApi
@@ -65,7 +68,7 @@ sealed class IndexUiIntent : UiIntent {
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    rootService: RemoteRootService,
+    private val rootService: RemoteRootService,
     private val taskRepo: TaskRepository,
     private val pkgRepo: PackageRepository,
     private val cloudRepo: CloudRepository,
@@ -173,6 +176,13 @@ class IndexViewModel @Inject constructor(
                     localRestoreService.destroyService()
                 }
             }
+
+            is IndexUiIntent.TurnOffScreen -> {
+                if (uiState.value.state == OperationState.PROCESSING) {
+                    rootService.setScreenOffTimeout(Int.MAX_VALUE)
+                    rootService.setDisplayPowerMode(SurfaceControlHidden.POWER_MODE_OFF)
+                }
+            }
         }
     }
 
@@ -275,6 +285,7 @@ class IndexViewModel @Inject constructor(
         else
             DateUtil.getShortRelativeTimeSpanString(context, 0, 0)
     }.flowOnIO()
+    private val _screenOffCountDown = context.readScreenOffCountDown().flowOnIO()
 
     var task: StateFlow<TaskEntity?> = _task.stateInScope(null)
     var preItems: StateFlow<List<ProcessingCardItem>> = _preItems.stateInScope(listOf())
@@ -284,4 +295,5 @@ class IndexViewModel @Inject constructor(
     val packageSucceed: StateFlow<List<ReportAppItemInfo>> = _packageSucceed.stateInScope(listOf())
     val packageFailed: StateFlow<List<ReportAppItemInfo>> = _packageFailed.stateInScope(listOf())
     val timer: StateFlow<String> = _timer.stateInScope(DateUtil.getShortRelativeTimeSpanString(context, 0, 0))
+    val screenOffCountDown: StateFlow<Int> = _screenOffCountDown.stateInScope(0)
 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.KeyAutoScreenOff
 import com.xayah.core.datastore.KeyMonet
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.InnerBottomSpacer
@@ -95,6 +96,14 @@ fun PageSettings() {
                 ) {
                     navController.navigate(MainRoutes.Directory.route)
                 }
+            }
+            Title(title = StringResourceToken.fromStringId(R.string.advanced)) {
+                Switchable(
+                    key = KeyAutoScreenOff,
+                    defValue = false,
+                    title = StringResourceToken.fromStringId(R.string.auto_screen_off),
+                    checkedText = StringResourceToken.fromStringId(R.string.auto_screen_off_desc),
+                )
             }
             Title(title = StringResourceToken.fromStringId(R.string.appearance)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

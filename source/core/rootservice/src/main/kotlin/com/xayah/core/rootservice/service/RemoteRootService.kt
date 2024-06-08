@@ -284,6 +284,15 @@ class RemoteRootService(private val context: Context) {
     suspend fun setPackageSsaidAsUser(packageName: String, uid: Int, userId: Int, ssaid: String) =
         runCatching { getService().setPackageSsaidAsUser(packageName, uid, userId, ssaid) }.onFailure(onFailure)
 
+    suspend fun setDisplayPowerMode(mode: Int) =
+        runCatching { getService().setDisplayPowerMode(mode) }.onFailure(onFailure)
+
+    suspend fun getScreenOffTimeout() =
+        runCatching { getService().getScreenOffTimeout() }.onFailure(onFailure).getOrElse { 0 }
+
+    suspend fun setScreenOffTimeout(timeout: Int) =
+        runCatching { getService().setScreenOffTimeout(timeout) }.onFailure(onFailure)
+
     suspend fun calculateMD5(src: String): String? =
         runCatching { getService().calculateMD5(src) }.onFailure(onFailure).getOrNull()
 

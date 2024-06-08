@@ -302,4 +302,7 @@
     <string name="confirm_remove_from_blacklist">從黑名單中移除？</string>
     <string name="it_is_empty">空空如也</string>
     <string name="report">報告</string>
+    <string name="auto_screen_off">自動息屏</string>
+    <string name="auto_screen_off_desc">備份或還原應用程式/檔案時自動關閉螢幕，完成後自動開啟螢幕</string>
+    <string name="args_screen_off_in_seconds">螢幕將在%1$s秒後關閉</string>
 </resources>

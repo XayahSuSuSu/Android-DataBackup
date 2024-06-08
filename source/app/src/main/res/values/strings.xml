@@ -309,4 +309,7 @@
     <string name="confirm_remove_from_blacklist">Remove from blacklist?</string>
     <string name="it_is_empty">It\'s empty</string>
     <string name="report">Report</string>
+    <string name="auto_screen_off">Auto screen off</string>
+    <string name="auto_screen_off_desc">Automatically turn off the screen during backing up or restoring apps/files, then turn it on after completion</string>
+    <string name="args_screen_off_in_seconds">The screen will turn off in %1$s seconds</string>
 </resources>

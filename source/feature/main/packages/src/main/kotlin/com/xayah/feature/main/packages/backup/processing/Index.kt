@@ -1,5 +1,6 @@
 package com.xayah.feature.main.packages.backup.processing
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -23,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.saveScreenOffCountDown
 import com.xayah.core.model.OperationState
 import com.xayah.core.ui.component.AnimatedTextContainer
 import com.xayah.core.ui.component.LocalSlotScope
@@ -31,18 +33,23 @@ import com.xayah.core.ui.component.ReportCard
 import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.component.pagerAnimation
+import com.xayah.core.ui.material3.SnackbarDuration
+import com.xayah.core.ui.material3.SnackbarType
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.value
+import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.withMainContext
 import com.xayah.feature.main.packages.ProcessingSetupScaffold
 import com.xayah.feature.main.packages.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 
+@SuppressLint("StringFormatInvalid")
 @ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
@@ -71,9 +78,39 @@ fun PagePackagesBackupProcessing(viewModel: IndexViewModel) {
                 -1f
         )
     }
+    val screenOffCountDown by viewModel.screenOffCountDown.collectAsStateWithLifecycle()
 
     LaunchedEffect(null) {
         viewModel.emitIntentOnIO(IndexUiIntent.Initialize)
+    }
+
+    LaunchedEffect(screenOffCountDown, uiState.state) {
+        viewModel.launchOnIO {
+            if (screenOffCountDown != 0) {
+                if (uiState.state != OperationState.PROCESSING) {
+                    context.saveScreenOffCountDown(0)
+                } else {
+                    viewModel.launchOnIO {
+                        viewModel.emitEffect(IndexUiEffect.DismissSnackbar)
+                        viewModel.emitEffect(
+                            IndexUiEffect.ShowSnackbar(
+                                type = SnackbarType.Success,
+                                message = context.getString(R.string.args_screen_off_in_seconds, screenOffCountDown),
+                                duration = SnackbarDuration.Indefinite
+                            )
+                        )
+                    }
+                    var count = screenOffCountDown
+                    while (count != 0) {
+                        delay(1000)
+                        count--
+                    }
+                    viewModel.emitEffectOnIO(IndexUiEffect.DismissSnackbar)
+                    context.saveScreenOffCountDown(count)
+                    viewModel.emitIntent(IndexUiIntent.TurnOffScreen)
+                }
+            }
+        }
     }
 
     val onBack: () -> Unit = remember {

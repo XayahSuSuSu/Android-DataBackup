@@ -16,6 +16,8 @@ import android.os.StatFs
 import android.os.UserHandle
 import android.os.UserHandleHidden
 import android.os.UserManagerHidden
+import android.view.SurfaceControlHidden
+import com.android.server.display.DisplayControl
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.rootservice.IRemoteRootService
@@ -345,6 +347,36 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     override fun getPackageSsaidAsUser(packageName: String, uid: Int, userId: Int): String? = synchronized(lock) { SsaidUtil(userId).getSsaid(packageName, uid) }
     override fun setPackageSsaidAsUser(packageName: String, uid: Int, userId: Int, ssaid: String) {
         synchronized(lock) { SsaidUtil(userId).setSsaid(packageName, uid, ssaid) }
+    }
+
+    override fun setDisplayPowerMode(mode: Int) {
+        synchronized(lock) {
+            val physicalDisplayIds: LongArray = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                DisplayControl.getPhysicalDisplayIds()
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                SurfaceControlHidden.getPhysicalDisplayIds()
+            } else {
+                LongArray(1) { 0L }
+            }
+            physicalDisplayIds.forEach { id ->
+                val token = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    DisplayControl.getPhysicalDisplayToken(id)
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    SurfaceControlHidden.getPhysicalDisplayToken(id)
+                } else {
+                    SurfaceControlHidden.getBuiltInDisplay(id.toInt())
+                }
+                SurfaceControlHidden.setDisplayPowerMode(token, mode)
+            }
+        }
+    }
+
+    override fun getScreenOffTimeout(): Int = synchronized(lock) {
+        ShellUtils.fastCmd("settings get system screen_off_timeout").toIntOrNull() ?: 30000
+    }
+
+    override fun setScreenOffTimeout(timeout: Int): Unit = synchronized(lock) {
+        ShellUtils.fastCmd("settings put system screen_off_timeout $timeout")
     }
 
     override fun calculateMD5(src: String): String = synchronized(lock) { HashUtil.calculateMD5(src) }
