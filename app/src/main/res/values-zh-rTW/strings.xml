@@ -25,7 +25,7 @@
     <string name="grant_root_access">取得 Root 權限</string>
     <string name="release_prebuilt_binaries">釋放預編譯二進製文件</string>
     <string name="finish">完成</string>
-    <string name="welcome_to_use">歡迎使用</string>
+    <string name="welcome_to_use">歡迎來到 DataBackup</string>
     <string name="start_subtitle">根據相關政策規定，你需要先仔細閱讀並同意以下《使用者協議》與《隱私政策》後才能開始使用本應用</string>
     <string name="internal_storage">內部儲存空間</string>
     <string name="support">支援</string>
@@ -56,7 +56,7 @@
     <string name="all">全部</string>
     <string name="backup_icon">備份圖示</string>
     <string name="backup_icon_title">備份應用時自動備份圖示，用於恢復時讀取</string>
-    <string name="alphabet">字母表序</string>
+    <string name="alphabet">A-Z</string>
     <string name="install_time">安裝時間</string>
     <string name="sort">排序</string>
     <string name="filter">過濾</string>
@@ -70,7 +70,7 @@
     <string name="backup_test_title">備份時自動校驗備份文件</string>
     <string name="testing">校驗中</string>
     <string name="check_package_usage_stats_permission">檢查應用程式使用情況權限</string>
-    <string name="start_desc">本應用程式產生的所有數據均用於備份/恢復功能本身，僅存於本機，嚴禁非法倒賣</string>
+    <string name="start_desc">此應用程式產生的所有資料只用於備份／復原，並且只儲存在本機。</string>
     <string name="network">網路</string>
     <string name="network_desc">用於取得應用程式更新訊息, 應用程式分析</string>
     <string name="application_desc">取得應用程式包名訊息，用於建立備份列表、取得應用程式數據大小</string>
