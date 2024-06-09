@@ -301,4 +301,7 @@
     <string name="confirm_add_to_blacklist">Adicionar à lista negra?</string>
     <string name="confirm_remove_from_blacklist">Remover da lista negra?</string>
     <string name="report">Denunciar</string>
+    <string name="auto_screen_off">Desligar tela automaticamente</string>
+    <string name="args_screen_off_in_seconds">A tela será desligada em %1$s segundos</string>
+    <string name="auto_screen_off_desc">Desligue automaticamente a tela durante o backup ou restauração de apps/arquivos e ligue-a após a conclusão</string>
 </resources>
