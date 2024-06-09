@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">數據備份</string>
-    <string name="welcome_to_use">歡迎使用</string>
+    <string name="welcome_to_use">歡迎來到 DataBackup</string>
     <string name="update_records">更新紀錄</string>
     <string name="environment_detection">環境檢測</string>
     <string name="start">開始</string>
     <string name="start_subtitle">根據相關政策規定，你需要先仔細閱讀並同意以下《使用者協議》與《隱私政策》後才能開始使用本應用</string>
-    <string name="start_desc">本應用程式產生的所有數據均用於備份/恢復功能本身，僅存於本機，嚴禁非法倒賣</string>
+    <string name="start_desc">此應用程式產生的所有資料只用於備份／復原，並且只儲存在本機。</string>
     <string name="network">網路</string>
     <string name="network_desc">用於取得應用程式更新訊息, 應用程式分析</string>
     <string name="application">應用程式</string>
@@ -19,7 +19,7 @@
     <string name="release_prebuilt_binaries">釋放預編譯二進製文件</string>
     <string name="confirm">確定</string>
     <string name="cancel">取消</string>
-    <string name="overlook">一覽</string>
+    <string name="overlook">概覽</string>
     <string name="last_backup">上次備份</string>
     <string name="none">無</string>
     <string name="utilities">工具</string>
@@ -142,12 +142,12 @@
     <string name="modify">修改</string>
     <string name="cloud">雲端</string>
     <string name="settings">設定</string>
-    <string name="alphabet">字母表序</string>
+    <string name="alphabet">A-Z</string>
     <string name="installation_time">安裝時間</string>
     <string name="data_size">數據大小</string>
     <string name="selected">已選取</string>
     <string name="not_selected">未選取</string>
-    <string name="third_party">第三方</string>
+    <string name="third_party">已安裝</string>
     <string name="system">系統</string>
     <string name="uploading">上傳中</string>
     <string name="main_account">主帳戶</string>
