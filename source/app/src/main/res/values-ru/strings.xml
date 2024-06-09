@@ -4,7 +4,6 @@
     <string name="clean_restoring">\"Чистое\" восстановление</string>
     <string name="save">Сохранить</string>
     <string name="restoring">Восстановление</string>
-    <string name="restore_user_desc">Целевой пользователь при загрузке списка восстановления или восстановлении</string>
     <string name="select_target_directory">Выбор целевой папки</string>
     <string name="prompt">Уведомление</string>
     <string name="both">Все</string>

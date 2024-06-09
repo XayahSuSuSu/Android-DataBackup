@@ -40,7 +40,6 @@
     <string name="sooner_or_later">Før eller siden</string>
     <string name="clean_restoring">Fersk gjenoppretting</string>
     <string name="restoring">Gjenoppretter …</string>
-    <string name="restore_user_desc">Målbruker under innlasting av gjenopprettingsliste eller gjenoppretting</string>
     <string name="select_target_directory">Velg målmappe</string>
     <string name="prompt">Spørring</string>
     <string name="password">Passord</string>

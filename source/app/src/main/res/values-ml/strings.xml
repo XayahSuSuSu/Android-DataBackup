@@ -5,7 +5,6 @@
     <string name="clean_restoring">ക്ലീൻ റീസ്റ്റോറിംഗ്</string>
     <string name="save">സേവ്</string>
     <string name="restoring">റീസ്റ്റോറിംഗ്</string>
-    <string name="restore_user_desc">റീസ്റ്റോർ, റീസ്റ്റോർ ലിസ്റ്റ് ലോഡ് ചെയ്യുമ്പോൾ ടാർഗറ്റ് ചെയ്യുന്ന യൂസർ</string>
     <string name="select_target_directory">ടാർഗറ്റ് ഫോൾഡർ സെലക്റ്റ് ചെയ്യുക</string>
     <string name="prompt">പ്രോംപ്റ്റ്</string>
     <string name="both">രണ്ടും</string>

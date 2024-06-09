@@ -16,26 +16,37 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.xayah.core.datastore.KeyAutoScreenOff
 import com.xayah.core.datastore.KeyResetRestoreList
+import com.xayah.core.datastore.saveRestoreUser
 import com.xayah.core.ui.component.Clickable
+import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.PackageIcons
+import com.xayah.core.ui.component.Selectable
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.paddingTop
+import com.xayah.core.ui.component.select
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.getValue
 import com.xayah.core.ui.util.value
 import com.xayah.feature.main.packages.ProcessingSetupScaffold
 import com.xayah.feature.main.packages.R
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
@@ -46,7 +57,10 @@ fun PagePackagesRestoreProcessingSetup(localNavController: NavHostController, vi
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     LaunchedEffect(null) {
-        viewModel.emitIntentOnIO(IndexUiIntent.UpdateApps)
+        viewModel.launchOnIO {
+            viewModel.emitIntent(IndexUiIntent.GetUsers)
+            viewModel.emitIntent(IndexUiIntent.UpdateApps)
+        }
     }
 
     ProcessingSetupScaffold(
@@ -79,7 +93,40 @@ fun PagePackagesRestoreProcessingSetup(localNavController: NavHostController, vi
                     }
                 )
             }
-            Title(title = StringResourceToken.fromStringId(R.string.restore_list)) {
+            Title(title = StringResourceToken.fromStringId(R.string.settings)) {
+                val dialogState = LocalSlotScope.current!!.dialogSlot
+                val context = LocalContext.current
+                var currentIndex by remember { mutableIntStateOf(0) }
+                LaunchedEffect(currentIndex) {
+                    viewModel.launchOnIO {
+                        var userId = -1
+                        if (currentIndex != 0) userId = uiState.restoreUsers[currentIndex].title.getValue(context).toIntOrNull() ?: -1
+                        context.saveRestoreUser(userId)
+                    }
+                }
+                Selectable(
+                    enabled = uiState.restoreUsers.size != 1,
+                    title = StringResourceToken.fromStringId(R.string.restore_user),
+                    value = StringResourceToken.fromStringId(R.string.restore_user_desc),
+                    current = uiState.restoreUsers[currentIndex].title,
+                ) {
+                    viewModel.launchOnIO {
+                        val (state, selectedIndex) = dialogState.select(
+                            title = StringResourceToken.fromStringId(R.string.restore_user),
+                            defIndex = currentIndex,
+                            items = uiState.restoreUsers
+                        )
+                        if (state) {
+                            currentIndex = selectedIndex
+                        }
+                    }
+                }
+                Switchable(
+                    key = KeyAutoScreenOff,
+                    defValue = false,
+                    title = StringResourceToken.fromStringId(R.string.auto_screen_off),
+                    checkedText = StringResourceToken.fromStringId(R.string.auto_screen_off_desc),
+                )
                 Switchable(
                     key = KeyResetRestoreList,
                     defValue = false,

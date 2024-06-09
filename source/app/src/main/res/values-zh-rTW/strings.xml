@@ -90,7 +90,7 @@
     <string name="backup_user_desc">讀取備份列表/備份數據時的目標用戶</string>
     <string name="user">用戶</string>
     <string name="restore_user">恢復用戶</string>
-    <string name="restore_user_desc">讀取恢復列表恢復數據時的目標用戶</string>
+    <string name="restore_user_desc">你想恢復到哪個用戶？</string>
     <string name="restore_completed">恢復完成</string>
     <string name="backup">備份</string>
     <string name="backup_itself">備份自身</string>

@@ -30,7 +30,6 @@
     <string name="reload">Recarregar</string>
     <string name="icon_reload_failed">Não foi possível recarregar o ícone</string>
     <string name="keep_screen_on">Manter tela ligada</string>
-    <string name="restore_user_desc">Usuário alvo ao carregar a lista de restauração ou restaurar</string>
     <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Use pipe em vez de parâmetro para entrada tar. Mude quando disser \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Não foi possível executar: esse arquivo ou diretório não existe\"</string>
     <string name="compression_type_desc">Afeta o backup e a restauração. Só deve ser alterado por usuários avançados.</string>
     <string name="backup_user_desc">Usuário alvo ao carregar a lista de backup ou fazer backup</string>

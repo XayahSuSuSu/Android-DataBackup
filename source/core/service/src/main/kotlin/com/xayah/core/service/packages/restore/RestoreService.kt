@@ -12,6 +12,7 @@ import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readAutoScreenOff
 import com.xayah.core.datastore.readResetRestoreList
+import com.xayah.core.datastore.readRestoreUser
 import com.xayah.core.datastore.readScreenOffTimeout
 import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.datastore.saveLastRestoreTime
@@ -87,6 +88,7 @@ internal abstract class RestoreService : Service() {
     private val pkgEntities: MutableList<TaskDetailPackageEntity> = mutableListOf()
 
     private var isInitialized: Boolean = false
+    internal var restoreUser = -1
 
     @SuppressLint("StringFormatInvalid")
     suspend fun initialize(cloudName: String, cloudRemote: String): Long {
@@ -94,6 +96,7 @@ internal abstract class RestoreService : Service() {
             if (rootService.getScreenOffTimeout() != Int.MAX_VALUE) {
                 context.saveScreenOffTimeout(rootService.getScreenOffTimeout())
             }
+            restoreUser = context.readRestoreUser().first()
             if (isInitialized.not()) {
                 taskEntity.also {
                     it.id = taskDao.upsert(it)

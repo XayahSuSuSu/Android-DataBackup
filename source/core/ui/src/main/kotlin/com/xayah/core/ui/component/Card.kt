@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
@@ -46,6 +47,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.readRestoreUser
 import com.xayah.core.model.OperationState
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CardColors
@@ -348,6 +351,7 @@ fun ReportCard(
     pagerState: PagerState,
     title: StringResourceToken,
     timer: StringResourceToken,
+    showRestoreUser: Boolean = false,
     packageSize: StringResourceToken,
     succeed: List<ReportAppItemInfo>,
     failed: List<ReportAppItemInfo>,
@@ -392,6 +396,18 @@ fun ReportCard(
                         titleTint = ColorSchemeKeyTokens.Primary,
                         content = timer
                     )
+                    if (showRestoreUser) {
+                        val context = LocalContext.current
+                        val restoreUser by context.readRestoreUser().collectAsStateWithLifecycle(initialValue = -1)
+                        ReportItem(
+                            icon = ImageVectorToken.fromVector(Icons.Filled.AccountCircle),
+                            iconTint = ColorSchemeKeyTokens.YellowPrimary,
+                            title = StringResourceToken.fromStringId(R.string.restore_user),
+                            titleTint = ColorSchemeKeyTokens.YellowPrimary,
+                            content = if (restoreUser == -1) StringResourceToken.fromStringId(R.string.backup_user) else StringResourceToken.fromString(restoreUser.toString())
+                        )
+                    }
+
                     ReportItem(
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel_circle),
                         iconTint = ColorSchemeKeyTokens.Error,

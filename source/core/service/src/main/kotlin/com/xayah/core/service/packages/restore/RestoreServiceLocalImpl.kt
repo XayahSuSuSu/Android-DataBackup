@@ -64,16 +64,16 @@ internal class RestoreServiceLocalImpl @Inject constructor() : RestoreService() 
 
         val p = t.packageEntity
         val srcDir = "${appsDir}/${p.archivesRelativeDir}"
+        val userId = if (restoreUser == -1) p.userId else restoreUser
 
-        packagesRestoreUtil.restoreApk(p = p, t = t, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_USER_DE, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = srcDir)
-        packagesRestoreUtil.updatePackage(p = p)
-        packagesRestoreUtil.restorePermissions(p = p)
-        packagesRestoreUtil.restoreSsaid(p = p)
+        packagesRestoreUtil.restoreApk(userId = userId, p = p, t = t, srcDir = srcDir)
+        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = srcDir)
+        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_USER_DE, srcDir = srcDir)
+        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = srcDir)
+        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = srcDir)
+        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = srcDir)
+        packagesRestoreUtil.restorePermissions(userId = userId, p = p)
+        packagesRestoreUtil.restoreSsaid(userId = userId, p = p)
 
         t.apply {
             t.apply {

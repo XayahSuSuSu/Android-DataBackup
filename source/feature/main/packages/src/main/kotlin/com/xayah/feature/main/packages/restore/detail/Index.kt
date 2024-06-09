@@ -46,7 +46,6 @@ import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.getValue
-import com.xayah.core.util.DateUtil
 import com.xayah.core.util.SymbolUtil
 import com.xayah.feature.main.packages.ListScaffold
 import com.xayah.feature.main.packages.R
@@ -103,25 +102,12 @@ fun PagePackagesRestoreDetail() {
                 AnimatedVisibility(uiState.infoExpanded) {
                     Title(title = StringResourceToken.fromStringId(R.string.info)) {
                         Clickable(
-                            title = StringResourceToken.fromStringId(R.string.user),
+                            title = StringResourceToken.fromStringId(R.string.backup_user),
                             value = StringResourceToken.fromString(uiState.userId.toString()),
-                        )
-                        Clickable(
-                            title = StringResourceToken.fromStringId(R.string.uid),
-                            value = StringResourceToken.fromString(pkg.extraInfo.uid.toString())
                         )
                         Clickable(
                             title = StringResourceToken.fromStringId(R.string.version),
                             value = StringResourceToken.fromString(pkg.packageInfo.versionName),
-                        )
-                        Clickable(
-                            title = StringResourceToken.fromStringId(R.string.first_install),
-                            value = StringResourceToken.fromString(
-                                DateUtil.formatTimestamp(
-                                    pkg.packageInfo.firstInstallTime,
-                                    "yyyy-MM-dd"
-                                )
-                            ),
                         )
                     }
                 }

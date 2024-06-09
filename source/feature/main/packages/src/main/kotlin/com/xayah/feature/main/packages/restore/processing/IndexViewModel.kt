@@ -20,6 +20,7 @@ import com.xayah.core.service.packages.restore.ProcessingServiceCloudImpl
 import com.xayah.core.service.packages.restore.ProcessingServiceLocalImpl
 import com.xayah.core.ui.material3.SnackbarDuration
 import com.xayah.core.ui.material3.SnackbarType
+import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.ProcessingPackageCardItem
 import com.xayah.core.ui.model.ReportAppItemInfo
@@ -27,6 +28,7 @@ import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.util.addInfo
 import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.toProcessingCardItem
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
@@ -52,6 +54,7 @@ data class IndexUiState(
     val cloudRemote: String,
     val packages: List<PackageEntity>,
     val packagesSize: String,
+    val restoreUsers: List<DialogRadioItem<Any>>
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -61,6 +64,7 @@ sealed class IndexUiIntent : UiIntent {
     data object Initialize : IndexUiIntent()
     data object DestroyService : IndexUiIntent()
     data object TurnOffScreen : IndexUiIntent()
+    data object GetUsers : IndexUiIntent()
 }
 
 @ExperimentalCoroutinesApi
@@ -83,6 +87,7 @@ class IndexViewModel @Inject constructor(
         cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.trim() ?: "",
         packages = listOf(),
         packagesSize = "",
+        restoreUsers = listOf(DialogRadioItem(enum = Any(), title = StringResourceToken.fromStringId(R.string.backup_user)))
     )
 ) {
     init {
@@ -182,6 +187,28 @@ class IndexViewModel @Inject constructor(
                     rootService.setScreenOffTimeout(Int.MAX_VALUE)
                     rootService.setDisplayPowerMode(SurfaceControlHidden.POWER_MODE_OFF)
                 }
+            }
+
+            is IndexUiIntent.GetUsers -> {
+                val users = rootService.getUsers().map { it.id }.toMutableSet()
+                pkgRepo.queryUserIds(OpType.RESTORE).forEach {
+                    users.add(it)
+                }
+                val restoreUsers = mutableListOf(
+                    DialogRadioItem(
+                        enum = Any(),
+                        title = StringResourceToken.fromStringId(R.string.backup_user),
+                    )
+                )
+                users.sorted().forEach {
+                    restoreUsers.add(
+                        DialogRadioItem(
+                            enum = Any(),
+                            title = StringResourceToken.fromString(it.toString()),
+                        )
+                    )
+                }
+                emitState(state.copy(restoreUsers = restoreUsers))
             }
         }
     }

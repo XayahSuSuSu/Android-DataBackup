@@ -208,6 +208,7 @@ fun PagePackagesRestoreProcessing(viewModel: IndexViewModel) {
                         pagerState = pagerState,
                         title = StringResourceToken.fromStringId(R.string.report),
                         timer = StringResourceToken.fromString(timer),
+                        showRestoreUser = true,
                         packageSize = StringResourceToken.fromString(packageSize),
                         succeed = packageSucceed,
                         failed = packageFailed,

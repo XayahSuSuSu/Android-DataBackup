@@ -40,10 +40,9 @@
     <item name="_continue" type="string" />
     <item name="finish" type="string" />
     <item name="storage" type="string" />
-    <item name="backup_list" type="string" />
+    <item name="settings" type="string" />
     <item name="reset_backup_list" type="string" />
     <item name="reset_backup_list_desc" type="string" />
-    <item name="restore_list" type="string" />
     <item name="reset_restore_list" type="string" />
     <item name="reset_restore_list_desc" type="string" />
     <item name="apps" type="string" />
@@ -58,6 +57,11 @@
     <item name="confirm_add_to_blacklist" type="string" />
     <item name="report" type="string" />
     <item name="args_screen_off_in_seconds" type="string" />
+    <item name="auto_screen_off" type="string" />
+    <item name="auto_screen_off_desc" type="string" />
+    <item name="backup_user" type="string" />
+    <item name="restore_user" type="string" />
+    <item name="restore_user_desc" type="string" />
 
     <item name="backup_sort_type_items" type="array" />
     <item name="flag_type_items" type="array" />

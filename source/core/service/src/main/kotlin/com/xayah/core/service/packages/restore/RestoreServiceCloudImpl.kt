@@ -90,35 +90,35 @@ internal class RestoreServiceCloudImpl @Inject constructor() : RestoreService() 
         val p = t.packageEntity
         val tmpDstDir = "${tmpAppsDir}/${p.archivesRelativeDir}"
         val remoteSrcDir = "${remoteAppsDir}/${p.archivesRelativeDir}"
+        val userId = if (restoreUser == -1) p.userId else restoreUser
 
         packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_APK, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, _, mPath ->
-            packagesRestoreUtil.restoreApk(p = mP, t = mT, srcDir = mPath)
+            packagesRestoreUtil.restoreApk(userId = userId, p = mP, t = mT, srcDir = mPath)
         }
 
         packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(p = mP, t = mT, dataType = mDataType, srcDir = mPath)
+            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
         }
 
         packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER_DE, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(p = mP, t = mT, dataType = mDataType, srcDir = mPath)
+            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
 
         }
 
         packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(p = mP, t = mT, dataType = mDataType, srcDir = mPath)
+            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
         }
 
         packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(p = mP, t = mT, dataType = mDataType, srcDir = mPath)
+            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
         }
 
         packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(p = mP, t = mT, dataType = mDataType, srcDir = mPath)
+            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
         }
 
-        packagesRestoreUtil.updatePackage(p = p)
-        packagesRestoreUtil.restorePermissions(p = p)
-        packagesRestoreUtil.restoreSsaid(p = p)
+        packagesRestoreUtil.restorePermissions(userId = userId, p = p)
+        packagesRestoreUtil.restoreSsaid(userId = userId, p = p)
 
         t.apply {
             packageEntity = p

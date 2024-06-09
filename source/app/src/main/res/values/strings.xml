@@ -94,7 +94,7 @@
     <string name="backup_user_desc">Target user while loading backup list or backing up</string>
     <string name="user">User</string>
     <string name="restore_user">Restore user</string>
-    <string name="restore_user_desc">Target user while loading restore list or restoring</string>
+    <string name="restore_user_desc">Which user do you want to restore to?</string>
     <string name="restore_completed">Restoring completed</string>
     <string name="backup">Backup</string>
     <string name="backup_itself">Backup itself</string>

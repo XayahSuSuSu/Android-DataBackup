@@ -77,7 +77,6 @@
     <string name="backup_user">Usuario del respaldo</string>
     <string name="backup_user_desc">Usuario objetivo para cargar lista de respaldo o respaldar</string>
     <string name="user">Usuario</string>
-    <string name="restore_user_desc">Usuario objetivo para cargar lista de restauración o restaurar</string>
     <string name="restore_completed">Restauración completada</string>
     <string name="compatible_mode">Modo de compatibilidad</string>
     <string name="clean_restoring_desc">Borrar el directorio de destino antes de restaurar</string>

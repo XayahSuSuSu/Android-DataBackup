@@ -4,7 +4,6 @@
     <string name="clean_restoring">Temiz geri yükleme</string>
     <string name="save">Kaydet</string>
     <string name="restoring">Kurtarılıyor</string>
-    <string name="restore_user_desc">Geri yükleme listesi yüklenirken veya geri yüklenirken hedef kullanıcı</string>
     <string name="prompt">İstem</string>
     <string name="both">Her ikisi de</string>
     <string name="user">Kullanıcı</string>

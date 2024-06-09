@@ -136,7 +136,6 @@
     <string name="processing_exit_confirmation">Zatvoriti aplikaciju i prekinuti aktualnu radnju?</string>
     <string name="premium_for_this_feature">Za ovu značajku preuzmi premium verziju</string>
     <string name="backup_user_desc">Odredi korisnika tijekom učitavanja popisa sigurnosnih kopija ili spremanja sigurnosnih kopija</string>
-    <string name="restore_user_desc">Odredi korisnika tijekom učitavanja popisa obnavljanja ili obnavljanja</string>
     <string name="keep_screen_on_desc">Ostavi uređaj aktivnim tijekom obrade</string>
     <string name="compression_type_desc">Utječe na spremanje sigurnosnih kopija i obnavljanje. Preporučuje se da ovu postavku mijenjaju samo iskusni korisnici.</string>
     <string name="restore_completed">Obnavljanje gotovo</string>

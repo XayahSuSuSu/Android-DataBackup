@@ -154,12 +154,11 @@ class PackagesRestoreUtil @Inject constructor(
         else -> ""
     }
 
-    suspend fun restoreApk(p: PackageEntity, t: TaskDetailPackageEntity, srcDir: String): ShellResult = run {
+    suspend fun restoreApk(userId: Int, p: PackageEntity, t: TaskDetailPackageEntity, srcDir: String): ShellResult = run {
         log { "Restoring apk..." }
 
         val dataType = DataType.PACKAGE_APK
         val packageName = p.packageName
-        val userId = p.userId
         val ct = p.indexInfo.compressionType
         val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
         var isSuccess: Boolean
@@ -246,11 +245,10 @@ class PackagesRestoreUtil @Inject constructor(
     /**
      * Package data: USER, USER_DE, DATA, OBB, MEDIA
      */
-    suspend fun restoreData(p: PackageEntity, t: TaskDetailPackageEntity, dataType: DataType, srcDir: String): ShellResult = run {
+    suspend fun restoreData(userId: Int, p: PackageEntity, t: TaskDetailPackageEntity, dataType: DataType, srcDir: String): ShellResult = run {
         log { "Restoring ${dataType.type}..." }
 
         val packageName = p.packageName
-        val userId = p.userId
         val ct = p.indexInfo.compressionType
         val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
         val dstDir = packageRepository.getDataSrcDir(dataType, userId)
@@ -354,24 +352,10 @@ class PackagesRestoreUtil @Inject constructor(
         ShellResult(code = if (isSuccess) 0 else -1, input = listOf(), out = out)
     }
 
-    suspend fun updatePackage(p: PackageEntity) = run {
-        log { "Update package..." }
-        val packageName = p.packageName
-
-        val userId = p.userId
-        val packageInfo = rootService.getPackageInfoAsUser(packageName, 0, userId)
-        packageInfo?.apply {
-            val uid = applicationInfo.uid
-            log { "New uid: $uid" }
-            p.extraInfo.uid = uid
-        }
-    }
-
-    suspend fun restorePermissions(p: PackageEntity) = run {
+    suspend fun restorePermissions(userId: Int, p: PackageEntity) = run {
         log { "Restoring permissions..." }
 
         val packageName = p.packageName
-        val userId = p.userId
         val user = rootService.getUserHandle(userId)
         val permissions = p.extraInfo.permissions
 
@@ -392,12 +376,11 @@ class PackagesRestoreUtil @Inject constructor(
         }
     }
 
-    suspend fun restoreSsaid(p: PackageEntity) = run {
+    suspend fun restoreSsaid(userId: Int, p: PackageEntity) = run {
         log { "Restoring ssaid..." }
 
         val packageName = p.packageName
         val uid = p.extraInfo.uid
-        val userId = p.userId
         val ssaid = p.extraInfo.ssaid
 
         if (p.ssaidSelected) {

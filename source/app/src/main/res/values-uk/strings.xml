@@ -95,7 +95,6 @@
     <string name="sooner_or_later">Раніше чи пізніше</string>
     <string name="clean_restoring">Чисте відновлення</string>
     <string name="installation_time">Час встановлення</string>
-    <string name="restore_user_desc">Цільовий користувач під час завантаження списку відновлення або відновлення</string>
     <string name="select_target_directory">Вибір цільової папки</string>
     <string name="password">Пароль</string>
     <string name="user">Користувач</string>
