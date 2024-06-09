@@ -208,37 +208,47 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
             taskDao.upsert(it)
         }
 
+        postBackupItselfEntity.state = OperationState.SKIP
+
         val backupItself = context.readBackupItself().first()
         // Backup itself if enabled.
         if (context.readBackupItself().first()) {
             log { "Backup itself enabled." }
-            commonBackupUtil.backupItself(dstDir = tmpDir)
-            postBackupItselfEntity.also {
-                it.state = OperationState.UPLOADING
-                taskDao.upsert(it)
-            }
-            var flag = true
-            var progress = 0f
-            with(CoroutineScope(coroutineContext)) {
-                launch {
-                    while (flag) {
-                        postBackupItselfEntity.also {
-                            it.content = "${(progress * 100).toInt()}%"
-                            taskDao.upsert(it)
-                        }
-                        delay(500)
+            commonBackupUtil.backupItself(dstDir = tmpDir).apply {
+                postBackupItselfEntity.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                if (isSuccess.not()) {
+                    postBackupItselfEntity.log = outString
+                } else {
+                    postBackupItselfEntity.also {
+                        it.state = OperationState.UPLOADING
+                        taskDao.upsert(it)
                     }
+                    var flag = true
+                    var progress = 0f
+                    with(CoroutineScope(coroutineContext)) {
+                        launch {
+                            while (flag) {
+                                postBackupItselfEntity.also {
+                                    it.content = "${(progress * 100).toInt()}%"
+                                    taskDao.upsert(it)
+                                }
+                                delay(500)
+                            }
+                        }
+                    }
+                    cloudRepository.upload(client = client, src = commonBackupUtil.getItselfDst(tmpDir), dstDir = remote, onUploading = { read, total -> progress = read.toFloat() / total }).apply {
+                        postBackupItselfEntity.also {
+                            it.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                            if (isSuccess.not()) it.log = outString
+                            it.content = "100%"
+                        }
+                    }
+                    flag = false
                 }
             }
-            cloudRepository.upload(client = client, src = commonBackupUtil.getItselfDst(tmpDir), dstDir = remote, onUploading = { read, total -> progress = read.toFloat() / total })
-            flag = false
         }
 
-        postBackupItselfEntity.also {
-            it.state = if (backupItself) OperationState.DONE else OperationState.SKIP
-            it.content = "100%"
-            taskDao.upsert(it)
-        }
+        taskDao.upsert(postBackupItselfEntity)
     }
 
     override suspend fun backupIcons() {
@@ -249,32 +259,44 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
 
         // Backup others.
         log { "Save icons." }
-        packagesBackupUtil.backupIcons(dstDir = tmpConfigsDir)
-        postSaveIconsEntity.also {
-            it.state = OperationState.UPLOADING
-            taskDao.upsert(it)
-        }
-        var flag = true
-        var progress = 0f
-        with(CoroutineScope(coroutineContext)) {
-            launch {
-                while (flag) {
-                    postSaveIconsEntity.also {
-                        it.content = "${(progress * 100).toInt()}%"
-                        taskDao.upsert(it)
-                    }
-                    delay(500)
+        packagesBackupUtil.backupIcons(dstDir = tmpConfigsDir).apply {
+            postSaveIconsEntity.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+            if (isSuccess.not()) {
+                postSaveIconsEntity.log = outString
+            } else {
+                postSaveIconsEntity.also {
+                    it.state = OperationState.UPLOADING
+                    taskDao.upsert(it)
                 }
+                var flag = true
+                var progress = 0f
+                with(CoroutineScope(coroutineContext)) {
+                    launch {
+                        while (flag) {
+                            postSaveIconsEntity.also {
+                                it.content = "${(progress * 100).toInt()}%"
+                                taskDao.upsert(it)
+                            }
+                            delay(500)
+                        }
+                    }
+                }
+                cloudRepository.upload(
+                    client = client,
+                    src = packagesBackupUtil.getIconsDst(tmpConfigsDir),
+                    dstDir = remoteConfigsDir,
+                    onUploading = { read, total -> progress = read.toFloat() / total }).apply {
+                    postSaveIconsEntity.also {
+                        it.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                        if (isSuccess.not()) it.log = outString
+                        it.content = "100%"
+                    }
+                }
+                flag = false
             }
         }
-        cloudRepository.upload(client = client, src = packagesBackupUtil.getIconsDst(tmpConfigsDir), dstDir = remoteConfigsDir, onUploading = { read, total -> progress = read.toFloat() / total })
-        flag = false
 
-        postSaveIconsEntity.also {
-            it.state = OperationState.DONE
-            it.content = "100%"
-            taskDao.upsert(it)
-        }
+        taskDao.upsert(postSaveIconsEntity)
     }
 
     override suspend fun clear() {

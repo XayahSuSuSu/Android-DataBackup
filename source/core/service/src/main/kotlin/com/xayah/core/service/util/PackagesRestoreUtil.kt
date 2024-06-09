@@ -412,7 +412,15 @@ class PackagesRestoreUtil @Inject constructor(
         }
     }
 
-    suspend fun download(client: CloudClient, p: PackageEntity, t: TaskDetailPackageEntity, dataType: DataType, srcDir: String, dstDir: String, onDownloaded: suspend (path: String) -> Unit) = run {
+    suspend fun download(
+        client: CloudClient,
+        p: PackageEntity,
+        t: TaskDetailPackageEntity,
+        dataType: DataType,
+        srcDir: String,
+        dstDir: String,
+        onDownloaded: suspend (p: PackageEntity, t: TaskDetailPackageEntity, dataType: DataType, path: String) -> Unit
+    ) = run {
         val ct = p.indexInfo.compressionType
         val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
 
@@ -433,14 +441,23 @@ class PackagesRestoreUtil @Inject constructor(
                     }
                 }
 
-                cloudRepository.download(client = client, src = src, dstDir = dstDir, onDownloading = { written, _ -> progress = written.toDouble() }, onDownloaded = onDownloaded).apply {
+                cloudRepository.download(client = client,
+                    src = src,
+                    dstDir = dstDir,
+                    onDownloading = { written, _ -> progress = written.toDouble() },
+                    onDownloaded = {
+                        onDownloaded(p, t, dataType, dstDir)
+                    }
+                ).apply {
                     flag = false
                     t.updateInfo(
                         dataType = dataType,
-                        state = if (isSuccess) OperationState.DONE else OperationState.ERROR,
-                        log = t.getLog(dataType) + "\n${outString}",
+                        log = (t.getLog(dataType) + "\n${outString}").trim(),
                         content = progress.formatSize()
                     )
+                    if (isSuccess.not()) {
+                        t.updateInfo(dataType = dataType, state = OperationState.ERROR)
+                    }
                 }
             } else {
                 if (dataType == DataType.PACKAGE_USER || dataType == DataType.PACKAGE_APK) {

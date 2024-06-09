@@ -157,14 +157,14 @@ internal abstract class RestoreService : Service() {
             log { "Preprocessing is starting." }
 
             log { "Trying to enable adb install permissions." }
-            PreparationUtil.setInstallEnv()
+            PreparationUtil.setInstallEnv().apply {
+                preSetUpInstEnvEntity.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                if (isSuccess.not()) preSetUpInstEnvEntity.log = outString
+            }
 
             runCatchingOnService { createTargetDirs() }
 
-            preSetUpInstEnvEntity.also {
-                it.state = OperationState.DONE
-                taskDao.upsert(it)
-            }
+            taskDao.upsert(preSetUpInstEnvEntity)
 
             taskEntity.also {
                 it.processingIndex++

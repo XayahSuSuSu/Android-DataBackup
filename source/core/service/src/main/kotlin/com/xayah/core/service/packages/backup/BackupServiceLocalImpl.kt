@@ -128,16 +128,17 @@ internal class BackupServiceLocalImpl @Inject constructor() : BackupService() {
 
         val dstDir = context.localBackupSaveDir()
         val backupItself = context.readBackupItself().first()
+
+        postBackupItselfEntity.state = OperationState.SKIP
         // Backup itself if enabled.
         if (backupItself) {
             log { "Backup itself enabled." }
-            commonBackupUtil.backupItself(dstDir = dstDir)
+            commonBackupUtil.backupItself(dstDir = dstDir).apply {
+                postBackupItselfEntity.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+                if (isSuccess.not()) postBackupItselfEntity.log = outString
+            }
         }
-
-        postBackupItselfEntity.also {
-            it.state = if (backupItself) OperationState.DONE else OperationState.SKIP
-            taskDao.upsert(it)
-        }
+        taskDao.upsert(postBackupItselfEntity)
     }
 
     override suspend fun backupIcons() {
@@ -148,12 +149,11 @@ internal class BackupServiceLocalImpl @Inject constructor() : BackupService() {
 
         // Backup others.
         log { "Save icons." }
-        packagesBackupUtil.backupIcons(dstDir = configsDir)
-
-        postSaveIconsEntity.also {
-            it.state = OperationState.DONE
-            taskDao.upsert(it)
+        packagesBackupUtil.backupIcons(dstDir = configsDir).apply {
+            postSaveIconsEntity.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
+            if (isSuccess.not()) postSaveIconsEntity.log = outString
         }
+        taskDao.upsert(postSaveIconsEntity)
     }
 
     override suspend fun clear() {}

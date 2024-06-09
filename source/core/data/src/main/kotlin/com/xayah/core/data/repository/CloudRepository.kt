@@ -81,7 +81,6 @@ class CloudRepository @Inject constructor(
 
             runCatching {
                 client.download(src = src, dst = dstDir, onDownloading = onDownloading)
-                out.add("Download succeed.")
             }.onFailure {
                 code = -2
                 if (it.localizedMessage != null)
