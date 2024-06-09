@@ -13,7 +13,7 @@ ZSTD_DEV=false
 
 NDK_VERSION=r25c
 
-BIN_VERSION=1.8
+BIN_VERSION=1.9
 ZLIB_VERSION=1.3.1             # https://github.com/madler/zlib/releases
 XZ_VERSION=5.6.2               # https://github.com/tukaani-project/xz/releases
 LZ4_VERSION=1.9.4              # https://github.com/lz4/lz4/releases
@@ -21,12 +21,12 @@ ZSTD_VERSION=1.5.6             # https://github.com/facebook/zstd/releases
 TAR_VERSION=1.35               # https://ftp.gnu.org/gnu/tar/?C=M;O=D
 COREUTLS_VERSION=9.4           # https://ftp.gnu.org/gnu/coreutils/?C=M;O=D
 TREE_VERSION=2.1.1             # https://gitlab.com/OldManProgrammer/unix-tree
-GAWK_VERSION=5.3.0             # https://ftp.gnu.org/gnu/gawk/?C=M;O=D
+AWK_VERSION=20240422           # https://github.com/onetrueawk/awk/tags
 ##################################################
 # Functions
 set_up_utils() {
     sudo apt-get update
-    sudo apt-get install wget zip unzip bzip2 -q make gcc g++ clang meson golang-go cmake -y
+    sudo apt-get install wget zip unzip bzip2 -q make gcc g++ clang meson golang-go cmake bison -y
     # Create build directory
     mkdir build_bin
     cd build_bin
@@ -287,24 +287,33 @@ build_tree() {
     rm -rf tree-$TREE_VERSION
 }
 
-build_gawk() {
-    if [ ! -f $LOCAL_PATH/gawk-$GAWK_VERSION.tar.gz ]; then
-        wget -nv https://ftp.gnu.org/gnu/gawk/gawk-$GAWK_VERSION.tar.gz
+build_awk() {
+    if [ ! -f $LOCAL_PATH/$AWK_VERSION.tar.gz ]; then
+        wget -nv https://github.com/onetrueawk/awk/archive/refs/tags/$AWK_VERSION.tar.gz
     fi
-    if [ -d $LOCAL_PATH/gawk-$GAWK_VERSION ]; then
-        rm -rf gawk-$GAWK_VERSION
+    if [ -d $LOCAL_PATH/awk-$AWK_VERSION ]; then
+        rm -rf awk-$AWK_VERSION
     fi
-    tar xf gawk-$GAWK_VERSION.tar.gz
-    cd gawk-$GAWK_VERSION
+    tar xf $AWK_VERSION.tar.gz
+    cd awk-$AWK_VERSION
 
-    ./configure --host=$TARGET LDFLAGS="$BUILD_LDFLAGS_STATIC" CFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" CXXFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" $DISABLE_YEAR2038_PARA
-    make -j8
-    make install prefix= DESTDIR=$LOCAL_PATH/gawk
-    $STRIP $LOCAL_PATH/gawk/bin/gawk
-    rm $LOCAL_PATH/gawk/bin/awk
-    mv $LOCAL_PATH/gawk/bin/gawk $LOCAL_PATH/gawk/bin/awk
+    make \
+        AR=$AR \
+        CC=$CC \
+        AS=$AS \
+        CXX=$CXX \
+        LD=$LD \
+        RANLIB=$RANLIB \
+        STRIP=$STRIP \
+        CFLAGS="$BUILD_CFLAGS" \
+        CXXFLAGS="$BUILD_CFLAGS" \
+        LDFLAGS="$BUILD_LDFLAGS_STATIC" \
+        -j8
+    mkdir -p $LOCAL_PATH/awk/bin
+    mv a.out $LOCAL_PATH/awk/bin/awk
+    $STRIP $LOCAL_PATH/awk/bin/awk
     cd ..
-    rm -rf gawk-$GAWK_VERSION
+    rm -rf awk-$AWK_VERSION
 }
 
 build_built_in() {
@@ -312,14 +321,14 @@ build_built_in() {
     build_tar
     build_coreutls
     build_tree
-    build_gawk
+    build_awk
 }
 
 package_built_in() {
     # Built-in modules
     mkdir -p built_in/$TARGET_ARCH
     echo "$BIN_VERSION" > built_in/version
-    zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df coreutls/bin/sha1sum tar/bin/tar zstd/bin/zstd built_in/version tree/tree gawk/bin/awk
+    zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df coreutls/bin/sha1sum tar/bin/tar zstd/bin/zstd built_in/version tree/tree awk/bin/awk
 }
 
 build() {
@@ -365,5 +374,5 @@ for abi in ${abis[@]}; do
     build $1
     package $1
     # Clean build files
-    rm -rf NDK coreutls tar zstd tree gawk
+    rm -rf NDK coreutls tar zstd tree awk
 done
