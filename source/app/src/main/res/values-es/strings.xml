@@ -304,4 +304,5 @@
     <string name="auto_screen_off">Apagado automático de la pantalla</string>
     <string name="auto_screen_off_desc">Apaga automáticamente la pantalla durante la copia de seguridad o la restauración de aplicaciones/archivos y, a continuación, enciéndela una vez finalizada</string>
     <string name="args_screen_off_in_seconds">La pantalla se apagará en %1$s segundos</string>
+    <string name="restore_user_desc">¿A qué usuario quieres restaurar?</string>
 </resources>
