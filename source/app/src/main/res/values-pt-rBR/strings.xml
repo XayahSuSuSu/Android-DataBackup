@@ -304,4 +304,5 @@
     <string name="auto_screen_off">Desligar tela automaticamente</string>
     <string name="args_screen_off_in_seconds">A tela será desligada em %1$s segundos</string>
     <string name="auto_screen_off_desc">Desligue automaticamente a tela durante o backup ou restauração de apps/arquivos e ligue-a após a conclusão</string>
+    <string name="restore_user_desc">Para qual usuário você deseja restaurar?</string>
 </resources>
