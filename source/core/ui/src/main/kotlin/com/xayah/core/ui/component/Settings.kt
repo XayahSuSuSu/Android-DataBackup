@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
@@ -292,13 +291,7 @@ fun Checkable(
             if (icon != null) Icon(imageVector = icon.value, contentDescription = null)
         },
         trailingContent = {
-            Divider(
-                modifier = Modifier
-                    .height(SizeTokens.Level36)
-                    .width(SizeTokens.Level1)
-                    .fillMaxHeight()
-            )
-            Checkbox(modifier = Modifier, enabled = enabled, checked = checked, onCheckedChange = { onCheckedChange(checked) })
+            CheckIconButton(enabled = enabled, checked = checked, onCheckedChange = { onCheckedChange(checked) })
         },
         onClick = {
             onCheckedChange(checked)

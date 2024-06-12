@@ -66,6 +66,7 @@ fun PageDashboard() {
         ),
         actions = {
             IconButton(
+                enabled = nullBackupDir.not(),
                 icon = ImageVectorToken.fromVector(Icons.Outlined.Settings),
                 onClick = {
                     navController.navigate(MainRoutes.Settings.route)

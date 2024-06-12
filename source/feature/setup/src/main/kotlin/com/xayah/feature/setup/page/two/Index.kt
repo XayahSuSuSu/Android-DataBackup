@@ -92,6 +92,14 @@ fun PageTwo() {
                 navController.navigate(SetupRoutes.Directory.route)
             }
             Title(title = StringResourceToken.fromStringId(R.string.optional)) {
+                AnimatedVisibility(visible = backupSavePathSaved) {
+                    Clickable(
+                        title = StringResourceToken.fromStringId(R.string.configurations),
+                        value = StringResourceToken.fromStringId(R.string.configurations_desc),
+                    ) {
+                        navController.navigate(SetupRoutes.Configurations.route)
+                    }
+                }
                 Switchable(
                     key = KeyLoadSystemApps,
                     defValue = false,

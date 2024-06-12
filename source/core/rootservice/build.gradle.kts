@@ -23,6 +23,7 @@ dependencies {
     implementation(project(":core:systemapi"))
     implementation(project(":core:util"))
     implementation(project(":core:common"))
+    implementation(project(":core:datastore"))
 
     implementation(libs.kotlinx.coroutines.core.jvm)
 

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.xayah.feature.setup"
+    namespace = "com.xayah.feature.main.configurations"
 }
 
 dependencies {
@@ -14,9 +14,10 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:util"))
     implementation(project(":core:datastore"))
+    implementation(project(":core:database"))
     implementation(project(":core:data"))
-    implementation(project(":feature:main:directory"))
-    implementation(project(":feature:main:configurations"))
+    implementation(project(":core:model"))
+    implementation(project(":core:rootservice"))
 
     // Compose Navigation
     implementation(libs.androidx.navigation.compose)
@@ -24,9 +25,6 @@ dependencies {
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
-
-    // libsu
-    implementation(libs.libsu.core)
 
     // PickYou
     implementation(libs.pickyou)

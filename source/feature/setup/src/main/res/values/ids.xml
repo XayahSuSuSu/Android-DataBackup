@@ -31,4 +31,6 @@
     <item name="custom_su_file" type="string" />
     <item name="name" type="string" />
     <item name="restart_to_take_effect" type="string" />
+    <item name="configurations" type="string" />
+    <item name="configurations_desc" type="string" />
 </resources>

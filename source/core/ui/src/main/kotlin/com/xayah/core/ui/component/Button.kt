@@ -48,9 +48,10 @@ fun TextButton(modifier: Modifier = Modifier, text: StringResourceToken, onClick
 }
 
 @Composable
-fun CheckIconButton(modifier: Modifier = Modifier, checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?) {
+fun CheckIconButton(modifier: Modifier = Modifier, enabled: Boolean = true, checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?) {
     IconButton(
         modifier = modifier,
+        enabled = enabled,
         icon = if (checked) ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle) else ImageVectorToken.fromVector(Icons.Rounded.Circle),
         tint = if (checked) ColorSchemeKeyTokens.Primary.toColor() else ColorSchemeKeyTokens.SurfaceVariant.toColor()
     ) {

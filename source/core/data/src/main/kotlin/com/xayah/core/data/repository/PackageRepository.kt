@@ -77,6 +77,7 @@ class PackageRepository @Inject constructor(
     }
 
     fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long) = packageDao.queryFlow(packageName, opType, userId, preserveId).distinctUntilChanged()
+    suspend fun getPackage(packageName: String, opType: OpType, userId: Int) = packageDao.query(packageName, opType, userId)
     fun queryPackagesFlow(opType: OpType) = packageDao.queryPackagesFlow(opType).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType, blocked: Boolean) = packageDao.queryPackagesFlow(opType, blocked).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType, cloud: String, backupDir: String) = packageDao.queryPackagesFlow(opType, cloud, backupDir).distinctUntilChanged()
@@ -85,6 +86,7 @@ class PackageRepository @Inject constructor(
     suspend fun queryActivated(opType: OpType) = packageDao.queryActivated(opType)
     suspend fun queryActivated(opType: OpType, cloud: String, backupDir: String) = packageDao.queryActivated(opType, cloud, backupDir)
     suspend fun setBlocked(id: Long, blocked: Boolean) = packageDao.setBlocked(id, blocked)
+    suspend fun clearBlocked() = packageDao.clearBlocked()
     private val localBackupSaveDir get() = context.localBackupSaveDir()
     val backupAppsDir get() = pathUtil.getLocalBackupAppsDir()
 

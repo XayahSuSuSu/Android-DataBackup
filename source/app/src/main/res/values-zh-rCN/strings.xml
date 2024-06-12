@@ -305,4 +305,10 @@
     <string name="auto_screen_off">自动息屏</string>
     <string name="auto_screen_off_desc">备份或恢复应用/文件时自动关闭屏幕，完成后自动开启屏幕</string>
     <string name="args_screen_off_in_seconds">屏幕将在%1$s秒后关闭</string>
+    <string name="configurations">配置</string>
+    <string name="configurations_desc">设置、黑名单、云端账户配置</string>
+    <string name="_import">导入</string>
+    <string name="exported">已导出</string>
+    <string name="config_file_may_be_broken">配置文件可能损坏</string>
+    <string name="imported">已导入</string>
 </resources>

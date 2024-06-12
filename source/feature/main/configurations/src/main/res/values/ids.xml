@@ -1,0 +1,14 @@
+<resources>
+    <item name="configurations" type="string" />
+    <item name="configurations_desc" type="string" />
+    <item name="cloud" type="string" />
+    <item name="export" type="string" />
+    <item name="_import" type="string" />
+    <item name="failed" type="string" />
+    <item name="exported" type="string" />
+    <item name="not_exist" type="string" />
+    <item name="config_file_may_be_broken" type="string" />
+    <item name="processing" type="string" />
+    <item name="imported" type="string" />
+    <item name="blacklist" type="string" />
+</resources>

@@ -15,6 +15,8 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:model"))
     implementation(project(":core:data"))
+    implementation(project(":core:util"))
+    implementation(project(":core:rootservice"))
     implementation(project(":feature:setup"))
 
     // Compose Navigation
@@ -26,4 +28,10 @@ dependencies {
 
     // dotLottie
     implementation(libs.dotlottie.android)
+
+    // PickYou
+    implementation(libs.pickyou)
+
+    // Gson
+    implementation(libs.gson)
 }

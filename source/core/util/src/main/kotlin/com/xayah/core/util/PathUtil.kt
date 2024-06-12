@@ -19,6 +19,7 @@ const val ApksRelativeDir = "apks"
 const val AppsRelativeDir = "apps"
 const val ConfigsRelativeDir = "configs"
 const val ConfigsPackageRestoreName = "package_restore_config.json"
+const val ConfigsConfigurationsName = "configurations.json"
 const val BinArchiveName = "bin.zip"
 const val CloudTmpRelativeDir = "DataBackupTmpDir"
 

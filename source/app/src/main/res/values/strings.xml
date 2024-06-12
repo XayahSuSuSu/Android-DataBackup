@@ -312,4 +312,10 @@
     <string name="auto_screen_off">Auto screen off</string>
     <string name="auto_screen_off_desc">Automatically turn off the screen during backing up or restoring apps/files, then turn it on after completion</string>
     <string name="args_screen_off_in_seconds">The screen will turn off in %1$s seconds</string>
+    <string name="configurations">Configurations</string>
+    <string name="configurations_desc">Settings, blacklist, cloud account configurations</string>
+    <string name="_import">Import</string>
+    <string name="exported">Exported</string>
+    <string name="config_file_may_be_broken">Config file may be broken</string>
+    <string name="imported">Imported</string>
 </resources>

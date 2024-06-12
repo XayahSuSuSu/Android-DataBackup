@@ -30,6 +30,7 @@ class CloudRepository @Inject constructor(
 
     fun getString(@StringRes resId: Int) = context.getString(resId)
     suspend fun upsert(item: CloudEntity) = cloudDao.upsert(item)
+    suspend fun upsert(items: List<CloudEntity>) = cloudDao.upsert(items)
     suspend fun queryByName(name: String) = cloudDao.queryByName(name)
 
     val clouds = cloudDao.queryFlow().distinctUntilChanged()

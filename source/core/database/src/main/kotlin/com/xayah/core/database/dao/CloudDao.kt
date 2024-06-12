@@ -12,6 +12,9 @@ interface CloudDao {
     @Upsert(entity = CloudEntity::class)
     suspend fun upsert(item: CloudEntity)
 
+    @Upsert(entity = CloudEntity::class)
+    suspend fun upsert(items: List<CloudEntity>)
+
     @Query("SELECT * FROM CloudEntity WHERE name = :name LIMIT 1")
     suspend fun queryByName(name: String): CloudEntity?
 

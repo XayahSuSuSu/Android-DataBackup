@@ -21,6 +21,7 @@ import com.xayah.feature.main.cloud.add.PageCloudAddAccount
 import com.xayah.feature.main.cloud.add.PageFTPSetup
 import com.xayah.feature.main.cloud.add.PageSMBSetup
 import com.xayah.feature.main.cloud.add.PageWebDAVSetup
+import com.xayah.feature.main.configurations.PageConfigurations
 import com.xayah.feature.main.dashboard.PageDashboard
 import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.packages.backup.detail.PagePackagesBackupDetail
@@ -115,6 +116,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.BlackList.route) {
                             PageBlackList()
+                        }
+                        composable(MainRoutes.Configurations.route) {
+                            PageConfigurations()
                         }
                         composable(route = MainRoutes.Directory.route) {
                             PageDirectory()

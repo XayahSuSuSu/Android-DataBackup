@@ -104,6 +104,12 @@ fun PageSettings() {
                     title = StringResourceToken.fromStringId(R.string.auto_screen_off),
                     checkedText = StringResourceToken.fromStringId(R.string.auto_screen_off_desc),
                 )
+                Clickable(
+                    title = StringResourceToken.fromStringId(R.string.configurations),
+                    value = StringResourceToken.fromStringId(R.string.configurations_desc),
+                ) {
+                    navController.navigate(MainRoutes.Configurations.route)
+                }
             }
             Title(title = StringResourceToken.fromStringId(R.string.appearance)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
