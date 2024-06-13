@@ -188,7 +188,7 @@
     <string name="permissions">Разрешения</string>
     <string name="recommend">Рекомендовано</string>
     <string name="limited_4gb">Ограничение 4Gb</string>
-    <string name="outdated_fs_warning">Вы используете 32-битную файловую систему, которая НЕ поддерживает размер файла больше 4 Gb</string>
+    <string name="outdated_fs_warning">Файловая система устройства не позволяет создать файл размером более 4 Гб.</string>
     <string name="shared_dir">Общий каталог</string>
     <string name="allow_empty">Разрешить пустое</string>
     <string name="domain">Домен</string>
@@ -228,4 +228,24 @@
     <string name="skip_setup_alert">Вы не сможете выполнять резервное копирование или восстановление, пока не выберете каталог для резервного копирования.</string>
     <string name="app_short_desc">Бесплатное приложение для резервного копирования данных с открытым исходным кодом</string>
     <string name="abi_validation_desc">Проверьте, поддерживается ли ваше устройство</string>
+    <string name="pull_down_to_refresh">Потяните для обновления</string>
+    <string name="args_loading_from_user">Загрузка из пользователя %1$s</string>
+    <string name="never">Никогда</string>
+    <string name="args_finished_at">Выполнено %1$s</string>
+    <string name="setup_required">Требуется настройка, тапните для выбора папки</string>
+    <string name="backup_apps">Резервная копия приложений</string>
+    <string name="backup_contacts">Резервная копия контактов</string>
+    <string name="confirm_delete">Это удалит все выбранные вами файлы</string>
+    <string name="storage">Хранилище</string>
+    <string name="restore_user_desc">Какого пользователя вы хотите восстановить?</string>
+    <string name="quick_actions">Быстрые действия</string>
+    <string name="backup_files">Резервная копия файлов</string>
+    <string name="backup_messages">Резервная копия сообщений</string>
+    <string name="monet_desc">Сгенерировать цвета на основании обоев рабочего стола</string>
+    <string name="select_apps">Выбрать приложения</string>
+    <string name="sync_to_cloud">Синхронизировать с облаком</string>
+    <string name="dashboard">Информационная панель</string>
+    <string name="select_all">Выбрать все</string>
+    <string name="filters">Фильтры</string>
+    <string name="sort">Сортировка</string>
 </resources>
