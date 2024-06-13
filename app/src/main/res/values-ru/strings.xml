@@ -19,7 +19,7 @@
     <string name="environment_detection">Обнаружение окружающей среды</string>
     <string name="selected">Выбрано</string>
     <string name="backup_user">Пользователь бекапа</string>
-    <string name="compression_type_help">Выберите тип сжатия приложений и данных, который влияет как на резервное копирование, так и на восстановление. Если вы не знаете, для чего нужен этот параметр, не меняйте его.</string>
+    <string name="compression_type_help">Выберите тип сжатия приложений и данных, который влияет как на резервное копирование, так и на восстановление. Если вы не знаете, для чего нужен этот параметр, не меняйте его</string>
     <string name="restore_user">Восстановление пользователя</string>
     <string name="failed">Сбои</string>
     <string name="grant_root_access">Предоставление root</string>
@@ -41,12 +41,12 @@
     <string name="symbol_question">\?</string>
     <string name="symbol_exclamation">!</string>
     <string name="start">Начать</string>
-    <string name="app_name_is_missing">App name is missing</string>
+    <string name="app_name_is_missing">Отсутствует имя приложения</string>
     <string name="please_wait">Ожидайте</string>
     <string name="settings">Настройки</string>
     <string name="monet">Monet</string>
     <string name="backup_itself">Бекап DataBackup</string>
-    <string name="backup_itself_title">При создании бекапа DataBackup автоматически создает резервную копию собственного установочного пакета в папке бекапов.</string>
+    <string name="backup_itself_title">При создании бекапа DataBackup автоматически создает резервную копию собственного установочного пакета в папке бекапов</string>
     <string name="create">Создать</string>
     <string name="repeat_to_add">Повторить, чтобы добавить!</string>
     <string name="installing">Установка</string>
@@ -54,16 +54,16 @@
     <string name="not_selected">Не выбрано</string>
     <string name="all">Все</string>
     <string name="backup_icon">Бекап значков</string>
-    <string name="backup_icon_title">Бекап значков при создании бекапа приложений. Используется для отображения при восстановлении.</string>
+    <string name="backup_icon_title">Бекап значков при создании бекапа приложений. Используется для отображения при восстановлении</string>
     <string name="alphabet">По алфавиту</string>
     <string name="install_time">Время установки</string>
     <string name="sort">Сортировка</string>
     <string name="filter">Фильтр</string>
     <string name="backup_strategy">Стратегия создания бекапа</string>
     <string name="cover">Cover</string>
-    <string name="cover_desc">Перезапись существующих бекап-файлов при каждом создании бекапа, или пропуск создания бекапа, если нет изменений. Т.е. несмотря ни на что существует только одна копия ваших данных.</string>
+    <string name="cover_desc">Перезапись существующих бекап-файлов при каждом создании бекапа, или пропуск создания бекапа, если нет изменений. Т.е. несмотря ни на что существует только одна копия ваших данных</string>
     <string name="by_time">По времени</string>
-    <string name="by_time_desc">Каждое создание нового бекапа считается новым полным бекапом, и разделяется по времени резервного копирования, поэтому ваши данные могут существовать в нескольких копиях.</string>
+    <string name="by_time_desc">Каждое создание нового бекапа считается новым полным бекапом, и разделяется по времени резервного копирования, поэтому ваши данные могут существовать в нескольких копиях</string>
     <string name="name">Имя</string>
     <string name="backup_test">Тестирование бекапа</string>
     <string name="backup_test_title">Автоматическое тестирование бекапа в процессе создания</string>
@@ -81,15 +81,15 @@
     <string name="decompressing">Распаковка</string>
     <string name="finished">Готово</string>
     <string name="no_change_and_skip">Нет изменений, пропуск</string>
-    <string name="check_storage_management_permission">Разрешение на управление хранилищем.</string>
+    <string name="check_storage_management_permission">Разрешение на управление хранилищем</string>
     <string name="loading">Загрузка</string>
     <string name="loading_failed">Сбой загрузки</string>
     <string name="update_records">Список изменений</string>
-    <string name="path_permission_error">Ошибка разрешений, следующие пути требуют правильных разрешений.</string>
+    <string name="path_permission_error">Ошибка разрешений, следующие пути требуют правильных разрешений</string>
     <string name="backing_up">Бекап…</string>
     <string name="restoring">Восстановление</string>
     <string name="read_icon">Чтение значков</string>
-    <string name="read_icon_title">Для чтения значков требуется много памяти, если у вас возникают сбои при восстановлении, попробуйте отключить эту опцию.</string>
+    <string name="read_icon_title">Для чтения значков требуется много памяти, если у вас возникают сбои при восстановлении, попробуйте отключить эту опцию</string>
     <string name="app_crashed">Приложение вылетело</string>
     <string name="cancelling">Отмена</string>
     <string name="copy_grant_command">Копировать команду предоставления</string>
@@ -125,7 +125,7 @@
     <string name="selection_is_empty">Выбор пуст</string>
     <string name="system_app">Система</string>
     <string name="installed_app">Пользователь</string>
-    <string name="switch_to_system_app_warning">Создание бекапов большинства системных приложений не рекомендуется, так как их восстановление может привести к бутлупу телефона. Вы были предупреждены.</string>
+    <string name="switch_to_system_app_warning">Создание бекапов большинства системных приложений не рекомендуется, так как их восстановление может привести к бутлупу телефона. Вы были предупреждены</string>
     <string name="warning">Предупреждение</string>
     <string name="type">Тип</string>
     <string name="compatible_mode">Режим совместимости</string>
@@ -140,24 +140,24 @@
     <string name="posted_just_now">Прямо сейчас</string>
     <string name="posted_now">Сейчас</string>
     <plurals name="num_hours_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> ч.</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> ч.</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> ч.</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> ч.</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> час</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> часа</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> часов</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> часов</item>
     </plurals>
     <string name="card_telephony_subtitle">Бекап (восстановление) контактов, журнала звонков или СМС/ММС</string>
     <string name="not_the_default_sms_app_info">Для восстановления СМС/ММС требуется, чтобы DataBackup был установлен как СМС-приложение по умолчанию</string>
     <plurals name="num_minutes_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> мин.</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> мин.</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> мин.</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> мин.</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> минута</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> минуты</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> минут</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> минут</item>
     </plurals>
     <plurals name="num_days_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> д.</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> д.</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> д.</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> д.</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> день</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> дня</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> дней</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> дней</item>
     </plurals>
     <string name="sms_permission">СМС-разрешение</string>
     <string name="contacts_permission">Разрешение на контакты</string>
