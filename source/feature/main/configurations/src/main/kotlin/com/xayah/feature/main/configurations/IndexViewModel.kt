@@ -199,7 +199,7 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private val _blockedPackages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(OpType.BACKUP, true).flowOnIO()
+    private val _blockedPackages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(opType = OpType.BACKUP, blocked = true).flowOnIO()
     val blockedPackagesState: StateFlow<List<PackageEntity>> = _blockedPackages.stateInScope(listOf())
 
     private val _accounts: Flow<List<CloudEntity>> = cloudRepo.clouds.flowOnIO()

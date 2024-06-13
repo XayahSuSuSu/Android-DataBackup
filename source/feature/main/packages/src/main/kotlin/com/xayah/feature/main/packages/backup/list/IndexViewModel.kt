@@ -135,7 +135,7 @@ class IndexViewModel @Inject constructor(
 
     private val _refreshState: MutableStateFlow<RefreshState> =
         MutableStateFlow(RefreshState())
-    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(OpType.BACKUP, false).flowOnIO()
+    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(opType = OpType.BACKUP, existed = true, blocked = false).flowOnIO()
     private var _keyState: MutableStateFlow<String> = MutableStateFlow("")
     private var _flagIndex: Flow<Int> = context.readBackupFilterFlagIndex().flowOnIO()
     private var _userIdIndexList: Flow<List<Int>> = context.readBackupUserIdIndex().flowOnIO()

@@ -59,6 +59,6 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(OpType.BACKUP, true).flowOnIO()
+    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(opType = OpType.BACKUP, blocked = true).flowOnIO()
     val packagesState: StateFlow<List<PackageEntity>> = _packages.stateInScope(listOf())
 }
