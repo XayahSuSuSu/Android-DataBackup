@@ -305,4 +305,10 @@
     <string name="auto_screen_off_desc">Apaga automáticamente la pantalla durante la copia de seguridad o la restauración de aplicaciones/archivos y, a continuación, enciéndela una vez finalizada</string>
     <string name="args_screen_off_in_seconds">La pantalla se apagará en %1$s segundos</string>
     <string name="restore_user_desc">¿A qué usuario quieres restaurar?</string>
+    <string name="config_file_may_be_broken">El archivo de configuración puede estar dañado</string>
+    <string name="imported">Importado</string>
+    <string name="configurations">Configuraciones</string>
+    <string name="configurations_desc">Configuraciones, lista negra, configuraciones de cuentas en la nube</string>
+    <string name="_import">Importar</string>
+    <string name="exported">Exportado</string>
 </resources>
