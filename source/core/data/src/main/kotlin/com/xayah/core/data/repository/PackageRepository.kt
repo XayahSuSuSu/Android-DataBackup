@@ -684,14 +684,19 @@ class PackageRepository @Inject constructor(
             runCatching {
                 val pathListSize = path.pathList.size
                 val packageName = path.pathList[pathListSize - 3]
-                // Skip main backup
+                val preserveId: Long
+                val userId: Int
                 if (path.pathList[pathListSize - 2].contains("@")) {
                     val userIdWithPreserveId = path.pathList[pathListSize - 2].split("@")
-                    val preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
-                    val userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
-                    typedPathSet.add("$packageName@$preserveId@$userId")
-                    log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" }
+                    preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
+                    userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
+                } else {
+                    // Main backup
+                    preserveId = -1L
+                    userId = path.pathList[pathListSize - 2].split("_").lastOrNull()?.toIntOrNull() ?: 0
                 }
+                typedPathSet.add("$packageName@$preserveId@$userId")
+                log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" }
             }.withLog()
         }
 
@@ -702,10 +707,11 @@ class PackageRepository @Inject constructor(
                 val split = typed.split("@")
                 val packageName = split[0]
                 var preserveId = split[1].toLong()
+                val mainBackup: Boolean = preserveId == -1L
                 val userId = split[2].toInt()
-                var dir = "${appsDir}/${packageName}/user_${userId}@${preserveId}"
+                var dir = if (mainBackup) "${appsDir}/${packageName}/user_${userId}" else "${appsDir}/${packageName}/user_${userId}@${preserveId}"
                 onMsgUpdate(log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" })
-                if (preserveId < 1000000000000) {
+                if (mainBackup.not() && preserveId < 1000000000000) {
                     // Diff from main backup (without preserveId)
                     val timestamp = DateUtil.getTimestamp()
                     val newDir = "${appsDir}/${packageName}/user_${userId}@${timestamp}"
@@ -731,7 +737,7 @@ class PackageRepository @Inject constructor(
                     val entity = rootService.readJson<PackageEntity>(jsonPath).also { p ->
                         p?.indexInfo?.packageName = packageName
                         p?.indexInfo?.userId = userId
-                        p?.indexInfo?.preserveId = preserveId
+                        p?.indexInfo?.preserveId = if (mainBackup) 0L else preserveId
                         p?.extraInfo?.existed = true
                         p?.extraInfo?.activated = false
                         p?.indexInfo?.cloud = ""
@@ -747,7 +753,7 @@ class PackageRepository @Inject constructor(
                         packageName = packageName,
                         userId = userId,
                         compressionType = context.readCompressionType().first(),
-                        preserveId = preserveId,
+                        preserveId = if (mainBackup) 0L else preserveId,
                         cloud = "",
                         backupDir = localBackupSaveDir
                     ),
@@ -893,9 +899,17 @@ class PackageRepository @Inject constructor(
                     runCatching {
                         val pathListSize = path.pathList.size
                         val packageName = path.pathList[pathListSize - 3]
-                        val userIdWithPreserveId = path.pathList[pathListSize - 2].split("@")
-                        val preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
-                        val userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
+                        val preserveId: Long
+                        val userId: Int
+                        if (path.pathList[pathListSize - 2].contains("@")) {
+                            val userIdWithPreserveId = path.pathList[pathListSize - 2].split("@")
+                            preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
+                            userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
+                        } else {
+                            // Main backup
+                            preserveId = -1L
+                            userId = path.pathList[pathListSize - 2].split("_").lastOrNull()?.toIntOrNull() ?: 0
+                        }
                         typedPathSet.add("$packageName@$preserveId@$userId")
                         log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" }
                     }.withLog()
@@ -908,10 +922,11 @@ class PackageRepository @Inject constructor(
                         val split = typed.split("@")
                         val packageName = split[0]
                         var preserveId = split[1].toLong()
+                        val mainBackup: Boolean = preserveId == -1L
                         val userId = split[2].toInt()
-                        var dir = "${appsDir}/${packageName}/user_${userId}@${preserveId}"
+                        var dir = if (mainBackup) "${appsDir}/${packageName}/user_${userId}" else "${appsDir}/${packageName}/user_${userId}@${preserveId}"
                         onMsgUpdate(log { "packageName: $packageName, preserveId: $preserveId, userId: $userId" })
-                        if (preserveId < 1000000000000) {
+                        if (mainBackup.not() && preserveId < 1000000000000) {
                             // Diff from main backup (without preserveId)
                             val timestamp = DateUtil.getTimestamp()
                             val newDir = "${appsDir}/${packageName}/user_${userId}@${timestamp}"
@@ -940,7 +955,7 @@ class PackageRepository @Inject constructor(
                                 entity = rootService.readJson<PackageEntity>(path).also { p ->
                                     p?.indexInfo?.packageName = packageName
                                     p?.indexInfo?.userId = userId
-                                    p?.indexInfo?.preserveId = preserveId
+                                    p?.indexInfo?.preserveId = if (mainBackup) 0L else preserveId
                                     p?.extraInfo?.existed = true
                                     p?.extraInfo?.activated = false
                                     p?.indexInfo?.cloud = ""
@@ -957,7 +972,7 @@ class PackageRepository @Inject constructor(
                                 packageName = packageName,
                                 userId = userId,
                                 compressionType = context.readCompressionType().first(),
-                                preserveId = preserveId,
+                                preserveId = if (mainBackup) 0L else preserveId,
                                 cloud = "",
                                 backupDir = localBackupSaveDir
                             ),
