@@ -63,7 +63,7 @@
     <item name="restore_user" type="string" />
     <item name="restore_user_desc" type="string" />
 
-    <item name="backup_sort_type_items" type="array" />
+    <item name="backup_sort_type_items_apps" type="array" />
     <item name="flag_type_items" type="array" />
 
     <item name="ic_rounded_apps" type="drawable" />

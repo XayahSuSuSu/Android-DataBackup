@@ -3,6 +3,7 @@ package com.xayah.core.ui.route
 sealed class MainRoutes(val route: String) {
     companion object {
         const val ARG_PACKAGE_NAME = "pkgName"
+        const val ARG_MEDIA_NAME = "mediaName"
         const val ARG_USER_ID = "userId"
         const val ARG_PRESERVE_ID = "preserveId"
         const val ARG_ACCOUNT_NAME = "accountName"
@@ -54,5 +55,14 @@ sealed class MainRoutes(val route: String) {
     }
     data object PackagesRestoreProcessing : MainRoutes(route = "main_packages_restore_processing")
     data object PackagesRestoreProcessingSetup : MainRoutes(route = "main_packages_restore_processing_setup")
+
+    data object MediumBackupList : MainRoutes(route = "main_medium_backup_list")
+    data object MediumBackupDetail : MainRoutes(route = "main_medium_backup_detail/{$ARG_MEDIA_NAME}") {
+        fun getRoute(name: String) = "main_medium_backup_detail/${name}"
+    }
+    data object MediumBackupProcessingGraph : MainRoutes(route = "main_medium_backup_processing_graph")
+    data object MediumBackupProcessing : MainRoutes(route = "main_medium_backup_processing")
+    data object MediumBackupProcessingSetup : MainRoutes(route = "main_medium_backup_processing_setup")
+
     data object Directory : MainRoutes(route = "main_directory")
 }

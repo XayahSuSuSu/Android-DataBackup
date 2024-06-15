@@ -50,14 +50,13 @@ fun AssistChip(
     onClick: () -> Unit = {},
 ) {
     AssistChip(
-        enabled = enabled,
         onClick = onClick,
         label = { Text(text = label.value) },
         leadingIcon = if (leadingIcon != null) {
             {
                 Icon(
                     imageVector = leadingIcon.value,
-                    tint = color.toColor(),
+                    tint = color.toColor(enabled),
                     contentDescription = null,
                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                 )
@@ -69,7 +68,7 @@ fun AssistChip(
             {
                 Icon(
                     imageVector = trailingIcon.value,
-                    tint = color.toColor(),
+                    tint = color.toColor(enabled),
                     contentDescription = null,
                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                 )
@@ -78,7 +77,7 @@ fun AssistChip(
             null
         },
         shape = shape,
-        colors = AssistChipDefaults.assistChipColors(labelColor = color.toColor(), containerColor = containerColor.toColor()),
+        colors = AssistChipDefaults.assistChipColors(labelColor = color.toColor(enabled), containerColor = containerColor.toColor(enabled)),
         border = border
     )
 }

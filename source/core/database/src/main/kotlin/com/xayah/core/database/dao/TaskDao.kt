@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.xayah.core.model.ProcessingType
 import com.xayah.core.model.database.ProcessingInfoEntity
+import com.xayah.core.model.database.TaskDetailMediaEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,9 @@ interface TaskDao {
     @Upsert(entity = TaskDetailPackageEntity::class)
     suspend fun upsert(item: TaskDetailPackageEntity): Long
 
+    @Upsert(entity = TaskDetailMediaEntity::class)
+    suspend fun upsert(item: TaskDetailMediaEntity): Long
+
     @Upsert(entity = ProcessingInfoEntity::class)
     suspend fun upsert(item: ProcessingInfoEntity): Long
 
@@ -28,4 +32,7 @@ interface TaskDao {
 
     @Query("SELECT * FROM TaskDetailPackageEntity WHERE taskId = :taskId")
     fun queryPackageFlow(taskId: Long): Flow<List<TaskDetailPackageEntity>>
+
+    @Query("SELECT * FROM TaskDetailMediaEntity WHERE taskId = :taskId")
+    fun queryMediaFlow(taskId: Long): Flow<List<TaskDetailMediaEntity>>
 }

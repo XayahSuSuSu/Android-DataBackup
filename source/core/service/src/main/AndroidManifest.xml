@@ -25,5 +25,15 @@
             android:name=".packages.restore.RestoreServiceCloudImpl"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".medium.backup.BackupServiceLocalImpl"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".medium.backup.BackupServiceCloudImpl"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
     </application>
 </manifest>

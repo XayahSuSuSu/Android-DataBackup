@@ -187,7 +187,7 @@ fun PagePackagesBackupList() {
                                 leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Sort),
                                 selectedIndex = sortIndexState,
                                 type = sortTypeState,
-                                list = stringArrayResource(id = R.array.backup_sort_type_items).toList(),
+                                list = stringArrayResource(id = R.array.backup_sort_type_items_apps).toList(),
                                 onSelected = { index, _ ->
                                     viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
                                 },

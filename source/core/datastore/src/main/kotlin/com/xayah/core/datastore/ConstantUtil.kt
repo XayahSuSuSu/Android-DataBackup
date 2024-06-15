@@ -16,4 +16,10 @@ object ConstantUtil {
         "f2fs",
         "texfat",
     )
+    val DefaultMediaList = listOf(
+        "Pictures" to "/storage/emulated/0/Pictures",
+        "Music" to "/storage/emulated/0/Music",
+        "DCIM" to "/storage/emulated/0/DCIM",
+        "Download" to "/storage/emulated/0/Download",
+    )
 }

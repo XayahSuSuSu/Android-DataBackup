@@ -61,6 +61,7 @@ import com.xayah.core.ui.material3.tokens.OutlinedCardTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.ReportAppItemInfo
+import com.xayah.core.ui.model.ReportFileItemInfo
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.StateView
@@ -341,10 +342,30 @@ private fun ReportAppItem(enabled: Boolean, color: ColorSchemeKeyTokens = ColorS
     }
 }
 
+@ExperimentalFoundationApi
+@Composable
+private fun ReportFileItem(enabled: Boolean, color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnSurfaceVariant, item: ReportFileItemInfo, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        enabled = true,
+        color = ColorSchemeKeyTokens.Transparent.toColor(enabled),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(SizeTokens.Level16),
+            horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.size(SizeTokens.Level24))
+            LabelMediumText(modifier = Modifier.weight(1f), text = item.name, color = color.toColor(enabled))
+        }
+    }
+}
+
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @Composable
-fun ReportCard(
+fun AppsReportCard(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     scope: CoroutineScope,
@@ -439,6 +460,119 @@ fun ReportCard(
                                 Column {
                                     succeed.forEach {
                                         ReportAppItem(enabled = enabled, color = ColorSchemeKeyTokens.GreenPrimary, item = it) {
+                                            scope.launch {
+                                                pagerState.animateScrollToPage(it.index)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
+@Composable
+fun FilesReportCard(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    scope: CoroutineScope,
+    pagerState: PagerState,
+    title: StringResourceToken,
+    timer: StringResourceToken,
+    showRestoreUser: Boolean = false,
+    packageSize: StringResourceToken,
+    succeed: List<ReportFileItemInfo>,
+    failed: List<ReportFileItemInfo>,
+) {
+    Card(
+        modifier = modifier,
+        enabled = enabled,
+        colors = CardDefaults.cardColors(containerColor = ColorSchemeKeyTokens.SurfaceVariantDim.toColor(enabled)),
+        indication = null,
+    ) {
+        Column {
+            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = enabled,
+                    color = ColorSchemeKeyTokens.SurfaceVariant.toColor(enabled),
+                    shape = ShapeDefaults.Medium,
+                    onClick = {}
+                ) {
+                    Row(modifier = Modifier.padding(SizeTokens.Level16), horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            modifier = Modifier.size(SizeTokens.Level24),
+                            imageVector = ImageVectorToken.fromVector(Icons.Outlined.Description).value,
+                            contentDescription = null,
+                            tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled)
+                        )
+
+                        TitleMediumText(
+                            modifier = Modifier.weight(1f),
+                            text = title.value,
+                            color = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                        )
+
+                        LabelSmallText(text = packageSize.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                    }
+                }
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    ReportItem(
+                        icon = ImageVectorToken.fromVector(Icons.Filled.Timer),
+                        iconTint = ColorSchemeKeyTokens.Primary,
+                        title = StringResourceToken.fromStringId(R.string.time),
+                        titleTint = ColorSchemeKeyTokens.Primary,
+                        content = timer
+                    )
+                    if (showRestoreUser) {
+                        val context = LocalContext.current
+                        val restoreUser by context.readRestoreUser().collectAsStateWithLifecycle(initialValue = -1)
+                        ReportItem(
+                            icon = ImageVectorToken.fromVector(Icons.Filled.AccountCircle),
+                            iconTint = ColorSchemeKeyTokens.YellowPrimary,
+                            title = StringResourceToken.fromStringId(R.string.restore_user),
+                            titleTint = ColorSchemeKeyTokens.YellowPrimary,
+                            content = if (restoreUser == -1) StringResourceToken.fromStringId(R.string.backup_user) else StringResourceToken.fromString(restoreUser.toString())
+                        )
+                    }
+
+                    ReportItem(
+                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel_circle),
+                        iconTint = ColorSchemeKeyTokens.Error,
+                        title = StringResourceToken.fromStringId(R.string.failed),
+                        titleTint = ColorSchemeKeyTokens.Error,
+                        content = StringResourceToken.fromString(failed.size.toString()),
+                        expandedContent = if (failed.isEmpty()) null else {
+                            {
+                                Column {
+                                    failed.forEach {
+                                        ReportFileItem(enabled = enabled, color = ColorSchemeKeyTokens.Error, item = it) {
+                                            scope.launch {
+                                                pagerState.animateScrollToPage(it.index)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    )
+                    ReportItem(
+                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle),
+                        iconTint = ColorSchemeKeyTokens.GreenPrimary,
+                        title = StringResourceToken.fromStringId(R.string.succeed),
+                        titleTint = ColorSchemeKeyTokens.GreenPrimary,
+                        content = StringResourceToken.fromString(succeed.size.toString()),
+                        expandedContent = if (succeed.isEmpty()) null else {
+                            {
+                                Column {
+                                    succeed.forEach {
+                                        ReportFileItem(enabled = enabled, color = ColorSchemeKeyTokens.GreenPrimary, item = it) {
                                             scope.launch {
                                                 pagerState.animateScrollToPage(it.index)
                                             }

@@ -4,6 +4,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -26,7 +29,7 @@ import com.xayah.core.util.withIOContext
 
 @ExperimentalFoundationApi
 @Composable
-fun PackageIconImage(enabled: Boolean = true, packageName: String, label: String = "", size: Dp = SizeTokens.Level32) {
+fun PackageIconImage(enabled: Boolean = true, packageName: String, label: String = "", textStyle: TextStyle = MaterialTheme.typography.labelMedium, size: Dp = SizeTokens.Level32) {
     val context = LocalContext.current
     var icon by remember { mutableStateOf<Any?>(null) }
     LaunchedEffect(null) {
@@ -37,9 +40,13 @@ fun PackageIconImage(enabled: Boolean = true, packageName: String, label: String
     }
 
     if (icon == null) {
-        Surface(modifier = Modifier.size(size), shape = CircleShape, color = ColorSchemeKeyTokens.PrimaryContainer.toColor(enabled), enabled = enabled) {
+        Surface(modifier = Modifier.size(size), indication = null, shape = CircleShape, color = ColorSchemeKeyTokens.PrimaryContainer.toColor(enabled), enabled = enabled) {
             Box(contentAlignment = Alignment.Center) {
-                LabelMediumText(text = label, color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor(enabled))
+                Text(
+                    text = label,
+                    style = textStyle,
+                    color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor(enabled),
+                )
             }
         }
     } else {
@@ -52,5 +59,19 @@ fun PackageIconImage(enabled: Boolean = true, packageName: String, label: String
                 .build(),
             contentDescription = null
         )
+    }
+}
+
+@ExperimentalFoundationApi
+@Composable
+fun MediaIconImage(enabled: Boolean = true, name: String, textStyle: TextStyle = MaterialTheme.typography.labelMedium, size: Dp = SizeTokens.Level32) {
+    Surface(modifier = Modifier.size(size), indication = null, shape = CircleShape, color = ColorSchemeKeyTokens.PrimaryContainer.toColor(enabled), enabled = enabled) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = name,
+                style = textStyle,
+                color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor(enabled),
+            )
+        }
     }
 }

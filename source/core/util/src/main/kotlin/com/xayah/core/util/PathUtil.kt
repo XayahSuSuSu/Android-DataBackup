@@ -17,8 +17,10 @@ const val BinRelativeDir = "bin"
 const val TmpRelativeDir = "tmp"
 const val ApksRelativeDir = "apks"
 const val AppsRelativeDir = "apps"
+const val FilesRelativeDir = "files"
 const val ConfigsRelativeDir = "configs"
 const val ConfigsPackageRestoreName = "package_restore_config.json"
+const val ConfigsMediaRestoreName = "media_restore_config.json"
 const val ConfigsConfigurationsName = "configurations.json"
 const val BinArchiveName = "bin.zip"
 const val CloudTmpRelativeDir = "DataBackupTmpDir"
@@ -52,9 +54,11 @@ class PathUtil @Inject constructor(
         fun getConfigsRelativeDir(): String = ConfigsRelativeDir
 
         fun getAppsRelativeDir(): String = AppsRelativeDir
+        fun getFilesRelativeDir(): String = FilesRelativeDir
 
 
         fun getPackageRestoreConfigDst(dstDir: String): String = "${dstDir}/$ConfigsPackageRestoreName"
+        fun getMediaRestoreConfigDst(dstDir: String): String = "${dstDir}/$ConfigsMediaRestoreName"
 
         suspend fun setFilesDirSELinux(context: Context) = SELinux.getContext(path = context.filesDir()).also { result ->
             val pathContext = if (result.isSuccess) result.outString else ""
@@ -73,9 +77,13 @@ class PathUtil @Inject constructor(
     fun getCloudRemoteConfigsDir(remote: String): String = getConfigsDir(parent = remote)
 
     private fun getAppsDir(parent: String): String = "${parent}/${getAppsRelativeDir()}"
+    private fun getFilesDir(parent: String): String = "${parent}/${getFilesRelativeDir()}"
     fun getLocalBackupAppsDir(): String = getAppsDir(parent = context.localBackupSaveDir())
     fun getCloudTmpAppsDir(): String = getAppsDir(parent = context.cloudTmpAbsoluteDir())
     fun getCloudRemoteAppsDir(remote: String): String = getAppsDir(parent = remote)
+    fun getLocalBackupFilesDir(): String = getFilesDir(parent = context.localBackupSaveDir())
+    fun getCloudTmpFilesDir(): String = getFilesDir(parent = context.cloudTmpAbsoluteDir())
+    fun getCloudRemoteFilesDir(remote: String): String = getFilesDir(parent = remote)
 
 
     fun getTmpApkPath(packageName: String): String = "${context.tmpApksDir()}/$packageName"

@@ -311,4 +311,8 @@
     <string name="exported">已導出</string>
     <string name="config_file_may_be_broken">配置文件可能損壞</string>
     <string name="imported">已導入</string>
+    <string name="select_files">選擇文件</string>
+    <string name="choose_a_custom_path">選擇一個自定義路徑</string>
+    <string name="delete_desc">這將會被刪除</string>
+    <string name="files">文件</string>
 </resources>

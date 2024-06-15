@@ -117,13 +117,15 @@ fun PageDashboard() {
                     }
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
-                        enabled = false,
+                        enabled = nullBackupDir.not(),
                         title = StringResourceToken.fromStringId(R.string.backup_files),
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
                         colorContainer = ColorSchemeKeyTokens.YellowPrimaryContainer,
                         colorL80D20 = ColorSchemeKeyTokens.YellowL80D20,
                         onColorContainer = ColorSchemeKeyTokens.YellowOnPrimaryContainer
-                    )
+                    ) {
+                        navController.navigate(MainRoutes.MediumBackupList.route)
+                    }
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
                         enabled = false,

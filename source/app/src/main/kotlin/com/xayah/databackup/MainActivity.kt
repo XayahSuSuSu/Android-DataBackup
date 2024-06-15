@@ -24,6 +24,9 @@ import com.xayah.feature.main.cloud.add.PageWebDAVSetup
 import com.xayah.feature.main.configurations.PageConfigurations
 import com.xayah.feature.main.dashboard.PageDashboard
 import com.xayah.feature.main.directory.PageDirectory
+import com.xayah.feature.main.medium.backup.detail.PageMediumBackupDetail
+import com.xayah.feature.main.medium.backup.list.PageMediumBackupList
+import com.xayah.feature.main.medium.backup.processing.MediumBackupProcessingGraph
 import com.xayah.feature.main.packages.backup.detail.PagePackagesBackupDetail
 import com.xayah.feature.main.packages.backup.list.PagePackagesBackupList
 import com.xayah.feature.main.packages.backup.processing.PackagesBackupProcessingGraph
@@ -98,6 +101,15 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.PackagesRestoreProcessingGraph.route) {
                             PackagesRestoreProcessingGraph()
+                        }
+                        composable(MainRoutes.MediumBackupList.route) {
+                            PageMediumBackupList()
+                        }
+                        composable(MainRoutes.MediumBackupDetail.route) {
+                            PageMediumBackupDetail()
+                        }
+                        composable(MainRoutes.MediumBackupProcessingGraph.route) {
+                            MediumBackupProcessingGraph()
                         }
                         composable(MainRoutes.Settings.route) {
                             PageSettings()

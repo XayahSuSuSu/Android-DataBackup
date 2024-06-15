@@ -6,13 +6,16 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.xayah.core.database.dao.CloudDao
 import com.xayah.core.database.dao.DirectoryDao
+import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.database.util.StringListConverters
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.DirectoryEntity
+import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.ProcessingInfoEntity
+import com.xayah.core.model.database.TaskDetailMediaEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 
@@ -21,10 +24,12 @@ import com.xayah.core.model.database.TaskEntity
     exportSchema = true,
     entities = [
         PackageEntity::class,
+        MediaEntity::class,
         DirectoryEntity::class,
         CloudEntity::class,
         TaskEntity::class,
         TaskDetailPackageEntity::class,
+        TaskDetailMediaEntity::class,
         ProcessingInfoEntity::class,
     ],
     autoMigrations = [
@@ -37,6 +42,7 @@ import com.xayah.core.model.database.TaskEntity
 @TypeConverters(StringListConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun packageDao(): PackageDao
+    abstract fun mediaDao(): MediaDao
     abstract fun taskDao(): TaskDao
     abstract fun directoryDao(): DirectoryDao
     abstract fun cloudDao(): CloudDao

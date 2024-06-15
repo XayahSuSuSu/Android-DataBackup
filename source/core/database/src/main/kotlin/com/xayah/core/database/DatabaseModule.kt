@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.xayah.core.database.dao.CloudDao
 import com.xayah.core.database.dao.DirectoryDao
+import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import dagger.Module
@@ -26,6 +27,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePackageDao(database: AppDatabase): PackageDao = database.packageDao()
+
+    @Provides
+    @Singleton
+    fun provideMediaDao(database: AppDatabase): MediaDao = database.mediaDao()
 
     @Provides
     @Singleton

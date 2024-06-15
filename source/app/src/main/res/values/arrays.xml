@@ -1,7 +1,11 @@
 <resources>
-    <string-array name="backup_sort_type_items">
+    <string-array name="backup_sort_type_items_apps">
         <item>@string/alphabet</item>
         <item>@string/installation_time</item>
+        <item>@string/data_size</item>
+    </string-array>
+    <string-array name="backup_sort_type_items_files">
+        <item>@string/alphabet</item>
         <item>@string/data_size</item>
     </string-array>
     <string-array name="flag_type_items">

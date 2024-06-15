@@ -37,18 +37,19 @@ data class TaskDetailPackageEntity(
             if (obbInfo.state == OperationState.ERROR) return false
             return mediaInfo.state != OperationState.ERROR
         }
+}
 
-    private fun isOpFinished(state: OperationState) =
-        state != OperationState.IDLE && state != OperationState.PROCESSING && state != OperationState.UPLOADING
-
-    val isFinished: Boolean
+@Entity
+data class TaskDetailMediaEntity(
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    val taskId: Long,
+    var state: OperationState = OperationState.IDLE,
+    @Embedded(prefix = "mediaEntity_") var mediaEntity: MediaEntity,
+    @Embedded(prefix = "media_") val mediaInfo: Info = Info(),
+) {
+    val isSuccess: Boolean
         get() {
-            if (isOpFinished(apkInfo.state).not()) return false
-            if (isOpFinished(userInfo.state).not()) return false
-            if (isOpFinished(userDeInfo.state).not()) return false
-            if (isOpFinished(dataInfo.state).not()) return false
-            if (isOpFinished(obbInfo.state).not()) return false
-            return isOpFinished(mediaInfo.state)
+            return mediaInfo.state != OperationState.ERROR
         }
 }
 

@@ -160,13 +160,15 @@ internal abstract class BackupService : Service() {
 
     suspend fun preprocessing(): BackupPreprocessing = withIOContext {
         mutex.withLock {
-            if (context.readAutoScreenOff().first()) {
-                context.saveScreenOffCountDown(3)
-            }
             prePreparationsEntity.also {
                 it.state = OperationState.PROCESSING
                 taskDao.upsert(it)
             }
+
+            if (context.readAutoScreenOff().first()) {
+                context.saveScreenOffCountDown(3)
+            }
+
             startTimestamp = DateUtil.getTimestamp()
 
             NotificationUtil.notify(context, notificationBuilder, context.getString(R.string.backing_up), context.getString(R.string.preprocessing))

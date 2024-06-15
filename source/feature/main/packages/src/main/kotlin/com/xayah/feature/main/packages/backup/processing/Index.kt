@@ -29,7 +29,7 @@ import com.xayah.core.model.OperationState
 import com.xayah.core.ui.component.AnimatedTextContainer
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.ProcessingCard
-import com.xayah.core.ui.component.ReportCard
+import com.xayah.core.ui.component.AppsReportCard
 import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.component.pagerAnimation
@@ -199,7 +199,7 @@ fun PagePackagesBackupProcessing(viewModel: IndexViewModel) {
                         items = postItems
                     )
 
-                    pagerState.pageCount - 1 -> ReportCard(
+                    pagerState.pageCount - 1 -> AppsReportCard(
                         modifier = Modifier
                             .fillMaxSize()
                             .pagerAnimation(pagerState, page),

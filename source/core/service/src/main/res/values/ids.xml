@@ -12,4 +12,5 @@
     <item name="backup_itself" type="string"/>
     <item name="save_icons" type="string"/>
     <item name="set_up_inst_env" type="string"/>
+    <item name="args_backup" type="string"/>
 </resources>

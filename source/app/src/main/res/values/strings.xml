@@ -318,4 +318,8 @@
     <string name="exported">Exported</string>
     <string name="config_file_may_be_broken">Config file may be broken</string>
     <string name="imported">Imported</string>
+    <string name="select_files">Select files</string>
+    <string name="choose_a_custom_path">Choose a custom path</string>
+    <string name="delete_desc">This will be deleted</string>
+    <string name="files">Files</string>
 </resources>

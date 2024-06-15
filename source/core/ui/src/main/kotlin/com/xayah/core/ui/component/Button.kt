@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.xayah.core.ui.R
+import com.xayah.core.ui.material3.DisabledAlpha
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
@@ -27,7 +28,7 @@ fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, tint: Colo
         Icon(
             imageVector = icon.value,
             contentDescription = null,
-            tint = tint,
+            tint = if (enabled) tint else tint.copy(alpha = DisabledAlpha),
         )
     }
 }

@@ -210,7 +210,6 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
 
         postBackupItselfEntity.state = OperationState.SKIP
 
-        val backupItself = context.readBackupItself().first()
         // Backup itself if enabled.
         if (context.readBackupItself().first()) {
             log { "Backup itself enabled." }

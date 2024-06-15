@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -88,7 +89,12 @@ fun PagePackagesBackupDetail() {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
                 ) {
-                    PackageIconImage(packageName = uiState.packageName, label = "${pkg.packageInfo.label.firstOrNull() ?: ""}", size = SizeTokens.Level64)
+                    PackageIconImage(
+                        packageName = uiState.packageName,
+                        label = "${pkg.packageInfo.label.firstOrNull() ?: ""}",
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        size = SizeTokens.Level64
+                    )
                     Column(modifier = Modifier.weight(1f)) {
                         TitleLargeText(text = pkg.packageInfo.label, color = ColorSchemeKeyTokens.OnSurface.toColor())
                         BodyMediumText(text = uiState.packageName, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())

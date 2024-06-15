@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "11ab01aea2aab71067f7a3986d82063f",
+    "identityHash": "bee9608a1403843b4cb225e08d7c688a",
     "entities": [
       {
         "tableName": "PackageEntity",
@@ -275,6 +275,104 @@
           {
             "fieldPath": "displayStats.mediaBytes",
             "columnName": "displayStats_mediaBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "MediaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `indexInfo_opType` TEXT NOT NULL, `indexInfo_name` TEXT NOT NULL, `indexInfo_compressionType` TEXT NOT NULL, `indexInfo_preserveId` INTEGER NOT NULL, `indexInfo_cloud` TEXT NOT NULL, `indexInfo_backupDir` TEXT NOT NULL, `mediaInfo_path` TEXT NOT NULL, `mediaInfo_dataBytes` INTEGER NOT NULL, `mediaInfo_displayBytes` INTEGER NOT NULL, `extraInfo_labels` TEXT NOT NULL, `extraInfo_blocked` INTEGER NOT NULL, `extraInfo_activated` INTEGER NOT NULL, `extraInfo_existed` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.opType",
+            "columnName": "indexInfo_opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.name",
+            "columnName": "indexInfo_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.compressionType",
+            "columnName": "indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.preserveId",
+            "columnName": "indexInfo_preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.cloud",
+            "columnName": "indexInfo_cloud",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.backupDir",
+            "columnName": "indexInfo_backupDir",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.path",
+            "columnName": "mediaInfo_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.dataBytes",
+            "columnName": "mediaInfo_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.displayBytes",
+            "columnName": "mediaInfo_displayBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.labels",
+            "columnName": "extraInfo_labels",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.blocked",
+            "columnName": "extraInfo_blocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.activated",
+            "columnName": "extraInfo_activated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.existed",
+            "columnName": "extraInfo_existed",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -1081,6 +1179,158 @@
         "foreignKeys": []
       },
       {
+        "tableName": "TaskDetailMediaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `state` TEXT NOT NULL, `mediaEntity_id` INTEGER NOT NULL, `mediaEntity_indexInfo_opType` TEXT NOT NULL, `mediaEntity_indexInfo_name` TEXT NOT NULL, `mediaEntity_indexInfo_compressionType` TEXT NOT NULL, `mediaEntity_indexInfo_preserveId` INTEGER NOT NULL, `mediaEntity_indexInfo_cloud` TEXT NOT NULL, `mediaEntity_indexInfo_backupDir` TEXT NOT NULL, `mediaEntity_mediaInfo_path` TEXT NOT NULL, `mediaEntity_mediaInfo_dataBytes` INTEGER NOT NULL, `mediaEntity_mediaInfo_displayBytes` INTEGER NOT NULL, `mediaEntity_extraInfo_labels` TEXT NOT NULL, `mediaEntity_extraInfo_blocked` INTEGER NOT NULL, `mediaEntity_extraInfo_activated` INTEGER NOT NULL, `mediaEntity_extraInfo_existed` INTEGER NOT NULL, `media_bytes` INTEGER NOT NULL, `media_log` TEXT NOT NULL, `media_title` TEXT NOT NULL, `media_content` TEXT NOT NULL, `media_progress` REAL NOT NULL, `media_state` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.id",
+            "columnName": "mediaEntity_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.opType",
+            "columnName": "mediaEntity_indexInfo_opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.name",
+            "columnName": "mediaEntity_indexInfo_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.compressionType",
+            "columnName": "mediaEntity_indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.preserveId",
+            "columnName": "mediaEntity_indexInfo_preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.cloud",
+            "columnName": "mediaEntity_indexInfo_cloud",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.backupDir",
+            "columnName": "mediaEntity_indexInfo_backupDir",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.path",
+            "columnName": "mediaEntity_mediaInfo_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.dataBytes",
+            "columnName": "mediaEntity_mediaInfo_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.displayBytes",
+            "columnName": "mediaEntity_mediaInfo_displayBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.labels",
+            "columnName": "mediaEntity_extraInfo_labels",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.blocked",
+            "columnName": "mediaEntity_extraInfo_blocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.activated",
+            "columnName": "mediaEntity_extraInfo_activated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.existed",
+            "columnName": "mediaEntity_extraInfo_existed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.bytes",
+            "columnName": "media_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.log",
+            "columnName": "media_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.title",
+            "columnName": "media_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.content",
+            "columnName": "media_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.progress",
+            "columnName": "media_progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.state",
+            "columnName": "media_state",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "ProcessingInfoEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `type` TEXT NOT NULL, `bytes` INTEGER NOT NULL, `log` TEXT NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `progress` REAL NOT NULL, `state` TEXT NOT NULL)",
         "fields": [
@@ -1152,7 +1402,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '11ab01aea2aab71067f7a3986d82063f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bee9608a1403843b4cb225e08d7c688a')"
     ]
   }
 }
