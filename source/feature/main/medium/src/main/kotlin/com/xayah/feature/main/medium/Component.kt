@@ -3,6 +3,7 @@ package com.xayah.feature.main.medium
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -24,10 +25,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
+import com.dotlottie.dlplayer.Mode
+import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
+import com.lottiefiles.dotlottie.core.util.DotLottieSource
+import com.xayah.core.ui.component.BodyLargeText
 import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.InnerTopSpacer
@@ -37,9 +44,12 @@ import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
+import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
+import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.value
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -173,4 +183,25 @@ fun ProcessingSetupScaffold(
             InnerBottomSpacer(innerPadding = innerPadding)
         }
     }
+}
+
+@Composable
+fun DotLottieView(isLoading: Boolean) {
+    DotLottieAnimation(
+        source = DotLottieSource.Asset("bear.lottie"),
+        autoplay = true,
+        loop = true,
+        playMode = Mode.FORWARD,
+        modifier = Modifier.background(Color.Transparent)
+    )
+    BodyLargeText(
+        text = (
+                if (isLoading)
+                    StringResourceToken.fromStringId(R.string.loading)
+                else
+                    StringResourceToken.fromStringId(R.string.no_backups_found_warning)
+                ).value,
+        color = com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+        textAlign = TextAlign.Center
+    )
 }

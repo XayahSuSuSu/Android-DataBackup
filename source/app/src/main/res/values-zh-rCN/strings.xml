@@ -315,4 +315,6 @@
     <string name="choose_a_custom_path">选择一个自定义路径</string>
     <string name="delete_desc">这将会被删除</string>
     <string name="files">文件</string>
+    <string name="args_files_backed_up">已备份%1$s个文件</string>
+    <string name="backed_up_files">已备份文件</string>
 </resources>

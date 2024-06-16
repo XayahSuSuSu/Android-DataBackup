@@ -486,7 +486,7 @@ fun FilesReportCard(
     title: StringResourceToken,
     timer: StringResourceToken,
     showRestoreUser: Boolean = false,
-    packageSize: StringResourceToken,
+    mediaSize: StringResourceToken,
     succeed: List<ReportFileItemInfo>,
     failed: List<ReportFileItemInfo>,
 ) {
@@ -519,7 +519,7 @@ fun FilesReportCard(
                             color = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
                         )
 
-                        LabelSmallText(text = packageSize.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                        LabelSmallText(text = mediaSize.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
                     }
                 }
                 Column(modifier = Modifier.fillMaxWidth()) {

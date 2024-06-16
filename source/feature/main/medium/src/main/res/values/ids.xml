@@ -36,6 +36,14 @@
     <item name="preprocessing" type="string" />
     <item name="post_processing" type="string" />
     <item name="report" type="string" />
+    <item name="backed_up_files" type="string" />
+    <item name="confirm_delete" type="string" />
+    <item name="loading" type="string" />
+    <item name="no_backups_found_warning" type="string" />
+    <item name="reset_restore_list" type="string" />
+    <item name="reset_restore_list_desc" type="string" />
+    <item name="restore_completed" type="string" />
+    <item name="restore" type="string" />
 
     <item name="backup_sort_type_items_files" type="array" />
 

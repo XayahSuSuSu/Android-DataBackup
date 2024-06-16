@@ -24,9 +24,12 @@
     <item name="dump_apk_desc" type="string" />
     <item name="idle" type="string" />
     <item name="finished" type="string" />
+    <item name="files" type="string" />
+    <item name="args_files_backed_up" type="string" />
 
     <item name="ic_rounded_package_2" type="drawable" />
     <item name="ic_rounded_apps" type="drawable" />
     <item name="ic_rounded_cancel_circle" type="drawable" />
     <item name="ic_rounded_person" type="drawable" />
+    <item name="ic_rounded_folder_open" type="drawable" />
 </resources>

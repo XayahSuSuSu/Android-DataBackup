@@ -1,4 +1,4 @@
-package com.xayah.feature.main.medium.backup.processing
+package com.xayah.feature.main.medium.restore.processing
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
@@ -56,7 +56,7 @@ import kotlinx.coroutines.delay
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
-fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
+fun PageMediumRestoreProcessing(viewModel: IndexViewModel) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val task by viewModel.task.collectAsStateWithLifecycle()
@@ -146,14 +146,14 @@ fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
         title = StringResourceToken.fromStringId(
             when (uiState.state) {
                 OperationState.PROCESSING -> R.string.processing
-                OperationState.DONE -> R.string.backup_completed
-                else -> R.string.backup
+                OperationState.DONE -> R.string.restore_completed
+                else -> R.string.restore
             }
         ),
         progress = progress,
         actions = {
             Button(enabled = uiState.state == OperationState.IDLE || uiState.state == OperationState.DONE, onClick = {
-                if (uiState.state == OperationState.IDLE) viewModel.emitIntentOnIO(IndexUiIntent.Backup)
+                if (uiState.state == OperationState.IDLE) viewModel.emitIntentOnIO(IndexUiIntent.Restore)
                 else navController.popBackStack()
             }) {
                 AnimatedTextContainer(targetState = if (uiState.state == OperationState.DONE) StringResourceToken.fromStringId(R.string.finish).value else StringResourceToken.fromStringId(R.string._continue).value) { text ->
@@ -198,6 +198,7 @@ fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
                         defExpanded = true,
                         items = postItems
                     )
+
 
                     pagerState.pageCount - 1 -> FilesReportCard(
                         modifier = Modifier

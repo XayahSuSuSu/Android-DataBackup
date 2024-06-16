@@ -31,6 +31,12 @@ interface MediaDao {
     suspend fun query(opType: OpType, preserveId: Long, cloud: String, backupDir: String): List<MediaEntity>
 
     @Query(
+        "SELECT * FROM MediaEntity WHERE" +
+                " indexInfo_opType = :opType AND extraInfo_existed = 1 AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
+    )
+    suspend fun query(opType: OpType, cloud: String, backupDir: String): List<MediaEntity>
+
+    @Query(
         "SELECT * FROM MediaEntity" +
                 " WHERE indexInfo_opType = :opType AND indexInfo_name = :name" +
                 " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
@@ -56,11 +62,20 @@ interface MediaDao {
     @Query("SELECT * FROM MediaEntity WHERE extraInfo_activated = 1 AND indexInfo_opType = :opType")
     suspend fun queryActivated(opType: OpType): List<MediaEntity>
 
+    @Query("SELECT * FROM MediaEntity WHERE extraInfo_activated = 1 AND indexInfo_opType = :opType AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir")
+    suspend fun queryActivated(opType: OpType, cloud: String, backupDir: String): List<MediaEntity>
+
     @Query(
         "SELECT * FROM MediaEntity WHERE" +
                 " indexInfo_opType = :opType AND extraInfo_blocked = :blocked"
     )
     fun queryFlow(opType: OpType, blocked: Boolean): Flow<List<MediaEntity>>
+
+    @Query(
+        "SELECT * FROM MediaEntity WHERE" +
+                " indexInfo_opType = :opType AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
+    )
+    fun queryFlow(opType: OpType, cloud: String, backupDir: String): Flow<List<MediaEntity>>
 
     @Query("SELECT * FROM MediaEntity WHERE indexInfo_opType = :opType AND indexInfo_preserveId = :preserveId")
     fun queryFlow(opType: OpType, preserveId: Long): Flow<List<MediaEntity>>

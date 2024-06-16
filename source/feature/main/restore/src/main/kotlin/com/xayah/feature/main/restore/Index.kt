@@ -71,7 +71,10 @@ fun PageRestore() {
     val accounts by viewModel.accounts.collectAsStateWithLifecycle()
 
     LaunchedEffect(null) {
-        viewModel.emitIntentOnIO(IndexUiIntent.UpdateApps)
+        viewModel.launchOnIO {
+            viewModel.emitIntent(IndexUiIntent.UpdateApps)
+            viewModel.emitIntent(IndexUiIntent.UpdateFiles)
+        }
     }
 
     RestoreScaffold(
@@ -105,6 +108,7 @@ fun PageRestore() {
                                 enabled = false
                                 viewModel.emitState(state = uiState.copy(storageIndex = index, storageType = if (index == 0) StorageMode.Local else StorageMode.Cloud))
                                 viewModel.emitIntent(IndexUiIntent.UpdateApps)
+                                viewModel.emitIntent(IndexUiIntent.UpdateFiles)
                                 enabled = true
                             }
                         },
@@ -152,23 +156,35 @@ fun PageRestore() {
                 }
             }
 
-            val interactionSource = remember { MutableInteractionSource() }
+            val appsInteractionSource = remember { MutableInteractionSource() }
             Clickable(
                 title = StringResourceToken.fromStringId(R.string.apps),
                 value = if (uiState.packages.isEmpty()) null else StringResourceToken.fromString(
                     "${context.getString(R.string.args_apps_backed_up, uiState.packages.size)}${if (uiState.packagesSize.isNotEmpty()) " (${uiState.packagesSize})" else ""}"
                 ),
                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_apps),
-                interactionSource = interactionSource,
+                interactionSource = appsInteractionSource,
                 content = if (uiState.packages.isEmpty()) null else {
                     {
-                        PackageIcons(modifier = Modifier.paddingTop(SizeTokens.Level8), packages = uiState.packages, interactionSource = interactionSource) {
+                        PackageIcons(modifier = Modifier.paddingTop(SizeTokens.Level8), packages = uiState.packages, interactionSource = appsInteractionSource) {
                             viewModel.emitIntentOnIO(IndexUiIntent.ToAppList(navController))
                         }
                     }
                 }
             ) {
                 viewModel.emitIntentOnIO(IndexUiIntent.ToAppList(navController))
+            }
+
+            val filesInteractionSource = remember { MutableInteractionSource() }
+            Clickable(
+                title = StringResourceToken.fromStringId(R.string.files),
+                value = if (uiState.medium.isEmpty()) null else StringResourceToken.fromString(
+                    "${context.getString(R.string.args_files_backed_up, uiState.medium.size)}${if (uiState.mediumSize.isNotEmpty()) " (${uiState.mediumSize})" else ""}"
+                ),
+                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+                interactionSource = filesInteractionSource,
+            ) {
+                viewModel.emitIntentOnIO(IndexUiIntent.ToFileList(navController))
             }
 
             Title(title = StringResourceToken.fromStringId(R.string.advanced)) {

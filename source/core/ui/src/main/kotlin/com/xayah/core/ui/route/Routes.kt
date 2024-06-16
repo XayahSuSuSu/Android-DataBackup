@@ -64,5 +64,20 @@ sealed class MainRoutes(val route: String) {
     data object MediumBackupProcessing : MainRoutes(route = "main_medium_backup_processing")
     data object MediumBackupProcessingSetup : MainRoutes(route = "main_medium_backup_processing_setup")
 
+    data object MediumRestoreList : MainRoutes(route = "main_medium_restore_list/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
+        fun getRoute(name: String, remote: String) = "main_medium_restore_list/${name}/${remote}"
+    }
+
+    data object MediumRestoreDetail : MainRoutes(route = "main_medium_restore_detail/{$ARG_MEDIA_NAME}/{$ARG_PRESERVE_ID}") {
+        fun getRoute(name: String, preserveId: Long) = "main_medium_restore_detail/${name}/${preserveId}"
+    }
+
+    data object MediumRestoreProcessingGraph : MainRoutes(route = "main_medium_restore_processing_graph/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
+        fun getRoute(name: String, remote: String) = "main_medium_restore_processing_graph/${name}/${remote}"
+    }
+
+    data object MediumRestoreProcessing : MainRoutes(route = "main_medium_restore_processing")
+    data object MediumRestoreProcessingSetup : MainRoutes(route = "main_medium_restore_processing_setup")
+
     data object Directory : MainRoutes(route = "main_directory")
 }

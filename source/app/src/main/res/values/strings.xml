@@ -322,4 +322,6 @@
     <string name="choose_a_custom_path">Choose a custom path</string>
     <string name="delete_desc">This will be deleted</string>
     <string name="files">Files</string>
+    <string name="args_files_backed_up">%1$s files backed up</string>
+    <string name="backed_up_files">Backed up files</string>
 </resources>

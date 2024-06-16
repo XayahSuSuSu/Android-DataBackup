@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
 import com.xayah.core.data.repository.CloudRepository
+import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.datastore.readLastRestoreTime
 import com.xayah.core.datastore.readRestoreFilterFlagIndex
@@ -11,6 +12,7 @@ import com.xayah.core.datastore.saveCloudActivatedAccountName
 import com.xayah.core.model.OpType
 import com.xayah.core.model.StorageMode
 import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.model.DialogRadioItem
@@ -38,12 +40,16 @@ data class IndexUiState(
     val cloudEntity: CloudEntity?,
     val packages: List<PackageEntity>,
     val packagesSize: String,
+    val medium: List<MediaEntity>,
+    val mediumSize: String,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
     data object UpdateApps : IndexUiIntent()
+    data object UpdateFiles : IndexUiIntent()
     data class SetCloudEntity(val name: String) : IndexUiIntent()
     data class ToAppList(val navController: NavHostController) : IndexUiIntent()
+    data class ToFileList(val navController: NavHostController) : IndexUiIntent()
     data class ToReload(val navController: NavHostController) : IndexUiIntent()
 }
 
@@ -52,6 +58,7 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val pkgRepo: PackageRepository,
+    private val mediaRepo: MediaRepository,
     private val cloudRepo: CloudRepository,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
@@ -59,7 +66,9 @@ class IndexViewModel @Inject constructor(
         storageType = StorageMode.Local,
         cloudEntity = null,
         packages = listOf(),
-        packagesSize = ""
+        packagesSize = "",
+        medium = listOf(),
+        mediumSize = "",
     )
 ) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
@@ -78,22 +87,35 @@ class IndexViewModel @Inject constructor(
                         }
                     }
                 }).filter(pkgRepo.getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
-                var bytes = 0L
-                packages.forEach {
-                    bytes += it.displayStats.apkBytes
-                    bytes += it.displayStats.userBytes
-                    bytes += it.displayStats.userDeBytes
-                    bytes += it.displayStats.dataBytes
-                    bytes += it.displayStats.obbBytes
-                    bytes += it.displayStats.mediaBytes
-                }
-                emitState(state.copy(packages = packages, packagesSize = bytes.toDouble().formatSize()))
+                var bytes = 0.0
+                packages.forEach { bytes += it.displayStatsBytes }
+                emitState(state.copy(packages = packages, packagesSize = bytes.formatSize()))
+            }
+
+            is IndexUiIntent.UpdateFiles -> {
+                val medium = (when (state.storageType) {
+                    StorageMode.Local -> mediaRepo.query(OpType.RESTORE, "", context.localBackupSaveDir())
+
+                    else -> when {
+                        (state.cloudEntity == null) -> {
+                            listOf()
+                        }
+
+                        else -> {
+                            mediaRepo.query(OpType.RESTORE, state.cloudEntity.name, state.cloudEntity.remote)
+                        }
+                    }
+                })
+                var bytes = 0.0
+                medium.forEach { bytes += it.displayStatsBytes }
+                emitState(state.copy(medium = medium, mediumSize = bytes.formatSize()))
             }
 
             is IndexUiIntent.SetCloudEntity -> {
                 context.saveCloudActivatedAccountName(intent.name)
                 emitState(state.copy(cloudEntity = cloudRepo.queryByName(intent.name)))
                 emitIntent(IndexUiIntent.UpdateApps)
+                emitIntent(IndexUiIntent.UpdateFiles)
             }
 
             is IndexUiIntent.ToAppList -> {
@@ -107,6 +129,27 @@ class IndexViewModel @Inject constructor(
                             if (state.cloudEntity != null) {
                                 intent.navController.navigate(
                                     MainRoutes.PackagesRestoreList.getRoute(
+                                        state.cloudEntity.name,
+                                        URLEncoder.encode(state.cloudEntity.remote, StandardCharsets.UTF_8.toString())
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            is IndexUiIntent.ToFileList -> {
+                withMainContext {
+                    when (state.storageType) {
+                        StorageMode.Local -> {
+                            intent.navController.navigate(MainRoutes.MediumRestoreList.getRoute(" ", URLEncoder.encode(context.localBackupSaveDir(), StandardCharsets.UTF_8.toString())))
+                        }
+
+                        StorageMode.Cloud -> {
+                            if (state.cloudEntity != null) {
+                                intent.navController.navigate(
+                                    MainRoutes.MediumRestoreList.getRoute(
                                         state.cloudEntity.name,
                                         URLEncoder.encode(state.cloudEntity.remote, StandardCharsets.UTF_8.toString())
                                     )

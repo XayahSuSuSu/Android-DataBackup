@@ -27,6 +27,9 @@ import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.medium.backup.detail.PageMediumBackupDetail
 import com.xayah.feature.main.medium.backup.list.PageMediumBackupList
 import com.xayah.feature.main.medium.backup.processing.MediumBackupProcessingGraph
+import com.xayah.feature.main.medium.restore.detail.PageMediumRestoreDetail
+import com.xayah.feature.main.medium.restore.list.PageMediumRestoreList
+import com.xayah.feature.main.medium.restore.processing.MediumRestoreProcessingGraph
 import com.xayah.feature.main.packages.backup.detail.PagePackagesBackupDetail
 import com.xayah.feature.main.packages.backup.list.PagePackagesBackupList
 import com.xayah.feature.main.packages.backup.processing.PackagesBackupProcessingGraph
@@ -40,10 +43,12 @@ import com.xayah.feature.main.settings.backup.PageBackupSettings
 import com.xayah.feature.main.settings.blacklist.PageBlackList
 import com.xayah.feature.main.settings.restore.PageRestoreSettings
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @ExperimentalCoroutinesApi
     @ExperimentalAnimationApi
     @ExperimentalFoundationApi
     @ExperimentalLayoutApi
@@ -110,6 +115,15 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.MediumBackupProcessingGraph.route) {
                             MediumBackupProcessingGraph()
+                        }
+                        composable(MainRoutes.MediumRestoreList.route) {
+                            PageMediumRestoreList()
+                        }
+                        composable(MainRoutes.MediumRestoreDetail.route) {
+                            PageMediumRestoreDetail()
+                        }
+                        composable(MainRoutes.MediumRestoreProcessingGraph.route) {
+                            MediumRestoreProcessingGraph()
                         }
                         composable(MainRoutes.Settings.route) {
                             PageSettings()

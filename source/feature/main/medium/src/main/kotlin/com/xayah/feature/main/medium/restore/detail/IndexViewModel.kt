@@ -1,4 +1,4 @@
-package com.xayah.feature.main.medium.backup.detail
+package com.xayah.feature.main.medium.restore.detail
 
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +24,7 @@ import javax.inject.Inject
 
 data class IndexUiState(
     val name: String,
+    val preserveId: Long,
     val isCalculating: Boolean,
 ) : UiState
 
@@ -43,6 +44,7 @@ class IndexViewModel @Inject constructor(
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
         name = args.get<String>(MainRoutes.ARG_MEDIA_NAME) ?: "",
+        preserveId = args.get<String>(MainRoutes.ARG_PRESERVE_ID)?.toLongOrNull() ?: 0,
         isCalculating = false,
     )
 ) {
@@ -59,7 +61,7 @@ class IndexViewModel @Inject constructor(
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
                 emitState(state.copy(isCalculating = true))
-                mediaRepo.updateLocalMediaSize(name = state.name, opType = OpType.BACKUP, preserveId = 0)
+                mediaRepo.updateLocalMediaArchivesSize(state.name, OpType.RESTORE)
                 emitState(state.copy(isCalculating = false))
             }
 
@@ -87,11 +89,11 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.Delete -> {
-                mediaRepo.deleteEntity(intent.mediaEntity)
+                mediaRepo.delete(intent.mediaEntity)
             }
         }
     }
 
-    private val _media: Flow<MediaEntity?> = mediaRepo.queryFlow(uiState.value.name, OpType.BACKUP, 0).flowOnIO()
+    private val _media: Flow<MediaEntity?> = mediaRepo.queryFlow(uiState.value.name, OpType.RESTORE, uiState.value.preserveId).flowOnIO()
     val mediaState: StateFlow<MediaEntity?> = _media.stateInScope(null)
 }
