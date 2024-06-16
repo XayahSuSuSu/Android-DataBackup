@@ -311,4 +311,10 @@
     <string name="configurations_desc">Configuraciones, lista negra, configuraciones de cuentas en la nube</string>
     <string name="_import">Importar</string>
     <string name="exported">Exportado</string>
+    <string name="choose_a_custom_path">Elija una ruta personalizada</string>
+    <string name="delete_desc">Esto será eliminado</string>
+    <string name="select_files">Selecciona los archivos</string>
+    <string name="args_files_backed_up">%1$s archivos en la copia de seguridad</string>
+    <string name="backed_up_files">Archivos dela copia de seguridad</string>
+    <string name="files">Archivos</string>
 </resources>
