@@ -126,24 +126,25 @@ fun PageDashboard() {
                     ) {
                         navController.navigate(MainRoutes.MediumBackupList.route)
                     }
-                    QuickActionsButton(
-                        modifier = Modifier.weight(1f),
-                        enabled = false,
-                        title = StringResourceToken.fromStringId(R.string.backup_messages),
-                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
-                        colorContainer = ColorSchemeKeyTokens.BluePrimaryContainer,
-                        colorL80D20 = ColorSchemeKeyTokens.BlueL80D20,
-                        onColorContainer = ColorSchemeKeyTokens.BlueOnPrimaryContainer
-                    )
-                    QuickActionsButton(
-                        modifier = Modifier.weight(1f),
-                        enabled = false,
-                        title = StringResourceToken.fromStringId(R.string.backup_contacts),
-                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
-                        colorContainer = ColorSchemeKeyTokens.GreenPrimaryContainer,
-                        colorL80D20 = ColorSchemeKeyTokens.GreenL80D20,
-                        onColorContainer = ColorSchemeKeyTokens.GreenOnPrimaryContainer
-                    )
+                    // TODO MMS/SMS, Contacts backup/restore
+//                    QuickActionsButton(
+//                        modifier = Modifier.weight(1f),
+//                        enabled = false,
+//                        title = StringResourceToken.fromStringId(R.string.backup_messages),
+//                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
+//                        colorContainer = ColorSchemeKeyTokens.BluePrimaryContainer,
+//                        colorL80D20 = ColorSchemeKeyTokens.BlueL80D20,
+//                        onColorContainer = ColorSchemeKeyTokens.BlueOnPrimaryContainer
+//                    )
+//                    QuickActionsButton(
+//                        modifier = Modifier.weight(1f),
+//                        enabled = false,
+//                        title = StringResourceToken.fromStringId(R.string.backup_contacts),
+//                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
+//                        colorContainer = ColorSchemeKeyTokens.GreenPrimaryContainer,
+//                        colorL80D20 = ColorSchemeKeyTokens.GreenL80D20,
+//                        onColorContainer = ColorSchemeKeyTokens.GreenOnPrimaryContainer
+//                    )
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
                         enabled = nullBackupDir.not(),
