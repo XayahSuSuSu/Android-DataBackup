@@ -13,4 +13,13 @@
         <item>@string/third_party</item>
         <item>@string/system</item>
     </string-array>
+    <string-array name="ftp_auth_mode">
+        <item>@string/password</item>
+        <item>@string/anonymous</item>
+    </string-array>
+    <string-array name="smb_auth_mode">
+        <item>@string/password</item>
+        <item>@string/guest</item>
+        <item>@string/anonymous</item>
+    </string-array>
 </resources>

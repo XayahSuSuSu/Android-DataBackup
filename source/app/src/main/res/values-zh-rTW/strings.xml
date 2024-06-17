@@ -318,4 +318,6 @@
     <string name="args_files_backed_up">已備份%1$s個文件</string>
     <string name="backed_up_files">已備份文件</string>
     <string name="specify_a_path">請指定路徑</string>
+    <string name="anonymous">匿名</string>
+    <string name="guest">來賓</string>
 </resources>

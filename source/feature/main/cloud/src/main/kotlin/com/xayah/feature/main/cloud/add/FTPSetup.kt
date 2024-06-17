@@ -12,6 +12,9 @@ import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -19,16 +22,19 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.model.database.FTPExtra
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.ui.component.Clickable
@@ -69,6 +75,8 @@ fun PageFTPSetup() {
     var url by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.host ?: "") }
     var port by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<FTPExtra>()?.port?.toString() ?: "21") }
     var username by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.user ?: "") }
+    val modeOptions = stringArrayResource(id = R.array.ftp_auth_mode).toList()
+    var modeIndex by rememberSaveable(uiState.cloudEntity) { mutableIntStateOf(if ((uiState.cloudEntity?.user ?: "") == ConstantUtil.FTP_ANONYMOUS_USERNAME) 1 else 0) }
     var password by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.pass ?: "") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val allFilled by rememberSaveable(
@@ -152,11 +160,41 @@ fun PageFTPSetup() {
             }
 
             Title(enabled = uiState.isProcessing.not(), title = StringResourceToken.fromStringId(R.string.account), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .paddingHorizontal(SizeTokens.Level24),
+                ) {
+                    modeOptions.forEachIndexed { index, label ->
+                        SegmentedButton(
+                            enabled = uiState.isProcessing.not(),
+                            shape = SegmentedButtonDefaults.itemShape(index = index, count = modeOptions.size),
+                            onClick = {
+                                if (index == 0) {
+                                    // Password
+                                    if (modeIndex != 0) {
+                                        username = ""
+                                        password = ""
+                                    }
+                                } else {
+                                    // Anonymous
+                                    username = ConstantUtil.FTP_ANONYMOUS_USERNAME
+                                    password = ConstantUtil.FTP_ANONYMOUS_PASSWORD
+                                }
+                                modeIndex = index
+                            },
+                            selected = index == modeIndex
+                        ) {
+                            Text(label)
+                        }
+                    }
+                }
+
                 SetupTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .paddingHorizontal(SizeTokens.Level24),
-                    enabled = uiState.isProcessing.not(),
+                    enabled = uiState.isProcessing.not() && modeIndex == 0,
                     value = username,
                     leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
                     onValueChange = { username = it },
@@ -167,7 +205,7 @@ fun PageFTPSetup() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .paddingHorizontal(SizeTokens.Level24),
-                    enabled = uiState.isProcessing.not(),
+                    enabled = uiState.isProcessing.not() && modeIndex == 0,
                     value = password,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_key),

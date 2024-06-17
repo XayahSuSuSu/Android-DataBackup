@@ -28,6 +28,9 @@
     <item name="not_selected" type="string"/>
     <item name="remote_path_desc" type="string"/>
 
+    <item name="ftp_auth_mode" type="array"/>
+    <item name="smb_auth_mode" type="array"/>
+
     <item name="ic_rounded_link" type="drawable"/>
     <item name="ic_rounded_key" type="drawable"/>
     <item name="ic_rounded_folder_open" type="drawable"/>

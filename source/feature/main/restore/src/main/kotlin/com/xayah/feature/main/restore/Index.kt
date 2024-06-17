@@ -92,7 +92,7 @@ fun PageRestore() {
             )
 
             var enabled by remember { mutableStateOf(true) }
-            val storageOptions = listOf(context.getString(R.string.local), context.getString(R.string.cloud))
+            val storageOptions = remember { listOf(context.getString(R.string.local), context.getString(R.string.cloud)) }
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
                     .fillMaxWidth()

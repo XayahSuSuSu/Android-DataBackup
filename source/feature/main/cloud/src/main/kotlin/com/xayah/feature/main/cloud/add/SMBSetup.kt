@@ -1,5 +1,6 @@
 package com.xayah.feature.main.cloud.add
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,9 @@ import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -20,17 +24,21 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.model.SmbAuthMode
 import com.xayah.core.model.database.SMBExtra
+import com.xayah.core.model.util.indexOf
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.LocalSlotScope
@@ -73,6 +81,8 @@ fun PageSMBSetup() {
     var domain by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<SMBExtra>()?.domain ?: "") }
     var share by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<SMBExtra>()?.share ?: "") }
     var username by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.user ?: "") }
+    val modeOptions = stringArrayResource(id = R.array.smb_auth_mode).toList()
+    var modeIndex by rememberSaveable(uiState.cloudEntity) { mutableIntStateOf(uiState.cloudEntity?.getExtraEntity<SMBExtra>()?.mode?.index ?: 0) }
     var password by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.pass ?: "") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val allFilled by rememberSaveable(
@@ -96,7 +106,17 @@ fun PageSMBSetup() {
                 enabled = allFilled && uiState.isProcessing.not(),
                 onClick = {
                     viewModel.launchOnIO {
-                        viewModel.updateSMBEntity(name = name, remote = remote, url = url, username = username, password = password, share = share, port = port, domain = domain)
+                        viewModel.updateSMBEntity(
+                            name = name,
+                            remote = remote,
+                            url = url,
+                            username = username,
+                            password = password,
+                            share = share,
+                            port = port,
+                            domain = domain,
+                            mode = SmbAuthMode.indexOf(modeIndex)
+                        )
                         viewModel.emitIntent(IndexUiIntent.TestConnection)
                     }
                 }
@@ -106,7 +126,17 @@ fun PageSMBSetup() {
 
             Button(enabled = allFilled && remote.isNotEmpty() && uiState.isProcessing.not(), onClick = {
                 viewModel.launchOnIO {
-                    viewModel.updateSMBEntity(name = name, remote = remote, url = url, username = username, password = password, share = share, port = port, domain = domain)
+                    viewModel.updateSMBEntity(
+                        name = name,
+                        remote = remote,
+                        url = url,
+                        username = username,
+                        password = password,
+                        share = share,
+                        port = port,
+                        domain = domain,
+                        mode = SmbAuthMode.indexOf(modeIndex)
+                    )
                     viewModel.emitIntent(IndexUiIntent.CreateAccount(navController = navController))
                 }
             }) {
@@ -159,22 +189,6 @@ fun PageSMBSetup() {
                         .fillMaxWidth()
                         .paddingHorizontal(SizeTokens.Level24),
                     enabled = uiState.isProcessing.not(),
-                    value = domain,
-                    leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Domain),
-                    onValueChange = { domain = it },
-                    label = StringResourceToken.fromStringArgs(
-                        StringResourceToken.fromStringId(R.string.domain),
-                        StringResourceToken.fromString("("),
-                        StringResourceToken.fromStringId(R.string.allow_empty),
-                        StringResourceToken.fromString(")"),
-                    ),
-                )
-
-                SetupTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .paddingHorizontal(SizeTokens.Level24),
-                    enabled = uiState.isProcessing.not(),
                     value = share,
                     leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
                     onValueChange = { share = it },
@@ -188,33 +202,80 @@ fun PageSMBSetup() {
             }
 
             Title(enabled = uiState.isProcessing.not(), title = StringResourceToken.fromStringId(R.string.account), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
-                SetupTextField(
+                SingleChoiceSegmentedButtonRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .paddingHorizontal(SizeTokens.Level24),
-                    enabled = uiState.isProcessing.not(),
-                    value = username,
-                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
-                    onValueChange = { username = it },
-                    label = StringResourceToken.fromStringId(R.string.username)
-                )
+                ) {
+                    modeOptions.forEachIndexed { index, label ->
+                        SegmentedButton(
+                            enabled = uiState.isProcessing.not(),
+                            shape = SegmentedButtonDefaults.itemShape(index = index, count = modeOptions.size),
+                            onClick = {
+                                if (index == 0) {
+                                    // Password
+                                } else {
+                                    // Anonymous or Guest
+                                    username = ""
+                                    password = ""
+                                    domain = ""
+                                }
+                                modeIndex = index
+                            },
+                            selected = index == modeIndex
+                        ) {
+                            Text(label)
+                        }
+                    }
+                }
 
-                SetupTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .paddingHorizontal(SizeTokens.Level24),
-                    enabled = uiState.isProcessing.not(),
-                    value = password,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_key),
-                    trailingIcon = ImageVectorToken.fromVector(if (passwordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff),
-                    onTrailingIconClick = {
-                        passwordVisible = passwordVisible.not()
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    onValueChange = { password = it },
-                    label = StringResourceToken.fromStringId(R.string.password),
-                )
+                AnimatedVisibility(visible = modeIndex == 0) {
+                    Column(verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
+                        SetupTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .paddingHorizontal(SizeTokens.Level24),
+                            enabled = uiState.isProcessing.not(),
+                            value = username,
+                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
+                            onValueChange = { username = it },
+                            label = StringResourceToken.fromStringId(R.string.username)
+                        )
+
+                        SetupTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .paddingHorizontal(SizeTokens.Level24),
+                            enabled = uiState.isProcessing.not(),
+                            value = domain,
+                            leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Domain),
+                            onValueChange = { domain = it },
+                            label = StringResourceToken.fromStringArgs(
+                                StringResourceToken.fromStringId(R.string.domain),
+                                StringResourceToken.fromString("("),
+                                StringResourceToken.fromStringId(R.string.allow_empty),
+                                StringResourceToken.fromString(")"),
+                            ),
+                        )
+
+                        SetupTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .paddingHorizontal(SizeTokens.Level24),
+                            enabled = uiState.isProcessing.not(),
+                            value = password,
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_key),
+                            trailingIcon = ImageVectorToken.fromVector(if (passwordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff),
+                            onTrailingIconClick = {
+                                passwordVisible = passwordVisible.not()
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            onValueChange = { password = it },
+                            label = StringResourceToken.fromStringId(R.string.password),
+                        )
+                    }
+                }
             }
 
             Title(enabled = uiState.isProcessing.not(), title = StringResourceToken.fromStringId(R.string.advanced)) {
@@ -225,7 +286,17 @@ fun PageSMBSetup() {
                     desc = StringResourceToken.fromStringId(R.string.remote_path_desc),
                 ) {
                     viewModel.launchOnIO {
-                        viewModel.updateSMBEntity(name = name, remote = remote, url = url, username = username, password = password, share = share, port = port, domain = domain)
+                        viewModel.updateSMBEntity(
+                            name = name,
+                            remote = remote,
+                            url = url,
+                            username = username,
+                            password = password,
+                            share = share,
+                            port = port,
+                            domain = domain,
+                            mode = SmbAuthMode.indexOf(modeIndex)
+                        )
                         viewModel.emitIntent(IndexUiIntent.SetRemotePath(context = context))
                         remote = uiState.cloudEntity!!.remote
                         share = uiState.cloudEntity!!.getExtraEntity<SMBExtra>()!!.share

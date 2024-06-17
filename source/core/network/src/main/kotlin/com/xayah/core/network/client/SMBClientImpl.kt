@@ -19,6 +19,7 @@ import com.hierynomus.smbj.share.Share
 import com.rapid7.client.dcerpc.mssrvs.ServerService
 import com.rapid7.client.dcerpc.transport.SMBTransportFactories
 import com.xayah.core.common.util.toPathString
+import com.xayah.core.model.SmbAuthMode
 import com.xayah.core.model.SmbVersion
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.SMBExtra
@@ -100,15 +101,21 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         client = SMBClient(config).apply {
             connect(entity.host, extra.port).also { connection ->
                 log { "Dialect: ${connection.connectionContext.negotiatedProtocol.dialect.name}" }
-                AuthenticationContext(entity.user, entity.pass.toCharArray(), extra.domain).also { authentication ->
-                    session = connection.authenticate(authentication)
-                    if (extra.share.isNotEmpty()) setShare(extra.share)
-                    withSession { _ ->
-                        val transport = SMBTransportFactories.SRVSVC.getTransport(session)
-                        val serverService = ServerService(transport)
-                        val shares = serverService.shares1
-                        availableShares = shares.filter { (it.type and STYPE_SPECIAL == STYPE_SPECIAL).not() }.map { it.netName }
-                    }
+                log { "Mode: ${extra.mode}" }
+
+                val authentication = when (extra.mode) {
+                    SmbAuthMode.PASSWORD -> AuthenticationContext(entity.user, entity.pass.toCharArray(), extra.domain)
+                    SmbAuthMode.GUEST -> AuthenticationContext.guest()
+                    SmbAuthMode.ANONYMOUS -> AuthenticationContext.anonymous()
+                }
+
+                session = connection.authenticate(authentication)
+                if (extra.share.isNotEmpty()) setShare(extra.share)
+                withSession { _ ->
+                    val transport = SMBTransportFactories.SRVSVC.getTransport(session)
+                    val serverService = ServerService(transport)
+                    val shares = serverService.shares1
+                    availableShares = shares.filter { (it.type and STYPE_SPECIAL == STYPE_SPECIAL).not() }.map { it.netName }
                 }
             }
         }

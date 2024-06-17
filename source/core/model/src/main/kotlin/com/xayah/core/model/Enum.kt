@@ -103,6 +103,14 @@ enum class SmbVersion(val text: String) {
     SMB_3_1_1("3.1.1"),
 }
 
+enum class SmbAuthMode(val index: Int) {
+    PASSWORD(0),
+    GUEST(1),
+    ANONYMOUS(2);
+
+    companion object
+}
+
 enum class DataState {
     Selected,
     NotSelected,

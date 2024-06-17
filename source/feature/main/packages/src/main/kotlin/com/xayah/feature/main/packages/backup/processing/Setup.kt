@@ -92,7 +92,7 @@ fun PagePackagesBackupProcessingSetup(localNavController: NavHostController, vie
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize(),
         ) {
-            val storageOptions = listOf(context.getString(R.string.local), context.getString(R.string.cloud))
+            val storageOptions = remember { listOf(context.getString(R.string.local), context.getString(R.string.cloud)) }
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
                     .fillMaxWidth()
