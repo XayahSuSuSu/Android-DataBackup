@@ -93,7 +93,10 @@ fun PageMediumRestoreDetail() {
                     MediaIconImage(name = uiState.name.firstOrNull()?.toString() ?: "", textStyle = MaterialTheme.typography.titleLarge, size = SizeTokens.Level64)
                     Column(modifier = Modifier.weight(1f)) {
                         TitleLargeText(text = media.name, color = ColorSchemeKeyTokens.OnSurface.toColor())
-                        BodyMediumText(text = media.path, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+                        BodyMediumText(
+                            text = (if (media.path.isEmpty()) StringResourceToken.fromStringId(R.string.specify_a_path) else StringResourceToken.fromString(media.path)).value,
+                            color = (if (media.path.isEmpty()) ColorSchemeKeyTokens.Error else ColorSchemeKeyTokens.OnSurfaceVariant).toColor()
+                        )
                     }
                     IconButton(
                         enabled = true,
@@ -104,6 +107,7 @@ fun PageMediumRestoreDetail() {
                 }
                 Title(title = StringResourceToken.fromStringId(R.string.backup_parts)) {
                     Switchable(
+                        enabled = media.extraInfo.existed && media.path.isNotEmpty(),
                         checked = media.extraInfo.activated,
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_image),
                         title = StringResourceToken.fromString(DataType.MEDIA_MEDIA.type.uppercase()),

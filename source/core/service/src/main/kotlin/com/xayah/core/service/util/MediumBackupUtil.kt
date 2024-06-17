@@ -49,6 +49,7 @@ class MediumBackupUtil @Inject constructor(
     private fun MediaEntity.getDataBytes() = mediaInfo.dataBytes
 
     private fun MediaEntity.setDataBytes(sizeBytes: Long) = run { mediaInfo.dataBytes = sizeBytes }
+    private fun MediaEntity.setDisplayBytes(sizeBytes: Long) = run { mediaInfo.displayBytes = sizeBytes }
 
     private fun TaskDetailMediaEntity.getLog() = mediaInfo.log
 
@@ -111,7 +112,10 @@ class MediumBackupUtil @Inject constructor(
             commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
                 isSuccess = isSuccess and result.isSuccess
                 out.addAll(result.out)
-                if (result.isSuccess) m.setDataBytes(sizeBytes)
+                if (result.isSuccess) {
+                    m.setDataBytes(sizeBytes)
+                    m.setDisplayBytes(rootService.calculateSize(dst))
+                }
             }
         }
 

@@ -194,13 +194,12 @@ fun PageMediumRestoreList() {
                         Row(modifier = Modifier.animateItemPlacement()) {
                             MediaItem(
                                 item = item,
-                                enabled = item.extraInfo.existed,
                                 onCheckedChange = { viewModel.emitIntentOnIO(IndexUiIntent.Select(item)) },
+                                filterMode = uiState.filterMode,
                                 onClick = {
                                     if (uiState.filterMode) viewModel.emitIntentOnIO(IndexUiIntent.ToPageDetail(navController, item))
                                     else viewModel.emitIntentOnIO(IndexUiIntent.Select(item))
-                                },
-                                filterMode = uiState.filterMode
+                                }
                             )
                         }
                     }

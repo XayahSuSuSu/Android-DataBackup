@@ -43,6 +43,7 @@
     <item name="auto_screen_off_desc" type="string" />
     <item name="configurations" type="string" />
     <item name="configurations_desc" type="string" />
+    <item name="files" type="string" />
 
     <item name="ic_rounded_acute" type="drawable" />
     <item name="ic_rounded_history" type="drawable" />

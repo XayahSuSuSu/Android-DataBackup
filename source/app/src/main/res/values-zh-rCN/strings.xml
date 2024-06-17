@@ -317,4 +317,5 @@
     <string name="files">文件</string>
     <string name="args_files_backed_up">已备份%1$s个文件</string>
     <string name="backed_up_files">已备份文件</string>
+    <string name="specify_a_path">请指定路径</string>
 </resources>

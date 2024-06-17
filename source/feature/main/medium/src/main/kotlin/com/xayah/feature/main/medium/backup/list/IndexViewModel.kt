@@ -89,7 +89,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.SelectAll -> {
-                mediaRepo.upsert(mediumState.value.onEach { it.extraInfo.activated = intent.selected })
+                mediaRepo.upsert(mediumState.value.onEach { if (it.enabled) it.extraInfo.activated = intent.selected })
             }
 
             is IndexUiIntent.BlockSelected -> {

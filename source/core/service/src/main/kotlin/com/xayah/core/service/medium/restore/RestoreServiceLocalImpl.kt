@@ -64,7 +64,13 @@ internal class RestoreServiceLocalImpl @Inject constructor() : RestoreService() 
         val m = t.mediaEntity
         val srcDir = "${filesDir}/${m.archivesRelativeDir}"
 
-        mediumRestoreUtil.restoreMedia(m = m, t = t, srcDir = srcDir)
+        if (m.path.isEmpty()) {
+            t.mediaInfo.state = OperationState.ERROR
+            t.mediaInfo.log = "Path is empty."
+            taskDao.upsert(t)
+        } else {
+            mediumRestoreUtil.restoreMedia(m = m, t = t, srcDir = srcDir)
+        }
 
         t.apply {
             t.apply {

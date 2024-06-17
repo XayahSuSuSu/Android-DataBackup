@@ -96,8 +96,6 @@ internal class BackupServiceLocalImpl @Inject constructor() : BackupService() {
             restoreEntity = p.copy(
                 id = id,
                 indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = "", backupDir = localBackupSaveDir),
-                dataStates = restoreEntity?.dataStates?.copy() ?: p.dataStates.copy(),
-                displayStats = restoreEntity?.dataStats?.copy() ?: p.dataStats.copy(),
                 extraInfo = p.extraInfo.copy(existed = true, activated = false)
             )
             rootService.writeJson(data = restoreEntity, dst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir))

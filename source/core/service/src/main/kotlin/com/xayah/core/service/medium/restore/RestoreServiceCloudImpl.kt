@@ -89,8 +89,14 @@ internal class RestoreServiceCloudImpl @Inject constructor() : RestoreService() 
         val tmpDstDir = "${tmpFilesDir}/${m.archivesRelativeDir}"
         val remoteSrcDir = "${remoteFilesDir}/${m.archivesRelativeDir}"
 
-        mediumRestoreUtil.download(client = client, m = m, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mM, mT, mPath ->
-            mediumRestoreUtil.restoreMedia(m = mM, t = mT, srcDir = mPath)
+        if (m.path.isEmpty()) {
+            t.mediaInfo.state = OperationState.ERROR
+            t.mediaInfo.log = "Path is empty."
+            taskDao.upsert(t)
+        } else {
+            mediumRestoreUtil.download(client = client, m = m, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mM, mT, mPath ->
+                mediumRestoreUtil.restoreMedia(m = mM, t = mT, srcDir = mPath)
+            }
         }
 
         t.apply {

@@ -15,6 +15,7 @@
     <item name="backup_user" type="string" />
     <item name="restore_user" type="string" />
     <item name="not_exist" type="string" />
+    <item name="specify_a_path" type="string" />
 
     <item name="jetbrains_mono_regular" type="font" />
     <item name="ic_rounded_check_circle" type="drawable" />

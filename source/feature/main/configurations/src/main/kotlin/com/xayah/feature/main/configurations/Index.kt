@@ -20,6 +20,7 @@ import com.xayah.core.ui.component.Checkable
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
@@ -37,12 +38,14 @@ fun PageConfigurations() {
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val blockedPackagesState by viewModel.blockedPackagesState.collectAsStateWithLifecycle()
+    val blockedFilesState by viewModel.blockedFilesState.collectAsStateWithLifecycle()
     val accounts by viewModel.accounts.collectAsStateWithLifecycle()
+    val files by viewModel.files.collectAsStateWithLifecycle()
 
     ConfigurationsScaffold(
         scrollBehavior = scrollBehavior, snackbarHostState = viewModel.snackbarHostState,
         title = StringResourceToken.fromStringId(R.string.configurations), actions = {
-            OutlinedButton(enabled = blockedPackagesState.size + accounts.size != 0 && uiState.selectedCount != 0, onClick = {
+            OutlinedButton(enabled = blockedPackagesState.size + blockedFilesState.size + accounts.size + files.size != 0 && uiState.selectedCount != 0, onClick = {
                 viewModel.emitIntentOnIO(IndexUiIntent.Export)
             }) {
                 Text(
@@ -62,7 +65,7 @@ fun PageConfigurations() {
         Checkable(
             icon = ImageVectorToken.fromVector(Icons.Outlined.Block),
             title = StringResourceToken.fromStringId(R.string.blacklist),
-            value = StringResourceToken.fromString(blockedPackagesState.size.toString()),
+            value = StringResourceToken.fromString((blockedPackagesState.size + blockedFilesState.size).toString()),
             checked = uiState.blacklistSelected,
         ) {
             viewModel.emitStateOnMain(uiState.copy(selectedCount = if (it) uiState.selectedCount - 1 else uiState.selectedCount + 1, blacklistSelected = it.not()))
@@ -74,6 +77,14 @@ fun PageConfigurations() {
             checked = uiState.cloudSelected,
         ) {
             viewModel.emitStateOnMain(uiState.copy(selectedCount = if (it) uiState.selectedCount - 1 else uiState.selectedCount + 1, cloudSelected = it.not()))
+        }
+        Checkable(
+            icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+            title = StringResourceToken.fromStringId(R.string.files),
+            value = StringResourceToken.fromString(files.size.toString()),
+            checked = uiState.fileSelected,
+        ) {
+            viewModel.emitStateOnMain(uiState.copy(selectedCount = if (it) uiState.selectedCount - 1 else uiState.selectedCount + 1, fileSelected = it.not()))
         }
     }
 }

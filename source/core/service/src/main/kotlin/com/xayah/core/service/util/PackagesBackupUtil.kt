@@ -101,6 +101,16 @@ class PackagesBackupUtil @Inject constructor(
         else -> Unit
     }
 
+    private fun PackageEntity.setDisplayBytes(dataType: DataType, sizeBytes: Long) = when (dataType) {
+        DataType.PACKAGE_APK -> displayStats.apkBytes = sizeBytes
+        DataType.PACKAGE_USER -> displayStats.userBytes = sizeBytes
+        DataType.PACKAGE_USER_DE -> displayStats.userDeBytes = sizeBytes
+        DataType.PACKAGE_DATA -> displayStats.dataBytes = sizeBytes
+        DataType.PACKAGE_OBB -> displayStats.obbBytes = sizeBytes
+        DataType.PACKAGE_MEDIA -> displayStats.mediaBytes = sizeBytes
+        else -> Unit
+    }
+
     private suspend fun TaskDetailPackageEntity.updateInfo(
         dataType: DataType,
         state: OperationState? = null,
@@ -245,7 +255,10 @@ class PackagesBackupUtil @Inject constructor(
                     commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
                         isSuccess = isSuccess and result.isSuccess
                         out.addAll(result.out)
-                        if (result.isSuccess) p.setDataBytes(dataType, sizeBytes)
+                        if (result.isSuccess) {
+                            p.setDataBytes(dataType, sizeBytes)
+                            p.setDisplayBytes(dataType, rootService.calculateSize(dst))
+                        }
                     }
                 }
             } else {
@@ -337,7 +350,10 @@ class PackagesBackupUtil @Inject constructor(
                 commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
                     isSuccess = isSuccess and result.isSuccess
                     out.addAll(result.out)
-                    if (result.isSuccess) p.setDataBytes(dataType, sizeBytes)
+                    if (result.isSuccess) {
+                        p.setDataBytes(dataType, sizeBytes)
+                        p.setDisplayBytes(dataType, rootService.calculateSize(dst))
+                    }
                 }
             }
 

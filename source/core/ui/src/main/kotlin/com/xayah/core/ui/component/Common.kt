@@ -354,8 +354,10 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
 @Composable
-fun MediaItem(item: MediaEntity, enabled: Boolean, checked: Boolean? = null, onCheckedChange: ((Boolean) -> Unit)?, filterMode: Boolean, onClick: () -> Unit) {
+fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = null, onCheckedChange: ((Boolean) -> Unit)?, filterMode: Boolean, onClick: () -> Unit) {
     val context = LocalContext.current
+    val existed = item.existed
+    val _enabled = enabled ?: item.enabled
     com.xayah.core.ui.material3.Surface(onClick = onClick) {
         Column {
             Row(
@@ -374,8 +376,8 @@ fun MediaItem(item: MediaEntity, enabled: Boolean, checked: Boolean? = null, onC
                         color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor()
                     )
                     BodyMediumText(
-                        text = StringResourceToken.fromString(item.path).value,
-                        color = ColorSchemeKeyTokens.Outline.toColor()
+                        text = (if (item.path.isEmpty()) StringResourceToken.fromStringId(R.string.specify_a_path) else StringResourceToken.fromString(item.path)).value,
+                        color = (if (item.path.isEmpty()) ColorSchemeKeyTokens.Error else ColorSchemeKeyTokens.Outline).toColor()
                     )
                 }
 
@@ -385,7 +387,7 @@ fun MediaItem(item: MediaEntity, enabled: Boolean, checked: Boolean? = null, onC
                         .width(SizeTokens.Level1)
                         .fillMaxHeight()
                 )
-                CheckIconButton(enabled = enabled, checked = checked ?: item.extraInfo.activated, onCheckedChange = onCheckedChange)
+                CheckIconButton(enabled = _enabled, checked = checked ?: item.extraInfo.activated, onCheckedChange = onCheckedChange)
             }
 
             AnimatedVisibility(visible = filterMode, enter = fadeIn() + slideInVertically(), exit = slideOutVertically() + fadeOut()) {
@@ -399,7 +401,7 @@ fun MediaItem(item: MediaEntity, enabled: Boolean, checked: Boolean? = null, onC
                     content = {
                         val storageStatsFormat = item.displayStatsBytes
 
-                        if (enabled.not()) {
+                        if (existed.not()) {
                             AssistChip(
                                 enabled = true,
                                 label = StringResourceToken.fromStringId(R.string.not_exist),
@@ -422,7 +424,7 @@ fun MediaItem(item: MediaEntity, enabled: Boolean, checked: Boolean? = null, onC
                                 border = null,
                             )
                         }
-                        if (enabled) {
+                        if (existed) {
                             AssistChip(
                                 enabled = true,
                                 label = StringResourceToken.fromString(storageStatsFormat.formatSize()),

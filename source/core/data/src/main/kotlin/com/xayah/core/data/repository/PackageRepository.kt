@@ -28,6 +28,10 @@ import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.MediaEntity
+import com.xayah.core.model.database.MediaExtraInfo
+import com.xayah.core.model.database.MediaIndexInfo
+import com.xayah.core.model.database.MediaInfo
 import com.xayah.core.model.database.PackageDataStates
 import com.xayah.core.model.database.PackageDataStats
 import com.xayah.core.model.database.PackageEntity
@@ -550,6 +554,45 @@ class PackageRepository @Inject constructor(
     }
 
     /**
+     * Modify directory structure from local.
+     *        /.../DataBackup/backup/$userId/media/$name/$coverOrTimestamp/${dataType}.tar.*
+     * --->   /.../DataBackup/files/$name@$timestamp/${dataType}.tar.*
+     */
+    suspend fun modifyFilesStructureFromLocal10x(onMsgUpdate: suspend (String) -> Unit) {
+        onMsgUpdate(log { "Modifying directory structure..." })
+        val backupDir = "${context.localBackupSaveDir()}/backup"
+        val dstDir = pathUtil.getLocalBackupFilesDir()
+        var serialTimestamp: Long
+
+        rootService.listFilePaths(backupDir).forEach { userPath ->
+            // Timestamp serial for "Cover".
+            serialTimestamp = DateUtil.getTimestamp()
+            val userId = userPath.split("/").lastOrNull()?.toIntOrNull() ?: 0
+            val mediumDir = "${userPath}/media"
+            rootService.listFilePaths(mediumDir).forEach { media ->
+                rootService.listFilePaths(media).forEach { path ->
+                    val list = path.split("/")
+                    runCatching {
+                        val pathListSize = list.size
+                        val name = list[pathListSize - 2]
+                        val timestampName = list[pathListSize - 1]
+
+                        /**
+                         * In old versions, the timestamp may be named as "Cover" or something else,
+                         * we need to convert it to number.
+                         */
+                        val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
+                        val dst = "${dstDir}/${name}@${timestamp}"
+                        onMsgUpdate(log { "Trying to move $path to $dst." })
+                        rootService.mkdirs(path = PathUtil.getParentPath(dst))
+                        rootService.renameTo(src = path, dst = dst)
+                    }.withLog()
+                }
+            }
+        }
+    }
+
+    /**
      * Modify directory structure from cloud.
      *        /.../DataBackup/backup/$userId/data/$packageName/$coverOrTimestamp/${dataType}.tar.*
      * --->   /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
@@ -600,6 +643,52 @@ class PackageRepository @Inject constructor(
     }
 
     /**
+     * Modify directory structure from cloud.
+     *        /.../DataBackup/backup/$userId/data/$packageName/$coverOrTimestamp/${dataType}.tar.*
+     * --->   /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
+     */
+    suspend fun modifyFilesStructureFromCloud10x(cloud: String, onMsgUpdate: suspend (String) -> Unit) {
+        runCatching {
+            cloudRepository.withClient(cloud) { client, entity ->
+                onMsgUpdate(log { "Modifying directory structure..." })
+                val backupDir = "${entity.remote}/backup"
+                val dstDir = pathUtil.getCloudRemoteFilesDir(entity.remote)
+                var serialTimestamp: Long
+
+                client.listFiles(backupDir).directories.forEach { fileParcelable ->
+                    val userPath = "${backupDir}/${fileParcelable.name}"
+                    // Timestamp serial for "Cover".
+                    serialTimestamp = DateUtil.getTimestamp()
+                    val userId = userPath.split("/").lastOrNull()?.toIntOrNull() ?: 0
+                    val mediumDir = "${userPath}/media"
+                    client.listFiles(mediumDir).directories.forEach { media ->
+                        val mediaPath = "${mediumDir}/${media.name}"
+                        client.listFiles(mediaPath).directories.forEach { pathParcelable ->
+                            val path = "${mediaPath}/${pathParcelable.name}"
+                            val list = path.split("/")
+                            runCatching {
+                                val pathListSize = list.size
+                                val name = list[pathListSize - 2]
+                                val timestampName = list[pathListSize - 1]
+
+                                /**
+                                 * In old versions, the timestamp may be named as "Cover" or something else,
+                                 * we need to convert it to number.
+                                 */
+                                val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
+                                val dst = "${dstDir}/${name}@${timestamp}"
+                                onMsgUpdate(log { "Trying to move $path to $dst." })
+                                client.mkdirRecursively(dst = PathUtil.getParentPath(dst))
+                                client.renameTo(src = path, dst = dst)
+                            }.withLog()
+                        }
+                    }
+                }
+            }
+        }.onFailure(rootService.onFailure)
+    }
+
+    /**
      * Modify directory structure from local.
      *        /.../DataBackup/archives/packages/$packageName/$timestamp/${dataType}.tar.*
      * --->   /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
@@ -621,6 +710,34 @@ class PackageRepository @Inject constructor(
                     val timestampName = list[pathListSize - 1]
                     val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
                     val dst = "${dstDir}/${packageName}/user_${userId}@${timestamp}"
+                    onMsgUpdate(log { "Trying to move $path to $dst." })
+                    rootService.mkdirs(path = PathUtil.getParentPath(dst))
+                    rootService.renameTo(src = path, dst = dst)
+                }.withLog()
+            }
+        }
+    }
+
+    /**
+     * Modify directory structure from local.
+     *        /.../DataBackup/archives/medium/$name/$timestamp/${dataType}.tar.*
+     * --->   /.../DataBackup/files/$name@$timestamp/${dataType}.tar.*
+     */
+    suspend fun modifyFilesStructureFromLocal11x(onMsgUpdate: suspend (String) -> Unit) {
+        onMsgUpdate(log { "Modifying directory structure..." })
+        val mediumDir = "${context.localBackupSaveDir()}/archives/medium"
+        val dstDir = pathUtil.getLocalBackupFilesDir()
+        val serialTimestamp: Long = DateUtil.getTimestamp()
+
+        rootService.listFilePaths(mediumDir).forEach { mediaPath ->
+            rootService.listFilePaths(mediaPath).forEach { path ->
+                val list = path.split("/")
+                runCatching {
+                    val pathListSize = list.size
+                    val name = list[pathListSize - 2]
+                    val timestampName = list[pathListSize - 1]
+                    val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
+                    val dst = "${dstDir}/${name}@${timestamp}"
                     onMsgUpdate(log { "Trying to move $path to $dst." })
                     rootService.mkdirs(path = PathUtil.getParentPath(dst))
                     rootService.renameTo(src = path, dst = dst)
@@ -655,6 +772,40 @@ class PackageRepository @Inject constructor(
                             val timestampName = list[pathListSize - 1]
                             val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
                             val dst = "${dstDir}/${packageName}/user_${userId}@${timestamp}"
+                            onMsgUpdate(log { "Trying to move $path to $dst." })
+                            client.mkdirRecursively(dst = PathUtil.getParentPath(dst))
+                            client.renameTo(src = path, dst = dst)
+                        }.withLog()
+                    }
+                }
+            }
+        }.onFailure(rootService.onFailure)
+    }
+
+    /**
+     * Modify directory structure from cloud.
+     *        /.../DataBackup/archives/medium/$name/$timestamp/${dataType}.tar.*
+     * --->   /.../DataBackup/files/$name@$timestamp/${dataType}.tar.*
+     */
+    suspend fun modifyFilesStructureFromCloud11x(cloud: String, onMsgUpdate: suspend (String) -> Unit) {
+        runCatching {
+            cloudRepository.withClient(cloud) { client, entity ->
+                onMsgUpdate(log { "Modifying directory structure..." })
+                val mediumDir = "${entity.remote}/archives/medium"
+                val dstDir = pathUtil.getCloudRemoteFilesDir(entity.remote)
+                val serialTimestamp: Long = DateUtil.getTimestamp()
+
+                client.listFiles(mediumDir).directories.forEach { media ->
+                    val mediaPath = "${mediumDir}/${media.name}"
+                    client.listFiles(mediaPath).directories.forEach { pathParcelable ->
+                        val path = "${mediaPath}/${pathParcelable.name}"
+                        val list = path.split("/")
+                        runCatching {
+                            val pathListSize = list.size
+                            val name = list[pathListSize - 2]
+                            val timestampName = list[pathListSize - 1]
+                            val timestamp = runCatching { timestampName.toLong() }.getOrElse { serialTimestamp }
+                            val dst = "${dstDir}/${name}@${timestamp}"
                             onMsgUpdate(log { "Trying to move $path to $dst." })
                             client.mkdirRecursively(dst = PathUtil.getParentPath(dst))
                             client.renameTo(src = path, dst = dst)
@@ -879,6 +1030,124 @@ class PackageRepository @Inject constructor(
     }
 
     /**
+     * Reload directory structure from local.
+     *        /.../DataBackup/files/$name@$timestamp/${dataType}.tar.*
+     */
+    suspend fun reloadFilesFromLocal12x(onMsgUpdate: suspend (String) -> Unit) {
+        onMsgUpdate(log { "Reloading..." })
+        val filesDir = pathUtil.getLocalBackupFilesDir()
+        val pathList = rootService.walkFileTree(filesDir)
+        val typedPathSet = mutableSetOf<String>()
+        log { "Total paths count: ${pathList.size}" }
+
+        // Classify the paths
+        pathList.forEach { path ->
+            log { "Classifying: ${path.pathString}" }
+            runCatching {
+                val pathListSize = path.pathList.size
+                val name: String
+                val preserveId: Long
+                if (path.pathList[pathListSize - 2].contains("@")) {
+                    val nameWithPreserveId = path.pathList[pathListSize - 2].split("@")
+                    preserveId = nameWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
+                    name = nameWithPreserveId.first()
+                } else {
+                    // Main backup
+                    preserveId = -1L
+                    name = path.pathList[pathListSize - 2]
+                }
+                typedPathSet.add("$name@$preserveId")
+                log { "name: $name, preserveId: $preserveId" }
+            }.withLog()
+        }
+
+        log { "Files count: ${typedPathSet.size}" }
+        typedPathSet.forEach { typed ->
+            runCatching {
+                // For each $packageName@$preserveId
+                val split = typed.split("@")
+                val name = split[0]
+                var preserveId = split[1].toLong()
+                val mainBackup: Boolean = preserveId == -1L
+                var dir = if (mainBackup) "${filesDir}/${name}" else "${filesDir}/${name}@${preserveId}"
+                onMsgUpdate(log { "name: $name, preserveId: $preserveId" })
+                if (mainBackup.not() && preserveId < 1000000000000) {
+                    // Diff from main backup (without preserveId)
+                    val timestamp = DateUtil.getTimestamp()
+                    val newDir = "${filesDir}/${name}@${timestamp}"
+                    onMsgUpdate(log { "$dir move to $newDir" })
+                    rootService.mkdirs(path = PathUtil.getParentPath(newDir))
+                    rootService.renameTo(dir, newDir)
+                    preserveId = timestamp
+                    dir = newDir
+                }
+                val jsonPath = PathUtil.getMediaRestoreConfigDst(dir)
+
+                val mediaEntity = runCatching {
+                    val entity = rootService.readJson<MediaEntity>(jsonPath).also { m ->
+                        m?.indexInfo?.name = name
+                        m?.indexInfo?.preserveId = if (mainBackup) 0L else preserveId
+                        m?.extraInfo?.existed = true
+                        m?.extraInfo?.activated = false
+                        m?.indexInfo?.cloud = ""
+                        m?.indexInfo?.backupDir = localBackupSaveDir
+                    }
+                    onMsgUpdate(log { "Config is reloaded from json." })
+                    entity
+                }.getOrNull() ?: MediaEntity(
+                    id = 0,
+                    indexInfo = MediaIndexInfo(
+                        opType = OpType.RESTORE,
+                        name = name,
+                        compressionType = CompressionType.TAR,
+                        preserveId = if (mainBackup) 0L else preserveId,
+                        cloud = "",
+                        backupDir = localBackupSaveDir
+                    ),
+                    mediaInfo = MediaInfo(
+                        path = "",
+                        dataBytes = 0L,
+                        displayBytes = 0L,
+                    ),
+                    extraInfo = MediaExtraInfo(
+                        labels = listOf(),
+                        blocked = false,
+                        activated = false,
+                        existed = true,
+                    ),
+                )
+
+                val archives = rootService.walkFileTree(dir)
+
+                archives.forEach { archivePath ->
+                    // For each archive
+                    log { "Media archive: ${archivePath.pathString}" }
+                    runCatching {
+                        when (archivePath.nameWithoutExtension) {
+                            DataType.MEDIA_MEDIA.type -> {
+                                onMsgUpdate(log { "Dumping media..." })
+                                val type = CompressionType.suffixOf(archivePath.extension)
+                                if (type != null) {
+                                    log { "Archive compression type: ${type.type}" }
+                                    mediaEntity.indexInfo.compressionType = type
+                                    mediaEntity.extraInfo.existed = true
+                                } else {
+                                    log { "Failed to parse compression type: ${archivePath.extension}" }
+                                }
+                            }
+
+                            else -> {}
+                        }
+                    }.withLog()
+                }
+
+                // Write config
+                rootService.writeJson(data = mediaEntity, dst = jsonPath)
+            }.withLog()
+        }
+    }
+
+    /**
      * Reload directory structure from cloud.
      *        /.../DataBackup/apps/$packageName/user_$userId@$timestamp/${dataType}.tar.*
      */
@@ -958,8 +1227,8 @@ class PackageRepository @Inject constructor(
                                     p?.indexInfo?.preserveId = if (mainBackup) 0L else preserveId
                                     p?.extraInfo?.existed = true
                                     p?.extraInfo?.activated = false
-                                    p?.indexInfo?.cloud = ""
-                                    p?.indexInfo?.backupDir = localBackupSaveDir
+                                    p?.indexInfo?.cloud = cloud
+                                    p?.indexInfo?.backupDir = cloudEntity.remote
                                     p?.dataStates = dataStates
                                 }
                                 onMsgUpdate(log { "Config is reloaded from json." })
@@ -973,8 +1242,8 @@ class PackageRepository @Inject constructor(
                                 userId = userId,
                                 compressionType = context.readCompressionType().first(),
                                 preserveId = if (mainBackup) 0L else preserveId,
-                                cloud = "",
-                                backupDir = localBackupSaveDir
+                                cloud = cloud,
+                                backupDir = cloudEntity.remote
                             ),
                             packageInfo = PackageInfo(
                                 label = "",
@@ -1099,6 +1368,136 @@ class PackageRepository @Inject constructor(
                         val tmpDir = pathUtil.getCloudTmpDir()
                         val tmpJsonPath = PathUtil.getPackageRestoreConfigDst(tmpDir)
                         rootService.writeJson(data = packageEntity, dst = tmpJsonPath)
+                        cloudRepository.upload(client = client, src = tmpJsonPath, dstDir = PathUtil.getParentPath(jsonPath))
+                        rootService.deleteRecursively(tmpDir)
+                    }.withLog()
+                }
+            }
+        }.onFailure(rootService.onFailure)
+    }
+
+    /**
+     * Reload directory structure from cloud.
+     *        /.../DataBackup/files/$name@$timestamp/${dataType}.tar.*
+     */
+    suspend fun reloadFilesFromCloud12x(cloud: String, onMsgUpdate: suspend (String) -> Unit) {
+        runCatching {
+            cloudRepository.withClient(cloud) { client, cloudEntity ->
+                onMsgUpdate(log { "Reloading..." })
+                val filesDir = pathUtil.getCloudRemoteFilesDir(cloudEntity.remote)
+                val pathList = client.walkFileTree(filesDir)
+                val typedPathSet = mutableSetOf<String>()
+                log { "Total paths count: ${pathList.size}" }
+
+                // Classify the paths
+                pathList.forEach { path ->
+                    log { "Classifying: ${path.pathString}" }
+                    runCatching {
+                        val pathListSize = path.pathList.size
+                        val name: String
+                        val preserveId: Long
+                        if (path.pathList[pathListSize - 2].contains("@")) {
+                            val nameWithPreserveId = path.pathList[pathListSize - 2].split("@")
+                            preserveId = nameWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0
+                            name = nameWithPreserveId.first()
+                        } else {
+                            // Main backup
+                            preserveId = -1L
+                            name = path.pathList[pathListSize - 2]
+                        }
+                        typedPathSet.add("$name@$preserveId")
+                        log { "name: $name, preserveId: $preserveId" }
+                    }.withLog()
+                }
+
+                log { "Files count: ${typedPathSet.size}" }
+                typedPathSet.forEach { typed ->
+                    runCatching {
+                        // For each $packageName@$preserveId
+                        val split = typed.split("@")
+                        val name = split[0]
+                        var preserveId = split[1].toLong()
+                        val mainBackup: Boolean = preserveId == -1L
+                        var dir = if (mainBackup) "${filesDir}/${name}" else "${filesDir}/${name}@${preserveId}"
+                        onMsgUpdate(log { "name: $name, preserveId: $preserveId" })
+                        if (mainBackup.not() && preserveId < 1000000000000) {
+                            // Diff from main backup (without preserveId)
+                            val timestamp = DateUtil.getTimestamp()
+                            val newDir = "${filesDir}/${name}@${timestamp}"
+                            onMsgUpdate(log { "$dir move to $newDir" })
+                            client.mkdirRecursively(dst = PathUtil.getParentPath(newDir))
+                            client.renameTo(dir, newDir)
+                            preserveId = timestamp
+                            dir = newDir
+                        }
+                        val jsonPath = PathUtil.getMediaRestoreConfigDst(dir)
+
+                        val mediaEntity = runCatching {
+                            val tmpDir = pathUtil.getCloudTmpDir()
+                            var entity: MediaEntity? = null
+                            cloudRepository.download(client = client, src = jsonPath, dstDir = tmpDir) { path ->
+                                entity = rootService.readJson<MediaEntity>(path).also { p ->
+                                    p?.indexInfo?.name = name
+                                    p?.indexInfo?.preserveId = if (mainBackup) 0L else preserveId
+                                    p?.extraInfo?.existed = true
+                                    p?.extraInfo?.activated = false
+                                    p?.indexInfo?.cloud = cloud
+                                    p?.indexInfo?.backupDir = cloudEntity.remote
+                                }
+                                onMsgUpdate(log { "Config is reloaded from json." })
+                            }
+                            entity!!
+                        }.getOrNull() ?: MediaEntity(
+                            id = 0,
+                            indexInfo = MediaIndexInfo(
+                                opType = OpType.RESTORE,
+                                name = name,
+                                compressionType = CompressionType.TAR,
+                                preserveId = if (mainBackup) 0L else preserveId,
+                                cloud = cloud,
+                                backupDir = cloudEntity.remote
+                            ),
+                            mediaInfo = MediaInfo(
+                                path = "",
+                                dataBytes = 0L,
+                                displayBytes = 0L,
+                            ),
+                            extraInfo = MediaExtraInfo(
+                                labels = listOf(),
+                                blocked = false,
+                                activated = false,
+                                existed = true,
+                            ),
+                        )
+
+                        val archives = client.walkFileTree(dir)
+
+                        archives.forEach { archivePath ->
+                            // For each archive
+                            log { "Media archive: ${archivePath.pathString}" }
+                            runCatching {
+                                when (archivePath.nameWithoutExtension) {
+                                    DataType.PACKAGE_USER.type -> {
+                                        onMsgUpdate(log { "Dumping media..." })
+                                        val type = CompressionType.suffixOf(archivePath.extension)
+                                        if (type != null) {
+                                            log { "Archive compression type: ${type.type}" }
+                                            mediaEntity.indexInfo.compressionType = type
+                                            mediaEntity.extraInfo.existed = true
+                                        } else {
+                                            log { "Failed to parse compression type: ${archivePath.extension}" }
+                                        }
+                                    }
+
+                                    else -> {}
+                                }
+                            }.withLog()
+                        }
+
+                        // Write config
+                        val tmpDir = pathUtil.getCloudTmpDir()
+                        val tmpJsonPath = PathUtil.getMediaRestoreConfigDst(tmpDir)
+                        rootService.writeJson(data = mediaEntity, dst = tmpJsonPath)
                         cloudRepository.upload(client = client, src = tmpJsonPath, dstDir = PathUtil.getParentPath(jsonPath))
                         rootService.deleteRecursively(tmpDir)
                     }.withLog()

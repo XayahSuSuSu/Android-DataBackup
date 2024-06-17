@@ -68,9 +68,15 @@ class IndexViewModel @Inject constructor(
                             packageRepo.modifyAppsStructureFromLocal11x {
                                 emitState(uiState.value.copy(text = it))
                             }
+                            packageRepo.modifyFilesStructureFromLocal11x {
+                                emitState(uiState.value.copy(text = it))
+                            }
                         } else {
                             // Cloud
                             packageRepo.modifyAppsStructureFromCloud11x(state.cloudName) {
+                                emitState(uiState.value.copy(text = it))
+                            }
+                            packageRepo.modifyFilesStructureFromCloud11x(state.cloudName) {
                                 emitState(uiState.value.copy(text = it))
                             }
                         }
@@ -83,9 +89,15 @@ class IndexViewModel @Inject constructor(
                             packageRepo.modifyAppsStructureFromLocal10x {
                                 emitState(uiState.value.copy(text = it))
                             }
+                            packageRepo.modifyFilesStructureFromLocal10x {
+                                emitState(uiState.value.copy(text = it))
+                            }
                         } else {
                             // Cloud
                             packageRepo.modifyAppsStructureFromCloud10x(state.cloudName) {
+                                emitState(uiState.value.copy(text = it))
+                            }
+                            packageRepo.modifyFilesStructureFromCloud10x(state.cloudName) {
                                 emitState(uiState.value.copy(text = it))
                             }
                         }
@@ -97,9 +109,15 @@ class IndexViewModel @Inject constructor(
                     packageRepo.reloadAppsFromLocal12x {
                         emitState(uiState.value.copy(text = it))
                     }
+                    packageRepo.reloadFilesFromLocal12x {
+                        emitState(uiState.value.copy(text = it))
+                    }
                 } else {
                     // Cloud
                     packageRepo.reloadAppsFromCloud12x(state.cloudName) {
+                        emitState(uiState.value.copy(text = it))
+                    }
+                    packageRepo.reloadFilesFromCloud12x(state.cloudName) {
                         emitState(uiState.value.copy(text = it))
                     }
                 }

@@ -57,4 +57,10 @@ data class MediaEntity(
 
     val archivesRelativeDir: String
         get() = "${indexInfo.name}${if (preserveId == 0L) "" else "@$preserveId"}"
+
+    val existed: Boolean
+        get() = extraInfo.existed
+
+    val enabled: Boolean
+        get() = extraInfo.existed && path.isNotEmpty()
 }

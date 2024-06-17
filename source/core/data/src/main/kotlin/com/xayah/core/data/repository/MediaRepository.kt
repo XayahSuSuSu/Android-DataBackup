@@ -42,6 +42,8 @@ class MediaRepository @Inject constructor(
     private val localBackupSaveDir get() = context.localBackupSaveDir()
     val backupFilesDir get() = pathUtil.getLocalBackupFilesDir()
 
+    suspend fun clearBlocked() = mediaDao.clearBlocked()
+    suspend fun setBlocked(id: Long, blocked: Boolean) = mediaDao.setBlocked(id, blocked)
     fun queryFlow(opType: OpType, blocked: Boolean) = mediaDao.queryFlow(opType, blocked).distinctUntilChanged()
     fun queryFlow(opType: OpType, cloud: String, backupDir: String) = mediaDao.queryFlow(opType, cloud, backupDir).distinctUntilChanged()
     fun queryFlow(name: String, opType: OpType, preserveId: Long) = mediaDao.queryFlow(name, opType, preserveId).distinctUntilChanged()
@@ -55,6 +57,7 @@ class MediaRepository @Inject constructor(
     suspend fun query(opType: OpType, name: String, cloud: String, backupDir: String) = mediaDao.query(opType, name, cloud, backupDir)
     suspend fun query(opType: OpType, preserveId: Long, cloud: String, backupDir: String) = mediaDao.query(opType, preserveId, cloud, backupDir)
     suspend fun query(opType: OpType, cloud: String, backupDir: String) = mediaDao.query(opType, cloud, backupDir)
+    suspend fun query(name: String, opType: OpType) = mediaDao.query(name, opType)
 
     fun getArchiveDst(dstDir: String, ct: CompressionType) = "${dstDir}/${DataType.MEDIA_MEDIA.type}.${ct.suffix}"
 
@@ -232,7 +235,7 @@ class MediaRepository @Inject constructor(
                     val remote = entity.remote
                     val remoteArchivesMediumDir = pathUtil.getCloudRemoteFilesDir(remote)
                     val src = "${remoteArchivesMediumDir}/${m.archivesRelativeDir}"
-                    client.deleteRecursively(src)
+                    if (client.exists(src)) client.deleteRecursively(src)
                 }
             }.onFailure(rootService.onFailure).isSuccess
         }

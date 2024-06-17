@@ -324,4 +324,5 @@
     <string name="files">Files</string>
     <string name="args_files_backed_up">%1$s files backed up</string>
     <string name="backed_up_files">Backed up files</string>
+    <string name="specify_a_path">Please specify a path</string>
 </resources>

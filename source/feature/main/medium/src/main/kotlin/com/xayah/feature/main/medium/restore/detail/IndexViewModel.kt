@@ -80,12 +80,10 @@ class IndexViewModel @Inject constructor(
                         setPermissionType(PermissionType.ROOT)
                         val pathList = awaitPickerOnce(context)
                         pathList.firstOrNull()?.also { pathString ->
-                            entity.mediaInfo.path = pathString
-                            entity.extraInfo.existed = true
+                            mediaRepo.upsert(entity.copy(mediaInfo = entity.mediaInfo.copy(path = pathString), extraInfo = entity.extraInfo.copy(existed = true)))
                         }
                     }
                 }
-                mediaRepo.upsert(entity)
             }
 
             is IndexUiIntent.Delete -> {

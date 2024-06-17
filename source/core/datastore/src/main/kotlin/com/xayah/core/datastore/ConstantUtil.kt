@@ -7,6 +7,7 @@ object ConstantUtil {
     const val DEFAULT_TIMEOUT = 30000
     const val CONFIGURATIONS_KEY_BLACKLIST = "blacklist"
     const val CONFIGURATIONS_KEY_CLOUD = "cloud"
+    const val CONFIGURATIONS_KEY_FILE = "file"
     val SupportedExternalStorageFormat = listOf(
         "sdfat",
         "fuseblk",

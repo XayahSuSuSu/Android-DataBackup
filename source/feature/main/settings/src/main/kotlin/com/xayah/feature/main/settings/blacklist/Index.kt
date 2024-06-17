@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.LocalSlotScope
+import com.xayah.core.ui.component.MediaItem
 import com.xayah.core.ui.component.PackageItem
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.confirm
@@ -49,12 +50,13 @@ fun PageBlackList() {
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val packagesState by viewModel.packagesState.collectAsStateWithLifecycle()
+    val mediumState by viewModel.mediumState.collectAsStateWithLifecycle()
 
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
         title = StringResourceToken.fromStringId(R.string.blacklist),
         actions = {
-            AnimatedVisibility(visible = uiState.appIds.isNotEmpty()) {
+            AnimatedVisibility(visible = uiState.appIds.isNotEmpty() || uiState.fileIds.isNotEmpty()) {
                 IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Delete)) {
                     viewModel.launchOnIO {
                         if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.confirm_remove_from_blacklist))) {
@@ -63,15 +65,15 @@ fun PageBlackList() {
                     }
                 }
             }
-            if (packagesState.isNotEmpty())
+            if (packagesState.isNotEmpty() || mediumState.isNotEmpty())
                 IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Checklist)) {
                     viewModel.emitIntentOnIO(IndexUiIntent.SelectAll)
                 }
         }
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            item {
-                if (packagesState.isEmpty()) {
+            if (packagesState.isEmpty() && mediumState.isEmpty()) {
+                item {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -80,7 +82,11 @@ fun PageBlackList() {
                             DotLottieView()
                         }
                     }
-                } else {
+                }
+            }
+
+            if (packagesState.isNotEmpty()) {
+                item {
                     Title(title = StringResourceToken.fromStringId(R.string.apps)) {}
                 }
             }
@@ -91,10 +97,33 @@ fun PageBlackList() {
                         item = item,
                         checked = item.id in uiState.appIds,
                         onCheckedChange = {
-                            viewModel.emitIntentOnIO(IndexUiIntent.Select(item.id))
+                            viewModel.emitIntentOnIO(IndexUiIntent.SelectApp(item.id))
                         },
                         onClick = {
-                            viewModel.emitIntentOnIO(IndexUiIntent.Select(item.id))
+                            viewModel.emitIntentOnIO(IndexUiIntent.SelectApp(item.id))
+                        },
+                        filterMode = false
+                    )
+                }
+            }
+
+            if (mediumState.isNotEmpty()) {
+                item {
+                    Title(title = StringResourceToken.fromStringId(R.string.files)) {}
+                }
+            }
+
+            items(items = mediumState, key = { "files-${it.id}" }) { item ->
+                Row(modifier = Modifier.animateItemPlacement()) {
+                    MediaItem(
+                        item = item,
+                        enabled = true,
+                        checked = item.id in uiState.fileIds,
+                        onCheckedChange = {
+                            viewModel.emitIntentOnIO(IndexUiIntent.SelectFile(item.id))
+                        },
+                        onClick = {
+                            viewModel.emitIntentOnIO(IndexUiIntent.SelectFile(item.id))
                         },
                         filterMode = false
                     )

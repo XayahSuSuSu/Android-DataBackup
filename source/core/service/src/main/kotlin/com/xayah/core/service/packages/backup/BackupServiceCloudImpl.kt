@@ -157,7 +157,6 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
                 restoreEntity = p.copy(
                     id = id,
                     indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = cloudEntity.name, backupDir = remote),
-                    dataStates = restoreEntity?.dataStates?.copy() ?: p.dataStates.copy(),
                     extraInfo = p.extraInfo.copy(existed = true, activated = false)
                 )
                 val dst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpDstDir)

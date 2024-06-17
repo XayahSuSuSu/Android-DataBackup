@@ -22,14 +22,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.model.DataType
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.BodyMediumText
-import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MediaIconImage
 import com.xayah.core.ui.component.Switchable
@@ -62,7 +60,6 @@ import com.xayah.feature.main.medium.R
 @ExperimentalMaterial3Api
 @Composable
 fun PageMediumBackupDetail() {
-    val context = LocalContext.current
     val navController = LocalNavController.current!!
     val dialogState = LocalSlotScope.current!!.dialogSlot
     val viewModel = hiltViewModel<IndexViewModel>()
@@ -100,12 +97,6 @@ fun PageMediumBackupDetail() {
                     Column(modifier = Modifier.weight(1f)) {
                         TitleLargeText(text = media.name, color = ColorSchemeKeyTokens.OnSurface.toColor())
                         BodyMediumText(text = media.path, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
-                    }
-                    IconButton(
-                        enabled = enabled,
-                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.SetPath(context = context, mediaEntity = media))
                     }
                 }
                 Title(title = StringResourceToken.fromStringId(R.string.backup_parts)) {

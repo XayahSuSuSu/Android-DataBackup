@@ -53,6 +53,13 @@ interface MediaDao {
 
     @Query(
         "SELECT * FROM MediaEntity WHERE" +
+                " indexInfo_name = :name AND indexInfo_opType = :opType" +
+                " LIMIT 1"
+    )
+    suspend fun query(name: String, opType: OpType): MediaEntity?
+
+    @Query(
+        "SELECT * FROM MediaEntity WHERE" +
                 " indexInfo_opType = :opType AND indexInfo_preserveId = :preserveId AND indexInfo_name = :name AND indexInfo_compressionType = :ct" +
                 " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir" +
                 " LIMIT 1"
@@ -94,6 +101,16 @@ interface MediaDao {
 
     @Query("UPDATE MediaEntity SET extraInfo_activated = 0")
     suspend fun clearActivated()
+
+    @Query("UPDATE MediaEntity SET extraInfo_blocked = 0")
+    suspend fun clearBlocked()
+
+    @Query(
+        "UPDATE MediaEntity" +
+                " SET extraInfo_blocked = :blocked" +
+                " WHERE id = :id"
+    )
+    suspend fun setBlocked(id: Long, blocked: Boolean)
 
     @Delete(entity = MediaEntity::class)
     suspend fun delete(item: MediaEntity)
