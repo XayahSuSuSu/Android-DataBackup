@@ -62,6 +62,9 @@
     <item name="backup_user" type="string" />
     <item name="restore_user" type="string" />
     <item name="restore_user_desc" type="string" />
+    <item name="delete_desc" type="string" />
+    <item name="protect" type="string" />
+    <item name="protect_desc" type="string" />
 
     <item name="backup_sort_type_items_apps" type="array" />
     <item name="flag_type_items" type="array" />

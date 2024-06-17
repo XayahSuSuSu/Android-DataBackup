@@ -320,4 +320,6 @@
     <string name="specify_a_path">请指定路径</string>
     <string name="anonymous">匿名</string>
     <string name="guest">来宾</string>
+    <string name="protect">保护</string>
+    <string name="protect_desc">防止此备份被覆盖</string>
 </resources>

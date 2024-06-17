@@ -471,24 +471,33 @@ class PackageRepository @Inject constructor(
     suspend fun upsert(items: List<PackageEntity>) = packageDao.upsert(items)
 
     suspend fun preserve(p: PackageEntity) {
-        val preserveId = DateUtil.getTimestamp()
-        val isSuccess = if (p.indexInfo.cloud.isEmpty()) {
-            val src = "${backupAppsDir}/${p.archivesRelativeDir}"
-            val dst = "${backupAppsDir}/${p.archivesRelativeDir}/${preserveId}"
+        val pkgEntity = p.copy(id = 0, indexInfo = p.indexInfo.copy(preserveId = DateUtil.getTimestamp()))
+        val appsDir = pathUtil.getLocalBackupAppsDir()
+        val isSuccess = if (pkgEntity.indexInfo.cloud.isEmpty()) {
+            val src = "${appsDir}/${p.archivesRelativeDir}"
+            val dst = "${appsDir}/${pkgEntity.archivesRelativeDir}"
+            rootService.writeJson(data = pkgEntity, dst = PathUtil.getPackageRestoreConfigDst(src))
             rootService.renameTo(src, dst)
         } else {
             runCatching {
-                cloudRepository.withClient(p.indexInfo.cloud) { client, entity ->
+                cloudRepository.withClient(pkgEntity.indexInfo.cloud) { client, entity ->
                     val remote = entity.remote
                     val remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
                     val src = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
-                    val dst = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}/${preserveId}"
+                    val dst = "${remoteArchivesPackagesDir}/${pkgEntity.archivesRelativeDir}"
+                    val tmpDir = pathUtil.getCloudTmpDir()
+                    val tmpJsonPath = PathUtil.getPackageRestoreConfigDst(tmpDir)
+                    rootService.writeJson(data = pkgEntity, dst = tmpJsonPath)
+                    cloudRepository.upload(client = client, src = tmpJsonPath, dstDir = src)
+                    rootService.deleteRecursively(tmpDir)
                     client.renameTo(src, dst)
                 }
             }.onFailure(rootService.onFailure).isSuccess
         }
-
-        if (isSuccess) upsert(p.copy(indexInfo = p.indexInfo.copy(preserveId = preserveId)))
+        if (isSuccess) {
+            packageDao.delete(p.id)
+            upsert(pkgEntity)
+        }
     }
 
     suspend fun delete(p: PackageEntity) {
@@ -507,7 +516,7 @@ class PackageRepository @Inject constructor(
             }.onFailure(rootService.onFailure).isSuccess
         }
 
-        if (isSuccess) packageDao.delete(p)
+        if (isSuccess) packageDao.delete(p.id)
     }
 
     /**

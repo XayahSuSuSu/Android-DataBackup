@@ -1,7 +1,6 @@
 package com.xayah.core.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.xayah.core.model.CompressionType
@@ -114,6 +113,6 @@ interface PackageDao {
     )
     suspend fun clearBlocked()
 
-    @Delete(entity = PackageEntity::class)
-    suspend fun delete(item: PackageEntity)
+    @Query("DELETE FROM PackageEntity WHERE id = :id")
+    suspend fun delete(id: Long)
 }

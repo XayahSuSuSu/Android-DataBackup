@@ -45,6 +45,8 @@
     <item name="restore_completed" type="string" />
     <item name="restore" type="string" />
     <item name="specify_a_path" type="string" />
+    <item name="protect" type="string" />
+    <item name="protect_desc" type="string" />
 
     <item name="backup_sort_type_items_files" type="array" />
 

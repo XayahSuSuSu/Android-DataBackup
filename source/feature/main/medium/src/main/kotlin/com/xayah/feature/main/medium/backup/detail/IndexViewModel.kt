@@ -62,7 +62,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.Delete -> {
-                mediaRepo.deleteEntity(intent.mediaEntity)
+                mediaRepo.delete(intent.mediaEntity.id)
             }
         }
     }

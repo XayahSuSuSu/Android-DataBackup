@@ -33,6 +33,7 @@ sealed class IndexUiIntent : UiIntent {
     data class UpdateMedia(val mediaEntity: MediaEntity) : IndexUiIntent()
     data class SetPath(val context: Context, val mediaEntity: MediaEntity) : IndexUiIntent()
     data class Delete(val mediaEntity: MediaEntity) : IndexUiIntent()
+    data class Preserve(val mediaEntity: MediaEntity) : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -88,6 +89,10 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.Delete -> {
                 mediaRepo.delete(intent.mediaEntity)
+            }
+
+            is IndexUiIntent.Preserve -> {
+                mediaRepo.preserve(intent.mediaEntity)
             }
         }
     }

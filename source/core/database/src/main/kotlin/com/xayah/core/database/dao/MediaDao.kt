@@ -114,4 +114,7 @@ interface MediaDao {
 
     @Delete(entity = MediaEntity::class)
     suspend fun delete(item: MediaEntity)
+
+    @Query("DELETE FROM MediaEntity WHERE id = :id")
+    suspend fun delete(id: Long)
 }

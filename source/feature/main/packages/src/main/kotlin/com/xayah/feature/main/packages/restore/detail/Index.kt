@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,18 +32,24 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.Clickable
+import com.xayah.core.ui.component.FilledIconButton
 import com.xayah.core.ui.component.IconButton
+import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.PackageIconImage
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.TitleLargeText
+import com.xayah.core.ui.component.confirm
+import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
-import com.xayah.core.ui.component.paddingVertical
+import com.xayah.core.ui.component.paddingStart
+import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
+import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
@@ -48,6 +57,7 @@ import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.getValue
 import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.withMainContext
 import com.xayah.feature.main.packages.ListScaffold
 import com.xayah.feature.main.packages.R
 import com.xayah.feature.main.packages.countItems
@@ -62,6 +72,8 @@ import com.xayah.feature.main.packages.reversedPackage
 @Composable
 fun PagePackagesRestoreDetail() {
     val context = LocalContext.current
+    val navController = LocalNavController.current!!
+    val dialogState = LocalSlotScope.current!!.dialogSlot
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val packageState by viewModel.packageState.collectAsStateWithLifecycle()
@@ -85,7 +97,7 @@ fun PagePackagesRestoreDetail() {
                 Row(
                     modifier = Modifier
                         .paddingHorizontal(SizeTokens.Level24)
-                        .paddingVertical(SizeTokens.Level12),
+                        .paddingTop(SizeTokens.Level12),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
                 ) {
@@ -103,6 +115,45 @@ fun PagePackagesRestoreDetail() {
                         icon = ImageVectorToken.fromVector(if (uiState.infoExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown),
                     ) {
                         viewModel.emitStateOnMain(uiState.copy(infoExpanded = uiState.infoExpanded.not()))
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .paddingHorizontal(SizeTokens.Level24)
+                        .paddingBottom(SizeTokens.Level12),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level4)
+                ) {
+                    Spacer(modifier = Modifier.paddingStart(SizeTokens.Level68))
+                    FilledIconButton(
+                        enabled = pkg.preserveId == 0L,
+                        icon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
+                        containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
+                        contentColor = ColorSchemeKeyTokens.YellowOnPrimaryContainer
+                    ) {
+                        viewModel.launchOnIO {
+                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.protect), text = StringResourceToken.fromStringId(R.string.protect_desc))) {
+                                viewModel.emitIntent(IndexUiIntent.Preserve(packageEntity = pkg))
+                                withMainContext {
+                                    navController.popBackStack()
+                                }
+                            }
+                        }
+                    }
+                    FilledIconButton(
+                        enabled = true,
+                        icon = ImageVectorToken.fromVector(Icons.Outlined.Delete),
+                        containerColor = ColorSchemeKeyTokens.ErrorContainer,
+                        contentColor = ColorSchemeKeyTokens.OnErrorContainer
+                    ) {
+                        viewModel.launchOnIO {
+                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.delete), text = StringResourceToken.fromStringId(R.string.delete_desc))) {
+                                viewModel.emitIntent(IndexUiIntent.Delete(packageEntity = pkg))
+                                withMainContext {
+                                    navController.popBackStack()
+                                }
+                            }
+                        }
                     }
                 }
                 AnimatedVisibility(uiState.infoExpanded) {

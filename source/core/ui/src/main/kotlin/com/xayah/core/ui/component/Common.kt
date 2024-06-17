@@ -295,7 +295,7 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         .paddingStart(SizeTokens.Level64)
                         .paddingBottom(SizeTokens.Level16),
                     horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
-                    verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                    verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8),
                     content = {
                         val ssaid = item.extraInfo.ssaid
                         val hasKeystore = item.extraInfo.hasKeystore
@@ -397,7 +397,7 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                         .paddingStart(SizeTokens.Level64)
                         .paddingBottom(SizeTokens.Level16),
                     horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
-                    verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                    verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8),
                     content = {
                         val storageStatsFormat = item.displayStatsBytes
 

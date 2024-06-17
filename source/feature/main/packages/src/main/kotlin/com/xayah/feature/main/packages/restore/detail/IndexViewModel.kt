@@ -28,6 +28,8 @@ data class IndexUiState(
 sealed class IndexUiIntent : UiIntent {
     data object OnRefresh : IndexUiIntent()
     data class UpdatePackage(val packageEntity: PackageEntity) : IndexUiIntent()
+    data class Delete(val packageEntity: PackageEntity) : IndexUiIntent()
+    data class Preserve(val packageEntity: PackageEntity) : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -64,6 +66,14 @@ class IndexViewModel @Inject constructor(
 
             is IndexUiIntent.UpdatePackage -> {
                 packageRepo.upsert(intent.packageEntity)
+            }
+
+            is IndexUiIntent.Delete -> {
+                packageRepo.delete(intent.packageEntity)
+            }
+
+            is IndexUiIntent.Preserve -> {
+                packageRepo.preserve(intent.packageEntity)
             }
         }
     }

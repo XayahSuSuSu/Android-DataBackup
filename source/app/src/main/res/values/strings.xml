@@ -327,4 +327,6 @@
     <string name="specify_a_path">Please specify a path</string>
     <string name="anonymous">Anonymous</string>
     <string name="guest">Guest</string>
+    <string name="protect">Protect</string>
+    <string name="protect_desc">Prevent this backup from being overwritten</string>
 </resources>

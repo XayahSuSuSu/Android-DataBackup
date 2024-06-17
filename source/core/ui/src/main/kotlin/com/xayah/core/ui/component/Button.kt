@@ -4,8 +4,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,6 +31,28 @@ fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, tint: Colo
             imageVector = icon.value,
             contentDescription = null,
             tint = if (enabled) tint else tint.copy(alpha = DisabledAlpha),
+        )
+    }
+}
+
+@Composable
+fun FilledIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVectorToken,
+    containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
+    contentColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnPrimary,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    FilledIconButton(
+        modifier = modifier,
+        colors = IconButtonDefaults.filledIconButtonColors(containerColor = containerColor.toColor(enabled), contentColor = contentColor.toColor(enabled)),
+        enabled = enabled,
+        onClick = onClick
+    ) {
+        Icon(
+            imageVector = icon.value,
+            contentDescription = null,
         )
     }
 }

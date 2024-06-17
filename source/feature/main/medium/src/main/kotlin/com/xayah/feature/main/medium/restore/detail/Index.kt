@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -26,17 +28,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.DataType
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.BodyMediumText
-import com.xayah.core.ui.component.IconButton
+import com.xayah.core.ui.component.FilledIconButton
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MediaIconImage
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.component.confirm
+import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
-import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
@@ -47,6 +49,7 @@ import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.withMainContext
@@ -86,7 +89,7 @@ fun PageMediumRestoreDetail() {
                 Row(
                     modifier = Modifier
                         .paddingHorizontal(SizeTokens.Level24)
-                        .paddingVertical(SizeTokens.Level12),
+                        .paddingTop(SizeTokens.Level12),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
                 ) {
@@ -98,11 +101,52 @@ fun PageMediumRestoreDetail() {
                             color = (if (media.path.isEmpty()) ColorSchemeKeyTokens.Error else ColorSchemeKeyTokens.OnSurfaceVariant).toColor()
                         )
                     }
-                    IconButton(
+                }
+                Row(
+                    modifier = Modifier
+                        .paddingHorizontal(SizeTokens.Level24)
+                        .paddingBottom(SizeTokens.Level12),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level4)
+                ) {
+                    Spacer(modifier = Modifier.paddingStart(SizeTokens.Level68))
+                    FilledIconButton(
                         enabled = true,
                         icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+                        containerColor = ColorSchemeKeyTokens.BluePrimaryContainer,
+                        contentColor = ColorSchemeKeyTokens.BlueOnPrimaryContainer
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.SetPath(context = context, mediaEntity = media))
+                    }
+                    FilledIconButton(
+                        enabled = media.preserveId == 0L,
+                        icon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
+                        containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
+                        contentColor = ColorSchemeKeyTokens.YellowOnPrimaryContainer
+                    ) {
+                        viewModel.launchOnIO {
+                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.protect), text = StringResourceToken.fromStringId(R.string.protect_desc))) {
+                                viewModel.emitIntent(IndexUiIntent.Preserve(mediaEntity = media))
+                                withMainContext {
+                                    navController.popBackStack()
+                                }
+                            }
+                        }
+                    }
+                    FilledIconButton(
+                        enabled = true,
+                        icon = ImageVectorToken.fromVector(Icons.Outlined.Delete),
+                        containerColor = ColorSchemeKeyTokens.ErrorContainer,
+                        contentColor = ColorSchemeKeyTokens.OnErrorContainer
+                    ) {
+                        viewModel.launchOnIO {
+                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.delete), text = StringResourceToken.fromStringId(R.string.delete_desc))) {
+                                viewModel.emitIntent(IndexUiIntent.Delete(mediaEntity = media))
+                                withMainContext {
+                                    navController.popBackStack()
+                                }
+                            }
+                        }
                     }
                 }
                 Title(title = StringResourceToken.fromStringId(R.string.backup_parts)) {
@@ -122,22 +166,6 @@ fun PageMediumRestoreDetail() {
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.UpdateMedia(media.copy(extraInfo = media.extraInfo.copy(activated = media.extraInfo.activated.not()))))
                     }
-                }
-                TextButton(modifier = Modifier
-                    .paddingStart(SizeTokens.Level12)
-                    .paddingTop(SizeTokens.Level12), onClick = {
-                    viewModel.launchOnIO {
-                        if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.delete), text = StringResourceToken.fromStringId(R.string.delete_desc))) {
-                            viewModel.emitIntent(IndexUiIntent.Delete(mediaEntity = media))
-                            withMainContext {
-                                navController.popBackStack()
-                            }
-                        }
-                    }
-                }) {
-                    Text(
-                        text = StringResourceToken.fromStringId(R.string.delete).value, color = ColorSchemeKeyTokens.Error.toColor()
-                    )
                 }
             }
         }

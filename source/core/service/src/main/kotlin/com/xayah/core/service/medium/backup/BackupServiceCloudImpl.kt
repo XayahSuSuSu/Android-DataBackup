@@ -124,7 +124,7 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
                     indexInfo = m.indexInfo.copy(opType = OpType.RESTORE, cloud = cloudEntity.name, backupDir = remote),
                     extraInfo = m.extraInfo.copy(existed = true, activated = restoreEntity?.extraInfo?.activated ?: false)
                 )
-                val dst = PathUtil.getPackageRestoreConfigDst(dstDir = tmpDstDir)
+                val dst = PathUtil.getMediaRestoreConfigDst(dstDir = tmpDstDir)
                 rootService.writeJson(data = restoreEntity, dst = dst)
                 cloudRepository.upload(client = client, src = dst, dstDir = remoteDstDir)
 
