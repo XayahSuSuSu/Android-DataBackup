@@ -315,4 +315,11 @@
     <string name="configurations">Configurações</string>
     <string name="configurations_desc">Configurações, lista negra, configurações de conta na nuvem.</string>
     <string name="delete_desc">Isso será excluído</string>
+    <string name="anonymous">Anônimo</string>
+    <string name="guest">Convidado</string>
+    <string name="protect">Proteger</string>
+    <string name="protect_desc">Impeça que este backup seja substituído</string>
+    <string name="backed_up_files">Arquivos de backup</string>
+    <string name="specify_a_path">Por favor, especifique um caminho.</string>
+    <string name="args_files_backed_up">%1$s arquivos salvos em backup</string>
 </resources>
