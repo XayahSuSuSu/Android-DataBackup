@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">DataBackup</string>
-    <string name="backup">Резервное копирование</string>
+    <string name="backup">Бекап</string>
     <string name="restore">Восстановление</string>
     <string name="error">Ошибка</string>
     <string name="application">Приложение</string>
@@ -74,7 +74,7 @@
     <string name="network_desc">Используется только для получения информации об обновлении приложения, аналитика приложений</string>
     <string name="application_desc">Получение всей информации об имени пакетов приложений устройства. Используется для создания списка бекапов и получения размера данных приложений</string>
     <string name="storage">Разрешение на чтение/запись на внешнее хранилище</string>
-    <string name="storage_desc">Используется для конфигурации резервного копирования, чтения и записи архива</string>
+    <string name="storage_desc">Используется для настройки резервного копирования, чтения и записи архива</string>
     <string name="data_size">Размер данных</string>
     <string name="setting_SELinux">Установка Selinux</string>
     <string name="compressing">Сжатие</string>
@@ -86,7 +86,7 @@
     <string name="loading_failed">Сбой загрузки</string>
     <string name="update_records">Список изменений</string>
     <string name="path_permission_error">Ошибка разрешений, следующие пути требуют правильных разрешений</string>
-    <string name="backing_up">Бекап…</string>
+    <string name="backing_up">Создание бекапа…</string>
     <string name="restoring">Восстановление</string>
     <string name="read_icon">Чтение значков</string>
     <string name="read_icon_title">Для чтения значков требуется много памяти, если у вас возникают сбои при восстановлении, попробуйте отключить эту опцию</string>
