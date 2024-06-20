@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="start_desc">يتم استخدام جميع البيانات التي ينتجها هذا التطبيق فقط للنسخ الاحتياطي والاستعادة، ويتم تخزينها على جهازك فقط.</string>
+    <string name="network">الشبكة</string>
+    <string name="welcome_to_use">أهلاً وسهلاً</string>
+    <string name="update_records">تحديث السجلات</string>
+    <string name="environment_detection">التأكد من بيئة العمل</string>
+    <string name="start">إبدأ</string>
+    <string name="network_desc">للحصول على معلومات تحديثات التطبيق وتحليلاته</string>
+    <string name="application">التطبيق</string>
+    <string name="app_name">نسخة احتياطية</string>
+    <string name="start_subtitle">هام: وفقًا للسياسات ذات الصلة، يجب عليك قراءة اتفاقية المُستخدم وسياسة الخصوصية التالية بعناية والموافقة عليهما قبل الشروع في استخدام هذا التطبيق</string>
+</resources>
