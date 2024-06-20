@@ -256,4 +256,20 @@
     <string name="backup_parts">Бекап частей</string>
     <string name="necessary_preparations">Необходимые приготовления</string>
     <string name="args_backup">Бекап %1$s</string>
+    <string name="enter_the_setup_page_again">Вернуться на экран установки</string>
+    <string name="manage_backups">Управление резервными копиями</string>
+    <string name="advanced">Продвинутый</string>
+    <string name="reload_desc">Перезагрузить резервные копии из локального хранилища или облака</string>
+    <string name="backed_up_apps">Резервные копии приложений</string>
+    <string name="no_backups_found_warning">Резервные копии не найдены, вы можете вернуться и попробовать снова</string>
+    <string name="args_restore">Восстановить %1$s</string>
+    <string name="set_up_inst_env">Настройка среды установки</string>
+    <string name="load_system_apps">Загрузить системные приложения</string>
+    <string name="set_them_later_in_settings">Вы можете установить их позже в настройках</string>
+    <string name="backup_settings">Настройки резервного копирования</string>
+    <string name="restore_settings">Восстановить настройки</string>
+    <string name="appearance">Внешний вид</string>
+    <string name="theme_auto">Автоматически</string>
+    <string name="theme_auto_desc">Будет включаться автоматически</string>
+    <string name="theme_light">Светлая</string>
 </resources>
