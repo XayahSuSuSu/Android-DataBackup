@@ -317,4 +317,9 @@
     <string name="args_files_backed_up">%1$s archivos en la copia de seguridad</string>
     <string name="backed_up_files">Archivos dela copia de seguridad</string>
     <string name="files">Archivos</string>
+    <string name="specify_a_path">Por favor, especifica una ruta</string>
+    <string name="guest">Invitado</string>
+    <string name="protect">Proteger</string>
+    <string name="protect_desc">Evitar que esta copia de seguridad se sobrescriba</string>
+    <string name="anonymous">Anónimo</string>
 </resources>
