@@ -48,7 +48,7 @@
     <string name="backup_icon_title">Uygulamaları yedeklerken yedekleme simgesi, geri yükleme sırasında göstermek için kullanılır</string>
     <string name="alphabet">A-Z</string>
     <string name="install_time">Kurulma zamanı</string>
-    <string name="sort">Düzenlemek</string>
+    <string name="sort">Sırala</string>
     <string name="filter">Filtre</string>
     <string name="backup_strategy">Yedekleme tipi</string>
     <string name="cover">Birleştir</string>
@@ -77,7 +77,7 @@
     <string name="settings_restore_user_subtitle">Veriler, kullanıcıyı geri yüklemek için yedek kullanıcıdan geri yüklenir</string>
     <string name="backup_storage_method">Yedek depolama yöntemi</string>
     <string name="select_backup_app">Yedeklenecek uygulamaları seçin</string>
-    <string name="blacklist">Karaliste</string>
+    <string name="blacklist">Kara liste</string>
     <string name="manifest">Bildiri</string>
     <string name="selected_app">Uygulama seçildi</string>
     <string name="selected_data">Seçilmiş veriler</string>
@@ -87,7 +87,7 @@
     <string name="select_restore_media">Kurtarılacak medyayı seç</string>
     <string name="backup_dir_as_media_error">Yedekleme dizini medya olarak eklenemiyor</string>
     <string name="add">Ekle</string>
-    <string name="select_all">Hepsini seç</string>
+    <string name="select_all">Tümünü seç</string>
     <string name="none">Yok</string>
     <string name="link">Bağlantı</string>
     <string name="stable">Stabil</string>
