@@ -248,4 +248,12 @@
     <string name="select_all">Выбрать все</string>
     <string name="filters">Фильтры</string>
     <string name="sort">Сортировка</string>
+    <string name="necessary_remaining_data_processing">Необходимая обработка оставшихся данных</string>
+    <string name="apps">Приложения</string>
+    <string name="post_processing">Пост-обработка</string>
+    <string name="args_apps_backed_up">Создан бекап %1$s приложений</string>
+    <string name="save_icons">Сохранить иконки</string>
+    <string name="backup_parts">Бекап частей</string>
+    <string name="necessary_preparations">Необходимые приготовления</string>
+    <string name="args_backup">Бекап %1$s</string>
 </resources>
