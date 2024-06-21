@@ -73,7 +73,7 @@
     <string name="network">Мережа</string>
     <string name="network_desc">Використовується для отримання інформації про оновлення програми, збору аналітики</string>
     <string name="application_desc">Отримання інформації про пакет програм. Використовується для створення списку бекапів і отримання розміру даних</string>
-    <string name="storage">Сховище</string>
+    <string name="storage">Дозвіл на читання/запис до сховища</string>
     <string name="storage_desc">Використовується для резервного копіювання конфігурації, читання та запису архіву</string>
     <string name="data_size">Розмір даних</string>
     <string name="setting_SELinux">Встановлення SELinux</string>
