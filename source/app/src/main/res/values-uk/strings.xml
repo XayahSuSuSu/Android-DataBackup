@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="storage">Сховище</string>
+    <string name="storage">Дозвіл на читання/запис до сховища</string>
     <string name="save">Зберегти</string>
     <string name="restoring">Відновлення</string>
     <string name="both">Обидва</string>
