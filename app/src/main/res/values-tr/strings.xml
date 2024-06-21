@@ -6,25 +6,25 @@
     <string name="restore">Geri yükle</string>
     <string name="app_name">DataBackup</string>
     <string name="error">Hata</string>
-    <string name="application">uygulama</string>
+    <string name="application">Uygulama</string>
     <string name="confirm">Onayla</string>
     <string name="backup_finished">Yedekleme tamamlandı</string>
     <string name="restore_finished">Geri yükleme tamamlandı</string>
-    <string name="compression_type">Sıkıştırma tipi</string>
+    <string name="compression_type">Sıkıştırma türü</string>
     <string name="cancel">İptal et</string>
     <string name="tips">Çeşitler</string>
     <string name="success">Başarılı</string>
     <string name="decompress">Çözümleme</string>
     <string name="environment_detection">Medya algılama</string>
     <string name="selected">Seçildi</string>
-    <string name="backup_user">Hedef kullanıcı</string>
-    <string name="restore_user">Kullanıcı geri yükleme</string>
+    <string name="backup_user">Kullanıcıyı yedekle</string>
+    <string name="restore_user">Kullanıcıyı geri yükle</string>
     <string name="failed">Başarısız</string>
-    <string name="grant_root_access">Kök erişim izni verin</string>
-    <string name="release_prebuilt_binaries">Önceden oluşturulmuş ikili dosyaları yayınlayın</string>
-    <string name="finish">Bitirmek</string>
+    <string name="grant_root_access">Kök erişim izni ver</string>
+    <string name="release_prebuilt_binaries">Önceden derlenmiş ikili dosyaları yayınla</string>
+    <string name="finish">Bitir</string>
     <string name="welcome_to_use">DataBackup\'a Hoşgeldiniz</string>
-    <string name="fetch_failed">Aktarma başarısız</string>
+    <string name="fetch_failed">Getirme başarısız oldu</string>
     <string name="latest">Güncel</string>
     <string name="unsupported_format">Desteklenmeyen format</string>
     <string name="user">Kullanıcı</string>
@@ -36,8 +36,8 @@
     <string name="app_name_is_missing">Uygulama ismi kayıp</string>
     <string name="please_wait">Lütfen bekleyin</string>
     <string name="settings">Ayarlar</string>
-    <string name="monet">İzlenimcilik</string>
-    <string name="backup_itself">Kendini yedekleme</string>
+    <string name="monet">Material You</string>
+    <string name="backup_itself">Kendini yedekle</string>
     <string name="create">Oluştur</string>
     <string name="repeat_to_add">Eklemek için tekrarlayın!</string>
     <string name="installing">Kuruluyor</string>
@@ -56,9 +56,9 @@
     <string name="name">İsim</string>
     <string name="backup_test">Yedekleme test</string>
     <string name="check_package_usage_stats_permission">Paket kullanım istatistikleri iznini kontrol edin</string>
-    <string name="network">Şebeke</string>
+    <string name="network">Ağ</string>
     <string name="network_desc">Uygulama güncelleme bilgilerini, uygulama analizlerini almak için kullanılır</string>
-    <string name="application_desc">Yedekleme listesi oluşturmak ve uygulama veri boyutunu elde etmek için kullanılan uygulama paketi bilgilerini elde edin</string>
+    <string name="application_desc">Uygulama paketi bilgilerini edinme, yedekleme listesi oluşturmak ve uygulama veri boyutunu edinmek için kullanılır</string>
     <string name="storage">Depolamayı okunmaya/yazmaya izni verin</string>
     <string name="compressing">Sıkıştırılıyor</string>
     <string name="decompressing">Parçalanıyor</string>
@@ -66,7 +66,7 @@
     <string name="no_change_and_skip">Seçenek yok, geç</string>
     <string name="loading">Yükleniyor</string>
     <string name="backing_up">Yedekleniyor…</string>
-    <string name="restoring">Kurtarılıyor</string>
+    <string name="restoring">Geri yükleniyor</string>
     <string name="read_icon">İkon okuma</string>
     <string name="app_crashed">Uygulama çöktü</string>
     <string name="cancelling">İptal ediliyor</string>
@@ -85,7 +85,7 @@
     <string name="select_backup_media">Yedeklenecek medyayı seç</string>
     <string name="select_restore_app">Kurtarılacak uygulamayı seç</string>
     <string name="select_restore_media">Kurtarılacak medyayı seç</string>
-    <string name="backup_dir_as_media_error">Yedekleme dizini medya olarak eklenemiyor</string>
+    <string name="backup_dir_as_media_error">Yedek dizin medya olarak eklenemiyor</string>
     <string name="add">Ekle</string>
     <string name="select_all">Tümünü seç</string>
     <string name="none">Yok</string>
@@ -102,13 +102,13 @@
     <string name="delete_confirm">Seçileni silmek için kararlı</string>
     <string name="compatible_mode">Uyumlu mod</string>
     <string name="compatible_mode_subtitle">.tar girişi için parametre yerine boru kullanın. \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Yürütülemiyor: Böyle bir dosya veya dizin yok\" dediği zaman değiştirin</string>
-    <string name="installed">Kuruldu</string>
+    <string name="installed">Yüklendi</string>
     <string name="not_installed">Yüklü değil</string>
     <string name="retry">Tekrar</string>
     <string name="succeed">Tamamlandı</string>
     <string name="backup">Yedek</string>
     <string name="compression_type_help">Hem yedeklemeyi hem de geri yüklemeyi etkileyen uygulamaların ve verilerin sıkıştırma türünü seçin. Bu seçeneğin ne için olduğunu bilmiyorsanız, değiştirmeyin</string>
-    <string name="start_subtitle">İlgili politikalara göre, bu uygulamayı kullanmaya başlamadan önce aşağıdaki Kullanıcı Sözleşmesini ve Gizlilik Politikasını dikkatlice okumanız ve kabul etmeniz gerekir</string>
+    <string name="start_subtitle">Bu uygulamayı kullanmaya başlamadan önce ilgili politikalara göre aşağıdaki Kullanıcı Sözleşmesi ve Gizlilik Politikasını dikkatlice okuyup kabul etmeniz gerekmektedir</string>
     <string name="support">Destek</string>
     <string name="ready">Hazır</string>
     <string name="symbol_question">\?</string>
@@ -122,7 +122,7 @@
     <string name="cover_desc">Her yedeklemede mevcut yedekleme dosyalarının üzerine yazın veya herhangi bir değişiklik yoksa yedeklemeleri atlayın, yani ne olursa olsun verilerinizin yalnızca bir kopyası mevcuttur</string>
     <string name="by_time_desc">Her yedekleme yeni bir tam yedekleme olarak kabul edilir ve yedekleme zamanına göre ayrılır, bu nedenle verileriniz birden fazla kopyada bulunabilir</string>
     <string name="testing">Test ediliyor</string>
-    <string name="start_desc">Bu uygulama tarafından oluşturulan tüm veriler yalnızca yedekleme/geri yükleme için kullanılır ve yalnızca yerel olarak depolanır.</string>
+    <string name="start_desc">Bu uygulama tarafından oluşturulan tüm veriler yalnızca yedekleme/geri yükleme amacıyla kullanılır ve yalnızca yerel olarak depolanır.</string>
     <string name="data_size">Veri boyutu</string>
     <string name="update_records">Güncelleme kayıtları</string>
     <string name="path_permission_error">İzin hatası, aşağıdaki yollar için doğru izinler gerekiyor</string>
@@ -133,11 +133,11 @@
     <string name="installed_app">Yüklenen uygulama</string>
     <string name="switch_to_system_app_warning">Çoğu sistem uygulamasının yedeklenmesi önerilmez, bunları geri yüklemek telefonunuzun açılmasına neden olabilir, karar sizin</string>
     <string name="warning">Uyarı</string>
-    <string name="type">Tip</string>
+    <string name="type">Tür</string>
     <string name="miui_service_sms_tips">MIUI kullanıyorsanız, lütfen Servis SMS iznini manuel olarak verin.</string>
     <string name="restored">Kurtarıldı</string>
     <string name="posted_just_now">Şimdilik</string>
-    <string name="telephony">Telefon Geçmişi</string>
+    <string name="telephony">Arama geçmişi</string>
     <string name="card_telephony_subtitle">Kişileri , arama kayıtları ya da mesajları kayıt eder</string>
     <string name="backed_up">Yedeklendi</string>
     <string name="posted_now">Şimdi</string>
@@ -147,7 +147,7 @@
     <string name="contacts_permission">Kişi erişim izni</string>
     <string name="call_log_permission">Arama kaydı erişim izni</string>
     <string name="monet_title">Dinamik temayı aktif edin</string>
-    <string name="reset_backup_list">Yedekleme listesini temizle</string>
+    <string name="reset_backup_list">Yedekleme listesini sıfırla</string>
     <string name="reset_backup_list_title">Yedeklemeden sonra seçimlerin seçimini kaldırın</string>
     <string name="reset_restore_list">Geri yükleme listesini sıfırla</string>
     <string name="reset_restore_list_title">Geri yükledikten sonra seçimlerin seçimini kaldırın</string>
@@ -163,7 +163,7 @@
         <item quantity="one"><xliff:g id="count">%d</xliff:g> gün</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> günler</item>
     </plurals>
-    <string name="log">Günlükler</string>
+    <string name="log">Kayıtlar</string>
     <string name="click_to_clear">Temizlemek için tıklayın</string>
     <string name="keep_the_screen_on">Ekran açık kalsın</string>
     <string name="keep_the_screen_on_help">İşlem sırasında cihazı uyanık tutun</string>
