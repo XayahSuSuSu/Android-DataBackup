@@ -63,4 +63,22 @@
     <string name="speed">속도</string>
     <string name="backup_test_title">백업하는 중에 백업 파일을 자동으로 테스트합니다.</string>
     <string name="setting_SELinux">SELinux 설정 중</string>
+    <string name="selected">선택된</string>
+    <string name="backup_user">백업을 이용한 사용자</string>
+    <string name="tips">팁들</string>
+    <string name="unsupported_format">지지받지 않은 포맷</string>
+    <string name="welcome_to_use">데이터 백업 세계에 온걸 환영합니다</string>
+    <string name="internal_storage">내부 저장 공간</string>
+    <string name="support">보조자</string>
+    <string name="fetch_failed">패치 실패</string>
+    <string name="latest">가장 최근의</string>
+    <string name="progress">진행</string>
+    <string name="ready">준비</string>
+    <string name="app_name_is_missing">앱의 이름이 보이지 않는다</string>
+    <string name="please_wait">기다려 주세요</string>
+    <string name="settings">설정</string>
+    <string name="app_name">데이터 백업</string>
+    <string name="compression_type_help">백업과 복원에 동시에 영향을 주는데이터와 애플리케이션의 압축 타입을 선택합니다. 만약 어떤 어디에 쓰는 것인지 모를 때는 바꾸지 않습니다</string>
+    <string name="restore_user">복원한 사용자</string>
+    <string name="failed">실패</string>
 </resources>
