@@ -80,7 +80,7 @@
     <string name="update_channel">Aktualiziraj kanal</string>
     <string name="card_media_subtitle">Spremi sigurnosne kopije (Obnovi) medijske datotke ili prilagođene direktorije</string>
     <string name="restore_user">Obnovi korisnika</string>
-    <string name="blacklist">Popis nepoželjnih</string>
+    <string name="blacklist">Popis blokiranih</string>
     <string name="delete">Izbriši</string>
     <string name="duplicate">Dupliciraj</string>
     <string name="start">Pokreni</string>
