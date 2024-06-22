@@ -139,7 +139,7 @@
     <string name="installation_time">Время установки</string>
     <string name="edit">Изменить</string>
     <string name="data_size">Размер данных</string>
-    <string name="third_party">Установлено</string>
+    <string name="third_party">Пользовательские</string>
     <string name="selected">Выбрано</string>
     <string name="not_selected">Не выбрано</string>
     <string name="url">URL</string>
