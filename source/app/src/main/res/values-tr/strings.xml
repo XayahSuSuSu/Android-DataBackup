@@ -35,7 +35,7 @@
     <string name="failed_and_terminated">Başarısız oldu ve sonlandırıldı</string>
     <string name="utilities">Yardımcı programlar</string>
     <string name="restore_user">Kullanıcıyı geri yükle</string>
-    <string name="idle">Boşta</string>
+    <string name="idle">İş yok</string>
     <string name="start">Başla</string>
     <string name="premium_for_this_feature">Lütfen bu özellik için premium sürümü indirin</string>
     <string name="data">Veri</string>
