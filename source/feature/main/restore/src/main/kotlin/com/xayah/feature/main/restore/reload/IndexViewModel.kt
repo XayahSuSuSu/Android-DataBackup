@@ -12,6 +12,7 @@ import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
+import com.xayah.core.util.decodeURL
 import com.xayah.feature.main.restore.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -38,8 +39,8 @@ class IndexViewModel @Inject constructor(
     args: SavedStateHandle,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
-        cloudName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.trim() ?: "",
-        cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.trim() ?: "",
+        cloudName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.decodeURL()?.trim() ?: "",
+        cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim() ?: "",
         versionList = listOf(
             DialogRadioItem(
                 title = StringResourceToken.fromString("1.2.x"),

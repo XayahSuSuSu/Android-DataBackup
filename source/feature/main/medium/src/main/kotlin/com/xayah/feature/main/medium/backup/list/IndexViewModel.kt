@@ -13,6 +13,7 @@ import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
+import com.xayah.core.util.encodeURL
 import com.xayah.feature.main.medium.R
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PermissionType
@@ -104,7 +105,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.ToPageDetail -> {
                 val entity = intent.mediaEntity
                 withMainContext {
-                    intent.navController.navigate(MainRoutes.MediumBackupDetail.getRoute(entity.name))
+                    intent.navController.navigate(MainRoutes.MediumBackupDetail.getRoute(entity.name.encodeURL()))
                 }
             }
 

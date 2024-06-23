@@ -115,4 +115,7 @@ interface PackageDao {
 
     @Query("DELETE FROM PackageEntity WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Query("DELETE FROM PackageEntity WHERE indexInfo_backupDir = :backupDir")
+    suspend fun delete(backupDir: String)
 }

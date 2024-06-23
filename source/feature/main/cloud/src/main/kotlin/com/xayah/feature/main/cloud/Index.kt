@@ -41,6 +41,7 @@ import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.icon
 import com.xayah.core.ui.util.value
+import com.xayah.core.util.encodeURL
 
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
@@ -91,9 +92,9 @@ fun PageCloud() {
                                 onClick = {
                                     navController.navigate(
                                         when (it.type) {
-                                            CloudType.FTP -> MainRoutes.FTPSetup.getRoute(it.name)
-                                            CloudType.WEBDAV -> MainRoutes.WebDAVSetup.getRoute(it.name)
-                                            CloudType.SMB -> MainRoutes.SMBSetup.getRoute(it.name)
+                                            CloudType.FTP -> MainRoutes.FTPSetup.getRoute(it.name.encodeURL())
+                                            CloudType.WEBDAV -> MainRoutes.WebDAVSetup.getRoute(it.name.encodeURL())
+                                            CloudType.SMB -> MainRoutes.SMBSetup.getRoute(it.name.encodeURL())
                                         }
                                     )
                                 }

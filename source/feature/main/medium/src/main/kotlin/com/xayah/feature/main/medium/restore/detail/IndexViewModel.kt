@@ -12,6 +12,7 @@ import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
+import com.xayah.core.util.decodeURL
 import com.xayah.feature.main.medium.R
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PermissionType
@@ -44,7 +45,7 @@ class IndexViewModel @Inject constructor(
     rootService: RemoteRootService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
-        name = args.get<String>(MainRoutes.ARG_MEDIA_NAME) ?: "",
+        name = args.get<String>(MainRoutes.ARG_MEDIA_NAME)?.decodeURL()?.trim() ?: "",
         preserveId = args.get<String>(MainRoutes.ARG_PRESERVE_ID)?.toLongOrNull() ?: 0,
         isCalculating = false,
     )

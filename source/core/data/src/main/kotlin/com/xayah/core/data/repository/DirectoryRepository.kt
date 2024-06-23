@@ -4,7 +4,9 @@ import android.content.Context
 import com.xayah.core.common.util.toSpaceString
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.DirectoryDao
+import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.datastore.ConstantUtil
+import com.xayah.core.datastore.readBackupSavePath
 import com.xayah.core.datastore.saveBackupSavePath
 import com.xayah.core.model.StorageType
 import com.xayah.core.model.database.DirectoryEntity
@@ -15,6 +17,7 @@ import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.PreparationUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import java.nio.file.Paths
 import javax.inject.Inject
 import kotlin.io.path.name
@@ -23,6 +26,7 @@ import kotlin.io.path.pathString
 class DirectoryRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val directoryDao: DirectoryDao,
+    private val packageDao: PackageDao,
     private val rootService: RemoteRootService,
 ) {
     fun queryActiveDirectoriesFlow(storageType: StorageType) = directoryDao.queryActiveDirectoriesFlow(storageType).distinctUntilChanged()
@@ -61,6 +65,7 @@ class DirectoryRepository @Inject constructor(
     }
 
     suspend fun selectDir(entity: DirectoryEntity) = run {
+        packageDao.delete(context.readBackupSavePath().first())
         selectDir(entity.path, entity.id)
     }
 

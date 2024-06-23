@@ -33,6 +33,7 @@ import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.DateUtil
+import com.xayah.core.util.decodeURL
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.feature.main.medium.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -79,8 +80,8 @@ class IndexViewModel @Inject constructor(
     IndexUiState(
         state = OperationState.IDLE,
         isTesting = false,
-        cloudName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.trim() ?: "",
-        cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.trim() ?: "",
+        cloudName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.decodeURL()?.trim() ?: "",
+        cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim() ?: "",
         medium = listOf(),
         mediumSize = "",
     )

@@ -11,6 +11,7 @@ import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
+import com.xayah.core.util.decodeURL
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +37,7 @@ class IndexViewModel @Inject constructor(
     rootService: RemoteRootService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
-        name = args.get<String>(MainRoutes.ARG_MEDIA_NAME) ?: "",
+        name = args.get<String>(MainRoutes.ARG_MEDIA_NAME)?.decodeURL()?.trim() ?: "",
         isCalculating = false,
     )
 ) {

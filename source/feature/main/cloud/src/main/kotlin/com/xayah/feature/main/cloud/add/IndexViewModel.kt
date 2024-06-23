@@ -20,6 +20,7 @@ import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.GsonUtil
+import com.xayah.core.util.decodeURL
 import com.xayah.feature.main.cloud.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -57,7 +58,7 @@ class IndexViewModel @Inject constructor(
     args: SavedStateHandle,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
-        currentName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.trim() ?: "",
+        currentName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.decodeURL()?.trim() ?: "",
         cloudEntity = null,
         isProcessing = false,
     )

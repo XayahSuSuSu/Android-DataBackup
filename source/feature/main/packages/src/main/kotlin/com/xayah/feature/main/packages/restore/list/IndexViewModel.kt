@@ -18,6 +18,8 @@ import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
+import com.xayah.core.util.decodeURL
+import com.xayah.core.util.encodeURL
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -26,8 +28,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.util.UUID
 import javax.inject.Inject
 
@@ -65,8 +65,8 @@ class IndexViewModel @Inject constructor(
     args: SavedStateHandle,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
-        cloudName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.trim() ?: "",
-        cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.trim() ?: "",
+        cloudName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.decodeURL()?.trim() ?: "",
+        cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim() ?: "",
         selectAll = false,
         userIdList = listOf(),
         filterMode = true,
@@ -141,7 +141,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.ToPageDetail -> {
                 val entity = intent.packageEntity
                 withMainContext {
-                    intent.navController.navigate(MainRoutes.PackagesRestoreDetail.getRoute(entity.packageName, entity.userId, entity.preserveId))
+                    intent.navController.navigate(MainRoutes.PackagesRestoreDetail.getRoute(entity.packageName.encodeURL(), entity.userId, entity.preserveId))
                 }
             }
 
@@ -149,8 +149,8 @@ class IndexViewModel @Inject constructor(
                 withMainContext {
                     intent.navController.navigate(
                         MainRoutes.PackagesRestoreProcessingGraph.getRoute(
-                            state.cloudName.ifEmpty { " " },
-                            URLEncoder.encode(state.cloudRemote, StandardCharsets.UTF_8.toString())
+                            state.cloudName.ifEmpty { " " }.encodeURL(),
+                            state.cloudRemote.encodeURL()
                         )
                     )
                 }
