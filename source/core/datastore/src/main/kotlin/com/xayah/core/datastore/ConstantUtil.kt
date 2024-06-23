@@ -1,7 +1,9 @@
 package com.xayah.core.datastore
 
 object ConstantUtil {
-    const val DEFAULT_PATH_PARENT = "/storage/emulated/0"
+    private const val DATA_MEDIA_PATH = "/data/media"
+    private const val DEFAULT_USER_ID = 0
+    const val DEFAULT_PATH_PARENT = "${DATA_MEDIA_PATH}/${DEFAULT_USER_ID}"
     const val DEFAULT_PATH_CHILD = "DataBackup"
     const val DEFAULT_PATH = "${DEFAULT_PATH_PARENT}/${DEFAULT_PATH_CHILD}"
     const val DEFAULT_TIMEOUT = 30000
@@ -20,9 +22,9 @@ object ConstantUtil {
         "texfat",
     )
     val DefaultMediaList = listOf(
-        "Pictures" to "/storage/emulated/0/Pictures",
-        "Music" to "/storage/emulated/0/Music",
-        "DCIM" to "/storage/emulated/0/DCIM",
-        "Download" to "/storage/emulated/0/Download",
+        "Pictures" to "${DEFAULT_PATH_PARENT}/Pictures",
+        "Music" to "${DEFAULT_PATH_PARENT}/Music",
+        "DCIM" to "${DEFAULT_PATH_PARENT}/DCIM",
+        "Download" to "${DEFAULT_PATH_PARENT}/Download",
     )
 }
