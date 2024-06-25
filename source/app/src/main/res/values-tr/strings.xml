@@ -322,4 +322,12 @@
     <string name="remote_path_desc">Yedeklemenin okunduğu veya kaydedildiği yer</string>
     <string name="delete_account_desc">Bu hesap silinecek</string>
     <string name="no_available_account">Mevcut bir hesap yok</string>
+    <string name="about">Hakkında</string>
+    <string name="about_app">Uygulama hakkında</string>
+    <string name="donate">Bağış yap</string>
+    <string name="translators">Çevirmenler</string>
+    <string name="translators_desc">Onların çabalarını takdir ediyoruz</string>
+    <string name="afdian">AFDIAN</string>
+    <string name="contact">İletişime geç</string>
+    <string name="docs">Dokümanlar</string>
 </resources>
