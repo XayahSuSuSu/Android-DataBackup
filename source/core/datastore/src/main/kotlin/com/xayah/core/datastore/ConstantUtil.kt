@@ -27,4 +27,10 @@ object ConstantUtil {
         "DCIM" to "${DEFAULT_PATH_PARENT}/DCIM",
         "Download" to "${DEFAULT_PATH_PARENT}/Download",
     )
+
+    const val DOC_LINK = "https://DataBackupOfficial.github.io"
+    const val GITHUB_LINK = "https://github.com/XayahSuSuSu/Android-DataBackup"
+    const val CHAT_LINK = "https://t.me/databackupchat"
+    const val DONATE_BMAC_LINK = "https://buymeacoffee.com/xayahsususu"
+    const val DONATE_AFD_LINK = "https://afdian.net/a/XayahSuSuSu"
 }

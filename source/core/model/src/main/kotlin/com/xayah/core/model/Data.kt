@@ -29,3 +29,17 @@ data class Configurations(
     var cloud: List<CloudEntity>,
     var file: List<FileItem>
 )
+
+data class ContributorItem(
+    val name: String,
+    var avatar: String,
+    var desc: String,
+    var link: String,
+)
+
+data class TranslatorItem(
+    val name: String,
+    var avatar: String,
+    var lang: String,
+    var link: String,
+)

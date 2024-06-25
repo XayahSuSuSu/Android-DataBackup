@@ -50,6 +50,25 @@ fun HeadlineMediumText(
 }
 
 @Composable
+fun HeadlineSmallText(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color = Color.Unspecified,
+    textAlign: TextAlign? = null,
+    fontWeight: FontWeight? = null,
+    enabled: Boolean = true,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.headlineSmall,
+        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        textAlign = textAlign,
+        fontWeight = fontWeight,
+    )
+}
+
+@Composable
 fun TitleLargeText(
     modifier: Modifier = Modifier,
     text: String,

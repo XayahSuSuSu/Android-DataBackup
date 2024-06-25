@@ -34,4 +34,7 @@ dependencies {
 
     // Gson
     implementation(libs.gson)
+
+    // Coil
+    implementation(libs.coil.compose)
 }

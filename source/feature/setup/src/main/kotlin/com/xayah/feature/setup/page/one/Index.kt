@@ -2,15 +2,11 @@ package com.xayah.feature.setup.page.one
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
@@ -19,13 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.readCustomSUFile
 import com.xayah.core.datastore.saveCustomSUFile
+import com.xayah.core.ui.component.AppIcon
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.HeadlineMediumText
 import com.xayah.core.ui.component.LocalSlotScope
@@ -35,11 +30,9 @@ import com.xayah.core.ui.component.edit
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.value
@@ -98,19 +91,7 @@ fun PageOne() {
                     .paddingTop(SizeTokens.Level100),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(SizeTokens.Level128)
-                        .clip(CircleShape)
-                        .background(colorResource(id = R.color.ic_launcher_background)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        modifier = Modifier.size(SizeTokens.Level100),
-                        imageVector = ImageVectorToken.fromDrawable(R.drawable.ic_launcher_foreground_tonal).value,
-                        contentDescription = null
-                    )
-                }
+                AppIcon()
                 HeadlineMediumText(modifier = Modifier.paddingTop(SizeTokens.Level12), text = StringResourceToken.fromStringId(R.string.welcome_to_use).value)
                 BodyMediumText(text = StringResourceToken.fromStringId(R.string.app_short_desc).value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
             }

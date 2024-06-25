@@ -81,6 +81,16 @@ fun PageSettings() {
                     context.startActivity(Intent(context, SetupActivity::class.java))
                 }
             }
+            Title(title = StringResourceToken.fromStringId(R.string.appearance)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    Switchable(
+                        key = KeyMonet,
+                        title = StringResourceToken.fromStringId(R.string.monet),
+                        checkedText = StringResourceToken.fromStringId(R.string.monet_desc),
+                    )
+                }
+                DarkThemeSelectable()
+            }
             Title(title = StringResourceToken.fromStringId(R.string.manage_backups)) {
                 Clickable(
                     icon = ImageVectorToken.fromVector(Icons.Outlined.Block),
@@ -110,16 +120,12 @@ fun PageSettings() {
                 ) {
                     navController.navigate(MainRoutes.Configurations.route)
                 }
-            }
-            Title(title = StringResourceToken.fromStringId(R.string.appearance)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    Switchable(
-                        key = KeyMonet,
-                        title = StringResourceToken.fromStringId(R.string.monet),
-                        checkedText = StringResourceToken.fromStringId(R.string.monet_desc),
-                    )
+                Clickable(
+                    title = StringResourceToken.fromStringId(R.string.about),
+                    value = StringResourceToken.fromStringId(R.string.about_app),
+                ) {
+                    navController.navigate(MainRoutes.About.route)
                 }
-                DarkThemeSelectable()
             }
             InnerBottomSpacer(innerPadding = it)
         }

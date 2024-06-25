@@ -322,4 +322,12 @@
     <string name="guest">来宾</string>
     <string name="protect">保护</string>
     <string name="protect_desc">防止此备份被覆盖</string>
+    <string name="about">关于</string>
+    <string name="about_app">关于应用</string>
+    <string name="donate">捐赠</string>
+    <string name="afdian">爱发电</string>
+    <string name="contact">联系</string>
+    <string name="docs">文档</string>
+    <string name="translators">翻译者</string>
+    <string name="translators_desc">感谢他们的付出</string>
 </resources>

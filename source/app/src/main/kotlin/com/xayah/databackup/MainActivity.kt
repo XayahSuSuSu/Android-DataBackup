@@ -39,6 +39,8 @@ import com.xayah.feature.main.packages.restore.processing.PackagesRestoreProcess
 import com.xayah.feature.main.restore.PageRestore
 import com.xayah.feature.main.restore.reload.PageReload
 import com.xayah.feature.main.settings.PageSettings
+import com.xayah.feature.main.settings.about.PageAboutSettings
+import com.xayah.feature.main.settings.about.PageTranslatorsSettings
 import com.xayah.feature.main.settings.backup.PageBackupSettings
 import com.xayah.feature.main.settings.blacklist.PageBlackList
 import com.xayah.feature.main.settings.restore.PageRestoreSettings
@@ -145,6 +147,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.Configurations.route) {
                             PageConfigurations()
+                        }
+                        composable(MainRoutes.About.route) {
+                            PageAboutSettings()
+                        }
+                        composable(MainRoutes.Translators.route) {
+                            PageTranslatorsSettings()
                         }
                         composable(route = MainRoutes.Directory.route) {
                             PageDirectory()

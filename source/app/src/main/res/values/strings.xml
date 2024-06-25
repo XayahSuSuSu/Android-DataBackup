@@ -329,4 +329,14 @@
     <string name="guest">Guest</string>
     <string name="protect">Protect</string>
     <string name="protect_desc">Prevent this backup from being overwritten</string>
+    <string name="about">About</string>
+    <string name="about_app">About application</string>
+    <string name="donate">Donate</string>
+    <string name="buymeacoffee" translatable="false">Buy me a coffee</string>
+    <string name="afdian">AFDIAN</string>
+    <string name="github" translatable="false">GitHub</string>
+    <string name="contact">Contact</string>
+    <string name="docs">Docs</string>
+    <string name="translators">Translators</string>
+    <string name="translators_desc">We appreciate their efforts</string>
 </resources>

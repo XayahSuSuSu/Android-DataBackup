@@ -24,4 +24,9 @@
     <item name="ic_rounded_not_started" type="drawable" />
     <item name="ic_rounded_arrow_circle_up" type="drawable" />
     <item name="ic_rounded_arrow_circle_down" type="drawable" />
+    <item name="ic_launcher_foreground_tonal" type="drawable" />
+
+    <item name="ic_launcher_background" type="color" />
+
+
 </resources>

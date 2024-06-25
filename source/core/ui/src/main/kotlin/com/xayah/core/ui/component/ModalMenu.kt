@@ -123,8 +123,8 @@ fun ModalActionDropdownMenu(
                                 }
                             }
                         },
-                        leadingIcon = {
-                            if (countdown != 0) {
+                        leadingIcon = if (countdown != 0) {
+                            {
                                 Icon(
                                     imageVector = when (countdown) {
                                         3 -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_counter_3)
@@ -135,8 +135,10 @@ fun ModalActionDropdownMenu(
                                     tint = item.color.toColor(enabled = enabled),
                                     contentDescription = null
                                 )
-                            } else {
-                                item.icon?.apply {
+                            }
+                        } else if (item.icon == null) null else {
+                            {
+                                item.icon.apply {
                                     Icon(imageVector = item.icon.value, tint = item.color.toColor(enabled = enabled), contentDescription = null)
                                 }
                             }
