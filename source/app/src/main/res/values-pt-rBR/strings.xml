@@ -322,4 +322,12 @@
     <string name="backed_up_files">Arquivos de backup</string>
     <string name="specify_a_path">Por favor, especifique um caminho.</string>
     <string name="args_files_backed_up">%1$s arquivos salvos em backup</string>
+    <string name="about">Sobre</string>
+    <string name="donate">Doar</string>
+    <string name="afdian">AFDIAN</string>
+    <string name="contact">Contato</string>
+    <string name="docs">Documentos</string>
+    <string name="about_app">Sobre o app</string>
+    <string name="translators">Tradutores</string>
+    <string name="translators_desc">Agradecemos seus esforços</string>
 </resources>
