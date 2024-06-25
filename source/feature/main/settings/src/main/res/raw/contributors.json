@@ -10,5 +10,17 @@
     "avatar": "https://palmdevs.me/assets/og/image.webp",
     "desc": "Lead Designer",
     "link": "https://palmdevs.me"
+  },
+  {
+    "name": "Ömer Süsin",
+    "avatar": "https://avatars.githubusercontent.com/polkexel",
+    "desc": "Project Manager",
+    "link": "https://github.com/polkexel"
+  },
+  {
+    "name": "Furkan Karcıoğlu",
+    "avatar": "https://avatars.githubusercontent.com/frknkrc44",
+    "desc": "Developer",
+    "link": "https://github.com/frknkrc44"
   }
 ]
