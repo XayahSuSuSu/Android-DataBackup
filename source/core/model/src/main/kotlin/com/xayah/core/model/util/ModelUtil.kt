@@ -12,7 +12,7 @@ import com.xayah.core.model.ZSTD_SUFFIX
 import java.text.DecimalFormat
 import kotlin.math.pow
 
-fun Double.formatSize(unitValue: Int = 1000): String = run {
+fun Double.formatSize(unitValue: Int = 1024): String = run {
     var unit = "Bytes"
     var size = this
     val gb = unitValue.toDouble().pow(3)
