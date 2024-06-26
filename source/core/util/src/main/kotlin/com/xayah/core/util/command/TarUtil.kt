@@ -1,9 +1,9 @@
 package com.xayah.core.util.command
 
-import com.xayah.core.util.SymbolUtil
-import com.xayah.core.util.model.ShellResult
 import com.xayah.core.common.util.toSpaceString
 import com.xayah.core.common.util.trim
+import com.xayah.core.util.SymbolUtil
+import com.xayah.core.util.model.ShellResult
 
 object Tar {
     private suspend fun execute(vararg args: String): ShellResult = BaseUtil.execute("tar", *args)
@@ -67,7 +67,7 @@ object Tar {
             val exclusion = exclusionList.trim().map { "--exclude=$it" }.toSpaceString()
             if (usePipe) {
                 if (extra.isEmpty()) {
-                    // tar --totals "$exclusion" $h -cpf - -C "$srcDir" "$src" > "$dst"
+                    // tar --totals "$exclusion" $h -cpf - -C "$srcDir" -- "$src" > "$dst"
                     execute(
                         "--totals",
                         exclusion,
@@ -76,12 +76,13 @@ object Tar {
                         "-",
                         "-C",
                         "${SymbolUtil.QUOTE}$srcDir${SymbolUtil.QUOTE}",
+                        "--",
                         "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
                         ">",
                         "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
                     )
                 } else {
-                    // tar --totals "$exclusion" $h -cpf - -C "$srcDir" "$src" | $extra > "$dst"
+                    // tar --totals "$exclusion" $h -cpf - -C "$srcDir" -- "$src" | $extra > "$dst"
                     execute(
                         "--totals",
                         exclusion,
@@ -90,6 +91,7 @@ object Tar {
                         "-",
                         "-C",
                         "${SymbolUtil.QUOTE}$srcDir${SymbolUtil.QUOTE}",
+                        "--",
                         "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
                         "| $extra",
                         ">",
@@ -98,7 +100,7 @@ object Tar {
                 }
             } else {
                 if (extra.isEmpty()) {
-                    // tar --totals "$exclusion" $h -cpf "$dst" -C "$srcDir" "$src"
+                    // tar --totals "$exclusion" $h -cpf "$dst" -C "$srcDir" -- "$src"
                     execute(
                         "--totals",
                         exclusion,
@@ -107,10 +109,11 @@ object Tar {
                         "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
                         "-C",
                         "${SymbolUtil.QUOTE}$srcDir${SymbolUtil.QUOTE}",
+                        "--",
                         "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
                     )
                 } else {
-                    // tar --totals "$exclusion" $h -cpf "$dst" -C "$srcDir" "$src" -I "$extra"
+                    // tar --totals "$exclusion" $h -cpf "$dst" -C "$srcDir" -- "$src" -I "$extra"
                     execute(
                         "--totals",
                         exclusion,
@@ -119,6 +122,7 @@ object Tar {
                         "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
                         "-C",
                         "${SymbolUtil.QUOTE}$srcDir${SymbolUtil.QUOTE}",
+                        "--",
                         "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
                         "-I",
                         "${SymbolUtil.QUOTE}$extra${SymbolUtil.QUOTE}",
