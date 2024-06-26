@@ -113,9 +113,11 @@ object Tar {
                         "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
                     )
                 } else {
-                    // tar --totals "$exclusion" $h -cpf "$dst" -C "$srcDir" -- "$src" -I "$extra"
+                    // tar --totals -I "$extra" "$exclusion" $h -cpf "$dst" -C "$srcDir" -- "$src"
                     execute(
                         "--totals",
+                        "-I",
+                        "${SymbolUtil.QUOTE}$extra${SymbolUtil.QUOTE}",
                         exclusion,
                         h,
                         "-cpf",
@@ -124,8 +126,6 @@ object Tar {
                         "${SymbolUtil.QUOTE}$srcDir${SymbolUtil.QUOTE}",
                         "--",
                         "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
-                        "-I",
-                        "${SymbolUtil.QUOTE}$extra${SymbolUtil.QUOTE}",
                     )
                 }
             }
