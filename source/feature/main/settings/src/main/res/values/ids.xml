@@ -56,6 +56,7 @@
     <item name="docs" type="string" />
     <item name="translators" type="string" />
     <item name="translators_desc" type="string" />
+    <item name="unknown" type="string" />
 
     <item name="ic_rounded_acute" type="drawable" />
     <item name="ic_rounded_history" type="drawable" />

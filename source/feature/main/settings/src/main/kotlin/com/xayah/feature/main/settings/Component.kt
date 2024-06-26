@@ -132,3 +132,35 @@ fun ContributorCard(avatar: String, name: String, desc: String, onClick: () -> U
         }
     }
 }
+
+@ExperimentalMaterial3Api
+@Composable
+fun TranslatorCard(modifier: Modifier = Modifier, avatar: String? = null, name: String, desc: String, onClick: () -> Unit) {
+    val context = LocalContext.current
+    Card(modifier = modifier.fillMaxWidth(), onClick = onClick) {
+        Row(modifier = Modifier.padding(SizeTokens.Level16), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
+            Box {
+                Icon(
+                    modifier = Modifier.size(SizeTokens.Level48),
+                    tint = ColorSchemeKeyTokens.OnSurface.toColor(),
+                    imageVector = ImageVectorToken.fromDrawable(R.drawable.logo_weblate).value,
+                    contentDescription = null
+                )
+                AsyncImage(
+                    modifier = Modifier
+                        .size(SizeTokens.Level48)
+                        .clip(CircleShape),
+                    model = ImageRequest.Builder(context)
+                        .data(avatar)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null
+                )
+            }
+            Column {
+                TitleMediumText(text = name, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.OnSurface.toColor())
+                TitleSmallText(text = desc, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.Outline.toColor())
+            }
+        }
+    }
+}

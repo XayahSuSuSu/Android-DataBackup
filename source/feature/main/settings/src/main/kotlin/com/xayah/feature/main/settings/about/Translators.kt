@@ -3,6 +3,7 @@ package com.xayah.feature.main.settings.about
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,13 +20,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.ui.component.InnerBottomSpacer
+import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
+import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.feature.main.settings.ContributorCard
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
+import com.xayah.feature.main.settings.TranslatorCard
 
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
@@ -49,21 +53,39 @@ fun PageTranslatorsSettings() {
         actions = {}
     ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .paddingHorizontal(SizeTokens.Level16),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8)
         ) {
             item {
                 Spacer(modifier = Modifier.size(SizeTokens.Level0))
             }
 
-            items(items = uiState.translators) {
-                ContributorCard(
-                    avatar = it.avatar, name = it.name, desc = it.lang
-                ) {
-                    viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, it.link))
+            items(items = uiState.translators) { item ->
+                item.keys.forEach { lang ->
+                    Title(title = StringResourceToken.fromString(lang)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8)) {
+                            item[lang]?.forEach { info ->
+                                TranslatorCard(
+                                    modifier = Modifier.paddingHorizontal(SizeTokens.Level16),
+                                    avatar = info.getOrNull(3),
+                                    name = info.getOrNull(1) ?: context.getString(R.string.unknown),
+                                    desc = info.getOrNull(0) ?: context.getString(R.string.unknown)
+                                ) {
+                                    val url = info.getOrNull(4)
+                                    if (url != null) {
+                                        viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, url))
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
                 }
+            }
+
+            item {
+                InnerBottomSpacer(innerPadding = it)
             }
         }
     }

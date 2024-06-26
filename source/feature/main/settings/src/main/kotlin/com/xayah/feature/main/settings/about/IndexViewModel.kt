@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.google.gson.reflect.TypeToken
 import com.xayah.core.model.ContributorItem
-import com.xayah.core.model.TranslatorItem
+import com.xayah.core.model.WeblateItems
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 data class IndexUiState(
     val contributors: List<ContributorItem>,
-    val translators: List<TranslatorItem>,
+    val translators: WeblateItems,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -43,7 +43,7 @@ class IndexViewModel @Inject constructor(
                         ),
                         translators = gsonUtil.fromJson(
                             context.resources.openRawResource(R.raw.translators).bufferedReader().readText(),
-                            object : TypeToken<List<TranslatorItem>>() {}.type
+                            object : TypeToken<WeblateItems>() {}.type
                         )
                     )
                 )
