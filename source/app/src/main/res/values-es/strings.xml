@@ -322,4 +322,12 @@
     <string name="protect">Proteger</string>
     <string name="protect_desc">Evitar que esta copia de seguridad se sobrescriba</string>
     <string name="anonymous">Anónimo</string>
+    <string name="about">Acerca de</string>
+    <string name="about_app">Acerca de la aplicación</string>
+    <string name="donate">Donar</string>
+    <string name="afdian">AFDIAN</string>
+    <string name="contact">Contactar</string>
+    <string name="docs">Docs</string>
+    <string name="translators">Traductores</string>
+    <string name="translators_desc">Apreciamos tus esfuerzos</string>
 </resources>
