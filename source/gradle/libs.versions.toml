@@ -44,6 +44,7 @@ apache-commons = "3.10.0"
 apache-commons-codec = "1.16.1"
 smbj = "0.13.0"
 smbj-rpc = "0.12.0"
+sshj = "0.38.0"
 guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
 sardine-next = "1.0.2"
 
@@ -106,6 +107,7 @@ apache-commons-net = { module = "commons-net:commons-net", version.ref = "apache
 apache-commons-codec = { module = "commons-codec:commons-codec", version.ref = "apache-commons-codec" }
 smbj = { module = "com.hierynomus:smbj", version.ref = "smbj" }
 smbj-rpc = { module = "com.rapid7.client:dcerpc", version.ref = "smbj-rpc" }
+sshj = { module = "com.hierynomus:sshj", version.ref = "sshj" }
 guava-compat = { module = "com.google.guava:listenablefuture", version.ref = "guava-compat" }
 sardine-next = { module = "com.github.xayahsususu:sardine-next", version.ref = "sardine-next" }
 

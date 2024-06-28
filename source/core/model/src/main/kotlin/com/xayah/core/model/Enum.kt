@@ -93,6 +93,7 @@ enum class CloudType(val title: String) {
     FTP("FTP"),
     WEBDAV("WebDAV"),
     SMB("SMB / CIFS"),
+    SFTP("SFTP"),
 }
 
 enum class SmbVersion(val text: String) {

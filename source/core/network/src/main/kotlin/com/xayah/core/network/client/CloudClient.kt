@@ -42,4 +42,9 @@ fun CloudEntity.getCloud() = when (this.type) {
         val extra = getExtraEntity<SMBExtra>()!!
         SMBClientImpl(this, extra)
     }
+
+    CloudType.SFTP -> {
+        val extra = getExtraEntity<FTPExtra>()!!
+        SFTPClientImpl(this, extra)
+    }
 }
