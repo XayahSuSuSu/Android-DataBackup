@@ -115,7 +115,6 @@
     <string name="name">Ім’я</string>
     <string name="username">Ім\'я користувача</string>
     <string name="data_size">Розмір даних</string>
-    <string name="third_party">Користувацькі</string>
     <string name="restore_user">Відновлення користувача</string>
     <string name="delete">Видалення</string>
     <string name="media_set_path">Вказати шлях</string>
@@ -125,7 +124,6 @@
     <string name="cloud_server_disconnected">Хмарний сервер відключено</string>
     <string name="account">Обліковий запис</string>
     <string name="clean_restoring_desc">Очистка цільової директорії перед відновленням</string>
-    <string name="alphabet">За абеткою</string>
     <string name="reset_backup_list_desc">Зняти виділення після бекапу</string>
     <string name="main_account">Основний обліковий запис</string>
     <string name="backup">Бекап</string>

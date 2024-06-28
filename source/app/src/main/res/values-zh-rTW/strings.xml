@@ -142,12 +142,11 @@
     <string name="modify">修改</string>
     <string name="cloud">雲端</string>
     <string name="settings">設定</string>
-    <string name="alphabet">A-Z</string>
     <string name="installation_time">安裝時間</string>
     <string name="data_size">數據大小</string>
     <string name="selected">已選取</string>
     <string name="not_selected">未選取</string>
-    <string name="third_party">已安裝</string>
+    <string name="third_party">第三方</string>
     <string name="system">系統</string>
     <string name="uploading">上傳中</string>
     <string name="main_account">主帳戶</string>

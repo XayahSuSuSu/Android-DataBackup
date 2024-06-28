@@ -4,7 +4,6 @@
     <string name="compression_type">Tipo de compressão</string>
     <string name="grant_root_access">Conceda acesso root</string>
     <string name="release_prebuilt_binaries">Liberar binários pré-construídos</string>
-    <string name="alphabet">A-Z</string>
     <string name="application_desc">Obtenha informações do pacote do app, usada para gerar lista de backup e obter o tamanho dos dados do app.</string>
     <string name="data_size">Tamanho dos dados</string>
     <string name="loading_failed">Falha ao carregar</string>
@@ -33,7 +32,6 @@
     <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Use pipe em vez de parâmetro para entrada tar. Mude quando disser \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Não foi possível executar: esse arquivo ou diretório não existe\"</string>
     <string name="compression_type_desc">Afeta o backup e a restauração. Só deve ser alterado por usuários avançados.</string>
     <string name="backup_user_desc">Usuário alvo ao carregar a lista de backup ou fazer backup</string>
-    <string name="third_party">Instalado</string>
     <string name="sooner_or_later">Cedo ou tarde</string>
     <string name="no_browser">Talvez não haja navegador para abri-lo</string>
     <string name="supported_format">Formato suportado</string>

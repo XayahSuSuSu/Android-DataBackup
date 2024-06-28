@@ -135,11 +135,9 @@
     <string name="installation_time">Время установки</string>
     <string name="edit">Изменить</string>
     <string name="data_size">Размер данных</string>
-    <string name="third_party">Пользовательские</string>
     <string name="selected">Выбрано</string>
     <string name="not_selected">Не выбрано</string>
     <string name="url">URL</string>
-    <string name="alphabet">По алфавиту</string>
     <string name="cloud">Облако</string>
     <string name="modify">Изменение</string>
     <string name="settings">Настройки</string>

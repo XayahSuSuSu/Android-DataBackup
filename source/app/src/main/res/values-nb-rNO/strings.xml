@@ -136,13 +136,11 @@
     <string name="edit">Rediger</string>
     <string name="follow_symlinks_desc">Arkiver og dump filene de peker til</string>
     <string name="data_size">Datastørrelse</string>
-    <string name="third_party">Tredjepart</string>
     <string name="mount">Monter</string>
     <string name="selected">Valgt</string>
     <string name="set_local">Sett som lokal</string>
     <string name="not_selected">Ikke valgt</string>
     <string name="cloud_server_disconnected">Skytjener frakoblet</string>
-    <string name="alphabet">Alfabet</string>
     <string name="main_account">Hovedkonto</string>
     <string name="original_data_size">Datastørrelse (opprinnelig)</string>
     <string name="unmount">Avmonter</string>

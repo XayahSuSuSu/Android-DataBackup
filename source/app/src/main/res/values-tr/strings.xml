@@ -140,7 +140,6 @@
     <string name="username">Kullanıcı adı</string>
     <string name="follow_symlinks_desc">İşaret ettikleri dosyaları arşivleyin ve dökün</string>
     <string name="data_size">Veri boyutu</string>
-    <string name="third_party">Kuruldu</string>
     <string name="data_only">Sadece veri</string>
     <string name="mount">Bağla</string>
     <string name="selected">Seçildi</string>
@@ -150,7 +149,6 @@
     <string name="cloud_server_disconnected">Bulut sunucusunun bağlantısı kesildi</string>
     <string name="batching_select">Toplu seçim</string>
     <string name="account">Hesap</string>
-    <string name="alphabet">A-Z</string>
     <string name="main_account">Ana hesap</string>
     <string name="in_use">Kullanımda</string>
     <string name="original_data_size">Veri boyutu (orijinal)</string>
