@@ -324,7 +324,7 @@
     <string name="about">О программе</string>
     <string name="donate">Пожертвовать</string>
     <string name="contact">Контакт</string>
-    <string name="docs">Документы</string>
+    <string name="docs">Документация</string>
     <string name="translators">Переводчики</string>
-    <string name="translators_desc">Мы ценим их усилия</string>
+    <string name="translators_desc">Мы признательны за их усилия</string>
 </resources>
