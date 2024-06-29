@@ -22,4 +22,8 @@
         <item>@string/guest</item>
         <item>@string/anonymous</item>
     </string-array>
+    <string-array name="sftp_auth_mode">
+        <item>@string/password</item>
+        <item>@string/public_key</item>
+    </string-array>
 </resources>

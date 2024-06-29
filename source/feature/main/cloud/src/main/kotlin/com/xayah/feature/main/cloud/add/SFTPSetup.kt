@@ -35,7 +35,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.ConstantUtil
-import com.xayah.core.model.database.FTPExtra
+import com.xayah.core.model.database.SFTPExtra
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.LocalSlotScope
@@ -73,17 +73,29 @@ fun PageSFTPSetup() {
     var name by rememberSaveable { mutableStateOf(uiState.currentName) }
     var remote by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.remote ?: "") }
     var url by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.host ?: "") }
-    var port by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<FTPExtra>()?.port?.toString() ?: "22") }
+    var port by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<SFTPExtra>()?.port?.toString() ?: "22") }
     var username by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.user ?: "") }
+    val modeOptions = stringArrayResource(id = R.array.sftp_auth_mode).toList()
+    var modeIndex by rememberSaveable(uiState.cloudEntity) { mutableIntStateOf(uiState.cloudEntity?.getExtraEntity<SFTPExtra>()?.authMode ?: 0) }
     var password by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.pass ?: "") }
+    var privateKey by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<SFTPExtra>()?.privateKey ?: "") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val allFilled by rememberSaveable(
         name,
         url,
         port,
         username,
-        password
-    ) { mutableStateOf(name.isNotEmpty() && url.isNotEmpty() && port.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty()) }
+        password,
+        privateKey,
+        modeIndex
+    ) { mutableStateOf(
+        name.isNotEmpty() &&
+                url.isNotEmpty() &&
+                port.isNotEmpty() &&
+                username.isNotEmpty() &&
+                ((modeIndex == 0 && password.isNotEmpty()) || modeIndex == 1) &&
+                ((modeIndex == 1 && privateKey.isNotEmpty()) || modeIndex == 0)
+    ) }
 
     LaunchedEffect(null) {
         viewModel.emitIntentOnIO(IndexUiIntent.Initialize)
@@ -98,7 +110,16 @@ fun PageSFTPSetup() {
                 enabled = allFilled && uiState.isProcessing.not(),
                 onClick = {
                     viewModel.launchOnIO {
-                        viewModel.updateSFTPEntity(name = name, remote = remote, url = url, username = username, password = password, port = port)
+                        viewModel.updateSFTPEntity(
+                            name = name,
+                            remote = remote,
+                            url = url,
+                            username = username,
+                            password = password,
+                            port = port,
+                            authMode = modeIndex,
+                            privateKey = privateKey,
+                        )
                         viewModel.emitIntent(IndexUiIntent.TestConnection)
                     }
                 }
@@ -108,7 +129,16 @@ fun PageSFTPSetup() {
 
             Button(enabled = allFilled && remote.isNotEmpty() && uiState.isProcessing.not(), onClick = {
                 viewModel.launchOnIO {
-                    viewModel.updateSFTPEntity(name = name, remote = remote, url = url, username = username, password = password, port = port)
+                    viewModel.updateSFTPEntity(
+                        name = name,
+                        remote = remote,
+                        url = url,
+                        username = username,
+                        password = password,
+                        port = port,
+                        authMode = modeIndex,
+                        privateKey = privateKey,
+                    )
                     viewModel.emitIntent(IndexUiIntent.CreateAccount(navController = navController))
                 }
             }) {
@@ -158,6 +188,22 @@ fun PageSFTPSetup() {
             }
 
             Title(enabled = uiState.isProcessing.not(), title = StringResourceToken.fromStringId(R.string.account), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .paddingHorizontal(SizeTokens.Level24),
+                ) {
+                    modeOptions.forEachIndexed { index, label ->
+                        SegmentedButton(
+                            enabled = uiState.isProcessing.not(),
+                            shape = SegmentedButtonDefaults.itemShape(index = index, count = modeOptions.size),
+                            onClick = { modeIndex = index },
+                            selected = index == modeIndex
+                        ) {
+                            Text(label)
+                        }
+                    }
+                }
 
                 SetupTextField(
                     modifier = Modifier
@@ -169,6 +215,19 @@ fun PageSFTPSetup() {
                     onValueChange = { username = it },
                     label = StringResourceToken.fromStringId(R.string.username)
                 )
+
+                if (modeIndex == 1) {
+                    SetupTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .paddingHorizontal(SizeTokens.Level24),
+                        enabled = uiState.isProcessing.not(),
+                        value = privateKey,
+                        leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_key),
+                        onValueChange = { privateKey = it },
+                        label = StringResourceToken.fromStringId(R.string.private_key)
+                    )
+                }
 
                 SetupTextField(
                     modifier = Modifier
@@ -196,7 +255,16 @@ fun PageSFTPSetup() {
                     desc = StringResourceToken.fromStringId(R.string.remote_path_desc),
                 ) {
                     viewModel.launchOnIO {
-                        viewModel.updateSFTPEntity(name = name, remote = remote, url = url, username = username, password = password, port = port)
+                        viewModel.updateSFTPEntity(
+                            name = name,
+                            remote = remote,
+                            url = url,
+                            username = username,
+                            password = password,
+                            port = port,
+                            authMode = modeIndex,
+                            privateKey = privateKey,
+                        )
                         viewModel.emitIntent(IndexUiIntent.SetRemotePath(context = context))
                         remote = uiState.cloudEntity!!.remote
                     }

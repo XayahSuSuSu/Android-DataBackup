@@ -18,6 +18,12 @@ data class SMBExtra(
     val mode: SmbAuthMode = SmbAuthMode.PASSWORD,
 )
 
+data class SFTPExtra(
+    val port: Int,
+    val privateKey: String,
+    val authMode: Int,
+)
+
 @Entity
 data class CloudEntity(
     @PrimaryKey var name: String,

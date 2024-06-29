@@ -6,6 +6,8 @@
     <item name="url" type="string"/>
     <item name="username" type="string"/>
     <item name="password" type="string"/>
+    <item name="public_key" type="string"/>
+    <item name="private_key" type="string"/>
     <item name="shared_dir" type="string"/>
     <item name="allow_empty" type="string"/>
     <item name="domain" type="string"/>
@@ -31,6 +33,7 @@
 
     <item name="ftp_auth_mode" type="array"/>
     <item name="smb_auth_mode" type="array"/>
+    <item name="sftp_auth_mode" type="array" />
 
     <item name="ic_rounded_link" type="drawable"/>
     <item name="ic_rounded_key" type="drawable"/>

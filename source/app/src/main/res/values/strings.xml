@@ -134,6 +134,8 @@
     <string name="url">URL</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="public_key">Public key</string>
+    <string name="private_key">Private key</string>
     <string name="port">Port</string>
     <string name="mount">Mount</string>
     <string name="set_remote">Set remote</string>
