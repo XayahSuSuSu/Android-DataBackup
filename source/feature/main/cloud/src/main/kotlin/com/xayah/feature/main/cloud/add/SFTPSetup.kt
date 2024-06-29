@@ -75,8 +75,6 @@ fun PageSFTPSetup() {
     var url by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.host ?: "") }
     var port by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<FTPExtra>()?.port?.toString() ?: "22") }
     var username by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.user ?: "") }
-    val modeOptions = stringArrayResource(id = R.array.ftp_auth_mode).toList()
-    var modeIndex by rememberSaveable(uiState.cloudEntity) { mutableIntStateOf(if ((uiState.cloudEntity?.user ?: "") == ConstantUtil.FTP_ANONYMOUS_USERNAME) 1 else 0) }
     var password by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.pass ?: "") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val allFilled by rememberSaveable(
@@ -94,7 +92,7 @@ fun PageSFTPSetup() {
     AccountSetupScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.ftp_setup),
+        title = StringResourceToken.fromStringId(R.string.sftp_setup),
         actions = {
             TextButton(
                 enabled = allFilled && uiState.isProcessing.not(),
@@ -160,41 +158,12 @@ fun PageSFTPSetup() {
             }
 
             Title(enabled = uiState.isProcessing.not(), title = StringResourceToken.fromStringId(R.string.account), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .paddingHorizontal(SizeTokens.Level24),
-                ) {
-                    modeOptions.forEachIndexed { index, label ->
-                        SegmentedButton(
-                            enabled = uiState.isProcessing.not(),
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = modeOptions.size),
-                            onClick = {
-                                if (index == 0) {
-                                    // Password
-                                    if (modeIndex != 0) {
-                                        username = ""
-                                        password = ""
-                                    }
-                                } else {
-                                    // Anonymous
-                                    username = ConstantUtil.FTP_ANONYMOUS_USERNAME
-                                    password = ConstantUtil.FTP_ANONYMOUS_PASSWORD
-                                }
-                                modeIndex = index
-                            },
-                            selected = index == modeIndex
-                        ) {
-                            Text(label)
-                        }
-                    }
-                }
 
                 SetupTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .paddingHorizontal(SizeTokens.Level24),
-                    enabled = uiState.isProcessing.not() && modeIndex == 0,
+                    enabled = uiState.isProcessing.not(),
                     value = username,
                     leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
                     onValueChange = { username = it },
@@ -205,7 +174,7 @@ fun PageSFTPSetup() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .paddingHorizontal(SizeTokens.Level24),
-                    enabled = uiState.isProcessing.not() && modeIndex == 0,
+                    enabled = uiState.isProcessing.not(),
                     value = password,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_key),

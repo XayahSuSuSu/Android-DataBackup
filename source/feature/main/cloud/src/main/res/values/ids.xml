@@ -18,6 +18,7 @@
     <item name="ftp_setup" type="string"/>
     <item name="webdav_setup" type="string"/>
     <item name="smb_setup" type="string"/>
+    <item name="sftp_setup" type="string"/>
     <item name="server" type="string"/>
     <item name="add_account" type="string"/>
     <item name="provider" type="string"/>
