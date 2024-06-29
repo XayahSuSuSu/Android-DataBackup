@@ -47,6 +47,7 @@ import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
+import com.xayah.core.ui.material3.SnackbarType
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ImageVectorToken
@@ -59,6 +60,7 @@ import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
+import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.feature.main.cloud.AccountSetupScaffold
 import com.xayah.feature.main.cloud.R
 import com.xayah.feature.main.cloud.SetupTextField
@@ -301,6 +303,9 @@ fun PageSMBSetup() {
                         viewModel.emitIntent(IndexUiIntent.SetRemotePath(context = context))
                         remote = uiState.cloudEntity!!.remote
                         share = uiState.cloudEntity!!.getExtraEntity<SMBExtra>()!!.share
+                        if (remote.isEmpty()) {
+                            viewModel.emitEffect(IndexUiEffect.ShowSnackbar(type = SnackbarType.Error, message = context.getString(R.string.no_root_directory)))
+                        }
                     }
                 }
 

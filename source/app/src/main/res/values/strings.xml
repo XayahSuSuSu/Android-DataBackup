@@ -339,4 +339,5 @@
     <string name="docs">Docs</string>
     <string name="translators">Translators</string>
     <string name="translators_desc">We appreciate their efforts</string>
+    <string name="no_root_directory">Please do not select the root directory</string>
 </resources>

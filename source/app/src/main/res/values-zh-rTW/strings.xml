@@ -329,4 +329,5 @@
     <string name="docs">文檔</string>
     <string name="translators">翻譯者</string>
     <string name="translators_desc">感謝他們的付出</string>
+    <string name="no_root_directory">請勿選擇根目錄</string>
 </resources>
