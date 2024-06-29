@@ -48,7 +48,6 @@
     <string name="url">URL</string>
     <string name="account">Račun</string>
     <string name="keep_screen_on">Ostavi ekran uključen</string>
-    <string name="alphabet">A-Z</string>
     <string name="structure">Stablo datoteka</string>
     <string name="apk">APK</string>
     <string name="backup">Sigurnosna kopija</string>
@@ -162,7 +161,6 @@
     <string name="set_remote">Postavi udaljenu</string>
     <string name="set_local">Postavi lokalnu</string>
     <string name="info_set_remote_or_local">Postavi udaljenu ili lokalnu putanju</string>
-    <string name="third_party">Instalirano</string>
     <string name="main_account">Glavni račun</string>
     <string name="set_as_main_account">Postavi kao glavni račun</string>
     <string name="please_set_up_main_account">Postavi glavni račun</string>

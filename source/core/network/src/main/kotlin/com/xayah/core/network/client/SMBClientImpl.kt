@@ -30,7 +30,9 @@ import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
+import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.toPathList
+import com.xayah.core.util.withLog
 import com.xayah.core.util.withMainContext
 import com.xayah.libpickyou.parcelables.DirChildrenParcelable
 import com.xayah.libpickyou.parcelables.FileParcelable
@@ -129,7 +131,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
             withClient { client ->
                 client.close()
             }
-        }
+        }.withLog()
         share = null
         client = null
     }
@@ -167,38 +169,30 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
     private fun openDirectory(src: String): Directory = withDiskShare { diskShare ->
         diskShare.openDirectory(
             src,
-            setOf(
-                AccessMask.FILE_WRITE_DATA,
-                AccessMask.FILE_WRITE_ATTRIBUTES,
-                AccessMask.FILE_WRITE_EA,
-            ),
-            setOf(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+            setOf(AccessMask.GENERIC_ALL),
+            null,
             SMB2ShareAccess.ALL,
-            SMB2CreateDisposition.FILE_OVERWRITE_IF,
-            setOf(SMB2CreateOptions.FILE_RANDOM_ACCESS)
+            SMB2CreateDisposition.FILE_OPEN,
+            null
         )
     }
 
     private fun openFile(src: String): com.hierynomus.smbj.share.File = withDiskShare { diskShare ->
         diskShare.openFile(
             src,
-            setOf(
-                AccessMask.FILE_WRITE_DATA,
-                AccessMask.FILE_WRITE_ATTRIBUTES,
-                AccessMask.FILE_WRITE_EA,
-            ),
+            setOf(AccessMask.GENERIC_ALL),
             setOf(FileAttributes.FILE_ATTRIBUTE_NORMAL),
             SMB2ShareAccess.ALL,
-            SMB2CreateDisposition.FILE_OVERWRITE_IF,
+            SMB2CreateDisposition.FILE_OPEN_IF,
             setOf(SMB2CreateOptions.FILE_RANDOM_ACCESS)
         )
     }
 
-    override fun renameTo(src: String, dst: String) = withDiskShare { diskShare ->
+    override fun renameTo(src: String, dst: String): Unit = withDiskShare { diskShare ->
         log { "renameTo: from $src to $dst" }
         if (diskShare.folderExists(src)) {
             val dir = openDirectory(src)
-            dir.rename(dst, false)
+            dir.rename(dst.replace("/", SymbolUtil.BACKSLASH.toString()), false)
         } else if (diskShare.fileExists(src)) {
             val file = openFile(src)
             file.rename(dst, false)

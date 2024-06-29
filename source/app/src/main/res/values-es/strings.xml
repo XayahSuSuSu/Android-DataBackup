@@ -156,7 +156,6 @@
     <string name="modify">Modificar</string>
     <string name="cloud">Nube</string>
     <string name="settings">Ajustes</string>
-    <string name="alphabet">A-Z</string>
     <string name="installation_time">Duración de la instalación</string>
     <string name="data_size">Tamaño de datos</string>
     <string name="selected">Seleccionado</string>
@@ -180,7 +179,6 @@
     <string name="select_cloud_accounts_to_refresh">Seleccione las cuentas de almacenamiento en nube a actualizar</string>
     <string name="_default">Defecto</string>
     <string name="apk">APK</string>
-    <string name="third_party">Instalado</string>
     <string name="not_selected">No seleccionado</string>
     <string name="uploading">Subiendo</string>
     <string name="system">Sistema</string>
@@ -322,4 +320,12 @@
     <string name="protect">Proteger</string>
     <string name="protect_desc">Evitar que esta copia de seguridad se sobrescriba</string>
     <string name="anonymous">Anónimo</string>
+    <string name="about">Acerca de</string>
+    <string name="about_app">Acerca de la aplicación</string>
+    <string name="donate">Donar</string>
+    <string name="afdian">AFDIAN</string>
+    <string name="contact">Contactar</string>
+    <string name="docs">Docs</string>
+    <string name="translators">Traductores</string>
+    <string name="translators_desc">Apreciamos tus esfuerzos</string>
 </resources>

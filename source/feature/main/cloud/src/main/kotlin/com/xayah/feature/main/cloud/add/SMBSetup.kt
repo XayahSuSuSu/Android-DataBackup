@@ -90,8 +90,9 @@ fun PageSMBSetup() {
         url,
         port,
         username,
-        password
-    ) { mutableStateOf(name.isNotEmpty() && url.isNotEmpty() && port.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty()) }
+        password,
+        modeIndex
+    ) { mutableStateOf(name.isNotEmpty() && url.isNotEmpty() && port.isNotEmpty() && (username.isNotEmpty() || modeIndex != 0) && (password.isNotEmpty() || modeIndex != 0)) }
 
     LaunchedEffect(null) {
         viewModel.emitIntentOnIO(IndexUiIntent.Initialize)

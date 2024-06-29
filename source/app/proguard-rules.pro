@@ -29,6 +29,7 @@
 # smbj
 -dontwarn javax.el.**
 -dontwarn org.ietf.jgss.**
+-dontwarn org.slf4j.impl.**
 
 # smbj-rpc
 -dontwarn java.rmi.UnmarshalException
@@ -45,6 +46,7 @@
 # smbj
 -keep class javax.el.**
 -keep class org.ietf.jgss.**
+-keep class org.slf4j.impl.**
 
 # SsaidUtil
 -keep class org.xmlpull.**

@@ -65,7 +65,7 @@
     <string name="selected_apks">Выбранные APK</string>
     <string name="structure">Дерево файлов</string>
     <string name="apk">APK</string>
-    <string name="backup">Бекап</string>
+    <string name="backup">Резервное копирование</string>
     <string name="network">Сеть</string>
     <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
     <string name="application">Приложение</string>
@@ -135,18 +135,16 @@
     <string name="installation_time">Время установки</string>
     <string name="edit">Изменить</string>
     <string name="data_size">Размер данных</string>
-    <string name="third_party">Пользовательские</string>
     <string name="selected">Выбрано</string>
     <string name="not_selected">Не выбрано</string>
     <string name="url">URL</string>
-    <string name="alphabet">По алфавиту</string>
     <string name="cloud">Облако</string>
     <string name="modify">Изменение</string>
     <string name="settings">Настройки</string>
     <string name="app_name">DataBackup</string>
     <string name="system">Системные</string>
     <string name="please_set_up_main_account">Настройте основной аккаунт</string>
-    <string name="uploading">Загрузка</string>
+    <string name="uploading">Выгрузка</string>
     <string name="cloud_server_disconnected">Облачный сервер отключен</string>
     <string name="main_account">Основной аккаунт</string>
     <string name="original_data_size">Размер данных (оригинальный)</string>
@@ -291,9 +289,9 @@
     <string name="it_is_empty">Пусто</string>
     <string name="report">Отчет</string>
     <string name="auto_screen_off">Автоматическое отключение экрана</string>
-    <string name="auto_screen_off_desc">Автоматически выключение экрана при создании или восстановления бекапов приложений/файлов, и включение после завершения операций.</string>
-    <string name="args_screen_off_in_seconds">Экран выключится через %1$s сек.</string>
-    <string name="dump_apk_desc">Попробуйте сделать дамп apk, чтобы получить подробную информацию.</string>
+    <string name="auto_screen_off_desc">Автовыключение экрана при создании или восстановления бекапов приложений/файлов, и включение после завершения операций</string>
+    <string name="args_screen_off_in_seconds">Экран выключится через %1$s сек</string>
+    <string name="dump_apk_desc">Попробуйте сделать дамп apk, чтобы получить подробную информацию</string>
     <string name="choose_a_custom_path">Указать пользовательский путь</string>
     <string name="delete_desc">Будет удалено</string>
     <string name="files">Файлы</string>
@@ -309,7 +307,7 @@
     <string name="theme_light_desc">Всегда светлая</string>
     <string name="theme_dark">Темная</string>
     <string name="theme_dark_desc">Всегда темная</string>
-    <string name="dark_theme">Темная</string>
+    <string name="dark_theme">Темная тема</string>
     <string name="ftp_setup">Настройка FTP</string>
     <string name="webdav_setup">Настройка WebDAV</string>
     <string name="smb_setup">Настройка SMB / CIFS</string>
@@ -322,4 +320,11 @@
     <string name="delete_account_desc">Этот аккаунт будет удален</string>
     <string name="choose_an_account">Выбрать аккаунт</string>
     <string name="no_available_account">Нет доступного аккаунта</string>
+    <string name="about_app">О приложении</string>
+    <string name="about">О программе</string>
+    <string name="donate">Пожертвовать</string>
+    <string name="contact">Контакт</string>
+    <string name="docs">Документация</string>
+    <string name="translators">Переводчики</string>
+    <string name="translators_desc">Мы признательны за их усилия</string>
 </resources>

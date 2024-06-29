@@ -146,12 +146,12 @@
     <string name="modify">Modify</string>
     <string name="cloud">Cloud</string>
     <string name="settings">Settings</string>
-    <string name="alphabet">A-Z</string>
+    <string name="alphabet" translatable="false">A-Z</string>
     <string name="installation_time">Installation time</string>
     <string name="data_size">Data size</string>
     <string name="selected">Selected</string>
     <string name="not_selected">Not selected</string>
-    <string name="third_party">Installed</string>
+    <string name="third_party">Third party</string>
     <string name="system">System</string>
     <string name="uploading">Uploading</string>
     <string name="main_account">Main account</string>
