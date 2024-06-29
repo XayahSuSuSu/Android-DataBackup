@@ -81,9 +81,15 @@ class IndexViewModel @Inject constructor(
     }
 
     suspend fun updateSFTPEntity(name: String, remote: String, url: String, username: String, password: String, port: String, authMode: Int, privateKey: String) {
+        val newPrivateKey = if (authMode == 0 && privateKey.isNotEmpty()) {
+            ""
+        } else {
+            privateKey
+        }
+
         val extra = GsonUtil().toJson(SFTPExtra(
             port = port.toIntOrNull() ?: 22,
-            privateKey = privateKey,
+            privateKey = newPrivateKey,
             authMode = authMode,
         ))
         emitIntent(
