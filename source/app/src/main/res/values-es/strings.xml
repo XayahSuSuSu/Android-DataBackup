@@ -328,4 +328,6 @@
     <string name="docs">Docs</string>
     <string name="translators">Traductores</string>
     <string name="translators_desc">Apreciamos tus esfuerzos</string>
+    <string name="no_root_directory">Por favor, no seleccione el directorio raíz</string>
+    <string name="third_party">Datos de terceros</string>
 </resources>
