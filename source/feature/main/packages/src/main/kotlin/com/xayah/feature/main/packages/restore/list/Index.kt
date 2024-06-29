@@ -93,6 +93,7 @@ fun PagePackagesRestoreList() {
 
     LaunchedEffect(null) {
         viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh)
+        viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
     }
 
     ListScaffold(
@@ -154,6 +155,7 @@ fun PagePackagesRestoreList() {
         } else {
             Column {
                 val flagIndexState by viewModel.flagIndexState.collectAsStateWithLifecycle()
+                val userIdListState by viewModel.userIdListState.collectAsStateWithLifecycle()
                 val userIdIndexListState by viewModel.userIdIndexListState.collectAsStateWithLifecycle()
                 val sortIndexState by viewModel.sortIndexState.collectAsStateWithLifecycle()
                 val sortTypeState by viewModel.sortTypeState.collectAsStateWithLifecycle()
@@ -189,7 +191,7 @@ fun PagePackagesRestoreList() {
                                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
                                 label = StringResourceToken.fromStringId(R.string.user),
                                 selectedIndexList = userIdIndexListState,
-                                list = uiState.userIdList.map { it.toString() },
+                                list = userIdListState.map { it.toString() },
                                 onSelected = { indexList ->
                                     if (indexList.isNotEmpty()) {
                                         viewModel.emitIntentOnIO(IndexUiIntent.SetUserIdIndexList(indexList))
