@@ -267,7 +267,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
         context: Context,
         onSet: suspend (remote: String, extra: String) -> Unit
     ) {
-        val extra = entity.getExtraEntity<FTPExtra>()!!
+        val extra = entity.getExtraEntity<SFTPExtra>()!!
         connect()
         PickYouLauncher.apply {
             val currentDir = pwd()
