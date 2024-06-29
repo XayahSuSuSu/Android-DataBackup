@@ -51,8 +51,6 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
         block(sftpClient!!)
     }
 
-    private fun getPath(path: String) = "${entity.host.trimEnd('/')}/${path.trimStart('/')}"
-
     override fun connect() {
         sshClient = SSHClient().apply {
             addHostKeyVerifier(PromiscuousVerifier())
@@ -115,9 +113,9 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
     ) {
         val name = Paths.get(src).fileName
         val dstPath = "${dst}/$name"
-        log { "download: ${getPath(src)} to $dstPath" }
+        log { "download: $src to $dstPath" }
         val dstFile = File(dstPath)
-        val dstStream = dstFile.outputStream()
+        val dstStream = FileOutputStream(dstFile)
         val srcFile = openFile(src)
         val srcFileSize = srcFile.length()
         val srcFileStream = srcFile.RemoteFileInputStream()
@@ -197,6 +195,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
         return try {
             withSFTPClient { it.statExistence(src) } != null
         } catch (e: Throwable) {
+            log { e.toString() }
             false
         }
     }
@@ -205,6 +204,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
         return try {
             withSFTPClient { it.size(src) }
         } catch (e: Throwable) {
+            log { e.toString() }
             -1
         }
     }
