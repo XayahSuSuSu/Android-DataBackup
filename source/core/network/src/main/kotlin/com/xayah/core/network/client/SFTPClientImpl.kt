@@ -157,20 +157,22 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
             if (item.isDirectory) {
                 directories.add(
                     FileParcelable(
-                        item.path,
+                        item.name,
                         item.attributes.atime,
                     )
                 )
             } else {
                 files.add(
                     FileParcelable(
-                        item.path,
+                        item.name,
                         item.attributes.atime,
                     )
                 )
             }
         }
 
+        files.sortBy { it.name }
+        directories.sortBy { it.name }
         return DirChildrenParcelable(files, directories)
     }
 
@@ -219,8 +221,8 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
         val extra = entity.getExtraEntity<FTPExtra>()!!
         connect()
         PickYouLauncher.apply {
-            val prefix = "${context.getString(R.string.cloud)}:"
-            sTraverseBackend = { listFiles(it.pathString.replaceFirst(prefix, "")) }
+            val prefix = "/home/${entity.user}"
+            sTraverseBackend = { listFiles(it.pathString) }
             sMkdirsBackend = { parent, child ->
                 runCatching { mkdirRecursively("$parent/$child") }.isSuccess
             }
