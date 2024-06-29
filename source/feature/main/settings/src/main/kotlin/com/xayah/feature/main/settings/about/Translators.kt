@@ -64,19 +64,32 @@ fun PageTranslatorsSettings() {
                 item.keys.forEach { lang ->
                     Title(title = StringResourceToken.fromString(lang)) {
                         Column(verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8)) {
-                            item[lang]?.forEach { info ->
-                                TranslatorCard(
-                                    modifier = Modifier.paddingHorizontal(SizeTokens.Level16),
-                                    avatar = info.getOrNull(3),
-                                    name = info.getOrNull(1) ?: context.getString(R.string.unknown),
-                                    desc = info.getOrNull(0) ?: context.getString(R.string.unknown)
-                                ) {
-                                    val url = info.getOrNull(4)
-                                    if (url != null) {
-                                        viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, url))
+                            if (item[lang] != null) {
+                                if (item[lang]!!.isEmpty()) {
+                                    TranslatorCard(
+                                        modifier = Modifier.paddingHorizontal(SizeTokens.Level16),
+                                        avatar = null,
+                                        name = context.getString(R.string.unknown),
+                                        desc = context.getString(R.string.translators_desc)
+                                    ) {
+                                    }
+                                } else {
+                                    item[lang]!!.forEach { info ->
+                                        TranslatorCard(
+                                            modifier = Modifier.paddingHorizontal(SizeTokens.Level16),
+                                            avatar = info.getOrNull(3),
+                                            name = info.getOrNull(1) ?: context.getString(R.string.unknown),
+                                            desc = info.getOrNull(0) ?: context.getString(R.string.unknown)
+                                        ) {
+                                            val url = info.getOrNull(4)
+                                            if (url != null) {
+                                                viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, url))
+                                            }
+                                        }
                                     }
                                 }
                             }
+
                         }
 
                     }
