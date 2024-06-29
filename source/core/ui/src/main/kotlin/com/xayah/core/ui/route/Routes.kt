@@ -17,6 +17,10 @@ sealed class MainRoutes(val route: String) {
         fun getRoute(name: String) = "main_ftp_setup/$name"
     }
 
+    data object SFTPSetup : MainRoutes(route = "main_sftp_setup/{$ARG_ACCOUNT_NAME}") {
+        fun getRoute(name: String) = "main_sftp_setup/$name"
+    }
+
     data object WebDAVSetup : MainRoutes(route = "main_webdav_setup/{$ARG_ACCOUNT_NAME}") {
         fun getRoute(name: String) = "main_webdav_setup/$name"
     }

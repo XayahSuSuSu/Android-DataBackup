@@ -1,6 +1,7 @@
 package com.xayah.core.ui.util
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Lan
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Web
@@ -13,5 +14,6 @@ val CloudType.icon: ImageVectorToken
             CloudType.FTP -> ImageVectorToken.fromVector(Icons.Rounded.Web)
             CloudType.WEBDAV -> ImageVectorToken.fromVector(Icons.Rounded.Language)
             CloudType.SMB -> ImageVectorToken.fromVector(Icons.Rounded.Storage)
+            CloudType.SFTP -> ImageVectorToken.fromVector(Icons.Rounded.Lan)
         }
     }

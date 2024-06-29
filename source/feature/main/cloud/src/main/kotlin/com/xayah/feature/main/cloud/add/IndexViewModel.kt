@@ -79,6 +79,21 @@ class IndexViewModel @Inject constructor(
         )
     }
 
+    suspend fun updateSFTPEntity(name: String, remote: String, url: String, username: String, password: String, port: String) {
+        val extra = GsonUtil().toJson(FTPExtra(port = port.toIntOrNull() ?: 22))
+        emitIntent(
+            IndexUiIntent.UpdateEntity(
+                name = name,
+                type = CloudType.SFTP,
+                url = url,
+                username = username,
+                password = password,
+                extra = extra,
+                remote = remote,
+            )
+        )
+    }
+
     suspend fun updateWebDAVEntity(name: String, remote: String, url: String, username: String, password: String) {
         emitIntent(
             IndexUiIntent.UpdateEntity(

@@ -95,6 +95,7 @@ fun PageCloud() {
                                             CloudType.FTP -> MainRoutes.FTPSetup.getRoute(it.name.encodeURL())
                                             CloudType.WEBDAV -> MainRoutes.WebDAVSetup.getRoute(it.name.encodeURL())
                                             CloudType.SMB -> MainRoutes.SMBSetup.getRoute(it.name.encodeURL())
+                                            CloudType.SFTP -> MainRoutes.SFTPSetup.getRoute(it.name.encodeURL())
                                         }
                                     )
                                 }

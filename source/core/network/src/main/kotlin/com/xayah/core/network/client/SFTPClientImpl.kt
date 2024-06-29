@@ -212,13 +212,6 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
         disconnect()
     }
 
-    private fun handleOriginalPath(path: String): String = run {
-        val pathSplit = path.toPathList().toMutableList()
-        // Remove “$Cloud:”
-        pathSplit.removeFirst()
-        pathSplit.toPathString()
-    }
-
     override suspend fun setRemote(
         context: Context,
         onSet: suspend (remote: String, extra: String) -> Unit
@@ -229,7 +222,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
             val prefix = "${context.getString(R.string.cloud)}:"
             sTraverseBackend = { listFiles(it.pathString.replaceFirst(prefix, "")) }
             sMkdirsBackend = { parent, child ->
-                runCatching { mkdirRecursively(handleOriginalPath("$parent/$child")) }.isSuccess
+                runCatching { mkdirRecursively("$parent/$child") }.isSuccess
             }
             sTitle = context.getString(R.string.select_target_directory)
             sPickerType = PickerType.DIRECTORY
@@ -241,7 +234,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
         withMainContext {
             val pathList = PickYouLauncher.awaitPickerOnce(context)
             pathList.firstOrNull()?.also { pathString ->
-                onSet(handleOriginalPath(pathString), GsonUtil().toJson(extra))
+                onSet(pathString, GsonUtil().toJson(extra))
             }
         }
         disconnect()
