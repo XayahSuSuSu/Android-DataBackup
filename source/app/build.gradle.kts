@@ -71,10 +71,6 @@ android {
                 "DataBackup-${versionName}-${productFlavors[0].name}-${productFlavors[1].name}-${buildType.name}.apk"
         }
     }
-
-    configurations.all {
-        exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
-    }
 }
 
 dependencies {

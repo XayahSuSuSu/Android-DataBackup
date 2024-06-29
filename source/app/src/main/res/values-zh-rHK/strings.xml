@@ -278,6 +278,7 @@
     <string name="ftp_setup">FTP配置</string>
     <string name="webdav_setup">WebDAV配置</string>
     <string name="smb_setup">SMB / CIFS配置</string>
+    <string name="sftp_setup">SFTP配置</string>
     <string name="server">服務器</string>
     <string name="add_account">添加賬戶</string>
     <string name="provider">供應商</string>

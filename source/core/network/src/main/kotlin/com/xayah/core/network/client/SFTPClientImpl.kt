@@ -37,7 +37,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
     private var sftpClient: SFTPClient? = null
 
     private fun log(msg: () -> String): String = run {
-        LogUtil.log { "FTPClientImpl" to msg() }
+        LogUtil.log { "SFTPClientImpl" to msg() }
         msg()
     }
 
