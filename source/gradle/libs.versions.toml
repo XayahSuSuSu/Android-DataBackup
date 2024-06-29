@@ -47,6 +47,7 @@ smbj-rpc = "0.12.0"
 sshj = "0.38.0"
 guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
 sardine-next = "1.0.2"
+bountycastle = "1.76"
 
 # plugins
 android-gradle-plugin = "8.2.2"
@@ -80,6 +81,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+bountycastle = { group = "org.bouncycastle", name = "bcutil-jdk18on", version.ref = "bountycastle" }
 refine-annotation = { module = "dev.rikka.tools.refine:annotation", version.ref = "refine" }
 refine-annotation-processor = { module = "dev.rikka.tools.refine:annotation-processor", version.ref = "refine" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
