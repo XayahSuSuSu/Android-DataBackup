@@ -511,7 +511,7 @@ class PackageRepository @Inject constructor(
                     val remote = entity.remote
                     val remoteArchivesPackagesDir = pathUtil.getCloudRemoteAppsDir(remote)
                     val src = "${remoteArchivesPackagesDir}/${p.archivesRelativeDir}"
-                    client.deleteRecursively(src)
+                    if (client.exists(src)) client.deleteRecursively(src)
                 }
             }.onFailure(rootService.onFailure).isSuccess
         }
