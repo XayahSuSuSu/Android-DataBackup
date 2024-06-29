@@ -58,6 +58,7 @@ import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
 import com.xayah.core.ui.component.PackageItem
 import com.xayah.core.ui.component.SearchBar
+import com.xayah.core.ui.component.SetOnResume
 import com.xayah.core.ui.component.SortChip
 import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
@@ -106,8 +107,13 @@ fun PagePackagesBackupList() {
         viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
     }
 
+    SetOnResume {
+        viewModel.emitIntentOnIO(IndexUiIntent.OnFastRefresh)
+    }
+
     ListScaffold(
         scrollBehavior = scrollBehavior,
+        progress = if (uiState.isLoading) -1F else null,
         title = StringResourceToken.fromStringArgs(
             StringResourceToken.fromStringId(R.string.select_apps),
             StringResourceToken.fromString(if (packagesSelectedState != 0 && isRefreshing.not()) " (${packagesSelectedState}/${packagesState.size})" else ""),

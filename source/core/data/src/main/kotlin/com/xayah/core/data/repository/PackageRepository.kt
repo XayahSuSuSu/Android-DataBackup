@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.UserHandle
 import com.xayah.core.data.R
 import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.PackageDao
@@ -222,6 +223,91 @@ class PackageRepository @Inject constructor(
         else -> sortByAlphabetNew(sortType)
     }
 
+    private suspend fun handlePackage(
+        pm: PackageManager,
+        info: android.content.pm.PackageInfo,
+        checkKeystore: Boolean, userId: Int,
+        userHandle: UserHandle?,
+        hasPassedOneDay: Boolean
+    ): PackageEntity {
+        val permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
+        val uid = info.applicationInfo.uid
+        val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid) else false
+        val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
+        val iconPath = pathUtil.getPackageIconPath(info.packageName)
+        val iconExists = rootService.exists(iconPath)
+        if (iconExists.not() || (iconExists && hasPassedOneDay)) {
+            runCatching {
+                val icon = info.applicationInfo.loadIcon(pm)
+                BaseUtil.writeIcon(icon = icon, dst = iconPath)
+            }.withLog()
+        }
+        val packageInfo = PackageInfo(
+            label = info.applicationInfo.loadLabel(pm).toString(),
+            versionName = info.versionName ?: "",
+            versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                info.longVersionCode
+            } else {
+                info.versionCode.toLong()
+            },
+            flags = info.applicationInfo.flags,
+            firstInstallTime = info.firstInstallTime,
+        )
+        val extraInfo = PackageExtraInfo(
+            uid = uid,
+            labels = listOf(),
+            hasKeystore = hasKeystore,
+            permissions = permissions,
+            ssaid = ssaid,
+            blocked = false,
+            activated = false,
+            existed = true,
+        )
+        val indexInfo = PackageIndexInfo(
+            opType = OpType.BACKUP,
+            packageName = info.packageName,
+            userId = userId,
+            compressionType = context.readCompressionType().first(),
+            preserveId = DefaultPreserveId,
+            cloud = "",
+            backupDir = ""
+        )
+        val packageEntity =
+            getPackage(packageName = info.packageName, opType = OpType.BACKUP, userId = userId, preserveId = DefaultPreserveId, cloud = "", backupDir = "")
+                ?: PackageEntity(
+                    id = 0,
+                    indexInfo = indexInfo,
+                    packageInfo = packageInfo,
+                    extraInfo = extraInfo,
+                    dataStates = PackageDataStates(),
+                    storageStats = PackageStorageStats(),
+                    dataStats = PackageDataStats(),
+                    displayStats = PackageDataStats(),
+                )
+        // Update if exists.
+        packageEntity.apply {
+            this.packageInfo = packageInfo
+            this.extraInfo.uid = uid
+            this.extraInfo.hasKeystore = hasKeystore
+            this.extraInfo.permissions = permissions
+            this.extraInfo.ssaid = ssaid
+            this.extraInfo.existed = true
+        }
+        if (userHandle != null) {
+            rootService.queryStatsForPackage(info, userHandle).also { stats ->
+                if (stats != null) {
+                    packageEntity.apply {
+                        this.storageStats.appBytes = stats.appBytes
+                        this.storageStats.cacheBytes = stats.cacheBytes
+                        this.storageStats.dataBytes = stats.dataBytes
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) this.storageStats.externalCacheBytes = stats.externalCacheBytes
+                    }
+                }
+            }
+        }
+        return packageEntity
+    }
+
     @SuppressLint("StringFormatInvalid")
     suspend fun refresh(refreshState: MutableStateFlow<RefreshState>) = run {
         packageDao.clearExisted(opType = OpType.BACKUP)
@@ -248,81 +334,7 @@ class PackageRepository @Inject constructor(
             installedPackages.forEachIndexed { index, info ->
                 val isSystemApp = (info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
                 if (loadSystemApps || isSystemApp.not()) {
-                    val permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
-                    val uid = info.applicationInfo.uid
-                    val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid) else false
-                    val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
-                    val iconPath = pathUtil.getPackageIconPath(info.packageName)
-                    val iconExists = rootService.exists(iconPath)
-                    if (iconExists.not() || (iconExists && hasPassedOneDay)) {
-                        runCatching {
-                            val icon = info.applicationInfo.loadIcon(pm)
-                            BaseUtil.writeIcon(icon = icon, dst = iconPath)
-                        }.withLog()
-                    }
-                    val packageInfo = PackageInfo(
-                        label = info.applicationInfo.loadLabel(pm).toString(),
-                        versionName = info.versionName ?: "",
-                        versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                            info.longVersionCode
-                        } else {
-                            info.versionCode.toLong()
-                        },
-                        flags = info.applicationInfo.flags,
-                        firstInstallTime = info.firstInstallTime,
-                    )
-                    val extraInfo = PackageExtraInfo(
-                        uid = uid,
-                        labels = listOf(),
-                        hasKeystore = hasKeystore,
-                        permissions = permissions,
-                        ssaid = ssaid,
-                        blocked = false,
-                        activated = false,
-                        existed = true,
-                    )
-                    val indexInfo = PackageIndexInfo(
-                        opType = OpType.BACKUP,
-                        packageName = info.packageName,
-                        userId = userId,
-                        compressionType = context.readCompressionType().first(),
-                        preserveId = DefaultPreserveId,
-                        cloud = "",
-                        backupDir = ""
-                    )
-                    val packageEntity =
-                        getPackage(packageName = info.packageName, opType = OpType.BACKUP, userId = userId, preserveId = DefaultPreserveId, cloud = "", backupDir = "")
-                            ?: PackageEntity(
-                                id = 0,
-                                indexInfo = indexInfo,
-                                packageInfo = packageInfo,
-                                extraInfo = extraInfo,
-                                dataStates = PackageDataStates(),
-                                storageStats = PackageStorageStats(),
-                                dataStats = PackageDataStats(),
-                                displayStats = PackageDataStats(),
-                            )
-                    // Update if exists.
-                    packageEntity.apply {
-                        this.packageInfo = packageInfo
-                        this.extraInfo.uid = uid
-                        this.extraInfo.hasKeystore = hasKeystore
-                        this.extraInfo.permissions = permissions
-                        this.extraInfo.ssaid = ssaid
-                        this.extraInfo.existed = true
-                    }
-                    if (userHandle != null) {
-                        rootService.queryStatsForPackage(info, userHandle).also { stats ->
-                            if (stats != null) {
-                                packageEntity.apply {
-                                    this.storageStats.appBytes = stats.appBytes
-                                    this.storageStats.cacheBytes = stats.cacheBytes
-                                    this.storageStats.dataBytes = stats.dataBytes
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) this.storageStats.externalCacheBytes = stats.externalCacheBytes
-                                }
-                            }
-                        }
-                    }
+                    val packageEntity = handlePackage(pm, info, checkKeystore, userId, userHandle, hasPassedOneDay)
                     upsert(packageEntity)
 
                     refreshState.emit(refreshState.value.copy(pkg = info.packageName))
@@ -333,6 +345,50 @@ class PackageRepository @Inject constructor(
             refreshState.emit(RefreshState(progress = 1f, pkg = ""))
         }
         refreshState.emit(RefreshState(progress = 1f, pkg = ""))
+    }
+
+    @SuppressLint("StringFormatInvalid")
+    suspend fun fastRefresh() = run {
+        val checkKeystore = context.readCheckKeystore().first()
+        val loadSystemApps = context.readLoadSystemApps().first()
+        val pm = context.packageManager
+        val userInfoList = rootService.getUsers()
+        for (userInfo in userInfoList) {
+            val userId = userInfo.id
+            val userHandle = rootService.getUserHandle(userId)
+            val installedPackages = getInstalledPackages(userId).filter {
+                val isSystemApp = (it.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                loadSystemApps || isSystemApp.not()
+            }.map { it.packageName!! }.toSet()
+            val storedPackages = packageDao.queryPackageNamesByUserId(OpType.BACKUP, userId).toSet()
+            val missingPackages = installedPackages.subtract(storedPackages)
+            val outdatedPackages = storedPackages.subtract(installedPackages)
+            log { "Missing packages: $missingPackages" }
+            log { "Outdated packages: $outdatedPackages" }
+
+            BaseUtil.mkdirs(context.iconDir())
+            val iconUpdateTime = context.readIconUpdateTime().first()
+            val now = DateUtil.getTimestamp()
+            val hasPassedOneDay = DateUtil.getNumberOfDaysPassed(iconUpdateTime, now) >= 1
+            if (hasPassedOneDay) context.saveIconUpdateTime(now)
+            // For missing packages, we query info.
+            missingPackages.forEach {
+                // Update packages' info.
+                val info = rootService.getPackageInfoAsUser(it, PackageManager.GET_PERMISSIONS, userId)
+                if (info != null) {
+                    val isSystemApp = (info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                    if (loadSystemApps || isSystemApp.not()) {
+                        val packageEntity = handlePackage(pm, info, checkKeystore, userId, userHandle, hasPassedOneDay)
+                        upsert(packageEntity)
+                    }
+                }
+            }
+
+            // For those uninstalled packages, we hide them.
+            outdatedPackages.forEach {
+                packageDao.setExisted(OpType.BACKUP, it, userId, false)
+            }
+        }
     }
 
     suspend fun loadPackagesFromLocal() {

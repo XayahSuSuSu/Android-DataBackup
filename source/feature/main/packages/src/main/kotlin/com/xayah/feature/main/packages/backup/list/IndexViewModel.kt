@@ -38,10 +38,12 @@ data class IndexUiState(
     val selectAll: Boolean,
     val filterMode: Boolean,
     val uuid: UUID,
+    val isLoading: Boolean,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
     data object OnRefresh : IndexUiIntent()
+    data object OnFastRefresh : IndexUiIntent()
     data object GetUserIds : IndexUiIntent()
     data class SetUserIdIndexList(val list: List<Int>) : IndexUiIntent()
     data class FilterByFlag(val index: Int) : IndexUiIntent()
@@ -60,7 +62,15 @@ class IndexViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val packageRepo: PackageRepository,
     private val rootService: RemoteRootService,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(isRefreshing = false, selectAll = false, filterMode = true, uuid = UUID.randomUUID())) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
+    IndexUiState(
+        isRefreshing = false,
+        selectAll = false,
+        filterMode = true,
+        uuid = UUID.randomUUID(),
+        isLoading = false
+    )
+) {
     init {
         rootService.onFailure = {
             val msg = it.message
@@ -77,6 +87,12 @@ class IndexViewModel @Inject constructor(
                 emitState(state.copy(isRefreshing = true))
                 packageRepo.refresh(refreshState = _refreshState)
                 emitState(state.copy(isRefreshing = false, uuid = UUID.randomUUID()))
+            }
+
+            is IndexUiIntent.OnFastRefresh -> {
+                emitState(state.copy(isLoading = true))
+                packageRepo.fastRefresh()
+                emitState(state.copy(isLoading = false))
             }
 
             is IndexUiIntent.GetUserIds -> {
