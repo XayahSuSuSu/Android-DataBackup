@@ -86,6 +86,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
     }
 
     override fun renameTo(src: String, dst: String) {
+        log { "Rename $src to $dst" }
         withSFTPClient { it.rename(src, dst) }
     }
 
@@ -137,9 +138,9 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtr
         withSFTPClient {
             for (item in it.ls(src)) {
                 if (item.isDirectory) {
-                    deleteRecursively("$src/${item.path}")
+                    deleteRecursively(item.path)
                 } else {
-                    deleteFile("$src/${item.path}")
+                    deleteFile(item.path)
                 }
             }
 
