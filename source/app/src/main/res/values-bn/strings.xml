@@ -1,2 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">ডাটা ব্যাকআপ</string>
+    <string name="welcome_to_use">ডাটা ব্যাকআপ এ আপনাকে স্বাগতম</string>
+    <string name="update_records">রেকর্ড পরিবর্তন করুন</string>
+    <string name="start">শুরু করুন</string>
+    <string name="start_desc">এই অ্যাপ দ্বারা তৈরি সকল তথ্য শুধুমাত্র ব্যাকআপ এবং রিস্টোর এর জন্য ব্যবহৃত হয় এবং আপনার নিজস্ব ফোন এ সংরক্ষিত থাকে।</string>
+    <string name="network">নেটওয়ার্ক</string>
+    <string name="application">অ্যাপ</string>
+    <string name="storage">স্টোরেজ</string>
+    <string name="storage_desc">ব্যাকআপ এর কনফিগারেশন, আর্কাইভ রিড এবং রাইটের জন্য ব্যবহৃত হয়</string>
+    <string name="loading">লোড হচ্ছে</string>
+    <string name="grant_root_access">রুট এর এক্সেস দিন</string>
+    <string name="release_prebuilt_binaries">প্রি-বিল্ট বাইনারি রিলিজ করুন</string>
+    <string name="cancel">বাতিল করুন</string>
+    <string name="overlook">ওভারভিউ</string>
+    <string name="none">কিছু না</string>
+    <string name="utilities">খুঁটিনাটি জিনিস</string>
+    <string name="activities">কার্যক্রম</string>
+    <string name="directory">স্টোরেজ</string>
+    <string name="log">লগ</string>
+    <string name="app_and_data">অ্যাপস</string>
+    <string name="media">মিডিয়া</string>
+    <string name="telephony">কল এর হিস্টরি</string>
+    <string name="network_desc">অ্যাপ এর আপডেট এবং এনালাইটিক্স এর জন্য ব্যবহৃত</string>
+    <string name="application_desc">অ্যাপ এর প্যাকেজ সম্পর্কিত তথ্য গ্রহণ, ব্যাকআপ এর তালিকা এবং অ্যাপ এর ডাটা এর সাইজ এর জন্য</string>
+    <string name="loading_failed">লোডিং ব্যর্থ হয়েছে</string>
+    <string name="last_backup">সর্বশেষ ব্যাকআপ</string>
+    <string name="confirm">নিশ্চিত করুন</string>
+    <string name="start_subtitle">আমাদের পলিসি অনুসারে, আপনি এই অ্যাপ্লিকেশনটি ব্যবহার শুরু করার আগে আপনাকে নিম্নলিখিত চুক্তি এবং গোপনীয়তা নীতিটি সাবধানে পড়তে হবে এবং সম্মত হতে হবে</string>
+</resources>
