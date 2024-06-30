@@ -1,20 +1,34 @@
 <div align="center">
-	<span style="font-weight: bold"> <a> English </a> </span>
+
+<span style="font-weight: bold"> <a> English </a> </span>
+
+<img src="./fastlane/metadata/android/en-US/images/icon.png" alt="logo" width="128px" />
+
+<h1 align="center">DataBackup</h1>
+
+[![Doc](https://img.shields.io/badge/wiki-documentation-forestgreen)](https://DataBackupOfficial.github.io)
+[![Download](https://img.shields.io/github/downloads/XayahSuSuSu/Android-DataBackup/total)](https://github.com/XayahSuSuSu/Android-DataBackup/releases)
+[![GitHub release](https://img.shields.io/github/v/release/XayahSuSuSu/Android-DataBackup?color=orange)](https://github.com/XayahSuSuSu/Android-DataBackup/releases)
+[![License](https://img.shields.io/github/license/XayahSuSuSu/Android-DataBackup?color=ff69b4)](./LICENSE)
+[![Channel](https://img.shields.io/badge/channel-DataBackup-252850?color=blue&logo=telegram)](https://t.me/dabackupchannel)
+[![Chat](https://img.shields.io/badge/group-DataBackup-252850?color=blue&logo=telegram)](https://t.me/databackupchat)
+
+Free and open-source data backup application
+
 </div>
 
-# DataBackup
-[![Download](https://img.shields.io/github/downloads/XayahSuSuSu/Android-DataBackup/total)](https://github.com/XayahSuSuSu/Android-DataBackup/releases) [![GitHub release](https://img.shields.io/github/v/release/XayahSuSuSu/Android-DataBackup?color=orange)](https://github.com/XayahSuSuSu/Android-DataBackup/releases) [![License](https://img.shields.io/github/license/XayahSuSuSu/Android-DataBackup?color=ff69b4)](./LICENSE) [![Channel](https://img.shields.io/badge/channel-DataBackup-252850?color=blue&logo=telegram)](https://t.me/dabackupchannel) [![Chat](https://img.shields.io/badge/group-DataBackup-252850?color=blue&logo=telegram)](https://t.me/databackupchat)
-
-> :star: Based on [speed-backup](https://github.com/YAWAsau/backup_script) by [CoolApk@落叶凄凉TEL](http://www.coolapk.com/u/2277637)
->
-
 ## Overview
+:star: Based on [speed-backup](https://github.com/YAWAsau/backup_script) by [CoolApk@落叶凄凉TEL](http://www.coolapk.com/u/2277637).
+
 :fire: The [script](https://github.com/YAWAsau/backup_script) has been **acclaimed** since the [author](https://github.com/YAWAsau) wrote it.
 
 :sparkling_heart: This application was born **with the consent of the author**.
 
+## Usage
+See [documentation](https://DataBackupOfficial.github.io).
+
 ## Features
-* :deciduous_tree: **Root needed, support [Magisk](https://github.com/topjohnwu/Magisk), [KernelSU](https://github.com/tiann/KernelSU)**
+* :deciduous_tree: **Root needed, support [Magisk](https://github.com/topjohnwu/Magisk), [KernelSU](https://github.com/tiann/KernelSU), [APatch](https://github.com/bmax121/APatch)**
 
 * :cyclone: **Multi-user Support**
 
