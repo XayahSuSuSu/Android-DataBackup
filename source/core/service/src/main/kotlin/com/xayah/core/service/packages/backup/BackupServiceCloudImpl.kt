@@ -119,32 +119,32 @@ internal class BackupServiceCloudImpl @Inject constructor() : BackupService() {
             var restoreEntity = packageRepository.getPackage(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, cloudEntity.name, remote)
 
             packagesBackupUtil.backupApk(p = p, t = t, r = restoreEntity, dstDir = tmpDstDir).apply {
-                if (isSuccess)
+                if (isSuccess && t.apkInfo.state != OperationState.SKIP)
                     packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_APK, srcDir = tmpDstDir, dstDir = remoteDstDir)
             }
 
             packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_USER, dstDir = tmpDstDir).apply {
-                if (isSuccess)
+                if (isSuccess && t.userInfo.state != OperationState.SKIP)
                     packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = tmpDstDir, dstDir = remoteDstDir)
             }
 
             packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_USER_DE, dstDir = tmpDstDir).apply {
-                if (isSuccess)
+                if (isSuccess && t.userDeInfo.state != OperationState.SKIP)
                     packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER_DE, srcDir = tmpDstDir, dstDir = remoteDstDir)
             }
 
             packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_DATA, dstDir = tmpDstDir).apply {
-                if (isSuccess)
+                if (isSuccess && t.dataInfo.state != OperationState.SKIP)
                     packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = tmpDstDir, dstDir = remoteDstDir)
             }
 
             packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_OBB, dstDir = tmpDstDir).apply {
-                if (isSuccess)
+                if (isSuccess && t.obbInfo.state != OperationState.SKIP)
                     packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = tmpDstDir, dstDir = remoteDstDir)
             }
 
             packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_MEDIA, dstDir = tmpDstDir).apply {
-                if (isSuccess)
+                if (isSuccess && t.mediaInfo.state != OperationState.SKIP)
                     packagesBackupUtil.upload(client = client, p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = tmpDstDir, dstDir = remoteDstDir)
             }
 
