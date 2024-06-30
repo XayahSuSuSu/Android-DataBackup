@@ -157,7 +157,7 @@ fun PagePackagesBackupList() {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .pullRefresh(pullRefreshState),
+                    .pullRefresh(pullRefreshState, uiState.isLoading.not()),
             ) {
                 Box(
                     modifier = Modifier
@@ -246,7 +246,7 @@ fun PagePackagesBackupList() {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .pullRefresh(pullRefreshState),
+                            .pullRefresh(pullRefreshState, uiState.isLoading.not()),
                         state = scrollState,
                     ) {
                         items(items = packagesState, key = { "${uiState.uuid}-${it.id}" }) { item ->
