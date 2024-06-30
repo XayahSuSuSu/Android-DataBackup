@@ -39,6 +39,13 @@ interface PackageDao {
     suspend fun query(packageName: String, opType: OpType, userId: Int, cloud: String, backupDir: String): List<PackageEntity>
 
     @Query(
+        "SELECT indexInfo_packageName FROM PackageEntity WHERE" +
+                " indexInfo_opType = :opType AND indexInfo_userId = :userId" +
+                " AND extraInfo_blocked = 0 AND extraInfo_existed = 1"
+    )
+    suspend fun queryPackageNamesByUserId(opType: OpType, userId: Int): List<String>
+
+    @Query(
         "SELECT * FROM PackageEntity WHERE" +
                 " indexInfo_packageName = :packageName AND indexInfo_opType = :opType AND indexInfo_userId = :userId AND indexInfo_preserveId = :preserveId AND indexInfo_compressionType = :ct" +
                 " AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir" +
@@ -107,6 +114,13 @@ interface PackageDao {
                 " WHERE id = :id"
     )
     suspend fun setBlocked(id: Long, blocked: Boolean)
+
+    @Query(
+        "UPDATE PackageEntity" +
+                " SET extraInfo_existed = :existed" +
+                " WHERE indexInfo_opType = :opType AND indexInfo_packageName = :packageName AND indexInfo_userId = :userId"
+    )
+    suspend fun setExisted(opType: OpType, packageName: String, userId: Int, existed: Boolean)
 
     @Query(
         "UPDATE PackageEntity SET extraInfo_blocked = 0"

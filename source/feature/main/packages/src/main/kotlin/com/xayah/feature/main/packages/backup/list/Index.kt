@@ -35,6 +35,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +58,7 @@ import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MultipleSelectionFilterChip
 import com.xayah.core.ui.component.PackageItem
 import com.xayah.core.ui.component.SearchBar
+import com.xayah.core.ui.component.SetOnResume
 import com.xayah.core.ui.component.SortChip
 import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
@@ -101,8 +103,17 @@ fun PagePackagesBackupList() {
     var fabHeight: Float by remember { mutableFloatStateOf(0F) }
     val loadSystemApps by context.readLoadSystemApps().collectAsStateWithLifecycle(initialValue = false)
 
+    LaunchedEffect(null) {
+        viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
+    }
+
+    SetOnResume {
+        viewModel.emitIntentOnIO(IndexUiIntent.OnFastRefresh)
+    }
+
     ListScaffold(
         scrollBehavior = scrollBehavior,
+        progress = if (uiState.isLoading) -1F else null,
         title = StringResourceToken.fromStringArgs(
             StringResourceToken.fromStringId(R.string.select_apps),
             StringResourceToken.fromString(if (packagesSelectedState != 0 && isRefreshing.not()) " (${packagesSelectedState}/${packagesState.size})" else ""),
@@ -164,6 +175,7 @@ fun PagePackagesBackupList() {
         } else {
             Column {
                 val flagIndexState by viewModel.flagIndexState.collectAsStateWithLifecycle()
+                val userIdListState by viewModel.userIdListState.collectAsStateWithLifecycle()
                 val userIdIndexListState by viewModel.userIdIndexListState.collectAsStateWithLifecycle()
                 val sortIndexState by viewModel.sortIndexState.collectAsStateWithLifecycle()
                 val sortTypeState by viewModel.sortTypeState.collectAsStateWithLifecycle()
@@ -199,7 +211,7 @@ fun PagePackagesBackupList() {
                                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
                                 label = StringResourceToken.fromStringId(R.string.user),
                                 selectedIndexList = userIdIndexListState,
-                                list = uiState.userIdList.map { it.toString() },
+                                list = userIdListState.map { it.toString() },
                                 onSelected = { indexList ->
                                     if (indexList.isNotEmpty()) {
                                         viewModel.emitIntentOnIO(IndexUiIntent.SetUserIdIndexList(indexList))

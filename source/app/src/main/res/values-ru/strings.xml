@@ -320,7 +320,7 @@
     <string name="delete_account_desc">Этот аккаунт будет удален</string>
     <string name="choose_an_account">Выбрать аккаунт</string>
     <string name="no_available_account">Нет доступного аккаунта</string>
-    <string name="about_app">О приложении</string>
+    <string name="about_app">Контакты, документация, переводы</string>
     <string name="about">О программе</string>
     <string name="donate">Пожертвовать</string>
     <string name="contact">Контакт</string>

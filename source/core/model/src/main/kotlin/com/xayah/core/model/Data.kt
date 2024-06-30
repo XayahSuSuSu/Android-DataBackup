@@ -37,9 +37,14 @@ data class ContributorItem(
     var link: String,
 )
 
-data class TranslatorItem(
+/**
+ * Action value(Int):
+ * 0: Replace
+ * 1: Remove
+ */
+data class TranslatorRevisionItem(
     val name: String,
     var avatar: String,
-    var lang: String,
     var link: String,
+    var actions: Map<String, Int>,
 )
