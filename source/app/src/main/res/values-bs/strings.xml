@@ -75,7 +75,7 @@
     <string name="cancel">Obustavi</string>
     <string name="none">Nepoznat</string>
     <string name="directory">Skladište</string>
-    <string name="external_storage">Eksterno skladište</string>
+    <string name="external_storage">Vanjsko skladište</string>
     <string name="app_and_data">Aplikacije</string>
     <string name="search_bar_hint_packages">Traži ime ili paket …</string>
     <string name="both">Oboje</string>
@@ -182,7 +182,7 @@
     <string name="args_used_by_backups">%1$s%% iskorišteno za sigurnosne kopije</string>
     <string name="pick_custom_directory_desc">Dodirni za biranje prilagođene mape</string>
     <string name="quick_actions">Brze radnje</string>
-    <string name="backup_apps">Sigurnosno kopiranje aplikacija</string>
+    <string name="backup_apps">Backup apps</string>
     <string name="never">Nikada</string>
     <string name="custom_directory">Prilagođena mapa</string>
     <string name="set_them_later_in_settings">Možete ih kasnije postaviti u podešavanjima</string>
@@ -196,7 +196,7 @@
     <string name="necessary_preparations">Potrebne pripreme</string>
     <string name="post_processing">Naknadna obrada</string>
     <string name="necessary_remaining_data_processing">Potrebna obrada preostalih podataka</string>
-    <string name="save_icons">Spremi ikone</string>
+    <string name="save_icons">Spremanje ikona</string>
     <string name="set_up_inst_env">Postaviti okruženje za instalaciju</string>
     <string name="backup_settings">Podešavanje sigurnosne kopije</string>
     <string name="restore_settings">Podešavanja obnavljanja</string>
@@ -211,7 +211,7 @@
     <string name="backed_up_files">Sigurnosno spremljene datoteke</string>
     <string name="grant_root_access">Odobri root pristup</string>
     <string name="configurations_desc">Podešavanja, crna lista, konfiguracije oblaka</string>
-    <string name="internal_storage">Interno skladište</string>
+    <string name="internal_storage">Lokalno skladište</string>
     <string name="custom_storage">Prilagođeno skladište</string>
     <string name="cloud_server_disconnected">Server u oblaku je odspojen</string>
     <string name="reload_desc">Učitavanje sigurnosnih kopija sa lokalnog ili oblak servera</string>
@@ -231,4 +231,6 @@
     <string name="skip_setup_alert">Nećete moći izvršiti operacije sigurnosnog kopiranja ili obnavljanja dok ne odaberete direktorij za sigurnosne kopije.</string>
     <string name="setup_required">Potrebno je postavljanje, dodirni za postavljanje mape</string>
     <string name="restore">Obnovi</string>
+    <string name="enabled">Omogućeno</string>
+    <string name="report">Izvještaj</string>
 </resources>
