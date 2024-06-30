@@ -13,7 +13,7 @@ ZSTD_DEV=false
 
 NDK_VERSION=r25c
 
-BIN_VERSION=1.9
+BIN_VERSION=2.0
 ZLIB_VERSION=1.3.1             # https://github.com/madler/zlib/releases
 XZ_VERSION=5.6.2               # https://github.com/tukaani-project/xz/releases
 LZ4_VERSION=1.9.4              # https://github.com/lz4/lz4/releases
@@ -75,7 +75,8 @@ set_up_environment() {
     export LD=$TOOLCHAIN/bin/ld
     export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
     export STRIP=$TOOLCHAIN/bin/llvm-strip
-    export BUILD_CFLAGS="-O3 -ffunction-sections -fdata-sections"
+    export FILE_PREFIX_MAP=/src
+    export BUILD_CFLAGS="-O3 -ffunction-sections -fdata-sections -ffile-prefix-map=$LOCAL_PATH=$FILE_PREFIX_MAP"
     export BUILD_LDFLAGS="-s -flto -Wl,--gc-sections"
     export BUILD_LDFLAGS_STATIC="-static $BUILD_LDFLAGS"
      
