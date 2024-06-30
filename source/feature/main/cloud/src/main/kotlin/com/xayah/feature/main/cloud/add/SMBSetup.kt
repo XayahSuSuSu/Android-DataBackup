@@ -215,13 +215,24 @@ fun PageSMBSetup() {
                             enabled = uiState.isProcessing.not(),
                             shape = SegmentedButtonDefaults.itemShape(index = index, count = modeOptions.size),
                             onClick = {
-                                if (index == 0) {
-                                    // Password
-                                } else {
-                                    // Anonymous or Guest
-                                    username = ""
-                                    password = ""
-                                    domain = ""
+                                when (index) {
+                                    0 -> {
+                                        // Password
+                                    }
+
+                                    1 -> {
+                                        // Guest
+                                        username = "Guest"
+                                        password = ""
+                                        domain = ""
+                                    }
+
+                                    2 -> {
+                                        // Anonymous
+                                        username = "Anonymous"
+                                        password = ""
+                                        domain = ""
+                                    }
                                 }
                                 modeIndex = index
                             },
