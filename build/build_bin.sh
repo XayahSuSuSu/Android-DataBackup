@@ -77,7 +77,7 @@ set_up_environment() {
     export STRIP=$TOOLCHAIN/bin/llvm-strip
     export FILE_PREFIX_MAP=/src
     export BUILD_CFLAGS="-O3 -ffunction-sections -fdata-sections -ffile-prefix-map=$LOCAL_PATH=$FILE_PREFIX_MAP"
-    export BUILD_LDFLAGS="-s -flto -Wl,--gc-sections -Wl,--build-id=none -Wl,--hash-style=gnu"
+    export BUILD_LDFLAGS="-s -flto -Wl,--gc-sections -Wl,--build-id=none -Wl,--hash-style=both"
     export BUILD_LDFLAGS_STATIC="-static $BUILD_LDFLAGS"
      
 }
