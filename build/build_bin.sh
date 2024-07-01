@@ -26,7 +26,7 @@ AWK_VERSION=20240422           # https://github.com/onetrueawk/awk/tags
 # Functions
 set_up_utils() {
     sudo apt-get update
-    sudo apt-get install wget zip unzip bzip2 -q make gcc g++ clang meson golang-go cmake bison -y
+    sudo apt-get install wget zip unzip bzip2 -q make gcc g++ clang meson golang-go cmake bison strip-nondeterminism -y
     # Create build directory
     mkdir build_bin
     cd build_bin
@@ -77,7 +77,7 @@ set_up_environment() {
     export STRIP=$TOOLCHAIN/bin/llvm-strip
     export FILE_PREFIX_MAP=/src
     export BUILD_CFLAGS="-O3 -ffunction-sections -fdata-sections -ffile-prefix-map=$LOCAL_PATH=$FILE_PREFIX_MAP"
-    export BUILD_LDFLAGS="-s -flto -Wl,--gc-sections"
+    export BUILD_LDFLAGS="-s -flto -Wl,--gc-sections -Wl,--build-id=none -Wl,--hash-style=gnu"
     export BUILD_LDFLAGS_STATIC="-static $BUILD_LDFLAGS"
      
 }
@@ -330,6 +330,7 @@ package_built_in() {
     mkdir -p built_in/$TARGET_ARCH
     echo "$BIN_VERSION" > built_in/version
     zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df coreutls/bin/sha1sum tar/bin/tar zstd/bin/zstd built_in/version tree/tree awk/bin/awk
+    strip-nondeterminism built_in/$TARGET_ARCH/bin.zip
 }
 
 build() {
