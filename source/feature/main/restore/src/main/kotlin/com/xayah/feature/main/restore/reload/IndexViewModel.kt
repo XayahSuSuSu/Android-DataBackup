@@ -43,7 +43,7 @@ class IndexViewModel @Inject constructor(
         cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim() ?: "",
         versionList = listOf(
             DialogRadioItem(
-                title = StringResourceToken.fromString("1.2.x"),
+                title = StringResourceToken.fromString("current"),
             ),
             DialogRadioItem(
                 title = StringResourceToken.fromString("1.1.x"),

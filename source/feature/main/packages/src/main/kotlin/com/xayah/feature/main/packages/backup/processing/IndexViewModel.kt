@@ -173,10 +173,10 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.DestroyService -> {
                 if (state.cloudEntity != null) {
                     // Cloud
-                    cloudBackupService.destroyService()
+                    cloudBackupService.destroyService(true)
                 } else {
                     // Local
-                    localBackupService.destroyService()
+                    localBackupService.destroyService(true)
                 }
             }
 

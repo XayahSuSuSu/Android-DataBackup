@@ -79,4 +79,8 @@ object NotificationUtil {
         builder.setContentTitle(title).setContentText(content).setProgress(max, progress, indeterminate).setOngoing(ongoing)
         (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(progressNotificationId, builder.build())
     }
+
+    fun cancel(context: Context) {
+        (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(progressNotificationId)
+    }
 }
