@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.model.CloudType
+import com.xayah.core.model.SFTPAuthMode
 import com.xayah.core.model.SmbAuthMode
 import com.xayah.core.model.SmbVersion
 import com.xayah.core.model.database.CloudEntity
@@ -80,18 +81,14 @@ class IndexViewModel @Inject constructor(
         )
     }
 
-    suspend fun updateSFTPEntity(name: String, remote: String, url: String, username: String, password: String, port: String, authMode: Int, privateKey: String) {
-        val newPrivateKey = if (authMode == 0 && privateKey.isNotEmpty()) {
-            ""
-        } else {
-            privateKey
-        }
-
-        val extra = GsonUtil().toJson(SFTPExtra(
-            port = port.toIntOrNull() ?: 22,
-            privateKey = newPrivateKey,
-            authMode = authMode,
-        ))
+    suspend fun updateSFTPEntity(name: String, remote: String, url: String, username: String, password: String, port: String, mode: SFTPAuthMode, privateKey: String) {
+        val extra = GsonUtil().toJson(
+            SFTPExtra(
+                port = port.toIntOrNull() ?: 22,
+                privateKey = privateKey,
+                mode = mode,
+            )
+        )
         emitIntent(
             IndexUiIntent.UpdateEntity(
                 name = name,

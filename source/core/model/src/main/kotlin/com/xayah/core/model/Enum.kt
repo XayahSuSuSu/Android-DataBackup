@@ -112,6 +112,13 @@ enum class SmbAuthMode(val index: Int) {
     companion object
 }
 
+enum class SFTPAuthMode(val index: Int) {
+    PASSWORD(0),
+    PUBLIC_KEY(1);
+
+    companion object
+}
+
 enum class DataState {
     Selected,
     NotSelected,

@@ -1,29 +1,37 @@
 package com.xayah.feature.main.cloud.add
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -34,13 +42,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.core.datastore.ConstantUtil
+import com.xayah.core.model.SFTPAuthMode
 import com.xayah.core.model.database.SFTPExtra
+import com.xayah.core.model.util.indexOf
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.ui.component.Clickable
+import com.xayah.core.ui.component.FullscreenModalBottomSheet
+import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.confirm
+import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
@@ -52,12 +64,14 @@ import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
+import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 import com.xayah.feature.main.cloud.AccountSetupScaffold
 import com.xayah.feature.main.cloud.R
 import com.xayah.feature.main.cloud.SetupTextField
+import kotlinx.coroutines.launch
 
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
@@ -76,7 +90,7 @@ fun PageSFTPSetup() {
     var port by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<SFTPExtra>()?.port?.toString() ?: "22") }
     var username by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.user ?: "") }
     val modeOptions = stringArrayResource(id = R.array.sftp_auth_mode).toList()
-    var modeIndex by rememberSaveable(uiState.cloudEntity) { mutableIntStateOf(uiState.cloudEntity?.getExtraEntity<SFTPExtra>()?.authMode ?: 0) }
+    var modeIndex by rememberSaveable(uiState.cloudEntity) { mutableIntStateOf(uiState.cloudEntity?.getExtraEntity<SFTPExtra>()?.mode?.index ?: 0) }
     var password by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.pass ?: "") }
     var privateKey by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<SFTPExtra>()?.privateKey ?: "") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -96,6 +110,7 @@ fun PageSFTPSetup() {
                 ((modeIndex == 0 && password.isNotEmpty()) || modeIndex == 1) &&
                 ((modeIndex == 1 && privateKey.isNotEmpty()) || modeIndex == 0)
     ) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(null) {
         viewModel.emitIntentOnIO(IndexUiIntent.Initialize)
@@ -117,7 +132,7 @@ fun PageSFTPSetup() {
                             username = username,
                             password = password,
                             port = port,
-                            authMode = modeIndex,
+                            mode = SFTPAuthMode.indexOf(modeIndex),
                             privateKey = privateKey,
                         )
                         viewModel.emitIntent(IndexUiIntent.TestConnection)
@@ -136,7 +151,7 @@ fun PageSFTPSetup() {
                         username = username,
                         password = password,
                         port = port,
-                        authMode = modeIndex,
+                        mode = SFTPAuthMode.indexOf(modeIndex),
                         privateKey = privateKey,
                     )
                     viewModel.emitIntent(IndexUiIntent.CreateAccount(navController = navController))
@@ -197,7 +212,10 @@ fun PageSFTPSetup() {
                         SegmentedButton(
                             enabled = uiState.isProcessing.not(),
                             shape = SegmentedButtonDefaults.itemShape(index = index, count = modeOptions.size),
-                            onClick = { modeIndex = index },
+                            onClick = {
+                                password = ""
+                                modeIndex = index
+                            },
                             selected = index == modeIndex
                         ) {
                             Text(label)
@@ -216,17 +234,60 @@ fun PageSFTPSetup() {
                     label = StringResourceToken.fromStringId(R.string.username)
                 )
 
-                if (modeIndex == 1) {
+                AnimatedVisibility(modeIndex == 1) {
+                    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                    var showBottomSheet by remember { mutableStateOf(false) }
+
                     SetupTextField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .paddingHorizontal(SizeTokens.Level24),
-                        enabled = uiState.isProcessing.not(),
-                        value = privateKey,
-                        leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_key),
-                        onValueChange = { privateKey = it },
-                        label = StringResourceToken.fromStringId(R.string.private_key)
+                        enabled = true,
+                        readOnly = true,
+                        value = if (privateKey.isEmpty()) "" else "[ Private key ]",
+                        leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.VpnKey),
+                        onValueChange = { },
+                        label = StringResourceToken.fromStringId(R.string.private_key),
+                        onClick = { showBottomSheet = true }
                     )
+
+                    if (showBottomSheet) {
+                        FullscreenModalBottomSheet(
+                            onDismissRequest = {
+                                showBottomSheet = false
+                            },
+                            sheetState = sheetState,
+                        ) {
+                            OutlinedTextField(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .padding(SizeTokens.Level24),
+                                value = privateKey,
+                                onValueChange = {
+                                    privateKey = it
+                                },
+                                label = { Text(text = StringResourceToken.fromStringId(R.string.private_key).value) },
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .paddingHorizontal(SizeTokens.Level24)
+                                    .paddingBottom(SizeTokens.Level24),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                Button(enabled = true, onClick = {
+                                    scope.launch {
+                                        sheetState.hide()
+                                        showBottomSheet = false
+                                    }
+                                }) {
+                                    Text(text = StringResourceToken.fromStringId(R.string.confirm).value)
+                                }
+                            }
+                            InnerBottomSpacer(innerPadding = it)
+                        }
+                    }
                 }
 
                 SetupTextField(
@@ -243,7 +304,12 @@ fun PageSFTPSetup() {
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     onValueChange = { password = it },
-                    label = StringResourceToken.fromStringId(R.string.password),
+                    label = if (modeIndex == 1) StringResourceToken.fromStringArgs(
+                        StringResourceToken.fromStringId(R.string.password),
+                        StringResourceToken.fromString("("),
+                        StringResourceToken.fromStringId(R.string.allow_empty),
+                        StringResourceToken.fromString(")"),
+                    ) else StringResourceToken.fromStringId(R.string.password),
                 )
             }
 
@@ -262,7 +328,7 @@ fun PageSFTPSetup() {
                             username = username,
                             password = password,
                             port = port,
-                            authMode = modeIndex,
+                            mode = SFTPAuthMode.indexOf(modeIndex),
                             privateKey = privateKey,
                         )
                         viewModel.emitIntent(IndexUiIntent.SetRemotePath(context = context))

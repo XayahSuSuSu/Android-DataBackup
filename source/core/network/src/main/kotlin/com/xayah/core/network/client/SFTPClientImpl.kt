@@ -2,6 +2,7 @@ package com.xayah.core.network.client
 
 import android.content.Context
 import com.xayah.core.common.util.toPathString
+import com.xayah.core.model.SFTPAuthMode
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.SFTPExtra
 import com.xayah.core.network.R
@@ -40,12 +41,12 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
     }
 
     private fun <T> withSSHClient(block: (client: SSHClient) -> T) = run {
-        if (sshClient == null) throw NullPointerException("Client is null.")
+        if (sshClient == null) throw NullPointerException("SSHClient is null.")
         block(sshClient!!)
     }
 
     private fun <T> withSFTPClient(block: (client: SFTPClient) -> T) = run {
-        if (sftpClient == null) throw NullPointerException("Client is null.")
+        if (sftpClient == null) throw NullPointerException("SFTPClient is null.")
         block(sftpClient!!)
     }
 
@@ -54,26 +55,29 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
             addHostKeyVerifier(PromiscuousVerifier())
             connect(entity.host, extra.port)
 
-            if (extra.authMode == 1) {
-                val passwordFinder = object : PasswordFinder {
-                    var retryCount = 0
-
-                    override fun reqPassword(p0: Resource<*>?): CharArray {
-                        return entity.pass.toCharArray()
-                    }
-
-                    override fun shouldRetry(p0: Resource<*>?): Boolean {
-                        return ++retryCount < 3
-                    }
+            when (extra.mode) {
+                SFTPAuthMode.PASSWORD -> {
+                    authPassword(entity.user, entity.pass)
                 }
 
-                log { "Authenticating with public key..." }
-                val keyLoader = loadKeys(extra.privateKey, null, passwordFinder)
-                log { "Loaded keys!" }
-                authPublickey(entity.user, keyLoader)
-                log { "Authenticated with public key!" }
-            } else {
-                authPassword(entity.user, entity.pass)
+                SFTPAuthMode.PUBLIC_KEY -> {
+                    val passwordFinder = object : PasswordFinder {
+                        var retryCount = 0
+
+                        override fun reqPassword(resource: Resource<*>?): CharArray {
+                            return entity.pass.toCharArray()
+                        }
+
+                        override fun shouldRetry(resource: Resource<*>?): Boolean {
+                            return ++retryCount < 3
+                        }
+                    }
+                    log { "Authenticating with public key..." }
+                    val keyProvider = loadKeys(extra.privateKey, null, passwordFinder)
+                    log { "Loaded keys!" }
+                    authPublickey(entity.user, keyProvider)
+                    log { "Authenticated with public key!" }
+                }
             }
 
             sftpClient = newSFTPClient()
@@ -87,6 +91,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
     }
 
     override fun mkdir(dst: String) {
+        log { "mkdir: $dst" }
         withSFTPClient { it.mkdir(dst) }
     }
 
@@ -95,16 +100,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
     }
 
     private fun openFile(src: String): RemoteFile {
-        return withSFTPClient {
-            it.open(
-                src,
-                setOf(
-                    OpenMode.READ,
-                    OpenMode.WRITE,
-                    OpenMode.CREAT,
-                )
-            )
-        }
+        return withSFTPClient { it.open(src, setOf(OpenMode.READ, OpenMode.WRITE, OpenMode.CREAT)) }
     }
 
     override fun renameTo(src: String, dst: String) {
@@ -129,11 +125,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
         onUploading(countingStream.byteCount, countingStream.byteCount)
     }
 
-    override fun download(
-        src: String,
-        dst: String,
-        onDownloading: (written: Long, total: Long) -> Unit
-    ) {
+    override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) {
         val name = Paths.get(src).fileName
         val dstPath = "${dst}/$name"
         log { "download: $src to $dstPath" }
@@ -149,10 +141,12 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
     }
 
     override fun deleteFile(src: String) {
+        log { "deleteFile: $src" }
         withSFTPClient { it.rm(src) }
     }
 
     override fun removeDirectory(src: String) {
+        log { "removeDirectory: $src" }
         withSFTPClient { it.rmdir(src) }
     }
 
@@ -171,36 +165,20 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
     }
 
     override fun listFiles(src: String): DirChildrenParcelable {
-        log { "list files: $src" }
-
+        log { "listFiles: $src" }
         val files = ArrayList<FileParcelable>()
         val directories = ArrayList<FileParcelable>()
-
         val dirInfo = withSFTPClient { it.ls(src) }
-
         for (item in dirInfo) {
-            log { "Loaded ${item.path}" }
-
             if (item.isDirectory) {
-                directories.add(
-                    FileParcelable(
-                        item.name,
-                        item.attributes.atime,
-                    )
-                )
+                directories.add(FileParcelable(item.name, item.attributes.atime))
             } else {
-                files.add(
-                    FileParcelable(
-                        item.name,
-                        item.attributes.atime,
-                    )
-                )
+                files.add(FileParcelable(item.name, item.attributes.atime))
             }
         }
-
         files.sortBy { it.name }
         directories.sortBy { it.name }
-        return DirChildrenParcelable(files, directories)
+        return DirChildrenParcelable(files = files, directories = directories)
     }
 
     override fun walkFileTree(src: String): List<PathParcelable> {
@@ -220,23 +198,9 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
         return pathParcelableList
     }
 
-    override fun exists(src: String): Boolean {
-        return try {
-            withSFTPClient { it.statExistence(src) } != null
-        } catch (e: Throwable) {
-            log { e.toString() }
-            false
-        }
-    }
+    override fun exists(src: String): Boolean = runCatching { withSFTPClient { it.statExistence(src) } != null }.getOrElse { false }
 
-    override fun size(src: String): Long {
-        return try {
-            withSFTPClient { it.size(src) }
-        } catch (e: Throwable) {
-            log { e.toString() }
-            -1
-        }
-    }
+    override fun size(src: String): Long = runCatching { withSFTPClient { it.size(src) } }.getOrElse { 0 }
 
     override suspend fun testConnection() {
         connect()

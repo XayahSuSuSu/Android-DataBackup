@@ -130,6 +130,8 @@
     <string name="url">地址</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
+    <string name="public_key">公钥</string>
+    <string name="private_key">私钥</string>
     <string name="port">端口</string>
     <string name="mount">挂载</string>
     <string name="set_remote">设置远程</string>

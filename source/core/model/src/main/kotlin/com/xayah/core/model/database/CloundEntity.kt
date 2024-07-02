@@ -3,6 +3,7 @@ package com.xayah.core.model.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.xayah.core.model.CloudType
+import com.xayah.core.model.SFTPAuthMode
 import com.xayah.core.model.SmbAuthMode
 import com.xayah.core.model.SmbVersion
 
@@ -21,7 +22,7 @@ data class SMBExtra(
 data class SFTPExtra(
     val port: Int,
     val privateKey: String,
-    val authMode: Int,
+    val mode: SFTPAuthMode = SFTPAuthMode.PASSWORD,
 )
 
 @Entity
