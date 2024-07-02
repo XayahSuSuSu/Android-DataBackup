@@ -327,4 +327,9 @@
     <string name="docs">Документация</string>
     <string name="translators">Переводчики</string>
     <string name="translators_desc">Мы признательны за их усилия</string>
+    <string name="public_key">Публичный ключ</string>
+    <string name="private_key">Приватный ключ</string>
+    <string name="afdian">AFDIAN</string>
+    <string name="sftp_setup">Настройка SFTP</string>
+    <string name="third_party">Сторонние</string>
 </resources>
