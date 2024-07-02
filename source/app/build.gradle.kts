@@ -36,18 +36,22 @@ android {
         create("arm64-v8a") {
             dimension = "abi"
             versionCode = 4 + (android.defaultConfig.versionCode ?: 0)
+            ndk.abiFilters.add("arm64-v8a")
         }
         create("armeabi-v7a") {
             dimension = "abi"
             versionCode = 3 + (android.defaultConfig.versionCode ?: 0)
+            ndk.abiFilters.add("armeabi-v7a")
         }
         create("x86_64") {
             dimension = "abi"
             versionCode = 2 + (android.defaultConfig.versionCode ?: 0)
+            ndk.abiFilters.add("x86_64")
         }
         create("x86") {
             dimension = "abi"
             versionCode = 1 + (android.defaultConfig.versionCode ?: 0)
+            ndk.abiFilters.add("x86")
         }
         create("foss") {
             dimension = "feature"
