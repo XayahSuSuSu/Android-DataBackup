@@ -40,14 +40,6 @@ fun FullscreenModalBottomSheet(
             sheetState = sheetState,
             dragHandle = {
                 TopAppBar(
-                    navigationIcon = {
-                        androidx.compose.material3.IconButton(onClick = { onDismissRequest() }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    },
                     title = {
                         Text(
                             title,
