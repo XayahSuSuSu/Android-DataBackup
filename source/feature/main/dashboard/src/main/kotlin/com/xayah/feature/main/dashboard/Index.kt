@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.MainIndexSubScaffold
 import com.xayah.core.ui.component.Section
@@ -37,7 +36,6 @@ import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 
@@ -60,10 +58,7 @@ fun PageDashboard() {
 
     MainIndexSubScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromStringArgs(
-            StringResourceToken.fromStringId(R.string.app_name),
-            StringResourceToken.fromString(" ${BuildConfigUtil.VERSION_NAME}"),
-        ),
+        title = StringResourceToken.fromStringId(R.string.app_name),
         actions = {
             IconButton(
                 enabled = nullBackupDir.not(),

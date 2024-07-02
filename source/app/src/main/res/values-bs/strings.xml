@@ -60,7 +60,7 @@
     <string name="environment_detection">Prepoznavanje okruženja</string>
     <string name="start">Pokreni</string>
     <string name="start_subtitle">U skladu s relevantnim pravilima, pažljivo pročitaj i prihvati sljedeći „Korisnički ugovor” i „Pravila o privatnosti” prije korištenja ove aplikacije</string>
-    <string name="start_desc">Svi podaci generirani ovom aplikacijom koriste se samo za sigurnosno kopiranje/obnavljanje i čuvaju se samo lokalno.</string>
+    <string name="start_desc">Svi podaci generirani ovom aplikacijom koriste se samo za sigurnosno kopiranje/ obnavljanje i čuvaju se samo lokalno.</string>
     <string name="network">Mreža</string>
     <string name="network_desc">Koristi se za dobijanje informacija o ažuriranju aplikacije i analitiku aplikacije</string>
     <string name="application">App</string>
