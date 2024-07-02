@@ -1,6 +1,8 @@
 package com.xayah.feature.main.cloud
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -25,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,7 +93,7 @@ fun AccountSetupScaffold(
     scrollBehavior: TopAppBarScrollBehavior, title: StringResourceToken,
     snackbarHostState: SnackbarHostState,
     actions: @Composable RowScope.() -> Unit = {},
-    content: @Composable (BoxScope.() -> Unit)
+    content: @Composable (BoxScope.(innerPadding: PaddingValues) -> Unit)
 ) {
     var _innerPadding by remember { mutableStateOf(PaddingValues(SizeTokens.Level0)) }
     var bottomBarSize by remember { mutableStateOf(IntSize.Zero) }
@@ -131,7 +134,7 @@ fun AccountSetupScaffold(
                         InnerTopSpacer(innerPadding = innerPadding)
                     }
                     item {
-                        content()
+                        content(innerPadding)
                     }
 
                     item {
@@ -160,6 +163,7 @@ fun AccountSetupScaffold(
 fun SetupTextField(
     modifier: Modifier,
     enabled: Boolean = true,
+    readOnly: Boolean = false,
     value: String,
     leadingIcon: ImageVectorToken,
     trailingIcon: ImageVectorToken? = null,
@@ -168,12 +172,29 @@ fun SetupTextField(
     label: StringResourceToken,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    onClick: (() -> Unit)? = null,
+    singleLine: Boolean = true,
+    interactionSource: MutableInteractionSource = if (onClick == null)
+        remember { MutableInteractionSource() }
+    else
+        remember { MutableInteractionSource() }
+            .also { src ->
+                LaunchedEffect(src) {
+                    src.interactions.collect {
+                        if (it is PressInteraction.Release) {
+                            onClick()
+                        }
+                    }
+                }
+            },
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
         modifier = modifier,
         enabled = enabled,
+        readOnly = readOnly,
         value = value,
+        singleLine = singleLine,
         leadingIcon = {
             Icon(
                 modifier = Modifier
@@ -201,6 +222,7 @@ fun SetupTextField(
         visualTransformation = visualTransformation,
         shape = CircleShape,
         onValueChange = onValueChange,
-        label = { Text(text = label.value) }
+        label = { Text(text = label.value) },
+        interactionSource = interactionSource,
     )
 }

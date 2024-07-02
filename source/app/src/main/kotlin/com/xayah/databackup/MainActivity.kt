@@ -19,6 +19,7 @@ import com.xayah.core.util.command.BaseUtil
 import com.xayah.feature.main.cloud.PageCloud
 import com.xayah.feature.main.cloud.add.PageCloudAddAccount
 import com.xayah.feature.main.cloud.add.PageFTPSetup
+import com.xayah.feature.main.cloud.add.PageSFTPSetup
 import com.xayah.feature.main.cloud.add.PageSMBSetup
 import com.xayah.feature.main.cloud.add.PageWebDAVSetup
 import com.xayah.feature.main.configurations.PageConfigurations
@@ -90,6 +91,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.SMBSetup.route) {
                             PageSMBSetup()
+                        }
+                        composable(MainRoutes.SFTPSetup.route) {
+                            PageSFTPSetup()
                         }
                         composable(MainRoutes.PackagesBackupList.route) {
                             PagePackagesBackupList()

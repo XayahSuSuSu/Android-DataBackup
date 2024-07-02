@@ -93,6 +93,7 @@ enum class CloudType(val title: String) {
     FTP("FTP"),
     WEBDAV("WebDAV"),
     SMB("SMB / CIFS"),
+    SFTP("SFTP"),
 }
 
 enum class SmbVersion(val text: String) {
@@ -107,6 +108,13 @@ enum class SmbAuthMode(val index: Int) {
     PASSWORD(0),
     GUEST(1),
     ANONYMOUS(2);
+
+    companion object
+}
+
+enum class SFTPAuthMode(val index: Int) {
+    PASSWORD(0),
+    PUBLIC_KEY(1);
 
     companion object
 }

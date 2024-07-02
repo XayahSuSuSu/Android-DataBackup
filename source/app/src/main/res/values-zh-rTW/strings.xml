@@ -130,6 +130,8 @@
     <string name="url">地址</string>
     <string name="username">使用者名稱</string>
     <string name="password">密碼</string>
+    <string name="public_key">公鑰</string>
+    <string name="private_key">私鑰</string>
     <string name="port">連接埠</string>
     <string name="mount">掛載</string>
     <string name="set_remote">設定遠端</string>
@@ -278,6 +280,7 @@
     <string name="ftp_setup">FTP配置</string>
     <string name="webdav_setup">WebDAV配置</string>
     <string name="smb_setup">SMB / CIFS配置</string>
+    <string name="sftp_setup">SFTP配置</string>
     <string name="server">服務器</string>
     <string name="add_account">添加賬戶</string>
     <string name="provider">供應商</string>

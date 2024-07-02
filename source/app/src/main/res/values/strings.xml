@@ -134,6 +134,8 @@
     <string name="url">URL</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="public_key">Public key</string>
+    <string name="private_key">Private key</string>
     <string name="port">Port</string>
     <string name="mount">Mount</string>
     <string name="set_remote">Set remote</string>
@@ -286,6 +288,7 @@
     <string name="ftp_setup">FTP Setup</string>
     <string name="webdav_setup">WebDAV Setup</string>
     <string name="smb_setup">SMB / CIFS Setup</string>
+    <string name="sftp_setup">SFTP Setup</string>
     <string name="server">Server</string>
     <string name="add_account">Add account</string>
     <string name="provider">Provider</string>

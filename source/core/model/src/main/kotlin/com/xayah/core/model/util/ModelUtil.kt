@@ -3,6 +3,7 @@ package com.xayah.core.model.util
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.LZ4_SUFFIX
 import com.xayah.core.model.OpType
+import com.xayah.core.model.SFTPAuthMode
 import com.xayah.core.model.SelectionType
 import com.xayah.core.model.SmbAuthMode
 import com.xayah.core.model.SortType
@@ -57,4 +58,9 @@ fun SmbAuthMode.Companion.indexOf(index: Int): SmbAuthMode = when (index) {
     1 -> SmbAuthMode.GUEST
     2 -> SmbAuthMode.ANONYMOUS
     else -> SmbAuthMode.PASSWORD
+}
+
+fun SFTPAuthMode.Companion.indexOf(index: Int): SFTPAuthMode = when (index) {
+    1 -> SFTPAuthMode.PUBLIC_KEY
+    else -> SFTPAuthMode.PASSWORD
 }

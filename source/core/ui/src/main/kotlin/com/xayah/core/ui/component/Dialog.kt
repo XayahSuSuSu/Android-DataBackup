@@ -199,6 +199,7 @@ suspend inline fun <reified T> DialogState.select(title: StringResourceToken, de
 suspend fun DialogState.edit(
     title: StringResourceToken,
     defValue: String = "",
+    singleLine: Boolean = true,
     label: StringResourceToken? = null,
     desc: StringResourceToken? = null,
 ) = open(
@@ -210,6 +211,7 @@ suspend fun DialogState.edit(
             OutlinedTextField(
                 modifier = Modifier.paddingTop(SizeTokens.Level8),
                 value = uiState.value,
+                singleLine = singleLine,
                 onValueChange = {
                     uiState.value = it
                 },

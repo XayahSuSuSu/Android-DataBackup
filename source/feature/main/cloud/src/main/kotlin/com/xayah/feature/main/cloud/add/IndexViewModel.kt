@@ -6,10 +6,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.model.CloudType
+import com.xayah.core.model.SFTPAuthMode
 import com.xayah.core.model.SmbAuthMode
 import com.xayah.core.model.SmbVersion
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.FTPExtra
+import com.xayah.core.model.database.SFTPExtra
 import com.xayah.core.model.database.SMBExtra
 import com.xayah.core.network.client.getCloud
 import com.xayah.core.ui.material3.SnackbarDuration
@@ -70,6 +72,27 @@ class IndexViewModel @Inject constructor(
             IndexUiIntent.UpdateEntity(
                 name = name,
                 type = CloudType.FTP,
+                url = url,
+                username = username,
+                password = password,
+                extra = extra,
+                remote = remote,
+            )
+        )
+    }
+
+    suspend fun updateSFTPEntity(name: String, remote: String, url: String, username: String, password: String, port: String, mode: SFTPAuthMode, privateKey: String) {
+        val extra = GsonUtil().toJson(
+            SFTPExtra(
+                port = port.toIntOrNull() ?: 22,
+                privateKey = privateKey,
+                mode = mode,
+            )
+        )
+        emitIntent(
+            IndexUiIntent.UpdateEntity(
+                name = name,
+                type = CloudType.SFTP,
                 url = url,
                 username = username,
                 password = password,

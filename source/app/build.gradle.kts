@@ -114,4 +114,7 @@ dependencies {
 
     // libsu
     implementation(libs.libsu.core)
+
+    // BountyCastle
+    implementation(libs.bountycastle)
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.xayah.core.model.CloudType
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.FTPExtra
+import com.xayah.core.model.database.SFTPExtra
 import com.xayah.core.model.database.SMBExtra
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
@@ -41,5 +42,10 @@ fun CloudEntity.getCloud() = when (this.type) {
     CloudType.SMB -> {
         val extra = getExtraEntity<SMBExtra>()!!
         SMBClientImpl(this, extra)
+    }
+
+    CloudType.SFTP -> {
+        val extra = getExtraEntity<SFTPExtra>()!!
+        SFTPClientImpl(this, extra)
     }
 }

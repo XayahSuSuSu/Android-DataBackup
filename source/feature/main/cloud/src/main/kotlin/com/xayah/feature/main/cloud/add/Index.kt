@@ -64,6 +64,12 @@ fun PageCloudAddAccount() {
                 ) {
                     navController.navigate(MainRoutes.SMBSetup.getRoute(" ".encodeURL()))
                 }
+                Clickable(
+                    icon = CloudType.SFTP.icon,
+                    title = StringResourceToken.fromString(CloudType.SFTP.title),
+                ) {
+                    navController.navigate(MainRoutes.SFTPSetup.getRoute(" ".encodeURL()))
+                }
             }
         }
     }
