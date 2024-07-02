@@ -1,7 +1,10 @@
 package com.xayah.core.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +21,8 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.xayah.core.ui.material3.toColor
+import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.token.AnimationTokens
@@ -44,17 +49,26 @@ fun PrimaryTopBar(scrollBehavior: TopAppBarScrollBehavior?, title: StringResourc
     )
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
 fun SecondaryTopBar(
     scrollBehavior: TopAppBarScrollBehavior?,
     title: StringResourceToken,
+    subtitle: StringResourceToken? = null,
     actions: @Composable RowScope.() -> Unit = {},
     onBackClick: (() -> Unit)? = null
 ) {
     val navController = LocalNavController.current!!
     TopAppBar(
-        title = { Text(text = title.value) },
+        title = {
+            Column {
+                Text(modifier = Modifier.basicMarquee(), text = title.value, maxLines = 1)
+                AnimatedVisibility(visible = subtitle != null) {
+                    LabelLargeText(text = subtitle?.value ?: "", color = ColorSchemeKeyTokens.Outline.toColor())
+                }
+            }
+        },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             ArrowBackButton {
@@ -110,6 +124,7 @@ fun SecondaryLargeTopBar(
     )
 }
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
 fun SecondaryTopBar(

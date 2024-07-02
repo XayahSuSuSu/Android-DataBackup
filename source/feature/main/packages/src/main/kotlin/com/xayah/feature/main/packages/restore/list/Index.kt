@@ -67,7 +67,6 @@ import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.packages.DotLottieView
@@ -99,10 +98,8 @@ fun PagePackagesRestoreList() {
     ListScaffold(
         scrollBehavior = scrollBehavior,
         progress = if (uiState.isLoading) -1F else null,
-        title = StringResourceToken.fromStringArgs(
-            StringResourceToken.fromStringId(R.string.backed_up_apps),
-            StringResourceToken.fromString(if (packagesSelectedState != 0) " (${packagesSelectedState}/${packagesState.size})" else ""),
-        ),
+        title = StringResourceToken.fromStringId(R.string.backed_up_apps),
+        subtitle = if (packagesSelectedState != 0) StringResourceToken.fromString("(${packagesSelectedState}/${packagesState.size})") else null,
         actions = {
             if (srcPackagesEmptyState.not()) {
                 AnimatedVisibility(visible = packagesSelectedState != 0) {

@@ -64,7 +64,6 @@ import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.medium.DotLottieView
@@ -96,10 +95,8 @@ fun PageMediumRestoreList() {
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
         progress = if (uiState.isLoading) -1F else null,
-        title = StringResourceToken.fromStringArgs(
-            StringResourceToken.fromStringId(R.string.backed_up_files),
-            StringResourceToken.fromString(if (mediumSelectedState != 0) " (${mediumSelectedState}/${mediumState.size})" else ""),
-        ),
+        title = StringResourceToken.fromStringId(R.string.backed_up_files),
+        subtitle = if (mediumSelectedState != 0) StringResourceToken.fromString("(${mediumSelectedState}/${mediumState.size})") else null,
         actions = {
             if (srcMediumEmptyState.not()) {
                 AnimatedVisibility(visible = mediumSelectedState != 0) {

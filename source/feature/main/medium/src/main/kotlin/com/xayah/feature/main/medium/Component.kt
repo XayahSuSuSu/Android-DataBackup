@@ -3,6 +3,7 @@ package com.xayah.feature.main.medium
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +52,7 @@ import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.value
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
@@ -58,6 +60,7 @@ fun ListScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
     snackbarHostState: SnackbarHostState,
     title: StringResourceToken,
+    subtitle: StringResourceToken? = null,
     actions: @Composable RowScope.() -> Unit = {},
     progress: Float? = null,
     floatingActionButton: @Composable () -> Unit = {},
@@ -73,6 +76,7 @@ fun ListScaffold(
                 SecondaryTopBar(
                     scrollBehavior = scrollBehavior,
                     title = title,
+                    subtitle = subtitle,
                     actions = actions,
                     onBackClick = onBackClick,
                 )
