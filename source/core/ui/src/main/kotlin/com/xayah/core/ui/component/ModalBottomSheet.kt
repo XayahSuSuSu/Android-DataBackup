@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 fun FullscreenModalBottomSheet(
     title: String,
     onDismissRequest: () -> Unit,
-    actions: @Composable() (RowScope.() -> Unit) = {},
+    actions: @Composable (RowScope.() -> Unit) = {},
     sheetState: SheetState = rememberModalBottomSheetState(),
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -37,13 +37,7 @@ fun FullscreenModalBottomSheet(
             sheetState = sheetState,
             dragHandle = {
                 TopAppBar(
-                    title = {
-                        Text(
-                            title,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
+                    title = { Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     actions = actions,
                 )
             },
