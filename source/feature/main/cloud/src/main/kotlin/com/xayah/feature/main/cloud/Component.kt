@@ -173,6 +173,7 @@ fun SetupTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     onClick: (() -> Unit)? = null,
+    singleLine: Boolean = true,
     interactionSource: MutableInteractionSource = if (onClick == null)
         remember { MutableInteractionSource() }
     else
@@ -193,6 +194,7 @@ fun SetupTextField(
         enabled = enabled,
         readOnly = readOnly,
         value = value,
+        singleLine = singleLine,
         leadingIcon = {
             Icon(
                 modifier = Modifier

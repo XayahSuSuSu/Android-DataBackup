@@ -1,5 +1,7 @@
 package com.xayah.feature.main.cloud.add
 
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -11,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -36,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -237,14 +243,16 @@ fun PageSFTPSetup() {
                 AnimatedVisibility(modeIndex == 1) {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     var showBottomSheet by remember { mutableStateOf(false) }
+                    val focusManager = LocalFocusManager.current
+                    val privateKeyTextFieldValue = "[ ${StringResourceToken.fromStringId(R.string.private_key).value} ]"
 
                     SetupTextField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .paddingHorizontal(SizeTokens.Level24),
-                        enabled = true,
+                        enabled = uiState.isProcessing.not(),
                         readOnly = true,
-                        value = if (privateKey.isEmpty()) "" else "[ Private key ]",
+                        value = if (privateKey.isEmpty()) "" else privateKeyTextFieldValue,
                         leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.VpnKey),
                         onValueChange = { },
                         label = StringResourceToken.fromStringId(R.string.private_key),
@@ -253,10 +261,29 @@ fun PageSFTPSetup() {
 
                     if (showBottomSheet) {
                         FullscreenModalBottomSheet(
+                            title = StringResourceToken.fromStringId(R.string.private_key).value,
                             onDismissRequest = {
-                                showBottomSheet = false
+                                scope.launch {
+                                    sheetState.hide()
+                                    showBottomSheet = false
+                                    focusManager.clearFocus()
+                                }
                             },
                             sheetState = sheetState,
+                            actions = {
+                                IconButton(onClick = {
+                                    val clipboardManager =
+                                        context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+
+                                    privateKey = clipboardManager.primaryClip?.getItemAt(0)?.text?.toString() ?: return@IconButton
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.ContentPaste,
+                                        contentDescription = StringResourceToken.fromStringId(android.R.string.paste)
+                                            .toString(),
+                                    )
+                                }
+                            },
                         ) {
                             OutlinedTextField(
                                 modifier = Modifier
@@ -280,6 +307,7 @@ fun PageSFTPSetup() {
                                     scope.launch {
                                         sheetState.hide()
                                         showBottomSheet = false
+                                        focusManager.clearFocus()
                                     }
                                 }) {
                                     Text(text = StringResourceToken.fromStringId(R.string.confirm).value)
