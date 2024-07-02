@@ -159,7 +159,8 @@ fun TranslatorCard(modifier: Modifier = Modifier, avatar: String? = null, name: 
             }
             Column {
                 TitleMediumText(text = name, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.OnSurface.toColor())
-                TitleSmallText(text = desc, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.Outline.toColor())
+                // Hide email address
+                // TitleSmallText(text = desc, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.Outline.toColor())
             }
         }
     }

@@ -84,4 +84,5 @@
     <string name="architecture">Kiến trúc</string>
     <string name="premium_for_this_feature">Hãy tải bản premium để có tính năng này</string>
     <string name="monet_desc">Tạo màu theo hình nền</string>
+    <string name="no_root_directory">Vui lòng không chọn thư mục root</string>
 </resources>
