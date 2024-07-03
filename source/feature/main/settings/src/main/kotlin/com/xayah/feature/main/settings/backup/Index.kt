@@ -1,6 +1,5 @@
 package com.xayah.feature.main.settings.backup
 
-import android.os.Build
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.xayah.core.datastore.KeyBackupItself
 import com.xayah.core.datastore.KeyCheckKeystore
-import com.xayah.core.datastore.KeyCompatibleMode
 import com.xayah.core.datastore.KeyCompressionTest
 import com.xayah.core.datastore.KeyFollowSymlinks
 import com.xayah.core.datastore.KeyLoadSystemApps
@@ -71,12 +69,14 @@ fun PageBackupSettings() {
                     title = StringResourceToken.fromStringId(R.string.compression_test),
                     checkedText = StringResourceToken.fromStringId(R.string.compression_test_desc),
                 )
-                Switchable(
-                    key = KeyCompatibleMode,
-                    defValue = Build.VERSION.SDK_INT < Build.VERSION_CODES.P,
-                    title = StringResourceToken.fromStringId(R.string.compatible_mode),
-                    checkedText = StringResourceToken.fromStringId(R.string.compatible_mode_desc),
-                )
+                /**
+                 * Switchable(
+                 *     key = KeyCompatibleMode,
+                 *     defValue = Build.VERSION.SDK_INT < Build.VERSION_CODES.P,
+                 *     title = StringResourceToken.fromStringId(R.string.compatible_mode),
+                 *     checkedText = StringResourceToken.fromStringId(R.string.compatible_mode_desc),
+                 * )
+                 */
                 Switchable(
                     key = KeyFollowSymlinks,
                     defValue = false,

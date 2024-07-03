@@ -43,6 +43,8 @@ private class EnvInitializer : Shell.Initializer() {
                 .add("export PATH=${context.binDir()}:${USD}PATH")
                 .add("export HOME=${context.filesDir()}")
                 .add("set -o pipefail") // Ensure that the exit code of each command is correct.
+                .add("alias tar=${QUOTE}busybox tar$QUOTE")
+                .add("alias awk=${QUOTE}busybox awk$QUOTE")
                 .exec()
         }
     }
