@@ -7,6 +7,8 @@ on:
   pull_request:
     paths:
     - build/**
+  workflow_dispatch:
+    inputs:
 
 jobs:
   build:
