@@ -83,6 +83,7 @@ class DirectoryRepository @Inject constructor(
 
             // Internal storage
             val internalList = rootService.listFilePaths(PathUtil.getDataMediaDir(), listFiles = false)
+                .filter { it.substring(it.lastIndexOf("/")+1).toIntOrNull() != null } // just select 0 10 999 etc.
             val internalDirs = mutableListOf<DirectoryUpsertEntity>()
             for (storageItem in internalList) {
                 // e.g. /data/media/0
