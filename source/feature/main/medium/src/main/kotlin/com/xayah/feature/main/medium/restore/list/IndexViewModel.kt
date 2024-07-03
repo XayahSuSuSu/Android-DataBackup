@@ -148,6 +148,7 @@ class IndexViewModel @Inject constructor(
         combine(_medium, _keyState, _sortIndexState, _sortTypeState) { medium, key, sortIndex, sortType ->
             medium.filter(mediaRepo.getKeyPredicateNew(key = key))
                 .sortedWith(mediaRepo.getSortComparatorNew(sortIndex = sortIndex, sortType = sortType))
+                .sortedByDescending { it.extraInfo.activated }
         }
     private val _srcMediumEmptyState: Flow<Boolean> = _medium.map { medium -> medium.isEmpty() }.flowOnIO()
     private val _mediumSelectedState: Flow<Int> = _mediumState.map { medium -> medium.count { it.extraInfo.activated } }.flowOnIO()
