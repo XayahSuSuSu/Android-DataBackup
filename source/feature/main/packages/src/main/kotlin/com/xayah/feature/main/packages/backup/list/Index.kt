@@ -106,6 +106,10 @@ fun PagePackagesBackupList() {
         viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
     }
 
+    LaunchedEffect(packagesState) {
+        scrollState.scrollToItem(0)
+    }
+
     SetOnResume {
         viewModel.emitIntentOnIO(IndexUiIntent.OnFastRefresh)
     }

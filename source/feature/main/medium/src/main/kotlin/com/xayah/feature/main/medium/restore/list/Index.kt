@@ -91,6 +91,10 @@ fun PageMediumRestoreList() {
         viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh)
     }
 
+    LaunchedEffect(mediumState) {
+        scrollState.scrollToItem(0)
+    }
+
     ListScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,

@@ -95,6 +95,10 @@ fun PagePackagesRestoreList() {
         viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
     }
 
+    LaunchedEffect(packagesState) {
+        scrollState.scrollToItem(0)
+    }
+
     ListScaffold(
         scrollBehavior = scrollBehavior,
         progress = if (uiState.isLoading) -1F else null,
