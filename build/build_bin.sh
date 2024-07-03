@@ -82,7 +82,8 @@ set_up_environment() {
     export BUILD_CFLAGS="-O3 -ffunction-sections -fdata-sections -ffile-prefix-map=$LOCAL_PATH=$FILE_PREFIX_MAP"
     export BUILD_LDFLAGS="-s -flto -Wl,--gc-sections -Wl,--build-id=none -Wl,--hash-style=both"
     export BUILD_LDFLAGS_STATIC="-static $BUILD_LDFLAGS"
-    export FORCE_UNSAFE_CONFIGURE=1 # Busybox
+    export FORCE_UNSAFE_CONFIGURE=1
+    export KCONFIG_NOTIMESTAMP=1 # Busybox
 }
 
 build_zlib() {
