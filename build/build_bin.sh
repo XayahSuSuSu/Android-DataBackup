@@ -14,19 +14,18 @@ ZSTD_DEV=false
 NDK_VERSION=r25c
 
 BIN_VERSION=2.0
-ZLIB_VERSION=1.3.1             # https://github.com/madler/zlib/releases
-XZ_VERSION=5.6.2               # https://github.com/tukaani-project/xz/releases
-LZ4_VERSION=1.9.4              # https://github.com/lz4/lz4/releases
-ZSTD_VERSION=1.5.6             # https://github.com/facebook/zstd/releases
-TAR_VERSION=1.35               # https://ftp.gnu.org/gnu/tar/?C=M;O=D
-COREUTLS_VERSION=9.4           # https://ftp.gnu.org/gnu/coreutils/?C=M;O=D
-TREE_VERSION=2.1.1             # https://gitlab.com/OldManProgrammer/unix-tree
-AWK_VERSION=20240422           # https://github.com/onetrueawk/awk/tags
+ZLIB_VERSION=1.3.1                                               # https://github.com/madler/zlib/releases
+XZ_VERSION=5.6.2                                                 # https://github.com/tukaani-project/xz/releases
+LZ4_VERSION=1.9.4                                                # https://github.com/lz4/lz4/releases
+ZSTD_VERSION=1.5.6                                               # https://github.com/facebook/zstd/releases
+BUSYBOX_VERSION=1_36_1                                           # https://www.busybox.net/downloads/?C=M;O=D
+SELINUX_COMMIT=48fcf8bba0635dc597bef75994294fd055d9f0ba          # https://github.com/topjohnwu/selinux/tree/48fcf8bba0635dc597bef75994294fd055d9f0ba
+PCRE_BRANCH=android14-mainline-adbd-release                      # https://android.googlesource.com/platform/external/pcre
 ##################################################
 # Functions
 set_up_utils() {
     sudo apt-get update
-    sudo apt-get install wget zip unzip bzip2 -q make gcc g++ clang meson golang-go cmake bison strip-nondeterminism -y
+    sudo apt-get install wget zip unzip bzip2 make meson cmake bison strip-nondeterminism xz-utils -y
     # Create build directory
     mkdir build_bin
     cd build_bin
@@ -56,15 +55,19 @@ set_up_environment() {
     esac
 
     # NDK
-    if [ ! -f $LOCAL_PATH/android-ndk-$NDK_VERSION-linux.zip ]; then
-        wget -nv https://dl.google.com/android/repository/android-ndk-$NDK_VERSION-linux.zip
+    if [ -z $NDK ];then
+        if [ ! -f $LOCAL_PATH/android-ndk-$NDK_VERSION-linux.zip ]; then
+            wget -nv https://dl.google.com/android/repository/android-ndk-$NDK_VERSION-linux.zip
+        fi
+        if [ -d $LOCAL_PATH/NDK ]; then
+            rm -rf $LOCAL_PATH/NDK
+        fi
+        unzip -q android-ndk-$NDK_VERSION-linux.zip
+        mv android-ndk-$NDK_VERSION NDK
+        export NDK=$LOCAL_PATH/NDK
+        export USE_NEW_NDK=true
     fi
-    if [ -d $LOCAL_PATH/NDK ]; then
-        rm -rf $LOCAL_PATH/NDK
-    fi
-    unzip -q android-ndk-$NDK_VERSION-linux.zip
-    mv android-ndk-$NDK_VERSION NDK
-    export NDK=$LOCAL_PATH/NDK
+    export PATH=$NDK:$PATH
     export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64
     export SYSROOT=$TOOLCHAIN/sysroot
     export API=28
@@ -79,16 +82,7 @@ set_up_environment() {
     export BUILD_CFLAGS="-O3 -ffunction-sections -fdata-sections -ffile-prefix-map=$LOCAL_PATH=$FILE_PREFIX_MAP"
     export BUILD_LDFLAGS="-s -flto -Wl,--gc-sections -Wl,--build-id=none -Wl,--hash-style=both"
     export BUILD_LDFLAGS_STATIC="-static $BUILD_LDFLAGS"
-     
-}
-
-patch_gnu_symbols() {
-    # $1: path
-    sed -i "s/tzalloc/tzalloc_gnu/g" `grep tzalloc -rl $1`
-    sed -i "s/tzfree/tzfree_gnu/g" `grep tzfree -rl ./`
-    sed -i "s/localtime_rz/localtime_rz_gnu/g" `grep localtime_rz -rl $1`
-    sed -i "s/mktime_z/mktime_z_gnu/g" `grep mktime_z -rl $1`
-    sed -i "s/copy_file_range/copy_file_range_gnu/g" `grep copy_file_range -rl $1`
+    export FORCE_UNSAFE_CONFIGURE=1 # Busybox
 }
 
 build_zlib() {
@@ -212,124 +206,33 @@ build_zstd() {
     rm -rf zstd-$ZSTD_VERSION
 }
 
-build_tar() {
-    if [ ! -f $LOCAL_PATH/tar-$TAR_VERSION.tar.xz ]; then
-        wget -nv https://ftp.gnu.org/gnu/tar/tar-$TAR_VERSION.tar.xz
-    fi
-    if [ -d $LOCAL_PATH/tar-$TAR_VERSION ]; then
-        rm -rf tar-$TAR_VERSION
-    fi
-    tar xf tar-$TAR_VERSION.tar.xz
-    cd tar-$TAR_VERSION
-
-    # Patch duplicate symbols
-    patch_gnu_symbols "gnu"
-
-    ./configure --host=$TARGET LDFLAGS="$BUILD_LDFLAGS_STATIC" CFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" CXXFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" $DISABLE_YEAR2038_PARA
-    make -j8
-    make install prefix= DESTDIR=$LOCAL_PATH/tar
-    $STRIP $LOCAL_PATH/tar/bin/tar
+build_busybox() {
+    git clone https://github.com/XayahSuSuSu/ndk-box-kitchen -b $NDK_VERSION && cd ndk-box-kitchen
+    git clone https://git.busybox.net/busybox
+    cd busybox && git checkout $BUSYBOX_VERSION && cd ..
+    git clone https://github.com/topjohnwu/selinux jni/selinux
+    cd jni/selinux && git checkout $SELINUX_COMMIT && cd ../..
+    git clone https://android.googlesource.com/platform/external/pcre -b $PCRE_BRANCH jni/pcre
+    ./run.sh patch
+    ./run.sh generate
+    ndk-build APP_ABI=$TARGET_ARCH
+    mkdir -p $LOCAL_PATH/busybox/bin
+    mv libs/$TARGET_ARCH/busybox $LOCAL_PATH/busybox/bin/busybox
+    $STRIP $LOCAL_PATH/busybox/bin/busybox
     cd ..
-    rm -rf tar-$TAR_VERSION
-}
-
-build_coreutls() {
-    # df
-    if [ ! -f $LOCAL_PATH/coreutils-$COREUTLS_VERSION.tar.xz ]; then
-        wget -nv https://ftp.gnu.org/gnu/coreutils/coreutils-$COREUTLS_VERSION.tar.xz
-    fi
-    if [ -d $LOCAL_PATH/coreutils-$COREUTLS_VERSION ]; then
-        rm -rf coreutils-$COREUTLS_VERSION
-    fi
-    tar xf coreutils-$COREUTLS_VERSION.tar.xz
-    cd coreutils-$COREUTLS_VERSION
-
-    # Patch duplicate symbols
-    patch_gnu_symbols "lib"
-
-    ./configure --host=$TARGET LDFLAGS="$BUILD_LDFLAGS_STATIC" CFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0" CXXFLAGS="$BUILD_CFLAGS -D_FORTIFY_SOURCE=0"  $DISABLE_YEAR2038_PARA
-    make -j8
-    make install prefix= DESTDIR=$LOCAL_PATH/coreutls
-    $STRIP $LOCAL_PATH/coreutls/bin/df
-    $STRIP $LOCAL_PATH/coreutls/bin/sha1sum
-    cd ..
-    rm -rf coreutils-$COREUTLS_VERSION
-}
-
-build_tree() {
-    # tree
-    if [ ! -f $LOCAL_PATH/unix-tree-$TREE_VERSION.tar.gz ]; then
-        wget -nv https://gitlab.com/OldManProgrammer/unix-tree/-/archive/$TREE_VERSION/unix-tree-$TREE_VERSION.tar.gz
-    fi
-    if [ -d $LOCAL_PATH/tree-$TREE_VERSION ]; then
-        rm -rf $LOCAL_PATH/tree-$TREE_VERSION
-    fi
-    tar xf unix-tree-$TREE_VERSION.tar.gz
-    cd unix-tree-$TREE_VERSION
-
-    echo "int strverscmp (const char *s1, const char *s2);" >> tree.h
-    sed -i -e "/#ifndef __linux__/d" -e "/#endif/d" strverscmp.c
-
-    make \
-        AR=$AR \
-        CC=$CC \
-        AS=$AS \
-        CXX=$CXX \
-        LD=$LD \
-        RANLIB=$RANLIB \
-        STRIP=$STRIP \
-        CFLAGS="$BUILD_CFLAGS" \
-        CXXFLAGS="$BUILD_CFLAGS" \
-        LDFLAGS="$BUILD_LDFLAGS_STATIC" \
-        -j8
-    make install prefix= DESTDIR=$LOCAL_PATH/tree MANDIR=$LOCAL_PATH/tree
-    $STRIP $LOCAL_PATH/tree/tree
-    cd ..
-    rm -rf tree-$TREE_VERSION
-}
-
-build_awk() {
-    if [ ! -f $LOCAL_PATH/$AWK_VERSION.tar.gz ]; then
-        wget -nv https://github.com/onetrueawk/awk/archive/refs/tags/$AWK_VERSION.tar.gz
-    fi
-    if [ -d $LOCAL_PATH/awk-$AWK_VERSION ]; then
-        rm -rf awk-$AWK_VERSION
-    fi
-    tar xf $AWK_VERSION.tar.gz
-    cd awk-$AWK_VERSION
-
-    make \
-        AR=$AR \
-        CC=$CC \
-        AS=$AS \
-        CXX=$CXX \
-        LD=$LD \
-        RANLIB=$RANLIB \
-        STRIP=$STRIP \
-        CFLAGS="$BUILD_CFLAGS" \
-        CXXFLAGS="$BUILD_CFLAGS" \
-        LDFLAGS="$BUILD_LDFLAGS_STATIC" \
-        -j8
-    mkdir -p $LOCAL_PATH/awk/bin
-    mv a.out $LOCAL_PATH/awk/bin/awk
-    $STRIP $LOCAL_PATH/awk/bin/awk
-    cd ..
-    rm -rf awk-$AWK_VERSION
+    rm -rf ndk-box-kitchen
 }
 
 build_built_in() {
     build_zstd
-    build_tar
-    build_coreutls
-    build_tree
-    build_awk
+    build_busybox
 }
 
 package_built_in() {
     # Built-in modules
     mkdir -p built_in/$TARGET_ARCH
     echo "$BIN_VERSION" > built_in/version
-    zip -pj built_in/$TARGET_ARCH/bin coreutls/bin/df coreutls/bin/sha1sum tar/bin/tar zstd/bin/zstd built_in/version tree/tree awk/bin/awk
+    zip -pj built_in/$TARGET_ARCH/bin built_in/version zstd/bin/zstd busybox/bin/busybox
     strip-nondeterminism built_in/$TARGET_ARCH/bin.zip
 }
 
@@ -344,7 +247,7 @@ build() {
         ;;
     esac
 }
-
+ 
 package() {
     # $1: type
     case "$1" in
@@ -376,5 +279,9 @@ for abi in ${abis[@]}; do
     build $1
     package $1
     # Clean build files
-    rm -rf NDK coreutls tar zstd tree awk
+    rm -rf NDK zstd busybox
+    if [ ! -z $USE_NEW_NDK ];then
+        unset NDK
+    fi
 done
+

@@ -12,21 +12,13 @@ jobs:
   build:
     name: "Build bin"
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: build
-
-    permissions:
-      contents: write
-
-    timeout-minutes: 60
-
+    container: registry.gitlab.com/fdroid/fdroidserver:buildserver-bookworm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Build
-        run: bash -e -x build_bin.sh all all 1> /dev/null
+        run: bash -e -x build/build_bin.sh all all 1> /dev/null
 
       - name: Upload
         uses: actions/upload-artifact@v4
