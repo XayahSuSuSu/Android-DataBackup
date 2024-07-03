@@ -330,4 +330,7 @@
     <string name="translators_desc">Agradecemos seus esforços</string>
     <string name="no_root_directory">Por favor, não selecione o diretório raiz.</string>
     <string name="third_party">Terceiro</string>
+    <string name="public_key">Chave pública</string>
+    <string name="private_key">Chave privada</string>
+    <string name="sftp_setup">Configuração SFTP</string>
 </resources>
