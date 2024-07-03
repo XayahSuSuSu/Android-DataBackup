@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -69,6 +70,7 @@ import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.medium.ListScaffold
 import com.xayah.feature.main.medium.R
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
@@ -87,13 +89,10 @@ fun PageMediumBackupList() {
     val scrollState = rememberLazyListState()
     val srcMediumEmptyState by viewModel.srcMediumEmptyState.collectAsStateWithLifecycle()
     var fabHeight: Float by remember { mutableFloatStateOf(0F) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(null) {
         viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh)
-    }
-
-    LaunchedEffect(mediumState) {
-        scrollState.scrollToItem(0)
     }
 
     ListScaffold(
@@ -156,12 +155,16 @@ fun PageMediumBackupList() {
                     ChipRow(horizontalSpace = SizeTokens.Level16) {
                         SortChip(
                             enabled = true,
+                            dismissOnSelected = true,
                             leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Sort),
                             selectedIndex = sortIndexState,
                             type = sortTypeState,
                             list = stringArrayResource(id = R.array.backup_sort_type_items_files).toList(),
                             onSelected = { index, _ ->
-                                viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                scope.launch {
+                                    scrollState.scrollToItem(0)
+                                    viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                }
                             },
                             onClick = {}
                         )

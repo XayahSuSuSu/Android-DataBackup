@@ -85,6 +85,7 @@ fun AssistChip(
 @Composable
 fun SortChip(
     enabled: Boolean,
+    dismissOnSelected: Boolean = false,
     leadingIcon: ImageVectorToken,
     selectedIndex: Int,
     type: SortType = SortType.ASCENDING,
@@ -118,7 +119,10 @@ fun SortChip(
             selectedIcon = selectedIcon,
             list = list,
             maxDisplay = ModalMenuTokens.DefaultMaxDisplay,
-            onSelected = onSelected,
+            onSelected = { index: Int, selected: String ->
+                onSelected(index, selected)
+                if (dismissOnSelected) expanded = false
+            },
             onDismissRequest = { expanded = false }
         )
     }
@@ -133,7 +137,7 @@ fun FilterChip(
     selectedIndex: Int,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
-    onSelectedDismiss: Boolean = false,
+    dismissOnSelected: Boolean = false,
     onClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -156,7 +160,7 @@ fun FilterChip(
             maxDisplay = ModalMenuTokens.DefaultMaxDisplay,
             onSelected = { index, selected ->
                 onSelected(index, selected)
-                if (onSelectedDismiss) expanded = false
+                if (dismissOnSelected) expanded = false
             },
             onDismissRequest = { expanded = false }
         )
@@ -172,7 +176,7 @@ fun MultipleSelectionFilterChip(
     selectedIndexList: List<Int>,
     list: List<String>,
     onSelected: (indexList: List<Int>) -> Unit,
-    onSelectedDismiss: Boolean = false,
+    dismissOnSelected: Boolean = false,
     onClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -195,7 +199,7 @@ fun MultipleSelectionFilterChip(
             maxDisplay = ModalMenuTokens.DefaultMaxDisplay,
             onSelected = { indexList ->
                 onSelected(indexList)
-                if (onSelectedDismiss) expanded = false
+                if (dismissOnSelected) expanded = false
             },
             onDismissRequest = { expanded = false }
         )
@@ -210,7 +214,7 @@ fun FilterChip(
     selectedIndex: Int,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
-    onSelectedDismiss: Boolean = false,
+    dismissOnSelected: Boolean = false,
     onClick: () -> Unit,
 ) {
     FilterChip(
@@ -221,7 +225,7 @@ fun FilterChip(
         selectedIndex = selectedIndex,
         list = list,
         onSelected = onSelected,
-        onSelectedDismiss = onSelectedDismiss,
+        dismissOnSelected = dismissOnSelected,
         onClick = onClick
     )
 }

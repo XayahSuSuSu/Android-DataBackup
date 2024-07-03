@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -39,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +74,7 @@ import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.packages.DotLottieView
 import com.xayah.feature.main.packages.ListScaffold
 import com.xayah.feature.main.packages.R
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
@@ -89,14 +92,11 @@ fun PagePackagesRestoreList() {
     val scrollState = rememberLazyListState()
     val srcPackagesEmptyState by viewModel.srcPackagesEmptyState.collectAsStateWithLifecycle()
     var fabHeight: Float by remember { mutableFloatStateOf(0F) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(null) {
         viewModel.emitIntentOnIO(IndexUiIntent.OnRefresh)
         viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
-    }
-
-    LaunchedEffect(packagesState) {
-        scrollState.scrollToItem(0)
     }
 
     ListScaffold(
@@ -177,18 +177,23 @@ fun PagePackagesRestoreList() {
                         ChipRow(horizontalSpace = SizeTokens.Level16) {
                             SortChip(
                                 enabled = true,
+                                dismissOnSelected = true,
                                 leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Sort),
                                 selectedIndex = sortIndexState,
                                 type = sortTypeState,
                                 list = stringArrayResource(id = R.array.backup_sort_type_items_apps).toList(),
                                 onSelected = { index, _ ->
-                                    viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                    scope.launch {
+                                        scrollState.scrollToItem(0)
+                                        viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                    }
                                 },
                                 onClick = {}
                             )
 
                             MultipleSelectionFilterChip(
                                 enabled = true,
+                                dismissOnSelected = true,
                                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
                                 label = StringResourceToken.fromStringId(R.string.user),
                                 selectedIndexList = userIdIndexListState,
@@ -205,6 +210,7 @@ fun PagePackagesRestoreList() {
 
                             FilterChip(
                                 enabled = true,
+                                dismissOnSelected = true,
                                 leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_deployed_code),
                                 selectedIndex = flagIndexState,
                                 list = stringArrayResource(id = R.array.flag_type_items).toList(),
@@ -224,6 +230,10 @@ fun PagePackagesRestoreList() {
                 }
 
                 LazyColumn(modifier = Modifier.fillMaxSize(), state = scrollState) {
+                    item(key = "-1") {
+                        Spacer(modifier = Modifier.size(SizeTokens.Level1))
+                    }
+
                     items(items = packagesState, key = { "${uiState.uuid}-${it.id}" }) { item ->
                         Row(modifier = Modifier.animateItemPlacement()) {
                             PackageItem(
