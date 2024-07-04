@@ -329,4 +329,8 @@
     <string name="contact">İletişime geç</string>
     <string name="docs">Dokümanlar</string>
     <string name="third_party">Üçüncü parti</string>
+    <string name="public_key">Genel anahtar</string>
+    <string name="private_key">Özel anahtar</string>
+    <string name="sftp_setup">SFTP kurulumu</string>
+    <string name="no_root_directory">Lütfen kök dizinini seçme</string>
 </resources>
