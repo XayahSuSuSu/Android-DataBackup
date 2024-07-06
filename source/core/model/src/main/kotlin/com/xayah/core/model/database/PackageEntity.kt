@@ -123,6 +123,17 @@ data class PackageEntity(
     val mediaSelected: Boolean
         get() = dataStates.mediaState == DataState.Selected
 
+    val dataSelectedCount: Int
+        get() = run {
+            var count = 0
+            if (userSelected) count++
+            if (userDeSelected) count++
+            if (dataSelected) count++
+            if (obbSelected) count++
+            if (mediaSelected) count++
+            count
+        }
+
     val permissionSelected: Boolean
         get() = dataStates.permissionState == DataState.Selected
 

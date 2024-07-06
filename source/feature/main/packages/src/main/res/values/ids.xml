@@ -65,6 +65,10 @@
     <item name="delete_desc" type="string" />
     <item name="protect" type="string" />
     <item name="protect_desc" type="string" />
+    <item name="batch_select" type="string" />
+    <item name="confirm" type="string" />
+    <item name="apk" type="string" />
+    <item name="selected" type="string" />
 
     <item name="backup_sort_type_items_apps" type="array" />
     <item name="flag_type_items" type="array" />

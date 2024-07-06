@@ -61,7 +61,6 @@ import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.getValue
@@ -251,31 +250,24 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
             ) {
                 PackageIconImage(packageName = item.packageName, label = "${item.packageInfo.label.firstOrNull() ?: ""}", size = SizeTokens.Level32)
                 Column(modifier = Modifier.weight(1f)) {
-                    TitleLargeText(
-                        text = item.packageInfo.label.ifEmpty { StringResourceToken.fromStringId(R.string.unknown).getValue(context) },
-                        color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor()
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level4)) {
+                        RoundChip {
+                            LabelSmallText(
+                                modifier = Modifier.paddingHorizontal(SizeTokens.Level8),
+                                text = StringResourceToken.fromString("${item.userId}").value,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        TitleLargeText(
+                            text = item.packageInfo.label.ifEmpty { StringResourceToken.fromStringId(R.string.unknown).getValue(context) },
+                            color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor(),
+                            maxLines = 1,
+                        )
+                    }
                     BodyMediumText(
                         text = StringResourceToken.fromString(item.packageName).value,
-                        color = ColorSchemeKeyTokens.Outline.toColor()
-                    )
-                    BodyMediumText(
-                        text = (
-                                if (item.preserveId == 0L) {
-                                    StringResourceToken.fromStringArgs(
-                                        StringResourceToken.fromStringId(R.string.user),
-                                        StringResourceToken.fromString(": ${item.userId}"),
-                                    )
-                                } else {
-                                    StringResourceToken.fromStringArgs(
-                                        StringResourceToken.fromStringId(R.string.user),
-                                        StringResourceToken.fromString(": ${item.userId}, "),
-                                        StringResourceToken.fromStringId(R.string.id),
-                                        StringResourceToken.fromString(": ${item.preserveId}"),
-                                    )
-                                }
-                                ).value,
-                        color = ColorSchemeKeyTokens.OnSurface.toColor()
+                        color = ColorSchemeKeyTokens.Outline.toColor(),
+                        maxLines = 1,
                     )
                 }
 
@@ -302,6 +294,33 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         val storageStatsFormat = when (item.indexInfo.opType) {
                             OpType.BACKUP -> item.storageStatsBytes
                             OpType.RESTORE -> item.displayStatsBytes
+                        }
+
+                        if (item.apkSelected) {
+                            AssistChip(
+                                enabled = true,
+                                label = StringResourceToken.fromStringId(R.string.apk),
+                                leadingIcon = null,
+                                trailingIcon = null,
+                                color = ColorSchemeKeyTokens.RedPrimary,
+                                containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
+                                border = null,
+                            )
+                        }
+
+                        if (item.userSelected || item.userDeSelected || item.dataSelected || item.obbSelected || item.mediaSelected) {
+                            AssistChip(
+                                enabled = true,
+                                label = StringResourceToken.StringArgsToken(
+                                    StringResourceToken.fromStringId(R.string.data),
+                                    StringResourceToken.fromString("(${item.dataSelectedCount})"),
+                                ),
+                                leadingIcon = null,
+                                trailingIcon = null,
+                                color = ColorSchemeKeyTokens.RedPrimary,
+                                containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
+                                border = null,
+                            )
                         }
 
                         if (item.preserveId != 0L) {

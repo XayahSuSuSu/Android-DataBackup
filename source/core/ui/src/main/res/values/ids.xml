@@ -16,6 +16,8 @@
     <item name="restore_user" type="string" />
     <item name="not_exist" type="string" />
     <item name="specify_a_path" type="string" />
+    <item name="apk" type="string" />
+    <item name="data" type="string" />
 
     <item name="jetbrains_mono_regular" type="font" />
     <item name="ic_rounded_check_circle" type="drawable" />
@@ -25,6 +27,12 @@
     <item name="ic_rounded_arrow_circle_up" type="drawable" />
     <item name="ic_rounded_arrow_circle_down" type="drawable" />
     <item name="ic_launcher_foreground_tonal" type="drawable" />
+    <item name="ic_rounded_android" type="drawable" />
+    <item name="ic_rounded_person" type="drawable" />
+    <item name="ic_rounded_manage_accounts" type="drawable" />
+    <item name="ic_rounded_database" type="drawable" />
+    <item name="ic_rounded_stadia_controller" type="drawable" />
+    <item name="ic_rounded_image" type="drawable" />
 
     <item name="ic_launcher_background" type="color" />
 

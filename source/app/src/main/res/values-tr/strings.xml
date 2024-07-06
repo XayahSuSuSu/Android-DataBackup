@@ -147,7 +147,7 @@
     <string name="not_selected">Seçilmedi</string>
     <string name="url">URL</string>
     <string name="cloud_server_disconnected">Bulut sunucusunun bağlantısı kesildi</string>
-    <string name="batching_select">Toplu seçim</string>
+    <string name="batch_select">Toplu seçim</string>
     <string name="account">Hesap</string>
     <string name="main_account">Ana hesap</string>
     <string name="in_use">Kullanımda</string>

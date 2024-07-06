@@ -22,7 +22,6 @@ data class IndexUiState(
     val packageName: String,
     val userId: Int,
     val preserveId: Long,
-    val infoExpanded: Boolean,
     val isCalculating: Boolean,
 ) : UiState
 
@@ -44,7 +43,6 @@ class IndexViewModel @Inject constructor(
         packageName = args.get<String>(MainRoutes.ARG_PACKAGE_NAME)?.decodeURL()?.trim() ?: "",
         userId = args.get<String>(MainRoutes.ARG_USER_ID)?.toIntOrNull() ?: 0,
         preserveId = args.get<String>(MainRoutes.ARG_PRESERVE_ID)?.toLongOrNull() ?: 0,
-        infoExpanded = false,
         isCalculating = false,
     )
 ) {

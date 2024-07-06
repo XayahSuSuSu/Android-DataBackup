@@ -3,6 +3,7 @@ package com.xayah.core.ui.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,7 +55,25 @@ fun FullscreenModalBottomSheet(
             ) {
                 content()
             }
+        }
+    }
+}
 
+@ExperimentalMaterial3Api
+@Composable
+fun ModalBottomSheet(
+    onDismissRequest: () -> Unit,
+    sheetState: SheetState = rememberModalBottomSheetState(),
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    with(LocalDensity.current) {
+        ModalBottomSheet(
+            onDismissRequest = onDismissRequest,
+            sheetState = sheetState,
+            windowInsets = WindowInsets(0, 0, 0, 0)
+        ) {
+            content()
+            Spacer(modifier = Modifier.height(WindowInsets.safeDrawing.getBottom(this@with).toDp()))
         }
     }
 }

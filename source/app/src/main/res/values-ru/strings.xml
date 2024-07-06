@@ -161,7 +161,7 @@
     <string name="clear_all">Очистить все</string>
     <string name="processing">Обработка</string>
     <string name="data_only">Только данные</string>
-    <string name="batching_select">Пакетный выбор</string>
+    <string name="batch_select">Пакетный выбор</string>
     <string name="in_use">Используется</string>
     <string name="overall_config">Общая конфигурация</string>
     <string name="connection_established">Связь успешно установлена</string>

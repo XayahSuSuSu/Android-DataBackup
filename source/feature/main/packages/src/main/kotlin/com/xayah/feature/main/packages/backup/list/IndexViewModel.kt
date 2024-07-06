@@ -10,6 +10,7 @@ import com.xayah.core.datastore.readUserIdList
 import com.xayah.core.datastore.saveBackupFilterFlagIndex
 import com.xayah.core.datastore.saveBackupUserIdIndex
 import com.xayah.core.datastore.saveUserIdList
+import com.xayah.core.model.DataState
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.database.PackageEntity
@@ -53,6 +54,7 @@ sealed class IndexUiIntent : UiIntent {
     data class Select(val entity: PackageEntity) : IndexUiIntent()
     data class SelectAll(val selected: Boolean) : IndexUiIntent()
     data object BlockSelected : IndexUiIntent()
+    data class BatchSelectData(val apk: Boolean, val user: Boolean, val userDe: Boolean, val data: Boolean, val obb: Boolean, val media: Boolean) : IndexUiIntent()
     data class ToPageDetail(val navController: NavHostController, val packageEntity: PackageEntity) : IndexUiIntent()
 }
 
@@ -145,6 +147,19 @@ class IndexViewModel @Inject constructor(
                 packages.forEach {
                     it.extraInfo.blocked = true
                     it.extraInfo.activated = false
+                }
+                packageRepo.upsert(packages)
+            }
+
+            is IndexUiIntent.BatchSelectData -> {
+                val packages = packageRepo.filterBackup(packageRepo.queryActivated(OpType.BACKUP))
+                packages.forEach {
+                    it.dataStates.apkState = if (intent.apk) DataState.Selected else DataState.NotSelected
+                    it.dataStates.userState = if (intent.user) DataState.Selected else DataState.NotSelected
+                    it.dataStates.userDeState = if (intent.userDe) DataState.Selected else DataState.NotSelected
+                    it.dataStates.dataState = if (intent.data) DataState.Selected else DataState.NotSelected
+                    it.dataStates.obbState = if (intent.obb) DataState.Selected else DataState.NotSelected
+                    it.dataStates.mediaState = if (intent.media) DataState.Selected else DataState.NotSelected
                 }
                 packageRepo.upsert(packages)
             }

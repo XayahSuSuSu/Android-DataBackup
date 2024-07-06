@@ -134,7 +134,7 @@
     <string name="recursive_mode">Rekurzivni način</string>
     <string name="follow_symlinks">Pratite linkove</string>
     <string name="follow_symlinks_desc">Arhivirajte i ispišite datoteke na koje se upućuje</string>
-    <string name="batching_select">Serijski odabir</string>
+    <string name="batch_select">Serijski odabir</string>
     <string name="remain">Ostani</string>
     <string name="apk_only">Samo APK</string>
     <string name="data_only">Samo podaci</string>

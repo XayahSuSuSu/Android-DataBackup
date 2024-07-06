@@ -88,7 +88,7 @@
     <string name="password">Contraseña</string>
     <string name="recursive_mode">Modo recursivo</string>
     <string name="follow_symlinks">Seguir enlaces simbólicos</string>
-    <string name="batching_select">Selección múltiple</string>
+    <string name="batch_select">Selección múltiple</string>
     <string name="apk_only">Solo APK</string>
     <string name="in_use">En uso</string>
     <string name="test_connection">Probar la conexión</string>

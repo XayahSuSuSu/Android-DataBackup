@@ -163,7 +163,7 @@
     <string name="finished">Finalizado</string>
     <string name="type">Tipo</string>
     <string name="remote_not_set">Diretório remoto não definido</string>
-    <string name="batching_select">Seleção de lote</string>
+    <string name="batch_select">Seleção de lote</string>
     <string name="welcome_to_use">Bem-vindo ao DataBackup</string>
     <string name="directory">Armazenamento</string>
     <string name="log">Logs</string>

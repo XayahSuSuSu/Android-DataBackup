@@ -1,6 +1,5 @@
 package com.xayah.feature.main.packages.restore.detail
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Shield
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,7 +30,6 @@ import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.FilledIconButton
-import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.PackageIconImage
 import com.xayah.core.ui.component.Switchable
@@ -56,6 +52,7 @@ import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.getValue
+import com.xayah.core.util.DateUtil
 import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.withMainContext
 import com.xayah.feature.main.packages.ListScaffold
@@ -111,11 +108,6 @@ fun PagePackagesRestoreDetail() {
                         TitleLargeText(text = pkg.packageInfo.label.ifEmpty { StringResourceToken.fromStringId(R.string.unknown).getValue(context) }, color = ColorSchemeKeyTokens.OnSurface.toColor())
                         BodyMediumText(text = uiState.packageName, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
                     }
-                    IconButton(
-                        icon = ImageVectorToken.fromVector(if (uiState.infoExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown),
-                    ) {
-                        viewModel.emitStateOnMain(uiState.copy(infoExpanded = uiState.infoExpanded.not()))
-                    }
                 }
                 Row(
                     modifier = Modifier
@@ -156,17 +148,19 @@ fun PagePackagesRestoreDetail() {
                         }
                     }
                 }
-                AnimatedVisibility(uiState.infoExpanded) {
-                    Title(title = StringResourceToken.fromStringId(R.string.info)) {
-                        Clickable(
-                            title = StringResourceToken.fromStringId(R.string.backup_user),
-                            value = StringResourceToken.fromString(uiState.userId.toString()),
-                        )
-                        Clickable(
-                            title = StringResourceToken.fromStringId(R.string.version),
-                            value = StringResourceToken.fromString(pkg.packageInfo.versionName),
-                        )
-                    }
+                Title(title = StringResourceToken.fromStringId(R.string.info)) {
+                    Clickable(
+                        title = StringResourceToken.fromStringId(R.string.backup_user),
+                        value = StringResourceToken.fromString(uiState.userId.toString()),
+                    )
+                    Clickable(
+                        title = StringResourceToken.fromStringId(R.string.version),
+                        value = StringResourceToken.fromString(pkg.packageInfo.versionName),
+                    )
+                    Clickable(
+                        title = StringResourceToken.fromStringId(R.string._protected),
+                        value = StringResourceToken.fromString(DateUtil.formatTimestamp(pkg.indexInfo.preserveId)),
+                    )
                 }
                 Title(title = StringResourceToken.fromStringId(R.string.backup_parts)) {
                     Switchable(

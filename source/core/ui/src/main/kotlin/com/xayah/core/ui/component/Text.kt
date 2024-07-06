@@ -75,6 +75,8 @@ fun TitleLargeText(
     color: Color = Color.Unspecified,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    maxLines: Int = Int.MAX_VALUE,
     enabled: Boolean = true,
 ) {
     Text(
@@ -84,6 +86,8 @@ fun TitleLargeText(
         color = if (enabled) color else color.copy(alpha = DisabledAlpha),
         textAlign = textAlign,
         fontWeight = fontWeight,
+        overflow = overflow,
+        maxLines = maxLines,
     )
 }
 
@@ -152,6 +156,8 @@ fun LabelLargeText(
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
     fontFamily: FontFamily? = null,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    maxLines: Int = Int.MAX_VALUE,
     enabled: Boolean = true,
 ) {
     Text(
@@ -162,6 +168,8 @@ fun LabelLargeText(
         textAlign = textAlign,
         fontWeight = fontWeight,
         fontFamily = fontFamily,
+        maxLines = maxLines,
+        overflow = overflow,
     )
 }
 
@@ -232,6 +240,8 @@ fun LabelSmallText(
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
     fontFamily: FontFamily? = null,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    maxLines: Int = Int.MAX_VALUE,
     enabled: Boolean = true,
 ) {
     Text(
@@ -242,6 +252,8 @@ fun LabelSmallText(
         textAlign = textAlign,
         fontWeight = fontWeight,
         fontFamily = fontFamily,
+        maxLines = maxLines,
+        overflow = overflow,
     )
 }
 
@@ -290,6 +302,8 @@ fun BodyMediumText(
     color: Color = Color.Unspecified,
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    maxLines: Int = Int.MAX_VALUE,
     enabled: Boolean = true,
 ) {
     Text(
@@ -299,6 +313,8 @@ fun BodyMediumText(
         color = if (enabled) color else color.copy(alpha = DisabledAlpha),
         textAlign = textAlign,
         fontWeight = fontWeight,
+        overflow = overflow,
+        maxLines = maxLines,
     )
 }
 

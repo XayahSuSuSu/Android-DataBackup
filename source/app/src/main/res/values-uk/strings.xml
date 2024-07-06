@@ -163,7 +163,7 @@
     <string name="clear_all">Очистити все</string>
     <string name="processing">Обробка</string>
     <string name="data_only">Тільки дані</string>
-    <string name="batching_select">Пакетний вибір</string>
+    <string name="batch_select">Пакетний вибір</string>
     <string name="local">Локально</string>
     <string name="in_use">Використовується</string>
     <string name="overall_config">Загальні налаштування</string>

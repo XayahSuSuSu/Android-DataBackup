@@ -21,7 +21,6 @@ import javax.inject.Inject
 data class IndexUiState(
     val packageName: String,
     val userId: Int,
-    val infoExpanded: Boolean,
     val isCalculating: Boolean,
 ) : UiState
 
@@ -40,7 +39,6 @@ class IndexViewModel @Inject constructor(
     IndexUiState(
         packageName = args.get<String>(MainRoutes.ARG_PACKAGE_NAME)?.decodeURL()?.trim() ?: "",
         userId = args.get<String>(MainRoutes.ARG_USER_ID)?.toIntOrNull() ?: 0,
-        infoExpanded = false,
         isCalculating = false,
     )
 ) {

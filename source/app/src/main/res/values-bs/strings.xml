@@ -262,7 +262,7 @@
     <string name="data_only">Samo podaci</string>
     <string name="in_use">Koristi se</string>
     <string name="clear_all">Izbriši sve</string>
-    <string name="batching_select">Serijski odabir</string>
+    <string name="batch_select">Serijski odabir</string>
     <string name="existing_files">Postojeće datoteke</string>
     <string name="overall_config">Općenita konfiguracija</string>
     <string name="test_connection">Testiraj vezu</string>

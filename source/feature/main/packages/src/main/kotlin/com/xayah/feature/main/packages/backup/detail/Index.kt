@@ -1,6 +1,5 @@
 package com.xayah.feature.main.packages.backup.detail
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -10,9 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
@@ -29,7 +25,6 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.Clickable
-import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.PackageIconImage
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
@@ -45,7 +40,6 @@ import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.SymbolUtil
 import com.xayah.feature.main.packages.ListScaffold
@@ -99,36 +93,29 @@ fun PagePackagesBackupDetail() {
                         TitleLargeText(text = pkg.packageInfo.label, color = ColorSchemeKeyTokens.OnSurface.toColor())
                         BodyMediumText(text = uiState.packageName, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
                     }
-                    IconButton(
-                        icon = ImageVectorToken.fromVector(if (uiState.infoExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown),
-                    ) {
-                        viewModel.emitStateOnMain(uiState.copy(infoExpanded = uiState.infoExpanded.not()))
-                    }
                 }
-                AnimatedVisibility(uiState.infoExpanded) {
-                    Title(title = StringResourceToken.fromStringId(R.string.info)) {
-                        Clickable(
-                            title = StringResourceToken.fromStringId(R.string.user),
-                            value = StringResourceToken.fromString(uiState.userId.toString()),
-                        )
-                        Clickable(
-                            title = StringResourceToken.fromStringId(R.string.uid),
-                            value = StringResourceToken.fromString(pkg.extraInfo.uid.toString())
-                        )
-                        Clickable(
-                            title = StringResourceToken.fromStringId(R.string.version),
-                            value = StringResourceToken.fromString(pkg.packageInfo.versionName),
-                        )
-                        Clickable(
-                            title = StringResourceToken.fromStringId(R.string.first_install),
-                            value = StringResourceToken.fromString(
-                                DateUtil.formatTimestamp(
-                                    pkg.packageInfo.firstInstallTime,
-                                    "yyyy-MM-dd"
-                                )
-                            ),
-                        )
-                    }
+                Title(title = StringResourceToken.fromStringId(R.string.info)) {
+                    Clickable(
+                        title = StringResourceToken.fromStringId(R.string.user),
+                        value = StringResourceToken.fromString(uiState.userId.toString()),
+                    )
+                    Clickable(
+                        title = StringResourceToken.fromStringId(R.string.uid),
+                        value = StringResourceToken.fromString(pkg.extraInfo.uid.toString())
+                    )
+                    Clickable(
+                        title = StringResourceToken.fromStringId(R.string.version),
+                        value = StringResourceToken.fromString(pkg.packageInfo.versionName),
+                    )
+                    Clickable(
+                        title = StringResourceToken.fromStringId(R.string.first_install),
+                        value = StringResourceToken.fromString(
+                            DateUtil.formatTimestamp(
+                                pkg.packageInfo.firstInstallTime,
+                                "yyyy-MM-dd"
+                            )
+                        ),
+                    )
                 }
                 Title(title = StringResourceToken.fromStringId(R.string.backup_parts)) {
                     Switchable(

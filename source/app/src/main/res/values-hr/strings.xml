@@ -170,7 +170,7 @@
     <string name="recursive_mode">Rekurzivni način</string>
     <string name="please_set_up_backup_dir">Postavi direktorij sigurnosnih kopija</string>
     <string name="follow_symlinks_desc">Arhivirajte i ispišite datoteke na koje se upućuje</string>
-    <string name="batching_select">Serijski odabir</string>
+    <string name="batch_select">Serijski odabir</string>
     <string name="remain">Ostani</string>
     <string name="in_use">Koristi se</string>
     <string name="overall_config">Općenita konfiguracija</string>
