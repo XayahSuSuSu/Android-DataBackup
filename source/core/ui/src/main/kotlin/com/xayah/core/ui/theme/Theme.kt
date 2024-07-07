@@ -11,8 +11,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -25,11 +26,15 @@ import com.xayah.core.datastore.readThemeType
 import com.xayah.core.model.ThemeType
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.rememberSlotScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun darkTheme() = run {
     val context = LocalContext.current
-    val themeType by context.readThemeType().collectAsState(initial = ThemeType.AUTO)
+    val themeType by context.readThemeType().collectImmediatelyAsState()
     when (themeType) {
         ThemeType.AUTO -> isSystemInDarkTheme()
         else -> remember(themeType) { themeType != ThemeType.LIGHT_THEME }
@@ -43,7 +48,7 @@ fun DataBackupTheme(
     val context = LocalContext.current
     val darkTheme = darkTheme()
     // Dynamic color is available on Android 12+
-    val dynamicColor by context.readMonet().collectAsState(initial = true)
+    val dynamicColor by context.readMonet().collectImmediatelyAsState()
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -83,4 +88,12 @@ fun DataBackupTheme(
             CompositionLocalProvider(LocalSlotScope provides slotScope, content = content)
         }
     )
+}
+
+@Composable
+private fun <T> Flow<T>.collectImmediatelyAsState(): State<T> = produceState(
+    initialValue = runBlocking { first() }, // DataStore shouldn't be really heavy
+    key1 = this,
+) {
+    drop(1).collect { value = it }
 }
