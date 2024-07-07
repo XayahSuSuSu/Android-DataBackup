@@ -33,8 +33,8 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun darkTheme() = run {
-    val context = LocalContext.current
-    val themeType by context.readThemeType().collectImmediatelyAsState()
+    val themeType by observeCurrentTheme()
+
     when (themeType) {
         ThemeType.AUTO -> isSystemInDarkTheme()
         else -> remember(themeType) { themeType != ThemeType.LIGHT_THEME }
@@ -48,7 +48,7 @@ fun DataBackupTheme(
     val context = LocalContext.current
     val darkTheme = darkTheme()
     // Dynamic color is available on Android 12+
-    val dynamicColor by context.readMonet().collectImmediatelyAsState()
+    val dynamicColor by observeMonetEnabled()
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -88,6 +88,16 @@ fun DataBackupTheme(
             CompositionLocalProvider(LocalSlotScope provides slotScope, content = content)
         }
     )
+}
+
+@Composable
+fun observeCurrentTheme(): State<ThemeType> {
+    return LocalContext.current.readThemeType().collectImmediatelyAsState()
+}
+
+@Composable
+fun observeMonetEnabled(): State<Boolean> {
+    return LocalContext.current.readMonet().collectImmediatelyAsState()
 }
 
 @Composable
