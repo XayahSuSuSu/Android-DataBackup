@@ -21,11 +21,9 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.xayah.core.datastore.readMonet
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.theme.Blue10
 import com.xayah.core.ui.theme.Blue20
@@ -52,6 +50,7 @@ import com.xayah.core.ui.theme.Yellow40
 import com.xayah.core.ui.theme.Yellow80
 import com.xayah.core.ui.theme.Yellow90
 import com.xayah.core.ui.theme.darkTheme
+import com.xayah.core.ui.theme.observeMonetEnabled
 
 /**
  * Helper function for component color tokens. Here is an example on how to use component color
@@ -62,7 +61,7 @@ import com.xayah.core.ui.theme.darkTheme
 internal fun ColorScheme.fromToken(value: ColorSchemeKeyTokens): Color {
     val context = LocalContext.current
     // Dynamic color is available on Android 12+
-    val dynamicColor by context.readMonet().collectAsState(initial = true)
+    val dynamicColor by observeMonetEnabled()
     val isDarkTheme = darkTheme()
     val tonalPalette = if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dynamicTonalPalette(context) else BaselineTonalPalette
 
