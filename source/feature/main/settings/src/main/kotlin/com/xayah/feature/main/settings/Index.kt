@@ -80,6 +80,11 @@ fun PageSettings() {
                     (context as ComponentActivity).finish()
                     context.startActivity(Intent(context, SetupActivity::class.java))
                 }
+                Clickable(
+                    title = StringResourceToken.fromStringId(R.string.app_language),
+                ) {
+                    navController.navigate(MainRoutes.LanguageSettings.route)
+                }
             }
             Title(title = StringResourceToken.fromStringId(R.string.appearance)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

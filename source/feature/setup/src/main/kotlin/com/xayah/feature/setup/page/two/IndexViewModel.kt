@@ -3,11 +3,11 @@ package com.xayah.feature.setup.page.two
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.xayah.core.datastore.saveAppVersionName
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
-import com.xayah.core.datastore.saveAppVersionName
 import com.xayah.core.util.ActivityUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

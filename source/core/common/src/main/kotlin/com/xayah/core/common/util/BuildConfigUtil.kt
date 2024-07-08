@@ -13,4 +13,5 @@ object BuildConfigUtil {
     val VERSION_CODE = runCatching { fromBuildConfig("VERSION_CODE") as Int }.getOrDefault(0).toLong()
     val FLAVOR_feature = runCatching { fromBuildConfig("FLAVOR_feature") as String }.getOrDefault("")
     val FLAVOR_abi = runCatching { fromBuildConfig("FLAVOR_abi") as String }.getOrDefault("")
+    val SUPPORTED_LOCALES = runCatching { fromBuildConfig("SUPPORTED_LOCALES") as Array<String> }.getOrDefault(arrayOf())
 }

@@ -348,4 +348,5 @@
     <string name="disabled">Disabled</string>
     <string name="kill_app_options">Killing app options</string>
     <string name="kill_app_options_desc">Behavior before backup</string>
+    <string name="app_language">App language</string>
 </resources>

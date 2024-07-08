@@ -1,5 +1,8 @@
 package com.xayah.databackup
 
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,9 +11,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.xayah.core.provider.LanguageProvider
 import com.xayah.core.ui.component.AnimatedNavHost
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.theme.DataBackupTheme
@@ -44,6 +49,7 @@ import com.xayah.feature.main.settings.about.PageAboutSettings
 import com.xayah.feature.main.settings.about.PageTranslatorsSettings
 import com.xayah.feature.main.settings.backup.PageBackupSettings
 import com.xayah.feature.main.settings.blacklist.PageBlackList
+import com.xayah.feature.main.settings.language.PageLanguageSelector
 import com.xayah.feature.main.settings.restore.PageRestoreSettings
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,6 +57,15 @@ import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    class ContextWithUpdatedResources(
+        private val resources: Context,
+        base: Context,
+    ) : ContextWrapper(base) {
+        override fun getResources(): Resources {
+            return resources.resources
+        }
+    }
+
     @ExperimentalCoroutinesApi
     @ExperimentalAnimationApi
     @ExperimentalFoundationApi
@@ -69,7 +84,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             DataBackupTheme {
                 val navController = rememberNavController()
-                CompositionLocalProvider(LocalNavController provides navController) {
+                val localizedContext = ContextWithUpdatedResources(
+                    runBlocking { LanguageProvider.getLocalizedContext(this@MainActivity) },
+                    this@MainActivity,
+                )
+
+                CompositionLocalProvider(
+                    LocalNavController provides navController,
+                    LocalContext provides localizedContext,
+                ) {
                     AnimatedNavHost(
                         navController = navController,
                         startDestination = MainRoutes.Dashboard.route,
@@ -145,6 +168,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.RestoreSettings.route) {
                             PageRestoreSettings()
+                        }
+                        composable(MainRoutes.LanguageSettings.route) {
+                            PageLanguageSelector()
                         }
                         composable(MainRoutes.BlackList.route) {
                             PageBlackList()

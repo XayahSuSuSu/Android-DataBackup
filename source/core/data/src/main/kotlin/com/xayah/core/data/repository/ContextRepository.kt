@@ -10,7 +10,7 @@ class ContextRepository @Inject constructor(
 ) {
     fun getString(@StringRes resId: Int) = context.getString(resId)
 
-    suspend fun withContext(block: suspend (context: Context) -> Unit) = run {
+    suspend fun <T> withContext(block: suspend (context: Context) -> T) = run {
         block(context)
     }
 }
