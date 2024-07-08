@@ -333,4 +333,9 @@
     <string name="public_key">Chave pública</string>
     <string name="private_key">Chave privada</string>
     <string name="sftp_setup">Configuração SFTP</string>
+    <string name="kill_app_options">Matar opções de apps</string>
+    <string name="kill_app_options_desc">Comportamento antes do backup</string>
+    <string name="option_i">Opção 1</string>
+    <string name="option_ii">Opção 2</string>
+    <string name="disabled">Desativado</string>
 </resources>
