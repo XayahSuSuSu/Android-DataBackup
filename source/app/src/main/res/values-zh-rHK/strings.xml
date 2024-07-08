@@ -52,7 +52,7 @@
     <string name="selected_apks">已選安裝包</string>
     <string name="selected_data">Selected data</string>
     <string name="idle">空閒</string>
-    <string name="backing_up">備份中</string>
+    <string name="backing_up">備份中…</string>
     <string name="failed_and_terminated">失敗, 終止</string>
     <string name="not_exist">不存在</string>
     <string name="not_exist_and_skip">不存在, 跳過</string>
@@ -62,7 +62,7 @@
     <string name="export">導出</string>
     <string name="simplify">精簡</string>
     <string name="integral">完整</string>
-    <string name="wait_for_remaining_data_processing">請稍等, 正在處理餘下數據🦖</string>
+    <string name="wait_for_remaining_data_processing">正在處理剩餘資料…</string>
     <string name="restore">恢復</string>
     <string name="last_restore">上次恢復</string>
     <string name="restore_dir">恢復目錄</string>
