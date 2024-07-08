@@ -333,4 +333,9 @@
     <string name="private_key">Özel anahtar</string>
     <string name="sftp_setup">SFTP kurulumu</string>
     <string name="no_root_directory">Lütfen kök dizinini seçme</string>
+    <string name="option_i">Birinci seçenek</string>
+    <string name="option_ii">İkinci seçenek</string>
+    <string name="disabled">Devre dışı bırakıldı</string>
+    <string name="kill_app_options">Uygulama kapatma seçenekleri</string>
+    <string name="kill_app_options_desc">Yedeklemeden önceki davranış</string>
 </resources>
