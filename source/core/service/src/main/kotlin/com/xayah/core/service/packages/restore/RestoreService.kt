@@ -11,6 +11,7 @@ import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readAutoScreenOff
+import com.xayah.core.datastore.readKillAppOption
 import com.xayah.core.datastore.readResetRestoreList
 import com.xayah.core.datastore.readRestoreUser
 import com.xayah.core.datastore.readScreenOffTimeout
@@ -19,6 +20,7 @@ import com.xayah.core.datastore.saveLastRestoreTime
 import com.xayah.core.datastore.saveScreenOffCountDown
 import com.xayah.core.datastore.saveScreenOffTimeout
 import com.xayah.core.model.DataType
+import com.xayah.core.model.KillAppOption
 import com.xayah.core.model.OpType
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.ProcessingType
@@ -206,6 +208,8 @@ internal abstract class RestoreService : Service() {
                 taskDao.upsert(it)
             }
 
+            val killAppOption = context.readKillAppOption().first()
+
             pkgEntities.forEachIndexed { index, pkg ->
                 NotificationUtil.notify(
                     context,
@@ -218,8 +222,21 @@ internal abstract class RestoreService : Service() {
                 log { "Current package: ${pkg.packageEntity}" }
 
                 // Kill the package.
-                log { "Trying to kill ${pkg.packageEntity.packageName}." }
-                BaseUtil.killPackage(context = context, userId = pkg.packageEntity.userId, packageName = pkg.packageEntity.packageName)
+                when (killAppOption) {
+                    KillAppOption.DISABLED -> {
+                        log { "Won't kill ${pkg.packageEntity.packageName}." }
+                    }
+
+                    KillAppOption.OPTION_I -> {
+                        log { "Trying to kill ${pkg.packageEntity.packageName}." }
+                        BaseUtil.killPackage(context = context, userId = pkg.packageEntity.userId, packageName = pkg.packageEntity.packageName)
+                    }
+
+                    KillAppOption.OPTION_II -> {
+                        log { "Trying to kill ${pkg.packageEntity.packageName}." }
+                        rootService.forceStopPackageAsUser(pkg.packageEntity.packageName, pkg.packageEntity.userId)
+                    }
+                }
 
                 runCatchingOnService { restorePackage(pkg) }
 

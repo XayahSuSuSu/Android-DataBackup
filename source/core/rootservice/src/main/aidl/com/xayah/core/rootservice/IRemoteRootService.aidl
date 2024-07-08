@@ -37,6 +37,7 @@ interface IRemoteRootService {
     void setDisplayPowerMode(int mode);
     int getScreenOffTimeout();
     void setScreenOffTimeout(int timeout);
+    void forceStopPackageAsUser(String packageName, int userId);
 
     String calculateMD5(String src);
 }

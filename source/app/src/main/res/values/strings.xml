@@ -343,4 +343,9 @@
     <string name="translators">Translators</string>
     <string name="translators_desc">We appreciate their efforts</string>
     <string name="no_root_directory">Please do not select the root directory</string>
+    <string name="option_i">Option One</string>
+    <string name="option_ii">Option II</string>
+    <string name="disabled">Disabled</string>
+    <string name="kill_app_options">Killing app options</string>
+    <string name="kill_app_options_desc">Behavior before backup</string>
 </resources>

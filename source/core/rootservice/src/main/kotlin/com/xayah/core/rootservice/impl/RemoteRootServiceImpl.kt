@@ -1,5 +1,6 @@
 package com.xayah.core.rootservice.impl
 
+import android.app.ActivityManagerHidden
 import android.app.ActivityThread
 import android.app.usage.StorageStats
 import android.app.usage.StorageStatsManager
@@ -52,12 +53,15 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private var packageManagerHidden: PackageManagerHidden
     private var storageStatsManager: StorageStatsManager
     private var userManager: UserManagerHidden
+    private var activityManager: ActivityManagerHidden
 
     private fun getSystemContext(): Context = ActivityThread.systemMain().systemContext
 
     private fun getStorageStatsManager(): StorageStatsManager = systemContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
 
     private fun getUserManager(): UserManagerHidden = UserManagerHidden.get(systemContext).castTo()
+
+    private fun getActivityManager(): ActivityManagerHidden = systemContext.getSystemService(Context.ACTIVITY_SERVICE).castTo()
 
     init {
         /**
@@ -84,6 +88,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         packageManagerHidden = packageManager.castTo()
         storageStatsManager = getStorageStatsManager()
         userManager = getUserManager()
+        activityManager = getActivityManager()
     }
 
     override fun readStatFs(path: String): StatFsParcelable = synchronized(lock) {
@@ -378,6 +383,10 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun setScreenOffTimeout(timeout: Int): Unit = synchronized(lock) {
         ShellUtils.fastCmd("settings put system screen_off_timeout $timeout")
+    }
+
+    override fun forceStopPackageAsUser(packageName: String, userId: Int) = synchronized(lock) {
+        activityManager.forceStopPackageAsUser(packageName, userId)
     }
 
     override fun calculateMD5(src: String): String = synchronized(lock) { HashUtil.calculateMD5(src) }

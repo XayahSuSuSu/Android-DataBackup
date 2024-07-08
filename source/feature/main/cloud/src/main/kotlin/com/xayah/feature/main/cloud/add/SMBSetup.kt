@@ -84,7 +84,7 @@ fun PageSMBSetup() {
     var share by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<SMBExtra>()?.share ?: "") }
     var username by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.user ?: "") }
     val modeOptions = stringArrayResource(id = R.array.smb_auth_mode).toList()
-    var modeIndex by rememberSaveable(uiState.cloudEntity) { mutableIntStateOf(uiState.cloudEntity?.getExtraEntity<SMBExtra>()?.mode?.index ?: 0) }
+    var modeIndex by rememberSaveable(uiState.cloudEntity) { mutableIntStateOf(uiState.cloudEntity?.getExtraEntity<SMBExtra>()?.mode?.ordinal ?: 0) }
     var password by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.pass ?: "") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val allFilled by rememberSaveable(

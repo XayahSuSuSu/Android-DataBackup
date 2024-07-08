@@ -104,10 +104,10 @@ enum class SmbVersion(val text: String) {
     SMB_3_1_1("3.1.1"),
 }
 
-enum class SmbAuthMode(val index: Int) {
-    PASSWORD(0),
-    GUEST(1),
-    ANONYMOUS(2);
+enum class SmbAuthMode() {
+    PASSWORD,
+    GUEST,
+    ANONYMOUS;
 
     companion object
 }
@@ -150,6 +150,14 @@ enum class ThemeType {
     AUTO,
     LIGHT_THEME,
     DARK_THEME;
+
+    companion object
+}
+
+enum class KillAppOption {
+    DISABLED,
+    OPTION_I,
+    OPTION_II;
 
     companion object
 }

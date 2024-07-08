@@ -1,6 +1,7 @@
 package com.xayah.core.model.util
 
 import com.xayah.core.model.CompressionType
+import com.xayah.core.model.KillAppOption
 import com.xayah.core.model.LZ4_SUFFIX
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SFTPAuthMode
@@ -64,3 +65,12 @@ fun SFTPAuthMode.Companion.indexOf(index: Int): SFTPAuthMode = when (index) {
     1 -> SFTPAuthMode.PUBLIC_KEY
     else -> SFTPAuthMode.PASSWORD
 }
+
+fun KillAppOption.Companion.indexOf(index: Int): KillAppOption = when (index) {
+    1 -> KillAppOption.OPTION_I
+    2 -> KillAppOption.OPTION_II
+    else -> KillAppOption.DISABLED
+}
+
+fun KillAppOption.Companion.of(name: String?): KillAppOption =
+    runCatching { KillAppOption.valueOf(name!!.uppercase()) }.getOrDefault(KillAppOption.OPTION_II)

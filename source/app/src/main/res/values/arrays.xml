@@ -26,4 +26,9 @@
         <item>@string/password</item>
         <item>@string/public_key</item>
     </string-array>
+    <string-array name="kill_app_options">
+        <item>@string/disabled</item>
+        <item>@string/option_i</item>
+        <item>@string/option_ii</item>
+    </string-array>
 </resources>

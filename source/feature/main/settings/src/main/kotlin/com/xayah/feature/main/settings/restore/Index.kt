@@ -11,10 +11,26 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.readKillAppOption
+import com.xayah.core.datastore.saveKillAppOption
+import com.xayah.core.model.KillAppOption
+import com.xayah.core.model.util.indexOf
 import com.xayah.core.ui.component.InnerBottomSpacer
+import com.xayah.core.ui.component.LocalSlotScope
+import com.xayah.core.ui.component.Selectable
+import com.xayah.core.ui.component.select
+import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
+import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
@@ -24,6 +40,8 @@ import com.xayah.feature.main.settings.SettingsScaffold
 @ExperimentalMaterial3Api
 @Composable
 fun PageRestoreSettings() {
+    val context = LocalContext.current
+    val dialogState = LocalSlotScope.current!!.dialogSlot
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     SettingsScaffold(
@@ -38,6 +56,29 @@ fun PageRestoreSettings() {
             verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
         ) {
             Column {
+                val items = stringArrayResource(id = R.array.kill_app_options)
+                val dialogItems by remember(items) {
+                    mutableStateOf(items.mapIndexed { index, s ->
+                        DialogRadioItem(enum = KillAppOption.indexOf(index), title = StringResourceToken.fromString(s), desc = null)
+                    })
+                }
+                val currentOption by context.readKillAppOption().collectAsStateWithLifecycle(initialValue = KillAppOption.OPTION_II)
+                val currentIndex by remember(currentOption) { mutableIntStateOf(currentOption.ordinal) }
+                Selectable(
+                    title = StringResourceToken.fromStringId(R.string.kill_app_options),
+                    value = StringResourceToken.fromStringId(R.string.kill_app_options_desc),
+                    current = StringResourceToken.fromString(items[currentIndex])
+                ) {
+                    val (state, selectedIndex) = dialogState.select(
+                        title = StringResourceToken.fromStringId(R.string.kill_app_options),
+                        defIndex = currentIndex,
+                        items = dialogItems
+                    )
+                    if (state) {
+                        context.saveKillAppOption(dialogItems[selectedIndex].enum!!)
+                    }
+                }
+
                 /**
                  * Switchable(
                  *     key = KeyCleanRestoring,

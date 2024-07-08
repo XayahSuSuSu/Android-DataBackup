@@ -11,6 +11,7 @@ import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readAutoScreenOff
+import com.xayah.core.datastore.readKillAppOption
 import com.xayah.core.datastore.readResetBackupList
 import com.xayah.core.datastore.readScreenOffTimeout
 import com.xayah.core.datastore.readSelectionType
@@ -18,6 +19,7 @@ import com.xayah.core.datastore.saveLastBackupTime
 import com.xayah.core.datastore.saveScreenOffCountDown
 import com.xayah.core.datastore.saveScreenOffTimeout
 import com.xayah.core.model.DataType
+import com.xayah.core.model.KillAppOption
 import com.xayah.core.model.OpType
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.ProcessingType
@@ -238,6 +240,9 @@ internal abstract class BackupService : Service() {
                 taskDao.upsert(it)
             }
 
+            val killAppOption = context.readKillAppOption().first()
+            log { "Kill app option: $killAppOption" }
+
             pkgEntities.forEachIndexed { index, pkg ->
                 NotificationUtil.notify(
                     context,
@@ -250,8 +255,21 @@ internal abstract class BackupService : Service() {
                 log { "Current package: ${pkg.packageEntity}" }
 
                 // Kill the package.
-                log { "Trying to kill ${pkg.packageEntity.packageName}." }
-                BaseUtil.killPackage(context = context, userId = pkg.packageEntity.userId, packageName = pkg.packageEntity.packageName)
+                when (killAppOption) {
+                    KillAppOption.DISABLED -> {
+                        log { "Won't kill ${pkg.packageEntity.packageName}." }
+                    }
+
+                    KillAppOption.OPTION_I -> {
+                        log { "Trying to kill ${pkg.packageEntity.packageName}." }
+                        BaseUtil.killPackage(context = context, userId = pkg.packageEntity.userId, packageName = pkg.packageEntity.packageName)
+                    }
+
+                    KillAppOption.OPTION_II -> {
+                        log { "Trying to kill ${pkg.packageEntity.packageName}." }
+                        rootService.forceStopPackageAsUser(pkg.packageEntity.packageName, pkg.packageEntity.userId)
+                    }
+                }
 
                 runCatchingOnService { backupPackage(pkg) }
 

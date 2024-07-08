@@ -333,4 +333,9 @@
     <string name="translators">翻译者</string>
     <string name="translators_desc">感谢他们的付出</string>
     <string name="no_root_directory">请勿选择根目录</string>
+    <string name="option_i">方案I</string>
+    <string name="option_ii">方案II</string>
+    <string name="disabled">禁用</string>
+    <string name="kill_app_options">杀死应用选项</string>
+    <string name="kill_app_options_desc">备份应用前行为</string>
 </resources>

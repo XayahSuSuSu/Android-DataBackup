@@ -67,14 +67,12 @@ fun PageSettings() {
                 ) {
                     navController.navigate(MainRoutes.BackupSettings.route)
                 }
-                /**
-                 * Clickable(
-                 *     icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
-                 *     title = StringResourceToken.fromStringId(R.string.restore_settings),
-                 * ) {
-                 *     navController.navigate(MainRoutes.RestoreSettings.route)
-                 * }
-                 */
+                Clickable(
+                    icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
+                    title = StringResourceToken.fromStringId(R.string.restore_settings),
+                ) {
+                    navController.navigate(MainRoutes.RestoreSettings.route)
+                }
                 Clickable(
                     title = StringResourceToken.fromStringId(R.string.setup),
                     value = StringResourceToken.fromStringId(R.string.enter_the_setup_page_again),

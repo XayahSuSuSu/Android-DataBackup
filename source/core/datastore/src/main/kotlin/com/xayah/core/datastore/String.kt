@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.xayah.core.model.CompressionType
+import com.xayah.core.model.KillAppOption
 import com.xayah.core.model.SelectionType
 import com.xayah.core.model.ThemeType
 import com.xayah.core.model.util.of
@@ -22,6 +23,7 @@ val KeyUserIdList = stringPreferencesKey("user_id_list")
 val KeyBackupUserIdIndex = stringPreferencesKey("backup_user_id_index")
 val KeyRestoreUserIdIndex = stringPreferencesKey("restore_user_id_index")
 val KeyCustomSUFile = stringPreferencesKey("custom_su_file")
+val KeyKillAppOption = stringPreferencesKey("kill_app_option")
 
 
 // -----------------------------------------Read-----------------------------------------
@@ -34,6 +36,7 @@ fun Context.readThemeType() = readStoreString(key = KeyThemeType, defValue = "")
 fun Context.readUserIdList() = readStoreString(key = KeyUserIdList, defValue = "[0]").map { Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type) }
 fun Context.readBackupUserIdIndex() = readStoreString(key = KeyBackupUserIdIndex, defValue = "[0]").map { Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type) }
 fun Context.readRestoreUserIdIndex() = readStoreString(key = KeyRestoreUserIdIndex, defValue = "[0]").map { Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type) }
+fun Context.readKillAppOption() = readStoreString(key = KeyKillAppOption, defValue = "").map { KillAppOption.of(it) }
 
 /**
  * The final path for saving the backup.
@@ -55,3 +58,4 @@ suspend fun Context.saveBackupUserIdIndex(value: List<Int>) = saveStoreString(ke
 suspend fun Context.saveRestoreUserIdIndex(value: List<Int>) = saveStoreString(key = KeyRestoreUserIdIndex, value = Gson().toJson(value))
 suspend fun Context.saveBackupSavePath(value: String) = saveStoreString(key = KeyBackupSavePath, value = value.trim())
 suspend fun Context.saveCustomSUFile(value: String) = saveStoreString(key = KeyCustomSUFile, value = value.trim())
+suspend fun Context.saveKillAppOption(value: KillAppOption) = saveStoreString(key = KeyKillAppOption, value = value.name.trim())
