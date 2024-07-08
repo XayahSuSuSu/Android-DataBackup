@@ -332,4 +332,5 @@
     <string name="afdian">AFDIAN</string>
     <string name="sftp_setup">Настройка SFTP</string>
     <string name="third_party">Сторонние</string>
+    <string name="no_root_directory">Пожалуйста, не выбирайте корневую директорию</string>
 </resources>
