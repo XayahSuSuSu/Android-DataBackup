@@ -11,8 +11,6 @@ fun Context.toBrowser(url: String) = startActivity(Intent(Intent.ACTION_VIEW, Ur
 fun Context.getBaseContext(): Context = (this as ContextResWrapper).baseContext
 fun Context.getActivity(): Activity = this as Activity
 
-class ContextResWrapper(private val resources: Context, base: Context) : ContextWrapper(base) {
-    override fun getResources(): Resources {
-        return resources.resources
-    }
+class ContextResWrapper(private val resContext: Context, baseContext: Context) : ContextWrapper(baseContext) {
+    override fun getResources(): Resources = resContext.resources
 }
