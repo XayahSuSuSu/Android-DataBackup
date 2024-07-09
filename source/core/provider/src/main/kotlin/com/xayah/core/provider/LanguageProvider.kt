@@ -1,6 +1,7 @@
 package com.xayah.core.provider
 
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import com.xayah.core.datastore.readAppLanguage
 import kotlinx.coroutines.flow.first
@@ -8,11 +9,11 @@ import java.util.Locale
 
 class LanguageProvider private constructor() {
     companion object {
-        suspend fun getLocalizedContext(context: Context): Context {
+        suspend fun getLocalizedConfiguration(context: Context): Configuration {
             val readLang = context.readAppLanguage().first()
 
             val locale = if (readLang == "auto") {
-                 Resources.getSystem().configuration.locales[0]
+                Resources.getSystem().configuration.locales[0]
             } else {
                 val splitLocale = readLang.split('_')
                 assert(splitLocale.size < 3)
@@ -24,11 +25,14 @@ class LanguageProvider private constructor() {
                 }
             }
 
-            val conf = context.resources.configuration.apply {
+            return context.resources.configuration.apply {
                 setLocale(locale)
                 setLayoutDirection(locale)
             }
-            return context.createConfigurationContext(conf)
+        }
+
+        suspend fun getLocalizedContext(context: Context): Context {
+            return context.createConfigurationContext(getLocalizedConfiguration(context))
         }
     }
 }

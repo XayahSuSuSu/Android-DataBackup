@@ -78,6 +78,12 @@ class MainActivity : ComponentActivity() {
         runBlocking {
             runCatching {
                 BaseUtil.initializeEnvironment(context = this@MainActivity)
+
+                @Suppress("DEPRECATION")
+                resources.updateConfiguration(
+                    LanguageProvider.getLocalizedConfiguration(this@MainActivity),
+                    null,
+                )
             }
         }
 
