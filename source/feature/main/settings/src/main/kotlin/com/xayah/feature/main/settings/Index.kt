@@ -1,8 +1,9 @@
 package com.xayah.feature.main.settings
 
+import android.app.Activity
+import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,7 +78,7 @@ fun PageSettings() {
                     title = StringResourceToken.fromStringId(R.string.setup),
                     value = StringResourceToken.fromStringId(R.string.enter_the_setup_page_again),
                 ) {
-                    (context as ComponentActivity).finish()
+                    ((context as ContextWrapper).baseContext as Activity).finish()
                     context.startActivity(Intent(context, SetupActivity::class.java))
                 }
                 Clickable(
