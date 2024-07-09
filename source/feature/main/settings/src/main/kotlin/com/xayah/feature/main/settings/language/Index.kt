@@ -66,8 +66,9 @@ fun PageLanguageSelector() {
                 )
             }
 
-            items(count = BuildConfigUtil.SUPPORTED_LOCALES.size) {
-                val item = BuildConfigUtil.SUPPORTED_LOCALES[it]
+            val sortedLocales = BuildConfigUtil.SUPPORTED_LOCALES.sorted()
+            items(count = sortedLocales.size) {
+                val item = sortedLocales[it]
                 val locale = LanguageProvider.convertStringToLocale(item)
 
                 Checkable(
