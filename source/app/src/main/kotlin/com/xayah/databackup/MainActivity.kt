@@ -1,8 +1,5 @@
 package com.xayah.databackup
 
-import android.content.Context
-import android.content.ContextWrapper
-import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +17,7 @@ import com.xayah.core.ui.component.AnimatedNavHost
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.theme.DataBackupTheme
 import com.xayah.core.ui.util.LocalNavController
+import com.xayah.core.util.ContextResWrapper
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.feature.main.cloud.PageCloud
 import com.xayah.feature.main.cloud.add.PageCloudAddAccount
@@ -57,15 +55,6 @@ import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    class ContextWithUpdatedResources(
-        private val resources: Context,
-        base: Context,
-    ) : ContextWrapper(base) {
-        override fun getResources(): Resources {
-            return resources.resources
-        }
-    }
-
     @ExperimentalCoroutinesApi
     @ExperimentalAnimationApi
     @ExperimentalFoundationApi
@@ -90,7 +79,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             DataBackupTheme {
                 val navController = rememberNavController()
-                val localizedContext = ContextWithUpdatedResources(
+                val localizedContext = ContextResWrapper(
                     runBlocking { LanguageProvider.getLocalizedContext(this@MainActivity) },
                     this@MainActivity,
                 )

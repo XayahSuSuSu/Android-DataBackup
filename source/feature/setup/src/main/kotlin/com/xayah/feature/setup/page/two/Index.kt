@@ -1,6 +1,5 @@
 package com.xayah.feature.setup.page.two
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,6 +32,7 @@ import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.value
+import com.xayah.core.util.getActivity
 import com.xayah.feature.setup.R
 import com.xayah.feature.setup.SetupRoutes
 import com.xayah.feature.setup.SetupScaffold
@@ -62,7 +62,7 @@ fun PageTwo() {
                     onClick = {
                         viewModel.launchOnIO {
                             if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.skip_setup), text = StringResourceToken.fromStringId(R.string.skip_setup_alert))) {
-                                viewModel.emitIntent(IndexUiIntent.ToMain(context = context as ComponentActivity))
+                                viewModel.emitIntent(IndexUiIntent.ToMain(context = context.getActivity()))
                             }
                         }
                     }
@@ -73,7 +73,7 @@ fun PageTwo() {
             Button(
                 enabled = backupSavePathSaved,
                 onClick = {
-                    viewModel.emitIntentOnIO(IndexUiIntent.ToMain(context = context as ComponentActivity))
+                    viewModel.emitIntentOnIO(IndexUiIntent.ToMain(context = context.getActivity()))
                 }
             ) {
                 Text(text = StringResourceToken.fromStringId(R.string.finish).value)

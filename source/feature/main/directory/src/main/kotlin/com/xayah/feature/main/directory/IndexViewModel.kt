@@ -1,6 +1,6 @@
 package com.xayah.feature.main.directory
 
-import androidx.activity.ComponentActivity
+import android.app.Activity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.core.data.repository.DirectoryRepository
 import com.xayah.core.model.StorageType
@@ -25,7 +25,7 @@ data class IndexUiState(
 sealed class IndexUiIntent : UiIntent {
     data object Update : IndexUiIntent()
     data class Select(val entity: DirectoryEntity) : IndexUiIntent()
-    data class Add(val context: ComponentActivity) : IndexUiIntent()
+    data class Add(val context: Activity) : IndexUiIntent()
     data class Delete(val entity: DirectoryEntity) : IndexUiIntent()
 }
 

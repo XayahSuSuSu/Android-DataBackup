@@ -1,7 +1,5 @@
 package com.xayah.feature.main.settings.language
 
-import android.app.Activity
-import android.content.ContextWrapper
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -23,9 +21,11 @@ import com.xayah.core.provider.LanguageProvider
 import com.xayah.core.ui.component.Checkable
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.util.getActivity
+import com.xayah.core.util.getBaseContext
+import com.xayah.core.util.withMainContext
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
-import java.util.Locale
 
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
@@ -48,10 +48,10 @@ fun PageLanguageSelector() {
                 selectedLanguage.value = item
                 context.saveAppLanguage(item)
                 viewModel.emitIntent(IndexUiIntent.UpdateLanguage)
-            }
+                withMainContext {
+                    context.getBaseContext().getActivity().recreate()
 
-            viewModel.launchOnMain {
-                ((context as ContextWrapper).baseContext as Activity).recreate()
+                }
             }
         }
 

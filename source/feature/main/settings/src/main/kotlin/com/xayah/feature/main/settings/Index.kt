@@ -1,7 +1,5 @@
 package com.xayah.feature.main.settings
 
-import android.app.Activity
-import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -37,6 +35,8 @@ import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
+import com.xayah.core.util.getActivity
+import com.xayah.core.util.getBaseContext
 import com.xayah.feature.setup.MainActivity as SetupActivity
 
 @ExperimentalLayoutApi
@@ -78,7 +78,7 @@ fun PageSettings() {
                     title = StringResourceToken.fromStringId(R.string.setup),
                     value = StringResourceToken.fromStringId(R.string.enter_the_setup_page_again),
                 ) {
-                    ((context as ContextWrapper).baseContext as Activity).finish()
+                    context.getBaseContext().getActivity().finish()
                     context.startActivity(Intent(context, SetupActivity::class.java))
                 }
                 Clickable(
