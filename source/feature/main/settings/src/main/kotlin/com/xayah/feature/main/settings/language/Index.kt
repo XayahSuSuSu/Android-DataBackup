@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.util.BuildConfigUtil
+import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.datastore.saveAppLanguage
 import com.xayah.core.provider.LanguageProvider
 import com.xayah.core.ui.component.Checkable
@@ -56,14 +57,12 @@ fun PageLanguageSelector() {
 
         LazyColumn {
             item {
-                val valueSystem = "auto"
-
                 Checkable(
-                    enabled = selectedLanguage.value != valueSystem,
+                    enabled = selectedLanguage.value != ConstantUtil.LANGUAGE_SYSTEM,
                     title = StringResourceToken.fromStringId(R.string.system),
-                    checked = selectedLanguage.value == valueSystem,
-                    value = StringResourceToken.StringToken(valueSystem),
-                    onCheckedChange = { onLangSelected(valueSystem) },
+                    checked = selectedLanguage.value == ConstantUtil.LANGUAGE_SYSTEM,
+                    value = StringResourceToken.StringToken(ConstantUtil.LANGUAGE_SYSTEM),
+                    onCheckedChange = { onLangSelected(ConstantUtil.LANGUAGE_SYSTEM) },
                 )
             }
 

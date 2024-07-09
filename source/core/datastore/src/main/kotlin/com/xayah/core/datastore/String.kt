@@ -38,7 +38,7 @@ fun Context.readUserIdList() = readStoreString(key = KeyUserIdList, defValue = "
 fun Context.readBackupUserIdIndex() = readStoreString(key = KeyBackupUserIdIndex, defValue = "[0]").map { Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type) }
 fun Context.readRestoreUserIdIndex() = readStoreString(key = KeyRestoreUserIdIndex, defValue = "[0]").map { Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type) }
 fun Context.readKillAppOption() = readStoreString(key = KeyKillAppOption, defValue = "").map { KillAppOption.of(it) }
-fun Context.readAppLanguage() = readStoreString(key = KeyAppLanguage, defValue = "auto")
+fun Context.readAppLanguage() = readStoreString(key = KeyAppLanguage, defValue = ConstantUtil.LANGUAGE_SYSTEM)
 
 /**
  * The final path for saving the backup.
