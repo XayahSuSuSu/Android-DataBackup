@@ -73,7 +73,7 @@ fun PageLanguageSelector() {
 
                 Checkable(
                     enabled = selectedLanguage.value != item,
-                    title = StringResourceToken.StringToken(locale.displayLanguage),
+                    title = StringResourceToken.StringToken(locale.getDisplayName(locale)),
                     checked = selectedLanguage.value == item,
                     value = StringResourceToken.StringToken(item),
                     onCheckedChange = { onLangSelected(item) },
