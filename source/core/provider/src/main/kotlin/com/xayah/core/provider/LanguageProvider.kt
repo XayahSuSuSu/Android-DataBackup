@@ -9,20 +9,23 @@ import java.util.Locale
 
 class LanguageProvider private constructor() {
     companion object {
+        fun convertStringToLocale(localeStr: String): Locale {
+            val splitLocale = localeStr.split('-')
+
+            return if (splitLocale.size < 2) {
+                Locale(splitLocale.first())
+            } else {
+                Locale(splitLocale.first(), splitLocale[1])
+            }
+        }
+
         suspend fun getLocalizedConfiguration(context: Context): Configuration {
             val readLang = context.readAppLanguage().first()
 
             val locale = if (readLang == "auto") {
                 Resources.getSystem().configuration.locales[0]
             } else {
-                val splitLocale = readLang.split('_')
-                assert(splitLocale.size < 3)
-
-                if (splitLocale.size < 2) {
-                    Locale(splitLocale.first())
-                } else {
-                    Locale(splitLocale.first(), splitLocale.last())
-                }
+                convertStringToLocale(readLang)
             }
 
             return context.resources.configuration.apply {

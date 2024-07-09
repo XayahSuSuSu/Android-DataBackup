@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.datastore.saveAppLanguage
+import com.xayah.core.provider.LanguageProvider
 import com.xayah.core.ui.component.Checkable
 import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.util.fromStringId
@@ -68,12 +69,7 @@ fun PageLanguageSelector() {
 
             items(count = BuildConfigUtil.SUPPORTED_LOCALES.size) {
                 val item = BuildConfigUtil.SUPPORTED_LOCALES[it]
-                val localeSplit = item.split('_')
-                val locale = if (localeSplit.size < 2) {
-                    Locale(localeSplit.first())
-                } else {
-                    Locale(localeSplit.first(), localeSplit.last())
-                }
+                val locale = LanguageProvider.convertStringToLocale(item)
 
                 Checkable(
                     enabled = selectedLanguage.value != item,
