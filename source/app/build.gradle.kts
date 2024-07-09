@@ -92,8 +92,8 @@ fun generateSupportedLocales(): String {
 
     fileTree("src/main/res").visit {
         if(file.path.endsWith("strings.xml")){
-            var languageCode = file.parent.split('/').last()
-                .replace("values-", "").replace("-r","-")
+            var languageCode = file.parent.replace("\\", "/").split('/').last()
+                .replace("values-", "")
             if (languageCode == "values") {
                 languageCode = "en"
             }
