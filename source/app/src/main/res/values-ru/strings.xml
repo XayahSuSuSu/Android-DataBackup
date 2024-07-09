@@ -224,7 +224,7 @@
     <string name="skip_setup">Пропустить установку</string>
     <string name="setup_backup_dir_desc">Если у вас есть существующий каталог, вам нужно будет выбрать его, чтобы появились резервные копии внутри.</string>
     <string name="skip_setup_alert">Вы не сможете выполнять резервное копирование или восстановление, пока не выберете каталог для хранения бекапов.</string>
-    <string name="app_short_desc">Бесплатное приложение для резервного копирования данных с открытым исходным кодом</string>
+    <string name="app_short_desc">Свободное приложение с открытым исходным кодом, для резервного копирования данных</string>
     <string name="abi_validation_desc">Проверьте, поддерживается ли ваше устройство</string>
     <string name="pull_down_to_refresh">Потяните для обновления</string>
     <string name="args_loading_from_user">Загрузка из пользователя %1$s</string>
@@ -333,4 +333,9 @@
     <string name="sftp_setup">Настройка SFTP</string>
     <string name="third_party">Сторонние</string>
     <string name="no_root_directory">Пожалуйста, не выбирайте корневую директорию</string>
+    <string name="option_i">Первый вариант</string>
+    <string name="option_ii">Второй вариант</string>
+    <string name="disabled">Отключено</string>
+    <string name="kill_app_options">Способы остановки приложения</string>
+    <string name="kill_app_options_desc">Действия перед созданием бекапа</string>
 </resources>
