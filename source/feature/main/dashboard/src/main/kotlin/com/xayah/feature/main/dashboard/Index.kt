@@ -83,7 +83,7 @@ fun PageDashboard() {
 
                 if (directoryState != null) {
                     OverviewStorageCard(
-                        StringResourceToken.fromString(directoryState!!.title),
+                        StringResourceToken.fromStringId(directoryState!!.titleResId),
                         SegmentProgress(used = directoryState!!.usedBytes, total = directoryState!!.totalBytes),
                         SegmentProgress(used = directoryState!!.childUsedBytes, total = directoryState!!.totalBytes),
                     ) {

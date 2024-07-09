@@ -68,11 +68,7 @@ class MainActivity : ComponentActivity() {
             runCatching {
                 BaseUtil.initializeEnvironment(context = this@MainActivity)
 
-                @Suppress("DEPRECATION")
-                resources.updateConfiguration(
-                    LanguageProvider.getLocalizedConfiguration(this@MainActivity),
-                    null,
-                )
+                updateConfiguration()
             }
         }
 
@@ -186,5 +182,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun recreate() {
+        runBlocking { runCatching { updateConfiguration() } }
+        super.recreate()
+    }
+
+    private suspend fun updateConfiguration() {
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(
+            LanguageProvider.getLocalizedConfiguration(this@MainActivity),
+            null,
+        )
     }
 }

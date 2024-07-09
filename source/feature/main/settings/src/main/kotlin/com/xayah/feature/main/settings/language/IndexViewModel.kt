@@ -2,6 +2,7 @@ package com.xayah.feature.main.settings.language
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.core.data.repository.ContextRepository
+import com.xayah.core.data.repository.DirectoryRepository
 import com.xayah.core.datastore.readAppLanguage
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
@@ -23,7 +24,7 @@ sealed class IndexUiIntent : UiIntent {
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
-    private val contextRepo: ContextRepository,
+    val contextRepo: ContextRepository,
 ) :
     BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
         IndexUiState(
@@ -39,7 +40,7 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.UpdateLanguage -> {
                 emitState(
                     state.copy(
-                        selectedLanguage =  contextRepo.withContext {
+                        selectedLanguage = contextRepo.withContext {
                             it.readAppLanguage().first()
                         }
                     )

@@ -1,6 +1,5 @@
 package com.xayah.core.data.repository
 
-import android.content.Context
 import com.xayah.core.common.util.toSpaceString
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.DirectoryDao
@@ -15,7 +14,6 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.rootservice.util.withIOContext
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.PreparationUtil
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import java.nio.file.Paths
@@ -24,7 +22,7 @@ import kotlin.io.path.name
 import kotlin.io.path.pathString
 
 class DirectoryRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
+    private val contextRepository: ContextRepository,
     private val directoryDao: DirectoryDao,
     private val packageDao: PackageDao,
     private val rootService: RemoteRootService,
@@ -52,7 +50,7 @@ class DirectoryRepository @Inject constructor(
                 // Custom storage
                 val dir = DirectoryUpsertEntity(
                     id = directoryDao.queryId(parent = parent, child = child),
-                    title = context.getString(R.string.custom_directory),
+                    title = "",
                     parent = parent,
                     child = child,
                     storageType = StorageType.CUSTOM,
@@ -65,13 +63,13 @@ class DirectoryRepository @Inject constructor(
     }
 
     suspend fun selectDir(entity: DirectoryEntity) = run {
-        packageDao.delete(context.readBackupSavePath().first())
+        packageDao.delete(contextRepository.withContext { it.readBackupSavePath() }.first())
         selectDir(entity.path, entity.id)
     }
 
     private suspend fun selectDir(path: String, id: Long?) = run {
         if (id != null) {
-            context.saveBackupSavePath(path)
+            contextRepository.withContext { it.saveBackupSavePath(path) }
             directoryDao.select(id = id)
         }
     }
@@ -92,7 +90,7 @@ class DirectoryRepository @Inject constructor(
                     internalDirs.add(
                         DirectoryUpsertEntity(
                             id = directoryDao.queryId(parent = storageItem, child = child),
-                            title = context.getString(R.string.internal_storage),
+                            title = "",
                             parent = storageItem,
                             child = child,
                             storageType = StorageType.INTERNAL,
@@ -112,7 +110,7 @@ class DirectoryRepository @Inject constructor(
                     externalDirs.add(
                         DirectoryUpsertEntity(
                             id = directoryDao.queryId(parent = storageItem, child = child),
-                            title = context.getString(R.string.external_storage),
+                            title = "",
                             parent = storageItem,
                             child = child,
                             storageType = StorageType.EXTERNAL,
@@ -141,9 +139,10 @@ class DirectoryRepository @Inject constructor(
                     // Check the format
                     val supported = type.lowercase() in ConstantUtil.SupportedExternalStorageFormat
                     if (supported.not()) {
-                        tags.add(context.getString(R.string.limited_4gb))
-                        entity.error = "${context.getString(R.string.outdated_fs_warning)}\n\n" +
-                                "${context.getString(R.string.recommend)}: ${ConstantUtil.SupportedExternalStorageFormat.toSpaceString()}"
+                        tags.add(contextRepository.getString(R.string.limited_4gb))
+                        entity.error = "${contextRepository.getString(R.string.outdated_fs_warning)}\n\n" +
+                                "${contextRepository.getString(R.string.recommend)}: " +
+                                ConstantUtil.SupportedExternalStorageFormat.toSpaceString()
                         entity.enabled = true
                     } else {
                         entity.error = ""

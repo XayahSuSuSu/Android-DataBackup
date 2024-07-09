@@ -191,7 +191,7 @@ fun DirectoryCard(item: DirectoryEntity, performHapticFeedback: Boolean = false,
     DirectoryCard(
         selected = item.selected,
         performHapticFeedback = performHapticFeedback,
-        title = StringResourceToken.fromString(item.title),
+        title = StringResourceToken.fromStringId(item.titleResId),
         icon = item.icon(),
         path = StringResourceToken.fromString(item.pathDisplay()),
         error = if (item.error.isEmpty()) null else StringResourceToken.fromString(item.error),

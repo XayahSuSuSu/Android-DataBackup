@@ -3,6 +3,7 @@ package com.xayah.core.model.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.xayah.core.model.R
 import com.xayah.core.model.StorageType
 import com.xayah.core.model.util.formatSize
 
@@ -34,6 +35,12 @@ data class DirectoryEntity(
 
     val totalBytesDisplay: String
         get() = totalBytes.toDouble().formatSize()
+
+    val titleResId get() = when(storageType) {
+        StorageType.INTERNAL -> R.string.internal_storage
+        StorageType.EXTERNAL -> R.string.external_storage
+        StorageType.CUSTOM -> R.string.custom_directory
+    }
 }
 
 @Entity

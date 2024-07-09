@@ -50,7 +50,6 @@ fun PageLanguageSelector() {
                 viewModel.emitIntent(IndexUiIntent.UpdateLanguage)
                 withMainContext {
                     context.getBaseContext().getActivity().recreate()
-
                 }
             }
         }
