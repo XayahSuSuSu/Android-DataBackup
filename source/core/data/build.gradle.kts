@@ -21,7 +21,6 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:rootservice"))
     implementation(project(":core:network"))
-    implementation(project(":core:provider"))
     compileOnly(project(":core:hiddenapi"))
 
     // Preferences DataStore

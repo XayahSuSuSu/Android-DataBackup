@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.DataBackup" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.DataBackup" parent="Theme.AppCompat.Light.NoActionBar" />
 
     <style name="Theme.DataBackup.SplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>

@@ -27,7 +27,6 @@ import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.util.getActivity
-import com.xayah.core.util.getBaseContext
 
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
@@ -95,7 +94,7 @@ fun PageDirectory() {
 
             item {
                 CustomDirectoryCard(enabled = uiState.updating.not()) {
-                    viewModel.emitIntentOnIO(IndexUiIntent.Add(context = context.getBaseContext().getActivity()))
+                    viewModel.emitIntentOnIO(IndexUiIntent.Add(context = context.getActivity()))
                 }
             }
 

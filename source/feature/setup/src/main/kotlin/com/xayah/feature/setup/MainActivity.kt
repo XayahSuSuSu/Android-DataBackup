@@ -1,8 +1,8 @@
 package com.xayah.feature.setup
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalAnimationApi
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     @ExperimentalLayoutApi
     @ExperimentalFoundationApi
     @ExperimentalMaterial3Api

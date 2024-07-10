@@ -1,5 +1,6 @@
 package com.xayah.core.data.repository
 
+import android.content.Context
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.MediaDao
 import com.xayah.core.datastore.ConstantUtil
@@ -17,12 +18,13 @@ import com.xayah.core.util.DateUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.text.Collator
 import javax.inject.Inject
 
 class MediaRepository @Inject constructor(
-    private val contextRepository: ContextRepository,
+    @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
     private val cloudRepository: CloudRepository,
     private val mediaDao: MediaDao,
@@ -38,7 +40,7 @@ class MediaRepository @Inject constructor(
         msg
     }
 
-    private val localBackupSaveDir get() = contextRepository.withContextSync { it.localBackupSaveDir() }
+    private val localBackupSaveDir get() = context.localBackupSaveDir()
     val backupFilesDir get() = pathUtil.getLocalBackupFilesDir()
 
     suspend fun clearBlocked() = mediaDao.clearBlocked()
@@ -177,9 +179,9 @@ class MediaRepository @Inject constructor(
         var failedCount = 0
         pathList.forEach { pathString ->
             if (pathString.isNotEmpty()) {
-                if (pathString == contextRepository.withContext { it.localBackupSaveDir() }) {
+                if (pathString == context.localBackupSaveDir()) {
                     failedCount++
-                    log { contextRepository.getString(R.string.backup_dir_as_media_error) }
+                    log { context.getString(R.string.backup_dir_as_media_error) }
                     return@forEach
                 }
                 var name = PathUtil.getFileName(pathString)
@@ -220,7 +222,7 @@ class MediaRepository @Inject constructor(
             }
         }
         mediaDao.upsert(customMediaList)
-        return "${contextRepository.getString(R.string.succeed)}: ${customMediaList.size}, ${contextRepository.getString(R.string.failed)}: $failedCount"
+        return "${context.getString(R.string.succeed)}: ${customMediaList.size}, ${context.getString(R.string.failed)}: $failedCount"
     }
 
     suspend fun delete(m: MediaEntity) {

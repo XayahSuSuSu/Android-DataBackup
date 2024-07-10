@@ -16,14 +16,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.datastore.ConstantUtil
-import com.xayah.core.datastore.saveAppLanguage
-import com.xayah.core.provider.LanguageProvider
-import com.xayah.core.ui.component.Checkable
+import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.util.getActivity
-import com.xayah.core.util.getBaseContext
-import com.xayah.core.util.withMainContext
+import com.xayah.core.util.LanguageUtil.toLocale
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
 
@@ -34,49 +31,33 @@ import com.xayah.feature.main.settings.SettingsScaffold
 @Composable
 fun PageLanguageSelector() {
     val context = LocalContext.current
+    val navController = LocalNavController.current!!
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val viewModel = hiltViewModel<IndexViewModel>()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val selectedLanguage = remember(uiState) { mutableStateOf(uiState.selectedLanguage) }
+    val selectedLanguage by viewModel.selectedLanguage.collectAsStateWithLifecycle()
 
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromStringId(R.string.app_language),
+        title = StringResourceToken.fromStringId(R.string.language),
     ) {
-        fun onLangSelected(item: String) {
-            viewModel.launchOnIO {
-                selectedLanguage.value = item
-                context.saveAppLanguage(item)
-                viewModel.emitIntent(IndexUiIntent.UpdateLanguage)
-                withMainContext {
-                    context.getBaseContext().getActivity().recreate()
-                }
-            }
-        }
-
+        val sortedLocales = remember { BuildConfigUtil.SUPPORTED_LOCALES.sorted() }
         LazyColumn {
-            item {
-                Checkable(
-                    enabled = selectedLanguage.value != ConstantUtil.LANGUAGE_SYSTEM,
-                    title = StringResourceToken.fromStringId(R.string.system),
-                    checked = selectedLanguage.value == ConstantUtil.LANGUAGE_SYSTEM,
-                    value = StringResourceToken.StringToken(ConstantUtil.LANGUAGE_SYSTEM),
-                    onCheckedChange = { onLangSelected(ConstantUtil.LANGUAGE_SYSTEM) },
-                )
-            }
-
-            val sortedLocales = BuildConfigUtil.SUPPORTED_LOCALES.sorted()
-            items(count = sortedLocales.size) {
-                val item = sortedLocales[it]
-                val locale = LanguageProvider.convertStringToLocale(item)
-
-                Checkable(
-                    enabled = selectedLanguage.value != item,
-                    title = StringResourceToken.StringToken(locale.getDisplayName(locale)),
-                    checked = selectedLanguage.value == item,
-                    value = StringResourceToken.StringToken(item),
-                    onCheckedChange = { onLangSelected(item) },
-                )
+            items(count = sortedLocales.size + 1) {
+                if (it == 0) {
+                    Clickable(
+                        enabled = selectedLanguage != ConstantUtil.LANGUAGE_SYSTEM,
+                        title = StringResourceToken.fromStringId(R.string.system),
+                        onClick = { viewModel.emitIntentOnIO(IndexUiIntent.UpdateLanguage(navController, ConstantUtil.LANGUAGE_SYSTEM)) },
+                    )
+                } else {
+                    val item = sortedLocales[it - 1]
+                    val locale by remember(item) { mutableStateOf(item.toLocale(context)) }
+                    Clickable(
+                        enabled = selectedLanguage != item,
+                        title = StringResourceToken.StringToken(locale.getDisplayName(locale)),
+                        onClick = { viewModel.emitIntentOnIO(IndexUiIntent.UpdateLanguage(navController, item)) },
+                    )
+                }
             }
         }
     }

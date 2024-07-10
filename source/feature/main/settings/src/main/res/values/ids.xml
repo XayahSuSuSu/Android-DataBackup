@@ -59,7 +59,7 @@
     <item name="unknown" type="string" />
     <item name="kill_app_options" type="string" />
     <item name="kill_app_options_desc" type="string" />
-    <item name="app_language" type="string" />
+    <item name="language" type="string" />
     <item name="system" type="string" />
 
     <item name="ic_rounded_acute" type="drawable" />

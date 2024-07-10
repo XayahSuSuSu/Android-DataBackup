@@ -1,23 +1,20 @@
 package com.xayah.databackup
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.xayah.core.provider.LanguageProvider
 import com.xayah.core.ui.component.AnimatedNavHost
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.theme.DataBackupTheme
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.util.ContextResWrapper
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.feature.main.cloud.PageCloud
 import com.xayah.feature.main.cloud.add.PageCloudAddAccount
@@ -54,7 +51,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     @ExperimentalCoroutinesApi
     @ExperimentalAnimationApi
     @ExperimentalFoundationApi
@@ -67,23 +64,13 @@ class MainActivity : ComponentActivity() {
         runBlocking {
             runCatching {
                 BaseUtil.initializeEnvironment(context = this@MainActivity)
-
-                updateConfiguration()
             }
         }
 
         setContent {
             DataBackupTheme {
                 val navController = rememberNavController()
-                val localizedContext = ContextResWrapper(
-                    runBlocking { LanguageProvider.getLocalizedContext(this@MainActivity) },
-                    this@MainActivity,
-                )
-
-                CompositionLocalProvider(
-                    LocalNavController provides navController,
-                    LocalContext provides localizedContext,
-                ) {
+                CompositionLocalProvider(LocalNavController provides navController) {
                     AnimatedNavHost(
                         navController = navController,
                         startDestination = MainRoutes.Dashboard.route,
@@ -182,18 +169,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun recreate() {
-        runBlocking { runCatching { updateConfiguration() } }
-        super.recreate()
-    }
-
-    private suspend fun updateConfiguration() {
-        @Suppress("DEPRECATION")
-        resources.updateConfiguration(
-            LanguageProvider.getLocalizedConfiguration(this@MainActivity),
-            null,
-        )
     }
 }

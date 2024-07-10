@@ -1,6 +1,7 @@
 package com.xayah.core.data.repository
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
@@ -56,6 +57,7 @@ import com.xayah.core.util.filesDir
 import com.xayah.core.util.iconDir
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.withLog
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -63,14 +65,12 @@ import java.text.Collator
 import javax.inject.Inject
 
 class PackageRepository @Inject constructor(
-    private val contextRepository: ContextRepository,
+    @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
     private val cloudRepository: CloudRepository,
     private val packageDao: PackageDao,
     private val pathUtil: PathUtil,
 ) {
-    private val context get() = contextRepository.withContextSync { it }
-
     companion object {
         private const val TAG = "PackageRepository"
     }

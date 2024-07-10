@@ -93,7 +93,7 @@ fun generateSupportedLocales(): String {
     fileTree("src/main/res").visit {
         if(file.path.endsWith("strings.xml")){
             var languageCode = file.parent.replace("\\", "/").split('/').last()
-                .replace("values-", "")
+                .replace("values-", "").replace("-r", "-")
             if (languageCode == "values") {
                 languageCode = "en"
             }
@@ -117,7 +117,6 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:data"))
     implementation(project(":core:datastore"))
-    implementation(project(":core:provider"))
     implementation(project(":core:util"))
     compileOnly(project(":core:hiddenapi"))
     implementation(project(":core:rootservice"))

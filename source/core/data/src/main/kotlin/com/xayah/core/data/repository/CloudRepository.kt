@@ -1,5 +1,6 @@
 package com.xayah.core.data.repository
 
+import android.content.Context
 import androidx.annotation.StringRes
 import com.xayah.core.database.dao.CloudDao
 import com.xayah.core.datastore.readCloudActivatedAccountName
@@ -10,6 +11,7 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.model.ShellResult
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import java.io.PrintWriter
@@ -17,7 +19,7 @@ import java.io.StringWriter
 import javax.inject.Inject
 
 class CloudRepository @Inject constructor(
-    private val contextRepository: ContextRepository,
+    @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
     private val cloudDao: CloudDao,
 ) {
@@ -26,7 +28,7 @@ class CloudRepository @Inject constructor(
         msg()
     }
 
-    fun getString(@StringRes resId: Int) = contextRepository.getString(resId)
+    fun getString(@StringRes resId: Int) = context.getString(resId)
     suspend fun upsert(item: CloudEntity) = cloudDao.upsert(item)
     suspend fun upsert(items: List<CloudEntity>) = cloudDao.upsert(items)
     suspend fun queryByName(name: String) = cloudDao.queryByName(name)
@@ -76,7 +78,7 @@ class CloudRepository @Inject constructor(
             val out = mutableListOf<String>()
             rootService.deleteRecursively(dstDir)
             rootService.mkdirs(dstDir)
-            contextRepository.withContext { PathUtil.setFilesDirSELinux(it) }
+            PathUtil.setFilesDirSELinux(context)
 
             runCatching {
                 client.download(src = src, dst = dstDir, onDownloading = onDownloading)
@@ -101,7 +103,7 @@ class CloudRepository @Inject constructor(
         }
 
     suspend fun getClient(name: String? = null): Pair<CloudClient, CloudEntity> {
-        val entity = queryByName(name ?: contextRepository.withContext { it.readCloudActivatedAccountName() }.first())
+        val entity = queryByName(name ?: context.readCloudActivatedAccountName().first())
         if (entity != null) if (entity.remote.isEmpty()) throw IllegalAccessException("${entity.name}: Remote directory is not set.")
         val client = entity?.getCloud()?.apply { connect() } ?: throw NullPointerException("Client is null.")
         return client to entity

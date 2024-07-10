@@ -1,5 +1,6 @@
 package com.xayah.core.data.repository
 
+import android.content.Context
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.ConstantUtil
@@ -8,10 +9,11 @@ import com.xayah.core.model.ProcessingType
 import com.xayah.core.model.TaskType
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.localBackupSaveDir
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class TaskRepository @Inject constructor(
-    private val contextRepository: ContextRepository,
+    @ApplicationContext private val context: Context,
     private val rootService: RemoteRootService,
     private val packageDao: PackageDao,
     private val taskDao: TaskDao,
@@ -21,8 +23,6 @@ class TaskRepository @Inject constructor(
     fun queryProcessingInfoFlow(taskId: Long, type: ProcessingType) = taskDao.queryProcessingInfoFlow(taskId, type)
     fun queryPackageFlow(taskId: Long) = taskDao.queryPackageFlow(taskId)
     fun queryMediaFlow(taskId: Long) = taskDao.queryMediaFlow(taskId)
-
-    private val localBackupSaveDir get() = contextRepository.withContextSync { it.localBackupSaveDir() }
 
     suspend fun getRawBytes(taskType: TaskType): Double = run {
         var total = 0.0
@@ -48,7 +48,7 @@ class TaskRepository @Inject constructor(
         var total = 0.0
         total += when (opType) {
             OpType.BACKUP -> {
-                rootService.readStatFs(localBackupSaveDir).availableBytes.toDouble()
+                rootService.readStatFs(context.localBackupSaveDir()).availableBytes.toDouble()
             }
 
             OpType.RESTORE -> {
@@ -62,7 +62,7 @@ class TaskRepository @Inject constructor(
         var total = 0.0
         total += when (opType) {
             OpType.BACKUP -> {
-                rootService.readStatFs(localBackupSaveDir).totalBytes.toDouble()
+                rootService.readStatFs(context.localBackupSaveDir()).totalBytes.toDouble()
             }
 
             OpType.RESTORE -> {

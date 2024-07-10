@@ -10,5 +10,4 @@ android {
 dependencies {
     // Feature
     implementation(project(":feature:crash"))
-    implementation(project(":core:datastore"))
 }
