@@ -1,15 +1,15 @@
 package com.xayah.feature.main.directory
 
-import androidx.activity.ComponentActivity
+import android.app.Activity
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.xayah.core.ui.viewmodel.BaseViewModel
-import com.xayah.core.ui.viewmodel.IndexUiEffect
-import com.xayah.core.ui.viewmodel.UiIntent
-import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.data.repository.DirectoryRepository
 import com.xayah.core.model.StorageType
 import com.xayah.core.model.database.DirectoryEntity
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.ui.viewmodel.BaseViewModel
+import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.ui.viewmodel.UiIntent
+import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PermissionType
 import com.xayah.libpickyou.ui.model.PickerType
@@ -25,7 +25,7 @@ data class IndexUiState(
 sealed class IndexUiIntent : UiIntent {
     data object Update : IndexUiIntent()
     data class Select(val entity: DirectoryEntity) : IndexUiIntent()
-    data class Add(val context: ComponentActivity) : IndexUiIntent()
+    data class Add(val context: Activity) : IndexUiIntent()
     data class Delete(val entity: DirectoryEntity) : IndexUiIntent()
 }
 

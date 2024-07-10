@@ -2,7 +2,6 @@ package com.xayah.feature.main.settings
 
 import android.content.Intent
 import android.os.Build
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.KeyAutoScreenOff
 import com.xayah.core.datastore.KeyMonet
+import com.xayah.core.datastore.readLanguage
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.Switchable
@@ -36,6 +36,10 @@ import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
+import com.xayah.core.util.LanguageUtil
+import com.xayah.core.util.LanguageUtil.toLocale
+import com.xayah.core.util.getActivity
+import kotlinx.coroutines.flow.map
 import com.xayah.feature.setup.MainActivity as SetupActivity
 
 @ExperimentalLayoutApi
@@ -77,7 +81,7 @@ fun PageSettings() {
                     title = StringResourceToken.fromStringId(R.string.setup),
                     value = StringResourceToken.fromStringId(R.string.enter_the_setup_page_again),
                 ) {
-                    (context as ComponentActivity).finish()
+                    context.getActivity().finish()
                     context.startActivity(Intent(context, SetupActivity::class.java))
                 }
             }
@@ -90,6 +94,14 @@ fun PageSettings() {
                     )
                 }
                 DarkThemeSelectable()
+
+                val locale by context.readLanguage().map { it.toLocale(context) }.collectAsStateWithLifecycle(initialValue = LanguageUtil.getSystemLocale(context))
+                Clickable(
+                    title = StringResourceToken.fromStringId(R.string.language),
+                    value = StringResourceToken.fromString(locale.getDisplayName(locale))
+                ) {
+                    navController.navigate(MainRoutes.LanguageSettings.route)
+                }
             }
             Title(title = StringResourceToken.fromStringId(R.string.manage_backups)) {
                 Clickable(

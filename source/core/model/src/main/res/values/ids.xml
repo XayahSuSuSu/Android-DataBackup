@@ -10,4 +10,7 @@
     <item name="backup" type="string" />
     <item name="restore" type="string" />
     <item name="batch" type="string" />
+    <item name="internal_storage" type="string" />
+    <item name="external_storage" type="string" />
+    <item name="custom_directory" type="string" />
 </resources>

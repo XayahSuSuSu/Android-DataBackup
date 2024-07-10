@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.topjohnwu.superuser.Shell
 import com.xayah.core.common.util.BuildConfigUtil
-import com.xayah.core.data.repository.ContextRepository
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
@@ -17,6 +16,7 @@ import com.xayah.core.util.withLog
 import com.xayah.feature.setup.EnvState
 import com.xayah.feature.setup.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -39,18 +39,16 @@ sealed class IndexUiIntent : UiIntent {
 @ExperimentalMaterial3Api
 @HiltViewModel
 class IndexViewModel @Inject constructor(
-    private val contextRepo: ContextRepository
+    @ApplicationContext private val context: Context,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(abiErr = "")) {
     @SuppressLint("StringFormatInvalid")
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnResume -> {
                 mutex.withLock {
-                    contextRepo.withContext { context ->
-                        val isNotificationPermissionGranted = NotificationUtil.checkPermission(context)
-                        if (isNotificationPermissionGranted) {
-                            _notificationState.value = EnvState.Succeed
-                        }
+                    val isNotificationPermissionGranted = NotificationUtil.checkPermission(context)
+                    if (isNotificationPermissionGranted) {
+                        _notificationState.value = EnvState.Succeed
                     }
                 }
             }
@@ -59,16 +57,14 @@ class IndexViewModel @Inject constructor(
                 mutex.withLock {
                     if (rootState.value == EnvState.Idle || rootState.value == EnvState.Failed) {
                         _rootState.value = EnvState.Processing
-                        contextRepo.withContext { context ->
-                            runCatching {
-                                BaseUtil.initializeEnvironment(context = context)
-                            }
-                            runCatching {
-                                // Kill daemon
-                                BaseUtil.kill(context, "${context.packageName}:root:daemon")
-                            }.withLog()
-                            _rootState.value = if (runCatching { Shell.getShell().isRoot }.getOrElse { false }) EnvState.Succeed else EnvState.Failed
+                        runCatching {
+                            BaseUtil.initializeEnvironment(context = context)
                         }
+                        runCatching {
+                            // Kill daemon
+                            BaseUtil.kill(context, "${context.packageName}:root:daemon")
+                        }.withLog()
+                        _rootState.value = if (runCatching { Shell.getShell().isRoot }.getOrElse { false }) EnvState.Succeed else EnvState.Failed
                     }
                 }
             }
@@ -77,29 +73,27 @@ class IndexViewModel @Inject constructor(
                 mutex.withLock {
                     if (abiState.value == EnvState.Idle || abiState.value == EnvState.Failed) {
                         _abiState.value = EnvState.Processing
-                        contextRepo.withContext { context ->
-                            val buildABI = BuildConfigUtil.FLAVOR_abi
-                            val deviceABI = Build.SUPPORTED_ABIS.firstOrNull().toString()
-                            if (buildABI == deviceABI) {
-                                _abiState.value = if (runCatching { BaseUtil.releaseBase(context = context) }.getOrElse { false }) {
-                                    emitState(state.copy(abiErr = ""))
-                                    EnvState.Succeed
-                                } else {
-                                    EnvState.Failed
-                                }
+                        val buildABI = BuildConfigUtil.FLAVOR_abi
+                        val deviceABI = Build.SUPPORTED_ABIS.firstOrNull().toString()
+                        if (buildABI == deviceABI) {
+                            _abiState.value = if (runCatching { BaseUtil.releaseBase(context = context) }.getOrElse { false }) {
+                                emitState(state.copy(abiErr = ""))
+                                EnvState.Succeed
                             } else {
-                                _abiState.value = EnvState.Failed
-                                emitState(
-                                    state.copy(
-                                        abiErr = context.getString(
-                                            R.string.this_version_only_supports_but_your_device_is_please_install_version,
-                                            buildABI,
-                                            deviceABI,
-                                            deviceABI
-                                        )
+                                EnvState.Failed
+                            }
+                        } else {
+                            _abiState.value = EnvState.Failed
+                            emitState(
+                                state.copy(
+                                    abiErr = context.getString(
+                                        R.string.this_version_only_supports_but_your_device_is_please_install_version,
+                                        buildABI,
+                                        deviceABI,
+                                        deviceABI
                                     )
                                 )
-                            }
+                            )
                         }
                     }
                 }

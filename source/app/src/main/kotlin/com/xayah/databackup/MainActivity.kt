@@ -1,8 +1,8 @@
 package com.xayah.databackup
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -44,13 +44,14 @@ import com.xayah.feature.main.settings.about.PageAboutSettings
 import com.xayah.feature.main.settings.about.PageTranslatorsSettings
 import com.xayah.feature.main.settings.backup.PageBackupSettings
 import com.xayah.feature.main.settings.blacklist.PageBlackList
+import com.xayah.feature.main.settings.language.PageLanguageSelector
 import com.xayah.feature.main.settings.restore.PageRestoreSettings
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     @ExperimentalCoroutinesApi
     @ExperimentalAnimationApi
     @ExperimentalFoundationApi
@@ -145,6 +146,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(MainRoutes.RestoreSettings.route) {
                             PageRestoreSettings()
+                        }
+                        composable(MainRoutes.LanguageSettings.route) {
+                            PageLanguageSelector()
                         }
                         composable(MainRoutes.BlackList.route) {
                             PageBlackList()

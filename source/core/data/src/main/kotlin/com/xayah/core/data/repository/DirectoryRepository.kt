@@ -52,7 +52,7 @@ class DirectoryRepository @Inject constructor(
                 // Custom storage
                 val dir = DirectoryUpsertEntity(
                     id = directoryDao.queryId(parent = parent, child = child),
-                    title = context.getString(R.string.custom_directory),
+                    title = "",
                     parent = parent,
                     child = child,
                     storageType = StorageType.CUSTOM,
@@ -92,7 +92,7 @@ class DirectoryRepository @Inject constructor(
                     internalDirs.add(
                         DirectoryUpsertEntity(
                             id = directoryDao.queryId(parent = storageItem, child = child),
-                            title = context.getString(R.string.internal_storage),
+                            title = "",
                             parent = storageItem,
                             child = child,
                             storageType = StorageType.INTERNAL,
@@ -112,7 +112,7 @@ class DirectoryRepository @Inject constructor(
                     externalDirs.add(
                         DirectoryUpsertEntity(
                             id = directoryDao.queryId(parent = storageItem, child = child),
-                            title = context.getString(R.string.external_storage),
+                            title = "",
                             parent = storageItem,
                             child = child,
                             storageType = StorageType.EXTERNAL,

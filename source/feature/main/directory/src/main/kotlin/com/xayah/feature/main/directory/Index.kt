@@ -1,6 +1,5 @@
 package com.xayah.feature.main.directory
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +26,7 @@ import com.xayah.core.ui.model.getActionMenuDeleteItem
 import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.util.getActivity
 
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
@@ -94,7 +94,7 @@ fun PageDirectory() {
 
             item {
                 CustomDirectoryCard(enabled = uiState.updating.not()) {
-                    viewModel.emitIntentOnIO(IndexUiIntent.Add(context = context as ComponentActivity))
+                    viewModel.emitIntentOnIO(IndexUiIntent.Add(context = context.getActivity()))
                 }
             }
 

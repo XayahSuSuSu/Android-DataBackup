@@ -1,7 +1,6 @@
 package com.xayah.core.util
 
 import android.Manifest
-import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -35,7 +34,7 @@ object NotificationUtil {
 
     fun requestPermissions(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+            ActivityCompat.requestPermissions(context.getActivity(), arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         } else {
             runCatching {
                 val intent = Intent()

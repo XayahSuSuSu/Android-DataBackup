@@ -27,9 +27,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.saveScreenOffCountDown
 import com.xayah.core.model.OperationState
 import com.xayah.core.ui.component.AnimatedTextContainer
+import com.xayah.core.ui.component.AppsReportCard
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.ProcessingCard
-import com.xayah.core.ui.component.AppsReportCard
 import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.component.pagerAnimation

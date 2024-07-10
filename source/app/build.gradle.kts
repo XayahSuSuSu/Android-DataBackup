@@ -19,6 +19,8 @@ android {
         versionName = libs.versions.versionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String[]", "SUPPORTED_LOCALES", generateSupportedLocales())
     }
 
     // TODO Force enable the latest libsu
@@ -82,6 +84,25 @@ android {
         // Disables dependency metadata when building Android App Bundles.
         includeInBundle = false
     }
+}
+
+fun generateSupportedLocales(): String {
+    val foundLocales = StringBuilder()
+    foundLocales.append("new String[]{")
+
+    fileTree("src/main/res").visit {
+        if(file.path.endsWith("strings.xml")){
+            var languageCode = file.parent.replace("\\", "/").split('/').last()
+                .replace("values-", "").replace("-r", "-")
+            if (languageCode == "values") {
+                languageCode = "en"
+            }
+            foundLocales.append("\"").append(languageCode).append("\"").append(",")
+        }
+    }
+
+    foundLocales.append("}")
+    return foundLocales.toString().replace(",}","}")
 }
 
 dependencies {

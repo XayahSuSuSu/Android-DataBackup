@@ -3,7 +3,7 @@ package com.xayah.databackup
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -16,7 +16,7 @@ import com.xayah.feature.setup.MainActivity as SetupActivity
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
-class SplashActivity : ComponentActivity() {
+class SplashActivity : AppCompatActivity() {
 
     // Workaround for HarmonyOS
     @ExperimentalAnimationApi
