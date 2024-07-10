@@ -338,4 +338,5 @@
     <string name="option_i">Opção 1</string>
     <string name="option_ii">Opção 2</string>
     <string name="disabled">Desativado</string>
+    <string name="language">Idioma</string>
 </resources>
