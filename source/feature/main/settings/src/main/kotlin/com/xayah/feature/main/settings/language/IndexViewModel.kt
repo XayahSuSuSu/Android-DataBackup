@@ -37,10 +37,10 @@ class IndexViewModel @Inject constructor(
                 context.saveLanguage(intent.lang)
                 withMainContext {
                     intent.navController.popBackStack()
+                    AppCompatDelegate.setApplicationLocales(
+                        LocaleListCompat.create(intent.lang.toLocale(context))
+                    )
                 }
-                AppCompatDelegate.setApplicationLocales(
-                    LocaleListCompat.create(intent.lang.toLocale(context))
-                )
             }
         }
     }
