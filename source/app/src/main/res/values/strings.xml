@@ -349,4 +349,7 @@
     <string name="kill_app_options">Killing app options</string>
     <string name="kill_app_options_desc">Behavior before backup</string>
     <string name="language">Language</string>
+    <string name="download">Download</string>
+    <string name="changelog">Changelog</string>
+    <string name="args_update_from">You can update from version %1$s to version %2$s</string>
 </resources>

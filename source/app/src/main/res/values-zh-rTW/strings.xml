@@ -119,7 +119,7 @@
     <string name="backup_dir_as_media_error">無法添加備份目錄作為媒體資料</string>
     <string name="media_target_path_missing">目標資料夾遺失。請手動設定。</string>
     <string name="media_set_path">設定路徑</string>
-    <string name="update_available">有更新</string>
+    <string name="update_available">更新可用</string>
     <string name="not_installed">未安裝</string>
     <string name="selected_both">兩者均選</string>
     <string name="abi_validation">驗證ABI</string>
@@ -339,4 +339,7 @@
     <string name="kill_app_options">殺死應用選項</string>
     <string name="kill_app_options_desc">備份應用前行爲</string>
     <string name="language">語言</string>
+    <string name="download">下載</string>
+    <string name="changelog">更新日志</string>
+    <string name="args_update_from">你可以從%1$s版本更新到%2$s版本</string>
 </resources>

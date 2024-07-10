@@ -1,5 +1,6 @@
 package com.xayah.feature.main.dashboard
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -14,16 +15,21 @@ import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.ui.component.IconButton
+import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MainIndexSubScaffold
 import com.xayah.core.ui.component.Section
 import com.xayah.core.ui.component.paddingTop
@@ -35,22 +41,27 @@ import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
+import kotlinx.coroutines.launch
 
+@SuppressLint("StringFormatInvalid")
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun PageDashboard() {
+    val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val viewModel = hiltViewModel<IndexViewModel>()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current!!
     val lastBackupTime by viewModel.lastBackupTimeState.collectAsStateWithLifecycle()
     val directoryState by viewModel.directoryState.collectAsStateWithLifecycle()
     val nullBackupDir by remember(directoryState) { mutableStateOf(directoryState == null) }
+    val dialogState = LocalSlotScope.current!!.dialogSlot
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(null) {
         viewModel.emitIntentOnIO(IndexUiIntent.Update)
@@ -58,7 +69,30 @@ fun PageDashboard() {
 
     MainIndexSubScaffold(
         scrollBehavior = scrollBehavior,
+        snackbarHostState = viewModel.snackbarHostState,
         title = StringResourceToken.fromStringId(R.string.app_name),
+        updateAvailable = uiState.latestRelease != null,
+        onVersionChipClick = {
+            scope.launch {
+                val state = dialogState.open(
+                    initialState = false,
+                    title = StringResourceToken.fromStringId(R.string.update_available),
+                    icon = null,
+                    dismissText = StringResourceToken.fromStringId(R.string.changelog),
+                    confirmText = StringResourceToken.fromStringId(R.string.download),
+                    block = { _ -> Text(text = context.getString(R.string.args_update_from, BuildConfigUtil.VERSION_NAME, uiState.latestRelease?.name)) }
+                ).first
+                if (state) {
+                    uiState.latestRelease?.assets?.firstOrNull { it.url.contains(BuildConfigUtil.FLAVOR_feature) && it.url.contains(BuildConfigUtil.FLAVOR_abi) }?.apply {
+                        viewModel.emitIntent(IndexUiIntent.ToBrowser(context = context, url = this.url))
+                    }
+                } else {
+                    uiState.latestRelease?.url?.apply {
+                        viewModel.emitIntent(IndexUiIntent.ToBrowser(context = context, url = this))
+                    }
+                }
+            }
+        },
         actions = {
             IconButton(
                 enabled = nullBackupDir.not(),

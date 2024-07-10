@@ -232,6 +232,7 @@ fun PackageIcons(
 }
 
 
+@ExperimentalMaterial3Api
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
 @Composable

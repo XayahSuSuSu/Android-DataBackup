@@ -34,4 +34,6 @@ object ConstantUtil {
     const val CHAT_LINK = "https://t.me/databackupchat"
     const val DONATE_BMAC_LINK = "https://buymeacoffee.com/xayahsususu"
     const val DONATE_AFD_LINK = "https://afdian.net/a/XayahSuSuSu"
+
+    const val FLAVOR_PREMIUM = "premium"
 }

@@ -15,6 +15,12 @@
     <item name="restore" type="string" />
     <item name="args_used_by_backups" type="string" />
     <item name="args_finished_at" type="string" />
+    <item name="update_available" type="string" />
+    <item name="no_browser" type="string" />
+    <item name="download" type="string" />
+    <item name="changelog" type="string" />
+    <item name="args_update_from" type="string" />
+
     <item name="ic_rounded_package_2" type="drawable" />
     <item name="ic_rounded_folder_open" type="drawable" />
     <item name="ic_rounded_acute" type="drawable" />

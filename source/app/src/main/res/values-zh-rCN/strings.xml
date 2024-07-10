@@ -119,7 +119,7 @@
     <string name="backup_dir_as_media_error">无法添加备份目录作为媒体资料</string>
     <string name="media_target_path_missing">目标目录丢失，请手动设置</string>
     <string name="media_set_path">设置路径</string>
-    <string name="update_available">有更新</string>
+    <string name="update_available">更新可用</string>
     <string name="not_installed">未安装</string>
     <string name="selected_both">两者均选</string>
     <string name="abi_validation">验证ABI</string>
@@ -339,4 +339,7 @@
     <string name="kill_app_options">杀死应用选项</string>
     <string name="kill_app_options_desc">备份应用前行为</string>
     <string name="language">语言</string>
+    <string name="download">下载</string>
+    <string name="changelog">更新日志</string>
+    <string name="args_update_from">你可以从%1$s版本更新到%2$s版本</string>
 </resources>

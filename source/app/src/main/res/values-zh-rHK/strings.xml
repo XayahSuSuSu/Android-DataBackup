@@ -339,4 +339,7 @@
     <string name="kill_app_options">殺死應用選項</string>
     <string name="kill_app_options_desc">備份應用前行爲</string>
     <string name="language">語言</string>
+    <string name="download">下載</string>
+    <string name="changelog">更新日志</string>
+    <string name="args_update_from">你可以從%1$s版本更新到%2$s版本</string>
 </resources>

@@ -15,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -75,7 +76,7 @@ fun TextButton(modifier: Modifier = Modifier, text: StringResourceToken, onClick
     TextButton(
         modifier = modifier,
         onClick = onClick,
-        content = { TitleSmallText(text = text.value, fontWeight = FontWeight.Bold) },
+        content = { Text(text = text.value, fontWeight = FontWeight.Bold) },
         contentPadding = ButtonDefaults.ContentPadding
     )
 }

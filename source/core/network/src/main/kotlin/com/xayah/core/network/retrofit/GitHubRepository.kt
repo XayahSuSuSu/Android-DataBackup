@@ -12,10 +12,13 @@ private const val BASE_URL = "https://api.github.com/repos/XayahSuSuSu/Android-D
 private interface Api {
     @GET(value = "releases")
     suspend fun getReleases(): List<Release>
+
+    @GET(value = "releases/latest")
+    suspend fun getLatestRelease(): Release
 }
 
 @Singleton
-class GitHubNetwork @Inject constructor() {
+class GitHubRepository @Inject constructor() {
     private val service = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -23,4 +26,5 @@ class GitHubNetwork @Inject constructor() {
         .create(Api::class.java)
 
     suspend fun getReleases(): List<Release> = service.getReleases()
+    suspend fun getLatestRelease(): Release = service.getLatestRelease()
 }
