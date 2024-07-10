@@ -338,4 +338,8 @@
     <string name="disabled">Отключено</string>
     <string name="kill_app_options">Способы остановки приложения</string>
     <string name="kill_app_options_desc">Действия перед созданием бекапа</string>
+    <string name="language">Язык</string>
+    <string name="args_update_from">Вы можете обновить приложение с версии %1$s до %2$s</string>
+    <string name="download">Загрузить</string>
+    <string name="changelog">Список изменений</string>
 </resources>
