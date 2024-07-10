@@ -338,4 +338,8 @@
     <string name="disabled">Devre dışı bırakıldı</string>
     <string name="kill_app_options">Uygulama kapatma seçenekleri</string>
     <string name="kill_app_options_desc">Yedeklemeden önceki davranış</string>
+    <string name="language">Dil</string>
+    <string name="download">İndir</string>
+    <string name="changelog">Değişim günlüğü</string>
+    <string name="args_update_from">Sürüm %1$s\'ten sürüm %2$s\'e güncelleme yapabilirsin</string>
 </resources>
