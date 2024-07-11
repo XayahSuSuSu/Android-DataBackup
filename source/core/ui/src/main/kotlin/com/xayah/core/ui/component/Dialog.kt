@@ -45,6 +45,14 @@ fun rememberDialogState(): DialogState {
     return state
 }
 
+enum class DismissState {
+    DISMISS,
+    CANCEL,
+    CONFIRM;
+
+    val isConfirm get() = this == CONFIRM
+}
+
 class DialogState {
     private var content: (@Composable () -> Unit)? by mutableStateOf(null)
 
@@ -69,7 +77,7 @@ class DialogState {
         dismissText: StringResourceToken? = null,
         contentHorizontalPadding: Boolean = true,
         block: @Composable (MutableState<T>) -> Unit,
-    ): Pair<Boolean, T> {
+    ): Pair<DismissState, T> {
         return suspendCancellableCoroutine { continuation ->
             continuation.invokeOnCancellation { dismiss() }
             content = {
@@ -77,18 +85,18 @@ class DialogState {
                 AlertDialog(
                     onDismissRequest = {
                         dismiss()
-                        continuation.resume(Pair(false, initialState))
+                        continuation.resume(Pair(DismissState.DISMISS, initialState))
                     },
                     confirmButton = {
                         TextButton(text = confirmText ?: StringResourceToken.fromStringId(R.string.confirm), onClick = {
                             dismiss()
-                            continuation.resume(Pair(true, uiState.value))
+                            continuation.resume(Pair(DismissState.CONFIRM, uiState.value))
                         })
                     },
                     dismissButton = {
                         TextButton(text = dismissText ?: StringResourceToken.fromStringId(R.string.cancel), onClick = {
                             dismiss()
-                            continuation.resume(Pair(false, initialState))
+                            continuation.resume(Pair(DismissState.CANCEL, initialState))
                         })
                     },
                     title = { Text(text = title.value) },
@@ -108,7 +116,7 @@ suspend fun DialogState.confirm(title: StringResourceToken, text: StringResource
     title = title,
     icon = null,
     block = { _ -> Text(text = text.value) }
-).first
+).first.isConfirm
 
 @Composable
 fun RadioItem(enabled: Boolean = true, selected: Boolean, title: StringResourceToken, desc: StringResourceToken?, onClick: () -> Unit) {

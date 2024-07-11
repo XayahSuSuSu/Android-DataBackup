@@ -99,7 +99,7 @@ fun PageReload() {
                             defIndex = currentIndex,
                             items = uiState.versionList
                         )
-                        if (state) {
+                        if (state.isConfirm) {
                             viewModel.emitState(uiState.copy(versionIndex = selectedIndex))
                         }
                     }

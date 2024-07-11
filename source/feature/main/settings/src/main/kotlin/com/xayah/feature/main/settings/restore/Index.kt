@@ -74,7 +74,7 @@ fun PageRestoreSettings() {
                         defIndex = currentIndex,
                         items = dialogItems
                     )
-                    if (state) {
+                    if (state.isConfirm) {
                         context.saveKillAppOption(dialogItems[selectedIndex].enum!!)
                     }
                 }

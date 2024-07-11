@@ -141,7 +141,7 @@ fun PagePackagesBackupProcessingSetup(localNavController: NavHostController, vie
                                     defIndex = currentIndex,
                                     items = accounts
                                 )
-                                if (state) {
+                                if (state.isConfirm) {
                                     currentIndex = selectedIndex
                                 }
                             }

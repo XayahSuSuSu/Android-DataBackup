@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.util.BuildConfigUtil
+import com.xayah.core.ui.component.DismissState
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MainIndexSubScaffold
@@ -82,14 +83,20 @@ fun PageDashboard() {
                     confirmText = StringResourceToken.fromStringId(R.string.download),
                     block = { _ -> Text(text = context.getString(R.string.args_update_from, BuildConfigUtil.VERSION_NAME, uiState.latestRelease?.name)) }
                 ).first
-                if (state) {
-                    uiState.latestRelease?.assets?.firstOrNull { it.url.contains(BuildConfigUtil.FLAVOR_feature) && it.url.contains(BuildConfigUtil.FLAVOR_abi) }?.apply {
-                        viewModel.emitIntent(IndexUiIntent.ToBrowser(context = context, url = this.url))
+                when (state) {
+                    DismissState.CONFIRM -> {
+                        uiState.latestRelease?.assets?.firstOrNull { it.url.contains(BuildConfigUtil.FLAVOR_feature) && it.url.contains(BuildConfigUtil.FLAVOR_abi) }?.apply {
+                            viewModel.emitIntent(IndexUiIntent.ToBrowser(context = context, url = this.url))
+                        }
                     }
-                } else {
-                    uiState.latestRelease?.url?.apply {
-                        viewModel.emitIntent(IndexUiIntent.ToBrowser(context = context, url = this))
+
+                    DismissState.CANCEL -> {
+                        uiState.latestRelease?.url?.apply {
+                            viewModel.emitIntent(IndexUiIntent.ToBrowser(context = context, url = this))
+                        }
                     }
+
+                    DismissState.DISMISS -> {}
                 }
             }
         },

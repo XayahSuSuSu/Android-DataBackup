@@ -148,7 +148,7 @@ fun PageRestore() {
                                 defIndex = currentIndex,
                                 items = accounts
                             )
-                            if (state) {
+                            if (state.isConfirm) {
                                 currentIndex = selectedIndex
                             }
                         }

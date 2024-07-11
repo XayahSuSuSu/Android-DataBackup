@@ -175,7 +175,7 @@ class IndexViewModel @Inject constructor(
                             def = items.map { true },
                             items = items
                         )
-                        if (s) {
+                        if (s.isConfirm) {
                             items.forEachIndexed { i, item ->
                                 if (selection[i]) {
                                     when (item.enum) {

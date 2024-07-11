@@ -52,7 +52,7 @@ fun DarkThemeSelectable() {
             defIndex = currentIndex,
             items = items
         )
-        if (state) {
+        if (state.isConfirm) {
             context.saveThemeType(items[selectedIndex].enum!!)
         }
     }

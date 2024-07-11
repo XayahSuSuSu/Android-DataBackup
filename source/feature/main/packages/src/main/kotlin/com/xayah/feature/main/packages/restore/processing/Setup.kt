@@ -116,7 +116,7 @@ fun PagePackagesRestoreProcessingSetup(localNavController: NavHostController, vi
                             defIndex = currentIndex,
                             items = uiState.restoreUsers
                         )
-                        if (state) {
+                        if (state.isConfirm) {
                             currentIndex = selectedIndex
                         }
                     }

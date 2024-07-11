@@ -111,7 +111,7 @@ fun PageOne() {
                                 label = StringResourceToken.fromStringId(R.string.name),
                                 desc = StringResourceToken.fromStringId(R.string.restart_to_take_effect)
                             )
-                            if (state) {
+                            if (state.isConfirm) {
                                 context.saveCustomSUFile(su)
                             }
                         }

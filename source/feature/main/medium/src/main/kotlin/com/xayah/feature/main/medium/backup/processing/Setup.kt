@@ -141,7 +141,7 @@ fun PageMediumBackupProcessingSetup(localNavController: NavHostController, viewM
                                     defIndex = currentIndex,
                                     items = accounts
                                 )
-                                if (state) {
+                                if (state.isConfirm) {
                                     currentIndex = selectedIndex
                                 }
                             }
