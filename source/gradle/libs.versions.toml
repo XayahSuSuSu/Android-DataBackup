@@ -5,9 +5,9 @@ minSdk = "26"
 targetSdk = "34"
 # __(API)_(feature)___(version)_(abi)
 # TODO: Feature bit is no longer useful, drop when next api releases
-versionCode = "3411070"
+versionCode = "3411080"
 versionCodeAlpha = "14"
-versionName = "2.0.1"
+versionName = "2.0.2"
 compose-compiler = "1.5.12" # https://androidx.dev/storage/compose-compiler/repository
 
 # libraries
