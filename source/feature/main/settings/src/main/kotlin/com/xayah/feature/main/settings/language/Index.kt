@@ -40,7 +40,7 @@ fun PageLanguageSelector() {
         scrollBehavior = scrollBehavior,
         title = StringResourceToken.fromStringId(R.string.language),
     ) {
-        val sortedLocales = remember { BuildConfigUtil.SUPPORTED_LOCALES.sorted() }
+        val sortedLocales = remember { BuildConfigUtil.SUPPORTED_LOCALES }
         LazyColumn {
             items(count = sortedLocales.size + 1) {
                 if (it == 0) {

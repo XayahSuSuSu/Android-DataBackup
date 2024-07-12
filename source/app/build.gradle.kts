@@ -90,6 +90,7 @@ fun generateSupportedLocales(): String {
     val foundLocales = StringBuilder()
     foundLocales.append("new String[]{")
 
+    val languages = mutableListOf<String>()
     fileTree("src/main/res").visit {
         if(file.path.endsWith("strings.xml")){
             var languageCode = file.parent.replace("\\", "/").split('/').last()
@@ -97,8 +98,11 @@ fun generateSupportedLocales(): String {
             if (languageCode == "values") {
                 languageCode = "en"
             }
-            foundLocales.append("\"").append(languageCode).append("\"").append(",")
+            languages.add(languageCode)
         }
+    }
+    languages.sorted().forEach {
+        foundLocales.append("\"").append(it).append("\"").append(",")
     }
 
     foundLocales.append("}")
