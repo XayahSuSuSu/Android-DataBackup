@@ -38,7 +38,6 @@
     <string name="environment_detection">Deteksi lingkungan</string>
     <string name="start">Mulai</string>
     <string name="welcome_to_use">Selamat Datang di DataBackup</string>
-    <string name="update_records"></string>
     <string name="start_subtitle">Menurut kebijakan terkait, Kamu perlu membaca dengan cermat dan menyetujui Perjanjian Pengguna dan Kebijakan Privasi berikut sebelum Kamu mulai menggunakan aplikasi ini</string>
     <string name="network">Jaringan</string>
     <string name="network_desc">Digunakan untuk mendapatkan informasi pembaruan aplikasi, analisis aplikasi</string>
