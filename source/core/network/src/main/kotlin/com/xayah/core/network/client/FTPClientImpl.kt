@@ -11,6 +11,7 @@ import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
+import com.xayah.core.util.PathUtil
 import com.xayah.core.util.toPathList
 import com.xayah.core.util.withMainContext
 import com.xayah.libpickyou.parcelables.DirChildrenParcelable
@@ -28,6 +29,8 @@ import java.io.OutputStream
 import java.nio.file.Paths
 import javax.security.auth.login.LoginException
 import kotlin.io.path.Path
+import kotlin.io.path.absolute
+import kotlin.io.path.name
 import kotlin.io.path.pathString
 
 class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra) : CloudClient {
@@ -88,7 +91,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
     }
 
     override fun upload(src: String, dst: String, onUploading: (read: Long, total: Long) -> Unit) = withClient { client ->
-        val name = Paths.get(src).fileName
+        val name = src.substring(src.lastIndexOf('/') + 1)
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
         val srcFile = File(src)
@@ -102,7 +105,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
     }
 
     override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) = withClient { client ->
-        val name = Paths.get(src).fileName
+        val name = src.substring(src.lastIndexOf('/') + 1)
         val dstPath = "$dst/$name"
         log { "download: $src to $dstPath" }
         val dstFile = File(dstPath)
@@ -133,8 +136,9 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
             val srcPath = Path(src)
             srcFile = client.mlistFile(src)
             if (srcFile == null) {
-                srcFile = client.listFiles(runCatching { srcPath.parent.pathString }.getOrElse { "." })
-                    .firstOrNull { it.name == srcPath.fileName.pathString }
+                srcFile = client.listFiles(runCatching { PathUtil.getParentPath(srcPath.pathString) }.getOrElse { "." })
+                    .firstOrNull { it.name == srcPath.pathString.substring(
+                        srcPath.pathString.lastIndexOf('/') + 1) }
             }
         }
         if (srcFile != null) {

@@ -72,7 +72,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     }
 
     override fun upload(src: String, dst: String, onUploading: (read: Long, total: Long) -> Unit) = withClient { client ->
-        val name = Paths.get(src).fileName
+        val name = src.substring(src.lastIndexOf('/') + 1)
         val dstPath = "${getPath(dst)}/$name"
         log { "upload: $src to $dstPath" }
         val srcFile = File(src)
@@ -80,7 +80,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     }
 
     override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) = withClient { client ->
-        val name = Paths.get(src).fileName
+        val name = src.substring(src.lastIndexOf('/') + 1)
         val dstPath = "${dst}/$name"
         log { "download: ${getPath(src)} to $dstPath" }
         val dstOutputStream = File(dstPath).outputStream()

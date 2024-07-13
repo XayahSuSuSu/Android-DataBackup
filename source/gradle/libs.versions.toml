@@ -1,7 +1,7 @@
 [versions]
 # config
 compileSdk = "34"
-minSdk = "26"
+minSdk = "24"
 targetSdk = "34"
 # __(API)_(feature)___(version)_(abi)
 # TODO: Feature bit is no longer useful, drop when next api releases
@@ -17,7 +17,7 @@ appcompat = "1.7.0"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
 junit = "4.13.2"
-compose-bom = "2024.05.00"
+compose-bom = "2024.06.00"
 core-ktx = "1.13.1"
 core-splashscreen = "1.0.1"
 gson = "2.10.1"
@@ -27,7 +27,7 @@ hilt-navigation-compose = "1.2.0"
 navigation-compose = "2.7.7"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
-libsu = "PR182-SNAPSHOT" # TODO Force enable the latest libsu
+libsu = "6.0.0" # TODO Force enable the latest libsu
 zip4j = "2.11.5"
 kotlinx-coroutines-core-jvm = "1.8.0"
 room = "2.6.1"

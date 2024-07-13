@@ -7,9 +7,7 @@ import com.xayah.core.util.command.SELinux
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import java.nio.file.Paths
 import javax.inject.Inject
-import kotlin.io.path.pathString
 
 const val LogRelativeDir = "log"
 const val IconRelativeDir = "icon"
@@ -38,8 +36,13 @@ class PathUtil @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
     companion object {
-        fun getParentPath(path: String): String = Paths.get(path).parent.pathString
-        fun getFileName(path: String): String = Paths.get(path).fileName.pathString
+        fun getParentPath(path: String): String {
+            assert(path.contains('/') && path != "/") { "Path doesn't have any parent" }
+            val child = path.substring(path.lastIndexOf('/'))
+            return path.replace(child, "", false)
+        }
+
+        fun getFileName(path: String): String = path.substring(path.lastIndexOf('/') + 1)
 
         // Paths for processing.
         @SuppressLint("SdCardPath")

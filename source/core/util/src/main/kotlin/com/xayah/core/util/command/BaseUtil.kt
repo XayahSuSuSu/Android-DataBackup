@@ -124,12 +124,14 @@ object BaseUtil {
     }
 
     suspend fun kill(context: Context, vararg keys: String) {
+        execute("echo \$PATH", shell = getNewShell(context), timeout = -1)
+
         // ps -A | grep -w $key1 | grep -w $key2 | ... | awk 'NF>1{print $2}' | xargs kill -9
         val keysArg = keys.map { "| grep -w $it" }.toTypedArray()
         execute(
-            "ps -A",
+            "busybox ps -A",
             *keysArg,
-            "| awk 'NF>1{print ${USD}2}'",
+            "| cut -f2 -d' '",
             "| xargs kill -9",
             shell = getNewShell(context),
             timeout = -1

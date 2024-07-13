@@ -1,6 +1,7 @@
 package com.xayah.core.rootservice;
 
 import com.xayah.core.rootservice.parcelables.StatFsParcelable;
+import com.xayah.core.rootservice.parcelables.StorageStatsParcelable;
 
 interface IRemoteRootService {
     StatFsParcelable readStatFs(String path);
@@ -28,7 +29,7 @@ interface IRemoteRootService {
     boolean queryInstalled(String packageName, int userId);
     int getPackageUid(String packageName, int userId);
     UserHandle getUserHandle(int userId);
-    StorageStats queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
+    StorageStatsParcelable queryStatsForPackage(in PackageInfo packageInfo, in UserHandle user);
     List<UserInfo> getUsers();
     ParcelFileDescriptor walkFileTree(String path);
     PackageInfo getPackageArchiveInfo(String path);

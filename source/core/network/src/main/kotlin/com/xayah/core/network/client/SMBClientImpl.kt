@@ -200,7 +200,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
     }
 
     override fun upload(src: String, dst: String, onUploading: (read: Long, total: Long) -> Unit) = run {
-        val name = Paths.get(src).fileName
+        val name = src.substring(src.lastIndexOf('/') + 1)
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
         val dstFile = openFile(dstPath)
@@ -216,7 +216,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
     }
 
     override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) = run {
-        val name = Paths.get(src).fileName
+        val name = src.substring(src.lastIndexOf('/') + 1)
         val dstPath = "$dst/$name"
         log { "download: $src to $dstPath" }
         val dstOutputStream = File(dstPath).outputStream()
