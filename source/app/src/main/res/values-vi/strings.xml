@@ -85,4 +85,25 @@
     <string name="premium_for_this_feature">Hãy tải bản premium để có tính năng này</string>
     <string name="monet_desc">Tạo màu theo hình nền</string>
     <string name="no_root_directory">Vui lòng không chọn thư mục root</string>
+    <string name="args_update_from">Bạn có thể cập nhật từ phiên bản %1$s đến %2$s</string>
+    <string name="backup_user">Sao lưu người dùng</string>
+    <string name="restore_completed">Khôi phục thành công</string>
+    <string name="restore_user_desc">Bạn muốn khôi phục đến người dùng nào ?</string>
+    <string name="user">Người dùng</string>
+    <string name="backup">Sao lưu</string>
+    <string name="backup_itself_desc">Sao lưu .apk đến thư mục sao lưu sau khi sao lưu</string>
+    <string name="compression_test">Kiểm tra nén</string>
+    <string name="compression_test_desc">Kiểm tra file nén có hoạt động sau khi tạo</string>
+    <string name="reset_backup_list">Đặt lại danh sách sao lưu</string>
+    <string name="reset_backup_list_desc">Bỏ chọn những lựa chọn trước đó sau khi sao lưu</string>
+    <string name="reset_restore_list">Đặt lại danh sách khôi phục</string>
+    <string name="reset_restore_list_desc">Bỏ chọn những lựa chọn trước đó sau khi khôi phục</string>
+    <string name="compatible_mode">Chế độ tương thích</string>
+    <string name="installed">Đã cài đặt</string>
+    <string name="delete">Xóa</string>
+    <string name="supported_format">Định dạng hỗ trợ</string>
+    <string name="add">Thêm</string>
+    <string name="custom_storage">Lưu trữ khác</string>
+    <string name="select_target_directory">Chọn thư mục đích</string>
+    <string name="media_set_path">Đặt đường dẫn</string>
 </resources>
