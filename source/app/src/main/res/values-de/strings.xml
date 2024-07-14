@@ -24,7 +24,6 @@
     <string name="succeed">Erfolg</string>
     <string name="failed">Fehlgeschlagen</string>
     <string name="save_directory_structure">Verzeichnisstruktur speichern</string>
-    <string name="copy"></string>
     <string name="app_name">DataBackup</string>
     <string name="welcome_to_use">Willkomen bei DataBackup</string>
     <string name="environment_detection">Bestimmen der Umgebung</string>
