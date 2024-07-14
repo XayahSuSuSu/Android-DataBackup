@@ -152,4 +152,15 @@
     <string name="clean_restoring">تنظيف الاستعادة</string>
     <string name="existing_files">الملفات الموجودة</string>
     <string name="overall_config">التكوين الشامل</string>
+    <string name="confirm_delete">هذا سيحذف كل الملفات اللتي تم اختيارها</string>
+    <string name="custom_storage">مساحة تخزين مختلفه</string>
+    <string name="select_target_directory">اختيار الملف المراد</string>
+    <string name="update_available">التحديث متوفر</string>
+    <string name="installed">مثبت</string>
+    <string name="delete">حذف</string>
+    <string name="no_browser">ربما لايوجد لديك متصفح لفتحه</string>
+    <string name="add">اضف</string>
+    <string name="media_target_path_missing">الملف المستهدف مفقود. الرجاء اختياره يدويا</string>
+    <string name="media_set_path">اختيار مسار</string>
+    <string name="not_installed">ليس مثبت</string>
 </resources>
