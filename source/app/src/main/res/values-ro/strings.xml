@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">DataBackup</string>
+    <string name="welcome_to_use">Bine ati venit la DataBackup</string>
+    <string name="update_records">Actualizați înregistrările</string>
+    <string name="environment_detection">Detectarea mediului</string>
+</resources>
