@@ -1,8 +1,8 @@
 package com.xayah.core.rootservice.impl
 
+import android.annotation.TargetApi
 import android.app.ActivityManagerHidden
 import android.app.ActivityThread
-import android.app.usage.StorageStats
 import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.PackageInfo
@@ -25,11 +25,13 @@ import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.rootservice.parcelables.StatFsParcelable
+import com.xayah.core.rootservice.parcelables.StorageStatsParcelable
 import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
 import com.xayah.core.rootservice.util.ExceptionUtil.tryWithBoolean
 import com.xayah.core.rootservice.util.SsaidUtil
 import com.xayah.core.util.FileUtil
 import com.xayah.core.util.HashUtil
+import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil.setAllPermissions
 import java.io.File
 import java.io.IOException
@@ -51,12 +53,12 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private var systemContext: Context
     private var packageManager: PackageManager
     private var packageManagerHidden: PackageManagerHidden
-    private var storageStatsManager: StorageStatsManager
     private var userManager: UserManagerHidden
     private var activityManager: ActivityManagerHidden
 
     private fun getSystemContext(): Context = ActivityThread.systemMain().systemContext
 
+    @TargetApi(Build.VERSION_CODES.O)
     private fun getStorageStatsManager(): StorageStatsManager = systemContext.getSystemService(Context.STORAGE_STATS_SERVICE) as StorageStatsManager
 
     private fun getUserManager(): UserManagerHidden = UserManagerHidden.get(systemContext).castTo()
@@ -86,7 +88,6 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         systemContext = getSystemContext()
         packageManager = systemContext.packageManager
         packageManagerHidden = packageManager.castTo()
-        storageStatsManager = getStorageStatsManager()
         userManager = getUserManager()
         activityManager = getActivityManager()
     }
@@ -180,30 +181,54 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun clearEmptyDirectoriesRecursively(path: String) = synchronized(lock) {
         tryOn {
-            Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
-                override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
-                    if (dir != null && attrs != null) {
-                        if (Files.isDirectory(dir) && Files.list(dir).count() == 0L) {
-                            // Empty dir
-                            Files.delete(dir)
-                        }
-                    }
-                    return FileVisitResult.CONTINUE
-                }
-
-                override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
-                    return FileVisitResult.CONTINUE
-                }
-
-                override fun visitFileFailed(file: Path?, exc: IOException?): FileVisitResult {
-                    return FileVisitResult.CONTINUE
-                }
-
-                override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
-                    return FileVisitResult.CONTINUE
-                }
-            })
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                clearEmptyDirectoriesRecursivelyApi26(path)
+            } else {
+                clearEmptyDirectoriesRecursivelyApi24(path)
+            }
         }
+    }
+
+    private fun clearEmptyDirectoriesRecursivelyApi24(path: String) {
+        val dir = File(path)
+        if (dir.isDirectory) {
+            dir.listFiles()?.also { items ->
+                if (items.isEmpty()) {
+                    dir.delete()
+                } else {
+                    items.forEach {
+                        clearEmptyDirectoriesRecursivelyApi24(it.absolutePath)
+                    }
+                }
+            }
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun clearEmptyDirectoriesRecursivelyApi26(path: String) {
+        Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
+            override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                if (dir != null && attrs != null) {
+                    if (Files.isDirectory(dir) && Files.list(dir).count() == 0L) {
+                        // Empty dir
+                        Files.delete(dir)
+                    }
+                }
+                return FileVisitResult.CONTINUE
+            }
+
+            override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                return FileVisitResult.CONTINUE
+            }
+
+            override fun visitFileFailed(file: Path?, exc: IOException?): FileVisitResult {
+                return FileVisitResult.CONTINUE
+            }
+
+            override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
+                return FileVisitResult.CONTINUE
+            }
+        })
     }
 
     override fun setAllPermissions(src: String): Unit = synchronized(lock) { File(src).setAllPermissions() }
@@ -278,15 +303,58 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         UserHandleHidden.of(userId)
     }
 
-    override fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats? = synchronized(lock) {
-        tryOn(
-            block = {
-                storageStatsManager.queryStatsForPackage(packageInfo.applicationInfo.storageUuid, packageInfo.packageName, user)
-            },
-            onException = {
-                null
-            }
+    private fun queryStatsForPackageApi24(packageInfo: PackageInfo, user: UserHandle): StorageStatsParcelable {
+        val userHandle: UserHandleHidden = user.castTo()
+        // https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/base/services/core/java/com/android/server/pm/Installer.java;l=225
+        // https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/native/cmds/installd/InstalldNativeService.cpp;l=1340
+        // https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/base/services/usage/java/com/android/server/usage/StorageStatsService.java;l=439
+        // https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/base/core/java/android/app/usage/StorageStats.java;l=31
+        val userDir = "${PathUtil.getPackageUserDir(userHandle.identifier)}/${packageInfo.packageName}"
+        val userCacheDir = "$userDir/cache"
+        val userCodeCacheDir = "$userDir}/code_cache"
+        val dataDir = "${PathUtil.getPackageDataDir(userHandle.identifier)}/${packageInfo.packageName}"
+        val dataCacheDir = "$dataDir/cache"
+        val dataCodeCacheDir = "$dataDir}/code_cache"
+        val obbDir = "${PathUtil.getPackageObbDir(userHandle.identifier)}/${packageInfo.packageName}"
+        val obbCacheDir = "$obbDir/cache"
+        val obbCodeCacheDir = "$obbDir}/code_cache"
+        val mediaDir = "${PathUtil.getPackageMediaDir(userHandle.identifier)}/${packageInfo.packageName}"
+        val mediaCacheDir = "$mediaDir/cache"
+        val mediaCodeCacheDir = "$mediaDir}/code_cache"
+
+        val cacheDirSize = FileUtil.calculateSize(userCacheDir) + FileUtil.calculateSize(userCodeCacheDir) +
+                FileUtil.calculateSize(dataCacheDir) + FileUtil.calculateSize(dataCodeCacheDir) +
+                FileUtil.calculateSize(obbCacheDir) + FileUtil.calculateSize(obbCodeCacheDir) +
+                FileUtil.calculateSize(mediaCacheDir) + FileUtil.calculateSize(mediaCodeCacheDir)
+        val dataDirSize = FileUtil.calculateSize(userDir) + FileUtil.calculateSize(dataDir) + FileUtil.calculateSize(obbDir) + FileUtil.calculateSize(mediaDir) - cacheDirSize
+        return StorageStatsParcelable(
+            FileUtil.calculateSize(PathUtil.getParentPath(packageInfo.applicationInfo.sourceDir)),
+            cacheDirSize,
+            dataDirSize,
+            0,
         )
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    fun queryStatsForPackageApi26(packageInfo: PackageInfo, user: UserHandle): StorageStatsParcelable {
+        val stats = getStorageStatsManager().queryStatsForPackage(packageInfo.applicationInfo.storageUuid, packageInfo.packageName, user)
+
+        return StorageStatsParcelable(
+            stats.appBytes,
+            stats.cacheBytes,
+            stats.dataBytes,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { stats.externalCacheBytes } else { 0 },
+        )
+    }
+
+    override fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStatsParcelable? = synchronized(lock) {
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                queryStatsForPackageApi26(packageInfo, user)
+            } else {
+                queryStatsForPackageApi24(packageInfo, user)
+            }
+        }.getOrNull()
     }
 
     override fun getUsers(): List<UserInfo> = synchronized(lock) {
@@ -301,39 +369,71 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun walkFileTree(path: String): ParcelFileDescriptor = synchronized(lock) {
-        writeToParcel { parcel ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            walkFileTreeApi26(path)
+        } else {
+            walkFileTreeApi24(path)
+        }
+    }
+
+    private fun walkFileTreeApi24(path: String): ParcelFileDescriptor {
+        fun walkFileTreeRecursively(path: String): List<PathParcelable> {
+            val pathParcelableList = mutableListOf<PathParcelable>()
+            val file = File(path)
+            if (file.isFile) {
+                pathParcelableList.add(PathParcelable(file.absolutePath))
+            } else if (file.isDirectory) {
+                for (item in file.listFiles()!!) {
+                    pathParcelableList.addAll(walkFileTreeRecursively(item.absolutePath))
+                }
+            }
+            return pathParcelableList
+        }
+        return writeToParcel { parcel ->
             parcel.writeTypedList(
                 tryOn(
-                    block = {
-                        val pathParcelableList = mutableListOf<PathParcelable>()
-                        Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
-                            override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
-                                return FileVisitResult.CONTINUE
-                            }
-
-                            override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
-                                if (file != null && attrs != null) {
-                                    pathParcelableList.add(PathParcelable(file.pathString))
-                                }
-                                return FileVisitResult.CONTINUE
-                            }
-
-                            override fun visitFileFailed(file: Path?, exc: IOException?): FileVisitResult {
-                                return FileVisitResult.CONTINUE
-                            }
-
-                            override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
-                                return FileVisitResult.CONTINUE
-                            }
-                        })
-                        pathParcelableList
-                    },
+                    block = { walkFileTreeRecursively(path) },
                     onException = {
                         listOf()
-                    }
+                    },
                 )
             )
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun walkFileTreeApi26(path: String): ParcelFileDescriptor = writeToParcel { parcel ->
+        parcel.writeTypedList(
+            tryOn(
+                block = {
+                    val pathParcelableList = mutableListOf<PathParcelable>()
+                    Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
+                        override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                            return FileVisitResult.CONTINUE
+                        }
+
+                        override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                            if (file != null && attrs != null) {
+                                pathParcelableList.add(PathParcelable(file.pathString))
+                            }
+                            return FileVisitResult.CONTINUE
+                        }
+
+                        override fun visitFileFailed(file: Path?, exc: IOException?): FileVisitResult {
+                            return FileVisitResult.CONTINUE
+                        }
+
+                        override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
+                            return FileVisitResult.CONTINUE
+                        }
+                    })
+                    pathParcelableList
+                },
+                onException = {
+                    listOf()
+                }
+            )
+        )
     }
 
     override fun getPackageArchiveInfo(path: String): PackageInfo? = synchronized(lock) {

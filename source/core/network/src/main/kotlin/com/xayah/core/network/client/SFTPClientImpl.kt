@@ -11,6 +11,7 @@ import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
+import com.xayah.core.util.PathUtil
 import com.xayah.core.util.toPathList
 import com.xayah.core.util.withMainContext
 import com.xayah.libpickyou.parcelables.DirChildrenParcelable
@@ -27,8 +28,6 @@ import net.schmizz.sshj.userauth.password.PasswordFinder
 import net.schmizz.sshj.userauth.password.Resource
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.file.Paths
-import kotlin.io.path.pathString
 
 
 class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExtra) : CloudClient {
@@ -109,7 +108,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
     }
 
     override fun upload(src: String, dst: String, onUploading: (read: Long, total: Long) -> Unit) {
-        val name = Paths.get(src).fileName
+        val name = PathUtil.getFileName(src)
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
         val dstFile = openFile(dstPath)
@@ -126,7 +125,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
     }
 
     override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) {
-        val name = Paths.get(src).fileName
+        val name = PathUtil.getFileName(src)
         val dstPath = "${dst}/$name"
         log { "download: $src to $dstPath" }
         val dstFile = File(dstPath)
@@ -221,7 +220,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
         connect()
         PickYouLauncher.apply {
             val prefix = "${context.getString(R.string.cloud)}:"
-            sTraverseBackend = { listFiles(it.pathString.replaceFirst(prefix, ".")) }
+            sTraverseBackend = { listFiles(it.replaceFirst(prefix, ".")) }
             sMkdirsBackend = { parent, child ->
                 runCatching { mkdirRecursively(handleOriginalPath("$parent/$child")) }.isSuccess
             }

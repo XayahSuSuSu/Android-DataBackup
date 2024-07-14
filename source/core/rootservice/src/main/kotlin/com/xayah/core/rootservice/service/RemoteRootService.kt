@@ -1,6 +1,5 @@
 package com.xayah.core.rootservice.service
 
-import android.app.usage.StorageStats
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -18,6 +17,7 @@ import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.impl.RemoteRootServiceImpl
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.rootservice.parcelables.StatFsParcelable
+import com.xayah.core.rootservice.parcelables.StorageStatsParcelable
 import com.xayah.core.rootservice.util.ExceptionUtil.tryOnScope
 import com.xayah.core.rootservice.util.withMainContext
 import com.xayah.core.util.GsonUtil
@@ -262,7 +262,7 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun getUserHandle(userId: Int): UserHandle? = runCatching { getService().getUserHandle(userId) }.onFailure(onFailure).getOrNull()
 
-    suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStats? =
+    suspend fun queryStatsForPackage(packageInfo: PackageInfo, user: UserHandle): StorageStatsParcelable? =
         runCatching { getService().queryStatsForPackage(packageInfo, user) }.onFailure(onFailure).getOrNull()
 
     suspend fun getUsers(): List<UserInfo> = runCatching { getService().users }.onFailure(onFailure).getOrElse { listOf() }

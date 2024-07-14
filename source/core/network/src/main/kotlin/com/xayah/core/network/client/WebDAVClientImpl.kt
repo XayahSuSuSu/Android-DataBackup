@@ -6,6 +6,7 @@ import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.network.R
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.util.LogUtil
+import com.xayah.core.util.PathUtil
 import com.xayah.core.util.toPathList
 import com.xayah.core.util.withMainContext
 import com.xayah.libpickyou.parcelables.DirChildrenParcelable
@@ -15,9 +16,7 @@ import com.xayah.libpickyou.ui.model.PickerType
 import com.xayah.libsardine.impl.OkHttpSardine
 import okhttp3.OkHttpClient
 import java.io.File
-import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
-import kotlin.io.path.pathString
 
 class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     private var client: OkHttpSardine? = null
@@ -72,7 +71,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     }
 
     override fun upload(src: String, dst: String, onUploading: (read: Long, total: Long) -> Unit) = withClient { client ->
-        val name = Paths.get(src).fileName
+        val name = PathUtil.getFileName(src)
         val dstPath = "${getPath(dst)}/$name"
         log { "upload: $src to $dstPath" }
         val srcFile = File(src)
@@ -80,7 +79,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     }
 
     override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) = withClient { client ->
-        val name = Paths.get(src).fileName
+        val name = PathUtil.getFileName(src)
         val dstPath = "${dst}/$name"
         log { "download: ${getPath(src)} to $dstPath" }
         val dstOutputStream = File(dstPath).outputStream()
@@ -191,7 +190,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
         connect()
         PickYouLauncher.apply {
             val prefix = "${context.getString(R.string.cloud)}:"
-            sTraverseBackend = { listFiles(it.pathString.replaceFirst(prefix, "")) }
+            sTraverseBackend = { listFiles(it.replaceFirst(prefix, "")) }
             sMkdirsBackend = { parent, child ->
                 runCatching { mkdirRecursively(handleOriginalPath("$parent/$child")) }.isSuccess
             }

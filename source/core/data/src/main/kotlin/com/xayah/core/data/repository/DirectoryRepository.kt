@@ -45,9 +45,8 @@ class DirectoryRepository @Inject constructor(
         val customDirList = mutableListOf<DirectoryUpsertEntity>()
         pathList.forEach { pathString ->
             if (pathString.isNotEmpty()) {
-                val path = Paths.get(pathString)
-                val parent = path.parent.pathString
-                val child = path.name
+                val parent = PathUtil.getParentPath(pathString)
+                val child = PathUtil.getFileName(pathString)
 
                 // Custom storage
                 val dir = DirectoryUpsertEntity(

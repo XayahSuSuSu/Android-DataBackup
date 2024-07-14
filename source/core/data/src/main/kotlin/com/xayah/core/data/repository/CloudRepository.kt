@@ -42,6 +42,7 @@ class CloudRepository @Inject constructor(
 
         var isSuccess = true
         val out = mutableListOf<String>()
+        PathUtil.setFilesDirSELinux(context)
 
         runCatching {
             client.upload(src = src, dst = dstDir, onUploading = onUploading)

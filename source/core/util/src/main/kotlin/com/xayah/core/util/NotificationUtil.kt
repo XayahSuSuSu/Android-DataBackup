@@ -1,13 +1,13 @@
 package com.xayah.core.util
 
 import android.Manifest
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.provider.Settings.EXTRA_APP_PACKAGE
@@ -35,7 +35,7 @@ object NotificationUtil {
     fun requestPermissions(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(context.getActivity(), arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
-        } else {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             runCatching {
                 val intent = Intent()
                 intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
@@ -46,6 +46,15 @@ object NotificationUtil {
             }.onFailure {
                 Toast.makeText(context, context.getString(R.string.grant_ntfy_perm_manually), Toast.LENGTH_SHORT).show()
             }
+        } else {
+            runCatching {
+                val intent = Intent().apply {
+                    setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    addCategory(Intent.CATEGORY_DEFAULT)
+                    setData(Uri.parse("package:${context.packageName}"))
+                }
+                context.startActivity(intent)
+            }
         }
     }
 
@@ -53,13 +62,20 @@ object NotificationUtil {
         val pendingIntent: PendingIntent = context.packageManager.getLaunchIntentForPackage(context.packageName).let { intent ->
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         }
-        val channel = NotificationChannel(ForegroundServiceChannelId, ForegroundServiceChannelName, NotificationManager.IMPORTANCE_LOW).apply {
-            description = ForegroundServiceChannelDesc
-        }
-        val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
 
-        Notification.Builder(context, ForegroundServiceChannelId).setContentIntent(pendingIntent).build()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                ForegroundServiceChannelId,
+                ForegroundServiceChannelName,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = ForegroundServiceChannelDesc
+            }
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+        NotificationCompat.Builder(context, ForegroundServiceChannelId).setContentIntent(pendingIntent).build()
     }
 
     fun getProgressNotificationBuilder(context: Context) =

@@ -12,11 +12,10 @@ class PathParcelable() : Parcelable {
     var extension: String = ""
 
     constructor(pathString: String) : this() {
-        val path = Paths.get(pathString)
         this.pathList = pathString.split("/")
         this.pathString = pathString
-        this.nameWithoutExtension = path.fileName.pathString.split(".").first()
-        this.extension = path.fileName.pathString.replace("${nameWithoutExtension}.", "")
+        this.nameWithoutExtension = pathList.last().split(".").first()
+        this.extension = pathList.last().replace("${nameWithoutExtension}.", "")
     }
 
     constructor(parcel: Parcel) : this() {

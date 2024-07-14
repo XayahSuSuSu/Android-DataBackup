@@ -300,7 +300,7 @@ class PackageRepository @Inject constructor(
                         this.storageStats.appBytes = stats.appBytes
                         this.storageStats.cacheBytes = stats.cacheBytes
                         this.storageStats.dataBytes = stats.dataBytes
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) this.storageStats.externalCacheBytes = stats.externalCacheBytes
+                        this.storageStats.externalCacheBytes = stats.externalCacheBytes
                     }
                 }
             }
