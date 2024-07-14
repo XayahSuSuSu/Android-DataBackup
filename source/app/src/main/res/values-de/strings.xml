@@ -1,2 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="start_subtitle">Bevor Sie beginnen, diese App nutzen, stimmen Sie bitte der folgenden Nutzungserklärung und Datenschutzerklärung zu, nachdem Sie diese sorgfältig gelesen haben.</string>
+    <string name="start_desc">Die von dieser App generierten Daten werden nur zur Sicherung/ Wiederherstellung genutzt und werden nur lokal gespeichert.</string>
+    <string name="network_desc">Wird sowohl für Analyse als auch zum Erhalten von Informationen zum Aktualisieren der App genutzt.</string>
+    <string name="application">App</string>
+    <string name="storage">Speicher</string>
+    <string name="loading">Lädt</string>
+    <string name="loading_failed">Laden fehlgeschlagen</string>
+    <string name="grant_root_access">Root-Zugriff erlauben</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="overlook">Überblick</string>
+    <string name="last_backup">Letzte Sicherheitskopie</string>
+    <string name="none">Keine</string>
+    <string name="activities">Aktivitäten</string>
+    <string name="directory">Speicher</string>
+    <string name="structure">Dateien-Baum</string>
+    <string name="app_and_data">Apps</string>
+    <string name="media">Medien</string>
+    <string name="telephony">Anrufsverlauf</string>
+    <string name="internal_storage">Interner Speicher</string>
+    <string name="fetch_failed">Zugriff fehlgeschlagen</string>
+    <string name="succeed">Erfolg</string>
+    <string name="failed">Fehlgeschlagen</string>
+    <string name="save_directory_structure">Verzeichnisstruktur speichern</string>
+    <string name="copy"></string>
+    <string name="app_name">DataBackup</string>
+    <string name="welcome_to_use">Willkomen bei DataBackup</string>
+    <string name="environment_detection">Bestimmen der Umgebung</string>
+    <string name="start">Starten</string>
+    <string name="network">Netzwerk</string>
+    <string name="application_desc">Informationen zum Applikationspaket erhalten, die zum Generieren einer Sicherungsliste und zur Bestimmung der Größe der Applikationsdaten genutzt werden.</string>
+    <string name="unsupported_format">Format wird nicht unterstützt</string>
+    <string name="storage_desc">Wird für die Konfiguration von Sicherungen und für den Lese-/Bearbeitungszugriff auf Archive genutzt</string>
+    <string name="external_storage">Externer Speicher</string>
+    <string name="backup_dir">Verzeicnis für Sicherheitskopien</string>
+    <string name="directory_structure">Verzeichnisstruktur</string>
+    <string name="log">Logdateien</string>
+</resources>
