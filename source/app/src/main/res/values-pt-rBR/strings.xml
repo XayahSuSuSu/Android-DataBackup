@@ -339,4 +339,7 @@
     <string name="option_ii">Opção 2</string>
     <string name="disabled">Desativado</string>
     <string name="language">Idioma</string>
+    <string name="download">Baixar</string>
+    <string name="changelog">Changelog</string>
+    <string name="args_update_from">Você pode atualizar da versão %1$s para a versão %2$s</string>
 </resources>
