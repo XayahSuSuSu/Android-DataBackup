@@ -27,7 +27,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import javax.security.auth.login.LoginException
-import kotlin.io.path.pathString
 
 class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra) : CloudClient {
     private var client: FTPClient? = null
@@ -251,7 +250,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
         connect()
         PickYouLauncher.apply {
             val prefix = "${context.getString(R.string.cloud)}:"
-            sTraverseBackend = { listFiles(it.pathString.replaceFirst(prefix, "")) }
+            sTraverseBackend = { listFiles(it.replaceFirst(prefix, "")) }
             sMkdirsBackend = { parent, child ->
                 runCatching { mkdirRecursively(handleOriginalPath("$parent/$child")) }.isSuccess
             }

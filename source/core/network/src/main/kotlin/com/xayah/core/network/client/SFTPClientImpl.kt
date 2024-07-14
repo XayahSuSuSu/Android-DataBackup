@@ -28,7 +28,6 @@ import net.schmizz.sshj.userauth.password.PasswordFinder
 import net.schmizz.sshj.userauth.password.Resource
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.io.path.pathString
 
 
 class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExtra) : CloudClient {
@@ -221,7 +220,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
         connect()
         PickYouLauncher.apply {
             val prefix = "${context.getString(R.string.cloud)}:"
-            sTraverseBackend = { listFiles(it.pathString.replaceFirst(prefix, ".")) }
+            sTraverseBackend = { listFiles(it.replaceFirst(prefix, ".")) }
             sMkdirsBackend = { parent, child ->
                 runCatching { mkdirRecursively(handleOriginalPath("$parent/$child")) }.isSuccess
             }

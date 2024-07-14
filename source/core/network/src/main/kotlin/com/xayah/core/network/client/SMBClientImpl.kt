@@ -42,7 +42,6 @@ import com.xayah.libpickyou.ui.model.PickerType
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import kotlin.io.path.pathString
 
 
 class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra) : CloudClient {
@@ -343,7 +342,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         connect()
         PickYouLauncher.apply {
             val prefix = "${context.getString(R.string.cloud)}:"
-            sTraverseBackend = { listFiles(it.pathString.replaceFirst(prefix, "")) }
+            sTraverseBackend = { listFiles(it.replaceFirst(prefix, "")) }
             sMkdirsBackend = { parent, child ->
                 val (_, target) = handleOriginalPath("$parent/$child")
                 runCatching { mkdirRecursively(target) }.isSuccess

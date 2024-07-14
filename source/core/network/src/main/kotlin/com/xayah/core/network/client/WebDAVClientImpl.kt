@@ -17,7 +17,6 @@ import com.xayah.libsardine.impl.OkHttpSardine
 import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.TimeUnit
-import kotlin.io.path.pathString
 
 class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     private var client: OkHttpSardine? = null
@@ -191,7 +190,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
         connect()
         PickYouLauncher.apply {
             val prefix = "${context.getString(R.string.cloud)}:"
-            sTraverseBackend = { listFiles(it.pathString.replaceFirst(prefix, "")) }
+            sTraverseBackend = { listFiles(it.replaceFirst(prefix, "")) }
             sMkdirsBackend = { parent, child ->
                 runCatching { mkdirRecursively(handleOriginalPath("$parent/$child")) }.isSuccess
             }
