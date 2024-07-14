@@ -36,4 +36,16 @@
     <string name="backup_dir">Verzeicnis für Sicherheitskopien</string>
     <string name="directory_structure">Verzeichnisstruktur</string>
     <string name="log">Logdateien</string>
+    <string name="idle">Beschäftigt</string>
+    <string name="backing_up">Sichere…</string>
+    <string name="not_exist">Existiert nicht</string>
+    <string name="time">Zeit</string>
+    <string name="save">Speichern</string>
+    <string name="copy">Kopieren</string>
+    <string name="search_bar_hint_packages">App- oder Paketname suchen…</string>
+    <string name="apk">APK</string>
+    <string name="data">Daten</string>
+    <string name="updating">Aktualisiere</string>
+    <string name="remote_service_err_info">Versuchen Sie, das Gerät neuzustarten oder installieren Sie Magisk erneut.</string>
+    <string name="selected_apks">Ausgewählte APKs</string>
 </resources>
