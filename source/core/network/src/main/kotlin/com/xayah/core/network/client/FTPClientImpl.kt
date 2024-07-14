@@ -26,11 +26,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.nio.file.Paths
 import javax.security.auth.login.LoginException
-import kotlin.io.path.Path
-import kotlin.io.path.absolute
-import kotlin.io.path.name
 import kotlin.io.path.pathString
 
 class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra) : CloudClient {
@@ -91,7 +87,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
     }
 
     override fun upload(src: String, dst: String, onUploading: (read: Long, total: Long) -> Unit) = withClient { client ->
-        val name = src.substring(src.lastIndexOf('/') + 1)
+        val name = PathUtil.getFileName(src)
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
         val srcFile = File(src)
@@ -105,7 +101,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
     }
 
     override fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit) = withClient { client ->
-        val name = src.substring(src.lastIndexOf('/') + 1)
+        val name = PathUtil.getFileName(src)
         val dstPath = "$dst/$name"
         log { "download: $src to $dstPath" }
         val dstFile = File(dstPath)
@@ -133,12 +129,10 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
     private fun listFile(src: String): FTPFile {
         var srcFile: FTPFile? = null
         withClient { client ->
-            val srcPath = Path(src)
             srcFile = client.mlistFile(src)
             if (srcFile == null) {
-                srcFile = client.listFiles(runCatching { PathUtil.getParentPath(srcPath.pathString) }.getOrElse { "." })
-                    .firstOrNull { it.name == srcPath.pathString.substring(
-                        srcPath.pathString.lastIndexOf('/') + 1) }
+                srcFile = client.listFiles(runCatching { PathUtil.getParentPath(src) }.getOrElse { "." })
+                    .firstOrNull { it.name == PathUtil.getFileName(src) }
             }
         }
         if (srcFile != null) {

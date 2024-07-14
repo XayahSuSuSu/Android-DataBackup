@@ -45,6 +45,7 @@ private class EnvInitializer : Shell.Initializer() {
                 .add("set -o pipefail") // Ensure that the exit code of each command is correct.
                 .add("alias tar=${QUOTE}busybox tar$QUOTE")
                 .add("alias awk=${QUOTE}busybox awk$QUOTE")
+                .add("alias ps=${QUOTE}busybox ps$QUOTE")
                 .exec()
         }
     }
@@ -124,14 +125,12 @@ object BaseUtil {
     }
 
     suspend fun kill(context: Context, vararg keys: String) {
-        execute("echo \$PATH", shell = getNewShell(context), timeout = -1)
-
-        // ps -A | grep -w $key1 | grep -w $key2 | ... | awk 'NF>1{print $2}' | xargs kill -9
+        // ps -A | grep -w $key1 | grep -w $key2 | ... | awk 'NF>1{print $1}' | xargs kill -9
         val keysArg = keys.map { "| grep -w $it" }.toTypedArray()
         execute(
-            "busybox ps -A",
+            "ps -A",
             *keysArg,
-            "| cut -f2 -d' '",
+            "| awk 'NF>1{print ${USD}1}'",
             "| xargs kill -9",
             shell = getNewShell(context),
             timeout = -1

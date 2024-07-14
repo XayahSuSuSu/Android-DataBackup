@@ -36,13 +36,22 @@ class PathUtil @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
     companion object {
+        /**
+         * Returns the parent path, or empty string if this path does not have a parent.
+         */
         fun getParentPath(path: String): String {
-            assert(path.contains('/') && path != "/") { "Path doesn't have any parent" }
+            if (path.contains('/').not() || path == "/") return ""
             val child = path.substring(path.lastIndexOf('/'))
-            return path.replace(child, "", false)
+            return path.replace(child, "")
         }
 
-        fun getFileName(path: String): String = path.substring(path.lastIndexOf('/') + 1)
+        /**
+         * Returns the name of the file or directory denoted by this path, or empty string if this path has zero elements.
+         */
+        fun getFileName(path: String): String {
+            if (path.isEmpty()) return ""
+            return path.substring(path.lastIndexOf('/') + 1)
+        }
 
         // Paths for processing.
         @SuppressLint("SdCardPath")

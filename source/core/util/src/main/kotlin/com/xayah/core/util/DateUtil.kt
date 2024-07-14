@@ -14,7 +14,6 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-
 object DateUtil {
     private const val SECOND_IN_MILLIS: Long = 1000
     private const val MINUTE_IN_MILLIS = SECOND_IN_MILLIS * 60
@@ -67,19 +66,19 @@ object DateUtil {
 
     fun getNumberOfDaysPassed(date1: Long, date2: Long): Long {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getNumberOfDaysPassedAPI26(date1, date2)
+            getNumberOfDaysPassedApi26(date1, date2)
         } else {
-            getNumberOfDaysPassedPRE26(date1, date2)
+            getNumberOfDaysPassedApi24(date1, date2)
         }
     }
 
-    private fun getNumberOfDaysPassedPRE26(date1: Long, date2: Long) = TimeUnit.MILLISECONDS.toDays(abs(date2 - date1))
+    private fun getNumberOfDaysPassedApi24(date1: Long, date2: Long) = TimeUnit.MILLISECONDS.toDays(abs(date2 - date1))
 
     /**
      * @see <a href="https://github.com/ArrowOS/android_packages_apps_Messaging/blob/6e561f4b715764f292ae8d774af6a090578e83d8/src/com/android/messaging/util/Dates.java#L271">packages/apps/Messaging/src/com/android/messaging/util/Dates.java</a>
      */
     @TargetApi(Build.VERSION_CODES.O)
-    private fun getNumberOfDaysPassedAPI26(date1: Long, date2: Long): Long {
+    private fun getNumberOfDaysPassedApi26(date1: Long, date2: Long): Long {
         val dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(date1), ZoneId.systemDefault())
         val dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(date2), ZoneId.systemDefault())
         return abs(ChronoUnit.DAYS.between(dateTime2, dateTime1))

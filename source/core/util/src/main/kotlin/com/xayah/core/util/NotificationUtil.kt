@@ -1,7 +1,6 @@
 package com.xayah.core.util
 
 import android.Manifest
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -75,13 +74,8 @@ object NotificationUtil {
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
-
-            Notification.Builder(context, ForegroundServiceChannelId)
-                .setContentIntent(pendingIntent).build()
-        } else {
-            @Suppress("DEPRECATION")
-            Notification.Builder(context).setContentIntent(pendingIntent).build()
         }
+        NotificationCompat.Builder(context, ForegroundServiceChannelId).setContentIntent(pendingIntent).build()
     }
 
     fun getProgressNotificationBuilder(context: Context) =

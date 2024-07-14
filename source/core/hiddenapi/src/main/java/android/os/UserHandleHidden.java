@@ -10,4 +10,8 @@ public class UserHandleHidden {
     public static UserHandle of(int userId) {
         throw new RuntimeException("Stub!");
     }
+
+    public int getIdentifier() {
+        throw new RuntimeException("Stub!");
+    }
 }

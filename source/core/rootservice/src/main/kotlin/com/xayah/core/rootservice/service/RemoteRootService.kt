@@ -124,6 +124,11 @@ class RemoteRootService(private val context: Context) {
                         val msg = "Service is null, trying to bind: $retries."
                         log { msg }
                         bindService()
+                    } else if (mService!!.asBinder().isBinderAlive.not()) {
+                        mService = null
+                        val msg = "Service is dead, trying to bind: $retries."
+                        log { msg }
+                        bindService()
                     } else {
                         mService!!
                     }
