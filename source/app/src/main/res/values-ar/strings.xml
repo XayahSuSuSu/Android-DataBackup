@@ -163,4 +163,16 @@
     <string name="media_target_path_missing">الملف المستهدف مفقود. الرجاء اختياره يدويا</string>
     <string name="media_set_path">اختيار مسار</string>
     <string name="not_installed">ليس مثبت</string>
+    <string name="abi_validation">التحقق من ما إذا كانت بنية التطبيق مدعومة لدى الجهاز</string>
+    <string name="this_version_only_supports_but_your_device_is_please_install_version">هذا الاصدار يدعم فقط اصدار %1$s لكن جهازك لديه الاصدار %2$s ، يرجى تثبيت الاصدار %3$s او احدث.</string>
+    <string name="account">الحساب</string>
+    <string name="public_key">المفتاح العام</string>
+    <string name="private_key">المفتاح الخاص</string>
+    <string name="restore_user_desc">اي مستخدم تود استعادة البيانات إليه ؟</string>
+    <string name="create_account">انشاء حساب</string>
+    <string name="name">الاسم</string>
+    <string name="url">الرابط</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="password">كلمة المرور</string>
+    <string name="port">البورت ( مثال: 8888)</string>
 </resources>
