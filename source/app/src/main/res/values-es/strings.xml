@@ -333,4 +333,13 @@
     <string name="sftp_setup">Configuración de SFTP</string>
     <string name="public_key">Llave pública</string>
     <string name="private_key">Llave privada</string>
+    <string name="option_ii">Opción dos</string>
+    <string name="option_i">Opción uno</string>
+    <string name="language">Idioma</string>
+    <string name="download">Descargar</string>
+    <string name="changelog">Registro de cambios</string>
+    <string name="kill_app_options">Opciones de eliminación de aplicaciones</string>
+    <string name="disabled">Desactivada</string>
+    <string name="args_update_from">Puede actualizar de la versión %1$s a la versión %2$s</string>
+    <string name="kill_app_options_desc">Comportamiento antes de la copia de seguridad</string>
 </resources>
