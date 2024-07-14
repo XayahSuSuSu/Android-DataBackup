@@ -1,5 +1,6 @@
 package com.xayah.core.model.util
 
+import android.os.Build
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.KillAppOption
 import com.xayah.core.model.LZ4_SUFFIX
@@ -53,7 +54,7 @@ fun SelectionType.Companion.of(name: String?): SelectionType =
     runCatching { SelectionType.valueOf(name!!.uppercase()) }.getOrDefault(SelectionType.DEFAULT)
 
 fun ThemeType.Companion.of(name: String?): ThemeType =
-    runCatching { ThemeType.valueOf(name!!.uppercase()) }.getOrDefault(ThemeType.AUTO)
+    runCatching { ThemeType.valueOf(name!!.uppercase()) }.getOrDefault(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) ThemeType.AUTO else ThemeType.LIGHT_THEME)
 
 fun SmbAuthMode.Companion.indexOf(index: Int): SmbAuthMode = when (index) {
     1 -> SmbAuthMode.GUEST
