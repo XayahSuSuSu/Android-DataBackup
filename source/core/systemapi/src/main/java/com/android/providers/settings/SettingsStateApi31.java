@@ -16,6 +16,7 @@
 
 package com.android.providers.settings;
 
+import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.FileUtils;
 import android.os.Handler;
@@ -66,6 +67,7 @@ import libcore.io.IoUtils;
  * the same lock to grab the current state to write to disk.
  * </p>
  */
+@TargetApi(Build.VERSION_CODES.S)
 public class SettingsStateApi31 implements SettingsState {
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_PERSISTENCE = false;
