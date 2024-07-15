@@ -27,7 +27,10 @@ class MainActivity : AppCompatActivity() {
         setContent {
             DataBackupTheme {
                 val navController = rememberNavController()
-                CompositionLocalProvider(LocalNavController provides navController) {
+                CompositionLocalProvider(
+                    LocalNavController provides navController,
+                    androidx.lifecycle.compose.LocalLifecycleOwner provides androidx.compose.ui.platform.LocalLifecycleOwner.current,
+                ) {
                     SetupGraph()
                 }
             }

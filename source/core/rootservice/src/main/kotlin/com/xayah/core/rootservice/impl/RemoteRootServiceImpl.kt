@@ -311,16 +311,16 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         // https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/base/core/java/android/app/usage/StorageStats.java;l=31
         val userDir = "${PathUtil.getPackageUserDir(userHandle.identifier)}/${packageInfo.packageName}"
         val userCacheDir = "$userDir/cache"
-        val userCodeCacheDir = "$userDir}/code_cache"
+        val userCodeCacheDir = "$userDir/code_cache"
         val dataDir = "${PathUtil.getPackageDataDir(userHandle.identifier)}/${packageInfo.packageName}"
         val dataCacheDir = "$dataDir/cache"
-        val dataCodeCacheDir = "$dataDir}/code_cache"
+        val dataCodeCacheDir = "$dataDir/code_cache"
         val obbDir = "${PathUtil.getPackageObbDir(userHandle.identifier)}/${packageInfo.packageName}"
         val obbCacheDir = "$obbDir/cache"
-        val obbCodeCacheDir = "$obbDir}/code_cache"
+        val obbCodeCacheDir = "$obbDir/code_cache"
         val mediaDir = "${PathUtil.getPackageMediaDir(userHandle.identifier)}/${packageInfo.packageName}"
         val mediaCacheDir = "$mediaDir/cache"
-        val mediaCodeCacheDir = "$mediaDir}/code_cache"
+        val mediaCodeCacheDir = "$mediaDir/code_cache"
 
         val cacheDirSize = FileUtil.calculateSize(userCacheDir) + FileUtil.calculateSize(userCodeCacheDir) +
                 FileUtil.calculateSize(dataCacheDir) + FileUtil.calculateSize(dataCodeCacheDir) +
@@ -343,7 +343,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
             stats.appBytes,
             stats.cacheBytes,
             stats.dataBytes,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { stats.externalCacheBytes } else { 0 },
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) stats.externalCacheBytes else 0,
         )
     }
 

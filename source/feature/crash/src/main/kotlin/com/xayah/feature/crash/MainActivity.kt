@@ -14,6 +14,7 @@ import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,39 +47,44 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             DataBackupTheme {
-                val viewModel = hiltViewModel<IndexViewModel>()
-                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                CompositionLocalProvider(
+                    androidx.lifecycle.compose.LocalLifecycleOwner provides androidx.compose.ui.platform.LocalLifecycleOwner.current,
+                ) {
 
-                LaunchedEffect(null) {
-                    viewModel.emitState(uiState.copy(text = crashInfo))
-                }
+                    val viewModel = hiltViewModel<IndexViewModel>()
+                    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-                Scaffold { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .paddingHorizontal(PaddingTokens.Level4)
-                            .verticalScroll(rememberScrollState()),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
-                    ) {
-                        InnerTopSpacer(innerPadding = innerPadding)
+                    LaunchedEffect(null) {
+                        viewModel.emitState(uiState.copy(text = crashInfo))
+                    }
 
-                        // TopBar
-                        Icon(
-                            imageVector = Icons.Rounded.Warning,
-                            contentDescription = null,
-                            tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    Scaffold { innerPadding ->
+                        Column(
                             modifier = Modifier
-                                .size(PaddingTokens.Level7)
-                                .paddingBottom(PaddingTokens.Level2)
-                        )
-                        TopBarTitle(text = stringResource(id = R.string.app_crashed))
+                                .fillMaxWidth()
+                                .paddingHorizontal(PaddingTokens.Level4)
+                                .verticalScroll(rememberScrollState()),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(PaddingTokens.Level4)
+                        ) {
+                            InnerTopSpacer(innerPadding = innerPadding)
 
-                        // Content
-                        LabelSmallText(text = uiState.text, fontFamily = JetbrainsMonoFamily)
+                            // TopBar
+                            Icon(
+                                imageVector = Icons.Rounded.Warning,
+                                contentDescription = null,
+                                tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                                modifier = Modifier
+                                    .size(PaddingTokens.Level7)
+                                    .paddingBottom(PaddingTokens.Level2)
+                            )
+                            TopBarTitle(text = stringResource(id = R.string.app_crashed))
 
-                        InnerBottomSpacer(innerPadding = innerPadding)
+                            // Content
+                            LabelSmallText(text = uiState.text, fontFamily = JetbrainsMonoFamily)
+
+                            InnerBottomSpacer(innerPadding = innerPadding)
+                        }
                     }
                 }
             }
