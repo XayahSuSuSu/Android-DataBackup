@@ -216,4 +216,22 @@
     <string name="info_set_remote_or_local">برجاء تحديد مسار الاتصال عن بعد او المسار المحلي</string>
     <string name="unmount_all">إلغاء تركيب الجميع</string>
     <string name="edit">تعديل</string>
+    <string name="root_permission_desc">نسخ واستعاده بيانات التطبيق</string>
+    <string name="abi_validation_desc">تحقق اذا جهازك مدعوم</string>
+    <string name="notification_permission">صلاحية الاشعارات</string>
+    <string name="finish">انتهاء</string>
+    <string name="select_apps">اختيار التطبيقات</string>
+    <string name="pull_down_to_refresh">اسحب للاسف للتحديث</string>
+    <string name="select_all">اختيار الكل</string>
+    <string name="sort">فرز</string>
+    <string name="advanced">متقدم</string>
+    <string name="never">ابدا</string>
+    <string name="backup_contacts">نسخ جهات الاتصال</string>
+    <string name="backup_messages">نسخ الرسائل النصيه</string>
+    <string name="backup_files">نسخ احتياطي للملفات</string>
+    <string name="not_enabled">غير مفعل</string>
+    <string name="enabled">مفعل</string>
+    <string name="save_icons">حفظ الايقونات</string>
+    <string name="apps">التطبيقات</string>
+    <string name="backed_up_apps">نسخ احتياطي للتطبيقات</string>
 </resources>
