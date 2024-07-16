@@ -1,5 +1,7 @@
 package com.xayah.core.ui.component
 
+import android.graphics.drawable.Drawable
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,7 +37,8 @@ fun PackageIconImage(enabled: Boolean = true, packageName: String, size: Dp = Si
     val context = LocalContext.current
     val icon = rememberDrawablePainter(drawable = runBlocking {
         BaseUtil.readIconFromPackageName(context, packageName) ?:
-        BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageName)}")
+        BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageName)}") ?:
+        AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
     } )
 
     Image(
