@@ -191,22 +191,23 @@ fun PagePackagesRestoreList() {
                                 onClick = {}
                             )
 
-                            MultipleSelectionFilterChip(
-                                enabled = true,
-                                dismissOnSelected = true,
-                                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
-                                label = StringResourceToken.fromStringId(R.string.user),
-                                selectedIndexList = userIdIndexListState,
-                                list = userIdListState.map { it.toString() },
-                                onSelected = { indexList ->
-                                    if (indexList.isNotEmpty()) {
-                                        viewModel.emitIntentOnIO(IndexUiIntent.SetUserIdIndexList(indexList))
+                            if (userIdListState.size > 1)
+                                MultipleSelectionFilterChip(
+                                    enabled = true,
+                                    dismissOnSelected = true,
+                                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
+                                    label = StringResourceToken.fromStringId(R.string.user),
+                                    selectedIndexList = userIdIndexListState,
+                                    list = userIdListState.map { it.toString() },
+                                    onSelected = { indexList ->
+                                        if (indexList.isNotEmpty()) {
+                                            viewModel.emitIntentOnIO(IndexUiIntent.SetUserIdIndexList(indexList))
+                                        }
+                                    },
+                                    onClick = {
+                                        viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
                                     }
-                                },
-                                onClick = {
-                                    viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
-                                }
-                            )
+                                )
 
                             FilterChip(
                                 enabled = true,
