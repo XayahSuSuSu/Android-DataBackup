@@ -34,7 +34,7 @@
     <string name="version">Versiune</string>
     <string name="feature">Funcție</string>
     <string name="architecture">Arhitectură</string>
-    <string name="monet">Monet</string>
+    <string name="monet">Temă monet</string>
     <string name="monet_desc">Generați culori din fundal</string>
     <string name="premium_for_this_feature">Vă rugăm să descărcați versiunea premium pentru această funcție</string>
     <string name="keep_screen_on">Tine ecranul aprins</string>
@@ -88,4 +88,17 @@
     <string name="wait_for_remaining_data_processing">Procesare date rămase…</string>
     <string name="keep_screen_on_desc">Țineți dispozitivul aprins în timpul procesării</string>
     <string name="compression_type_desc">Afectează atât backup-ul, cât și restaurarea. Ar trebui schimbat doar de utilizatori avansați.</string>
+    <string name="prompt">Semn</string>
+    <string name="restore_user">Restaurați utilizatorul</string>
+    <string name="restore_user_desc">Cărui utilizator doriți să restabiliți?</string>
+    <string name="restore_completed">Restaurare completă</string>
+    <string name="backup">Back-up</string>
+    <string name="backup_itself">Backup în sine</string>
+    <string name="backup_itself_desc">Copiați APK-ul în folderul de backup după efectuarea backup-ului</string>
+    <string name="compression_test">Test de compresie</string>
+    <string name="reset_backup_list">Resetați lista backup-ului</string>
+    <string name="reset_backup_list_desc">Deselectați selecțiile după efectuarea backup-ului</string>
+    <string name="compression_test_desc">Verificați dacă arhivele comprimate funcționează după creare</string>
+    <string name="reset_restore_list">Resetați lista de restaurare</string>
+    <string name="reset_restore_list_desc">Deselectați selecțiile după restaurare</string>
 </resources>
