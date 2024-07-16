@@ -91,6 +91,7 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
+import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.packages.DotLottieView
 import com.xayah.feature.main.packages.ListScaffold
 import com.xayah.feature.main.packages.R
@@ -263,7 +264,7 @@ fun PagePackagesBackupList() {
                 FloatingActionButton(
                     modifier = Modifier.onSizeChanged { fabHeight = it.height * 1.5f },
                     onClick = {
-                        navController.navigate(MainRoutes.PackagesBackupProcessingGraph.route)
+                        navController.navigateSingle(MainRoutes.PackagesBackupProcessingGraph.route)
                     },
                 ) {
                     Icon(Icons.Filled.ChevronRight, null)

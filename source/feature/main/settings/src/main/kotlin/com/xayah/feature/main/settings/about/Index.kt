@@ -58,6 +58,7 @@ import com.xayah.core.ui.util.fromStringArgs
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
+import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.settings.ContributorCard
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
@@ -178,7 +179,7 @@ fun PageAboutSettings() {
                     title = StringResourceToken.fromStringId(R.string.translators),
                     value = StringResourceToken.fromStringId(R.string.translators_desc),
                 ) {
-                    navController.navigate(MainRoutes.Translators.route)
+                    navController.navigateSingle(MainRoutes.Translators.route)
                 }
             }
 

@@ -23,6 +23,7 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.icon
 import com.xayah.core.util.encodeURL
+import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.cloud.CloudScaffold
 import com.xayah.feature.main.cloud.R
 
@@ -50,25 +51,25 @@ fun PageCloudAddAccount() {
                     icon = CloudType.FTP.icon,
                     title = StringResourceToken.fromString(CloudType.FTP.title),
                 ) {
-                    navController.navigate(MainRoutes.FTPSetup.getRoute(" ".encodeURL()))
+                    navController.navigateSingle(MainRoutes.FTPSetup.getRoute(" ".encodeURL()))
                 }
                 Clickable(
                     icon = CloudType.WEBDAV.icon,
                     title = StringResourceToken.fromString(CloudType.WEBDAV.title),
                 ) {
-                    navController.navigate(MainRoutes.WebDAVSetup.getRoute(" ".encodeURL()))
+                    navController.navigateSingle(MainRoutes.WebDAVSetup.getRoute(" ".encodeURL()))
                 }
                 Clickable(
                     icon = CloudType.SMB.icon,
                     title = StringResourceToken.fromString(CloudType.SMB.title),
                 ) {
-                    navController.navigate(MainRoutes.SMBSetup.getRoute(" ".encodeURL()))
+                    navController.navigateSingle(MainRoutes.SMBSetup.getRoute(" ".encodeURL()))
                 }
                 Clickable(
                     icon = CloudType.SFTP.icon,
                     title = StringResourceToken.fromString(CloudType.SFTP.title),
                 ) {
-                    navController.navigate(MainRoutes.SFTPSetup.getRoute(" ".encodeURL()))
+                    navController.navigateSingle(MainRoutes.SFTPSetup.getRoute(" ".encodeURL()))
                 }
             }
         }

@@ -54,6 +54,7 @@ import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.getValue
 import com.xayah.core.ui.util.icon
+import com.xayah.core.util.navigateSingle
 
 @SuppressLint("StringFormatInvalid")
 @ExperimentalFoundationApi
@@ -127,7 +128,7 @@ fun PageRestore() {
                         leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel_circle),
                         trailingIcon = ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight),
                     ) {
-                        navController.navigate(MainRoutes.Cloud.route)
+                        navController.navigateSingle(MainRoutes.Cloud.route)
                     }
                 } else {
                     val dialogState = LocalSlotScope.current!!.dialogSlot

@@ -36,6 +36,7 @@ import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.value
+import com.xayah.core.util.navigateSingle
 import com.xayah.feature.setup.PermissionButton
 import com.xayah.feature.setup.R
 import com.xayah.feature.setup.SetupRoutes
@@ -76,7 +77,7 @@ fun PageOne() {
                     Text(text = StringResourceToken.fromStringId(R.string.grant_all).value)
                 }
             }
-            Button(enabled = allRequiredValidated, onClick = { navController.navigate(SetupRoutes.Two.route) }) {
+            Button(enabled = allRequiredValidated, onClick = { navController.navigateSingle(SetupRoutes.Two.route) }) {
                 Text(text = StringResourceToken.fromStringId(R.string._continue).value)
             }
         }

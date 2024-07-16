@@ -37,6 +37,7 @@ import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.decodeURL
 import com.xayah.core.util.localBackupSaveDir
+import com.xayah.core.util.maybePopBackAndNavigateSingle
 import com.xayah.feature.main.packages.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -131,8 +132,7 @@ class IndexViewModel @Inject constructor(
                             client.testConnection()
                             emitEffect(IndexUiEffect.DismissSnackbar)
                             withMainContext {
-                                intent.navController.popBackStack()
-                                intent.navController.navigate(MainRoutes.PackagesRestoreProcessing.route)
+                                intent.navController.maybePopBackAndNavigateSingle(MainRoutes.PackagesRestoreProcessing.route)
                             }
                         }
                     }.onFailure {
@@ -143,8 +143,7 @@ class IndexViewModel @Inject constructor(
                     emitState(state.copy(isTesting = false))
                 } else {
                     withMainContext {
-                        intent.navController.popBackStack()
-                        intent.navController.navigate(MainRoutes.PackagesRestoreProcessing.route)
+                        intent.navController.maybePopBackAndNavigateSingle(MainRoutes.PackagesRestoreProcessing.route)
                     }
                 }
             }

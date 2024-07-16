@@ -28,6 +28,7 @@ import com.xayah.core.ui.model.TopBarState
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.value
+import com.xayah.core.util.maybePopBackStack
 
 @ExperimentalMaterial3Api
 @Composable
@@ -73,7 +74,7 @@ fun SecondaryTopBar(
         navigationIcon = {
             ArrowBackButton {
                 if (onBackClick != null) onBackClick.invoke()
-                else navController.popBackStack()
+                else navController.maybePopBackStack()
             }
         },
         actions = actions,
@@ -95,7 +96,7 @@ fun SecondaryMediumTopBar(
         navigationIcon = {
             ArrowBackButton {
                 if (onBackClick != null) onBackClick.invoke()
-                else navController.popBackStack()
+                else navController.maybePopBackStack()
             }
         },
         actions = actions,
@@ -117,7 +118,7 @@ fun SecondaryLargeTopBar(
         navigationIcon = {
             ArrowBackButton {
                 if (onBackClick != null) onBackClick.invoke()
-                else navController.popBackStack()
+                else navController.maybePopBackStack()
             }
         },
         actions = actions,

@@ -42,6 +42,7 @@ import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.icon
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.encodeURL
+import com.xayah.core.util.navigateSingle
 
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
@@ -90,7 +91,7 @@ fun PageCloud() {
                                 icon = ImageVectorToken.fromVector(Icons.Outlined.Settings),
                                 tint = ColorSchemeKeyTokens.Primary.toColor(),
                                 onClick = {
-                                    navController.navigate(
+                                    navController.navigateSingle(
                                         when (it.type) {
                                             CloudType.FTP -> MainRoutes.FTPSetup.getRoute(it.name.encodeURL())
                                             CloudType.WEBDAV -> MainRoutes.WebDAVSetup.getRoute(it.name.encodeURL())
@@ -111,7 +112,7 @@ fun PageCloud() {
                     icon = ImageVectorToken.fromVector(Icons.Rounded.Add),
                     title = StringResourceToken.fromStringId(R.string.add_account),
                 ) {
-                    navController.navigate(MainRoutes.CloudAddAccount.route)
+                    navController.navigateSingle(MainRoutes.CloudAddAccount.route)
                 }
             }
         }

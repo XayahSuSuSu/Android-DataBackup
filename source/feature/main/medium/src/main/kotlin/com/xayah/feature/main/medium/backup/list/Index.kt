@@ -68,6 +68,7 @@ import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
+import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.medium.ListScaffold
 import com.xayah.feature.main.medium.R
 import kotlinx.coroutines.launch
@@ -127,7 +128,7 @@ fun PageMediumBackupList() {
                 FloatingActionButton(
                     modifier = Modifier.onSizeChanged { fabHeight = it.height * 1.5f },
                     onClick = {
-                        navController.navigate(MainRoutes.MediumBackupProcessingGraph.route)
+                        navController.navigateSingle(MainRoutes.MediumBackupProcessingGraph.route)
                     },
                 ) {
                     Icon(Icons.Filled.ChevronRight, null)

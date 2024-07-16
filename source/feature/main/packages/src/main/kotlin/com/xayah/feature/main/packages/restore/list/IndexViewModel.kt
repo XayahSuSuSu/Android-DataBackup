@@ -23,6 +23,7 @@ import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.decodeURL
 import com.xayah.core.util.encodeURL
 import com.xayah.core.util.module.combine
+import com.xayah.core.util.navigateSingle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -141,13 +142,13 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.ToPageDetail -> {
                 val entity = intent.packageEntity
                 withMainContext {
-                    intent.navController.navigate(MainRoutes.PackagesRestoreDetail.getRoute(entity.packageName.encodeURL(), entity.userId, entity.preserveId))
+                    intent.navController.navigateSingle(MainRoutes.PackagesRestoreDetail.getRoute(entity.packageName.encodeURL(), entity.userId, entity.preserveId))
                 }
             }
 
             is IndexUiIntent.ToPageSetup -> {
                 withMainContext {
-                    intent.navController.navigate(
+                    intent.navController.navigateSingle(
                         MainRoutes.PackagesRestoreProcessingGraph.getRoute(
                             state.cloudName.ifEmpty { " " }.encodeURL(),
                             state.cloudRemote.encodeURL()

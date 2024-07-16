@@ -37,6 +37,7 @@ import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.DateUtil
+import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.medium.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -131,7 +132,7 @@ class IndexViewModel @Inject constructor(
                         emitEffect(IndexUiEffect.DismissSnackbar)
                         withMainContext {
                             intent.navController.popBackStack()
-                            intent.navController.navigate(MainRoutes.MediumBackupProcessing.route)
+                            intent.navController.navigateSingle(MainRoutes.MediumBackupProcessing.route)
                         }
                     }.onFailure {
                         emitEffect(IndexUiEffect.DismissSnackbar)
@@ -142,7 +143,7 @@ class IndexViewModel @Inject constructor(
                 } else {
                     withMainContext {
                         intent.navController.popBackStack()
-                        intent.navController.navigate(MainRoutes.MediumBackupProcessing.route)
+                        intent.navController.navigateSingle(MainRoutes.MediumBackupProcessing.route)
                     }
                 }
             }

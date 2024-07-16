@@ -13,6 +13,9 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:model"))
 
+    // Compose Navigation
+    implementation(libs.androidx.navigation.compose)
+
     // Gson
     implementation(libs.gson)
 

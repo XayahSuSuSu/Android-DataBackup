@@ -39,6 +39,7 @@ import com.xayah.core.ui.util.fromVector
 import com.xayah.core.util.LanguageUtil
 import com.xayah.core.util.LanguageUtil.toLocale
 import com.xayah.core.util.getActivity
+import com.xayah.core.util.navigateSingle
 import kotlinx.coroutines.flow.map
 import com.xayah.feature.setup.MainActivity as SetupActivity
 
@@ -69,13 +70,13 @@ fun PageSettings() {
                     icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
                     title = StringResourceToken.fromStringId(R.string.backup_settings),
                 ) {
-                    navController.navigate(MainRoutes.BackupSettings.route)
+                    navController.navigateSingle(MainRoutes.BackupSettings.route)
                 }
                 Clickable(
                     icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
                     title = StringResourceToken.fromStringId(R.string.restore_settings),
                 ) {
-                    navController.navigate(MainRoutes.RestoreSettings.route)
+                    navController.navigateSingle(MainRoutes.RestoreSettings.route)
                 }
                 Clickable(
                     title = StringResourceToken.fromStringId(R.string.setup),
@@ -100,7 +101,7 @@ fun PageSettings() {
                     title = StringResourceToken.fromStringId(R.string.language),
                     value = StringResourceToken.fromString(locale.getDisplayName(locale))
                 ) {
-                    navController.navigate(MainRoutes.LanguageSettings.route)
+                    navController.navigateSingle(MainRoutes.LanguageSettings.route)
                 }
             }
             Title(title = StringResourceToken.fromStringId(R.string.manage_backups)) {
@@ -109,14 +110,14 @@ fun PageSettings() {
                     title = StringResourceToken.fromStringId(R.string.blacklist),
                     value = StringResourceToken.fromStringId(R.string.blacklist_desc),
                 ) {
-                    navController.navigate(MainRoutes.BlackList.route)
+                    navController.navigateSingle(MainRoutes.BlackList.route)
                 }
                 Clickable(
                     icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
                     title = StringResourceToken.fromStringId(R.string.backup_dir),
                     value = if (directoryState != null) StringResourceToken.fromString(directoryState!!.title) else null,
                 ) {
-                    navController.navigate(MainRoutes.Directory.route)
+                    navController.navigateSingle(MainRoutes.Directory.route)
                 }
             }
             Title(title = StringResourceToken.fromStringId(R.string.advanced)) {
@@ -130,13 +131,13 @@ fun PageSettings() {
                     title = StringResourceToken.fromStringId(R.string.configurations),
                     value = StringResourceToken.fromStringId(R.string.configurations_desc),
                 ) {
-                    navController.navigate(MainRoutes.Configurations.route)
+                    navController.navigateSingle(MainRoutes.Configurations.route)
                 }
                 Clickable(
                     title = StringResourceToken.fromStringId(R.string.about),
                     value = StringResourceToken.fromStringId(R.string.about_app),
                 ) {
-                    navController.navigate(MainRoutes.About.route)
+                    navController.navigateSingle(MainRoutes.About.route)
                 }
             }
             InnerBottomSpacer(innerPadding = it)
