@@ -250,7 +250,7 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
             ) {
-                PackageIconImage(packageName = item.packageName, label = "${item.packageInfo.label.firstOrNull() ?: ""}", size = SizeTokens.Level32)
+                PackageIconImage(packageName = item.packageName, size = SizeTokens.Level32)
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level4)) {
                         RoundChip {
@@ -281,93 +281,91 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                 )
                 CheckIconButton(checked = checked ?: item.extraInfo.activated, onCheckedChange = onCheckedChange)
             }
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .paddingStart(SizeTokens.Level64)
+                    .paddingEnd(SizeTokens.Level64)
+                    .paddingBottom(SizeTokens.Level16),
+                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8),
+                content = {
+                    val ssaid = item.extraInfo.ssaid
+                    val hasKeystore = item.extraInfo.hasKeystore
+                    val storageStatsFormat = when (item.indexInfo.opType) {
+                        OpType.BACKUP -> item.storageStatsBytes
+                        OpType.RESTORE -> item.displayStatsBytes
+                    }
 
-            AnimatedVisibility(visible = filterMode, enter = fadeIn() + slideInVertically(), exit = slideOutVertically() + fadeOut()) {
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .paddingStart(SizeTokens.Level64)
-                        .paddingBottom(SizeTokens.Level16),
-                    horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
-                    verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8),
-                    content = {
-                        val ssaid = item.extraInfo.ssaid
-                        val hasKeystore = item.extraInfo.hasKeystore
-                        val storageStatsFormat = when (item.indexInfo.opType) {
-                            OpType.BACKUP -> item.storageStatsBytes
-                            OpType.RESTORE -> item.displayStatsBytes
-                        }
-
-                        if (item.apkSelected) {
-                            AssistChip(
-                                enabled = true,
-                                label = StringResourceToken.fromStringId(R.string.apk),
-                                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_android),
-                                trailingIcon = null,
-                                color = ColorSchemeKeyTokens.RedPrimary,
-                                containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
-                                border = null,
-                            )
-                        }
-
-                        if (item.userSelected || item.userDeSelected || item.dataSelected || item.obbSelected || item.mediaSelected) {
-                            AssistChip(
-                                enabled = true,
-                                label = StringResourceToken.StringArgsToken(
-                                    StringResourceToken.fromStringId(R.string.data),
-                                    StringResourceToken.fromString("(${item.dataSelectedCount})"),
-                                ),
-                                leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_database),
-                                trailingIcon = null,
-                                color = ColorSchemeKeyTokens.RedPrimary,
-                                containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
-                                border = null,
-                            )
-                        }
-
-                        if (item.preserveId != 0L) {
-                            AssistChip(
-                                enabled = true,
-                                label = StringResourceToken.fromStringId(R.string._protected),
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
-                                trailingIcon = null,
-                                color = ColorSchemeKeyTokens.YellowPrimary,
-                                containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
-                                border = null,
-                            )
-                        }
-                        if (storageStatsFormat != (0).toDouble()) {
-                            AssistChip(
-                                enabled = true,
-                                label = StringResourceToken.fromString(storageStatsFormat.formatSize()),
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Folder),
-                                trailingIcon = null,
-                                color = ColorSchemeKeyTokens.Primary,
-                                containerColor = ColorSchemeKeyTokens.PrimaryContainer,
-                                border = null,
-                            )
-                        }
-                        if (ssaid.isNotEmpty()) AssistChip(
+                    if (item.apkSelected) {
+                        AssistChip(
                             enabled = true,
-                            label = StringResourceToken.fromStringId(R.string.ssaid),
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Pin),
+                            label = StringResourceToken.fromStringId(R.string.apk),
+                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_android),
                             trailingIcon = null,
-                            color = ColorSchemeKeyTokens.Primary,
-                            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                            color = ColorSchemeKeyTokens.RedPrimary,
+                            containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
                             border = null,
                         )
-                        if (hasKeystore) AssistChip(
+                    }
+
+                    if (item.userSelected || item.userDeSelected || item.dataSelected || item.obbSelected || item.mediaSelected) {
+                        AssistChip(
                             enabled = true,
-                            label = StringResourceToken.fromStringId(R.string.keystore),
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Key),
+                            label = StringResourceToken.StringArgsToken(
+                                StringResourceToken.fromStringId(R.string.data),
+                                StringResourceToken.fromString("(${item.dataSelectedCount})"),
+                            ),
+                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_database),
+                            trailingIcon = null,
+                            color = ColorSchemeKeyTokens.RedPrimary,
+                            containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
+                            border = null,
+                        )
+                    }
+
+                    if (item.preserveId != 0L) {
+                        AssistChip(
+                            enabled = true,
+                            label = StringResourceToken.fromStringId(R.string._protected),
+                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
+                            trailingIcon = null,
+                            color = ColorSchemeKeyTokens.YellowPrimary,
+                            containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
+                            border = null,
+                        )
+                    }
+                    if (storageStatsFormat != (0).toDouble()) {
+                        AssistChip(
+                            enabled = true,
+                            label = StringResourceToken.fromString(storageStatsFormat.formatSize()),
+                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Folder),
                             trailingIcon = null,
                             color = ColorSchemeKeyTokens.Primary,
                             containerColor = ColorSchemeKeyTokens.PrimaryContainer,
                             border = null,
                         )
                     }
-                )
-            }
+                    if (ssaid.isNotEmpty()) AssistChip(
+                        enabled = true,
+                        label = StringResourceToken.fromStringId(R.string.ssaid),
+                        leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Pin),
+                        trailingIcon = null,
+                        color = ColorSchemeKeyTokens.Primary,
+                        containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                        border = null,
+                    )
+                    if (hasKeystore) AssistChip(
+                        enabled = true,
+                        label = StringResourceToken.fromStringId(R.string.keystore),
+                        leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Key),
+                        trailingIcon = null,
+                        color = ColorSchemeKeyTokens.Primary,
+                        containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                        border = null,
+                    )
+                }
+            )
         }
     }
 }

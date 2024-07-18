@@ -166,6 +166,8 @@ object BaseUtil {
         }
     }
 
+    fun readIconFromPackageName(context: Context, pkgName: String): Drawable? = runCatching { context.packageManager.getApplicationIcon(pkgName) }.getOrNull()
+
     suspend fun readIcon(context: Context, src: String): Drawable? = withIOContext {
         runCatching {
             val bytes = File(src).readBytes()

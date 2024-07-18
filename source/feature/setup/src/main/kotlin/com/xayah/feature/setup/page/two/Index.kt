@@ -33,6 +33,7 @@ import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.getActivity
+import com.xayah.core.util.navigateSingle
 import com.xayah.feature.setup.R
 import com.xayah.feature.setup.SetupRoutes
 import com.xayah.feature.setup.SetupScaffold
@@ -89,7 +90,7 @@ fun PageTwo() {
                 value = StringResourceToken.fromString(if (backupSavePathSaved) backupSavePath else context.getString(R.string.not_selected)),
                 desc = if (backupSavePathSaved) null else StringResourceToken.fromStringId(R.string.setup_backup_dir_desc),
             ) {
-                navController.navigate(SetupRoutes.Directory.route)
+                navController.navigateSingle(SetupRoutes.Directory.route)
             }
             Title(title = StringResourceToken.fromStringId(R.string.optional)) {
                 AnimatedVisibility(visible = backupSavePathSaved) {
@@ -97,7 +98,7 @@ fun PageTwo() {
                         title = StringResourceToken.fromStringId(R.string.configurations),
                         value = StringResourceToken.fromStringId(R.string.configurations_desc),
                     ) {
-                        navController.navigate(SetupRoutes.Configurations.route)
+                        navController.navigateSingle(SetupRoutes.Configurations.route)
                     }
                 }
                 Switchable(

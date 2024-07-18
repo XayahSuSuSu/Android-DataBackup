@@ -210,7 +210,7 @@ fun ProcessingCard(
                         )
 
                         if (packageName != null)
-                            PackageIconImage(packageName = packageName, label = title.value, size = SizeTokens.Level24)
+                            PackageIconImage(packageName = packageName, size = SizeTokens.Level24)
 
                         actions()
                         if (totalCount != 0) {

@@ -44,6 +44,7 @@ import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.fromDrawable
 import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.fromVector
+import com.xayah.core.util.navigateSingle
 import kotlinx.coroutines.launch
 
 @SuppressLint("StringFormatInvalid")
@@ -105,7 +106,7 @@ fun PageDashboard() {
                 enabled = nullBackupDir.not(),
                 icon = ImageVectorToken.fromVector(Icons.Outlined.Settings),
                 onClick = {
-                    navController.navigate(MainRoutes.Settings.route)
+                    navController.navigateSingle(MainRoutes.Settings.route)
                 }
             )
         }
@@ -119,7 +120,7 @@ fun PageDashboard() {
             Section(title = StringResourceToken.fromStringId(R.string.overlook)) {
                 OverviewLastBackupCard(nullBackupDir = nullBackupDir, lastBackupTime = lastBackupTime) {
                     if (nullBackupDir)
-                        navController.navigate(MainRoutes.Directory.route)
+                        navController.navigateSingle(MainRoutes.Directory.route)
                 }
 
                 if (directoryState != null) {
@@ -128,7 +129,7 @@ fun PageDashboard() {
                         SegmentProgress(used = directoryState!!.usedBytes, total = directoryState!!.totalBytes),
                         SegmentProgress(used = directoryState!!.childUsedBytes, total = directoryState!!.totalBytes),
                     ) {
-                        navController.navigate(MainRoutes.Directory.route)
+                        navController.navigateSingle(MainRoutes.Directory.route)
                     }
                 }
             }
@@ -149,7 +150,7 @@ fun PageDashboard() {
                         colorL80D20 = ColorSchemeKeyTokens.RedL80D20,
                         onColorContainer = ColorSchemeKeyTokens.RedOnPrimaryContainer
                     ) {
-                        navController.navigate(MainRoutes.PackagesBackupList.route)
+                        navController.navigateSingle(MainRoutes.PackagesBackupList.route)
                     }
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
@@ -160,7 +161,7 @@ fun PageDashboard() {
                         colorL80D20 = ColorSchemeKeyTokens.YellowL80D20,
                         onColorContainer = ColorSchemeKeyTokens.YellowOnPrimaryContainer
                     ) {
-                        navController.navigate(MainRoutes.MediumBackupList.route)
+                        navController.navigateSingle(MainRoutes.MediumBackupList.route)
                     }
                     // TODO MMS/SMS, Contacts backup/restore
 //                    QuickActionsButton(
@@ -191,7 +192,7 @@ fun PageDashboard() {
                         onColorContainer = ColorSchemeKeyTokens.OnPrimaryContainer,
                         actionIcon = ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight)
                     ) {
-                        navController.navigate(MainRoutes.Cloud.route)
+                        navController.navigateSingle(MainRoutes.Cloud.route)
                     }
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
@@ -203,7 +204,7 @@ fun PageDashboard() {
                         onColorContainer = ColorSchemeKeyTokens.OnSecondaryContainer,
                         actionIcon = ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight)
                     ) {
-                        navController.navigate(MainRoutes.Restore.route)
+                        navController.navigateSingle(MainRoutes.Restore.route)
                     }
                 }
             }

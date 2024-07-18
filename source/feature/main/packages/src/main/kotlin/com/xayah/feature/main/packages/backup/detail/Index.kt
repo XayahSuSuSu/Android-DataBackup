@@ -85,8 +85,6 @@ fun PagePackagesBackupDetail() {
                 ) {
                     PackageIconImage(
                         packageName = uiState.packageName,
-                        label = "${pkg.packageInfo.label.firstOrNull() ?: ""}",
-                        textStyle = MaterialTheme.typography.titleLarge,
                         size = SizeTokens.Level64
                     )
                     Column(modifier = Modifier.weight(1f)) {
