@@ -84,6 +84,15 @@ android {
         // Disables dependency metadata when building Android App Bundles.
         includeInBundle = false
     }
+
+    buildTypes {
+        create("benchmark") {
+            initWith(buildTypes.getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+        }
+    }
 }
 
 fun generateSupportedLocales(): String {

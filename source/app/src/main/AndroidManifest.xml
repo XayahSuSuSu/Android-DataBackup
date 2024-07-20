@@ -13,6 +13,7 @@
         android:theme="@style/Theme.DataBackup"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <profileable android:shell="true" />
 
         <activity
             android:name=".SplashActivity"
@@ -23,7 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:exported="false"

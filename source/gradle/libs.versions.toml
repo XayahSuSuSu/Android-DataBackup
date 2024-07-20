@@ -10,6 +10,13 @@ versionCodeAlpha = "14"
 versionName = "2.0.2"
 compose-compiler = "1.5.12" # https://androidx.dev/storage/compose-compiler/repository
 
+# plugins
+android-gradle-plugin = "8.2.2"
+kotlin = "1.9.23"
+hilt = "2.48"
+ksp-kotlin = "1.9.23-1.0.20"
+refine = "4.4.0"
+
 # libraries
 accompanist = "0.30.1"
 activity-compose = "1.9.0"
@@ -48,15 +55,16 @@ sshj = "0.38.0"
 guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
 sardine-next = "1.0.2"
 bountycastle = "1.76"
-
-# plugins
-android-gradle-plugin = "8.2.2"
-kotlin = "1.9.23"
-hilt = "2.48"
-ksp-kotlin = "1.9.23-1.0.20"
-refine = "4.4.0"
+uiautomator = "2.2.0"
+benchmarkMacroJunit4 = "1.2.0-beta01"
 
 [libraries]
+# Dependencies of the included build-logic
+android-build-logic = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
+kotlin-build-logic = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-build-logic = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp-kotlin" }
+firebase-crashlytics-build-logic = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
+
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 accompanist-placeholder = { module = "com.google.accompanist:accompanist-placeholder", version.ref = "accompanist" }
@@ -112,12 +120,8 @@ smbj-rpc = { module = "com.rapid7.client:dcerpc", version.ref = "smbj-rpc" }
 sshj = { module = "com.hierynomus:sshj", version.ref = "sshj" }
 guava-compat = { module = "com.google.guava:listenablefuture", version.ref = "guava-compat" }
 sardine-next = { module = "com.github.xayahsususu:sardine-next", version.ref = "sardine-next" }
-
-# Dependencies of the included build-logic
-android-build-logic = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
-kotlin-build-logic = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
-ksp-build-logic = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp-kotlin" }
-firebase-crashlytics-build-logic = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
+androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -142,3 +146,4 @@ library-protobuf = { id = "library.protobuf", version = "unspecified" }
 library-test = { id = "library.test", version = "unspecified" }
 library-androidTest = { id = "library.androidTest", version = "unspecified" }
 library-firebase = { id = "library.firebase", version = "unspecified" }
+android-test = { id = "com.android.test", version.ref = "android-gradle-plugin" }
