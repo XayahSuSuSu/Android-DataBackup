@@ -19,29 +19,26 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.TextFieldTokens
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier, enabled: Boolean, placeholder: StringResourceToken, onTextChange: (String) -> Unit) {
+fun SearchBar(modifier: Modifier = Modifier, enabled: Boolean, placeholder: String, onTextChange: (String) -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
 
     CleanableTextField(
         modifier = modifier
             .fillMaxWidth()
             .clip(CircleShape),
-        value = StringResourceToken.fromString(text),
+        value = text,
         placeholder = placeholder,
         enabled = enabled,
-        leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Search),
+        leadingIcon = Icons.Rounded.Search,
         onCleanClick = {
             text = ""
             onTextChange("")
@@ -99,19 +96,19 @@ fun RoundedTextField(
 @Composable
 fun CleanableTextField(
     modifier: Modifier = Modifier,
-    value: StringResourceToken,
-    placeholder: StringResourceToken,
+    value: String,
+    placeholder: String,
     enabled: Boolean = true,
-    leadingIcon: ImageVectorToken? = null,
+    leadingIcon: ImageVector? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    prefix: StringResourceToken? = null,
+    prefix: String? = null,
     onCleanClick: () -> Unit,
     onValueChange: (String) -> Unit,
 ) {
     RoundedTextField(
         modifier = modifier,
-        value = value.value,
-        placeholder = placeholder.value,
+        value = value,
+        placeholder = placeholder,
         enabled = enabled,
         visualTransformation = VisualTransformation.None,
         leadingIcon = if (leadingIcon != null) {
@@ -120,14 +117,14 @@ fun CleanableTextField(
                     modifier = Modifier
                         .paddingStart(TextFieldTokens.LeadingIconPaddingStart)
                         .size(TextFieldTokens.IconSize),
-                    imageVector = leadingIcon.value,
+                    imageVector = leadingIcon,
                     contentDescription = null,
                 )
             }
         } else {
             null
         },
-        trailingIcon = if (value.value.isNotEmpty() && enabled) {
+        trailingIcon = if (value.isNotEmpty() && enabled) {
             {
                 IconButton(
                     modifier = Modifier.paddingEnd(TextFieldTokens.TrailingIconPaddingEnd),
@@ -143,7 +140,7 @@ fun CleanableTextField(
             null
         },
         keyboardOptions = keyboardOptions,
-        prefix = prefix?.value,
+        prefix = prefix,
         onValueChange = onValueChange
     )
 }

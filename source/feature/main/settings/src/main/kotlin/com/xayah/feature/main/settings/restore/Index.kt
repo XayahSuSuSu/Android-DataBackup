@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.readKillAppOption
 import com.xayah.core.datastore.saveKillAppOption
@@ -28,10 +29,7 @@ import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.Selectable
 import com.xayah.core.ui.component.select
 import com.xayah.core.ui.model.DialogRadioItem
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
 
@@ -46,7 +44,7 @@ fun PageRestoreSettings() {
 
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromStringId(R.string.restore_settings),
+        title = stringResource(id = R.string.restore_settings),
         actions = {}
     ) {
         Column(
@@ -59,18 +57,18 @@ fun PageRestoreSettings() {
                 val items = stringArrayResource(id = R.array.kill_app_options)
                 val dialogItems by remember(items) {
                     mutableStateOf(items.mapIndexed { index, s ->
-                        DialogRadioItem(enum = KillAppOption.indexOf(index), title = StringResourceToken.fromString(s), desc = null)
+                        DialogRadioItem(enum = KillAppOption.indexOf(index), title = s, desc = null)
                     })
                 }
                 val currentOption by context.readKillAppOption().collectAsStateWithLifecycle(initialValue = KillAppOption.OPTION_II)
                 val currentIndex by remember(currentOption) { mutableIntStateOf(currentOption.ordinal) }
                 Selectable(
-                    title = StringResourceToken.fromStringId(R.string.kill_app_options),
-                    value = StringResourceToken.fromStringId(R.string.kill_app_options_desc),
-                    current = StringResourceToken.fromString(items[currentIndex])
+                    title = stringResource(id = R.string.kill_app_options),
+                    value = stringResource(id = R.string.kill_app_options_desc),
+                    current = items[currentIndex]
                 ) {
                     val (state, selectedIndex) = dialogState.select(
-                        title = StringResourceToken.fromStringId(R.string.kill_app_options),
+                        title = context.getString(R.string.kill_app_options),
                         defIndex = currentIndex,
                         items = dialogItems
                     )
@@ -83,8 +81,8 @@ fun PageRestoreSettings() {
                  * Switchable(
                  *     key = KeyCleanRestoring,
                  *     defValue = false,
-                 *     title = StringResourceToken.fromStringId(R.string.clean_restoring),
-                 *     checkedText = StringResourceToken.fromStringId(R.string.clean_restoring_desc),
+                 *     title = stringResource(id = R.string.clean_restoring),
+                 *     checkedText = stringResource(id = R.string.clean_restoring_desc),
                  * )
                  */
             }

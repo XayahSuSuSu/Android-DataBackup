@@ -4,10 +4,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.PriorityHigh
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromVector
 
 sealed class EnvState {
     data object Idle : EnvState()
@@ -72,11 +72,12 @@ sealed class EnvState {
             }
         }
 
-    val icon: ImageVectorToken
+    val icon: ImageVector
+        @Composable
         get() = when (this) {
-            Idle -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_package_2)
-            Processing -> ImageVectorToken.fromVector(Icons.Rounded.MoreHoriz)
-            Succeed -> ImageVectorToken.fromVector(Icons.Rounded.Done)
-            Failed -> ImageVectorToken.fromVector(Icons.Rounded.PriorityHigh)
+            Idle -> ImageVector.vectorResource(id = R.drawable.ic_rounded_package_2)
+            Processing -> Icons.Rounded.MoreHoriz
+            Succeed -> Icons.Rounded.Done
+            Failed -> Icons.Rounded.PriorityHigh
         }
 }

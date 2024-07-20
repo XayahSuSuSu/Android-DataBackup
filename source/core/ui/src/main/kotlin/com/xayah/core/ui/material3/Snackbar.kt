@@ -45,23 +45,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFirstOrNull
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.token.SnackbarTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
 import kotlin.math.max
 import kotlin.math.min
 
@@ -264,11 +262,11 @@ fun Snackbar(
                     Icon(
                         modifier = Modifier.size(SizeTokens.Level24),
                         imageVector = when (type) {
-                            SnackbarType.Warning -> ImageVectorToken.fromVector(Icons.Outlined.Warning)
-                            SnackbarType.Error -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel_circle)
-                            SnackbarType.Success -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle)
-                            else -> ImageVectorToken.fromVector(Icons.Rounded.Circle)
-                        }.value,
+                            SnackbarType.Warning -> Icons.Outlined.Warning
+                            SnackbarType.Error -> ImageVector.vectorResource(id = R.drawable.ic_rounded_cancel_circle)
+                            SnackbarType.Success -> ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle)
+                            else -> Icons.Rounded.Circle
+                        },
                         tint = when (type) {
                             SnackbarType.Warning -> ColorSchemeKeyTokens.Primary
                             SnackbarType.Error -> ColorSchemeKeyTokens.Error

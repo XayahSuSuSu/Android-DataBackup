@@ -7,6 +7,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.database.Info
 import com.xayah.core.model.database.ProcessingInfoEntity
@@ -14,9 +16,7 @@ import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CircularProgressIndicator
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.ProcessingCardItem
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 
 @Composable
@@ -56,14 +56,13 @@ fun OperationState.StateView(enabled: Boolean = true, expanded: Boolean = false,
                 modifier = Modifier.size(SizeTokens.Level24),
                 imageVector = (
                         when (this) {
-                            OperationState.DONE -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle)
-                            OperationState.ERROR -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel)
-                            OperationState.SKIP -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_not_started)
-                            OperationState.UPLOADING -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_arrow_circle_up)
-                            OperationState.DOWNLOADING -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_arrow_circle_down)
-                            else -> ImageVectorToken.fromVector(Icons.Rounded.Circle)
-                        }
-                        ).value,
+                            OperationState.DONE -> ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle)
+                            OperationState.ERROR -> ImageVector.vectorResource(id = R.drawable.ic_rounded_cancel)
+                            OperationState.SKIP -> ImageVector.vectorResource(id = R.drawable.ic_rounded_not_started)
+                            OperationState.UPLOADING -> ImageVector.vectorResource(id = R.drawable.ic_rounded_arrow_circle_up)
+                            OperationState.DOWNLOADING -> ImageVector.vectorResource(id = R.drawable.ic_rounded_arrow_circle_down)
+                            else -> Icons.Rounded.Circle
+                        }),
                 contentDescription = null,
                 tint = (
                         when (this) {
@@ -83,9 +82,9 @@ val Info.toProcessingCardItem: ProcessingCardItem
         return ProcessingCardItem(
             state = state,
             progress = progress,
-            title = StringResourceToken.fromString(title),
-            log = StringResourceToken.fromString(log),
-            content = StringResourceToken.fromString(content)
+            title = title,
+            log = log,
+            content = content
         )
     }
 
@@ -94,9 +93,9 @@ val ProcessingInfoEntity.toProcessingCardItem: ProcessingCardItem
         return ProcessingCardItem(
             state = state,
             progress = progress,
-            title = StringResourceToken.fromString(title),
-            log = StringResourceToken.fromString(log),
-            content = StringResourceToken.fromString(content)
+            title = title,
+            log = log,
+            content = content
         )
     }
 

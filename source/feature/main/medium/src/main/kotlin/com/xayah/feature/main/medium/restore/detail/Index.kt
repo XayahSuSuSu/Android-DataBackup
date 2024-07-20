@@ -22,7 +22,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.DataType
@@ -41,16 +44,9 @@ import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
+import com.xayah.core.ui.util.joinOf
 import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.withMainContext
 import com.xayah.feature.main.medium.ListScaffold
@@ -77,7 +73,7 @@ fun PageMediumRestoreDetail() {
     ListScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.details),
+        title = stringResource(id = R.string.details),
         actions = {}
     ) {
         mediaState?.also { media ->
@@ -97,7 +93,7 @@ fun PageMediumRestoreDetail() {
                     Column(modifier = Modifier.weight(1f)) {
                         TitleLargeText(text = media.name, color = ColorSchemeKeyTokens.OnSurface.toColor())
                         BodyMediumText(
-                            text = (if (media.path.isEmpty()) StringResourceToken.fromStringId(R.string.specify_a_path) else StringResourceToken.fromString(media.path)).value,
+                            text = media.path.ifEmpty { stringResource(id = R.string.specify_a_path) },
                             color = (if (media.path.isEmpty()) ColorSchemeKeyTokens.Error else ColorSchemeKeyTokens.OnSurfaceVariant).toColor()
                         )
                     }
@@ -112,7 +108,7 @@ fun PageMediumRestoreDetail() {
                     Spacer(modifier = Modifier.paddingStart(SizeTokens.Level68))
                     FilledIconButton(
                         enabled = true,
-                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
                         containerColor = ColorSchemeKeyTokens.BluePrimaryContainer,
                         contentColor = ColorSchemeKeyTokens.BlueOnPrimaryContainer
                     ) {
@@ -120,12 +116,12 @@ fun PageMediumRestoreDetail() {
                     }
                     FilledIconButton(
                         enabled = media.preserveId == 0L,
-                        icon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
+                        icon = Icons.Outlined.Shield,
                         containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
                         contentColor = ColorSchemeKeyTokens.YellowOnPrimaryContainer
                     ) {
                         viewModel.launchOnIO {
-                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.protect), text = StringResourceToken.fromStringId(R.string.protect_desc))) {
+                            if (dialogState.confirm(title = context.getString(R.string.protect), text = context.getString(R.string.protect_desc))) {
                                 viewModel.emitIntent(IndexUiIntent.Preserve(mediaEntity = media))
                                 withMainContext {
                                     navController.popBackStack()
@@ -135,12 +131,12 @@ fun PageMediumRestoreDetail() {
                     }
                     FilledIconButton(
                         enabled = true,
-                        icon = ImageVectorToken.fromVector(Icons.Outlined.Delete),
+                        icon = Icons.Outlined.Delete,
                         containerColor = ColorSchemeKeyTokens.ErrorContainer,
                         contentColor = ColorSchemeKeyTokens.OnErrorContainer
                     ) {
                         viewModel.launchOnIO {
-                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.delete), text = StringResourceToken.fromStringId(R.string.delete_desc))) {
+                            if (dialogState.confirm(title = context.getString(R.string.delete), text = context.getString(R.string.delete_desc))) {
                                 viewModel.emitIntent(IndexUiIntent.Delete(mediaEntity = media))
                                 withMainContext {
                                     navController.popBackStack()
@@ -149,20 +145,20 @@ fun PageMediumRestoreDetail() {
                         }
                     }
                 }
-                Title(title = StringResourceToken.fromStringId(R.string.backup_parts)) {
+                Title(title = stringResource(id = R.string.backup_parts)) {
                     Switchable(
                         enabled = media.extraInfo.existed && media.path.isNotEmpty(),
                         checked = media.extraInfo.activated,
-                        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_image),
-                        title = StringResourceToken.fromString(DataType.MEDIA_MEDIA.type.uppercase()),
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_image),
+                        title = DataType.MEDIA_MEDIA.type.uppercase(),
                         checkedText = if (uiState.isCalculating)
-                            StringResourceToken.fromStringArgs(
-                                StringResourceToken.fromString(media.displayStatsBytes.formatSize()),
-                                StringResourceToken.fromString(SymbolUtil.DOT.toString()),
-                                StringResourceToken.fromStringId(R.string.calculating),
+                            joinOf(
+                                media.displayStatsBytes.formatSize(),
+                                SymbolUtil.DOT.toString(),
+                                stringResource(id = R.string.calculating),
                             )
                         else
-                            StringResourceToken.fromString(media.displayStatsBytes.formatSize()),
+                            media.displayStatsBytes.formatSize(),
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.UpdateMedia(media.copy(extraInfo = media.extraInfo.copy(activated = media.extraInfo.activated.not()))))
                     }

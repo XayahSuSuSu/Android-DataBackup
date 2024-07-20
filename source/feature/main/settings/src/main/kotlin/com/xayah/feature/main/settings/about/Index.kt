@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.util.BuildConfigUtil
@@ -48,16 +49,10 @@ import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ActionMenuItem
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
+import com.xayah.core.ui.util.joinOf
 import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.settings.ContributorCard
 import com.xayah.feature.main.settings.R
@@ -82,7 +77,7 @@ fun PageAboutSettings() {
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.about),
+        title = stringResource(id = R.string.about),
         actions = {}
     ) {
         Column(
@@ -93,13 +88,13 @@ fun PageAboutSettings() {
         ) {
             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 AppIcon(modifier = Modifier.paddingVertical(SizeTokens.Level16))
-                HeadlineSmallText(text = StringResourceToken.fromStringId(R.string.app_name).value, color = ColorSchemeKeyTokens.OnSurface.toColor())
+                HeadlineSmallText(text = stringResource(id = R.string.app_name), color = ColorSchemeKeyTokens.OnSurface.toColor())
                 BodyMediumText(
-                    text = StringResourceToken.fromStringArgs(
-                        StringResourceToken.fromStringId(R.string.version),
-                        StringResourceToken.fromString(" ${BuildConfigUtil.VERSION_NAME} "),
-                        StringResourceToken.fromString("(${BuildConfigUtil.VERSION_CODE})"),
-                    ).value,
+                    text = joinOf(
+                        stringResource(id = R.string.version),
+                        " ${BuildConfigUtil.VERSION_NAME} ",
+                        "(${BuildConfigUtil.VERSION_CODE})",
+                    ),
                     color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
                 )
                 FlowRow(
@@ -111,14 +106,14 @@ fun PageAboutSettings() {
                         var expanded by remember { mutableStateOf(false) }
                         FilledTonalIconTextButton(
                             modifier = Modifier.width(SizeTokens.Level128),
-                            icon = ImageVectorToken.fromVector(Icons.Outlined.FavoriteBorder),
-                            text = StringResourceToken.fromStringId(R.string.donate)
+                            icon = Icons.Outlined.FavoriteBorder,
+                            text = stringResource(id = R.string.donate)
                         ) {
                             expanded = true
                         }
                         ModalActionDropdownMenu(expanded = expanded, actionList = listOf(
                             ActionMenuItem(
-                                title = StringResourceToken.fromStringId(R.string.buymeacoffee),
+                                title = stringResource(id = R.string.buymeacoffee),
                                 enabled = true,
                                 secondaryMenu = listOf(),
                                 onClick = {
@@ -126,7 +121,7 @@ fun PageAboutSettings() {
                                 }
                             ),
                             ActionMenuItem(
-                                title = StringResourceToken.fromStringId(R.string.afdian),
+                                title = stringResource(id = R.string.afdian),
                                 enabled = true,
                                 secondaryMenu = listOf(),
                                 onClick = {
@@ -137,22 +132,22 @@ fun PageAboutSettings() {
                     }
                     FilledTonalIconTextButton(
                         modifier = Modifier.width(SizeTokens.Level128),
-                        icon = ImageVectorToken.fromVector(Icons.Outlined.Assignment),
-                        text = StringResourceToken.fromStringId(R.string.docs)
+                        icon = Icons.Outlined.Assignment,
+                        text = stringResource(id = R.string.docs)
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, ConstantUtil.DOC_LINK))
                     }
                     OutlinedButtonIconTextButton(
                         modifier = Modifier.width(SizeTokens.Level128),
-                        icon = ImageVectorToken.fromVector(Icons.Outlined.Code),
-                        text = StringResourceToken.fromStringId(R.string.github)
+                        icon = Icons.Outlined.Code,
+                        text = stringResource(id = R.string.github)
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, ConstantUtil.GITHUB_LINK))
                     }
                     OutlinedButtonIconTextButton(
                         modifier = Modifier.width(SizeTokens.Level128),
-                        icon = ImageVectorToken.fromVector(Icons.Outlined.Chat),
-                        text = StringResourceToken.fromStringId(R.string.contact)
+                        icon = Icons.Outlined.Chat,
+                        text = stringResource(id = R.string.contact)
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, ConstantUtil.CHAT_LINK))
                     }
@@ -176,8 +171,8 @@ fun PageAboutSettings() {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 Clickable(
-                    title = StringResourceToken.fromStringId(R.string.translators),
-                    value = StringResourceToken.fromStringId(R.string.translators_desc),
+                    title = stringResource(id = R.string.translators),
+                    value = stringResource(id = R.string.translators_desc),
                 ) {
                     navController.navigateSingle(MainRoutes.Translators.route)
                 }

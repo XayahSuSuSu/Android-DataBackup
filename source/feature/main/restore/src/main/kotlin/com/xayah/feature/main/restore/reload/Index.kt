@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.KeyReloadDumpApk
@@ -31,13 +33,7 @@ import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.select
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
 import com.xayah.feature.main.restore.DotLottieView
 import com.xayah.feature.main.restore.R
 import com.xayah.feature.main.restore.RestoreScaffold
@@ -49,13 +45,14 @@ import com.xayah.feature.main.restore.RestoreScaffold
 @ExperimentalMaterial3Api
 @Composable
 fun PageReload() {
+    val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val viewModel = hiltViewModel<IndexViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     RestoreScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromStringId(R.string.reload),
+        title = stringResource(id = R.string.reload),
         actions = {
             Button(
                 enabled = uiState.isLoading.not(),
@@ -63,39 +60,39 @@ fun PageReload() {
                     viewModel.emitIntentOnIO(IndexUiIntent.Reload)
                 }
             ) {
-                Text(text = StringResourceToken.fromStringId(R.string.reload).value)
+                Text(text = stringResource(id = R.string.reload))
             }
         }
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
-                Title(enabled = uiState.isLoading.not(), title = StringResourceToken.fromStringId(R.string.settings)) {
+                Title(enabled = uiState.isLoading.not(), title = stringResource(id = R.string.settings)) {
                     if (uiState.cloudName.isNotEmpty()) {
                         Clickable(
                             enabled = false,
-                            title = StringResourceToken.fromString(uiState.cloudName),
-                            value = StringResourceToken.fromString(uiState.cloudRemote),
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Cloud),
+                            title = uiState.cloudName,
+                            value = uiState.cloudRemote,
+                            leadingIcon = Icons.Outlined.Cloud,
                         )
                     }
 
                     Switchable(
                         enabled = uiState.isLoading.not(),
                         key = KeyReloadDumpApk,
-                        title = StringResourceToken.fromStringId(R.string.dump_apk),
-                        checkedText = StringResourceToken.fromStringId(R.string.dump_apk_desc),
+                        title = stringResource(id = R.string.dump_apk),
+                        checkedText = stringResource(id = R.string.dump_apk_desc),
                     )
 
                     val dialogState = LocalSlotScope.current!!.dialogSlot
                     val currentIndex = uiState.versionIndex
                     Selectable(
                         enabled = uiState.isLoading.not(),
-                        title = StringResourceToken.fromStringId(R.string.version),
-                        value = StringResourceToken.fromStringId(R.string.reload_version_desc),
+                        title = stringResource(id = R.string.version),
+                        value = stringResource(id = R.string.reload_version_desc),
                         current = uiState.versionList[currentIndex].title
                     ) {
                         val (state, selectedIndex) = dialogState.select(
-                            title = StringResourceToken.fromStringId(R.string.version),
+                            title = context.getString(R.string.version),
                             defIndex = currentIndex,
                             items = uiState.versionList
                         )
@@ -115,7 +112,7 @@ fun PageReload() {
                     contentAlignment = Alignment.Center
                 ) {
                     Column(modifier = Modifier.paddingHorizontal(SizeTokens.Level16), horizontalAlignment = Alignment.CenterHorizontally) {
-                        DotLottieView(isRefreshing = uiState.isLoading, text = StringResourceToken.fromString(uiState.text))
+                        DotLottieView(isRefreshing = uiState.isLoading, text = uiState.text)
                     }
                 }
             }

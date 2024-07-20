@@ -6,13 +6,11 @@ import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.SdCard
 import com.xayah.core.model.StorageType
 import com.xayah.core.model.database.DirectoryEntity
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.util.fromVector
 
 fun DirectoryEntity.icon() = when (storageType) {
-    StorageType.INTERNAL -> ImageVectorToken.fromVector(Icons.Rounded.PhoneAndroid)
-    StorageType.EXTERNAL -> ImageVectorToken.fromVector(Icons.Rounded.SdCard)
-    StorageType.CUSTOM -> ImageVectorToken.fromVector(Icons.Rounded.Palette)
+    StorageType.INTERNAL -> Icons.Rounded.PhoneAndroid
+    StorageType.EXTERNAL -> Icons.Rounded.SdCard
+    StorageType.CUSTOM -> Icons.Rounded.Palette
 }
 
 fun DirectoryEntity.pathDisplay() = when (storageType) {

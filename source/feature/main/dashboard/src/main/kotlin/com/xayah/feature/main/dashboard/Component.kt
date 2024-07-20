@@ -12,7 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.xayah.core.ui.component.ActionButton
 import com.xayah.core.ui.component.AutoLabelLargeText
 import com.xayah.core.ui.component.BodyMediumText
@@ -23,34 +26,27 @@ import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.SegmentProgress
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
 import com.xayah.core.util.DateUtil
 
 @SuppressLint("StringFormatInvalid")
 @ExperimentalMaterial3Api
 @Composable
 fun OverviewStorageCard(
-    title: StringResourceToken,
+    title: String,
     used: SegmentProgress? = null,
     backupUsed: SegmentProgress? = null,
     onClick: () -> Unit,
 ) {
     val context = LocalContext.current
     OverviewCard(
-        title = StringResourceToken.fromStringId(R.string.storage),
-        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+        title = stringResource(id = R.string.storage),
+        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
         colorContainer = ColorSchemeKeyTokens.SecondaryContainer,
         onColorContainer = ColorSchemeKeyTokens.OnSecondaryContainer,
         content = {
-            TitleLargeText(text = title.value, color = ColorSchemeKeyTokens.OnSurface.toColor())
+            TitleLargeText(text = title, color = ColorSchemeKeyTokens.OnSurface.toColor())
             if (used != null && used.progress.isNaN().not()) {
                 SegmentProgressIndicator(
                     modifier = Modifier
@@ -85,7 +81,7 @@ fun OverviewStorageCard(
                 )
             }
         },
-        actionIcon = ImageVectorToken.fromVector(Icons.Outlined.Settings),
+        actionIcon = Icons.Outlined.Settings,
         onClick = onClick
     )
 }
@@ -102,22 +98,22 @@ fun OverviewLastBackupCard(nullBackupDir: Boolean, lastBackupTime: Long, onClick
         mutableStateOf(context.getString(R.string.args_finished_at, DateUtil.formatTimestamp(lastBackupTime, DateUtil.PATTERN_FINISH)))
     }
     OverviewCard(
-        title = StringResourceToken.fromStringId(R.string.last_backup),
-        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_package_2),
+        title = stringResource(id = R.string.last_backup),
+        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_package_2),
         colorContainer = if (nullBackupDir) ColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed else ColorSchemeKeyTokens.PrimaryContainer,
         onColorContainer = if (nullBackupDir) ColorSchemeKeyTokens.OnSurface else ColorSchemeKeyTokens.OnPrimaryContainer,
         content = {
             TitleLargeText(
-                text = (if (nullBackupDir || lastBackupTime == 0L) StringResourceToken.fromStringId(R.string.never) else StringResourceToken.fromString(relativeTime)).value,
+                text = (if (nullBackupDir || lastBackupTime == 0L) stringResource(id = R.string.never) else relativeTime),
                 color = (if (nullBackupDir) ColorSchemeKeyTokens.OnSurfaceVariant else ColorSchemeKeyTokens.OnSurface).toColor()
             )
             if (nullBackupDir || lastBackupTime != 0L)
                 BodyMediumText(
-                    text = (if (nullBackupDir) StringResourceToken.fromStringId(R.string.setup_required) else StringResourceToken.fromString(finishTime)).value,
+                    text = if (nullBackupDir) stringResource(id = R.string.setup_required) else finishTime,
                     color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
                 )
         },
-        actionIcon = if (nullBackupDir) ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight) else null,
+        actionIcon = if (nullBackupDir) Icons.Rounded.KeyboardArrowRight else null,
         onClick = onClick,
     )
 }
@@ -128,12 +124,12 @@ fun OverviewLastBackupCard(nullBackupDir: Boolean, lastBackupTime: Long, onClick
 fun QuickActionsButton(
     modifier: Modifier = Modifier,
     enabled: Boolean,
-    title: StringResourceToken,
-    icon: ImageVectorToken,
+    title: String,
+    icon: ImageVector,
     colorContainer: ColorSchemeKeyTokens,
     colorL80D20: ColorSchemeKeyTokens,
     onColorContainer: ColorSchemeKeyTokens,
-    actionIcon: ImageVectorToken? = null,
+    actionIcon: ImageVector? = null,
     onClick: () -> Unit = {},
 ) {
     ActionButton(
@@ -146,13 +142,13 @@ fun QuickActionsButton(
         trailingIcon = {
             if (actionIcon != null)
                 Icon(
-                    imageVector = actionIcon.value,
+                    imageVector = actionIcon,
                     tint = onColorContainer.toColor(enabled),
                     contentDescription = null
                 )
         },
         onClick = onClick
     ) {
-        AutoLabelLargeText(modifier = Modifier.weight(1f), text = title.value, color = onColorContainer.toColor(enabled), enabled = enabled)
+        AutoLabelLargeText(modifier = Modifier.weight(1f), text = title, color = onColorContainer.toColor(enabled), enabled = enabled)
     }
 }

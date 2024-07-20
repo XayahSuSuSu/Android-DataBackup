@@ -7,15 +7,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.xayah.core.datastore.saveThemeType
 import com.xayah.core.model.ThemeType
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.Selectable
 import com.xayah.core.ui.component.select
 import com.xayah.core.ui.model.DialogRadioItem
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.theme.observeCurrentTheme
-import com.xayah.core.ui.util.fromStringId
 
 @ExperimentalAnimationApi
 @Composable
@@ -27,31 +26,31 @@ fun DarkThemeSelectable() {
             listOf(
                 DialogRadioItem(
                     enum = ThemeType.AUTO,
-                    title = StringResourceToken.fromStringId(R.string.theme_auto),
-                    desc = StringResourceToken.fromStringId(R.string.theme_auto_desc),
+                    title = context.getString(R.string.theme_auto),
+                    desc = context.getString(R.string.theme_auto_desc),
                 ),
                 DialogRadioItem(
                     enum = ThemeType.LIGHT_THEME,
-                    title = StringResourceToken.fromStringId(R.string.theme_light),
-                    desc = StringResourceToken.fromStringId(R.string.theme_light_desc),
+                    title = context.getString(R.string.theme_light),
+                    desc = context.getString(R.string.theme_light_desc),
                 ),
                 DialogRadioItem(
                     enum = ThemeType.DARK_THEME,
-                    title = StringResourceToken.fromStringId(R.string.theme_dark),
-                    desc = StringResourceToken.fromStringId(R.string.theme_dark_desc),
+                    title = context.getString(R.string.theme_dark),
+                    desc = context.getString(R.string.theme_dark_desc),
                 ),
             )
         } else {
             listOf(
                 DialogRadioItem(
                     enum = ThemeType.LIGHT_THEME,
-                    title = StringResourceToken.fromStringId(R.string.theme_light),
-                    desc = StringResourceToken.fromStringId(R.string.theme_light_desc),
+                    title = context.getString(R.string.theme_light),
+                    desc = context.getString(R.string.theme_light_desc),
                 ),
                 DialogRadioItem(
                     enum = ThemeType.DARK_THEME,
-                    title = StringResourceToken.fromStringId(R.string.theme_dark),
-                    desc = StringResourceToken.fromStringId(R.string.theme_dark_desc),
+                    title = context.getString(R.string.theme_dark),
+                    desc = context.getString(R.string.theme_dark_desc),
                 ),
             )
         }
@@ -59,12 +58,12 @@ fun DarkThemeSelectable() {
     val currentType by observeCurrentTheme()
     val currentIndex by remember(currentType) { mutableIntStateOf(items.indexOfFirst { it.enum == currentType }) }
     Selectable(
-        title = StringResourceToken.fromStringId(R.string.dark_theme),
+        title = stringResource(id = R.string.dark_theme),
         value = items[currentIndex].desc,
         current = items[currentIndex].title
     ) {
         val (state, selectedIndex) = dialogState.select(
-            title = StringResourceToken.fromStringId(R.string.dark_theme),
+            title = context.getString(R.string.dark_theme),
             defIndex = currentIndex,
             items = items
         )

@@ -21,8 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import com.dotlottie.dlplayer.Mode
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
@@ -37,13 +40,7 @@ import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.value
 import com.xayah.core.util.DateUtil
 
 @ExperimentalAnimationApi
@@ -51,7 +48,7 @@ import com.xayah.core.util.DateUtil
 @Composable
 fun RestoreScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
-    title: StringResourceToken,
+    title: String,
     actions: @Composable (RowScope.() -> Unit)? = null,
     content: @Composable (BoxScope.() -> Unit)
 ) {
@@ -105,18 +102,18 @@ fun OverviewLastRestoreCard(modifier: Modifier, lastRestoreTime: Long) {
     }
     OverviewCard(
         modifier = modifier,
-        title = StringResourceToken.fromStringId(R.string.last_restore),
-        icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_package_2),
+        title = stringResource(id = R.string.last_restore),
+        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_package_2),
         colorContainer = ColorSchemeKeyTokens.PrimaryContainer,
         onColorContainer = ColorSchemeKeyTokens.OnPrimaryContainer,
         content = {
             TitleLargeText(
-                text = (if (lastRestoreTime == 0L) StringResourceToken.fromStringId(R.string.never) else StringResourceToken.fromString(relativeTime)).value,
+                text = if (lastRestoreTime == 0L) stringResource(id = R.string.never) else relativeTime,
                 color = ColorSchemeKeyTokens.OnSurface.toColor()
             )
             if (lastRestoreTime != 0L)
                 BodyMediumText(
-                    text = StringResourceToken.fromString(finishTime).value,
+                    text = finishTime,
                     color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
                 )
         },
@@ -125,7 +122,7 @@ fun OverviewLastRestoreCard(modifier: Modifier, lastRestoreTime: Long) {
 }
 
 @Composable
-fun DotLottieView(isRefreshing: Boolean, text: StringResourceToken) {
+fun DotLottieView(isRefreshing: Boolean, text: String) {
     DotLottieAnimation(
         source = if (isRefreshing) DotLottieSource.Asset("loading.lottie") else DotLottieSource.Asset("squirrel.lottie"),
         autoplay = true,
@@ -134,7 +131,7 @@ fun DotLottieView(isRefreshing: Boolean, text: StringResourceToken) {
         modifier = Modifier.background(Color.Transparent)
     )
     BodyLargeText(
-        text = text.value,
+        text = text,
         color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
         textAlign = TextAlign.Center
     )

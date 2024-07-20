@@ -27,10 +27,8 @@ import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.ProcessingPackageCardItem
 import com.xayah.core.ui.model.ReportAppItemInfo
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.util.addInfo
-import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.toProcessingCardItem
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
@@ -223,7 +221,7 @@ class IndexViewModel @Inject constructor(
                 packages.map {
                     items.add(
                         ProcessingPackageCardItem(
-                            title = StringResourceToken.fromString(it.packageEntity.packageInfo.label),
+                            title = it.packageEntity.packageInfo.label,
                             packageName = it.packageEntity.packageName,
                             items = listOf(
                                 it.apkInfo.toProcessingCardItem,
@@ -287,8 +285,8 @@ class IndexViewModel @Inject constructor(
         entities.map {
             DialogRadioItem(
                 enum = Any(),
-                title = StringResourceToken.fromString(it.name),
-                desc = StringResourceToken.fromString(it.user),
+                title = it.name,
+                desc = it.user,
             )
         }
 

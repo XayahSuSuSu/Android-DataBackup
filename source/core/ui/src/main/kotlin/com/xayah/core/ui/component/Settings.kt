@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.datastore.preferences.core.Preferences
@@ -36,8 +37,6 @@ import com.xayah.core.datastore.saveStoreBoolean
 import com.xayah.core.ui.material3.Surface
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.value
 import kotlinx.coroutines.launch
@@ -45,7 +44,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Clickable(
     enabled: Boolean = true,
-    desc: StringResourceToken? = null,
+    desc: String? = null,
     onClick: () -> Unit, indication: Indication? = rememberRipple(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable BoxScope.() -> Unit
@@ -73,7 +72,7 @@ fun Clickable(
             TitleSmallText(
                 modifier = Modifier.paddingHorizontal(SizeTokens.Level24),
                 enabled = enabled,
-                text = desc.value,
+                text = desc,
                 color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
                 fontWeight = FontWeight.Normal
             )
@@ -85,9 +84,9 @@ fun Clickable(
 fun Clickable(
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    title: StringResourceToken,
-    value: StringResourceToken? = null,
-    desc: StringResourceToken? = null,
+    title: String,
+    value: String? = null,
+    desc: String? = null,
     leadingContent: (@Composable RowScope.() -> Unit)? = null,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
     onClick: () -> Unit = {}
@@ -96,10 +95,10 @@ fun Clickable(
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingContent != null) leadingContent()
             Column(modifier = Modifier.weight(1f)) {
-                AnimatedTextContainer(targetState = title.value) { text ->
+                AnimatedTextContainer(targetState = title) { text ->
                     TitleLargeText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurface.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
-                if (value != null) AnimatedTextContainer(targetState = value.value) { text ->
+                if (value != null) AnimatedTextContainer(targetState = value) { text ->
                     TitleSmallText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.Outline.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
             }
@@ -112,10 +111,10 @@ fun Clickable(
 @Composable
 fun Clickable(
     enabled: Boolean = true,
-    icon: ImageVectorToken? = null,
-    title: StringResourceToken,
-    value: StringResourceToken? = null,
-    desc: StringResourceToken? = null,
+    icon: ImageVector? = null,
+    title: String,
+    value: String? = null,
+    desc: String? = null,
     onClick: () -> Unit = {}
 ) {
     Clickable(
@@ -124,7 +123,7 @@ fun Clickable(
         value = value,
         desc = desc,
         leadingContent = {
-            if (icon != null) Icon(imageVector = icon.value, contentDescription = null)
+            if (icon != null) Icon(imageVector = icon, contentDescription = null)
         },
         onClick = onClick
     )
@@ -134,10 +133,10 @@ fun Clickable(
 @Composable
 fun Clickable(
     enabled: Boolean = true,
-    title: StringResourceToken, value: StringResourceToken? = null,
-    desc: StringResourceToken? = null,
-    leadingIcon: ImageVectorToken? = null,
-    trailingIcon: ImageVectorToken? = null,
+    title: String, value: String? = null,
+    desc: String? = null,
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable (ColumnScope.() -> Unit)? = null,
     onClick: () -> Unit = {}
@@ -145,19 +144,19 @@ fun Clickable(
     Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingIcon != null) {
-                Icon(imageVector = leadingIcon.value, contentDescription = null, tint = ColorSchemeKeyTokens.LocalContent.toColor(enabled))
+                Icon(imageVector = leadingIcon, contentDescription = null, tint = ColorSchemeKeyTokens.LocalContent.toColor(enabled))
             }
             Column(modifier = Modifier.weight(1f)) {
-                AnimatedTextContainer(targetState = title.value) { text ->
+                AnimatedTextContainer(targetState = title) { text ->
                     TitleLargeText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurface.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
-                if (value != null) AnimatedTextContainer(targetState = value.value) { text ->
+                if (value != null) AnimatedTextContainer(targetState = value) { text ->
                     TitleSmallText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.Outline.toColor(enabled), fontWeight = FontWeight.Normal)
                 }
                 content?.invoke(this)
             }
             if (trailingIcon != null) {
-                Icon(imageVector = trailingIcon.value, contentDescription = null, tint = ColorSchemeKeyTokens.LocalContent.toColor(enabled))
+                Icon(imageVector = trailingIcon, contentDescription = null, tint = ColorSchemeKeyTokens.LocalContent.toColor(enabled))
             }
         }
     }
@@ -168,11 +167,11 @@ fun Clickable(
 @Composable
 fun Selectable(
     enabled: Boolean = true,
-    leadingIcon: ImageVectorToken? = null,
-    title: StringResourceToken,
-    value: StringResourceToken? = null,
-    desc: StringResourceToken? = null,
-    current: StringResourceToken,
+    leadingIcon: ImageVector? = null,
+    title: String,
+    value: String? = null,
+    desc: String? = null,
+    current: String,
     onClick: suspend () -> Unit = suspend {}
 ) {
     val scope = rememberCoroutineScope()
@@ -182,12 +181,12 @@ fun Selectable(
         value = value,
         desc = desc,
         leadingContent = if (leadingIcon == null) null else {
-            { Icon(imageVector = leadingIcon.value, contentDescription = null) }
+            { Icon(imageVector = leadingIcon, contentDescription = null) }
         },
         trailingContent = {
             FilledTonalButton(enabled = enabled, onClick = { scope.launch { onClick() } }) {
 
-                Text(text = current.value)
+                Text(text = current)
             }
         },
         onClick = { scope.launch { onClick() } }
@@ -199,11 +198,11 @@ fun Selectable(
 fun Switchable(
     enabled: Boolean = true,
     checked: Boolean,
-    icon: ImageVectorToken? = null,
-    title: StringResourceToken,
-    checkedText: StringResourceToken,
-    notCheckedText: StringResourceToken = checkedText,
-    desc: StringResourceToken? = null,
+    icon: ImageVector? = null,
+    title: String,
+    checkedText: String,
+    notCheckedText: String = checkedText,
+    desc: String? = null,
     onCheckedChange: (Boolean) -> Unit = {}
 ) {
     Clickable(
@@ -212,7 +211,7 @@ fun Switchable(
         value = if (checked) checkedText else notCheckedText,
         desc = desc,
         leadingContent = {
-            if (icon != null) Icon(imageVector = icon.value, contentDescription = null)
+            if (icon != null) Icon(imageVector = icon, contentDescription = null)
         },
         trailingContent = {
             Divider(
@@ -240,11 +239,11 @@ fun Switchable(
     enabled: Boolean = true,
     key: Preferences.Key<Boolean>,
     defValue: Boolean = true,
-    icon: ImageVectorToken? = null,
-    title: StringResourceToken,
-    checkedText: StringResourceToken,
-    notCheckedText: StringResourceToken = checkedText,
-    desc: StringResourceToken? = null,
+    icon: ImageVector? = null,
+    title: String,
+    checkedText: String,
+    notCheckedText: String = checkedText,
+    desc: String? = null,
     onCheckedChange: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -276,10 +275,10 @@ fun Switchable(
 fun Checkable(
     enabled: Boolean = true,
     checked: Boolean,
-    icon: ImageVectorToken? = null,
-    title: StringResourceToken,
-    value: StringResourceToken,
-    desc: StringResourceToken? = null,
+    icon: ImageVector? = null,
+    title: String,
+    value: String,
+    desc: String? = null,
     onCheckedChange: (Boolean) -> Unit = {}
 ) {
     Clickable(
@@ -288,7 +287,7 @@ fun Checkable(
         value = value,
         desc = desc,
         leadingContent = {
-            if (icon != null) Icon(imageVector = icon.value, contentDescription = null)
+            if (icon != null) Icon(imageVector = icon, contentDescription = null)
         },
         trailingContent = {
             CheckIconButton(enabled = enabled, checked = checked, onCheckedChange = { onCheckedChange(checked) })
@@ -302,7 +301,7 @@ fun Checkable(
 @Composable
 fun Title(
     enabled: Boolean = true,
-    title: StringResourceToken,
+    title: String,
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -312,7 +311,7 @@ fun Title(
                 .paddingHorizontal(SizeTokens.Level24)
                 .paddingVertical(SizeTokens.Level12),
             enabled = enabled,
-            text = title.value,
+            text = title,
             color = ColorSchemeKeyTokens.Primary.toColor(),
             fontWeight = FontWeight.Medium
         )

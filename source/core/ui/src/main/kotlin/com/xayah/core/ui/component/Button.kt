@@ -20,24 +20,22 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.DisabledAlpha
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 
 @Composable
-fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, tint: Color = LocalContentColor.current, enabled: Boolean = true, onClick: () -> Unit) {
+fun IconButton(modifier: Modifier = Modifier, icon: ImageVector, tint: Color = LocalContentColor.current, enabled: Boolean = true, onClick: () -> Unit) {
     IconButton(modifier = modifier, enabled = enabled, onClick = onClick) {
         Icon(
-            imageVector = icon.value,
+            imageVector = icon,
             contentDescription = null,
             tint = if (enabled) tint else tint.copy(alpha = DisabledAlpha),
         )
@@ -47,7 +45,7 @@ fun IconButton(modifier: Modifier = Modifier, icon: ImageVectorToken, tint: Colo
 @Composable
 fun FilledIconButton(
     modifier: Modifier = Modifier,
-    icon: ImageVectorToken,
+    icon: ImageVector,
     containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
     contentColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnPrimary,
     enabled: Boolean = true,
@@ -60,7 +58,7 @@ fun FilledIconButton(
         onClick = onClick
     ) {
         Icon(
-            imageVector = icon.value,
+            imageVector = icon,
             contentDescription = null,
         )
     }
@@ -68,15 +66,15 @@ fun FilledIconButton(
 
 @Composable
 fun ArrowBackButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    IconButton(modifier = modifier, icon = ImageVectorToken.fromVector(Icons.Rounded.ArrowBack), onClick = onClick)
+    IconButton(modifier = modifier, icon = Icons.Rounded.ArrowBack, onClick = onClick)
 }
 
 @Composable
-fun TextButton(modifier: Modifier = Modifier, text: StringResourceToken, onClick: () -> Unit) {
+fun TextButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
     TextButton(
         modifier = modifier,
         onClick = onClick,
-        content = { Text(text = text.value, fontWeight = FontWeight.Bold) },
+        content = { Text(text = text, fontWeight = FontWeight.Bold) },
         contentPadding = ButtonDefaults.ContentPadding
     )
 }
@@ -86,7 +84,7 @@ fun CheckIconButton(modifier: Modifier = Modifier, enabled: Boolean = true, chec
     IconButton(
         modifier = modifier,
         enabled = enabled,
-        icon = if (checked) ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle) else ImageVectorToken.fromVector(Icons.Rounded.Circle),
+        icon = if (checked) ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle) else Icons.Rounded.Circle,
         tint = if (checked) ColorSchemeKeyTokens.Primary.toColor() else ColorSchemeKeyTokens.SurfaceVariant.toColor()
     ) {
         onCheckedChange?.invoke(checked)
@@ -96,8 +94,8 @@ fun CheckIconButton(modifier: Modifier = Modifier, enabled: Boolean = true, chec
 @Composable
 fun FilledTonalIconTextButton(
     modifier: Modifier = Modifier,
-    icon: ImageVectorToken,
-    text: StringResourceToken,
+    icon: ImageVector,
+    text: String,
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
@@ -105,19 +103,19 @@ fun FilledTonalIconTextButton(
         Icon(
             modifier = Modifier.size(SizeTokens.Level20),
             tint = ColorSchemeKeyTokens.Primary.toColor(),
-            imageVector = icon.value,
+            imageVector = icon,
             contentDescription = null,
         )
         Spacer(modifier = Modifier.width(SizeTokens.Level8))
-        AutoSizeText(modifier = Modifier.weight(1f), text = text.value, textAlign = TextAlign.Center)
+        AutoSizeText(modifier = Modifier.weight(1f), text = text, textAlign = TextAlign.Center)
     }
 }
 
 @Composable
 fun OutlinedButtonIconTextButton(
     modifier: Modifier = Modifier,
-    icon: ImageVectorToken,
-    text: StringResourceToken,
+    icon: ImageVector,
+    text: String,
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
@@ -125,10 +123,10 @@ fun OutlinedButtonIconTextButton(
         Icon(
             modifier = Modifier.size(SizeTokens.Level20),
             tint = ColorSchemeKeyTokens.Primary.toColor(),
-            imageVector = icon.value,
+            imageVector = icon,
             contentDescription = null,
         )
         Spacer(modifier = Modifier.width(SizeTokens.Level8))
-        AutoSizeText(modifier = Modifier.weight(1f), text = text.value, textAlign = TextAlign.Center)
+        AutoSizeText(modifier = Modifier.weight(1f), text = text, textAlign = TextAlign.Center)
     }
 }

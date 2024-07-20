@@ -15,18 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.value
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.iconDir
@@ -75,7 +74,7 @@ fun AppIcon(modifier: Modifier = Modifier) {
     ) {
         Image(
             modifier = Modifier.size(SizeTokens.Level100),
-            imageVector = ImageVectorToken.fromDrawable(R.drawable.ic_launcher_foreground_tonal).value,
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_launcher_foreground_tonal),
             contentDescription = null
         )
     }

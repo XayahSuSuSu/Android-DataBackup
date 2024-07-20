@@ -16,9 +16,7 @@ import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.model.DialogRadioItem
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
-import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
@@ -190,8 +188,8 @@ class IndexViewModel @Inject constructor(
         entities.map {
             DialogRadioItem(
                 enum = Any(),
-                title = StringResourceToken.fromString(it.name),
-                desc = StringResourceToken.fromString(it.user),
+                title = it.name,
+                desc = it.user,
             )
         }
 

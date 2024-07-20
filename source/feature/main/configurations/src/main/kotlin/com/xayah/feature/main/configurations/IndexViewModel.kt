@@ -2,6 +2,7 @@ package com.xayah.feature.main.configurations
 
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.res.stringResource
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.data.repository.PackageRepository
@@ -31,10 +32,7 @@ import com.xayah.core.ui.component.select
 import com.xayah.core.ui.material3.SnackbarDuration
 import com.xayah.core.ui.material3.SnackbarType
 import com.xayah.core.ui.model.DialogCheckBoxItem
-import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
-import com.xayah.core.ui.util.fromStringId
+import com.xayah.core.ui.util.joinOf
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
@@ -128,9 +126,9 @@ class IndexViewModel @Inject constructor(
                             items.add(
                                 DialogCheckBoxItem(
                                     enum = ConstantUtil.CONFIGURATIONS_KEY_BLACKLIST,
-                                    title = StringResourceToken.fromStringArgs(
-                                        StringResourceToken.fromStringId(R.string.blacklist),
-                                        StringResourceToken.fromString(" (${appsCount + filesCount})"),
+                                    title = joinOf(
+                                        context.getString(R.string.blacklist),
+                                        " (${appsCount + filesCount})",
                                     )
                                 )
                             )
@@ -142,10 +140,7 @@ class IndexViewModel @Inject constructor(
                                 items.add(
                                     DialogCheckBoxItem(
                                         enum = ConstantUtil.CONFIGURATIONS_KEY_CLOUD,
-                                        title = StringResourceToken.fromStringArgs(
-                                            StringResourceToken.fromStringId(R.string.cloud),
-                                            StringResourceToken.fromString(" (${config.cloud.size})"),
-                                        )
+                                        title = joinOf(context.getString(R.string.cloud), " (${config.cloud.size})")
                                     )
                                 )
                             }
@@ -157,9 +152,9 @@ class IndexViewModel @Inject constructor(
                                 items.add(
                                     DialogCheckBoxItem(
                                         enum = ConstantUtil.CONFIGURATIONS_KEY_FILE,
-                                        title = StringResourceToken.fromStringArgs(
-                                            StringResourceToken.fromStringId(R.string.files),
-                                            StringResourceToken.fromString(" (${config.file.size})"),
+                                        title = joinOf(
+                                            context.getString(R.string.files),
+                                            " (${config.file.size})",
                                         )
                                     )
                                 )
@@ -171,7 +166,7 @@ class IndexViewModel @Inject constructor(
                         emitEffect(IndexUiEffect.ShowSnackbar(type = SnackbarType.Error, message = context.getString(R.string.config_file_may_be_broken), duration = SnackbarDuration.Short))
                     } else {
                         val (s, selection) = intent.dialogState.select(
-                            title = StringResourceToken.fromStringId(R.string._import),
+                            title = context.getString(R.string._import),
                             def = items.map { true },
                             items = items
                         )

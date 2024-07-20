@@ -51,10 +51,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.readLoadSystemApps
@@ -81,16 +84,9 @@ import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.pullrefresh.PullRefreshIndicator
 import com.xayah.core.ui.material3.pullrefresh.pullRefresh
 import com.xayah.core.ui.material3.pullrefresh.rememberPullRefreshState
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
 import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.packages.DotLottieView
 import com.xayah.feature.main.packages.ListScaffold
@@ -147,7 +143,7 @@ fun PagePackagesBackupList() {
             var obbSelected by remember { mutableStateOf(true) }
             var mediaSelected by remember { mutableStateOf(true) }
 
-            TitleLargeText(modifier = Modifier.paddingHorizontal(SizeTokens.Level24), text = StringResourceToken.fromStringId(R.string.batch_select).value)
+            TitleLargeText(modifier = Modifier.paddingHorizontal(SizeTokens.Level24), text = stringResource(id = R.string.batch_select))
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -162,7 +158,7 @@ fun PagePackagesBackupList() {
                     modifier = Modifier.weight(1f),
                     selected = apkSelected,
                     dataType = DataType.PACKAGE_APK,
-                    subtitle = StringResourceToken.fromStringId(if (apkSelected) R.string.selected else R.string.not_selected)
+                    subtitle = stringResource(id = if (apkSelected) R.string.selected else R.string.not_selected)
                 ) {
                     apkSelected = apkSelected.not()
                 }
@@ -170,7 +166,7 @@ fun PagePackagesBackupList() {
                     modifier = Modifier.weight(1f),
                     selected = userSelected,
                     dataType = DataType.PACKAGE_USER,
-                    subtitle = StringResourceToken.fromStringId(if (userSelected) R.string.selected else R.string.not_selected)
+                    subtitle = stringResource(id = if (userSelected) R.string.selected else R.string.not_selected)
                 ) {
                     userSelected = userSelected.not()
                 }
@@ -178,7 +174,7 @@ fun PagePackagesBackupList() {
                     modifier = Modifier.weight(1f),
                     selected = userDeSelected,
                     dataType = DataType.PACKAGE_USER_DE,
-                    subtitle = StringResourceToken.fromStringId(if (userDeSelected) R.string.selected else R.string.not_selected)
+                    subtitle = stringResource(id = if (userDeSelected) R.string.selected else R.string.not_selected)
                 ) {
                     userDeSelected = userDeSelected.not()
                 }
@@ -186,7 +182,7 @@ fun PagePackagesBackupList() {
                     modifier = Modifier.weight(1f),
                     selected = dataSelected,
                     dataType = DataType.PACKAGE_DATA,
-                    subtitle = StringResourceToken.fromStringId(if (dataSelected) R.string.selected else R.string.not_selected)
+                    subtitle = stringResource(id = if (dataSelected) R.string.selected else R.string.not_selected)
                 ) {
                     dataSelected = dataSelected.not()
                 }
@@ -194,7 +190,7 @@ fun PagePackagesBackupList() {
                     modifier = Modifier.weight(1f),
                     selected = obbSelected,
                     dataType = DataType.PACKAGE_OBB,
-                    subtitle = StringResourceToken.fromStringId(if (obbSelected) R.string.selected else R.string.not_selected)
+                    subtitle = stringResource(id = if (obbSelected) R.string.selected else R.string.not_selected)
                 ) {
                     obbSelected = obbSelected.not()
                 }
@@ -202,7 +198,7 @@ fun PagePackagesBackupList() {
                     modifier = Modifier.weight(1f),
                     selected = mediaSelected,
                     dataType = DataType.MEDIA_MEDIA,
-                    subtitle = StringResourceToken.fromStringId(if (mediaSelected) R.string.selected else R.string.not_selected)
+                    subtitle = stringResource(id = if (mediaSelected) R.string.selected else R.string.not_selected)
                 ) {
                     mediaSelected = mediaSelected.not()
                 }
@@ -221,7 +217,7 @@ fun PagePackagesBackupList() {
                         showBottomSheet = false
                     }
                 }) {
-                    Text(text = StringResourceToken.fromStringId(R.string.confirm).value)
+                    Text(text = stringResource(id = R.string.confirm))
                 }
             }
         }
@@ -230,29 +226,29 @@ fun PagePackagesBackupList() {
     ListScaffold(
         scrollBehavior = scrollBehavior,
         progress = if (uiState.isLoading) -1F else null,
-        title = StringResourceToken.fromStringId(R.string.select_apps),
-        subtitle = if (packagesSelectedState != 0 && isRefreshing.not()) StringResourceToken.fromString("(${packagesSelectedState}/${packagesState.size})") else null,
+        title = stringResource(id = R.string.select_apps),
+        subtitle = if (packagesSelectedState != 0 && isRefreshing.not()) "(${packagesSelectedState}/${packagesState.size})" else null,
         actions = {
             if (isRefreshing.not() && srcPackagesEmptyState.not()) {
                 AnimatedVisibility(visible = packagesSelectedState != 0) {
-                    IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Block)) {
+                    IconButton(icon = Icons.Outlined.Block) {
                         viewModel.launchOnIO {
-                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.confirm_add_to_blacklist))) {
+                            if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.confirm_add_to_blacklist))) {
                                 viewModel.emitIntentOnIO(IndexUiIntent.BlockSelected)
                             }
                         }
                     }
                 }
-                IconButton(icon = ImageVectorToken.fromVector(if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt)) {
+                IconButton(icon = if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt) {
                     viewModel.emitStateOnMain(uiState.copy(filterMode = uiState.filterMode.not()))
                     viewModel.emitIntentOnIO(IndexUiIntent.ClearKey)
                 }
                 AnimatedVisibility(visible = packagesSelectedState != 0) {
-                    IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.CheckBox)) {
+                    IconButton(icon = Icons.Outlined.CheckBox) {
                         showBottomSheet = true
                     }
                 }
-                IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Checklist)) {
+                IconButton(icon = Icons.Outlined.Checklist) {
                     viewModel.emitIntentOnIO(IndexUiIntent.SelectAll(uiState.selectAll.not()))
                     viewModel.emitStateOnMain(uiState.copy(selectAll = uiState.selectAll.not()))
                 }
@@ -306,7 +302,7 @@ fun PagePackagesBackupList() {
                                 .paddingHorizontal(SizeTokens.Level16)
                                 .paddingVertical(SizeTokens.Level8),
                             enabled = true,
-                            placeholder = StringResourceToken.fromStringId(R.string.search_bar_hint_packages),
+                            placeholder = stringResource(id = R.string.search_bar_hint_packages),
                             onTextChange = {
                                 viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
                             }
@@ -316,7 +312,7 @@ fun PagePackagesBackupList() {
                             SortChip(
                                 enabled = true,
                                 dismissOnSelected = true,
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Sort),
+                                leadingIcon = Icons.Rounded.Sort,
                                 selectedIndex = sortIndexState,
                                 type = sortTypeState,
                                 list = stringArrayResource(id = R.array.backup_sort_type_items_apps).toList(),
@@ -333,8 +329,8 @@ fun PagePackagesBackupList() {
                                 MultipleSelectionFilterChip(
                                     enabled = true,
                                     dismissOnSelected = true,
-                                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
-                                    label = StringResourceToken.fromStringId(R.string.user),
+                                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_person),
+                                    label = stringResource(id = R.string.user),
                                     selectedIndexList = userIdIndexListState,
                                     list = userIdListState.map { it.toString() },
                                     onSelected = { indexList ->
@@ -351,7 +347,7 @@ fun PagePackagesBackupList() {
                                 FilterChip(
                                     enabled = true,
                                     dismissOnSelected = true,
-                                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_deployed_code),
+                                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_deployed_code),
                                     selectedIndex = flagIndexState,
                                     list = stringArrayResource(id = R.array.flag_type_items).toList(),
                                     onSelected = { index, _ ->

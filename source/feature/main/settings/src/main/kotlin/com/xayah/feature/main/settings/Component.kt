@@ -22,8 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
@@ -42,12 +45,7 @@ import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.value
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -55,7 +53,7 @@ import com.xayah.core.ui.util.value
 fun SettingsScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
     snackbarHostState: SnackbarHostState? = null,
-    title: StringResourceToken,
+    title: String,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (BoxScope.(innerPadding: PaddingValues) -> Unit)
 ) {
@@ -95,7 +93,7 @@ fun DotLottieView() {
         modifier = Modifier.background(Color.Transparent)
     )
     BodyLargeText(
-        text = StringResourceToken.fromStringId(R.string.it_is_empty).value,
+        text = stringResource(id = R.string.it_is_empty),
         textAlign = TextAlign.Center,
         color = com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
     )
@@ -111,7 +109,7 @@ fun ContributorCard(avatar: String, name: String, desc: String, onClick: () -> U
                 Icon(
                     modifier = Modifier.size(SizeTokens.Level48),
                     tint = ColorSchemeKeyTokens.OnSurface.toColor(),
-                    imageVector = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_emoticon).value,
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_rounded_emoticon),
                     contentDescription = null
                 )
                 AsyncImage(
@@ -143,7 +141,7 @@ fun TranslatorCard(modifier: Modifier = Modifier, avatar: String? = null, name: 
                 Icon(
                     modifier = Modifier.size(SizeTokens.Level48),
                     tint = ColorSchemeKeyTokens.OnSurface.toColor(),
-                    imageVector = ImageVectorToken.fromDrawable(R.drawable.logo_weblate).value,
+                    imageVector = ImageVector.vectorResource(id = R.drawable.logo_weblate),
                     contentDescription = null
                 )
                 AsyncImage(

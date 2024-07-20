@@ -31,7 +31,6 @@ import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 
 
@@ -41,7 +40,7 @@ import com.xayah.core.ui.token.SizeTokens
 fun ConfigurationsScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
     snackbarHostState: SnackbarHostState,
-    title: StringResourceToken,
+    title: String,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (ColumnScope.() -> Unit)
 ) {

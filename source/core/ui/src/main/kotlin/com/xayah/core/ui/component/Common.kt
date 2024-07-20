@@ -45,7 +45,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import coil.compose.AsyncImage
@@ -57,14 +60,8 @@ import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.getValue
+import com.xayah.core.ui.util.joinOf
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
@@ -74,9 +71,9 @@ import kotlin.math.min
 
 @ExperimentalMaterial3Api
 @Composable
-fun Section(title: StringResourceToken, content: @Composable ColumnScope.() -> Unit) {
+fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(modifier = Modifier.paddingHorizontal(SizeTokens.Level16), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8)) {
-        LabelLargeText(text = title.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(), fontWeight = FontWeight.SemiBold)
+        LabelLargeText(text = title, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(), fontWeight = FontWeight.SemiBold)
 
         content()
     }
@@ -88,7 +85,7 @@ fun Section(title: StringResourceToken, content: @Composable ColumnScope.() -> U
 fun ActionButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    icon: ImageVectorToken,
+    icon: ImageVector,
     colorContainer: ColorSchemeKeyTokens,
     colorL80D20: ColorSchemeKeyTokens,
     onColorContainer: ColorSchemeKeyTokens,
@@ -123,7 +120,7 @@ fun ActionButton(
             ) {
                 Icon(
                     modifier = Modifier.padding(SizeTokens.Level8),
-                    imageVector = icon.value,
+                    imageVector = icon,
                     tint = onColorContainer.toColor(enabled),
                     contentDescription = null,
                 )
@@ -256,18 +253,18 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         RoundChip {
                             LabelSmallText(
                                 modifier = Modifier.paddingHorizontal(SizeTokens.Level8),
-                                text = StringResourceToken.fromString("${item.userId}").value,
+                                text = "${item.userId}",
                                 fontWeight = FontWeight.Bold
                             )
                         }
                         TitleLargeText(
-                            text = item.packageInfo.label.ifEmpty { StringResourceToken.fromStringId(R.string.unknown).getValue(context) },
+                            text = item.packageInfo.label.ifEmpty { stringResource(id = R.string.unknown) },
                             color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor(),
                             maxLines = 1,
                         )
                     }
                     BodyMediumText(
-                        text = StringResourceToken.fromString(item.packageName).value,
+                        text = item.packageName,
                         color = ColorSchemeKeyTokens.Outline.toColor(),
                         maxLines = 1,
                     )
@@ -300,8 +297,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                     if (item.apkSelected) {
                         AssistChip(
                             enabled = true,
-                            label = StringResourceToken.fromStringId(R.string.apk),
-                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_android),
+                            label = stringResource(id = R.string.apk),
+                            leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_android),
                             trailingIcon = null,
                             color = ColorSchemeKeyTokens.RedPrimary,
                             containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
@@ -312,11 +309,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                     if (item.userSelected || item.userDeSelected || item.dataSelected || item.obbSelected || item.mediaSelected) {
                         AssistChip(
                             enabled = true,
-                            label = StringResourceToken.StringArgsToken(
-                                StringResourceToken.fromStringId(R.string.data),
-                                StringResourceToken.fromString("(${item.dataSelectedCount})"),
-                            ),
-                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_database),
+                            label = joinOf(stringResource(id = R.string.data), " (${item.dataSelectedCount})"),
+                            leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_database),
                             trailingIcon = null,
                             color = ColorSchemeKeyTokens.RedPrimary,
                             containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
@@ -327,8 +321,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                     if (item.preserveId != 0L) {
                         AssistChip(
                             enabled = true,
-                            label = StringResourceToken.fromStringId(R.string._protected),
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
+                            label = stringResource(id = R.string._protected),
+                            leadingIcon = Icons.Outlined.Shield,
                             trailingIcon = null,
                             color = ColorSchemeKeyTokens.YellowPrimary,
                             containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
@@ -338,8 +332,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                     if (storageStatsFormat != (0).toDouble()) {
                         AssistChip(
                             enabled = true,
-                            label = StringResourceToken.fromString(storageStatsFormat.formatSize()),
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Folder),
+                            label = storageStatsFormat.formatSize(),
+                            leadingIcon = Icons.Outlined.Folder,
                             trailingIcon = null,
                             color = ColorSchemeKeyTokens.Primary,
                             containerColor = ColorSchemeKeyTokens.PrimaryContainer,
@@ -348,8 +342,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                     }
                     if (ssaid.isNotEmpty()) AssistChip(
                         enabled = true,
-                        label = StringResourceToken.fromStringId(R.string.ssaid),
-                        leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Pin),
+                        label = stringResource(id = R.string.ssaid),
+                        leadingIcon = Icons.Outlined.Pin,
                         trailingIcon = null,
                         color = ColorSchemeKeyTokens.Primary,
                         containerColor = ColorSchemeKeyTokens.PrimaryContainer,
@@ -357,8 +351,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                     )
                     if (hasKeystore) AssistChip(
                         enabled = true,
-                        label = StringResourceToken.fromStringId(R.string.keystore),
-                        leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Key),
+                        label = stringResource(id = R.string.keystore),
+                        leadingIcon = Icons.Outlined.Key,
                         trailingIcon = null,
                         color = ColorSchemeKeyTokens.Primary,
                         containerColor = ColorSchemeKeyTokens.PrimaryContainer,
@@ -391,11 +385,11 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                 MediaIconImage(name = item.name.firstOrNull()?.toString() ?: "", size = SizeTokens.Level32)
                 Column(modifier = Modifier.weight(1f)) {
                     TitleLargeText(
-                        text = item.name.ifEmpty { StringResourceToken.fromStringId(R.string.unknown).getValue(context) },
+                        text = item.name.ifEmpty { stringResource(id = R.string.unknown) },
                         color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor()
                     )
                     BodyMediumText(
-                        text = (if (item.path.isEmpty()) StringResourceToken.fromStringId(R.string.specify_a_path) else StringResourceToken.fromString(item.path)).value,
+                        text = item.path.ifEmpty { stringResource(id = R.string.specify_a_path) },
                         color = (if (item.path.isEmpty()) ColorSchemeKeyTokens.Error else ColorSchemeKeyTokens.Outline).toColor()
                     )
                 }
@@ -423,8 +417,8 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                         if (existed.not()) {
                             AssistChip(
                                 enabled = true,
-                                label = StringResourceToken.fromStringId(R.string.not_exist),
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Close),
+                                label = stringResource(id = R.string.not_exist),
+                                leadingIcon = Icons.Outlined.Close,
                                 trailingIcon = null,
                                 color = ColorSchemeKeyTokens.Error,
                                 containerColor = ColorSchemeKeyTokens.ErrorContainer,
@@ -435,8 +429,8 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                         if (item.preserveId != 0L) {
                             AssistChip(
                                 enabled = true,
-                                label = StringResourceToken.fromStringId(R.string._protected),
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Shield),
+                                label = stringResource(id = R.string._protected),
+                                leadingIcon = Icons.Outlined.Shield,
                                 trailingIcon = null,
                                 color = ColorSchemeKeyTokens.YellowPrimary,
                                 containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
@@ -446,8 +440,8 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                         if (existed) {
                             AssistChip(
                                 enabled = true,
-                                label = StringResourceToken.fromString(storageStatsFormat.formatSize()),
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Outlined.Folder),
+                                label = storageStatsFormat.formatSize(),
+                                leadingIcon = Icons.Outlined.Folder,
                                 trailingIcon = null,
                                 color = ColorSchemeKeyTokens.Primary,
                                 containerColor = ColorSchemeKeyTokens.PrimaryContainer,

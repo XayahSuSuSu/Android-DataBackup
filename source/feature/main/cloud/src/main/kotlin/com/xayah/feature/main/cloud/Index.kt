@@ -21,6 +21,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.CloudType
@@ -31,14 +32,9 @@ import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.material3.DisabledAlpha
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.icon
 import com.xayah.core.ui.util.value
 import com.xayah.core.util.encodeURL
@@ -58,7 +54,7 @@ fun PageCloud() {
     CloudScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.cloud),
+        title = stringResource(id = R.string.cloud),
         actions = {}
     ) {
         Column(
@@ -67,15 +63,15 @@ fun PageCloud() {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
         ) {
-            Title(title = StringResourceToken.fromStringId(R.string.account)) {
+            Title(title = stringResource(id = R.string.account)) {
                 accounts.forEach {
                     Clickable(
                         enabled = uiState.isProcessing.not(),
-                        title = StringResourceToken.fromString(it.name),
-                        value = StringResourceToken.fromString(it.user),
+                        title = it.name,
+                        value = it.user,
                         leadingContent = {
                             Icon(
-                                imageVector = it.type.icon.value,
+                                imageVector = it.type.icon,
                                 contentDescription = null,
                                 tint = if (uiState.isProcessing.not()) LocalContentColor.current else LocalContentColor.current.copy(alpha = DisabledAlpha)
                             )
@@ -88,7 +84,7 @@ fun PageCloud() {
                                     .fillMaxHeight()
                             )
                             IconButton(
-                                icon = ImageVectorToken.fromVector(Icons.Outlined.Settings),
+                                icon = Icons.Outlined.Settings,
                                 tint = ColorSchemeKeyTokens.Primary.toColor(),
                                 onClick = {
                                     navController.navigateSingle(
@@ -109,8 +105,8 @@ fun PageCloud() {
                 }
 
                 Clickable(
-                    icon = ImageVectorToken.fromVector(Icons.Rounded.Add),
-                    title = StringResourceToken.fromStringId(R.string.add_account),
+                    icon = Icons.Rounded.Add,
+                    title = stringResource(id = R.string.add_account),
                 ) {
                     navController.navigateSingle(MainRoutes.CloudAddAccount.route)
                 }

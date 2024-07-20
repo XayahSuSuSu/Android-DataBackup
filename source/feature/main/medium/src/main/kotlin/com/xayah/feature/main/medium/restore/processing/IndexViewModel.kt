@@ -23,10 +23,8 @@ import com.xayah.core.ui.material3.SnackbarType
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.ProcessingMediaCardItem
 import com.xayah.core.ui.model.ReportFileItemInfo
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.util.addInfo
-import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.util.toProcessingCardItem
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
@@ -219,7 +217,7 @@ class IndexViewModel @Inject constructor(
                 medium.map {
                     items.add(
                         ProcessingMediaCardItem(
-                            title = StringResourceToken.fromString(it.mediaEntity.name),
+                            title = it.mediaEntity.name,
                             name = it.mediaEntity.name,
                             items = listOf(it.mediaInfo.toProcessingCardItem)
                         )

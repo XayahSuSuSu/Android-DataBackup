@@ -24,11 +24,8 @@ import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.ProcessingPackageCardItem
 import com.xayah.core.ui.model.ReportAppItemInfo
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.util.addInfo
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.toProcessingCardItem
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
@@ -89,7 +86,7 @@ class IndexViewModel @Inject constructor(
         cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim() ?: "",
         packages = listOf(),
         packagesSize = "",
-        restoreUsers = listOf(DialogRadioItem(enum = Any(), title = StringResourceToken.fromStringId(R.string.backup_user)))
+        restoreUsers = listOf(DialogRadioItem(enum = Any(), title = context.getString(R.string.backup_user)))
     )
 ) {
     init {
@@ -197,14 +194,14 @@ class IndexViewModel @Inject constructor(
                 val restoreUsers = mutableListOf(
                     DialogRadioItem(
                         enum = Any(),
-                        title = StringResourceToken.fromStringId(R.string.backup_user),
+                        title = context.getString(R.string.backup_user),
                     )
                 )
                 users.sorted().forEach {
                     restoreUsers.add(
                         DialogRadioItem(
                             enum = Any(),
-                            title = StringResourceToken.fromString(it.toString()),
+                            title = it.toString(),
                         )
                     )
                 }
@@ -246,7 +243,7 @@ class IndexViewModel @Inject constructor(
                 packages.map {
                     items.add(
                         ProcessingPackageCardItem(
-                            title = StringResourceToken.fromString(it.packageEntity.packageInfo.label),
+                            title = it.packageEntity.packageInfo.label,
                             packageName = it.packageEntity.packageName,
                             items = listOf(
                                 it.apkInfo.toProcessingCardItem,

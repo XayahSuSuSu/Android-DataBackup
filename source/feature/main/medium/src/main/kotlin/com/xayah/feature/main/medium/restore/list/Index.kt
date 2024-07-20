@@ -44,8 +44,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.component.ChipRow
@@ -60,13 +62,8 @@ import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.medium.DotLottieView
 import com.xayah.feature.main.medium.ListScaffold
 import com.xayah.feature.main.medium.R
@@ -78,6 +75,7 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 fun PageMediumRestoreList() {
+    val context = LocalContext.current
     val navController = LocalNavController.current!!
     val dialogState = LocalSlotScope.current!!.dialogSlot
     val viewModel = hiltViewModel<IndexViewModel>()
@@ -98,24 +96,24 @@ fun PageMediumRestoreList() {
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
         progress = if (uiState.isLoading) -1F else null,
-        title = StringResourceToken.fromStringId(R.string.backed_up_files),
-        subtitle = if (mediumSelectedState != 0) StringResourceToken.fromString("(${mediumSelectedState}/${mediumState.size})") else null,
+        title = stringResource(id = R.string.backed_up_files),
+        subtitle = if (mediumSelectedState != 0) "(${mediumSelectedState}/${mediumState.size})" else null,
         actions = {
             if (srcMediumEmptyState.not()) {
                 AnimatedVisibility(visible = mediumSelectedState != 0) {
-                    IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Delete)) {
+                    IconButton(icon = Icons.Outlined.Delete) {
                         viewModel.launchOnIO {
-                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.confirm_delete))) {
+                            if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.confirm_delete))) {
                                 viewModel.emitIntent(IndexUiIntent.DeleteSelected)
                             }
                         }
                     }
                 }
-                IconButton(icon = ImageVectorToken.fromVector(if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt)) {
+                IconButton(icon = if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt) {
                     viewModel.emitStateOnMain(uiState.copy(filterMode = uiState.filterMode.not()))
                     viewModel.emitIntentOnIO(IndexUiIntent.ClearKey)
                 }
-                IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Checklist)) {
+                IconButton(icon = Icons.Outlined.Checklist) {
                     viewModel.emitIntentOnIO(IndexUiIntent.SelectAll(uiState.selectAll.not()))
                     viewModel.emitStateOnMain(uiState.copy(selectAll = uiState.selectAll.not()))
                 }
@@ -161,7 +159,7 @@ fun PageMediumRestoreList() {
                                 .paddingHorizontal(SizeTokens.Level16)
                                 .paddingVertical(SizeTokens.Level8),
                             enabled = true,
-                            placeholder = StringResourceToken.fromStringId(R.string.search_bar_hint_medium),
+                            placeholder = stringResource(id = R.string.search_bar_hint_medium),
                             onTextChange = {
                                 viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
                             }
@@ -171,7 +169,7 @@ fun PageMediumRestoreList() {
                             SortChip(
                                 enabled = true,
                                 dismissOnSelected = true,
-                                leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Sort),
+                                leadingIcon = Icons.Rounded.Sort,
                                 selectedIndex = sortIndexState,
                                 type = sortTypeState,
                                 list = stringArrayResource(id = R.array.backup_sort_type_items_files).toList(),

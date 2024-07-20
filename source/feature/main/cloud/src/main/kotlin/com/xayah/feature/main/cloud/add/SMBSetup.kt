@@ -29,8 +29,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -50,16 +53,9 @@ import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.SnackbarType
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
+import com.xayah.core.ui.util.joinOf
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.feature.main.cloud.AccountSetupScaffold
 import com.xayah.feature.main.cloud.R
@@ -103,7 +99,7 @@ fun PageSMBSetup() {
     AccountSetupScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.smb_setup),
+        title = stringResource(id = R.string.smb_setup),
         actions = {
             TextButton(
                 enabled = allFilled && uiState.isProcessing.not(),
@@ -124,7 +120,7 @@ fun PageSMBSetup() {
                     }
                 }
             ) {
-                Text(text = StringResourceToken.fromStringId(R.string.test_connection).value)
+                Text(text = stringResource(id = R.string.test_connection))
             }
 
             Button(enabled = allFilled && remote.isNotEmpty() && uiState.isProcessing.not(), onClick = {
@@ -143,7 +139,7 @@ fun PageSMBSetup() {
                     viewModel.emitIntent(IndexUiIntent.CreateAccount(navController = navController))
                 }
             }) {
-                Text(text = StringResourceToken.fromStringId(R.string._continue).value)
+                Text(text = stringResource(id = R.string._continue))
             }
         }
     ) {
@@ -151,16 +147,16 @@ fun PageSMBSetup() {
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
         ) {
-            Title(enabled = uiState.isProcessing.not(), title = StringResourceToken.fromStringId(R.string.server), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
+            Title(enabled = uiState.isProcessing.not(), title = stringResource(id = R.string.server), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
                 SetupTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .paddingHorizontal(SizeTokens.Level24),
                     enabled = uiState.currentName.isEmpty() && uiState.isProcessing.not(),
                     value = name,
-                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_badge),
+                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_badge),
                     onValueChange = { name = it },
-                    label = StringResourceToken.fromStringId(R.string.name)
+                    label = stringResource(id = R.string.name)
                 )
 
                 SetupTextField(
@@ -169,10 +165,10 @@ fun PageSMBSetup() {
                         .paddingHorizontal(SizeTokens.Level24),
                     enabled = uiState.isProcessing.not(),
                     value = url,
-                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_link),
-                    prefix = StringResourceToken.fromString("smb://"),
+                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_link),
+                    prefix = "smb://",
                     onValueChange = { url = it },
-                    label = StringResourceToken.fromStringId(R.string.url)
+                    label = stringResource(id = R.string.url)
                 )
 
                 SetupTextField(
@@ -181,10 +177,10 @@ fun PageSMBSetup() {
                         .paddingHorizontal(SizeTokens.Level24),
                     enabled = uiState.isProcessing.not(),
                     value = port,
-                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_lan),
+                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_lan),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     onValueChange = { port = it },
-                    label = StringResourceToken.fromStringId(R.string.port)
+                    label = stringResource(id = R.string.port)
                 )
 
                 SetupTextField(
@@ -193,18 +189,13 @@ fun PageSMBSetup() {
                         .paddingHorizontal(SizeTokens.Level24),
                     enabled = uiState.isProcessing.not(),
                     value = share,
-                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
                     onValueChange = { share = it },
-                    label = StringResourceToken.fromStringArgs(
-                        StringResourceToken.fromStringId(R.string.shared_dir),
-                        StringResourceToken.fromString("("),
-                        StringResourceToken.fromStringId(R.string.allow_empty),
-                        StringResourceToken.fromString(")"),
-                    ),
+                    label = joinOf(stringResource(id = R.string.shared_dir), "(", stringResource(id = R.string.allow_empty), ")"),
                 )
             }
 
-            Title(enabled = uiState.isProcessing.not(), title = StringResourceToken.fromStringId(R.string.account), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
+            Title(enabled = uiState.isProcessing.not(), title = stringResource(id = R.string.account), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)) {
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -251,9 +242,9 @@ fun PageSMBSetup() {
                                 .paddingHorizontal(SizeTokens.Level24),
                             enabled = uiState.isProcessing.not(),
                             value = username,
-                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
+                            leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_person),
                             onValueChange = { username = it },
-                            label = StringResourceToken.fromStringId(R.string.username)
+                            label = stringResource(id = R.string.username)
                         )
 
                         SetupTextField(
@@ -262,13 +253,13 @@ fun PageSMBSetup() {
                                 .paddingHorizontal(SizeTokens.Level24),
                             enabled = uiState.isProcessing.not(),
                             value = domain,
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Domain),
+                            leadingIcon = Icons.Rounded.Domain,
                             onValueChange = { domain = it },
-                            label = StringResourceToken.fromStringArgs(
-                                StringResourceToken.fromStringId(R.string.domain),
-                                StringResourceToken.fromString("("),
-                                StringResourceToken.fromStringId(R.string.allow_empty),
-                                StringResourceToken.fromString(")"),
+                            label = joinOf(
+                                stringResource(id = R.string.domain),
+                                "(",
+                                stringResource(id = R.string.allow_empty),
+                                ")",
                             ),
                         )
 
@@ -279,25 +270,25 @@ fun PageSMBSetup() {
                             enabled = uiState.isProcessing.not(),
                             value = password,
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_key),
-                            trailingIcon = ImageVectorToken.fromVector(if (passwordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff),
+                            leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_key),
+                            trailingIcon = if (passwordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
                             onTrailingIconClick = {
                                 passwordVisible = passwordVisible.not()
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                             onValueChange = { password = it },
-                            label = StringResourceToken.fromStringId(R.string.password),
+                            label = stringResource(id = R.string.password),
                         )
                     }
                 }
             }
 
-            Title(enabled = uiState.isProcessing.not(), title = StringResourceToken.fromStringId(R.string.advanced)) {
+            Title(enabled = uiState.isProcessing.not(), title = stringResource(id = R.string.advanced)) {
                 Clickable(
                     enabled = allFilled && uiState.isProcessing.not(),
-                    title = StringResourceToken.fromStringId(R.string.remote_path),
-                    value = StringResourceToken.fromString(remote.ifEmpty { context.getString(R.string.not_selected) }),
-                    desc = StringResourceToken.fromStringId(R.string.remote_path_desc),
+                    title = stringResource(id = R.string.remote_path),
+                    value = remote.ifEmpty { context.getString(R.string.not_selected) },
+                    desc = stringResource(id = R.string.remote_path_desc),
                 ) {
                     viewModel.launchOnIO {
                         viewModel.updateSMBEntity(
@@ -328,14 +319,14 @@ fun PageSMBSetup() {
                         enabled = uiState.isProcessing.not(),
                         onClick = {
                             viewModel.launchOnIO {
-                                if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.delete_account), text = StringResourceToken.fromStringId(R.string.delete_account_desc))) {
+                                if (dialogState.confirm(title = context.getString(R.string.delete_account), text = context.getString(R.string.delete_account_desc))) {
                                     viewModel.emitIntent(IndexUiIntent.DeleteAccount(navController = navController))
                                 }
                             }
                         }
                     ) {
                         Text(
-                            text = StringResourceToken.fromStringId(R.string.delete_account).value,
+                            text = stringResource(id = R.string.delete_account),
                             color = ColorSchemeKeyTokens.Error.toColor(uiState.isProcessing.not())
                         )
                     }

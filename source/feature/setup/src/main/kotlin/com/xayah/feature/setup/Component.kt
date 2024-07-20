@@ -30,10 +30,7 @@ import com.xayah.core.ui.component.LabelLargeText
 import com.xayah.core.ui.material3.Surface
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.value
 
 @Composable
@@ -81,8 +78,8 @@ fun SetupScaffold(topBar: @Composable () -> Unit = {}, actions: @Composable RowS
 @Composable
 fun PermissionButton(
     enabled: Boolean = true,
-    title: StringResourceToken,
-    desc: StringResourceToken,
+    title: String,
+    desc: String,
     envState: EnvState,
     onSetting: (() -> Unit)? = null,
     onClick: () -> Unit,
@@ -98,7 +95,7 @@ fun PermissionButton(
                 Surface(modifier = Modifier.size(SizeTokens.Level36), shape = CircleShape, onClick = onSetting, color = ColorSchemeKeyTokens.Transparent.toColor(enabled)) {
                     Icon(
                         modifier = Modifier.padding(SizeTokens.Level8),
-                        imageVector = ImageVectorToken.fromVector(Icons.Outlined.Settings).value,
+                        imageVector = Icons.Outlined.Settings,
                         tint = ColorSchemeKeyTokens.OnSurface.toColor(enabled),
                         contentDescription = null
                     )
@@ -106,7 +103,7 @@ fun PermissionButton(
             }
 
             Icon(
-                imageVector = ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight).value,
+                imageVector = Icons.Rounded.KeyboardArrowRight,
                 tint = envState.onColorContainer.toColor(enabled),
                 contentDescription = null
             )
@@ -114,8 +111,8 @@ fun PermissionButton(
         onClick = onClick
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            LabelLargeText(text = title.value, color = ColorSchemeKeyTokens.OnSurface.toColor())
-            BodySmallText(text = desc.value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+            LabelLargeText(text = title, color = ColorSchemeKeyTokens.OnSurface.toColor())
+            BodySmallText(text = desc, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
         }
     }
 }

@@ -23,8 +23,10 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.xayah.core.model.database.DirectoryEntity
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.Card
@@ -39,22 +41,16 @@ import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.SegmentProgress
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
+import com.xayah.core.ui.util.joinOf
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun DirectoryScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
-    title: StringResourceToken,
+    title: String,
     isLoading: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (BoxScope.() -> Unit)
@@ -90,10 +86,10 @@ fun DirectoryCard(
     enabled: Boolean = true,
     selected: Boolean,
     performHapticFeedback: Boolean = false,
-    title: StringResourceToken,
-    icon: ImageVectorToken,
-    path: StringResourceToken,
-    error: StringResourceToken? = null,
+    title: String,
+    icon: ImageVector,
+    path: String,
+    error: String? = null,
     used: SegmentProgress? = null,
     backupUsed: SegmentProgress? = null,
     onClick: () -> Unit = {},
@@ -123,19 +119,19 @@ fun DirectoryCard(
             ) {
                 Icon(
                     modifier = Modifier.intrinsicIcon(),
-                    imageVector = icon.value,
+                    imageVector = icon,
                     tint = (if (selected) ColorSchemeKeyTokens.OnPrimaryContainer else ColorSchemeKeyTokens.OnSurface).toColor(enabled),
                     contentDescription = null,
                 )
                 TitleLargeText(
                     enabled = enabled,
-                    text = title.value,
+                    text = title,
                     color = (if (selected) ColorSchemeKeyTokens.OnPrimaryContainer else ColorSchemeKeyTokens.OnSurface).toColor(),
                 )
             }
             BodyMediumText(
                 enabled = enabled,
-                text = path.value,
+                text = path,
                 color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
             )
             if (used != null && used.progress.isNaN().not()) {
@@ -176,7 +172,7 @@ fun DirectoryCard(
                 BodyMediumText(
                     modifier = Modifier.paddingTop(SizeTokens.Level8),
                     enabled = enabled,
-                    text = error.value,
+                    text = error,
                     color = ColorSchemeKeyTokens.Error.toColor(),
                 )
             }
@@ -191,10 +187,10 @@ fun DirectoryCard(item: DirectoryEntity, performHapticFeedback: Boolean = false,
     DirectoryCard(
         selected = item.selected,
         performHapticFeedback = performHapticFeedback,
-        title = StringResourceToken.fromStringId(item.titleResId),
+        title = stringResource(id = item.titleResId),
         icon = item.icon(),
-        path = StringResourceToken.fromString(item.pathDisplay()),
-        error = if (item.error.isEmpty()) null else StringResourceToken.fromString(item.error),
+        path = item.pathDisplay(),
+        error = item.error.ifEmpty { null },
         used = SegmentProgress(used = item.usedBytes, total = item.totalBytes),
         backupUsed = if (item.selected) SegmentProgress(used = item.childUsedBytes, total = item.totalBytes) else null,
         onClick = onClick,
@@ -209,12 +205,9 @@ fun CustomDirectoryCard(enabled: Boolean, onClick: () -> Unit) {
     DirectoryCard(
         enabled = enabled,
         selected = false,
-        title = StringResourceToken.fromStringArgs(
-            StringResourceToken.fromStringId(R.string.custom_directory),
-            StringResourceToken.fromString("..."),
-        ),
-        icon = ImageVectorToken.fromVector(Icons.Rounded.AddCircleOutline),
-        path = StringResourceToken.fromStringId(R.string.pick_custom_directory_desc),
+        title = joinOf(stringResource(id = R.string.custom_directory), "..."),
+        icon = Icons.Rounded.AddCircleOutline,
+        path = stringResource(id = R.string.pick_custom_directory_desc),
         onClick = onClick,
     )
 }
