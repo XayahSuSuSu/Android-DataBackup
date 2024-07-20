@@ -54,6 +54,7 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.ValidateRoot -> {
+                emitIntent(IndexUiIntent.ValidateAbi)
                 mutex.withLock {
                     if (rootState.value == EnvState.Idle || rootState.value == EnvState.Failed) {
                         _rootState.value = EnvState.Processing
