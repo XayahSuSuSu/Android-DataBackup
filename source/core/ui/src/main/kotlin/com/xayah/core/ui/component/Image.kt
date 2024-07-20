@@ -1,6 +1,5 @@
 package com.xayah.core.ui.component
 
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,16 +9,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
@@ -30,22 +34,29 @@ import com.xayah.core.ui.util.value
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.iconDir
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @Composable
-fun PackageIconImage(enabled: Boolean = true, packageName: String, size: Dp = SizeTokens.Level32) {
+fun PackageIconImage(packageName: String, size: Dp = SizeTokens.Level32) {
     val context = LocalContext.current
-    val icon = rememberDrawablePainter(drawable = runBlocking {
-        BaseUtil.readIconFromPackageName(context, packageName) ?:
-        BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageName)}") ?:
-        AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
-    } )
+    val scope = rememberCoroutineScope()
+    var icon by remember { mutableStateOf<Any?>(null) }
+    LaunchedEffect(null) {
+        // Read icon from cached internal dir.
+        scope.launch(Dispatchers.IO) {
+            icon = BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packageName)}")
+        }
+    }
 
-    Image(
-        modifier = Modifier.size(size),
-        painter = icon,
-        colorFilter = if (enabled) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
+    AsyncImage(
+        modifier = Modifier
+            .size(size),
+        model = ImageRequest.Builder(context)
+            .data(icon)
+            .crossfade(true)
+            .build(),
         contentDescription = null
     )
 }

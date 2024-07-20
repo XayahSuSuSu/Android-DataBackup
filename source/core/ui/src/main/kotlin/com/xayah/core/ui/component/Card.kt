@@ -337,7 +337,7 @@ private fun ReportAppItem(enabled: Boolean, color: ColorSchemeKeyTokens = ColorS
             Spacer(modifier = Modifier.size(SizeTokens.Level24))
             LabelMediumText(modifier = Modifier.weight(1f), text = item.label, color = color.toColor(enabled))
             LabelSmallText(text = item.user, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
-            PackageIconImage(enabled = enabled, packageName = item.packageName, size = SizeTokens.Level24)
+            PackageIconImage(packageName = item.packageName, size = SizeTokens.Level24)
         }
     }
 }
