@@ -1,80 +1,83 @@
 package com.xayah.core.ui.util
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.R
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
-val OperationState.icon: ImageVectorToken
+val OperationState.icon: ImageVector
+    @Composable
     get() = when (this) {
         OperationState.IDLE -> {
-            ImageVectorToken.fromDrawable(R.drawable.ic_rounded_adjust_circle)
+            ImageVector.vectorResource(id = R.drawable.ic_rounded_adjust_circle)
         }
 
         OperationState.SKIP -> {
-            ImageVectorToken.fromDrawable(R.drawable.ic_rounded_not_started_circle)
+            ImageVector.vectorResource(id = R.drawable.ic_rounded_not_started_circle)
         }
 
         OperationState.PROCESSING -> {
-            ImageVectorToken.fromDrawable(R.drawable.ic_rounded_pending_circle)
+            ImageVector.vectorResource(id = R.drawable.ic_rounded_pending_circle)
         }
 
         OperationState.UPLOADING -> {
-            ImageVectorToken.fromDrawable(R.drawable.ic_rounded_arrow_circle_up)
+            ImageVector.vectorResource(id = R.drawable.ic_rounded_arrow_circle_up)
         }
 
         OperationState.DOWNLOADING -> {
-            ImageVectorToken.fromDrawable(R.drawable.ic_rounded_arrow_circle_down)
+            ImageVector.vectorResource(id = R.drawable.ic_rounded_arrow_circle_down)
         }
 
         OperationState.DONE -> {
-            ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle)
+            ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle)
         }
 
         OperationState.ERROR -> {
-            ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel_circle)
+            ImageVector.vectorResource(id = R.drawable.ic_rounded_cancel_circle)
         }
     }
 
-val OperationState.color: ColorSchemeKeyTokens
+val OperationState.color: ThemedColorSchemeKeyTokens
     get() = when (this) {
         OperationState.PROCESSING -> {
-            ColorSchemeKeyTokens.SecondaryContainer
+            ThemedColorSchemeKeyTokens.SecondaryContainer
         }
 
         OperationState.UPLOADING, OperationState.DOWNLOADING -> {
-            ColorSchemeKeyTokens.SecondaryContainer
+            ThemedColorSchemeKeyTokens.SecondaryContainer
         }
 
         OperationState.DONE -> {
-            ColorSchemeKeyTokens.PrimaryContainer
+            ThemedColorSchemeKeyTokens.PrimaryContainer
         }
 
         OperationState.ERROR -> {
-            ColorSchemeKeyTokens.ErrorContainer
+            ThemedColorSchemeKeyTokens.ErrorContainer
         }
 
-        else -> ColorSchemeKeyTokens.Primary
+        else -> ThemedColorSchemeKeyTokens.Primary
     }
 
-val OperationState.containerColor: ColorSchemeKeyTokens
+val OperationState.containerColor: ThemedColorSchemeKeyTokens
     get() = when (this) {
         OperationState.PROCESSING -> {
-            ColorSchemeKeyTokens.Secondary
+            ThemedColorSchemeKeyTokens.Secondary
         }
 
         OperationState.UPLOADING, OperationState.DOWNLOADING -> {
-            ColorSchemeKeyTokens.Secondary
+            ThemedColorSchemeKeyTokens.Secondary
         }
 
         OperationState.DONE -> {
-            ColorSchemeKeyTokens.Primary
+            ThemedColorSchemeKeyTokens.Primary
         }
 
         OperationState.ERROR -> {
-            ColorSchemeKeyTokens.Error
+            ThemedColorSchemeKeyTokens.Error
         }
 
-        else -> ColorSchemeKeyTokens.Transparent
+        else -> ThemedColorSchemeKeyTokens.Transparent
     }
 

@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -48,11 +49,8 @@ import com.xayah.core.ui.component.paddingEnd
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.token.TextFieldTokens
-import com.xayah.core.ui.util.value
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -60,7 +58,7 @@ import com.xayah.core.ui.util.value
 fun CloudScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
     snackbarHostState: SnackbarHostState? = null,
-    title: StringResourceToken,
+    title: String,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (BoxScope.() -> Unit)
 ) {
@@ -90,7 +88,7 @@ fun CloudScaffold(
 @ExperimentalMaterial3Api
 @Composable
 fun AccountSetupScaffold(
-    scrollBehavior: TopAppBarScrollBehavior, title: StringResourceToken,
+    scrollBehavior: TopAppBarScrollBehavior, title: String,
     snackbarHostState: SnackbarHostState,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (BoxScope.(innerPadding: PaddingValues) -> Unit)
@@ -165,11 +163,11 @@ fun SetupTextField(
     enabled: Boolean = true,
     readOnly: Boolean = false,
     value: String,
-    leadingIcon: ImageVectorToken,
-    trailingIcon: ImageVectorToken? = null,
+    leadingIcon: ImageVector,
+    trailingIcon: ImageVector? = null,
     onTrailingIconClick: (() -> Unit)? = null,
-    prefix: StringResourceToken? = null,
-    label: StringResourceToken,
+    prefix: String? = null,
+    label: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     onClick: (() -> Unit)? = null,
@@ -200,21 +198,21 @@ fun SetupTextField(
                 modifier = Modifier
                     .paddingStart(TextFieldTokens.LeadingIconPaddingStart)
                     .size(TextFieldTokens.IconSize),
-                imageVector = leadingIcon.value,
+                imageVector = leadingIcon,
                 contentDescription = null,
             )
         },
         trailingIcon = if (trailingIcon == null) null else {
             {
                 IconButton(modifier = Modifier.paddingEnd(TextFieldTokens.TrailingIconPaddingEnd), onClick = { onTrailingIconClick?.invoke() }) {
-                    Icon(imageVector = trailingIcon.value, contentDescription = null)
+                    Icon(imageVector = trailingIcon, contentDescription = null)
                 }
             }
         },
         prefix = if (prefix == null) null else {
             {
                 Text(
-                    text = prefix.value
+                    text = prefix
                 )
             }
         },
@@ -222,7 +220,7 @@ fun SetupTextField(
         visualTransformation = visualTransformation,
         shape = CircleShape,
         onValueChange = onValueChange,
-        label = { Text(text = label.value) },
+        label = { Text(text = label) },
         interactionSource = interactionSource,
     )
 }

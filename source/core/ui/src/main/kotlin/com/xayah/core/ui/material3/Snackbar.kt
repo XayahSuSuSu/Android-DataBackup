@@ -45,23 +45,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFirstOrNull
 import com.xayah.core.ui.R
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.token.SnackbarTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
 import kotlin.math.max
 import kotlin.math.min
 
@@ -257,24 +256,24 @@ fun Snackbar(
                 if (type == SnackbarType.Loading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(SizeTokens.Level24),
-                        color = ColorSchemeKeyTokens.Primary.toColor(),
+                        color = ThemedColorSchemeKeyTokens.Primary.value,
                         strokeCap = StrokeCap.Round
                     )
                 } else {
                     Icon(
                         modifier = Modifier.size(SizeTokens.Level24),
                         imageVector = when (type) {
-                            SnackbarType.Warning -> ImageVectorToken.fromVector(Icons.Outlined.Warning)
-                            SnackbarType.Error -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel_circle)
-                            SnackbarType.Success -> ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle)
-                            else -> ImageVectorToken.fromVector(Icons.Rounded.Circle)
-                        }.value,
+                            SnackbarType.Warning -> Icons.Outlined.Warning
+                            SnackbarType.Error -> ImageVector.vectorResource(id = R.drawable.ic_rounded_cancel_circle)
+                            SnackbarType.Success -> ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle)
+                            else -> Icons.Rounded.Circle
+                        },
                         tint = when (type) {
-                            SnackbarType.Warning -> ColorSchemeKeyTokens.Primary
-                            SnackbarType.Error -> ColorSchemeKeyTokens.Error
-                            SnackbarType.Success -> ColorSchemeKeyTokens.GreenPrimary
-                            else -> ColorSchemeKeyTokens.Primary
-                        }.toColor(),
+                            SnackbarType.Warning -> ThemedColorSchemeKeyTokens.Primary
+                            SnackbarType.Error -> ThemedColorSchemeKeyTokens.Error
+                            SnackbarType.Success -> ThemedColorSchemeKeyTokens.GreenPrimary
+                            else -> ThemedColorSchemeKeyTokens.Primary
+                        }.value,
                         contentDescription = null,
                     )
                 }
@@ -475,19 +474,19 @@ object SnackbarDefaults {
     val shape: Shape @Composable get() = SnackbarTokens.ContainerShape.toShape()
 
     /** Default color of a snackbar. */
-    val color: Color @Composable get() = SnackbarTokens.ContainerColor.toColor()
+    val color: Color @Composable get() = SnackbarTokens.ContainerColor.value
 
     /** Default content color of a snackbar. */
-    val contentColor: Color @Composable get() = SnackbarTokens.SupportingTextColor.toColor()
+    val contentColor: Color @Composable get() = SnackbarTokens.SupportingTextColor.value
 
     /** Default action color of a snackbar. */
-    val actionColor: Color @Composable get() = SnackbarTokens.ActionLabelTextColor.toColor()
+    val actionColor: Color @Composable get() = SnackbarTokens.ActionLabelTextColor.value
 
     /** Default action content color of a snackbar. */
-    val actionContentColor: Color @Composable get() = SnackbarTokens.ActionLabelTextColor.toColor()
+    val actionContentColor: Color @Composable get() = SnackbarTokens.ActionLabelTextColor.value
 
     /** Default dismiss action content color of a snackbar. */
-    val dismissActionContentColor: Color @Composable get() = SnackbarTokens.IconColor.toColor()
+    val dismissActionContentColor: Color @Composable get() = SnackbarTokens.IconColor.value
 }
 
 private val ContainerMaxWidth = 600.dp

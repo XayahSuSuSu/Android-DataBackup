@@ -19,25 +19,26 @@
 package com.xayah.core.ui.material3.tokens
 
 import androidx.compose.ui.unit.dp
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 internal object OutlinedCardTokens {
-    val ContainerColor = ColorSchemeKeyTokens.Surface
+    val ContainerColor = ThemedColorSchemeKeyTokens.Surface
     val ContainerElevation = ElevationTokens.Level0
     val ContainerShape = ShapeKeyTokens.CornerMedium
-    val ContainerSurfaceTintLayerColor = ColorSchemeKeyTokens.SurfaceTint
+    val ContainerSurfaceTintLayerColor = ThemedColorSchemeKeyTokens.SurfaceTint
     val DisabledContainerElevation = ElevationTokens.Level0
-    val DisabledOutlineColor = ColorSchemeKeyTokens.Outline
+    val DisabledOutlineColor = ThemedColorSchemeKeyTokens.Outline
     const val DisabledOutlineOpacity = 0.12f
     val DraggedContainerElevation = ElevationTokens.Level3
-    val DraggedOutlineColor = ColorSchemeKeyTokens.Outline
+    val DraggedOutlineColor = ThemedColorSchemeKeyTokens.Outline
     val FocusContainerElevation = ElevationTokens.Level0
-    val FocusOutlineColor = ColorSchemeKeyTokens.OnSurface
+    val FocusOutlineColor = ThemedColorSchemeKeyTokens.OnSurface
     val HoverContainerElevation = ElevationTokens.Level1
-    val HoverOutlineColor = ColorSchemeKeyTokens.Outline
-    val IconColor = ColorSchemeKeyTokens.Primary
+    val HoverOutlineColor = ThemedColorSchemeKeyTokens.Outline
+    val IconColor = ThemedColorSchemeKeyTokens.Primary
     val IconSize = 24.0.dp
-    val OutlineColor = ColorSchemeKeyTokens.Outline
+    val OutlineColor = ThemedColorSchemeKeyTokens.Outline
     val OutlineWidth = 1.0.dp
     val PressedContainerElevation = ElevationTokens.Level0
-    val PressedOutlineColor = ColorSchemeKeyTokens.Outline
+    val PressedOutlineColor = ThemedColorSchemeKeyTokens.Outline
 }

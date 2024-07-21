@@ -19,19 +19,20 @@
 package com.xayah.core.ui.material3.tokens
 
 import androidx.compose.ui.unit.dp
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 internal object ElevatedCardTokens {
-    val ContainerColor = ColorSchemeKeyTokens.Surface
+    val ContainerColor = ThemedColorSchemeKeyTokens.Surface
     val ContainerElevation = ElevationTokens.Level1
     val ContainerShape = ShapeKeyTokens.CornerMedium
-    val ContainerSurfaceTintLayerColor = ColorSchemeKeyTokens.SurfaceTint
-    val DisabledContainerColor = ColorSchemeKeyTokens.Surface
+    val ContainerSurfaceTintLayerColor = ThemedColorSchemeKeyTokens.SurfaceTint
+    val DisabledContainerColor = ThemedColorSchemeKeyTokens.Surface
     val DisabledContainerElevation = ElevationTokens.Level1
     const val DisabledContainerOpacity = 0.38f
     val DraggedContainerElevation = ElevationTokens.Level4
     val FocusContainerElevation = ElevationTokens.Level1
     val HoverContainerElevation = ElevationTokens.Level2
-    val IconColor = ColorSchemeKeyTokens.Primary
+    val IconColor = ThemedColorSchemeKeyTokens.Primary
     val IconSize = 24.0.dp
     val PressedContainerElevation = ElevationTokens.Level1
 }

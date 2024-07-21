@@ -18,15 +18,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.paddingHorizontal
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
 import com.xayah.feature.main.settings.TranslatorCard
@@ -49,7 +47,7 @@ fun PageTranslatorsSettings() {
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.translators),
+        title = stringResource(id = R.string.translators),
         actions = {}
     ) {
         LazyColumn(
@@ -62,7 +60,7 @@ fun PageTranslatorsSettings() {
 
             items(items = uiState.translators) { item ->
                 item.keys.forEach { lang ->
-                    Title(title = StringResourceToken.fromString(lang)) {
+                    Title(title = lang) {
                         Column(verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8)) {
                             if (item[lang] != null) {
                                 if (item[lang]!!.isEmpty()) {

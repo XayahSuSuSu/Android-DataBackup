@@ -57,6 +57,14 @@ fun DataBackupTheme(
         darkTheme -> darkColorScheme()
         else -> lightColorScheme()
     }
+    val themedColorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (darkTheme) dynamicDarkThemedColorScheme(context) else dynamicLightThemedColorScheme(context)
+        }
+
+        darkTheme -> darkThemedColorScheme()
+        else -> lightThemedColorScheme()
+    }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -84,8 +92,16 @@ fun DataBackupTheme(
         colorScheme = colorScheme,
         typography = Typography,
         content = {
-            val slotScope = rememberSlotScope()
-            CompositionLocalProvider(LocalSlotScope provides slotScope, content = content)
+            CompositionLocalProvider(
+                LocalThemedColorScheme provides themedColorScheme,
+            ) {
+                // LocalThemedColorScheme should be applied first.
+                val slotScope = rememberSlotScope()
+                CompositionLocalProvider(
+                    LocalSlotScope provides slotScope,
+                    content = content
+                )
+            }
         }
     )
 }

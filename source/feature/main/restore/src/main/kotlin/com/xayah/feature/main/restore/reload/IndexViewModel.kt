@@ -5,9 +5,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.ui.model.DialogRadioItem
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
-import com.xayah.core.ui.util.fromString
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
@@ -43,13 +41,13 @@ class IndexViewModel @Inject constructor(
         cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim() ?: "",
         versionList = listOf(
             DialogRadioItem(
-                title = StringResourceToken.fromString("current"),
+                title = "current",
             ),
             DialogRadioItem(
-                title = StringResourceToken.fromString("1.1.x"),
+                title = "1.1.x",
             ),
             DialogRadioItem(
-                title = StringResourceToken.fromString("1.0.x"),
+                title = "1.0.x",
             ),
         ),
         versionIndex = 0,

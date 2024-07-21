@@ -29,10 +29,10 @@ import com.xayah.core.ui.component.LabelSmallText
 import com.xayah.core.ui.component.TopBarTitle
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.theme.DataBackupTheme
 import com.xayah.core.ui.theme.JetbrainsMonoFamily
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.PaddingTokens
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                             Icon(
                                 imageVector = Icons.Rounded.Warning,
                                 contentDescription = null,
-                                tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                                tint = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                                 modifier = Modifier
                                     .size(PaddingTokens.Level7)
                                     .paddingBottom(PaddingTokens.Level2)

@@ -19,16 +19,17 @@
 package com.xayah.core.ui.material3.tokens
 
 import androidx.compose.ui.unit.dp
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 internal object LinearProgressIndicatorTokens {
-    val ActiveIndicatorColor = ColorSchemeKeyTokens.Primary
+    val ActiveIndicatorColor = ThemedColorSchemeKeyTokens.Primary
     val ActiveIndicatorHeight = 4.0.dp
     val ActiveShape = ShapeKeyTokens.CornerNone
-    val FourColorActiveIndicatorFourColor = ColorSchemeKeyTokens.TertiaryContainer
-    val FourColorActiveIndicatorOneColor = ColorSchemeKeyTokens.Primary
-    val FourColorActiveIndicatorThreeColor = ColorSchemeKeyTokens.Tertiary
-    val FourColorActiveIndicatorTwoColor = ColorSchemeKeyTokens.PrimaryContainer
-    val TrackColor = ColorSchemeKeyTokens.SurfaceVariant
+    val FourColorActiveIndicatorFourColor = ThemedColorSchemeKeyTokens.TertiaryContainer
+    val FourColorActiveIndicatorOneColor = ThemedColorSchemeKeyTokens.Primary
+    val FourColorActiveIndicatorThreeColor = ThemedColorSchemeKeyTokens.Tertiary
+    val FourColorActiveIndicatorTwoColor = ThemedColorSchemeKeyTokens.PrimaryContainer
+    val TrackColor = ThemedColorSchemeKeyTokens.SurfaceVariant
     val TrackHeight = 4.0.dp
     val TrackShape = ShapeKeyTokens.CornerNone
 }

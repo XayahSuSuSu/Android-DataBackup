@@ -45,6 +45,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.component.ChipRow
@@ -60,14 +61,9 @@ import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.medium.ListScaffold
 import com.xayah.feature.main.medium.R
@@ -99,24 +95,24 @@ fun PageMediumBackupList() {
     ListScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.select_files),
-        subtitle = if (mediumSelectedState != 0) StringResourceToken.fromString("(${mediumSelectedState}/${mediumState.size})") else null,
+        title = stringResource(id = R.string.select_files),
+        subtitle = if (mediumSelectedState != 0) "(${mediumSelectedState}/${mediumState.size})" else null,
         actions = {
             if (srcMediumEmptyState.not()) {
                 AnimatedVisibility(visible = mediumSelectedState != 0) {
-                    IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Block)) {
+                    IconButton(icon = Icons.Outlined.Block) {
                         viewModel.launchOnIO {
-                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.confirm_add_to_blacklist))) {
+                            if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.confirm_add_to_blacklist))) {
                                 viewModel.emitIntentOnIO(IndexUiIntent.BlockSelected)
                             }
                         }
                     }
                 }
-                IconButton(icon = ImageVectorToken.fromVector(if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt)) {
+                IconButton(icon = if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt) {
                     viewModel.emitStateOnMain(uiState.copy(filterMode = uiState.filterMode.not()))
                     viewModel.emitIntentOnIO(IndexUiIntent.ClearKey)
                 }
-                IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Checklist)) {
+                IconButton(icon = Icons.Outlined.Checklist) {
                     viewModel.emitIntentOnIO(IndexUiIntent.SelectAll(uiState.selectAll.not()))
                     viewModel.emitStateOnMain(uiState.copy(selectAll = uiState.selectAll.not()))
                 }
@@ -147,7 +143,7 @@ fun PageMediumBackupList() {
                             .paddingHorizontal(SizeTokens.Level16)
                             .paddingVertical(SizeTokens.Level8),
                         enabled = true,
-                        placeholder = StringResourceToken.fromStringId(R.string.search_bar_hint_medium),
+                        placeholder = stringResource(id = R.string.search_bar_hint_medium),
                         onTextChange = {
                             viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
                         }
@@ -157,7 +153,7 @@ fun PageMediumBackupList() {
                         SortChip(
                             enabled = true,
                             dismissOnSelected = true,
-                            leadingIcon = ImageVectorToken.fromVector(Icons.Rounded.Sort),
+                            leadingIcon = Icons.Rounded.Sort,
                             selectedIndex = sortIndexState,
                             type = sortTypeState,
                             list = stringArrayResource(id = R.array.backup_sort_type_items_files).toList(),
@@ -183,9 +179,9 @@ fun PageMediumBackupList() {
                 LazyColumn(modifier = Modifier.fillMaxSize(), state = scrollState) {
                     item {
                         Clickable(
-                            icon = ImageVectorToken.fromVector(Icons.Rounded.Add),
-                            title = StringResourceToken.fromStringId(R.string.add),
-                            value = StringResourceToken.fromStringId(R.string.choose_a_custom_path)
+                            icon = Icons.Rounded.Add,
+                            title = stringResource(id = R.string.add),
+                            value = stringResource(id = R.string.choose_a_custom_path)
                         ) {
                             viewModel.emitIntentOnIO(IndexUiIntent.Add(context = context))
                         }

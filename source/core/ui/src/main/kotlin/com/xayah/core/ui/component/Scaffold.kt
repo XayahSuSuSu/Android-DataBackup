@@ -32,11 +32,7 @@ import com.xayah.core.common.util.BuildConfigUtil
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.getValue
-import com.xayah.core.ui.util.value
 import com.xayah.core.util.capitalizeString
 import kotlinx.coroutines.delay
 
@@ -46,7 +42,7 @@ import kotlinx.coroutines.delay
 fun MainIndexSubScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
     snackbarHostState: SnackbarHostState? = null,
-    title: StringResourceToken,
+    title: String,
     updateAvailable: Boolean,
     onVersionChipClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
@@ -59,7 +55,7 @@ fun MainIndexSubScaffold(
             TopAppBar(
                 title = {
                     Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8)) {
-                        Text(text = title.value)
+                        Text(text = title)
 
                         BadgedBox(
                             badge = {
@@ -75,7 +71,7 @@ fun MainIndexSubScaffold(
                                     while (updateAvailable) {
                                         delay(3000)
                                         val tmp = version
-                                        version = StringResourceToken.fromStringId(R.string.update_available).getValue(context)
+                                        version = context.getString(R.string.update_available)
                                         delay(3000)
                                         version = tmp
                                     }

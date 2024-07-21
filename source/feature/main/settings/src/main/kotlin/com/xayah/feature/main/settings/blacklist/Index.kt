@@ -20,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.component.IconButton
@@ -30,11 +32,7 @@ import com.xayah.core.ui.component.PackageItem
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 import com.xayah.feature.main.settings.DotLottieView
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
@@ -45,6 +43,7 @@ import com.xayah.feature.main.settings.SettingsScaffold
 @ExperimentalMaterial3Api
 @Composable
 fun PageBlackList() {
+    val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val dialogState = LocalSlotScope.current!!.dialogSlot
     val viewModel = hiltViewModel<IndexViewModel>()
@@ -54,19 +53,19 @@ fun PageBlackList() {
 
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromStringId(R.string.blacklist),
+        title = stringResource(id = R.string.blacklist),
         actions = {
             AnimatedVisibility(visible = uiState.appIds.isNotEmpty() || uiState.fileIds.isNotEmpty()) {
-                IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Delete)) {
+                IconButton(icon = Icons.Outlined.Delete) {
                     viewModel.launchOnIO {
-                        if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.confirm_remove_from_blacklist))) {
+                        if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.confirm_remove_from_blacklist))) {
                             viewModel.emitIntentOnIO(IndexUiIntent.RemoveSelected)
                         }
                     }
                 }
             }
             if (packagesState.isNotEmpty() || mediumState.isNotEmpty())
-                IconButton(icon = ImageVectorToken.fromVector(Icons.Outlined.Checklist)) {
+                IconButton(icon = Icons.Outlined.Checklist) {
                     viewModel.emitIntentOnIO(IndexUiIntent.SelectAll)
                 }
         }
@@ -87,7 +86,7 @@ fun PageBlackList() {
 
             if (packagesState.isNotEmpty()) {
                 item {
-                    Title(title = StringResourceToken.fromStringId(R.string.apps)) {}
+                    Title(title = stringResource(id = R.string.apps)) {}
                 }
             }
 
@@ -109,7 +108,7 @@ fun PageBlackList() {
 
             if (mediumState.isNotEmpty()) {
                 item {
-                    Title(title = StringResourceToken.fromStringId(R.string.files)) {}
+                    Title(title = stringResource(id = R.string.files)) {}
                 }
             }
 

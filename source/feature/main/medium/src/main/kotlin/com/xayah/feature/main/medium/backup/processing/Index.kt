@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.saveScreenOffCountDown
 import com.xayah.core.model.OperationState
@@ -35,12 +36,8 @@ import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.component.pagerAnimation
 import com.xayah.core.ui.material3.SnackbarDuration
 import com.xayah.core.ui.material3.SnackbarType
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.value
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.withMainContext
@@ -117,7 +114,7 @@ fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
         {
             if (uiState.state == OperationState.PROCESSING) {
                 viewModel.launchOnIO {
-                    if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.prompt), text = StringResourceToken.fromStringId(R.string.processing_exit_confirmation))) {
+                    if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.processing_exit_confirmation))) {
                         BaseUtil.kill(context, "tar", "root")
                         viewModel.emitIntent(IndexUiIntent.DestroyService)
                         withMainContext {
@@ -143,8 +140,7 @@ fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
     ProcessingSetupScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(
-            when (uiState.state) {
+        title = context.getString(when (uiState.state) {
                 OperationState.PROCESSING -> R.string.processing
                 OperationState.DONE -> R.string.backup_completed
                 else -> R.string.backup
@@ -156,7 +152,7 @@ fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
                 if (uiState.state == OperationState.IDLE) viewModel.emitIntentOnIO(IndexUiIntent.Backup)
                 else navController.popBackStack()
             }) {
-                AnimatedTextContainer(targetState = if (uiState.state == OperationState.DONE) StringResourceToken.fromStringId(R.string.finish).value else StringResourceToken.fromStringId(R.string._continue).value) { text ->
+                AnimatedTextContainer(targetState = if (uiState.state == OperationState.DONE) stringResource(id = R.string.finish) else stringResource(id = R.string._continue)) { text ->
                     Text(text = text)
                 }
             }
@@ -184,7 +180,7 @@ fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
                             .fillMaxSize()
                             .pagerAnimation(pagerState, page),
                         progress = -1f,
-                        title = StringResourceToken.fromStringId(R.string.preprocessing),
+                        title = stringResource(id = R.string.preprocessing),
                         defExpanded = true,
                         items = preItems
                     )
@@ -194,7 +190,7 @@ fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
                             .fillMaxSize()
                             .pagerAnimation(pagerState, page),
                         progress = -1f,
-                        title = StringResourceToken.fromStringId(R.string.post_processing),
+                        title = stringResource(id = R.string.post_processing),
                         defExpanded = true,
                         items = postItems
                     )
@@ -205,9 +201,9 @@ fun PageMediumBackupProcessing(viewModel: IndexViewModel) {
                             .pagerAnimation(pagerState, page),
                         scope = scope,
                         pagerState = pagerState,
-                        title = StringResourceToken.fromStringId(R.string.report),
-                        timer = StringResourceToken.fromString(timer),
-                        mediaSize = StringResourceToken.fromString(mediaSize),
+                        title = stringResource(id = R.string.report),
+                        timer = timer,
+                        mediaSize = mediaSize,
                         succeed = mediaSucceed,
                         failed = mediaFailed,
                     )

@@ -23,8 +23,10 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.xayah.core.model.database.DirectoryEntity
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.Card
@@ -37,24 +39,19 @@ import com.xayah.core.ui.component.intrinsicIcon
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.CardDefaults
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
 import com.xayah.core.ui.model.SegmentProgress
-import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
+import com.xayah.core.ui.util.joinOf
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun DirectoryScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
-    title: StringResourceToken,
+    title: String,
     isLoading: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (BoxScope.() -> Unit)
@@ -90,10 +87,10 @@ fun DirectoryCard(
     enabled: Boolean = true,
     selected: Boolean,
     performHapticFeedback: Boolean = false,
-    title: StringResourceToken,
-    icon: ImageVectorToken,
-    path: StringResourceToken,
-    error: StringResourceToken? = null,
+    title: String,
+    icon: ImageVector,
+    path: String,
+    error: String? = null,
     used: SegmentProgress? = null,
     backupUsed: SegmentProgress? = null,
     onClick: () -> Unit = {},
@@ -106,7 +103,7 @@ fun DirectoryCard(
             .wrapContentHeight(),
         enabled = enabled,
         performHapticFeedback = performHapticFeedback,
-        colors = CardDefaults.cardColors(containerColor = (if (selected) ColorSchemeKeyTokens.PrimaryContainer else ColorSchemeKeyTokens.Surface).toColor()),
+        colors = CardDefaults.cardColors(containerColor = (if (selected) ThemedColorSchemeKeyTokens.PrimaryContainer else ThemedColorSchemeKeyTokens.Surface).value),
         border = if (selected) null else CardDefaults.outlinedCardBorder(),
         onClick = onClick,
         onLongClick = onLongClick,
@@ -123,20 +120,20 @@ fun DirectoryCard(
             ) {
                 Icon(
                     modifier = Modifier.intrinsicIcon(),
-                    imageVector = icon.value,
-                    tint = (if (selected) ColorSchemeKeyTokens.OnPrimaryContainer else ColorSchemeKeyTokens.OnSurface).toColor(enabled),
+                    imageVector = icon,
+                    tint = (if (selected) ThemedColorSchemeKeyTokens.OnPrimaryContainer else ThemedColorSchemeKeyTokens.OnSurface).value.withState(enabled),
                     contentDescription = null,
                 )
                 TitleLargeText(
                     enabled = enabled,
-                    text = title.value,
-                    color = (if (selected) ColorSchemeKeyTokens.OnPrimaryContainer else ColorSchemeKeyTokens.OnSurface).toColor(),
+                    text = title,
+                    color = (if (selected) ThemedColorSchemeKeyTokens.OnPrimaryContainer else ThemedColorSchemeKeyTokens.OnSurface).value,
                 )
             }
             BodyMediumText(
                 enabled = enabled,
-                text = path.value,
-                color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                text = path,
+                color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
             )
             if (used != null && used.progress.isNaN().not()) {
                 SegmentProgressIndicator(
@@ -145,14 +142,14 @@ fun DirectoryCard(
                         .paddingBottom(SizeTokens.Level4),
                     enabled = enabled,
                     progress = used.progress,
-                    color = if (selected) ColorSchemeKeyTokens.Secondary else ColorSchemeKeyTokens.Primary,
-                    trackColor = ColorSchemeKeyTokens.SecondaryL80D20,
+                    color = if (selected) ThemedColorSchemeKeyTokens.Secondary else ThemedColorSchemeKeyTokens.Primary,
+                    trackColor = ThemedColorSchemeKeyTokens.SecondaryL80D20,
                 )
 
                 BodyMediumText(
                     enabled = enabled,
                     text = "${context.getString(R.string.args_used, (used.progress * 100).toInt())} (${used.usedFormat} / ${used.totalFormat})",
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 )
             }
             if (backupUsed != null && backupUsed.progress.isNaN().not()) {
@@ -162,13 +159,13 @@ fun DirectoryCard(
                         .paddingBottom(SizeTokens.Level4),
                     enabled = enabled,
                     progress = backupUsed.progress,
-                    color = ColorSchemeKeyTokens.Primary,
-                    trackColor = ColorSchemeKeyTokens.SecondaryL80D20,
+                    color = ThemedColorSchemeKeyTokens.Primary,
+                    trackColor = ThemedColorSchemeKeyTokens.SecondaryL80D20,
                 )
                 BodyMediumText(
                     enabled = enabled,
                     text = "${context.getString(R.string.args_used_by_backups, (backupUsed.progress * 100).toInt())} (${backupUsed.usedFormat} / ${backupUsed.totalFormat})",
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 )
             }
 
@@ -176,8 +173,8 @@ fun DirectoryCard(
                 BodyMediumText(
                     modifier = Modifier.paddingTop(SizeTokens.Level8),
                     enabled = enabled,
-                    text = error.value,
-                    color = ColorSchemeKeyTokens.Error.toColor(),
+                    text = error,
+                    color = ThemedColorSchemeKeyTokens.Error.value,
                 )
             }
         }
@@ -191,10 +188,10 @@ fun DirectoryCard(item: DirectoryEntity, performHapticFeedback: Boolean = false,
     DirectoryCard(
         selected = item.selected,
         performHapticFeedback = performHapticFeedback,
-        title = StringResourceToken.fromStringId(item.titleResId),
+        title = stringResource(id = item.titleResId),
         icon = item.icon(),
-        path = StringResourceToken.fromString(item.pathDisplay()),
-        error = if (item.error.isEmpty()) null else StringResourceToken.fromString(item.error),
+        path = item.pathDisplay(),
+        error = item.error.ifEmpty { null },
         used = SegmentProgress(used = item.usedBytes, total = item.totalBytes),
         backupUsed = if (item.selected) SegmentProgress(used = item.childUsedBytes, total = item.totalBytes) else null,
         onClick = onClick,
@@ -209,12 +206,9 @@ fun CustomDirectoryCard(enabled: Boolean, onClick: () -> Unit) {
     DirectoryCard(
         enabled = enabled,
         selected = false,
-        title = StringResourceToken.fromStringArgs(
-            StringResourceToken.fromStringId(R.string.custom_directory),
-            StringResourceToken.fromString("..."),
-        ),
-        icon = ImageVectorToken.fromVector(Icons.Rounded.AddCircleOutline),
-        path = StringResourceToken.fromStringId(R.string.pick_custom_directory_desc),
+        title = joinOf(stringResource(id = R.string.custom_directory), "..."),
+        icon = Icons.Rounded.AddCircleOutline,
+        path = stringResource(id = R.string.pick_custom_directory_desc),
         onClick = onClick,
     )
 }

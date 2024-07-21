@@ -14,18 +14,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.component.Checkable
 import com.xayah.core.ui.component.LocalSlotScope
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringArgs
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.value
+import com.xayah.core.ui.util.joinOf
 
 @ExperimentalFoundationApi
 @ExperimentalLayoutApi
@@ -44,44 +40,44 @@ fun PageConfigurations() {
 
     ConfigurationsScaffold(
         scrollBehavior = scrollBehavior, snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.configurations), actions = {
+        title = stringResource(id = R.string.configurations), actions = {
             OutlinedButton(enabled = blockedPackagesState.size + blockedFilesState.size + accounts.size + files.size != 0 && uiState.selectedCount != 0, onClick = {
                 viewModel.emitIntentOnIO(IndexUiIntent.Export)
             }) {
                 Text(
-                    text = StringResourceToken.fromStringArgs(
-                        StringResourceToken.fromStringId(R.string.export),
-                        StringResourceToken.fromString(" (${uiState.selectedCount})"),
-                    ).value
+                    text = joinOf(
+                        stringResource(id = R.string.export),
+                        " (${uiState.selectedCount})",
+                    )
                 )
             }
             Button(enabled = true, onClick = {
                 viewModel.emitIntentOnIO(IndexUiIntent.Import(dialogState))
             }) {
-                Text(text = StringResourceToken.fromStringId(R.string._import).value)
+                Text(text = stringResource(id = R.string._import))
             }
         }
     ) {
         Checkable(
-            icon = ImageVectorToken.fromVector(Icons.Outlined.Block),
-            title = StringResourceToken.fromStringId(R.string.blacklist),
-            value = StringResourceToken.fromString((blockedPackagesState.size + blockedFilesState.size).toString()),
+            icon = Icons.Outlined.Block,
+            title = stringResource(id = R.string.blacklist),
+            value = (blockedPackagesState.size + blockedFilesState.size).toString(),
             checked = uiState.blacklistSelected,
         ) {
             viewModel.emitStateOnMain(uiState.copy(selectedCount = if (it) uiState.selectedCount - 1 else uiState.selectedCount + 1, blacklistSelected = it.not()))
         }
         Checkable(
-            icon = ImageVectorToken.fromVector(Icons.Outlined.Cloud),
-            title = StringResourceToken.fromStringId(R.string.cloud),
-            value = StringResourceToken.fromString(accounts.size.toString()),
+            icon = Icons.Outlined.Cloud,
+            title = stringResource(id = R.string.cloud),
+            value = accounts.size.toString(),
             checked = uiState.cloudSelected,
         ) {
             viewModel.emitStateOnMain(uiState.copy(selectedCount = if (it) uiState.selectedCount - 1 else uiState.selectedCount + 1, cloudSelected = it.not()))
         }
         Checkable(
-            icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
-            title = StringResourceToken.fromStringId(R.string.files),
-            value = StringResourceToken.fromString(files.size.toString()),
+            icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
+            title = stringResource(id = R.string.files),
+            value = files.size.toString(),
             checked = uiState.fileSelected,
         ) {
             viewModel.emitStateOnMain(uiState.copy(selectedCount = if (it) uiState.selectedCount - 1 else uiState.selectedCount + 1, fileSelected = it.not()))

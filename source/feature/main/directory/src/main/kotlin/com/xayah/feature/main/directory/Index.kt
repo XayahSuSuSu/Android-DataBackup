@@ -17,15 +17,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.ui.component.ContentWithActions
 import com.xayah.core.ui.component.paddingHorizontal
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.model.getActionMenuDeleteItem
 import com.xayah.core.ui.model.getActionMenuReturnItem
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.util.getActivity
 
 @ExperimentalFoundationApi
@@ -49,7 +48,7 @@ fun PageDirectory() {
     DirectoryScaffold(
         scrollBehavior = scrollBehavior,
         isLoading = uiState.updating,
-        title = StringResourceToken.fromStringId(R.string.backup_dir),
+        title = stringResource(id = R.string.backup_dir),
         actions = {}
     ) {
         LazyColumn(
@@ -78,8 +77,8 @@ fun PageDirectory() {
                 ContentWithActions(
                     actions = { expanded ->
                         listOf(
-                            getActionMenuReturnItem { expanded.value = false },
-                            getActionMenuDeleteItem {
+                            getActionMenuReturnItem(context) { expanded.value = false },
+                            getActionMenuDeleteItem(context) {
                                 viewModel.emitIntent(IndexUiIntent.Delete(entity = item))
                                 expanded.value = false
                             }

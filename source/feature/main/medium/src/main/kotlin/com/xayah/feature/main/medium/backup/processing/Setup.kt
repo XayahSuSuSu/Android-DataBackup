@@ -26,7 +26,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.xayah.core.datastore.KeyAutoScreenOff
@@ -40,18 +43,10 @@ import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.select
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
-import com.xayah.core.ui.util.getValue
 import com.xayah.core.ui.util.icon
-import com.xayah.core.ui.util.value
 import com.xayah.core.util.navigateSingle
 import com.xayah.feature.main.medium.ProcessingSetupScaffold
 import com.xayah.feature.main.medium.R
@@ -77,14 +72,14 @@ fun PageMediumBackupProcessingSetup(localNavController: NavHostController, viewM
     ProcessingSetupScaffold(
         scrollBehavior = scrollBehavior,
         snackbarHostState = viewModel.snackbarHostState,
-        title = StringResourceToken.fromStringId(R.string.setup),
+        title = stringResource(id = R.string.setup),
         actions = {
             Button(
                 enabled = uiState.storageType == StorageMode.Local || (uiState.cloudEntity != null && uiState.isTesting.not()),
                 onClick = {
                     viewModel.emitIntentOnIO(IndexUiIntent.FinishSetup(navController = localNavController))
                 }) {
-                Text(text = StringResourceToken.fromStringId(R.string._continue).value)
+                Text(text = stringResource(id = R.string._continue))
             }
         }
     ) {
@@ -113,32 +108,32 @@ fun PageMediumBackupProcessingSetup(localNavController: NavHostController, viewM
                 }
             }
 
-            Title(title = StringResourceToken.fromStringId(R.string.storage)) {
+            Title(title = stringResource(id = R.string.storage)) {
                 AnimatedVisibility(uiState.storageIndex == 1) {
                     if (accounts.isEmpty()) {
                         Clickable(
-                            title = StringResourceToken.fromStringId(R.string.account),
-                            value = StringResourceToken.fromStringId(R.string.no_available_account),
-                            leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_cancel_circle),
-                            trailingIcon = ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowRight),
+                            title = stringResource(id = R.string.account),
+                            value = stringResource(id = R.string.no_available_account),
+                            leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_cancel_circle),
+                            trailingIcon = Icons.Rounded.KeyboardArrowRight,
                         ) {
                             navController.navigateSingle(MainRoutes.Cloud.route)
                         }
                     } else {
                         val dialogState = LocalSlotScope.current!!.dialogSlot
-                        var currentIndex by remember { mutableIntStateOf(if (uiState.cloudEntity == null) 0 else accounts.indexOfFirst { it.title.getValue(context) == uiState.cloudEntity!!.name }) }
+                        var currentIndex by remember { mutableIntStateOf(if (uiState.cloudEntity == null) 0 else accounts.indexOfFirst { it.title == uiState.cloudEntity!!.name }) }
                         LaunchedEffect(currentIndex) {
-                            viewModel.emitIntentOnIO(IndexUiIntent.SetCloudEntity(name = accounts[currentIndex].title.getValue(context)))
+                            viewModel.emitIntentOnIO(IndexUiIntent.SetCloudEntity(name = accounts[currentIndex].title))
                         }
                         Selectable(
-                            title = StringResourceToken.fromStringId(R.string.account),
-                            leadingIcon = uiState.cloudEntity?.type?.icon ?: ImageVectorToken.fromDrawable(R.drawable.ic_rounded_person),
-                            value = if (uiState.cloudEntity == null) StringResourceToken.fromStringId(R.string.choose_an_account) else accounts[currentIndex].desc,
-                            current = if (uiState.cloudEntity == null) StringResourceToken.fromStringId(R.string.not_selected) else accounts[currentIndex].title
+                            title = stringResource(id = R.string.account),
+                            leadingIcon = uiState.cloudEntity?.type?.icon ?: ImageVector.vectorResource(id = R.drawable.ic_rounded_person),
+                            value = if (uiState.cloudEntity == null) stringResource(id = R.string.choose_an_account) else accounts[currentIndex].desc,
+                            current = if (uiState.cloudEntity == null) stringResource(id = R.string.not_selected) else accounts[currentIndex].title
                         ) {
                             viewModel.launchOnIO {
                                 val (state, selectedIndex) = dialogState.select(
-                                    title = StringResourceToken.fromStringId(R.string.account),
+                                    title = context.getString(R.string.account),
                                     defIndex = currentIndex,
                                     items = accounts
                                 )
@@ -151,23 +146,23 @@ fun PageMediumBackupProcessingSetup(localNavController: NavHostController, viewM
                 }
 
                 Clickable(
-                    title = StringResourceToken.fromStringId(R.string.files),
-                    value = StringResourceToken.fromString(uiState.mediumSize),
-                    leadingIcon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
+                    title = stringResource(id = R.string.files),
+                    value = uiState.mediumSize,
+                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
                 )
             }
-            Title(title = StringResourceToken.fromStringId(R.string.settings)) {
+            Title(title = stringResource(id = R.string.settings)) {
                 Switchable(
                     key = KeyAutoScreenOff,
                     defValue = false,
-                    title = StringResourceToken.fromStringId(R.string.auto_screen_off),
-                    checkedText = StringResourceToken.fromStringId(R.string.auto_screen_off_desc),
+                    title = stringResource(id = R.string.auto_screen_off),
+                    checkedText = stringResource(id = R.string.auto_screen_off_desc),
                 )
                 Switchable(
                     key = KeyResetBackupList,
                     defValue = false,
-                    title = StringResourceToken.fromStringId(R.string.reset_backup_list),
-                    checkedText = StringResourceToken.fromStringId(R.string.reset_backup_list_desc),
+                    title = stringResource(id = R.string.reset_backup_list),
+                    checkedText = stringResource(id = R.string.reset_backup_list_desc),
                 )
             }
         }

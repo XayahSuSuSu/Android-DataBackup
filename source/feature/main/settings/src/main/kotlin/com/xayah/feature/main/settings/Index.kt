@@ -17,7 +17,10 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.KeyAutoScreenOff
@@ -27,15 +30,9 @@ import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.util.LanguageUtil
 import com.xayah.core.util.LanguageUtil.toLocale
 import com.xayah.core.util.getActivity
@@ -56,7 +53,7 @@ fun PageSettings() {
 
     SettingsScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromStringId(R.string.settings),
+        title = stringResource(id = R.string.settings),
         actions = {}
     ) {
         Column(
@@ -67,75 +64,75 @@ fun PageSettings() {
         ) {
             Column {
                 Clickable(
-                    icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_acute),
-                    title = StringResourceToken.fromStringId(R.string.backup_settings),
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
+                    title = stringResource(id = R.string.backup_settings),
                 ) {
                     navController.navigateSingle(MainRoutes.BackupSettings.route)
                 }
                 Clickable(
-                    icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_history),
-                    title = StringResourceToken.fromStringId(R.string.restore_settings),
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_history),
+                    title = stringResource(id = R.string.restore_settings),
                 ) {
                     navController.navigateSingle(MainRoutes.RestoreSettings.route)
                 }
                 Clickable(
-                    title = StringResourceToken.fromStringId(R.string.setup),
-                    value = StringResourceToken.fromStringId(R.string.enter_the_setup_page_again),
+                    title = stringResource(id = R.string.setup),
+                    value = stringResource(id = R.string.enter_the_setup_page_again),
                 ) {
                     context.getActivity().finish()
                     context.startActivity(Intent(context, SetupActivity::class.java))
                 }
             }
-            Title(title = StringResourceToken.fromStringId(R.string.appearance)) {
+            Title(title = stringResource(id = R.string.appearance)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     Switchable(
                         key = KeyMonet,
-                        title = StringResourceToken.fromStringId(R.string.monet),
-                        checkedText = StringResourceToken.fromStringId(R.string.monet_desc),
+                        title = stringResource(id = R.string.monet),
+                        checkedText = stringResource(id = R.string.monet_desc),
                     )
                 }
                 DarkThemeSelectable()
 
                 val locale by context.readLanguage().map { it.toLocale(context) }.collectAsStateWithLifecycle(initialValue = LanguageUtil.getSystemLocale(context))
                 Clickable(
-                    title = StringResourceToken.fromStringId(R.string.language),
-                    value = StringResourceToken.fromString(locale.getDisplayName(locale))
+                    title = stringResource(id = R.string.language),
+                    value = locale.getDisplayName(locale)
                 ) {
                     navController.navigateSingle(MainRoutes.LanguageSettings.route)
                 }
             }
-            Title(title = StringResourceToken.fromStringId(R.string.manage_backups)) {
+            Title(title = stringResource(id = R.string.manage_backups)) {
                 Clickable(
-                    icon = ImageVectorToken.fromVector(Icons.Outlined.Block),
-                    title = StringResourceToken.fromStringId(R.string.blacklist),
-                    value = StringResourceToken.fromStringId(R.string.blacklist_desc),
+                    icon = Icons.Outlined.Block,
+                    title = stringResource(id = R.string.blacklist),
+                    value = stringResource(id = R.string.blacklist_desc),
                 ) {
                     navController.navigateSingle(MainRoutes.BlackList.route)
                 }
                 Clickable(
-                    icon = ImageVectorToken.fromDrawable(R.drawable.ic_rounded_folder_open),
-                    title = StringResourceToken.fromStringId(R.string.backup_dir),
-                    value = if (directoryState != null) StringResourceToken.fromString(directoryState!!.title) else null,
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
+                    title = stringResource(id = R.string.backup_dir),
+                    value = if (directoryState == null) null else stringResource(id = directoryState!!.titleResId),
                 ) {
                     navController.navigateSingle(MainRoutes.Directory.route)
                 }
             }
-            Title(title = StringResourceToken.fromStringId(R.string.advanced)) {
+            Title(title = stringResource(id = R.string.advanced)) {
                 Switchable(
                     key = KeyAutoScreenOff,
                     defValue = false,
-                    title = StringResourceToken.fromStringId(R.string.auto_screen_off),
-                    checkedText = StringResourceToken.fromStringId(R.string.auto_screen_off_desc),
+                    title = stringResource(id = R.string.auto_screen_off),
+                    checkedText = stringResource(id = R.string.auto_screen_off_desc),
                 )
                 Clickable(
-                    title = StringResourceToken.fromStringId(R.string.configurations),
-                    value = StringResourceToken.fromStringId(R.string.configurations_desc),
+                    title = stringResource(id = R.string.configurations),
+                    value = stringResource(id = R.string.configurations_desc),
                 ) {
                     navController.navigateSingle(MainRoutes.Configurations.route)
                 }
                 Clickable(
-                    title = StringResourceToken.fromStringId(R.string.about),
-                    value = StringResourceToken.fromStringId(R.string.about_app),
+                    title = stringResource(id = R.string.about),
+                    value = stringResource(id = R.string.about_app),
                 ) {
                     navController.navigateSingle(MainRoutes.About.route)
                 }

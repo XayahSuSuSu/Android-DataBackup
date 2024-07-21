@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import com.dotlottie.dlplayer.Mode
@@ -49,14 +50,11 @@ import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.RefreshState
-import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.value
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
@@ -64,8 +62,8 @@ import com.xayah.core.ui.util.value
 @Composable
 fun ListScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
-    title: StringResourceToken,
-    subtitle: StringResourceToken? = null,
+    title: String,
+    subtitle: String? = null,
     actions: @Composable RowScope.() -> Unit = {},
     progress: Float? = null,
     floatingActionButton: @Composable () -> Unit = {},
@@ -120,7 +118,7 @@ fun ListScaffold(
 @ExperimentalMaterial3Api
 @Composable
 fun ProcessingSetupScaffold(
-    scrollBehavior: TopAppBarScrollBehavior, title: StringResourceToken,
+    scrollBehavior: TopAppBarScrollBehavior, title: String,
     snackbarHostState: SnackbarHostState,
     onBackClick: (() -> Unit)? = null,
     progress: Float = -1f,
@@ -197,15 +195,15 @@ fun DotLottieView(isRefreshing: Boolean, refreshState: RefreshState) {
         modifier = Modifier.background(Color.Transparent)
     )
     if (isRefreshing) {
-        BodyLargeText(text = refreshState.user, color = ColorSchemeKeyTokens.OnSurface.toColor())
+        BodyLargeText(text = refreshState.user, color = ThemedColorSchemeKeyTokens.OnSurface.value)
         AnimatedLinearProgressIndicator(
             modifier = Modifier.paddingVertical(SizeTokens.Level8),
             progress = refreshState.progress,
             strokeCap = StrokeCap.Round
         )
-        BodySmallText(text = refreshState.pkg, textAlign = TextAlign.Center, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+        BodySmallText(text = refreshState.pkg, textAlign = TextAlign.Center, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
     } else {
-        BodyLargeText(text = StringResourceToken.fromStringId(R.string.pull_down_to_refresh).value, textAlign = TextAlign.Center, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+        BodyLargeText(text = stringResource(id = R.string.pull_down_to_refresh), textAlign = TextAlign.Center, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
     }
 }
 
@@ -221,11 +219,11 @@ fun DotLottieView(isLoading: Boolean) {
     BodyLargeText(
         text = (
                 if (isLoading)
-                    StringResourceToken.fromStringId(R.string.loading)
+                    stringResource(id = R.string.loading)
                 else
-                    StringResourceToken.fromStringId(R.string.no_backups_found_warning)
-                ).value,
-        color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    stringResource(id = R.string.no_backups_found_warning)
+                ),
+        color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
         textAlign = TextAlign.Center
     )
 }

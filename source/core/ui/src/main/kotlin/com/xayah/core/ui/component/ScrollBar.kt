@@ -31,8 +31,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.AnimationTokens.AnimatedOffsetYLabel
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.ScrollBarTokens
@@ -87,7 +87,7 @@ fun ScrollBar(modifier: Modifier = Modifier, state: LazyListState) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(dp),
-                color = ColorSchemeKeyTokens.Primary.toColor().copy(alpha = ScrollBarTokens.BackgroundAlpha),
+                color = ThemedColorSchemeKeyTokens.Primary.value.copy(alpha = ScrollBarTokens.BackgroundAlpha),
                 indication = null,
             )
 
@@ -117,7 +117,7 @@ fun ScrollBar(modifier: Modifier = Modifier, state: LazyListState) {
                             .fillMaxHeight()
                             .width(dp),
                         shape = CircleShape,
-                        color = ColorSchemeKeyTokens.Primary.toColor(),
+                        color = ThemedColorSchemeKeyTokens.Primary.value,
                     )
                 }
             }

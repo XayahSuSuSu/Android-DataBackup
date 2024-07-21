@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.KeyCheckKeystore
@@ -26,12 +27,8 @@ import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.confirm
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.value
 import com.xayah.core.util.getActivity
 import com.xayah.core.util.navigateSingle
 import com.xayah.feature.setup.R
@@ -54,7 +51,7 @@ fun PageTwo() {
         topBar = {
             SecondaryLargeTopBar(
                 scrollBehavior = null,
-                title = StringResourceToken.fromStringId(R.string.setup)
+                title = stringResource(id = R.string.setup)
             )
         },
         actions = {
@@ -62,13 +59,13 @@ fun PageTwo() {
                 OutlinedButton(
                     onClick = {
                         viewModel.launchOnIO {
-                            if (dialogState.confirm(title = StringResourceToken.fromStringId(R.string.skip_setup), text = StringResourceToken.fromStringId(R.string.skip_setup_alert))) {
+                            if (dialogState.confirm(title = context.getString(R.string.skip_setup), text = context.getString(R.string.skip_setup_alert))) {
                                 viewModel.emitIntent(IndexUiIntent.ToMain(context = context.getActivity()))
                             }
                         }
                     }
                 ) {
-                    Text(text = StringResourceToken.fromStringId(R.string.skip_setup).value)
+                    Text(text = stringResource(id = R.string.skip_setup))
                 }
             }
             Button(
@@ -77,7 +74,7 @@ fun PageTwo() {
                     viewModel.emitIntentOnIO(IndexUiIntent.ToMain(context = context.getActivity()))
                 }
             ) {
-                Text(text = StringResourceToken.fromStringId(R.string.finish).value)
+                Text(text = stringResource(id = R.string.finish))
             }
         }
     ) {
@@ -86,17 +83,17 @@ fun PageTwo() {
             verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
         ) {
             Clickable(
-                title = StringResourceToken.fromStringId(R.string.backup_dir),
-                value = StringResourceToken.fromString(if (backupSavePathSaved) backupSavePath else context.getString(R.string.not_selected)),
-                desc = if (backupSavePathSaved) null else StringResourceToken.fromStringId(R.string.setup_backup_dir_desc),
+                title = stringResource(id = R.string.backup_dir),
+                value = if (backupSavePathSaved) backupSavePath else context.getString(R.string.not_selected),
+                desc = if (backupSavePathSaved) null else stringResource(id = R.string.setup_backup_dir_desc),
             ) {
                 navController.navigateSingle(SetupRoutes.Directory.route)
             }
-            Title(title = StringResourceToken.fromStringId(R.string.optional)) {
+            Title(title = stringResource(id = R.string.optional)) {
                 AnimatedVisibility(visible = backupSavePathSaved) {
                     Clickable(
-                        title = StringResourceToken.fromStringId(R.string.configurations),
-                        value = StringResourceToken.fromStringId(R.string.configurations_desc),
+                        title = stringResource(id = R.string.configurations),
+                        value = stringResource(id = R.string.configurations_desc),
                     ) {
                         navController.navigateSingle(SetupRoutes.Configurations.route)
                     }
@@ -104,17 +101,17 @@ fun PageTwo() {
                 Switchable(
                     key = KeyLoadSystemApps,
                     defValue = false,
-                    title = StringResourceToken.fromStringId(R.string.load_system_apps),
-                    checkedText = StringResourceToken.fromStringId(R.string.enabled),
-                    notCheckedText = StringResourceToken.fromStringId(R.string.not_enabled),
+                    title = stringResource(id = R.string.load_system_apps),
+                    checkedText = stringResource(id = R.string.enabled),
+                    notCheckedText = stringResource(id = R.string.not_enabled),
                 )
                 Switchable(
                     key = KeyCheckKeystore,
                     defValue = true,
-                    title = StringResourceToken.fromStringId(R.string.check_keystore),
-                    checkedText = StringResourceToken.fromStringId(R.string.enabled),
-                    notCheckedText = StringResourceToken.fromStringId(R.string.not_enabled),
-                    desc = StringResourceToken.fromStringId(R.string.set_them_later_in_settings)
+                    title = stringResource(id = R.string.check_keystore),
+                    checkedText = stringResource(id = R.string.enabled),
+                    notCheckedText = stringResource(id = R.string.not_enabled),
+                    desc = stringResource(id = R.string.set_them_later_in_settings)
                 )
             }
         }

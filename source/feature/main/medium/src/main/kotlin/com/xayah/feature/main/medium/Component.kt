@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import com.dotlottie.dlplayer.Mode
@@ -45,12 +46,10 @@ import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.value
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
@@ -59,8 +58,8 @@ import com.xayah.core.ui.util.value
 fun ListScaffold(
     scrollBehavior: TopAppBarScrollBehavior,
     snackbarHostState: SnackbarHostState,
-    title: StringResourceToken,
-    subtitle: StringResourceToken? = null,
+    title: String,
+    subtitle: String? = null,
     actions: @Composable RowScope.() -> Unit = {},
     progress: Float? = null,
     floatingActionButton: @Composable () -> Unit = {},
@@ -99,11 +98,9 @@ fun ListScaffold(
         floatingActionButtonPosition = floatingActionButtonPosition,
         floatingActionButton = floatingActionButton,
         snackbarHost = {
-            with(LocalDensity.current) {
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                )
-            }
+            SnackbarHost(
+                hostState = snackbarHostState,
+            )
         },
     ) { innerPadding ->
         Column {
@@ -122,7 +119,7 @@ fun ListScaffold(
 @ExperimentalMaterial3Api
 @Composable
 fun ProcessingSetupScaffold(
-    scrollBehavior: TopAppBarScrollBehavior, title: StringResourceToken,
+    scrollBehavior: TopAppBarScrollBehavior, title: String,
     snackbarHostState: SnackbarHostState,
     onBackClick: (() -> Unit)? = null,
     progress: Float = -1f,
@@ -201,11 +198,11 @@ fun DotLottieView(isLoading: Boolean) {
     BodyLargeText(
         text = (
                 if (isLoading)
-                    StringResourceToken.fromStringId(R.string.loading)
+                    stringResource(id = R.string.loading)
                 else
-                    StringResourceToken.fromStringId(R.string.no_backups_found_warning)
-                ).value,
-        color = com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    stringResource(id = R.string.no_backups_found_warning)
+                ),
+        color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
         textAlign = TextAlign.Center
     )
 }

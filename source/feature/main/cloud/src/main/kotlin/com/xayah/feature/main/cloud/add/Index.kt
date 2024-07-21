@@ -12,15 +12,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.xayah.core.model.CloudType
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.Title
-import com.xayah.core.ui.model.StringResourceToken
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
 import com.xayah.core.ui.util.icon
 import com.xayah.core.util.encodeURL
 import com.xayah.core.util.navigateSingle
@@ -37,7 +35,7 @@ fun PageCloudAddAccount() {
 
     CloudScaffold(
         scrollBehavior = scrollBehavior,
-        title = StringResourceToken.fromStringId(R.string.add_account),
+        title = stringResource(id = R.string.add_account),
         actions = {}
     ) {
         Column(
@@ -46,28 +44,28 @@ fun PageCloudAddAccount() {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
         ) {
-            Title(title = StringResourceToken.fromStringId(R.string.provider)) {
+            Title(title = stringResource(id = R.string.provider)) {
                 Clickable(
                     icon = CloudType.FTP.icon,
-                    title = StringResourceToken.fromString(CloudType.FTP.title),
+                    title = CloudType.FTP.title,
                 ) {
                     navController.navigateSingle(MainRoutes.FTPSetup.getRoute(" ".encodeURL()))
                 }
                 Clickable(
                     icon = CloudType.WEBDAV.icon,
-                    title = StringResourceToken.fromString(CloudType.WEBDAV.title),
+                    title = CloudType.WEBDAV.title,
                 ) {
                     navController.navigateSingle(MainRoutes.WebDAVSetup.getRoute(" ".encodeURL()))
                 }
                 Clickable(
                     icon = CloudType.SMB.icon,
-                    title = StringResourceToken.fromString(CloudType.SMB.title),
+                    title = CloudType.SMB.title,
                 ) {
                     navController.navigateSingle(MainRoutes.SMBSetup.getRoute(" ".encodeURL()))
                 }
                 Clickable(
                     icon = CloudType.SFTP.icon,
-                    title = StringResourceToken.fromString(CloudType.SFTP.title),
+                    title = CloudType.SFTP.title,
                 ) {
                     navController.navigateSingle(MainRoutes.SFTPSetup.getRoute(" ".encodeURL()))
                 }

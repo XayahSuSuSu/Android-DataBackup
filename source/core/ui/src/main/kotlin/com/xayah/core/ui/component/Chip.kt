@@ -37,45 +37,42 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import com.xayah.core.model.DataType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CardDefaults
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.ImageVectorToken
-import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.ModalMenuTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.fromDrawable
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromVector
 import com.xayah.core.ui.util.icon
-import com.xayah.core.ui.util.value
 
 @Composable
 fun AssistChip(
     enabled: Boolean,
-    label: StringResourceToken,
-    leadingIcon: ImageVectorToken?,
-    trailingIcon: ImageVectorToken?,
+    label: String,
+    leadingIcon: ImageVector?,
+    trailingIcon: ImageVector?,
     shape: Shape = AssistChipDefaults.shape,
-    color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
-    containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Transparent,
+    color: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Primary,
+    containerColor: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Transparent,
     border: BorderStroke? = AssistChipDefaults.assistChipBorder(enabled),
     onClick: () -> Unit = {},
 ) {
     AssistChip(
         onClick = onClick,
-        label = { Text(text = label.value) },
+        label = { Text(text = label) },
         leadingIcon = if (leadingIcon != null) {
             {
                 Icon(
-                    imageVector = leadingIcon.value,
-                    tint = color.toColor(enabled),
+                    imageVector = leadingIcon,
+                    tint = color.value.withState(enabled),
                     contentDescription = null,
                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                 )
@@ -86,8 +83,8 @@ fun AssistChip(
         trailingIcon = if (trailingIcon != null) {
             {
                 Icon(
-                    imageVector = trailingIcon.value,
-                    tint = color.toColor(enabled),
+                    imageVector = trailingIcon,
+                    tint = color.value.withState(enabled),
                     contentDescription = null,
                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                 )
@@ -96,7 +93,7 @@ fun AssistChip(
             null
         },
         shape = shape,
-        colors = AssistChipDefaults.assistChipColors(labelColor = color.toColor(enabled), containerColor = containerColor.toColor(enabled)),
+        colors = AssistChipDefaults.assistChipColors(labelColor = color.value.withState(enabled), containerColor = containerColor.value.withState(enabled)),
         border = border
     )
 }
@@ -105,7 +102,7 @@ fun AssistChip(
 fun SortChip(
     enabled: Boolean,
     dismissOnSelected: Boolean = false,
-    leadingIcon: ImageVectorToken,
+    leadingIcon: ImageVector,
     selectedIndex: Int,
     type: SortType = SortType.ASCENDING,
     list: List<String>,
@@ -114,9 +111,9 @@ fun SortChip(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectedIcon = if (type == SortType.ASCENDING)
-        ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowUp)
+        Icons.Rounded.KeyboardArrowUp
     else
-        ImageVectorToken.fromVector(Icons.Rounded.KeyboardArrowDown)
+        Icons.Rounded.KeyboardArrowDown
     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
         AssistChip(
             enabled = enabled,
@@ -124,11 +121,11 @@ fun SortChip(
                 onClick()
                 if (list.isNotEmpty()) expanded = true
             },
-            label = StringResourceToken.fromString(list[selectedIndex]),
+            label = list[selectedIndex],
             leadingIcon = leadingIcon,
             trailingIcon = selectedIcon,
-            color = ColorSchemeKeyTokens.Primary,
-            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+            color = ThemedColorSchemeKeyTokens.Primary,
+            containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
             border = null,
         )
 
@@ -150,9 +147,9 @@ fun SortChip(
 @Composable
 fun FilterChip(
     enabled: Boolean,
-    leadingIcon: ImageVectorToken,
-    trailingIcon: ImageVectorToken? = null,
-    label: StringResourceToken,
+    leadingIcon: ImageVector,
+    trailingIcon: ImageVector? = null,
+    label: String,
     selectedIndex: Int,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
@@ -189,9 +186,9 @@ fun FilterChip(
 @Composable
 fun MultipleSelectionFilterChip(
     enabled: Boolean,
-    leadingIcon: ImageVectorToken,
-    trailingIcon: ImageVectorToken? = null,
-    label: StringResourceToken,
+    leadingIcon: ImageVector,
+    trailingIcon: ImageVector? = null,
+    label: String,
     selectedIndexList: List<Int>,
     list: List<String>,
     onSelected: (indexList: List<Int>) -> Unit,
@@ -228,8 +225,8 @@ fun MultipleSelectionFilterChip(
 @Composable
 fun FilterChip(
     enabled: Boolean,
-    leadingIcon: ImageVectorToken,
-    trailingIcon: ImageVectorToken? = null,
+    leadingIcon: ImageVector,
+    trailingIcon: ImageVector? = null,
     selectedIndex: Int,
     list: List<String>,
     onSelected: (index: Int, selected: String) -> Unit,
@@ -240,7 +237,7 @@ fun FilterChip(
         enabled = enabled,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
-        label = StringResourceToken.fromString(list[selectedIndex]),
+        label = list[selectedIndex],
         selectedIndex = selectedIndex,
         list = list,
         onSelected = onSelected,
@@ -267,8 +264,8 @@ fun ChipRow(horizontalSpace: Dp = SizeTokens.Level16, chipGroup: @Composable () 
 @Composable
 fun FilterChip(
     modifier: Modifier = Modifier,
-    label: StringResourceToken,
-    trailingIcon: ImageVectorToken? = null,
+    label: String,
+    trailingIcon: ImageVector? = null,
     selected: Boolean,
     onClick: () -> Unit
 ) {
@@ -276,7 +273,7 @@ fun FilterChip(
         modifier = modifier,
         onClick = onClick,
         label = {
-            Text(text = label.value, maxLines = 1)
+            Text(text = label, maxLines = 1)
         },
         selected = selected,
         leadingIcon = if (selected) {
@@ -293,7 +290,7 @@ fun FilterChip(
         trailingIcon = if (trailingIcon != null) {
             {
                 Icon(
-                    imageVector = trailingIcon.value,
+                    imageVector = trailingIcon,
                     contentDescription = null,
                     modifier = Modifier.size(FilterChipDefaults.IconSize)
                 )
@@ -310,14 +307,14 @@ fun FilterChip(
 fun DataChip(
     modifier: Modifier = Modifier,
     enabled: Boolean,
-    title: StringResourceToken,
-    subtitle: StringResourceToken?,
-    leadingIcon: ImageVectorToken,
-    trailingIcon: ImageVectorToken?,
+    title: String,
+    subtitle: String?,
+    leadingIcon: ImageVector,
+    trailingIcon: ImageVector?,
     shape: Shape = AssistChipDefaults.shape,
     border: BorderStroke? = outlinedCardBorder(),
-    color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
-    containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Transparent,
+    color: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Primary,
+    containerColor: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Transparent,
     onClick: () -> Unit,
 ) {
     Card(
@@ -327,7 +324,7 @@ fun DataChip(
         onLongClick = {},
         border = border,
         shape = shape,
-        colors = if (enabled) CardDefaults.cardColors(containerColor = containerColor.toColor(), contentColor = color.toColor()) else CardDefaults.cardColors()
+        colors = if (enabled) CardDefaults.cardColors(containerColor = containerColor.value.withState(), contentColor = color.value.withState()) else CardDefaults.cardColors()
     ) {
         Row(
             modifier = Modifier
@@ -337,8 +334,8 @@ fun DataChip(
             horizontalArrangement = Arrangement.spacedBy(PaddingTokens.Level2)
         ) {
             Icon(
-                imageVector = leadingIcon.value,
-                tint = if (enabled) color.toColor() else LocalContentColor.current,
+                imageVector = leadingIcon,
+                tint = if (enabled) color.value.withState() else LocalContentColor.current,
                 contentDescription = null,
                 modifier = Modifier.size(AssistChipDefaults.IconSize)
             )
@@ -347,14 +344,14 @@ fun DataChip(
                     .weight(1f)
                     .paddingVertical(PaddingTokens.Level2)
             ) {
-                LabelLargeText(modifier = Modifier.basicMarquee(), text = title.value, maxLines = 1)
+                LabelLargeText(modifier = Modifier.basicMarquee(), text = title, maxLines = 1)
                 if (subtitle != null)
-                    LabelSmallText(modifier = Modifier.basicMarquee(), text = subtitle.value, maxLines = 1)
+                    LabelSmallText(modifier = Modifier.basicMarquee(), text = subtitle, maxLines = 1)
             }
             if (trailingIcon != null) {
                 Icon(
-                    imageVector = trailingIcon.value,
-                    tint = if (enabled) color.toColor() else LocalContentColor.current,
+                    imageVector = trailingIcon,
+                    tint = if (enabled) color.value.withState() else LocalContentColor.current,
                     contentDescription = null,
                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                 )
@@ -370,13 +367,13 @@ fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, data
     DataChip(
         modifier = modifier,
         enabled = enabled,
-        title = StringResourceToken.fromString(dataType.type.uppercase()),
-        subtitle = if (dataBytes == null) null else StringResourceToken.fromString(dataBytes.formatSize()),
+        title = dataType.type.uppercase(),
+        subtitle = dataBytes?.formatSize(),
         leadingIcon = dataType.icon,
-        trailingIcon = if (selected) ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle) else null,
+        trailingIcon = if (selected) ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle) else null,
         border = if (selected) null else outlinedCardBorder(),
-        color = if (selected) ColorSchemeKeyTokens.OnSecondaryContainer else ColorSchemeKeyTokens.OnSurfaceVariant,
-        containerColor = if (selected) ColorSchemeKeyTokens.SecondaryContainer else ColorSchemeKeyTokens.Transparent,
+        color = if (selected) ThemedColorSchemeKeyTokens.OnSecondaryContainer else ThemedColorSchemeKeyTokens.OnSurfaceVariant,
+        containerColor = if (selected) ThemedColorSchemeKeyTokens.SecondaryContainer else ThemedColorSchemeKeyTokens.Transparent,
         onClick = onClick
     )
 }
@@ -384,17 +381,17 @@ fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, data
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @Composable
-fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, dataType: DataType, selected: Boolean, subtitle: StringResourceToken? = null, onClick: () -> Unit) {
+fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, dataType: DataType, selected: Boolean, subtitle: String? = null, onClick: () -> Unit) {
     DataChip(
         modifier = modifier,
         enabled = enabled,
-        title = StringResourceToken.fromString(dataType.type.uppercase()),
+        title = dataType.type.uppercase(),
         subtitle = subtitle,
         leadingIcon = dataType.icon,
-        trailingIcon = if (selected) ImageVectorToken.fromDrawable(R.drawable.ic_rounded_check_circle) else null,
+        trailingIcon = if (selected) ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle) else null,
         border = if (selected) null else outlinedCardBorder(),
-        color = if (selected) ColorSchemeKeyTokens.OnSecondaryContainer else ColorSchemeKeyTokens.OnSurfaceVariant,
-        containerColor = if (selected) ColorSchemeKeyTokens.SecondaryContainer else ColorSchemeKeyTokens.Transparent,
+        color = if (selected) ThemedColorSchemeKeyTokens.OnSecondaryContainer else ThemedColorSchemeKeyTokens.OnSurfaceVariant,
+        containerColor = if (selected) ThemedColorSchemeKeyTokens.SecondaryContainer else ThemedColorSchemeKeyTokens.Transparent,
         onClick = onClick
     )
 }
@@ -407,7 +404,7 @@ fun RoundChip(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, labe
             modifier = modifier,
             onClick = { onClick?.invoke() },
             shape = CircleShape,
-            color = ColorSchemeKeyTokens.PrimaryContainer.toColor(),
+            color = ThemedColorSchemeKeyTokens.PrimaryContainer.value.withState(),
             indication = if (onClick != null) rememberRipple() else null,
         ) {
             Box(

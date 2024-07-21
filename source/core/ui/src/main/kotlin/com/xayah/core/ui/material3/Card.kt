@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.Dp
 import com.xayah.core.ui.material3.tokens.ElevatedCardTokens
 import com.xayah.core.ui.material3.tokens.FilledCardTokens
 import com.xayah.core.ui.material3.tokens.OutlinedCardTokens
+import com.xayah.core.ui.theme.DisabledAlpha
+import com.xayah.core.ui.theme.value
 
 /**
  * <a href="https://m3.material.io/components/cards/overview" class="external" target="_blank">Material Design filled card</a>.
@@ -458,10 +460,10 @@ object CardDefaults {
      */
     @Composable
     fun cardColors(
-        containerColor: Color = FilledCardTokens.ContainerColor.toColor(),
+        containerColor: Color = FilledCardTokens.ContainerColor.value,
         contentColor: Color = contentColorFor(containerColor),
         disabledContainerColor: Color =
-            FilledCardTokens.DisabledContainerColor.toColor()
+            FilledCardTokens.DisabledContainerColor.value
                 .copy(alpha = FilledCardTokens.DisabledContainerOpacity)
                 .compositeOver(
                     MaterialTheme.colorScheme.surfaceColorAtElevation(
@@ -487,10 +489,10 @@ object CardDefaults {
      */
     @Composable
     fun elevatedCardColors(
-        containerColor: Color = ElevatedCardTokens.ContainerColor.toColor(),
+        containerColor: Color = ElevatedCardTokens.ContainerColor.value,
         contentColor: Color = contentColorFor(containerColor),
         disabledContainerColor: Color =
-            ElevatedCardTokens.DisabledContainerColor.toColor()
+            ElevatedCardTokens.DisabledContainerColor.value
                 .copy(alpha = ElevatedCardTokens.DisabledContainerOpacity)
                 .compositeOver(
                     MaterialTheme.colorScheme.surfaceColorAtElevation(
@@ -517,7 +519,7 @@ object CardDefaults {
      */
     @Composable
     fun outlinedCardColors(
-        containerColor: Color = OutlinedCardTokens.ContainerColor.toColor(),
+        containerColor: Color = OutlinedCardTokens.ContainerColor.value,
         contentColor: Color = contentColorFor(containerColor),
         disabledContainerColor: Color = containerColor,
         disabledContentColor: Color = contentColor.copy(DisabledAlpha),
@@ -537,9 +539,9 @@ object CardDefaults {
     @Composable
     fun outlinedCardBorder(enabled: Boolean = true): BorderStroke {
         val color = if (enabled) {
-            OutlinedCardTokens.OutlineColor.toColor()
+            OutlinedCardTokens.OutlineColor.value
         } else {
-            OutlinedCardTokens.DisabledOutlineColor.toColor()
+            OutlinedCardTokens.DisabledOutlineColor.value
                 .copy(alpha = OutlinedCardTokens.DisabledOutlineOpacity)
                 .compositeOver(
                     MaterialTheme.colorScheme.surfaceColorAtElevation(

@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.readCustomSUFile
@@ -28,14 +29,10 @@ import com.xayah.core.ui.component.Section
 import com.xayah.core.ui.component.SetOnResume
 import com.xayah.core.ui.component.edit
 import com.xayah.core.ui.component.paddingTop
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
-import com.xayah.core.ui.model.StringResourceToken
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
-import com.xayah.core.ui.util.fromString
-import com.xayah.core.ui.util.fromStringId
-import com.xayah.core.ui.util.value
 import com.xayah.core.util.navigateSingle
 import com.xayah.feature.setup.PermissionButton
 import com.xayah.feature.setup.R
@@ -74,11 +71,11 @@ fun PageOne() {
                         }
                     }
                 ) {
-                    Text(text = StringResourceToken.fromStringId(R.string.grant_all).value)
+                    Text(text = stringResource(id = R.string.grant_all))
                 }
             }
             Button(enabled = allRequiredValidated, onClick = { navController.navigateSingle(SetupRoutes.Two.route) }) {
-                Text(text = StringResourceToken.fromStringId(R.string._continue).value)
+                Text(text = stringResource(id = R.string._continue))
             }
         }
     ) {
@@ -93,24 +90,24 @@ fun PageOne() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AppIcon()
-                HeadlineMediumText(modifier = Modifier.paddingTop(SizeTokens.Level12), text = StringResourceToken.fromStringId(R.string.welcome_to_use).value)
-                BodyMediumText(text = StringResourceToken.fromStringId(R.string.app_short_desc).value, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+                HeadlineMediumText(modifier = Modifier.paddingTop(SizeTokens.Level12), text = stringResource(id = R.string.welcome_to_use))
+                BodyMediumText(text = stringResource(id = R.string.app_short_desc), color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
             }
 
             Spacer(modifier = Modifier.size(SizeTokens.Level24))
 
-            Section(title = StringResourceToken.fromStringId(R.string.required)) {
+            Section(title = stringResource(id = R.string.required)) {
                 PermissionButton(
-                    title = StringResourceToken.fromStringId(R.string.root_permission),
-                    desc = StringResourceToken.fromStringId(R.string.root_permission_desc),
+                    title = stringResource(id = R.string.root_permission),
+                    desc = stringResource(id = R.string.root_permission_desc),
                     envState = rootState,
                     onSetting = {
                         viewModel.launchOnIO {
                             val (state, su) = dialogState.edit(
-                                title = StringResourceToken.fromStringId(R.string.custom_su_file),
+                                title = context.getString(R.string.custom_su_file),
                                 defValue = context.readCustomSUFile().first(),
-                                label = StringResourceToken.fromStringId(R.string.name),
-                                desc = StringResourceToken.fromStringId(R.string.restart_to_take_effect)
+                                label = context.getString(R.string.name),
+                                desc = context.getString(R.string.restart_to_take_effect)
                             )
                             if (state.isConfirm) {
                                 context.saveCustomSUFile(su)
@@ -123,8 +120,8 @@ fun PageOne() {
                     }
                 }
                 PermissionButton(
-                    title = StringResourceToken.fromStringId(R.string.abi_validation),
-                    desc = StringResourceToken.fromString(uiState.abiErr.ifEmpty { context.getString(R.string.abi_validation_desc) }),
+                    title = stringResource(id = R.string.abi_validation),
+                    desc = uiState.abiErr.ifEmpty { context.getString(R.string.abi_validation_desc) },
                     envState = abiState,
                 ) {
                     viewModel.launchOnIO {
@@ -133,10 +130,10 @@ fun PageOne() {
                 }
             }
 
-            Section(title = StringResourceToken.fromStringId(R.string.optional)) {
+            Section(title = stringResource(id = R.string.optional)) {
                 PermissionButton(
-                    title = StringResourceToken.fromStringId(R.string.notification_permission),
-                    desc = StringResourceToken.fromStringId(R.string.notification_permission_desc),
+                    title = stringResource(id = R.string.notification_permission),
+                    desc = stringResource(id = R.string.notification_permission_desc),
                     envState = notificationState,
                 ) {
                     viewModel.launchOnIO {
