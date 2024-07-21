@@ -25,7 +25,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.token.TextFieldTokens
-import com.xayah.core.ui.util.value
 
 @Composable
 fun SearchBar(modifier: Modifier = Modifier, enabled: Boolean, placeholder: String, onTextChange: (String) -> Unit) {

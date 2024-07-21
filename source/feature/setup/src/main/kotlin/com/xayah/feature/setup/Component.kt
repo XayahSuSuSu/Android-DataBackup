@@ -31,7 +31,6 @@ import com.xayah.core.ui.material3.Surface
 import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.ui.util.value
 
 @Composable
 fun SetupScaffold(topBar: @Composable () -> Unit = {}, actions: @Composable RowScope.() -> Unit, content: @Composable LazyItemScope.() -> Unit) {
