@@ -2,12 +2,8 @@ package com.xayah.feature.main.packages.backup.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,11 +23,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.CheckBox
 import androidx.compose.material.icons.outlined.Checklist
-import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -153,52 +147,45 @@ fun PagePackagesBackupList() {
                 verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
                 maxItemsInEachRow = 2
             ) {
-
                 PackageDataChip(
                     modifier = Modifier.weight(1f),
-                    selected = apkSelected,
                     dataType = DataType.PACKAGE_APK,
-                    subtitle = stringResource(id = if (apkSelected) R.string.selected else R.string.not_selected)
+                    selected = apkSelected
                 ) {
                     apkSelected = apkSelected.not()
                 }
                 PackageDataChip(
                     modifier = Modifier.weight(1f),
-                    selected = userSelected,
                     dataType = DataType.PACKAGE_USER,
-                    subtitle = stringResource(id = if (userSelected) R.string.selected else R.string.not_selected)
+                    selected = userSelected
                 ) {
                     userSelected = userSelected.not()
                 }
                 PackageDataChip(
                     modifier = Modifier.weight(1f),
-                    selected = userDeSelected,
                     dataType = DataType.PACKAGE_USER_DE,
-                    subtitle = stringResource(id = if (userDeSelected) R.string.selected else R.string.not_selected)
+                    selected = userDeSelected
                 ) {
                     userDeSelected = userDeSelected.not()
                 }
                 PackageDataChip(
                     modifier = Modifier.weight(1f),
-                    selected = dataSelected,
                     dataType = DataType.PACKAGE_DATA,
-                    subtitle = stringResource(id = if (dataSelected) R.string.selected else R.string.not_selected)
+                    selected = dataSelected
                 ) {
                     dataSelected = dataSelected.not()
                 }
                 PackageDataChip(
                     modifier = Modifier.weight(1f),
-                    selected = obbSelected,
                     dataType = DataType.PACKAGE_OBB,
-                    subtitle = stringResource(id = if (obbSelected) R.string.selected else R.string.not_selected)
+                    selected = obbSelected
                 ) {
                     obbSelected = obbSelected.not()
                 }
                 PackageDataChip(
                     modifier = Modifier.weight(1f),
-                    selected = mediaSelected,
                     dataType = DataType.MEDIA_MEDIA,
-                    subtitle = stringResource(id = if (mediaSelected) R.string.selected else R.string.not_selected)
+                    selected = mediaSelected
                 ) {
                     mediaSelected = mediaSelected.not()
                 }
@@ -230,23 +217,16 @@ fun PagePackagesBackupList() {
         subtitle = if (packagesSelectedState != 0 && isRefreshing.not()) "(${packagesSelectedState}/${packagesState.size})" else null,
         actions = {
             if (isRefreshing.not() && srcPackagesEmptyState.not()) {
-                AnimatedVisibility(visible = packagesSelectedState != 0) {
-                    IconButton(icon = Icons.Outlined.Block) {
-                        viewModel.launchOnIO {
-                            if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.confirm_add_to_blacklist))) {
-                                viewModel.emitIntentOnIO(IndexUiIntent.BlockSelected)
-                            }
+                IconButton(enabled = packagesSelectedState != 0, icon = Icons.Outlined.Block) {
+                    viewModel.launchOnIO {
+                        if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.confirm_add_to_blacklist))) {
+                            viewModel.emitIntentOnIO(IndexUiIntent.BlockSelected)
                         }
                     }
                 }
-                IconButton(icon = if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt) {
-                    viewModel.emitStateOnMain(uiState.copy(filterMode = uiState.filterMode.not()))
-                    viewModel.emitIntentOnIO(IndexUiIntent.ClearKey)
-                }
-                AnimatedVisibility(visible = packagesSelectedState != 0) {
-                    IconButton(icon = Icons.Outlined.CheckBox) {
-                        showBottomSheet = true
-                    }
+
+                IconButton(enabled = packagesSelectedState != 0, icon = Icons.Outlined.CheckBox) {
+                    showBottomSheet = true
                 }
                 IconButton(icon = Icons.Outlined.Checklist) {
                     viewModel.emitIntentOnIO(IndexUiIntent.SelectAll(uiState.selectAll.not()))
@@ -295,73 +275,77 @@ fun PagePackagesBackupList() {
                 val sortIndexState by viewModel.sortIndexState.collectAsStateWithLifecycle()
                 val sortTypeState by viewModel.sortTypeState.collectAsStateWithLifecycle()
 
-                AnimatedVisibility(visible = uiState.filterMode, enter = fadeIn() + slideInVertically(), exit = slideOutVertically() + fadeOut()) {
-                    Column {
-                        SearchBar(
-                            modifier = Modifier
-                                .paddingHorizontal(SizeTokens.Level16)
-                                .paddingVertical(SizeTokens.Level8),
+                Column {
+                    SearchBar(
+                        modifier = Modifier
+                            .paddingHorizontal(SizeTokens.Level16)
+                            .paddingVertical(SizeTokens.Level8),
+                        enabled = true,
+                        placeholder = stringResource(id = R.string.search_bar_hint_packages),
+                        onTextChange = {
+                            viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
+                        }
+                    )
+
+                    ChipRow(horizontalSpace = SizeTokens.Level16) {
+                        SortChip(
                             enabled = true,
-                            placeholder = stringResource(id = R.string.search_bar_hint_packages),
-                            onTextChange = {
-                                viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
-                            }
+                            dismissOnSelected = true,
+                            leadingIcon = Icons.Rounded.Sort,
+                            selectedIndex = sortIndexState,
+                            type = sortTypeState,
+                            list = stringArrayResource(id = R.array.backup_sort_type_items_apps).toList(),
+                            onSelected = { index, _ ->
+                                scope.launch {
+                                    scrollState.scrollToItem(0)
+                                    viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                }
+                            },
+                            onClick = {}
                         )
 
-                        ChipRow(horizontalSpace = SizeTokens.Level16) {
-                            SortChip(
+                        if (userIdListState.size > 1)
+                            MultipleSelectionFilterChip(
                                 enabled = true,
                                 dismissOnSelected = true,
-                                leadingIcon = Icons.Rounded.Sort,
-                                selectedIndex = sortIndexState,
-                                type = sortTypeState,
-                                list = stringArrayResource(id = R.array.backup_sort_type_items_apps).toList(),
-                                onSelected = { index, _ ->
-                                    scope.launch {
-                                        scrollState.scrollToItem(0)
-                                        viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_person),
+                                label = stringResource(id = R.string.user),
+                                selectedIndexList = userIdIndexListState,
+                                list = userIdListState.map { it.toString() },
+                                onSelected = { indexList ->
+                                    if (indexList.isNotEmpty()) {
+                                        viewModel.emitIntentOnIO(
+                                            IndexUiIntent.SetUserIdIndexList(
+                                                indexList
+                                            )
+                                        )
                                     }
+                                },
+                                onClick = {
+                                    viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
+                                }
+                            )
+
+                        AnimatedVisibility(visible = loadSystemApps) {
+                            FilterChip(
+                                enabled = true,
+                                dismissOnSelected = true,
+                                leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_deployed_code),
+                                selectedIndex = flagIndexState,
+                                list = stringArrayResource(id = R.array.flag_type_items).toList(),
+                                onSelected = { index, _ ->
+                                    viewModel.emitIntentOnIO(IndexUiIntent.FilterByFlag(index = index))
                                 },
                                 onClick = {}
                             )
-
-                            if (userIdListState.size > 1)
-                                MultipleSelectionFilterChip(
-                                    enabled = true,
-                                    dismissOnSelected = true,
-                                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_person),
-                                    label = stringResource(id = R.string.user),
-                                    selectedIndexList = userIdIndexListState,
-                                    list = userIdListState.map { it.toString() },
-                                    onSelected = { indexList ->
-                                        if (indexList.isNotEmpty()) {
-                                            viewModel.emitIntentOnIO(IndexUiIntent.SetUserIdIndexList(indexList))
-                                        }
-                                    },
-                                    onClick = {
-                                        viewModel.emitIntentOnIO(IndexUiIntent.GetUserIds)
-                                    }
-                                )
-
-                            AnimatedVisibility(visible = loadSystemApps) {
-                                FilterChip(
-                                    enabled = true,
-                                    dismissOnSelected = true,
-                                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_deployed_code),
-                                    selectedIndex = flagIndexState,
-                                    list = stringArrayResource(id = R.array.flag_type_items).toList(),
-                                    onSelected = { index, _ ->
-                                        viewModel.emitIntentOnIO(IndexUiIntent.FilterByFlag(index = index))
-                                    },
-                                    onClick = {}
-                                )
-                            }
                         }
-
-                        Divider(modifier = Modifier
-                            .fillMaxWidth()
-                            .paddingTop(SizeTokens.Level8))
                     }
+
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .paddingTop(SizeTokens.Level8)
+                    )
                 }
 
                 Box {
@@ -381,10 +365,8 @@ fun PagePackagesBackupList() {
                                     item = item,
                                     onCheckedChange = { viewModel.emitIntentOnIO(IndexUiIntent.Select(item)) },
                                     onClick = {
-                                        if (uiState.filterMode) viewModel.emitIntentOnIO(IndexUiIntent.ToPageDetail(navController, item))
-                                        else viewModel.emitIntentOnIO(IndexUiIntent.Select(item))
-                                    },
-                                    filterMode = uiState.filterMode
+                                        viewModel.emitIntentOnIO(IndexUiIntent.ToPageDetail(navController, item))
+                                    }
                                 )
                             }
                         }

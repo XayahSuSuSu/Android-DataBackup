@@ -2,12 +2,8 @@ package com.xayah.feature.main.medium.restore.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,10 +20,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -100,18 +94,12 @@ fun PageMediumRestoreList() {
         subtitle = if (mediumSelectedState != 0) "(${mediumSelectedState}/${mediumState.size})" else null,
         actions = {
             if (srcMediumEmptyState.not()) {
-                AnimatedVisibility(visible = mediumSelectedState != 0) {
-                    IconButton(icon = Icons.Outlined.Delete) {
-                        viewModel.launchOnIO {
-                            if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.confirm_delete))) {
-                                viewModel.emitIntent(IndexUiIntent.DeleteSelected)
-                            }
+                IconButton(enabled = mediumSelectedState != 0, icon = Icons.Outlined.Delete) {
+                    viewModel.launchOnIO {
+                        if (dialogState.confirm(title = context.getString(R.string.prompt), text = context.getString(R.string.confirm_delete))) {
+                            viewModel.emitIntent(IndexUiIntent.DeleteSelected)
                         }
                     }
-                }
-                IconButton(icon = if (uiState.filterMode) Icons.Filled.FilterAlt else Icons.Outlined.FilterAlt) {
-                    viewModel.emitStateOnMain(uiState.copy(filterMode = uiState.filterMode.not()))
-                    viewModel.emitIntentOnIO(IndexUiIntent.ClearKey)
                 }
                 IconButton(icon = Icons.Outlined.Checklist) {
                     viewModel.emitIntentOnIO(IndexUiIntent.SelectAll(uiState.selectAll.not()))
@@ -152,43 +140,41 @@ fun PageMediumRestoreList() {
                 val sortIndexState by viewModel.sortIndexState.collectAsStateWithLifecycle()
                 val sortTypeState by viewModel.sortTypeState.collectAsStateWithLifecycle()
 
-                AnimatedVisibility(visible = uiState.filterMode, enter = fadeIn() + slideInVertically(), exit = slideOutVertically() + fadeOut()) {
-                    Column {
-                        SearchBar(
-                            modifier = Modifier
-                                .paddingHorizontal(SizeTokens.Level16)
-                                .paddingVertical(SizeTokens.Level8),
-                            enabled = true,
-                            placeholder = stringResource(id = R.string.search_bar_hint_medium),
-                            onTextChange = {
-                                viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
-                            }
-                        )
-
-                        ChipRow(horizontalSpace = SizeTokens.Level16) {
-                            SortChip(
-                                enabled = true,
-                                dismissOnSelected = true,
-                                leadingIcon = Icons.Rounded.Sort,
-                                selectedIndex = sortIndexState,
-                                type = sortTypeState,
-                                list = stringArrayResource(id = R.array.backup_sort_type_items_files).toList(),
-                                onSelected = { index, _ ->
-                                    scope.launch {
-                                        scrollState.scrollToItem(0)
-                                        viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
-                                    }
-                                },
-                                onClick = {}
-                            )
+                Column {
+                    SearchBar(
+                        modifier = Modifier
+                            .paddingHorizontal(SizeTokens.Level16)
+                            .paddingVertical(SizeTokens.Level8),
+                        enabled = true,
+                        placeholder = stringResource(id = R.string.search_bar_hint_medium),
+                        onTextChange = {
+                            viewModel.emitIntentOnIO(IndexUiIntent.FilterByKey(key = it))
                         }
+                    )
 
-                        Divider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .paddingTop(SizeTokens.Level8)
+                    ChipRow(horizontalSpace = SizeTokens.Level16) {
+                        SortChip(
+                            enabled = true,
+                            dismissOnSelected = true,
+                            leadingIcon = Icons.Rounded.Sort,
+                            selectedIndex = sortIndexState,
+                            type = sortTypeState,
+                            list = stringArrayResource(id = R.array.backup_sort_type_items_files).toList(),
+                            onSelected = { index, _ ->
+                                scope.launch {
+                                    scrollState.scrollToItem(0)
+                                    viewModel.emitIntentOnIO(IndexUiIntent.Sort(index = index, type = sortTypeState))
+                                }
+                            },
+                            onClick = {}
                         )
                     }
+
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .paddingTop(SizeTokens.Level8)
+                    )
                 }
 
                 LazyColumn(modifier = Modifier.fillMaxSize(), state = scrollState) {
@@ -197,10 +183,8 @@ fun PageMediumRestoreList() {
                             MediaItem(
                                 item = item,
                                 onCheckedChange = { viewModel.emitIntentOnIO(IndexUiIntent.Select(item)) },
-                                filterMode = uiState.filterMode,
                                 onClick = {
-                                    if (uiState.filterMode) viewModel.emitIntentOnIO(IndexUiIntent.ToPageDetail(navController, item))
-                                    else viewModel.emitIntentOnIO(IndexUiIntent.Select(item))
+                                    viewModel.emitIntentOnIO(IndexUiIntent.ToPageDetail(navController, item))
                                 }
                             )
                         }

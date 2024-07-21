@@ -2,10 +2,6 @@ package com.xayah.core.ui.component
 
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +13,10 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,8 +28,10 @@ import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -234,16 +230,19 @@ fun PackageIcons(
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
 @Composable
-fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: ((Boolean) -> Unit)?, filterMode: Boolean, onClick: () -> Unit) {
-    val context = LocalContext.current
+fun PackageItem(
+    item: PackageEntity,
+    checked: Boolean? = null,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    onClick: () -> Unit
+) {
     com.xayah.core.ui.material3.Surface(onClick = onClick) {
         Column {
             Row(
                 modifier = Modifier
                     .height(IntrinsicSize.Min)
                     .paddingTop(SizeTokens.Level16)
-                    .paddingHorizontal(SizeTokens.Level16)
-                    .then(if (filterMode.not()) Modifier.paddingBottom(SizeTokens.Level16) else Modifier),
+                    .paddingHorizontal(SizeTokens.Level16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
             ) {
@@ -270,13 +269,13 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                     )
                 }
 
-                Divider(
-                    modifier = Modifier
-                        .height(SizeTokens.Level36)
-                        .width(SizeTokens.Level1)
-                        .fillMaxHeight()
+                VerticalDivider(
+                    modifier = Modifier.height(SizeTokens.Level32)
                 )
-                CheckIconButton(checked = checked ?: item.extraInfo.activated, onCheckedChange = onCheckedChange)
+                Checkbox(
+                    checked = checked ?: item.extraInfo.activated,
+                    onCheckedChange = onCheckedChange
+                )
             }
             FlowRow(
                 modifier = Modifier
@@ -294,7 +293,7 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         OpType.RESTORE -> item.displayStatsBytes
                     }
 
-                    if (item.apkSelected) {
+                    AnimatedVisibility(item.apkSelected) {
                         AssistChip(
                             enabled = true,
                             label = stringResource(id = R.string.apk),
@@ -306,7 +305,7 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         )
                     }
 
-                    if (item.userSelected || item.userDeSelected || item.dataSelected || item.obbSelected || item.mediaSelected) {
+                    AnimatedVisibility(item.userSelected || item.userDeSelected || item.dataSelected || item.obbSelected || item.mediaSelected) {
                         AssistChip(
                             enabled = true,
                             label = joinOf(stringResource(id = R.string.data), " (${item.dataSelectedCount})"),
@@ -318,7 +317,7 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         )
                     }
 
-                    if (item.preserveId != 0L) {
+                    AnimatedVisibility(item.preserveId != 0L) {
                         AssistChip(
                             enabled = true,
                             label = stringResource(id = R.string._protected),
@@ -329,7 +328,7 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                             border = null,
                         )
                     }
-                    if (storageStatsFormat != (0).toDouble()) {
+                    AnimatedVisibility(storageStatsFormat != (0).toDouble()) {
                         AssistChip(
                             enabled = true,
                             label = storageStatsFormat.formatSize(),
@@ -340,24 +339,28 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                             border = null,
                         )
                     }
-                    if (ssaid.isNotEmpty()) AssistChip(
-                        enabled = true,
-                        label = stringResource(id = R.string.ssaid),
-                        leadingIcon = Icons.Outlined.Pin,
-                        trailingIcon = null,
-                        color = ThemedColorSchemeKeyTokens.Primary,
-                        containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
-                        border = null,
-                    )
-                    if (hasKeystore) AssistChip(
-                        enabled = true,
-                        label = stringResource(id = R.string.keystore),
-                        leadingIcon = Icons.Outlined.Key,
-                        trailingIcon = null,
-                        color = ThemedColorSchemeKeyTokens.Primary,
-                        containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
-                        border = null,
-                    )
+                    AnimatedVisibility(ssaid.isNotEmpty()) {
+                        AssistChip(
+                            enabled = true,
+                            label = stringResource(id = R.string.ssaid),
+                            leadingIcon = Icons.Outlined.Pin,
+                            trailingIcon = null,
+                            color = ThemedColorSchemeKeyTokens.Primary,
+                            containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
+                            border = null,
+                        )
+                    }
+                    AnimatedVisibility(hasKeystore) {
+                        AssistChip(
+                            enabled = true,
+                            label = stringResource(id = R.string.keystore),
+                            leadingIcon = Icons.Outlined.Key,
+                            trailingIcon = null,
+                            color = ThemedColorSchemeKeyTokens.Primary,
+                            containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
+                            border = null,
+                        )
+                    }
                 }
             )
         }
@@ -367,8 +370,13 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
 @ExperimentalLayoutApi
 @ExperimentalFoundationApi
 @Composable
-fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = null, onCheckedChange: ((Boolean) -> Unit)?, filterMode: Boolean, onClick: () -> Unit) {
-    val context = LocalContext.current
+fun MediaItem(
+    item: MediaEntity,
+    enabled: Boolean? = null,
+    checked: Boolean? = null,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    onClick: () -> Unit
+) {
     val existed = item.existed
     val _enabled = enabled ?: item.enabled
     com.xayah.core.ui.material3.Surface(onClick = onClick) {
@@ -377,8 +385,7 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                 modifier = Modifier
                     .height(IntrinsicSize.Min)
                     .paddingTop(SizeTokens.Level16)
-                    .paddingHorizontal(SizeTokens.Level16)
-                    .then(if (filterMode.not()) Modifier.paddingBottom(SizeTokens.Level16) else Modifier),
+                    .paddingHorizontal(SizeTokens.Level16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
             ) {
@@ -394,63 +401,63 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                     )
                 }
 
-                Divider(
-                    modifier = Modifier
-                        .height(SizeTokens.Level36)
-                        .width(SizeTokens.Level1)
-                        .fillMaxHeight()
+                VerticalDivider(
+                    modifier = Modifier.height(SizeTokens.Level32)
                 )
-                CheckIconButton(enabled = _enabled, checked = checked ?: item.extraInfo.activated, onCheckedChange = onCheckedChange)
+                Checkbox(
+                    enabled = _enabled,
+                    checked = checked ?: item.extraInfo.activated,
+                    onCheckedChange = onCheckedChange
+                )
             }
 
-            AnimatedVisibility(visible = filterMode, enter = fadeIn() + slideInVertically(), exit = slideOutVertically() + fadeOut()) {
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .paddingStart(SizeTokens.Level64)
-                        .paddingBottom(SizeTokens.Level16),
-                    horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
-                    verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8),
-                    content = {
-                        val storageStatsFormat = item.displayStatsBytes
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .paddingStart(SizeTokens.Level64)
+                    .paddingEnd(SizeTokens.Level64)
+                    .paddingBottom(SizeTokens.Level16),
+                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8),
+                content = {
+                    val storageStatsFormat = item.displayStatsBytes
 
-                        if (existed.not()) {
-                            AssistChip(
-                                enabled = true,
-                                label = stringResource(id = R.string.not_exist),
-                                leadingIcon = Icons.Outlined.Close,
-                                trailingIcon = null,
-                                color = ThemedColorSchemeKeyTokens.Error,
-                                containerColor = ThemedColorSchemeKeyTokens.ErrorContainer,
-                                border = null,
-                            )
-                        }
-
-                        if (item.preserveId != 0L) {
-                            AssistChip(
-                                enabled = true,
-                                label = stringResource(id = R.string._protected),
-                                leadingIcon = Icons.Outlined.Shield,
-                                trailingIcon = null,
-                                color = ThemedColorSchemeKeyTokens.YellowPrimary,
-                                containerColor = ThemedColorSchemeKeyTokens.YellowPrimaryContainer,
-                                border = null,
-                            )
-                        }
-                        if (existed) {
-                            AssistChip(
-                                enabled = true,
-                                label = storageStatsFormat.formatSize(),
-                                leadingIcon = Icons.Outlined.Folder,
-                                trailingIcon = null,
-                                color = ThemedColorSchemeKeyTokens.Primary,
-                                containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
-                                border = null,
-                            )
-                        }
+                    AnimatedVisibility(existed.not()) {
+                        AssistChip(
+                            enabled = true,
+                            label = stringResource(id = R.string.not_exist),
+                            leadingIcon = Icons.Outlined.Close,
+                            trailingIcon = null,
+                            color = ThemedColorSchemeKeyTokens.Error,
+                            containerColor = ThemedColorSchemeKeyTokens.ErrorContainer,
+                            border = null,
+                        )
                     }
-                )
-            }
+
+                    AnimatedVisibility(item.preserveId != 0L) {
+                        AssistChip(
+                            enabled = true,
+                            label = stringResource(id = R.string._protected),
+                            leadingIcon = Icons.Outlined.Shield,
+                            trailingIcon = null,
+                            color = ThemedColorSchemeKeyTokens.YellowPrimary,
+                            containerColor = ThemedColorSchemeKeyTokens.YellowPrimaryContainer,
+                            border = null,
+                        )
+                    }
+                    AnimatedVisibility(existed) {
+                        AssistChip(
+                            enabled = true,
+                            label = storageStatsFormat.formatSize(),
+                            leadingIcon = Icons.Outlined.Folder,
+                            trailingIcon = null,
+                            color = ThemedColorSchemeKeyTokens.Primary,
+                            containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
+                            border = null,
+                        )
+                    }
+                }
+            )
         }
     }
 }

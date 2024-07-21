@@ -31,7 +31,6 @@ import javax.inject.Inject
 
 data class IndexUiState(
     val selectAll: Boolean,
-    val filterMode: Boolean,
     val uuid: UUID,
 ) : UiState
 
@@ -52,7 +51,7 @@ sealed class IndexUiIntent : UiIntent {
 class IndexViewModel @Inject constructor(
     private val mediaRepo: MediaRepository,
     rootService: RemoteRootService,
-) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(selectAll = false, filterMode = true, uuid = UUID.randomUUID())) {
+) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(IndexUiState(selectAll = false, uuid = UUID.randomUUID())) {
     init {
         rootService.onFailure = {
             val msg = it.message

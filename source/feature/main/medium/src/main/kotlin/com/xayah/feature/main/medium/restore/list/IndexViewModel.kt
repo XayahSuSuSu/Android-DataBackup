@@ -30,7 +30,6 @@ data class IndexUiState(
     val cloudName: String,
     val cloudRemote: String,
     val selectAll: Boolean,
-    val filterMode: Boolean,
     val uuid: UUID,
     val isLoading: Boolean,
 ) : UiState
@@ -58,7 +57,6 @@ class IndexViewModel @Inject constructor(
         cloudName = args.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.decodeURL()?.trim() ?: "",
         cloudRemote = args.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim() ?: "",
         selectAll = false,
-        filterMode = true,
         uuid = UUID.randomUUID(),
         isLoading = false
     )

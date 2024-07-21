@@ -38,7 +38,6 @@ import javax.inject.Inject
 data class IndexUiState(
     val isRefreshing: Boolean,
     val selectAll: Boolean,
-    val filterMode: Boolean,
     val uuid: UUID,
     val isLoading: Boolean,
 ) : UiState
@@ -69,7 +68,6 @@ class IndexViewModel @Inject constructor(
     IndexUiState(
         isRefreshing = false,
         selectAll = false,
-        filterMode = true,
         uuid = UUID.randomUUID(),
         isLoading = false
     )

@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import com.xayah.core.ui.theme.DisabledAlpha
 import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
@@ -68,7 +67,7 @@ fun RoundedTextField(
         shape = CircleShape,
         value = value,
         enabled = enabled,
-        placeholder = { TitleMediumText(text = placeholder, fontWeight = FontWeight.Bold) },
+        placeholder = { BodyLargeText(text = placeholder) },
         onValueChange = onValueChange,
         singleLine = true,
         visualTransformation = visualTransformation,
@@ -77,7 +76,7 @@ fun RoundedTextField(
         keyboardOptions = keyboardOptions,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = ThemedColorSchemeKeyTokens.SurfaceVariant.value,
-            unfocusedContainerColor = ThemedColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed.value,
+            unfocusedContainerColor = ThemedColorSchemeKeyTokens.SurfaceContainerHigh.value,
             disabledContainerColor = ThemedColorSchemeKeyTokens.SurfaceVariant.value.copy(alpha = DisabledAlpha),
             errorContainerColor = ThemedColorSchemeKeyTokens.SurfaceVariant.value,
             unfocusedBorderColor = ThemedColorSchemeKeyTokens.Transparent.value,

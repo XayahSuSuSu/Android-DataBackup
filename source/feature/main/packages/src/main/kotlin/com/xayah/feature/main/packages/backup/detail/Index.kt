@@ -5,8 +5,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,16 +19,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.DataType
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.component.BodyMediumText
 import com.xayah.core.ui.component.Clickable
+import com.xayah.core.ui.component.PackageDataChip
 import com.xayah.core.ui.component.PackageIconImage
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
@@ -89,6 +90,123 @@ fun PagePackagesBackupDetail() {
                         BodyMediumText(text = uiState.packageName, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
                     }
                 }
+                Title(title = stringResource(id = R.string.backup_parts)) {
+                    Switchable(
+                        checked = pkg.permissionSelected,
+                        title = stringResource(id = R.string.permissions),
+                        checkedText = countItems(context, pkg.extraInfo.permissions.size),
+                    ) {
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversePermission()))
+                    }
+                    Switchable(
+                        enabled = pkg.extraInfo.ssaid.isNotEmpty(),
+                        checked = pkg.ssaidSelected,
+                        title = stringResource(id = R.string.ssaid),
+                        checkedText = pkg.extraInfo.ssaid.ifEmpty { stringResource(id = R.string.none) },
+                    ) {
+                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reverseSsaid()))
+                    }
+                    FlowRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .paddingHorizontal(SizeTokens.Level24)
+                            .paddingVertical(SizeTokens.Level16),
+                        horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                        verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                        maxItemsInEachRow = 2
+                    ) {
+                        PackageDataChip(
+                            modifier = Modifier.weight(1f),
+                            dataType = DataType.PACKAGE_APK,
+                            selected = pkg.apkSelected,
+                            subtitle = if (uiState.isCalculating)
+                                joinOf(
+                                    pkg.displayStats.apkBytes.toDouble().formatSize(),
+                                    SymbolUtil.DOT.toString(),
+                                    stringResource(id = R.string.calculating),
+                                )
+                            else
+                                pkg.displayStats.apkBytes.toDouble().formatSize()
+                        ) {
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_APK)))
+                        }
+                        PackageDataChip(
+                            modifier = Modifier.weight(1f),
+                            dataType = DataType.PACKAGE_USER,
+                            selected = pkg.userSelected,
+                            subtitle = if (uiState.isCalculating)
+                                joinOf(
+                                    pkg.displayStats.userBytes.toDouble().formatSize(),
+                                    SymbolUtil.DOT.toString(),
+                                    stringResource(id = R.string.calculating),
+                                )
+                            else
+                                pkg.displayStats.userBytes.toDouble().formatSize()
+                        ) {
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER)))
+                        }
+                        PackageDataChip(
+                            modifier = Modifier.weight(1f),
+                            dataType = DataType.PACKAGE_USER_DE,
+                            selected = pkg.userDeSelected,
+                            subtitle = if (uiState.isCalculating)
+                                joinOf(
+                                    pkg.displayStats.userDeBytes.toDouble().formatSize(),
+                                    SymbolUtil.DOT.toString(),
+                                    stringResource(id = R.string.calculating),
+                                )
+                            else
+                                pkg.displayStats.userDeBytes.toDouble().formatSize()
+                        ) {
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER_DE)))
+                        }
+                        PackageDataChip(
+                            modifier = Modifier.weight(1f),
+                            dataType = DataType.PACKAGE_DATA,
+                            selected = pkg.dataSelected,
+                            subtitle = if (uiState.isCalculating)
+                                joinOf(
+                                    pkg.displayStats.dataBytes.toDouble().formatSize(),
+                                    SymbolUtil.DOT.toString(),
+                                    stringResource(id = R.string.calculating),
+                                )
+                            else
+                                pkg.displayStats.dataBytes.toDouble().formatSize()
+                        ) {
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_DATA)))
+                        }
+                        PackageDataChip(
+                            modifier = Modifier.weight(1f),
+                            dataType = DataType.PACKAGE_OBB,
+                            selected = pkg.obbSelected,
+                            subtitle = if (uiState.isCalculating)
+                                joinOf(
+                                    pkg.displayStats.obbBytes.toDouble().formatSize(),
+                                    SymbolUtil.DOT.toString(),
+                                    stringResource(id = R.string.calculating),
+                                )
+                            else
+                                pkg.displayStats.obbBytes.toDouble().formatSize()
+                        ) {
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_OBB)))
+                        }
+                        PackageDataChip(
+                            modifier = Modifier.weight(1f),
+                            dataType = DataType.PACKAGE_MEDIA,
+                            selected = pkg.mediaSelected,
+                            subtitle = if (uiState.isCalculating)
+                                joinOf(
+                                    pkg.displayStats.mediaBytes.toDouble().formatSize(),
+                                    SymbolUtil.DOT.toString(),
+                                    stringResource(id = R.string.calculating),
+                                )
+                            else
+                                pkg.displayStats.mediaBytes.toDouble().formatSize()
+                        ) {
+                            viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_MEDIA)))
+                        }
+                    }
+                }
                 Title(title = stringResource(id = R.string.info)) {
                     Clickable(
                         title = stringResource(id = R.string.user),
@@ -109,113 +227,6 @@ fun PagePackagesBackupDetail() {
                             "yyyy-MM-dd"
                         ),
                     )
-                }
-                Title(title = stringResource(id = R.string.backup_parts)) {
-                    Switchable(
-                        checked = pkg.permissionSelected,
-                        title = stringResource(id = R.string.permissions),
-                        checkedText = countItems(context, pkg.extraInfo.permissions.size),
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversePermission()))
-                    }
-                    Switchable(
-                        enabled = pkg.extraInfo.ssaid.isNotEmpty(),
-                        checked = pkg.ssaidSelected,
-                        title = stringResource(id = R.string.ssaid),
-                        checkedText = pkg.extraInfo.ssaid.ifEmpty { stringResource(id = R.string.none) },
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reverseSsaid()))
-                    }
-                    Switchable(
-                        checked = pkg.apkSelected,
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_android),
-                        title = DataType.PACKAGE_APK.type.uppercase(),
-                        checkedText = if (uiState.isCalculating)
-                            joinOf(
-                                pkg.displayStats.apkBytes.toDouble().formatSize(),
-                                SymbolUtil.DOT.toString(),
-                                stringResource(id = R.string.calculating),
-                            )
-                        else
-                            pkg.displayStats.apkBytes.toDouble().formatSize(),
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_APK)))
-                    }
-                    Switchable(
-                        checked = pkg.userSelected,
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_person),
-                        title = DataType.PACKAGE_USER.type.uppercase(),
-                        checkedText = if (uiState.isCalculating)
-                            joinOf(
-                                pkg.displayStats.userBytes.toDouble().formatSize(),
-                                SymbolUtil.DOT.toString(),
-                                stringResource(id = R.string.calculating),
-                            )
-                        else
-                            pkg.displayStats.userBytes.toDouble().formatSize(),
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER)))
-                    }
-                    Switchable(
-                        checked = pkg.userDeSelected,
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_manage_accounts),
-                        title = DataType.PACKAGE_USER_DE.type.uppercase(),
-                        checkedText = if (uiState.isCalculating)
-                            joinOf(
-                                pkg.displayStats.userDeBytes.toDouble().formatSize(),
-                                SymbolUtil.DOT.toString(),
-                                stringResource(id = R.string.calculating),
-                            )
-                        else
-                            pkg.displayStats.userDeBytes.toDouble().formatSize(),
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_USER_DE)))
-                    }
-                    Switchable(
-                        checked = pkg.dataSelected,
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_database),
-                        title = DataType.PACKAGE_DATA.type.uppercase(),
-                        checkedText = if (uiState.isCalculating)
-                            joinOf(
-                                pkg.displayStats.dataBytes.toDouble().formatSize(),
-                                SymbolUtil.DOT.toString(),
-                                stringResource(id = R.string.calculating),
-                            )
-                        else
-                            pkg.displayStats.dataBytes.toDouble().formatSize(),
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_DATA)))
-                    }
-                    Switchable(
-                        checked = pkg.obbSelected,
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_stadia_controller),
-                        title = DataType.PACKAGE_OBB.type.uppercase(),
-                        checkedText = if (uiState.isCalculating)
-                            joinOf(
-                                pkg.displayStats.obbBytes.toDouble().formatSize(),
-                                SymbolUtil.DOT.toString(),
-                                stringResource(id = R.string.calculating),
-                            )
-                        else
-                            pkg.displayStats.obbBytes.toDouble().formatSize(),
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_OBB)))
-                    }
-                    Switchable(
-                        checked = pkg.mediaSelected,
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_image),
-                        title = DataType.PACKAGE_MEDIA.type.uppercase(),
-                        checkedText = if (uiState.isCalculating)
-                            joinOf(
-                                pkg.displayStats.mediaBytes.toDouble().formatSize(),
-                                SymbolUtil.DOT.toString(),
-                                stringResource(id = R.string.calculating),
-                            )
-                        else
-                            pkg.displayStats.mediaBytes.toDouble().formatSize(),
-                    ) {
-                        viewModel.emitIntentOnIO(IndexUiIntent.UpdatePackage(pkg.reversedPackage(DataType.PACKAGE_MEDIA)))
-                    }
                 }
             }
         }

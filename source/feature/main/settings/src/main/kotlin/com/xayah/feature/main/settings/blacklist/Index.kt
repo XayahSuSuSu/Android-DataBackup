@@ -100,8 +100,7 @@ fun PageBlackList() {
                         },
                         onClick = {
                             viewModel.emitIntentOnIO(IndexUiIntent.SelectApp(item.id))
-                        },
-                        filterMode = false
+                        }
                     )
                 }
             }
@@ -123,8 +122,7 @@ fun PageBlackList() {
                         },
                         onClick = {
                             viewModel.emitIntentOnIO(IndexUiIntent.SelectFile(item.id))
-                        },
-                        filterMode = false
+                        }
                     )
                 }
             }

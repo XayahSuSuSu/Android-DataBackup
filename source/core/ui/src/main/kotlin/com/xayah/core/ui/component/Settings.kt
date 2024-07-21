@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -144,7 +145,7 @@ fun Clickable(
     Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingIcon != null) {
-                Icon(imageVector = leadingIcon, contentDescription = null, tint = ThemedColorSchemeKeyTokens.Unspecified.value.withState(enabled))
+                Icon(imageVector = leadingIcon, contentDescription = null, tint = LocalContentColor.current.withState(enabled))
             }
             Column(modifier = Modifier.weight(1f)) {
                 AnimatedTextContainer(targetState = title) { text ->
@@ -156,7 +157,7 @@ fun Clickable(
                 content?.invoke(this)
             }
             if (trailingIcon != null) {
-                Icon(imageVector = trailingIcon, contentDescription = null, tint = ThemedColorSchemeKeyTokens.Unspecified.value.withState(enabled))
+                Icon(imageVector = trailingIcon, contentDescription = null, tint = LocalContentColor.current.withState(enabled))
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.xayah.core.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
@@ -16,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.ripple.rememberRipple
@@ -38,12 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import com.xayah.core.model.DataType
 import com.xayah.core.model.SortType
-import com.xayah.core.model.util.formatSize
-import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 import com.xayah.core.ui.theme.value
@@ -363,37 +362,21 @@ fun DataChip(
 @ExperimentalMaterial3Api
 @ExperimentalFoundationApi
 @Composable
-fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, dataType: DataType, selected: Boolean, dataBytes: Double? = null, onClick: () -> Unit) {
-    DataChip(
-        modifier = modifier,
-        enabled = enabled,
-        title = dataType.type.uppercase(),
-        subtitle = dataBytes?.formatSize(),
-        leadingIcon = dataType.icon,
-        trailingIcon = if (selected) ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle) else null,
-        border = if (selected) null else outlinedCardBorder(),
-        color = if (selected) ThemedColorSchemeKeyTokens.OnSecondaryContainer else ThemedColorSchemeKeyTokens.OnSurfaceVariant,
-        containerColor = if (selected) ThemedColorSchemeKeyTokens.SecondaryContainer else ThemedColorSchemeKeyTokens.Transparent,
-        onClick = onClick
-    )
-}
-
-@ExperimentalMaterial3Api
-@ExperimentalFoundationApi
-@Composable
 fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, dataType: DataType, selected: Boolean, subtitle: String? = null, onClick: () -> Unit) {
-    DataChip(
+    ActionButton(
         modifier = modifier,
         enabled = enabled,
-        title = dataType.type.uppercase(),
-        subtitle = subtitle,
-        leadingIcon = dataType.icon,
-        trailingIcon = if (selected) ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle) else null,
-        border = if (selected) null else outlinedCardBorder(),
-        color = if (selected) ThemedColorSchemeKeyTokens.OnSecondaryContainer else ThemedColorSchemeKeyTokens.OnSurfaceVariant,
-        containerColor = if (selected) ThemedColorSchemeKeyTokens.SecondaryContainer else ThemedColorSchemeKeyTokens.Transparent,
+        icon = if (selected) Icons.Rounded.Check else dataType.icon,
+        colorContainer = if (selected) ThemedColorSchemeKeyTokens.PrimaryContainer else ThemedColorSchemeKeyTokens.SurfaceContainerHigh,
+        colorL80D20 = if (selected) ThemedColorSchemeKeyTokens.OnPrimaryContainer else ThemedColorSchemeKeyTokens.SurfaceDim,
+        onColorContainer = if (selected) ThemedColorSchemeKeyTokens.PrimaryContainer else ThemedColorSchemeKeyTokens.OnSurface,
         onClick = onClick
-    )
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            LabelLargeText(text = dataType.type.uppercase(), color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled), maxLines = 1, enabled = enabled)
+            AnimatedVisibility(subtitle != null) { LabelSmallText(modifier = Modifier.basicMarquee(), text = subtitle!!, maxLines = 1, enabled = enabled) }
+        }
+    }
 }
 
 @ExperimentalMaterial3Api
