@@ -7,7 +7,7 @@ import androidx.compose.material.icons.rounded.PriorityHigh
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 sealed class EnvState {
     data object Idle : EnvState()
@@ -15,60 +15,60 @@ sealed class EnvState {
     data object Succeed : EnvState()
     data object Failed : EnvState()
 
-    val colorContainer: ColorSchemeKeyTokens
+    val colorContainer: ThemedColorSchemeKeyTokens
         get() = when (this) {
             Idle -> {
-                ColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed
+                ThemedColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed
             }
 
             Processing -> {
-                ColorSchemeKeyTokens.SecondaryContainer
+                ThemedColorSchemeKeyTokens.SecondaryContainer
             }
 
             Succeed -> {
-                ColorSchemeKeyTokens.PrimaryContainer
+                ThemedColorSchemeKeyTokens.PrimaryContainer
             }
 
             Failed -> {
-                ColorSchemeKeyTokens.ErrorContainer
+                ThemedColorSchemeKeyTokens.ErrorContainer
             }
         }
 
-    val colorL80D20: ColorSchemeKeyTokens
+    val colorL80D20: ThemedColorSchemeKeyTokens
         get() = when (this) {
             Idle -> {
-                ColorSchemeKeyTokens.SurfaceDimBaselineFixed
+                ThemedColorSchemeKeyTokens.SurfaceDimBaselineFixed
             }
 
             Processing -> {
-                ColorSchemeKeyTokens.OnSecondaryContainer
+                ThemedColorSchemeKeyTokens.OnSecondaryContainer
             }
 
             Succeed -> {
-                ColorSchemeKeyTokens.OnPrimaryContainer
+                ThemedColorSchemeKeyTokens.OnPrimaryContainer
             }
 
             Failed -> {
-                ColorSchemeKeyTokens.OnErrorContainer
+                ThemedColorSchemeKeyTokens.OnErrorContainer
             }
         }
 
-    val onColorContainer: ColorSchemeKeyTokens
+    val onColorContainer: ThemedColorSchemeKeyTokens
         get() = when (this) {
             Idle -> {
-                ColorSchemeKeyTokens.OnSurface
+                ThemedColorSchemeKeyTokens.OnSurface
             }
 
             Processing -> {
-                ColorSchemeKeyTokens.SecondaryContainer
+                ThemedColorSchemeKeyTokens.SecondaryContainer
             }
 
             Succeed -> {
-                ColorSchemeKeyTokens.PrimaryContainer
+                ThemedColorSchemeKeyTokens.PrimaryContainer
             }
 
             Failed -> {
-                ColorSchemeKeyTokens.ErrorContainer
+                ThemedColorSchemeKeyTokens.ErrorContainer
             }
         }
 

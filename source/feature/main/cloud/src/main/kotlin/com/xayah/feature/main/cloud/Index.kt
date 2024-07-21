@@ -29,10 +29,10 @@ import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.Title
-import com.xayah.core.ui.material3.DisabledAlpha
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.route.MainRoutes
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.icon
@@ -72,7 +72,7 @@ fun PageCloud() {
                             Icon(
                                 imageVector = it.type.icon,
                                 contentDescription = null,
-                                tint = if (uiState.isProcessing.not()) LocalContentColor.current else LocalContentColor.current.copy(alpha = DisabledAlpha)
+                                tint = LocalContentColor.current.withState(uiState.isProcessing.not())
                             )
                         },
                         trailingContent = {
@@ -84,7 +84,7 @@ fun PageCloud() {
                             )
                             IconButton(
                                 icon = Icons.Outlined.Settings,
-                                tint = ColorSchemeKeyTokens.Primary.toColor(),
+                                tint = ThemedColorSchemeKeyTokens.Primary.value,
                                 onClick = {
                                     navController.navigateSingle(
                                         when (it.type) {

@@ -21,9 +21,9 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.TopBarState
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.util.maybePopBackStack
@@ -54,7 +54,7 @@ fun SecondaryTopBar(
             Column {
                 Text(modifier = Modifier.basicMarquee(), text = title, maxLines = 1)
                 AnimatedVisibility(visible = subtitle != null) {
-                    LabelLargeText(text = subtitle ?: "", color = ColorSchemeKeyTokens.Outline.toColor())
+                    LabelLargeText(text = subtitle ?: "", color = ThemedColorSchemeKeyTokens.Outline.value)
                 }
             }
         },

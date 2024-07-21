@@ -64,6 +64,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupPositionProvider
 import com.xayah.core.ui.material3.tokens.MenuTokens
+import com.xayah.core.ui.theme.fromToken
+import com.xayah.core.ui.theme.themedColorScheme
+import com.xayah.core.ui.theme.value
 import kotlin.math.max
 import kotlin.math.min
 
@@ -133,7 +136,7 @@ internal fun DropdownMenuContent(
             transformOrigin = transformOriginState.value
         },
         shape = shape,
-        color = MaterialTheme.colorScheme.fromToken(MenuTokens.ContainerColor),
+        color = MaterialTheme.themedColorScheme.fromToken(MenuTokens.ContainerColor),
         tonalElevation = MenuTokens.ContainerElevation,
         shadowElevation = MenuTokens.ContainerElevation
     ) {
@@ -241,15 +244,15 @@ object MenuDefaults {
      */
     @Composable
     fun itemColors(
-        textColor: Color = MenuTokens.ListItemLabelTextColor.toColor(),
-        leadingIconColor: Color = MenuTokens.ListItemLeadingIconColor.toColor(),
-        trailingIconColor: Color = MenuTokens.ListItemTrailingIconColor.toColor(),
+        textColor: Color = MenuTokens.ListItemLabelTextColor.value,
+        leadingIconColor: Color = MenuTokens.ListItemLeadingIconColor.value,
+        trailingIconColor: Color = MenuTokens.ListItemTrailingIconColor.value,
         disabledTextColor: Color =
-            MenuTokens.ListItemDisabledLabelTextColor.toColor()
+            MenuTokens.ListItemDisabledLabelTextColor.value
                 .copy(alpha = MenuTokens.ListItemDisabledLabelTextOpacity),
-        disabledLeadingIconColor: Color = MenuTokens.ListItemDisabledLeadingIconColor.toColor()
+        disabledLeadingIconColor: Color = MenuTokens.ListItemDisabledLeadingIconColor.value
             .copy(alpha = MenuTokens.ListItemDisabledLeadingIconOpacity),
-        disabledTrailingIconColor: Color = MenuTokens.ListItemDisabledTrailingIconColor.toColor()
+        disabledTrailingIconColor: Color = MenuTokens.ListItemDisabledTrailingIconColor.value
             .copy(alpha = MenuTokens.ListItemDisabledTrailingIconOpacity),
     ): MenuItemColors = MenuItemColors(
         textColor = textColor,

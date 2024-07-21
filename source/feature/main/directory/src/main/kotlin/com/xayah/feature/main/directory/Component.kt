@@ -39,9 +39,10 @@ import com.xayah.core.ui.component.intrinsicIcon
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.CardDefaults
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.SegmentProgress
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.joinOf
 
@@ -102,7 +103,7 @@ fun DirectoryCard(
             .wrapContentHeight(),
         enabled = enabled,
         performHapticFeedback = performHapticFeedback,
-        colors = CardDefaults.cardColors(containerColor = (if (selected) ColorSchemeKeyTokens.PrimaryContainer else ColorSchemeKeyTokens.Surface).toColor()),
+        colors = CardDefaults.cardColors(containerColor = (if (selected) ThemedColorSchemeKeyTokens.PrimaryContainer else ThemedColorSchemeKeyTokens.Surface).value),
         border = if (selected) null else CardDefaults.outlinedCardBorder(),
         onClick = onClick,
         onLongClick = onLongClick,
@@ -120,19 +121,19 @@ fun DirectoryCard(
                 Icon(
                     modifier = Modifier.intrinsicIcon(),
                     imageVector = icon,
-                    tint = (if (selected) ColorSchemeKeyTokens.OnPrimaryContainer else ColorSchemeKeyTokens.OnSurface).toColor(enabled),
+                    tint = (if (selected) ThemedColorSchemeKeyTokens.OnPrimaryContainer else ThemedColorSchemeKeyTokens.OnSurface).value.withState(enabled),
                     contentDescription = null,
                 )
                 TitleLargeText(
                     enabled = enabled,
                     text = title,
-                    color = (if (selected) ColorSchemeKeyTokens.OnPrimaryContainer else ColorSchemeKeyTokens.OnSurface).toColor(),
+                    color = (if (selected) ThemedColorSchemeKeyTokens.OnPrimaryContainer else ThemedColorSchemeKeyTokens.OnSurface).value,
                 )
             }
             BodyMediumText(
                 enabled = enabled,
                 text = path,
-                color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
             )
             if (used != null && used.progress.isNaN().not()) {
                 SegmentProgressIndicator(
@@ -141,14 +142,14 @@ fun DirectoryCard(
                         .paddingBottom(SizeTokens.Level4),
                     enabled = enabled,
                     progress = used.progress,
-                    color = if (selected) ColorSchemeKeyTokens.Secondary else ColorSchemeKeyTokens.Primary,
-                    trackColor = ColorSchemeKeyTokens.SecondaryL80D20,
+                    color = if (selected) ThemedColorSchemeKeyTokens.Secondary else ThemedColorSchemeKeyTokens.Primary,
+                    trackColor = ThemedColorSchemeKeyTokens.SecondaryL80D20,
                 )
 
                 BodyMediumText(
                     enabled = enabled,
                     text = "${context.getString(R.string.args_used, (used.progress * 100).toInt())} (${used.usedFormat} / ${used.totalFormat})",
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 )
             }
             if (backupUsed != null && backupUsed.progress.isNaN().not()) {
@@ -158,13 +159,13 @@ fun DirectoryCard(
                         .paddingBottom(SizeTokens.Level4),
                     enabled = enabled,
                     progress = backupUsed.progress,
-                    color = ColorSchemeKeyTokens.Primary,
-                    trackColor = ColorSchemeKeyTokens.SecondaryL80D20,
+                    color = ThemedColorSchemeKeyTokens.Primary,
+                    trackColor = ThemedColorSchemeKeyTokens.SecondaryL80D20,
                 )
                 BodyMediumText(
                     enabled = enabled,
                     text = "${context.getString(R.string.args_used_by_backups, (backupUsed.progress * 100).toInt())} (${backupUsed.usedFormat} / ${backupUsed.totalFormat})",
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 )
             }
 
@@ -173,7 +174,7 @@ fun DirectoryCard(
                     modifier = Modifier.paddingTop(SizeTokens.Level8),
                     enabled = enabled,
                     text = error,
-                    color = ColorSchemeKeyTokens.Error.toColor(),
+                    color = ThemedColorSchemeKeyTokens.Error.value,
                 )
             }
         }

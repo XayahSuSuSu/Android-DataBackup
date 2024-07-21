@@ -22,8 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.DisabledAlpha
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.TextFieldTokens
 
 @Composable
@@ -75,14 +76,14 @@ fun RoundedTextField(
         trailingIcon = trailingIcon,
         keyboardOptions = keyboardOptions,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = ColorSchemeKeyTokens.SurfaceVariant.toColor(),
-            unfocusedContainerColor = ColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed.toColor(),
-            disabledContainerColor = ColorSchemeKeyTokens.SurfaceVariant.toColor(false),
-            errorContainerColor = ColorSchemeKeyTokens.SurfaceVariant.toColor(),
-            unfocusedBorderColor = ColorSchemeKeyTokens.Transparent.toColor(),
-            disabledBorderColor = ColorSchemeKeyTokens.Transparent.toColor(),
-            focusedBorderColor = ColorSchemeKeyTokens.Transparent.toColor(),
-            errorBorderColor = ColorSchemeKeyTokens.Transparent.toColor(),
+            focusedContainerColor = ThemedColorSchemeKeyTokens.SurfaceVariant.value,
+            unfocusedContainerColor = ThemedColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed.value,
+            disabledContainerColor = ThemedColorSchemeKeyTokens.SurfaceVariant.value.copy(alpha = DisabledAlpha),
+            errorContainerColor = ThemedColorSchemeKeyTokens.SurfaceVariant.value,
+            unfocusedBorderColor = ThemedColorSchemeKeyTokens.Transparent.value,
+            disabledBorderColor = ThemedColorSchemeKeyTokens.Transparent.value,
+            focusedBorderColor = ThemedColorSchemeKeyTokens.Transparent.value,
+            errorBorderColor = ThemedColorSchemeKeyTokens.Transparent.value,
         ),
         prefix = if (prefix != null) {
             { Text(prefix) }

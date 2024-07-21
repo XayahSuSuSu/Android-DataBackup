@@ -45,8 +45,9 @@ import com.xayah.core.model.SortType
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CardDefaults
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.ModalMenuTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.SizeTokens
@@ -59,8 +60,8 @@ fun AssistChip(
     leadingIcon: ImageVector?,
     trailingIcon: ImageVector?,
     shape: Shape = AssistChipDefaults.shape,
-    color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
-    containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Transparent,
+    color: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Primary,
+    containerColor: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Transparent,
     border: BorderStroke? = AssistChipDefaults.assistChipBorder(enabled),
     onClick: () -> Unit = {},
 ) {
@@ -71,7 +72,7 @@ fun AssistChip(
             {
                 Icon(
                     imageVector = leadingIcon,
-                    tint = color.toColor(enabled),
+                    tint = color.value.withState(enabled),
                     contentDescription = null,
                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                 )
@@ -83,7 +84,7 @@ fun AssistChip(
             {
                 Icon(
                     imageVector = trailingIcon,
-                    tint = color.toColor(enabled),
+                    tint = color.value.withState(enabled),
                     contentDescription = null,
                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                 )
@@ -92,7 +93,7 @@ fun AssistChip(
             null
         },
         shape = shape,
-        colors = AssistChipDefaults.assistChipColors(labelColor = color.toColor(enabled), containerColor = containerColor.toColor(enabled)),
+        colors = AssistChipDefaults.assistChipColors(labelColor = color.value.withState(enabled), containerColor = containerColor.value.withState(enabled)),
         border = border
     )
 }
@@ -123,8 +124,8 @@ fun SortChip(
             label = list[selectedIndex],
             leadingIcon = leadingIcon,
             trailingIcon = selectedIcon,
-            color = ColorSchemeKeyTokens.Primary,
-            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+            color = ThemedColorSchemeKeyTokens.Primary,
+            containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
             border = null,
         )
 
@@ -312,8 +313,8 @@ fun DataChip(
     trailingIcon: ImageVector?,
     shape: Shape = AssistChipDefaults.shape,
     border: BorderStroke? = outlinedCardBorder(),
-    color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Primary,
-    containerColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.Transparent,
+    color: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Primary,
+    containerColor: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Transparent,
     onClick: () -> Unit,
 ) {
     Card(
@@ -323,7 +324,7 @@ fun DataChip(
         onLongClick = {},
         border = border,
         shape = shape,
-        colors = if (enabled) CardDefaults.cardColors(containerColor = containerColor.toColor(), contentColor = color.toColor()) else CardDefaults.cardColors()
+        colors = if (enabled) CardDefaults.cardColors(containerColor = containerColor.value.withState(), contentColor = color.value.withState()) else CardDefaults.cardColors()
     ) {
         Row(
             modifier = Modifier
@@ -334,7 +335,7 @@ fun DataChip(
         ) {
             Icon(
                 imageVector = leadingIcon,
-                tint = if (enabled) color.toColor() else LocalContentColor.current,
+                tint = if (enabled) color.value.withState() else LocalContentColor.current,
                 contentDescription = null,
                 modifier = Modifier.size(AssistChipDefaults.IconSize)
             )
@@ -350,7 +351,7 @@ fun DataChip(
             if (trailingIcon != null) {
                 Icon(
                     imageVector = trailingIcon,
-                    tint = if (enabled) color.toColor() else LocalContentColor.current,
+                    tint = if (enabled) color.value.withState() else LocalContentColor.current,
                     contentDescription = null,
                     modifier = Modifier.size(AssistChipDefaults.IconSize)
                 )
@@ -371,8 +372,8 @@ fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, data
         leadingIcon = dataType.icon,
         trailingIcon = if (selected) ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle) else null,
         border = if (selected) null else outlinedCardBorder(),
-        color = if (selected) ColorSchemeKeyTokens.OnSecondaryContainer else ColorSchemeKeyTokens.OnSurfaceVariant,
-        containerColor = if (selected) ColorSchemeKeyTokens.SecondaryContainer else ColorSchemeKeyTokens.Transparent,
+        color = if (selected) ThemedColorSchemeKeyTokens.OnSecondaryContainer else ThemedColorSchemeKeyTokens.OnSurfaceVariant,
+        containerColor = if (selected) ThemedColorSchemeKeyTokens.SecondaryContainer else ThemedColorSchemeKeyTokens.Transparent,
         onClick = onClick
     )
 }
@@ -389,8 +390,8 @@ fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, data
         leadingIcon = dataType.icon,
         trailingIcon = if (selected) ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle) else null,
         border = if (selected) null else outlinedCardBorder(),
-        color = if (selected) ColorSchemeKeyTokens.OnSecondaryContainer else ColorSchemeKeyTokens.OnSurfaceVariant,
-        containerColor = if (selected) ColorSchemeKeyTokens.SecondaryContainer else ColorSchemeKeyTokens.Transparent,
+        color = if (selected) ThemedColorSchemeKeyTokens.OnSecondaryContainer else ThemedColorSchemeKeyTokens.OnSurfaceVariant,
+        containerColor = if (selected) ThemedColorSchemeKeyTokens.SecondaryContainer else ThemedColorSchemeKeyTokens.Transparent,
         onClick = onClick
     )
 }
@@ -403,7 +404,7 @@ fun RoundChip(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, labe
             modifier = modifier,
             onClick = { onClick?.invoke() },
             shape = CircleShape,
-            color = ColorSchemeKeyTokens.PrimaryContainer.toColor(),
+            color = ThemedColorSchemeKeyTokens.PrimaryContainer.value.withState(),
             indication = if (onClick != null) rememberRipple() else null,
         ) {
             Box(

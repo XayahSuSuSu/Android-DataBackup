@@ -35,8 +35,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.readStoreBoolean
 import com.xayah.core.datastore.saveStoreBoolean
 import com.xayah.core.ui.material3.Surface
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 import kotlinx.coroutines.launch
 
@@ -72,7 +73,7 @@ fun Clickable(
                 modifier = Modifier.paddingHorizontal(SizeTokens.Level24),
                 enabled = enabled,
                 text = desc,
-                color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 fontWeight = FontWeight.Normal
             )
     }
@@ -95,10 +96,10 @@ fun Clickable(
             if (leadingContent != null) leadingContent()
             Column(modifier = Modifier.weight(1f)) {
                 AnimatedTextContainer(targetState = title) { text ->
-                    TitleLargeText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurface.toColor(enabled), fontWeight = FontWeight.Normal)
+                    TitleLargeText(enabled = enabled, text = text, color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled), fontWeight = FontWeight.Normal)
                 }
                 if (value != null) AnimatedTextContainer(targetState = value) { text ->
-                    TitleSmallText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.Outline.toColor(enabled), fontWeight = FontWeight.Normal)
+                    TitleSmallText(enabled = enabled, text = text, color = ThemedColorSchemeKeyTokens.Outline.value.withState(enabled), fontWeight = FontWeight.Normal)
                 }
             }
             if (trailingContent != null) trailingContent()
@@ -143,19 +144,19 @@ fun Clickable(
     Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingIcon != null) {
-                Icon(imageVector = leadingIcon, contentDescription = null, tint = ColorSchemeKeyTokens.LocalContent.toColor(enabled))
+                Icon(imageVector = leadingIcon, contentDescription = null, tint = ThemedColorSchemeKeyTokens.Unspecified.value.withState(enabled))
             }
             Column(modifier = Modifier.weight(1f)) {
                 AnimatedTextContainer(targetState = title) { text ->
-                    TitleLargeText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.OnSurface.toColor(enabled), fontWeight = FontWeight.Normal)
+                    TitleLargeText(enabled = enabled, text = text, color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled), fontWeight = FontWeight.Normal)
                 }
                 if (value != null) AnimatedTextContainer(targetState = value) { text ->
-                    TitleSmallText(enabled = enabled, text = text, color = ColorSchemeKeyTokens.Outline.toColor(enabled), fontWeight = FontWeight.Normal)
+                    TitleSmallText(enabled = enabled, text = text, color = ThemedColorSchemeKeyTokens.Outline.value.withState(enabled), fontWeight = FontWeight.Normal)
                 }
                 content?.invoke(this)
             }
             if (trailingIcon != null) {
-                Icon(imageVector = trailingIcon, contentDescription = null, tint = ColorSchemeKeyTokens.LocalContent.toColor(enabled))
+                Icon(imageVector = trailingIcon, contentDescription = null, tint = ThemedColorSchemeKeyTokens.Unspecified.value.withState(enabled))
             }
         }
     }
@@ -311,7 +312,7 @@ fun Title(
                 .paddingVertical(SizeTokens.Level12),
             enabled = enabled,
             text = title,
-            color = ColorSchemeKeyTokens.Primary.toColor(),
+            color = ThemedColorSchemeKeyTokens.Primary.value,
             fontWeight = FontWeight.Medium
         )
         Column(verticalArrangement = verticalArrangement) {

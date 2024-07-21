@@ -29,8 +29,8 @@ import com.xayah.core.ui.component.Section
 import com.xayah.core.ui.component.SetOnResume
 import com.xayah.core.ui.component.edit
 import com.xayah.core.ui.component.paddingTop
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.util.navigateSingle
@@ -91,7 +91,7 @@ fun PageOne() {
             ) {
                 AppIcon()
                 HeadlineMediumText(modifier = Modifier.paddingTop(SizeTokens.Level12), text = stringResource(id = R.string.welcome_to_use))
-                BodyMediumText(text = stringResource(id = R.string.app_short_desc), color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+                BodyMediumText(text = stringResource(id = R.string.app_short_desc), color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
             }
 
             Spacer(modifier = Modifier.size(SizeTokens.Level24))

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.xayah.core.ui.material3.tokens.CircularProgressIndicatorTokens
 import com.xayah.core.ui.material3.tokens.LinearProgressIndicatorTokens
+import com.xayah.core.ui.theme.value
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.max
@@ -505,17 +506,17 @@ object ProgressIndicatorDefaults {
     /** Default color for a linear progress indicator. */
     val linearColor: Color
         @Composable get() =
-            LinearProgressIndicatorTokens.ActiveIndicatorColor.toColor()
+            LinearProgressIndicatorTokens.ActiveIndicatorColor.value
 
     /** Default color for a circular progress indicator. */
     val circularColor: Color
         @Composable get() =
-            CircularProgressIndicatorTokens.ActiveIndicatorColor.toColor()
+            CircularProgressIndicatorTokens.ActiveIndicatorColor.value
 
     /** Default track color for a linear progress indicator. */
     val linearTrackColor: Color
         @Composable get() =
-            LinearProgressIndicatorTokens.TrackColor.toColor()
+            LinearProgressIndicatorTokens.TrackColor.value
 
     /** Default track color for a circular progress indicator. */
     val circularTrackColor: Color @Composable get() = Color.Transparent

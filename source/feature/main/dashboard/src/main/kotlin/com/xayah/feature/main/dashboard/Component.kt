@@ -24,9 +24,10 @@ import com.xayah.core.ui.component.SegmentProgressIndicator
 import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingTop
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.SegmentProgress
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.util.DateUtil
 
@@ -43,10 +44,10 @@ fun OverviewStorageCard(
     OverviewCard(
         title = stringResource(id = R.string.storage),
         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
-        colorContainer = ColorSchemeKeyTokens.SecondaryContainer,
-        onColorContainer = ColorSchemeKeyTokens.OnSecondaryContainer,
+        colorContainer = ThemedColorSchemeKeyTokens.SecondaryContainer,
+        onColorContainer = ThemedColorSchemeKeyTokens.OnSecondaryContainer,
         content = {
-            TitleLargeText(text = title, color = ColorSchemeKeyTokens.OnSurface.toColor())
+            TitleLargeText(text = title, color = ThemedColorSchemeKeyTokens.OnSurface.value)
             if (used != null && used.progress.isNaN().not()) {
                 SegmentProgressIndicator(
                     modifier = Modifier
@@ -54,14 +55,14 @@ fun OverviewStorageCard(
                         .paddingBottom(SizeTokens.Level4),
                     enabled = true,
                     progress = used.progress,
-                    color = ColorSchemeKeyTokens.Secondary,
-                    trackColor = ColorSchemeKeyTokens.SecondaryL80D20,
+                    color = ThemedColorSchemeKeyTokens.Secondary,
+                    trackColor = ThemedColorSchemeKeyTokens.SecondaryL80D20,
                 )
 
                 BodyMediumText(
                     enabled = true,
                     text = "${context.getString(R.string.args_used, (used.progress * 100).toInt())} (${used.usedFormat} / ${used.totalFormat})",
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 )
             }
             if (backupUsed != null && backupUsed.progress.isNaN().not()) {
@@ -71,13 +72,13 @@ fun OverviewStorageCard(
                         .paddingBottom(SizeTokens.Level4),
                     enabled = true,
                     progress = backupUsed.progress,
-                    color = ColorSchemeKeyTokens.Primary,
-                    trackColor = ColorSchemeKeyTokens.SecondaryL80D20,
+                    color = ThemedColorSchemeKeyTokens.Primary,
+                    trackColor = ThemedColorSchemeKeyTokens.SecondaryL80D20,
                 )
                 BodyMediumText(
                     enabled = true,
                     text = "${context.getString(R.string.args_used_by_backups, (backupUsed.progress * 100).toInt())} (${backupUsed.usedFormat} / ${backupUsed.totalFormat})",
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 )
             }
         },
@@ -100,17 +101,17 @@ fun OverviewLastBackupCard(nullBackupDir: Boolean, lastBackupTime: Long, onClick
     OverviewCard(
         title = stringResource(id = R.string.last_backup),
         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_package_2),
-        colorContainer = if (nullBackupDir) ColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed else ColorSchemeKeyTokens.PrimaryContainer,
-        onColorContainer = if (nullBackupDir) ColorSchemeKeyTokens.OnSurface else ColorSchemeKeyTokens.OnPrimaryContainer,
+        colorContainer = if (nullBackupDir) ThemedColorSchemeKeyTokens.SurfaceContainerHighBaselineFixed else ThemedColorSchemeKeyTokens.PrimaryContainer,
+        onColorContainer = if (nullBackupDir) ThemedColorSchemeKeyTokens.OnSurface else ThemedColorSchemeKeyTokens.OnPrimaryContainer,
         content = {
             TitleLargeText(
                 text = (if (nullBackupDir || lastBackupTime == 0L) stringResource(id = R.string.never) else relativeTime),
-                color = (if (nullBackupDir) ColorSchemeKeyTokens.OnSurfaceVariant else ColorSchemeKeyTokens.OnSurface).toColor()
+                color = (if (nullBackupDir) ThemedColorSchemeKeyTokens.OnSurfaceVariant else ThemedColorSchemeKeyTokens.OnSurface).value
             )
             if (nullBackupDir || lastBackupTime != 0L)
                 BodyMediumText(
                     text = if (nullBackupDir) stringResource(id = R.string.setup_required) else finishTime,
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 )
         },
         actionIcon = if (nullBackupDir) Icons.Rounded.KeyboardArrowRight else null,
@@ -126,9 +127,9 @@ fun QuickActionsButton(
     enabled: Boolean,
     title: String,
     icon: ImageVector,
-    colorContainer: ColorSchemeKeyTokens,
-    colorL80D20: ColorSchemeKeyTokens,
-    onColorContainer: ColorSchemeKeyTokens,
+    colorContainer: ThemedColorSchemeKeyTokens,
+    colorL80D20: ThemedColorSchemeKeyTokens,
+    onColorContainer: ThemedColorSchemeKeyTokens,
     actionIcon: ImageVector? = null,
     onClick: () -> Unit = {},
 ) {
@@ -143,12 +144,12 @@ fun QuickActionsButton(
             if (actionIcon != null)
                 Icon(
                     imageVector = actionIcon,
-                    tint = onColorContainer.toColor(enabled),
+                    tint = onColorContainer.value.withState(enabled),
                     contentDescription = null
                 )
         },
         onClick = onClick
     ) {
-        AutoLabelLargeText(modifier = Modifier.weight(1f), text = title, color = onColorContainer.toColor(enabled), enabled = enabled)
+        AutoLabelLargeText(modifier = Modifier.weight(1f), text = title, color = onColorContainer.value.withState(enabled), enabled = enabled)
     }
 }

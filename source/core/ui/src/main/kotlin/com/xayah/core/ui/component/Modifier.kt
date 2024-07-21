@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.fade
 import com.google.accompanist.placeholder.placeholder
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.material3.util.lerp
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 import com.xayah.core.ui.theme.darkTheme
+import com.xayah.core.ui.theme.value
 import kotlin.math.absoluteValue
 
 fun Modifier.paddingStart(start: Dp) = padding(start, 0.dp, 0.dp, 0.dp)
@@ -45,13 +45,13 @@ fun Modifier.shimmer(visible: Boolean = true, colorAlpha: Float = 0.1f, highligh
     placeholder(
         visible = visible,
         shape = CircleShape,
-        color = ColorSchemeKeyTokens.OnSurface
-            .toColor()
+        color = ThemedColorSchemeKeyTokens.OnSurface
+            .value
             .copy(alpha = alphaColor)
-            .compositeOver(ColorSchemeKeyTokens.Surface.toColor()),
+            .compositeOver(ThemedColorSchemeKeyTokens.Surface.value),
         highlight = PlaceholderHighlight.fade(
-            ColorSchemeKeyTokens.Surface
-                .toColor()
+            ThemedColorSchemeKeyTokens.Surface
+                .value
                 .copy(alpha = alphaHighlight)
         ),
     )

@@ -19,25 +19,25 @@
 package com.xayah.core.ui.token
 
 import androidx.compose.ui.unit.dp
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.material3.tokens.ElevationTokens
 import com.xayah.core.ui.material3.tokens.ShapeKeyTokens
 import com.xayah.core.ui.material3.tokens.TypographyKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 internal object DialogTokens {
-    val ActionFocusLabelTextColor = ColorSchemeKeyTokens.Primary
-    val ActionHoverLabelTextColor = ColorSchemeKeyTokens.Primary
-    val ActionLabelTextColor = ColorSchemeKeyTokens.Primary
+    val ActionFocusLabelTextColor = ThemedColorSchemeKeyTokens.Primary
+    val ActionHoverLabelTextColor = ThemedColorSchemeKeyTokens.Primary
+    val ActionLabelTextColor = ThemedColorSchemeKeyTokens.Primary
     val ActionLabelTextFont = TypographyKeyTokens.LabelLarge
-    val ActionPressedLabelTextColor = ColorSchemeKeyTokens.Primary
-    val ContainerColor = ColorSchemeKeyTokens.Surface
+    val ActionPressedLabelTextColor = ThemedColorSchemeKeyTokens.Primary
+    val ContainerColor = ThemedColorSchemeKeyTokens.Surface
     val ContainerElevation = ElevationTokens.Level3
     val ContainerShape = ShapeKeyTokens.CornerExtraLarge
-    val ContainerSurfaceTintLayerColor = ColorSchemeKeyTokens.SurfaceTint
-    val HeadlineColor = ColorSchemeKeyTokens.OnSurface
+    val ContainerSurfaceTintLayerColor = ThemedColorSchemeKeyTokens.SurfaceTint
+    val HeadlineColor = ThemedColorSchemeKeyTokens.OnSurface
     val HeadlineFont = TypographyKeyTokens.HeadlineSmall
-    val SupportingTextColor = ColorSchemeKeyTokens.OnSurfaceVariant
+    val SupportingTextColor = ThemedColorSchemeKeyTokens.OnSurfaceVariant
     val SupportingTextFont = TypographyKeyTokens.BodyMedium
-    val IconColor = ColorSchemeKeyTokens.Secondary
+    val IconColor = ThemedColorSchemeKeyTokens.Secondary
     val IconSize = 24.0.dp
 }

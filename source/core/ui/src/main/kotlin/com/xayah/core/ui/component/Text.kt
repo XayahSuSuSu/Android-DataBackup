@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import com.xayah.core.ui.material3.DisabledAlpha
+import com.xayah.core.ui.theme.withState
 
 @Composable
 fun TopBarTitle(modifier: Modifier = Modifier, text: String) {
@@ -43,7 +43,7 @@ fun HeadlineMediumText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.headlineMedium,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -62,7 +62,7 @@ fun HeadlineSmallText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.headlineSmall,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -83,7 +83,7 @@ fun TitleLargeText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.titleLarge,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
         overflow = overflow,
@@ -104,7 +104,7 @@ fun AutoTitleLargeText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.titleLarge,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -123,7 +123,7 @@ fun TitleMediumText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -142,7 +142,7 @@ fun TitleSmallText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.titleSmall,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -164,7 +164,7 @@ fun LabelLargeText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.labelLarge,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
         fontFamily = fontFamily,
@@ -186,7 +186,7 @@ fun AutoLabelLargeText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.labelLarge,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -206,7 +206,7 @@ fun LabelMediumText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.labelMedium,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
         textDecoration = textDecoration,
@@ -226,7 +226,7 @@ fun AutoLabelMediumText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.labelMedium,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -248,7 +248,7 @@ fun LabelSmallText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.labelSmall,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
         fontFamily = fontFamily,
@@ -270,7 +270,7 @@ fun BodyLargeText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodyLarge,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -289,7 +289,7 @@ fun BodySmallText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodySmall,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
     )
@@ -310,7 +310,7 @@ fun BodyMediumText(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
         overflow = overflow,
@@ -333,7 +333,7 @@ fun AutoSizeText(
         modifier = modifier,
         text = text,
         style = autoStyle,
-        color = if (enabled) color else color.copy(alpha = DisabledAlpha),
+        color = color.withState(enabled),
         textAlign = textAlign,
         fontWeight = fontWeight,
         maxLines = 1,

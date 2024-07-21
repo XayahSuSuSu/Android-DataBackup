@@ -7,13 +7,13 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.xayah.core.ui.R
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 data class ActionMenuItem(
     val title: String,
     val icon: ImageVector? = null,
-    val color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.LocalContent,
-    val backgroundColor: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnPrimary,
+    val color: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Unspecified,
+    val backgroundColor: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.OnPrimary,
     val enabled: Boolean,
     val countdown: Int = 0,
     val dismissOnClick: Boolean = false,
@@ -32,8 +32,8 @@ fun getActionMenuReturnItem(context: Context, onClick: (suspend () -> Unit)? = n
 fun getActionMenuConfirmItem(context: Context, onClick: suspend () -> Unit) = ActionMenuItem(
     title = context.getString(R.string.confirm),
     icon = Icons.Rounded.Warning,
-    color = ColorSchemeKeyTokens.Error,
-    backgroundColor = ColorSchemeKeyTokens.ErrorContainer,
+    color = ThemedColorSchemeKeyTokens.Error,
+    backgroundColor = ThemedColorSchemeKeyTokens.ErrorContainer,
     enabled = true,
     countdown = 1,
     secondaryMenu = listOf(),
@@ -43,8 +43,8 @@ fun getActionMenuConfirmItem(context: Context, onClick: suspend () -> Unit) = Ac
 fun getActionMenuDeleteItem(context: Context, onClick: suspend () -> Unit) = ActionMenuItem(
     title = context.getString(R.string.delete),
     icon = Icons.Rounded.Delete,
-    color = ColorSchemeKeyTokens.Error,
-    backgroundColor = ColorSchemeKeyTokens.ErrorContainer,
+    color = ThemedColorSchemeKeyTokens.Error,
+    backgroundColor = ThemedColorSchemeKeyTokens.ErrorContainer,
     enabled = true,
     countdown = 1,
     secondaryMenu = listOf(),

@@ -37,9 +37,9 @@ import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.MainIndexSubScaffold
 import com.xayah.core.ui.component.Section
 import com.xayah.core.ui.component.paddingTop
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.SegmentProgress
 import com.xayah.core.ui.route.MainRoutes
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.util.navigateSingle
@@ -144,9 +144,9 @@ fun PageDashboard() {
                         enabled = nullBackupDir.not(),
                         title = stringResource(id = R.string.backup_apps),
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
-                        colorContainer = ColorSchemeKeyTokens.RedPrimaryContainer,
-                        colorL80D20 = ColorSchemeKeyTokens.RedL80D20,
-                        onColorContainer = ColorSchemeKeyTokens.RedOnPrimaryContainer
+                        colorContainer = ThemedColorSchemeKeyTokens.RedPrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.RedL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.RedOnPrimaryContainer
                     ) {
                         navController.navigateSingle(MainRoutes.PackagesBackupList.route)
                     }
@@ -155,9 +155,9 @@ fun PageDashboard() {
                         enabled = nullBackupDir.not(),
                         title = stringResource(id = R.string.backup_files),
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
-                        colorContainer = ColorSchemeKeyTokens.YellowPrimaryContainer,
-                        colorL80D20 = ColorSchemeKeyTokens.YellowL80D20,
-                        onColorContainer = ColorSchemeKeyTokens.YellowOnPrimaryContainer
+                        colorContainer = ThemedColorSchemeKeyTokens.YellowPrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.YellowL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.YellowOnPrimaryContainer
                     ) {
                         navController.navigateSingle(MainRoutes.MediumBackupList.route)
                     }
@@ -167,27 +167,27 @@ fun PageDashboard() {
 //                        enabled = false,
 //                        title = stringResource(id = R.string.backup_messages),
 //                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
-//                        colorContainer = ColorSchemeKeyTokens.BluePrimaryContainer,
-//                        colorL80D20 = ColorSchemeKeyTokens.BlueL80D20,
-//                        onColorContainer = ColorSchemeKeyTokens.BlueOnPrimaryContainer
+//                        colorContainer = ThemedColorSchemeKeyTokens.BluePrimaryContainer,
+//                        colorL80D20 = ThemedColorSchemeKeyTokens.BlueL80D20,
+//                        onColorContainer = ThemedColorSchemeKeyTokens.BlueOnPrimaryContainer
 //                    )
 //                    QuickActionsButton(
 //                        modifier = Modifier.weight(1f),
 //                        enabled = false,
 //                        title = stringResource(id = R.string.backup_contacts),
 //                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
-//                        colorContainer = ColorSchemeKeyTokens.GreenPrimaryContainer,
-//                        colorL80D20 = ColorSchemeKeyTokens.GreenL80D20,
-//                        onColorContainer = ColorSchemeKeyTokens.GreenOnPrimaryContainer
+//                        colorContainer = ThemedColorSchemeKeyTokens.GreenPrimaryContainer,
+//                        colorL80D20 = ThemedColorSchemeKeyTokens.GreenL80D20,
+//                        onColorContainer = ThemedColorSchemeKeyTokens.GreenOnPrimaryContainer
 //                    )
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
                         enabled = nullBackupDir.not(),
                         title = stringResource(id = R.string.cloud),
                         icon = Icons.Outlined.Cloud,
-                        colorContainer = ColorSchemeKeyTokens.PrimaryContainer,
-                        colorL80D20 = ColorSchemeKeyTokens.PrimaryL80D20,
-                        onColorContainer = ColorSchemeKeyTokens.OnPrimaryContainer,
+                        colorContainer = ThemedColorSchemeKeyTokens.PrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.PrimaryL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.OnPrimaryContainer,
                         actionIcon = Icons.Rounded.KeyboardArrowRight
                     ) {
                         navController.navigateSingle(MainRoutes.Cloud.route)
@@ -197,9 +197,9 @@ fun PageDashboard() {
                         enabled = nullBackupDir.not(),
                         title = stringResource(id = R.string.restore),
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_history),
-                        colorContainer = ColorSchemeKeyTokens.SecondaryContainer,
-                        colorL80D20 = ColorSchemeKeyTokens.SecondaryL80D20,
-                        onColorContainer = ColorSchemeKeyTokens.OnSecondaryContainer,
+                        colorContainer = ThemedColorSchemeKeyTokens.SecondaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.SecondaryL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.OnSecondaryContainer,
                         actionIcon = Icons.Rounded.KeyboardArrowRight
                     ) {
                         navController.navigateSingle(MainRoutes.Restore.route)

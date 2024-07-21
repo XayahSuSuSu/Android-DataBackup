@@ -43,8 +43,8 @@ import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.material3.Card
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 
 @ExperimentalAnimationApi
@@ -95,7 +95,7 @@ fun DotLottieView() {
     BodyLargeText(
         text = stringResource(id = R.string.it_is_empty),
         textAlign = TextAlign.Center,
-        color = com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
+        color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value
     )
 }
 
@@ -108,7 +108,7 @@ fun ContributorCard(avatar: String, name: String, desc: String, onClick: () -> U
             Box {
                 Icon(
                     modifier = Modifier.size(SizeTokens.Level48),
-                    tint = ColorSchemeKeyTokens.OnSurface.toColor(),
+                    tint = ThemedColorSchemeKeyTokens.OnSurface.value,
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_rounded_emoticon),
                     contentDescription = null
                 )
@@ -124,8 +124,8 @@ fun ContributorCard(avatar: String, name: String, desc: String, onClick: () -> U
                 )
             }
             Column {
-                TitleMediumText(text = name, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.OnSurface.toColor())
-                TitleSmallText(text = desc, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.Outline.toColor())
+                TitleMediumText(text = name, fontWeight = FontWeight.Bold, color = ThemedColorSchemeKeyTokens.OnSurface.value)
+                TitleSmallText(text = desc, fontWeight = FontWeight.Bold, color = ThemedColorSchemeKeyTokens.Outline.value)
             }
         }
     }
@@ -140,7 +140,7 @@ fun TranslatorCard(modifier: Modifier = Modifier, avatar: String? = null, name: 
             Box {
                 Icon(
                     modifier = Modifier.size(SizeTokens.Level48),
-                    tint = ColorSchemeKeyTokens.OnSurface.toColor(),
+                    tint = ThemedColorSchemeKeyTokens.OnSurface.value,
                     imageVector = ImageVector.vectorResource(id = R.drawable.logo_weblate),
                     contentDescription = null
                 )
@@ -156,9 +156,9 @@ fun TranslatorCard(modifier: Modifier = Modifier, avatar: String? = null, name: 
                 )
             }
             Column {
-                TitleMediumText(text = name, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.OnSurface.toColor())
+                TitleMediumText(text = name, fontWeight = FontWeight.Bold, color = ThemedColorSchemeKeyTokens.OnSurface.value)
                 // Hide email address
-                // TitleSmallText(text = desc, fontWeight = FontWeight.Bold, color = ColorSchemeKeyTokens.Outline.toColor())
+                // TitleSmallText(text = desc, fontWeight = FontWeight.Bold, color = ThemedColorSchemeKeyTokens.Outline.value)
             }
         }
     }

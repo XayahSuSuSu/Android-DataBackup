@@ -28,14 +28,15 @@ import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.LabelLargeText
 import com.xayah.core.ui.material3.Surface
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 
 @Composable
 fun SetupScaffold(topBar: @Composable () -> Unit = {}, actions: @Composable RowScope.() -> Unit, content: @Composable LazyItemScope.() -> Unit) {
     Scaffold(
-        containerColor = ColorSchemeKeyTokens.Surface.toColor(),
+        containerColor = ThemedColorSchemeKeyTokens.Surface.value,
         topBar = topBar,
     ) { innerPadding ->
         Column {
@@ -91,11 +92,11 @@ fun PermissionButton(
         onColorContainer = envState.onColorContainer,
         trailingIcon = {
             if (onSetting != null) {
-                Surface(modifier = Modifier.size(SizeTokens.Level36), shape = CircleShape, onClick = onSetting, color = ColorSchemeKeyTokens.Transparent.toColor(enabled)) {
+                Surface(modifier = Modifier.size(SizeTokens.Level36), shape = CircleShape, onClick = onSetting, color = ThemedColorSchemeKeyTokens.Transparent.value.withState(enabled)) {
                     Icon(
                         modifier = Modifier.padding(SizeTokens.Level8),
                         imageVector = Icons.Outlined.Settings,
-                        tint = ColorSchemeKeyTokens.OnSurface.toColor(enabled),
+                        tint = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled),
                         contentDescription = null
                     )
                 }
@@ -103,15 +104,15 @@ fun PermissionButton(
 
             Icon(
                 imageVector = Icons.Rounded.KeyboardArrowRight,
-                tint = envState.onColorContainer.toColor(enabled),
+                tint = envState.onColorContainer.value.withState(enabled),
                 contentDescription = null
             )
         },
         onClick = onClick
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            LabelLargeText(text = title, color = ColorSchemeKeyTokens.OnSurface.toColor())
-            BodySmallText(text = desc, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+            LabelLargeText(text = title, color = ThemedColorSchemeKeyTokens.OnSurface.value)
+            BodySmallText(text = desc, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
         }
     }
 }

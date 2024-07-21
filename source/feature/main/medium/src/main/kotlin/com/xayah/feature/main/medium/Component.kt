@@ -46,7 +46,8 @@ import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.material3.toColor
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
 
@@ -97,11 +98,9 @@ fun ListScaffold(
         floatingActionButtonPosition = floatingActionButtonPosition,
         floatingActionButton = floatingActionButton,
         snackbarHost = {
-            with(LocalDensity.current) {
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                )
-            }
+            SnackbarHost(
+                hostState = snackbarHostState,
+            )
         },
     ) { innerPadding ->
         Column {
@@ -203,7 +202,7 @@ fun DotLottieView(isLoading: Boolean) {
                 else
                     stringResource(id = R.string.no_backups_found_warning)
                 ),
-        color = com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+        color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
         textAlign = TextAlign.Center
     )
 }

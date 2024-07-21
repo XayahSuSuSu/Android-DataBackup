@@ -42,8 +42,8 @@ import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.joinOf
@@ -91,10 +91,10 @@ fun PageMediumRestoreDetail() {
                 ) {
                     MediaIconImage(name = uiState.name.firstOrNull()?.toString() ?: "", textStyle = MaterialTheme.typography.titleLarge, size = SizeTokens.Level64)
                     Column(modifier = Modifier.weight(1f)) {
-                        TitleLargeText(text = media.name, color = ColorSchemeKeyTokens.OnSurface.toColor())
+                        TitleLargeText(text = media.name, color = ThemedColorSchemeKeyTokens.OnSurface.value)
                         BodyMediumText(
                             text = media.path.ifEmpty { stringResource(id = R.string.specify_a_path) },
-                            color = (if (media.path.isEmpty()) ColorSchemeKeyTokens.Error else ColorSchemeKeyTokens.OnSurfaceVariant).toColor()
+                            color = (if (media.path.isEmpty()) ThemedColorSchemeKeyTokens.Error else ThemedColorSchemeKeyTokens.OnSurfaceVariant).value
                         )
                     }
                 }
@@ -109,16 +109,16 @@ fun PageMediumRestoreDetail() {
                     FilledIconButton(
                         enabled = true,
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
-                        containerColor = ColorSchemeKeyTokens.BluePrimaryContainer,
-                        contentColor = ColorSchemeKeyTokens.BlueOnPrimaryContainer
+                        containerColor = ThemedColorSchemeKeyTokens.BluePrimaryContainer,
+                        contentColor = ThemedColorSchemeKeyTokens.BlueOnPrimaryContainer
                     ) {
                         viewModel.emitIntentOnIO(IndexUiIntent.SetPath(context = context, mediaEntity = media))
                     }
                     FilledIconButton(
                         enabled = media.preserveId == 0L,
                         icon = Icons.Outlined.Shield,
-                        containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
-                        contentColor = ColorSchemeKeyTokens.YellowOnPrimaryContainer
+                        containerColor = ThemedColorSchemeKeyTokens.YellowPrimaryContainer,
+                        contentColor = ThemedColorSchemeKeyTokens.YellowOnPrimaryContainer
                     ) {
                         viewModel.launchOnIO {
                             if (dialogState.confirm(title = context.getString(R.string.protect), text = context.getString(R.string.protect_desc))) {
@@ -132,8 +132,8 @@ fun PageMediumRestoreDetail() {
                     FilledIconButton(
                         enabled = true,
                         icon = Icons.Outlined.Delete,
-                        containerColor = ColorSchemeKeyTokens.ErrorContainer,
-                        contentColor = ColorSchemeKeyTokens.OnErrorContainer
+                        containerColor = ThemedColorSchemeKeyTokens.ErrorContainer,
+                        contentColor = ThemedColorSchemeKeyTokens.OnErrorContainer
                     ) {
                         viewModel.launchOnIO {
                             if (dialogState.confirm(title = context.getString(R.string.delete), text = context.getString(R.string.delete_desc))) {

@@ -38,8 +38,8 @@ import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.OverviewCard
 import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.TitleLargeText
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.util.DateUtil
 
@@ -104,17 +104,17 @@ fun OverviewLastRestoreCard(modifier: Modifier, lastRestoreTime: Long) {
         modifier = modifier,
         title = stringResource(id = R.string.last_restore),
         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_package_2),
-        colorContainer = ColorSchemeKeyTokens.PrimaryContainer,
-        onColorContainer = ColorSchemeKeyTokens.OnPrimaryContainer,
+        colorContainer = ThemedColorSchemeKeyTokens.PrimaryContainer,
+        onColorContainer = ThemedColorSchemeKeyTokens.OnPrimaryContainer,
         content = {
             TitleLargeText(
                 text = if (lastRestoreTime == 0L) stringResource(id = R.string.never) else relativeTime,
-                color = ColorSchemeKeyTokens.OnSurface.toColor()
+                color = ThemedColorSchemeKeyTokens.OnSurface.value
             )
             if (lastRestoreTime != 0L)
                 BodyMediumText(
                     text = finishTime,
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
                 )
         },
         actionIcon = null,
@@ -132,7 +132,7 @@ fun DotLottieView(isRefreshing: Boolean, text: String) {
     )
     BodyLargeText(
         text = text,
-        color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+        color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
         textAlign = TextAlign.Center
     )
 }

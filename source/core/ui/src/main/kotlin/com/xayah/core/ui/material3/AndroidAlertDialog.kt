@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.DialogTokens
 
 /**
@@ -118,7 +119,7 @@ fun AlertDialog(
         // most cases, TextButtons should be used for dismiss and confirm buttons.
         // TextButtons will not consume this provided content color value, and will used their
         // own defined or default colors.
-        buttonContentColor = DialogTokens.ActionLabelTextColor.toColor(),
+        buttonContentColor = DialogTokens.ActionLabelTextColor.value,
         iconContentColor = iconContentColor,
         titleContentColor = titleContentColor,
         textContentColor = textContentColor,
@@ -181,16 +182,16 @@ object AlertDialogDefaults {
     val shape: Shape @Composable get() = DialogTokens.ContainerShape.toShape()
 
     /** The default container color for alert dialogs */
-    val containerColor: Color @Composable get() = DialogTokens.ContainerColor.toColor()
+    val containerColor: Color @Composable get() = DialogTokens.ContainerColor.value
 
     /** The default icon color for alert dialogs */
-    val iconContentColor: Color @Composable get() = DialogTokens.IconColor.toColor()
+    val iconContentColor: Color @Composable get() = DialogTokens.IconColor.value
 
     /** The default title color for alert dialogs */
-    val titleContentColor: Color @Composable get() = DialogTokens.HeadlineColor.toColor()
+    val titleContentColor: Color @Composable get() = DialogTokens.HeadlineColor.value
 
     /** The default text color for alert dialogs */
-    val textContentColor: Color @Composable get() = DialogTokens.SupportingTextColor.toColor()
+    val textContentColor: Color @Composable get() = DialogTokens.SupportingTextColor.value
 
     /** The default tonal elevation for alert dialogs */
     val TonalElevation: Dp = DialogTokens.ContainerElevation

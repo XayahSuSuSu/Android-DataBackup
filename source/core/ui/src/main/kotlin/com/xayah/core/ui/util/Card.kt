@@ -14,9 +14,10 @@ import com.xayah.core.model.database.Info
 import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CircularProgressIndicator
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ProcessingCardItem
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 
 @Composable
@@ -44,10 +45,10 @@ fun OperationState.StateView(enabled: Boolean = true, expanded: Boolean = false,
                 progress = 0f,
                 trackColor = (
                         if (expanded)
-                            ColorSchemeKeyTokens.OnSurfaceVariant
+                            ThemedColorSchemeKeyTokens.OnSurfaceVariant
                         else
-                            ColorSchemeKeyTokens.OutlineVariant
-                        ).toColor(enabled)
+                            ThemedColorSchemeKeyTokens.OutlineVariant
+                        ).value.withState(enabled)
             )
         }
 
@@ -66,12 +67,12 @@ fun OperationState.StateView(enabled: Boolean = true, expanded: Boolean = false,
                 contentDescription = null,
                 tint = (
                         when (this) {
-                            OperationState.ERROR -> ColorSchemeKeyTokens.Error
-                            OperationState.SKIP -> ColorSchemeKeyTokens.YellowPrimary
-                            OperationState.UPLOADING, OperationState.DOWNLOADING -> ColorSchemeKeyTokens.GreenPrimary
-                            else -> ColorSchemeKeyTokens.Primary
+                            OperationState.ERROR -> ThemedColorSchemeKeyTokens.Error
+                            OperationState.SKIP -> ThemedColorSchemeKeyTokens.YellowPrimary
+                            OperationState.UPLOADING, OperationState.DOWNLOADING -> ThemedColorSchemeKeyTokens.GreenPrimary
+                            else -> ThemedColorSchemeKeyTokens.Primary
                         }
-                        ).toColor(enabled)
+                        ).value.withState(enabled)
             )
         }
     }

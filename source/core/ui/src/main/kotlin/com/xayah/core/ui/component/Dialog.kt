@@ -25,10 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.AlertDialog
 import com.xayah.core.ui.material3.Surface
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.DialogCheckBoxItem
 import com.xayah.core.ui.model.DialogRadioItem
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -118,7 +118,7 @@ suspend fun DialogState.confirm(title: String, text: String) = open(
 
 @Composable
 fun RadioItem(enabled: Boolean = true, selected: Boolean, title: String, desc: String?, onClick: () -> Unit) {
-    Surface(enabled = true, modifier = Modifier.fillMaxWidth(), onClick = onClick, color = ColorSchemeKeyTokens.Transparent.toColor()) {
+    Surface(enabled = true, modifier = Modifier.fillMaxWidth(), onClick = onClick, color = ThemedColorSchemeKeyTokens.Transparent.value) {
         Row(
             modifier = Modifier
                 .paddingVertical(SizeTokens.Level8)
@@ -132,9 +132,9 @@ fun RadioItem(enabled: Boolean = true, selected: Boolean, title: String, desc: S
                 enabled = enabled
             )
             Column {
-                BodyLargeText(text = title, color = ColorSchemeKeyTokens.OnSurface.toColor(), fontWeight = FontWeight.Normal, enabled = enabled)
+                BodyLargeText(text = title, color = ThemedColorSchemeKeyTokens.OnSurface.value, fontWeight = FontWeight.Normal, enabled = enabled)
                 if (desc != null)
-                    BodyMediumText(text = desc, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(), fontWeight = FontWeight.Normal, enabled = enabled)
+                    BodyMediumText(text = desc, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value, fontWeight = FontWeight.Normal, enabled = enabled)
             }
         }
     }
@@ -142,7 +142,7 @@ fun RadioItem(enabled: Boolean = true, selected: Boolean, title: String, desc: S
 
 @Composable
 fun CheckBoxItem(enabled: Boolean = true, checked: Boolean, title: String, desc: String?, onClick: () -> Unit) {
-    Surface(enabled = true, modifier = Modifier.fillMaxWidth(), onClick = onClick, color = ColorSchemeKeyTokens.Transparent.toColor()) {
+    Surface(enabled = true, modifier = Modifier.fillMaxWidth(), onClick = onClick, color = ThemedColorSchemeKeyTokens.Transparent.value) {
         Row(
             modifier = Modifier
                 .paddingVertical(SizeTokens.Level8)
@@ -151,9 +151,9 @@ fun CheckBoxItem(enabled: Boolean = true, checked: Boolean, title: String, desc:
             horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                BodyLargeText(text = title, color = ColorSchemeKeyTokens.OnSurface.toColor(), fontWeight = FontWeight.Normal, enabled = enabled)
+                BodyLargeText(text = title, color = ThemedColorSchemeKeyTokens.OnSurface.value, fontWeight = FontWeight.Normal, enabled = enabled)
                 if (desc != null)
-                    BodyMediumText(text = desc, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(), fontWeight = FontWeight.Normal, enabled = enabled)
+                    BodyMediumText(text = desc, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value, fontWeight = FontWeight.Normal, enabled = enabled)
             }
             CheckIconButton(enabled = enabled, checked = checked, onCheckedChange = { onClick() })
         }

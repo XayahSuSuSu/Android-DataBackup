@@ -46,10 +46,10 @@ import com.xayah.core.ui.component.OutlinedButtonIconTextButton
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.ActionMenuItem
 import com.xayah.core.ui.route.MainRoutes
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.joinOf
@@ -88,14 +88,14 @@ fun PageAboutSettings() {
         ) {
             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 AppIcon(modifier = Modifier.paddingVertical(SizeTokens.Level16))
-                HeadlineSmallText(text = stringResource(id = R.string.app_name), color = ColorSchemeKeyTokens.OnSurface.toColor())
+                HeadlineSmallText(text = stringResource(id = R.string.app_name), color = ThemedColorSchemeKeyTokens.OnSurface.value)
                 BodyMediumText(
                     text = joinOf(
                         stringResource(id = R.string.version),
                         " ${BuildConfigUtil.VERSION_NAME} ",
                         "(${BuildConfigUtil.VERSION_CODE})",
                     ),
-                    color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor()
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value
                 )
                 FlowRow(
                     modifier = Modifier.paddingTop(SizeTokens.Level16),

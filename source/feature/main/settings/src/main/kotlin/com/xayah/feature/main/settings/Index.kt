@@ -112,7 +112,7 @@ fun PageSettings() {
                 Clickable(
                     icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_folder_open),
                     title = stringResource(id = R.string.backup_dir),
-                    value = directoryState?.title,
+                    value = if (directoryState == null) null else stringResource(id = directoryState!!.titleResId),
                 ) {
                     navController.navigateSingle(MainRoutes.Directory.route)
                 }

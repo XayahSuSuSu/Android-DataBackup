@@ -19,8 +19,9 @@
 package com.xayah.core.ui.material3.tokens
 
 import androidx.compose.ui.unit.dp
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 internal object DividerTokens {
-    val Color = ColorSchemeKeyTokens.OutlineVariant
+    val Color = ThemedColorSchemeKeyTokens.OutlineVariant
     val Thickness = 1.0.dp
 }

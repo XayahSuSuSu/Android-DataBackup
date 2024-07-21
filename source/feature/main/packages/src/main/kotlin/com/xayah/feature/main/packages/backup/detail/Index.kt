@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -34,8 +33,8 @@ import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.TitleLargeText
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingVertical
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.joinOf
 import com.xayah.core.util.DateUtil
@@ -86,8 +85,8 @@ fun PagePackagesBackupDetail() {
                         size = SizeTokens.Level64
                     )
                     Column(modifier = Modifier.weight(1f)) {
-                        TitleLargeText(text = pkg.packageInfo.label, color = ColorSchemeKeyTokens.OnSurface.toColor())
-                        BodyMediumText(text = uiState.packageName, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+                        TitleLargeText(text = pkg.packageInfo.label, color = ThemedColorSchemeKeyTokens.OnSurface.value)
+                        BodyMediumText(text = uiState.packageName, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
                     }
                 }
                 Title(title = stringResource(id = R.string.info)) {

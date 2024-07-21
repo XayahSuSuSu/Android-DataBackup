@@ -51,8 +51,9 @@ import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.material3.SnackbarType
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.joinOf
@@ -327,7 +328,7 @@ fun PageSMBSetup() {
                     ) {
                         Text(
                             text = stringResource(id = R.string.delete_account),
-                            color = ColorSchemeKeyTokens.Error.toColor(uiState.isProcessing.not())
+                            color = ThemedColorSchemeKeyTokens.Error.value.withState(uiState.isProcessing.not())
                         )
                     }
             }

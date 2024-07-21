@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.R
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 val OperationState.icon: ImageVector
     @Composable
@@ -39,45 +39,45 @@ val OperationState.icon: ImageVector
         }
     }
 
-val OperationState.color: ColorSchemeKeyTokens
+val OperationState.color: ThemedColorSchemeKeyTokens
     get() = when (this) {
         OperationState.PROCESSING -> {
-            ColorSchemeKeyTokens.SecondaryContainer
+            ThemedColorSchemeKeyTokens.SecondaryContainer
         }
 
         OperationState.UPLOADING, OperationState.DOWNLOADING -> {
-            ColorSchemeKeyTokens.SecondaryContainer
+            ThemedColorSchemeKeyTokens.SecondaryContainer
         }
 
         OperationState.DONE -> {
-            ColorSchemeKeyTokens.PrimaryContainer
+            ThemedColorSchemeKeyTokens.PrimaryContainer
         }
 
         OperationState.ERROR -> {
-            ColorSchemeKeyTokens.ErrorContainer
+            ThemedColorSchemeKeyTokens.ErrorContainer
         }
 
-        else -> ColorSchemeKeyTokens.Primary
+        else -> ThemedColorSchemeKeyTokens.Primary
     }
 
-val OperationState.containerColor: ColorSchemeKeyTokens
+val OperationState.containerColor: ThemedColorSchemeKeyTokens
     get() = when (this) {
         OperationState.PROCESSING -> {
-            ColorSchemeKeyTokens.Secondary
+            ThemedColorSchemeKeyTokens.Secondary
         }
 
         OperationState.UPLOADING, OperationState.DOWNLOADING -> {
-            ColorSchemeKeyTokens.Secondary
+            ThemedColorSchemeKeyTokens.Secondary
         }
 
         OperationState.DONE -> {
-            ColorSchemeKeyTokens.Primary
+            ThemedColorSchemeKeyTokens.Primary
         }
 
         OperationState.ERROR -> {
-            ColorSchemeKeyTokens.Error
+            ThemedColorSchemeKeyTokens.Error
         }
 
-        else -> ColorSchemeKeyTokens.Transparent
+        else -> ThemedColorSchemeKeyTokens.Transparent
     }
 

@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -43,8 +42,8 @@ import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.joinOf
@@ -99,8 +98,8 @@ fun PagePackagesRestoreDetail() {
                         size = SizeTokens.Level64
                     )
                     Column(modifier = Modifier.weight(1f)) {
-                        TitleLargeText(text = pkg.packageInfo.label.ifEmpty { stringResource(id = R.string.unknown) }, color = ColorSchemeKeyTokens.OnSurface.toColor())
-                        BodyMediumText(text = uiState.packageName, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+                        TitleLargeText(text = pkg.packageInfo.label.ifEmpty { stringResource(id = R.string.unknown) }, color = ThemedColorSchemeKeyTokens.OnSurface.value)
+                        BodyMediumText(text = uiState.packageName, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
                     }
                 }
                 Row(
@@ -114,8 +113,8 @@ fun PagePackagesRestoreDetail() {
                     FilledIconButton(
                         enabled = pkg.preserveId == 0L,
                         icon = Icons.Outlined.Shield,
-                        containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
-                        contentColor = ColorSchemeKeyTokens.YellowOnPrimaryContainer
+                        containerColor = ThemedColorSchemeKeyTokens.YellowPrimaryContainer,
+                        contentColor = ThemedColorSchemeKeyTokens.YellowOnPrimaryContainer
                     ) {
                         viewModel.launchOnIO {
                             if (dialogState.confirm(title = context.getString(R.string.protect), text = context.getString(R.string.protect_desc))) {
@@ -129,8 +128,8 @@ fun PagePackagesRestoreDetail() {
                     FilledIconButton(
                         enabled = true,
                         icon = Icons.Outlined.Delete,
-                        containerColor = ColorSchemeKeyTokens.ErrorContainer,
-                        contentColor = ColorSchemeKeyTokens.OnErrorContainer
+                        containerColor = ThemedColorSchemeKeyTokens.ErrorContainer,
+                        contentColor = ThemedColorSchemeKeyTokens.OnErrorContainer
                     ) {
                         viewModel.launchOnIO {
                             if (dialogState.confirm(title = context.getString(R.string.delete), text = context.getString(R.string.delete_desc))) {

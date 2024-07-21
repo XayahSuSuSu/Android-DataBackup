@@ -50,9 +50,9 @@ import com.xayah.core.ui.component.paddingBottom
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.model.RefreshState
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
 
@@ -195,15 +195,15 @@ fun DotLottieView(isRefreshing: Boolean, refreshState: RefreshState) {
         modifier = Modifier.background(Color.Transparent)
     )
     if (isRefreshing) {
-        BodyLargeText(text = refreshState.user, color = ColorSchemeKeyTokens.OnSurface.toColor())
+        BodyLargeText(text = refreshState.user, color = ThemedColorSchemeKeyTokens.OnSurface.value)
         AnimatedLinearProgressIndicator(
             modifier = Modifier.paddingVertical(SizeTokens.Level8),
             progress = refreshState.progress,
             strokeCap = StrokeCap.Round
         )
-        BodySmallText(text = refreshState.pkg, textAlign = TextAlign.Center, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+        BodySmallText(text = refreshState.pkg, textAlign = TextAlign.Center, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
     } else {
-        BodyLargeText(text = stringResource(id = R.string.pull_down_to_refresh), textAlign = TextAlign.Center, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+        BodyLargeText(text = stringResource(id = R.string.pull_down_to_refresh), textAlign = TextAlign.Center, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
     }
 }
 
@@ -223,7 +223,7 @@ fun DotLottieView(isLoading: Boolean) {
                 else
                     stringResource(id = R.string.no_backups_found_warning)
                 ),
-        color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(),
+        color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
         textAlign = TextAlign.Center
     )
 }

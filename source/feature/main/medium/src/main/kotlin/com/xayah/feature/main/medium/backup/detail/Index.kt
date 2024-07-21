@@ -42,8 +42,9 @@ import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingStart
 import com.xayah.core.ui.component.paddingTop
 import com.xayah.core.ui.component.paddingVertical
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.ui.util.joinOf
@@ -94,8 +95,8 @@ fun PageMediumBackupDetail() {
                 ) {
                     MediaIconImage(name = uiState.name.firstOrNull()?.toString() ?: "", textStyle = MaterialTheme.typography.titleLarge, size = SizeTokens.Level64)
                     Column(modifier = Modifier.weight(1f)) {
-                        TitleLargeText(text = media.name, color = ColorSchemeKeyTokens.OnSurface.toColor())
-                        BodyMediumText(text = media.path, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor())
+                        TitleLargeText(text = media.name, color = ThemedColorSchemeKeyTokens.OnSurface.value)
+                        BodyMediumText(text = media.path, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
                     }
                 }
                 Title(title = stringResource(id = R.string.backup_parts)) {
@@ -128,7 +129,7 @@ fun PageMediumBackupDetail() {
                     }
                 }) {
                     Text(
-                        text = stringResource(id = R.string.delete), color = ColorSchemeKeyTokens.Error.toColor(enabled)
+                        text = stringResource(id = R.string.delete), color = ThemedColorSchemeKeyTokens.Error.value.withState(enabled)
                     )
                 }
             }

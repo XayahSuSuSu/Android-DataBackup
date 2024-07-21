@@ -58,12 +58,13 @@ import com.xayah.core.ui.material3.CardColors
 import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.material3.CardElevation
 import com.xayah.core.ui.material3.ShapeDefaults
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.material3.tokens.OutlinedCardTokens
 import com.xayah.core.ui.model.ProcessingCardItem
 import com.xayah.core.ui.model.ReportAppItemInfo
 import com.xayah.core.ui.model.ReportFileItemInfo
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.StateView
 import kotlinx.coroutines.CoroutineScope
@@ -71,7 +72,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun outlinedCardBorder(enabled: Boolean = true, borderColor: Color? = null): BorderStroke {
-    val tint = borderColor ?: OutlinedCardTokens.OutlineColor.toColor()
+    val tint = borderColor ?: OutlinedCardTokens.OutlineColor.value
     val color = if (enabled) {
         tint
     } else {
@@ -179,7 +180,7 @@ fun ProcessingCard(
     Card(
         modifier = modifier,
         enabled = enabled,
-        colors = CardDefaults.cardColors(containerColor = (if (_expanded) ColorSchemeKeyTokens.SurfaceVariantDim else ColorSchemeKeyTokens.Transparent).toColor(enabled)),
+        colors = CardDefaults.cardColors(containerColor = (if (_expanded) ThemedColorSchemeKeyTokens.SurfaceVariantDim else ThemedColorSchemeKeyTokens.Transparent).value.withState(enabled)),
         indication = null,
     ) {
         Column {
@@ -187,7 +188,7 @@ fun ProcessingCard(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = enabled,
-                    color = (if (_expanded) ColorSchemeKeyTokens.SurfaceVariant else ColorSchemeKeyTokens.Surface).toColor(enabled),
+                    color = (if (_expanded) ThemedColorSchemeKeyTokens.SurfaceVariant else ThemedColorSchemeKeyTokens.Surface).value.withState(enabled),
                     shape = ShapeDefaults.Medium,
                     onClick = {
                         if (totalCount != 0 && expandable) {
@@ -201,7 +202,7 @@ fun ProcessingCard(
                         TitleMediumText(
                             modifier = Modifier.weight(1f),
                             text = title,
-                            color = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                            color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
                         )
 
                         if (packageName != null)
@@ -209,11 +210,11 @@ fun ProcessingCard(
 
                         actions()
                         if (totalCount != 0) {
-                            LabelSmallText(text = "${successCount + failedCount}/${totalCount}", color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                            LabelSmallText(text = "${successCount + failedCount}/${totalCount}", color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
                             if (expandable) Icon(
                                 imageVector = if (_expanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
                                 contentDescription = null,
-                                tint = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                                tint = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
                             )
                         }
                     }
@@ -231,7 +232,7 @@ fun ProcessingCard(
                                     .animateItemPlacement()
                                     .fillMaxWidth(),
                                 enabled = enabled,
-                                color = ColorSchemeKeyTokens.Transparent.toColor(enabled),
+                                color = ThemedColorSchemeKeyTokens.Transparent.value.withState(enabled),
                                 onClick = {
                                     if (log.isNotEmpty())
                                         logExpanded = logExpanded.not()
@@ -243,18 +244,18 @@ fun ProcessingCard(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     item.state.StateView(enabled = enabled, expanded = false, progress = item.progress)
-                                    TitleSmallText(modifier = Modifier.weight(1f), text = item.title, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
-                                    LabelSmallText(text = item.content, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                                    TitleSmallText(modifier = Modifier.weight(1f), text = item.title, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
+                                    LabelSmallText(text = item.content, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
                                     if (log.isNotEmpty())
                                         Icon(
                                             imageVector = if (logExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
                                             contentDescription = null,
-                                            tint = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                                            tint = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
                                         )
                                 }
                             }
                             AnimatedVisibility(logExpanded) {
-                                LabelSmallText(modifier = Modifier.paddingHorizontal(SizeTokens.Level56), text = item.log, color = ColorSchemeKeyTokens.Outline.toColor(enabled))
+                                LabelSmallText(modifier = Modifier.paddingHorizontal(SizeTokens.Level56), text = item.log, color = ThemedColorSchemeKeyTokens.Outline.value.withState(enabled))
                             }
                         }
                     }
@@ -269,9 +270,9 @@ fun ProcessingCard(
 private fun ReportItem(
     enabled: Boolean = true,
     icon: ImageVector,
-    iconTint: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnSurfaceVariant,
+    iconTint: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.OnSurfaceVariant,
     title: String,
-    titleTint: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnSurfaceVariant,
+    titleTint: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.OnSurfaceVariant,
     content: String,
     expandedContent: (@Composable () -> Unit)? = null
 ) {
@@ -282,7 +283,7 @@ private fun ReportItem(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             enabled = true,
-            color = ColorSchemeKeyTokens.Transparent.toColor(enabled),
+            color = ThemedColorSchemeKeyTokens.Transparent.value.withState(enabled),
             onClick = {
                 if (expandable)
                     expanded = expanded.not()
@@ -297,15 +298,15 @@ private fun ReportItem(
                     modifier = Modifier.size(SizeTokens.Level24),
                     imageVector = icon,
                     contentDescription = null,
-                    tint = iconTint.toColor(enabled)
+                    tint = iconTint.value.withState(enabled)
                 )
-                TitleSmallText(modifier = Modifier.weight(1f), text = title, color = titleTint.toColor(enabled))
-                LabelSmallText(text = content, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                TitleSmallText(modifier = Modifier.weight(1f), text = title, color = titleTint.value.withState(enabled))
+                LabelSmallText(text = content, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
                 if (expandable)
                     Icon(
                         imageVector = if (expanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
                         contentDescription = null,
-                        tint = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                        tint = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
                     )
             }
         }
@@ -317,11 +318,11 @@ private fun ReportItem(
 
 @ExperimentalFoundationApi
 @Composable
-private fun ReportAppItem(enabled: Boolean, color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnSurfaceVariant, item: ReportAppItemInfo, onClick: () -> Unit) {
+private fun ReportAppItem(enabled: Boolean, color: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.OnSurfaceVariant, item: ReportAppItemInfo, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         enabled = true,
-        color = ColorSchemeKeyTokens.Transparent.toColor(enabled),
+        color = ThemedColorSchemeKeyTokens.Transparent.value.withState(enabled),
         onClick = onClick
     ) {
         Row(
@@ -330,8 +331,8 @@ private fun ReportAppItem(enabled: Boolean, color: ColorSchemeKeyTokens = ColorS
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.size(SizeTokens.Level24))
-            LabelMediumText(modifier = Modifier.weight(1f), text = item.label, color = color.toColor(enabled))
-            LabelSmallText(text = item.user, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+            LabelMediumText(modifier = Modifier.weight(1f), text = item.label, color = color.value.withState(enabled))
+            LabelSmallText(text = item.user, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
             PackageIconImage(enabled = enabled, packageName = item.packageName, size = SizeTokens.Level24)
         }
     }
@@ -339,11 +340,11 @@ private fun ReportAppItem(enabled: Boolean, color: ColorSchemeKeyTokens = ColorS
 
 @ExperimentalFoundationApi
 @Composable
-private fun ReportFileItem(enabled: Boolean, color: ColorSchemeKeyTokens = ColorSchemeKeyTokens.OnSurfaceVariant, item: ReportFileItemInfo, onClick: () -> Unit) {
+private fun ReportFileItem(enabled: Boolean, color: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.OnSurfaceVariant, item: ReportFileItemInfo, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         enabled = true,
-        color = ColorSchemeKeyTokens.Transparent.toColor(enabled),
+        color = ThemedColorSchemeKeyTokens.Transparent.value.withState(enabled),
         onClick = onClick
     ) {
         Row(
@@ -352,7 +353,7 @@ private fun ReportFileItem(enabled: Boolean, color: ColorSchemeKeyTokens = Color
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(modifier = Modifier.size(SizeTokens.Level24))
-            LabelMediumText(modifier = Modifier.weight(1f), text = item.name, color = color.toColor(enabled))
+            LabelMediumText(modifier = Modifier.weight(1f), text = item.name, color = color.value.withState(enabled))
         }
     }
 }
@@ -375,7 +376,7 @@ fun AppsReportCard(
     Card(
         modifier = modifier,
         enabled = enabled,
-        colors = CardDefaults.cardColors(containerColor = ColorSchemeKeyTokens.SurfaceVariantDim.toColor(enabled)),
+        colors = CardDefaults.cardColors(containerColor = ThemedColorSchemeKeyTokens.SurfaceVariantDim.value.withState(enabled)),
         indication = null,
     ) {
         Column {
@@ -383,7 +384,7 @@ fun AppsReportCard(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = enabled,
-                    color = ColorSchemeKeyTokens.SurfaceVariant.toColor(enabled),
+                    color = ThemedColorSchemeKeyTokens.SurfaceVariant.value.withState(enabled),
                     shape = ShapeDefaults.Medium,
                     onClick = {}
                 ) {
@@ -392,24 +393,24 @@ fun AppsReportCard(
                             modifier = Modifier.size(SizeTokens.Level24),
                             imageVector = Icons.Outlined.Description,
                             contentDescription = null,
-                            tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled)
+                            tint = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled)
                         )
 
                         TitleMediumText(
                             modifier = Modifier.weight(1f),
                             text = title,
-                            color = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                            color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
                         )
 
-                        LabelSmallText(text = packageSize, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                        LabelSmallText(text = packageSize, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
                     }
                 }
                 Column(modifier = Modifier.fillMaxWidth()) {
                     ReportItem(
                         icon = Icons.Filled.Timer,
-                        iconTint = ColorSchemeKeyTokens.Primary,
+                        iconTint = ThemedColorSchemeKeyTokens.Primary,
                         title = stringResource(id = R.string.time),
-                        titleTint = ColorSchemeKeyTokens.Primary,
+                        titleTint = ThemedColorSchemeKeyTokens.Primary,
                         content = timer
                     )
                     if (showRestoreUser) {
@@ -417,24 +418,24 @@ fun AppsReportCard(
                         val restoreUser by context.readRestoreUser().collectAsStateWithLifecycle(initialValue = -1)
                         ReportItem(
                             icon = Icons.Filled.AccountCircle,
-                            iconTint = ColorSchemeKeyTokens.YellowPrimary,
+                            iconTint = ThemedColorSchemeKeyTokens.YellowPrimary,
                             title = stringResource(id = R.string.restore_user),
-                            titleTint = ColorSchemeKeyTokens.YellowPrimary,
+                            titleTint = ThemedColorSchemeKeyTokens.YellowPrimary,
                             content = if (restoreUser == -1) stringResource(id = R.string.backup_user) else restoreUser.toString()
                         )
                     }
 
                     ReportItem(
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_cancel_circle),
-                        iconTint = ColorSchemeKeyTokens.Error,
+                        iconTint = ThemedColorSchemeKeyTokens.Error,
                         title = stringResource(id = R.string.failed),
-                        titleTint = ColorSchemeKeyTokens.Error,
+                        titleTint = ThemedColorSchemeKeyTokens.Error,
                         content = failed.size.toString(),
                         expandedContent = if (failed.isEmpty()) null else {
                             {
                                 Column {
                                     failed.forEach {
-                                        ReportAppItem(enabled = enabled, color = ColorSchemeKeyTokens.Error, item = it) {
+                                        ReportAppItem(enabled = enabled, color = ThemedColorSchemeKeyTokens.Error, item = it) {
                                             scope.launch {
                                                 pagerState.animateScrollToPage(it.index)
                                             }
@@ -446,15 +447,15 @@ fun AppsReportCard(
                     )
                     ReportItem(
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle),
-                        iconTint = ColorSchemeKeyTokens.GreenPrimary,
+                        iconTint = ThemedColorSchemeKeyTokens.GreenPrimary,
                         title = stringResource(id = R.string.succeed),
-                        titleTint = ColorSchemeKeyTokens.GreenPrimary,
+                        titleTint = ThemedColorSchemeKeyTokens.GreenPrimary,
                         content = succeed.size.toString(),
                         expandedContent = if (succeed.isEmpty()) null else {
                             {
                                 Column {
                                     succeed.forEach {
-                                        ReportAppItem(enabled = enabled, color = ColorSchemeKeyTokens.GreenPrimary, item = it) {
+                                        ReportAppItem(enabled = enabled, color = ThemedColorSchemeKeyTokens.GreenPrimary, item = it) {
                                             scope.launch {
                                                 pagerState.animateScrollToPage(it.index)
                                             }
@@ -488,7 +489,7 @@ fun FilesReportCard(
     Card(
         modifier = modifier,
         enabled = enabled,
-        colors = CardDefaults.cardColors(containerColor = ColorSchemeKeyTokens.SurfaceVariantDim.toColor(enabled)),
+        colors = CardDefaults.cardColors(containerColor = ThemedColorSchemeKeyTokens.SurfaceVariantDim.value.withState(enabled)),
         indication = null,
     ) {
         Column {
@@ -496,7 +497,7 @@ fun FilesReportCard(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = enabled,
-                    color = ColorSchemeKeyTokens.SurfaceVariant.toColor(enabled),
+                    color = ThemedColorSchemeKeyTokens.SurfaceVariant.value.withState(enabled),
                     shape = ShapeDefaults.Medium,
                     onClick = {}
                 ) {
@@ -505,24 +506,24 @@ fun FilesReportCard(
                             modifier = Modifier.size(SizeTokens.Level24),
                             imageVector = Icons.Outlined.Description,
                             contentDescription = null,
-                            tint = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled)
+                            tint = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled)
                         )
 
                         TitleMediumText(
                             modifier = Modifier.weight(1f),
                             text = title,
-                            color = ColorSchemeKeyTokens.OnSurface.toColor(enabled)
+                            color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
                         )
 
-                        LabelSmallText(text = mediaSize, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(enabled))
+                        LabelSmallText(text = mediaSize, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
                     }
                 }
                 Column(modifier = Modifier.fillMaxWidth()) {
                     ReportItem(
                         icon = Icons.Filled.Timer,
-                        iconTint = ColorSchemeKeyTokens.Primary,
+                        iconTint = ThemedColorSchemeKeyTokens.Primary,
                         title = stringResource(id = R.string.time),
-                        titleTint = ColorSchemeKeyTokens.Primary,
+                        titleTint = ThemedColorSchemeKeyTokens.Primary,
                         content = timer
                     )
                     if (showRestoreUser) {
@@ -530,24 +531,24 @@ fun FilesReportCard(
                         val restoreUser by context.readRestoreUser().collectAsStateWithLifecycle(initialValue = -1)
                         ReportItem(
                             icon = Icons.Filled.AccountCircle,
-                            iconTint = ColorSchemeKeyTokens.YellowPrimary,
+                            iconTint = ThemedColorSchemeKeyTokens.YellowPrimary,
                             title = stringResource(id = R.string.restore_user),
-                            titleTint = ColorSchemeKeyTokens.YellowPrimary,
+                            titleTint = ThemedColorSchemeKeyTokens.YellowPrimary,
                             content = if (restoreUser == -1) stringResource(id = R.string.backup_user) else restoreUser.toString()
                         )
                     }
 
                     ReportItem(
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_cancel_circle),
-                        iconTint = ColorSchemeKeyTokens.Error,
+                        iconTint = ThemedColorSchemeKeyTokens.Error,
                         title = stringResource(id = R.string.failed),
-                        titleTint = ColorSchemeKeyTokens.Error,
+                        titleTint = ThemedColorSchemeKeyTokens.Error,
                         content = failed.size.toString(),
                         expandedContent = if (failed.isEmpty()) null else {
                             {
                                 Column {
                                     failed.forEach {
-                                        ReportFileItem(enabled = enabled, color = ColorSchemeKeyTokens.Error, item = it) {
+                                        ReportFileItem(enabled = enabled, color = ThemedColorSchemeKeyTokens.Error, item = it) {
                                             scope.launch {
                                                 pagerState.animateScrollToPage(it.index)
                                             }
@@ -559,15 +560,15 @@ fun FilesReportCard(
                     )
                     ReportItem(
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_check_circle),
-                        iconTint = ColorSchemeKeyTokens.GreenPrimary,
+                        iconTint = ThemedColorSchemeKeyTokens.GreenPrimary,
                         title = stringResource(id = R.string.succeed),
-                        titleTint = ColorSchemeKeyTokens.GreenPrimary,
+                        titleTint = ThemedColorSchemeKeyTokens.GreenPrimary,
                         content = succeed.size.toString(),
                         expandedContent = if (succeed.isEmpty()) null else {
                             {
                                 Column {
                                     succeed.forEach {
-                                        ReportFileItem(enabled = enabled, color = ColorSchemeKeyTokens.GreenPrimary, item = it) {
+                                        ReportFileItem(enabled = enabled, color = ThemedColorSchemeKeyTokens.GreenPrimary, item = it) {
                                             scope.launch {
                                                 pagerState.animateScrollToPage(it.index)
                                             }
@@ -589,8 +590,8 @@ fun OverviewCard(
     modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector,
-    colorContainer: ColorSchemeKeyTokens,
-    onColorContainer: ColorSchemeKeyTokens,
+    colorContainer: ThemedColorSchemeKeyTokens,
+    onColorContainer: ThemedColorSchemeKeyTokens,
     content: @Composable ColumnScope.() -> Unit,
     actionIcon: ImageVector?,
     onClick: () -> Unit = {},
@@ -599,7 +600,7 @@ fun OverviewCard(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = colorContainer.toColor()),
+        colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = colorContainer.value),
         onClick = onClick
     ) {
         Row(
@@ -620,12 +621,12 @@ fun OverviewCard(
                     Icon(
                         modifier = Modifier.intrinsicIcon(),
                         imageVector = icon,
-                        tint = onColorContainer.toColor(),
+                        tint = onColorContainer.value,
                         contentDescription = null,
                     )
                     LabelLargeText(
                         text = title,
-                        color = onColorContainer.toColor(),
+                        color = onColorContainer.value,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -635,7 +636,7 @@ fun OverviewCard(
             if (actionIcon != null)
                 Icon(
                     imageVector = actionIcon,
-                    tint = onColorContainer.toColor(),
+                    tint = onColorContainer.value,
                     contentDescription = null
                 )
         }

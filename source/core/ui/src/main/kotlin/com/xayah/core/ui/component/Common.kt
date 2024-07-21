@@ -58,8 +58,9 @@ import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.util.formatSize
 import com.xayah.core.ui.R
-import com.xayah.core.ui.material3.toColor
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.joinOf
 import com.xayah.core.util.PathUtil
@@ -72,7 +73,7 @@ import kotlin.math.min
 @Composable
 fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(modifier = Modifier.paddingHorizontal(SizeTokens.Level16), verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8)) {
-        LabelLargeText(text = title, color = ColorSchemeKeyTokens.OnSurfaceVariant.toColor(), fontWeight = FontWeight.SemiBold)
+        LabelLargeText(text = title, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value, fontWeight = FontWeight.SemiBold)
 
         content()
     }
@@ -85,9 +86,9 @@ fun ActionButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     icon: ImageVector,
-    colorContainer: ColorSchemeKeyTokens,
-    colorL80D20: ColorSchemeKeyTokens,
-    onColorContainer: ColorSchemeKeyTokens,
+    colorContainer: ThemedColorSchemeKeyTokens,
+    colorL80D20: ThemedColorSchemeKeyTokens,
+    onColorContainer: ThemedColorSchemeKeyTokens,
     trailingIcon: @Composable (RowScope.() -> Unit)? = null,
     onClick: () -> Unit = {},
     content: @Composable RowScope.() -> Unit
@@ -96,7 +97,7 @@ fun ActionButton(
     Card(
         modifier = modifier.wrapContentHeight(),
         shape = RoundedCornerShape(SizeTokens.Level18),
-        colors = CardDefaults.cardColors(containerColor = colorContainer.toColor(enabled)),
+        colors = CardDefaults.cardColors(containerColor = colorContainer.value.withState(enabled)),
         onClick = onClick,
         enabled = enabled,
         interactionSource = interactionSource,
@@ -111,7 +112,7 @@ fun ActionButton(
             Surface(
                 modifier = Modifier.size(SizeTokens.Level36),
                 shape = CircleShape,
-                color = colorL80D20.toColor(enabled),
+                color = colorL80D20.value.withState(enabled),
                 enabled = enabled,
                 onClick = onClick,
                 indication = null,
@@ -120,7 +121,7 @@ fun ActionButton(
                 Icon(
                     modifier = Modifier.padding(SizeTokens.Level8),
                     imageVector = icon,
-                    tint = onColorContainer.toColor(enabled),
+                    tint = onColorContainer.value.withState(enabled),
                     contentDescription = null,
                 )
             }
@@ -161,13 +162,13 @@ fun PackageIcons(
                 Surface(
                     modifier = Modifier.size(size),
                     shape = ClippedCircleShape,
-                    color = ColorSchemeKeyTokens.PrimaryContainer.toColor(),
+                    color = ThemedColorSchemeKeyTokens.PrimaryContainer.value,
                     onClick = onClick,
                     indication = null,
                     interactionSource = interactionSource
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        LabelMediumText(text = "${packages[index].packageInfo.label.firstOrNull() ?: ""}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
+                        LabelMediumText(text = "${packages[index].packageInfo.label.firstOrNull() ?: ""}", color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value)
                     }
                 }
             } else {
@@ -190,13 +191,13 @@ fun PackageIcons(
                 Surface(
                     modifier = Modifier.size(size),
                     shape = CircleShape,
-                    color = ColorSchemeKeyTokens.PrimaryContainer.toColor(),
+                    color = ThemedColorSchemeKeyTokens.PrimaryContainer.value,
                     onClick = onClick,
                     indication = null,
                     interactionSource = interactionSource
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        LabelMediumText(text = "${packages[icons.lastIndex].packageInfo.label.firstOrNull() ?: ""}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
+                        LabelMediumText(text = "${packages[icons.lastIndex].packageInfo.label.firstOrNull() ?: ""}", color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value)
                     }
                 }
             } else {
@@ -215,13 +216,13 @@ fun PackageIcons(
             Surface(
                 modifier = Modifier.size(size),
                 shape = CircleShape,
-                color = ColorSchemeKeyTokens.PrimaryContainer.toColor(),
+                color = ThemedColorSchemeKeyTokens.PrimaryContainer.value,
                 onClick = onClick,
                 indication = null,
                 interactionSource = interactionSource
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    LabelMediumText(text = "+${packages.size - maxDisplayNum + 1}", color = ColorSchemeKeyTokens.OnPrimaryContainer.toColor())
+                    LabelMediumText(text = "+${packages.size - maxDisplayNum + 1}", color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value)
                 }
             }
         }
@@ -258,13 +259,13 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         }
                         TitleLargeText(
                             text = item.packageInfo.label.ifEmpty { stringResource(id = R.string.unknown) },
-                            color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor(),
+                            color = (if (item.preserveId != 0L) ThemedColorSchemeKeyTokens.YellowPrimary else ThemedColorSchemeKeyTokens.OnSurface).value,
                             maxLines = 1,
                         )
                     }
                     BodyMediumText(
                         text = item.packageName,
-                        color = ColorSchemeKeyTokens.Outline.toColor(),
+                        color = ThemedColorSchemeKeyTokens.Outline.value,
                         maxLines = 1,
                     )
                 }
@@ -299,8 +300,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                             label = stringResource(id = R.string.apk),
                             leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_android),
                             trailingIcon = null,
-                            color = ColorSchemeKeyTokens.RedPrimary,
-                            containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
+                            color = ThemedColorSchemeKeyTokens.RedPrimary,
+                            containerColor = ThemedColorSchemeKeyTokens.RedPrimaryContainer,
                             border = null,
                         )
                     }
@@ -311,8 +312,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                             label = joinOf(stringResource(id = R.string.data), " (${item.dataSelectedCount})"),
                             leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_database),
                             trailingIcon = null,
-                            color = ColorSchemeKeyTokens.RedPrimary,
-                            containerColor = ColorSchemeKeyTokens.RedPrimaryContainer,
+                            color = ThemedColorSchemeKeyTokens.RedPrimary,
+                            containerColor = ThemedColorSchemeKeyTokens.RedPrimaryContainer,
                             border = null,
                         )
                     }
@@ -323,8 +324,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                             label = stringResource(id = R.string._protected),
                             leadingIcon = Icons.Outlined.Shield,
                             trailingIcon = null,
-                            color = ColorSchemeKeyTokens.YellowPrimary,
-                            containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
+                            color = ThemedColorSchemeKeyTokens.YellowPrimary,
+                            containerColor = ThemedColorSchemeKeyTokens.YellowPrimaryContainer,
                             border = null,
                         )
                     }
@@ -334,8 +335,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                             label = storageStatsFormat.formatSize(),
                             leadingIcon = Icons.Outlined.Folder,
                             trailingIcon = null,
-                            color = ColorSchemeKeyTokens.Primary,
-                            containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                            color = ThemedColorSchemeKeyTokens.Primary,
+                            containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
                             border = null,
                         )
                     }
@@ -344,8 +345,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         label = stringResource(id = R.string.ssaid),
                         leadingIcon = Icons.Outlined.Pin,
                         trailingIcon = null,
-                        color = ColorSchemeKeyTokens.Primary,
-                        containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                        color = ThemedColorSchemeKeyTokens.Primary,
+                        containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
                         border = null,
                     )
                     if (hasKeystore) AssistChip(
@@ -353,8 +354,8 @@ fun PackageItem(item: PackageEntity, checked: Boolean? = null, onCheckedChange: 
                         label = stringResource(id = R.string.keystore),
                         leadingIcon = Icons.Outlined.Key,
                         trailingIcon = null,
-                        color = ColorSchemeKeyTokens.Primary,
-                        containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                        color = ThemedColorSchemeKeyTokens.Primary,
+                        containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
                         border = null,
                     )
                 }
@@ -385,11 +386,11 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                 Column(modifier = Modifier.weight(1f)) {
                     TitleLargeText(
                         text = item.name.ifEmpty { stringResource(id = R.string.unknown) },
-                        color = (if (item.preserveId != 0L) ColorSchemeKeyTokens.YellowPrimary else ColorSchemeKeyTokens.OnSurface).toColor()
+                        color = (if (item.preserveId != 0L) ThemedColorSchemeKeyTokens.YellowPrimary else ThemedColorSchemeKeyTokens.OnSurface).value
                     )
                     BodyMediumText(
                         text = item.path.ifEmpty { stringResource(id = R.string.specify_a_path) },
-                        color = (if (item.path.isEmpty()) ColorSchemeKeyTokens.Error else ColorSchemeKeyTokens.Outline).toColor()
+                        color = (if (item.path.isEmpty()) ThemedColorSchemeKeyTokens.Error else ThemedColorSchemeKeyTokens.Outline).value
                     )
                 }
 
@@ -419,8 +420,8 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                                 label = stringResource(id = R.string.not_exist),
                                 leadingIcon = Icons.Outlined.Close,
                                 trailingIcon = null,
-                                color = ColorSchemeKeyTokens.Error,
-                                containerColor = ColorSchemeKeyTokens.ErrorContainer,
+                                color = ThemedColorSchemeKeyTokens.Error,
+                                containerColor = ThemedColorSchemeKeyTokens.ErrorContainer,
                                 border = null,
                             )
                         }
@@ -431,8 +432,8 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                                 label = stringResource(id = R.string._protected),
                                 leadingIcon = Icons.Outlined.Shield,
                                 trailingIcon = null,
-                                color = ColorSchemeKeyTokens.YellowPrimary,
-                                containerColor = ColorSchemeKeyTokens.YellowPrimaryContainer,
+                                color = ThemedColorSchemeKeyTokens.YellowPrimary,
+                                containerColor = ThemedColorSchemeKeyTokens.YellowPrimaryContainer,
                                 border = null,
                             )
                         }
@@ -442,8 +443,8 @@ fun MediaItem(item: MediaEntity, enabled: Boolean? = null, checked: Boolean? = n
                                 label = storageStatsFormat.formatSize(),
                                 leadingIcon = Icons.Outlined.Folder,
                                 trailingIcon = null,
-                                color = ColorSchemeKeyTokens.Primary,
-                                containerColor = ColorSchemeKeyTokens.PrimaryContainer,
+                                color = ThemedColorSchemeKeyTokens.Primary,
+                                containerColor = ThemedColorSchemeKeyTokens.PrimaryContainer,
                                 border = null,
                             )
                         }

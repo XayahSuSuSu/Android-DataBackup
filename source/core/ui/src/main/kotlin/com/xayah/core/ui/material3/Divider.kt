@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.xayah.core.ui.material3.tokens.DividerTokens
+import com.xayah.core.ui.theme.value
 
 /**
  * <a href="https://m3.material.io/components/divider/overview" class="external" target="_blank">Material Design divider</a>.
@@ -121,5 +122,5 @@ object DividerDefaults {
     val Thickness: Dp = DividerTokens.Thickness
 
     /** Default color of a divider. */
-    val color: Color @Composable get() = DividerTokens.Color.toColor()
+    val color: Color @Composable get() = DividerTokens.Color.value
 }

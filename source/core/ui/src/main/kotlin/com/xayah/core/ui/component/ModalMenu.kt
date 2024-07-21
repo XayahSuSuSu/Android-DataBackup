@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -44,12 +43,13 @@ import com.xayah.core.ui.material3.CircularProgressIndicator
 import com.xayah.core.ui.material3.DropdownMenuContent
 import com.xayah.core.ui.material3.DropdownMenuPositionProvider
 import com.xayah.core.ui.material3.calculateTransformOrigin
-import com.xayah.core.ui.material3.toColor
 import com.xayah.core.ui.material3.toShape
-import com.xayah.core.ui.material3.tokens.ColorSchemeKeyTokens
 import com.xayah.core.ui.material3.tokens.ShapeKeyTokens
 import com.xayah.core.ui.material3.window.PopupProperties
 import com.xayah.core.ui.model.ActionMenuItem
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
+import com.xayah.core.ui.theme.value
+import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.SizeTokens
@@ -94,13 +94,13 @@ fun ModalActionDropdownMenu(
 
                     DropdownMenuItem(
                         modifier = Modifier
-                            .background(item.backgroundColor.toColor(enabled = enabled))
+                            .background(item.backgroundColor.value.withState(enabled))
                             .onSizeChanged { itemHeightPx = it.height },
                         text = {
                             Text(
                                 modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                                 text = item.title,
-                                color = item.color.toColor(enabled = enabled)
+                                color = item.color.value.withState(enabled)
                             )
                         },
                         enabled = enabled,
@@ -131,14 +131,14 @@ fun ModalActionDropdownMenu(
                                         1 -> ImageVector.vectorResource(id = R.drawable.ic_rounded_counter_1)
                                         else -> Icons.Rounded.Pending
                                     },
-                                    tint = item.color.toColor(enabled = enabled),
+                                    tint = item.color.value.withState(enabled),
                                     contentDescription = null
                                 )
                             }
                         } else if (item.icon == null) null else {
                             {
                                 item.icon.apply {
-                                    Icon(imageVector = item.icon, tint = item.color.toColor(enabled = enabled), contentDescription = null)
+                                    Icon(imageVector = item.icon, tint = item.color.value.withState(enabled), contentDescription = null)
                                 }
                             }
                         },
@@ -146,7 +146,7 @@ fun ModalActionDropdownMenu(
                             {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(SizeTokens.Level18),
-                                    color = item.color.toColor(enabled = enabled),
+                                    color = item.color.value.withState(enabled),
                                     strokeCap = StrokeCap.Round
                                 )
                             }
@@ -190,7 +190,7 @@ fun ModalStringListDropdownMenu(
                     repeat(2) {
                         DropdownMenuItem(
                             modifier = Modifier
-                                .background(ColorSchemeKeyTokens.OnPrimary.toColor())
+                                .background(ThemedColorSchemeKeyTokens.OnPrimary.value)
                                 .onSizeChanged { itemHeightPx = it.height },
                             text = {
                                 Text(
@@ -208,13 +208,13 @@ fun ModalStringListDropdownMenu(
                         val selected = index == selectedIndex
                         DropdownMenuItem(
                             modifier = Modifier
-                                .background(if (selected) ColorSchemeKeyTokens.PrimaryContainer.toColor() else ColorSchemeKeyTokens.OnPrimary.toColor())
+                                .background(if (selected) ThemedColorSchemeKeyTokens.PrimaryContainer.value else ThemedColorSchemeKeyTokens.OnPrimary.value)
                                 .onSizeChanged { itemHeightPx = it.height },
                             text = {
                                 Text(
                                     modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                                     text = item,
-                                    color = if (selected) ColorSchemeKeyTokens.Primary.toColor() else Color.Unspecified
+                                    color = if (selected) ThemedColorSchemeKeyTokens.Primary.value else Color.Unspecified
                                 )
                             },
                             onClick = {
@@ -224,7 +224,7 @@ fun ModalStringListDropdownMenu(
                                 if (selected) Icon(
                                     imageVector = selectedIcon,
                                     contentDescription = null,
-                                    tint = ColorSchemeKeyTokens.Primary.toColor()
+                                    tint = ThemedColorSchemeKeyTokens.Primary.value
                                 )
                             }
                         )
@@ -267,7 +267,7 @@ fun ModalStringListMultipleSelectionDropdownMenu(
                     repeat(2) {
                         DropdownMenuItem(
                             modifier = Modifier
-                                .background(ColorSchemeKeyTokens.OnPrimary.toColor())
+                                .background(ThemedColorSchemeKeyTokens.OnPrimary.value)
                                 .onSizeChanged { itemHeightPx = it.height },
                             text = {
                                 Text(
@@ -285,13 +285,13 @@ fun ModalStringListMultipleSelectionDropdownMenu(
                         val selected = index in selectedIndexList
                         DropdownMenuItem(
                             modifier = Modifier
-                                .background(if (selected) ColorSchemeKeyTokens.PrimaryContainer.toColor() else ColorSchemeKeyTokens.OnPrimary.toColor())
+                                .background(if (selected) ThemedColorSchemeKeyTokens.PrimaryContainer.value else ThemedColorSchemeKeyTokens.OnPrimary.value)
                                 .onSizeChanged { itemHeightPx = it.height },
                             text = {
                                 Text(
                                     modifier = Modifier.paddingHorizontal(PaddingTokens.Level4),
                                     text = item,
-                                    color = if (selected) ColorSchemeKeyTokens.Primary.toColor() else Color.Unspecified
+                                    color = if (selected) ThemedColorSchemeKeyTokens.Primary.value else Color.Unspecified
                                 )
                             },
                             onClick = {
@@ -304,7 +304,7 @@ fun ModalStringListMultipleSelectionDropdownMenu(
                                 if (selected) Icon(
                                     imageVector = selectedIcon,
                                     contentDescription = null,
-                                    tint = ColorSchemeKeyTokens.Primary.toColor()
+                                    tint = ThemedColorSchemeKeyTokens.Primary.value
                                 )
                             }
                         )
