@@ -329,4 +329,17 @@
     <string name="protect_desc">Sprečiti da ova sigurnosna kopija bude prekopirana</string>
     <string name="third_party">Treća strana</string>
     <string name="no_root_directory">Molim vas, nemojte odabrati glavni direktorij</string>
+    <string name="kill_app_options">Opcije za gašenje aplikacije</string>
+    <string name="kill_app_options_desc">Ponašanje pre sigurnosnog kopiranja</string>
+    <string name="public_key">Javni ključ</string>
+    <string name="private_key">Privatni ključ</string>
+    <string name="sftp_setup">SFTP podešavanja</string>
+    <string name="afdian">AFDIAN</string>
+    <string name="option_i">Opcija 1</string>
+    <string name="option_ii">Opcija 2</string>
+    <string name="disabled">Onemogućeno</string>
+    <string name="language">Jezik</string>
+    <string name="download">Preuzmi</string>
+    <string name="changelog">Zapisnik promjena</string>
+    <string name="args_update_from">Možete nadograditi sa verzije %1$s na verziju %2$s</string>
 </resources>
