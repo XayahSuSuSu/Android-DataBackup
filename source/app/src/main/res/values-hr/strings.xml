@@ -311,7 +311,7 @@
     <string name="set_them_later_in_settings">Možete ih kasnije postaviti u podešavanjima</string>
     <string name="set_up_inst_env">Postaviti okruženje za instalaciju</string>
     <string name="remote_path_desc">Putanja za čitanje ili spremanje sigurnosne kopije</string>
-    <string name="logcat">Zapisnik</string>
+    <string name="logcat">Izvješće</string>
     <string name="batch">Serijski</string>
     <string name="no_backups_found_warning">Nisu pronađene sigurnosne kopije, vratite se i pokušajte ponovno učitati</string>
     <string name="enter_the_setup_page_again">Ponovo otvorite stranicu za postavljanje</string>
@@ -329,4 +329,17 @@
     <string name="translators_desc">Cijenimo njihov trud</string>
     <string name="provider">Provajder</string>
     <string name="remote_path">Udaljena putanja</string>
+    <string name="option_i">Opcija 1</string>
+    <string name="option_ii">Opcija 2</string>
+    <string name="public_key">Javni ključ</string>
+    <string name="private_key">Privatni ključ</string>
+    <string name="sftp_setup">SFTP postavke</string>
+    <string name="afdian">AFDIAN</string>
+    <string name="disabled">Onemogućeno</string>
+    <string name="kill_app_options">Opcije za gašenje aplikacije</string>
+    <string name="kill_app_options_desc">Ponašanje prije sigurnosnog kopiranja</string>
+    <string name="language">Jezik</string>
+    <string name="download">Preuzmi</string>
+    <string name="args_update_from">Možete ažurirati sa verzije %1$s na verziju %2$s</string>
+    <string name="changelog">Izvješće izmijena</string>
 </resources>
