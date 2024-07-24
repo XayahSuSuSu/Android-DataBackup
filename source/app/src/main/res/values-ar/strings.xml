@@ -159,7 +159,7 @@
     <string name="installed">مثبت</string>
     <string name="delete">حذف</string>
     <string name="no_browser">ربما لايوجد لديك متصفح لفتحه</string>
-    <string name="add">اضف</string>
+    <string name="add">اضافة مسار جديد</string>
     <string name="media_target_path_missing">الملف المستهدف مفقود. الرجاء اختياره يدويا</string>
     <string name="media_set_path">اختيار مسار</string>
     <string name="not_installed">غير مثبت</string>
