@@ -96,6 +96,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
         client.storeFile(dstPath, countingStream)
         srcInputStream.close()
         countingStream.close()
+        if (countingStream.byteCount == 0L) throw IOException("Failed to write remote file: 0 byte.")
         onUploading(countingStream.byteCount, countingStream.byteCount)
     }
 

@@ -11,7 +11,6 @@ import com.hierynomus.smbj.SMBClient
 import com.hierynomus.smbj.SmbConfig
 import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.common.SMBRuntimeException
-import com.hierynomus.smbj.io.InputStreamByteChunkProvider
 import com.hierynomus.smbj.session.Session
 import com.hierynomus.smbj.share.Directory
 import com.hierynomus.smbj.share.DiskShare
@@ -24,7 +23,6 @@ import com.xayah.core.model.SmbVersion
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.SMBExtra
 import com.xayah.core.network.R
-import com.xayah.core.network.io.CountingInputStreamImpl
 import com.xayah.core.network.io.CountingOutputStreamImpl
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
@@ -40,7 +38,6 @@ import com.xayah.libpickyou.parcelables.FileParcelable
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PickerType
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 
 
@@ -203,14 +200,16 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
         val dstFile = openFile(dstPath)
+        val dstStream = dstFile.outputStream
         val srcFile = File(src)
         val srcFileSize = srcFile.length()
-        val srcInputStream = FileInputStream(srcFile)
-        val countingStream = CountingInputStreamImpl(srcInputStream, srcFileSize) { read, total -> onUploading(read, total) }
-        dstFile.write(InputStreamByteChunkProvider(countingStream))
+        val srcInputStream = srcFile.inputStream()
+        val countingStream = CountingOutputStreamImpl(dstStream, srcFileSize, onUploading)
+        srcInputStream.copyTo(countingStream)
         srcInputStream.close()
         countingStream.close()
         dstFile.close()
+        if (countingStream.byteCount == 0L) throw IOException("Failed to write remote file: 0 byte.")
         onUploading(countingStream.byteCount, countingStream.byteCount)
     }
 

@@ -28,6 +28,7 @@ import net.schmizz.sshj.userauth.password.PasswordFinder
 import net.schmizz.sshj.userauth.password.Resource
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 
 
 class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExtra) : CloudClient {
@@ -121,6 +122,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
         srcInputStream.close()
         countingStream.close()
         dstFile.close()
+        if (countingStream.byteCount == 0L) throw IOException("Failed to write remote file: 0 byte.")
         onUploading(countingStream.byteCount, countingStream.byteCount)
     }
 
