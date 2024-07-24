@@ -209,8 +209,9 @@ build_zstd() {
 
 build_busybox() {
     git clone https://github.com/XayahSuSuSu/ndk-box-kitchen -b $NDK_VERSION && cd ndk-box-kitchen
-    git clone https://git.busybox.net/busybox
-    cd busybox && git checkout $BUSYBOX_VERSION && cd ..
+    wget https://git.busybox.net/busybox/snapshot/busybox-$BUSYBOX_VERSION.tar.bz2
+    tar xf busybox-$BUSYBOX_VERSION.tar.bz2
+    mv busybox-$BUSYBOX_VERSION busybox
     git clone https://github.com/topjohnwu/selinux jni/selinux
     cd jni/selinux && git checkout $SELINUX_COMMIT && cd ../..
     git clone https://android.googlesource.com/platform/external/pcre -b $PCRE_BRANCH jni/pcre
