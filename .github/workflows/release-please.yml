@@ -6,7 +6,7 @@ permissions:
   contents: write
   pull-requests: write
 
-name: release-please
+name: Release notes
 
 jobs:
   release-please:
@@ -16,3 +16,4 @@ jobs:
         with:
           token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
           release-type: simple
+          skip-github-release: true
