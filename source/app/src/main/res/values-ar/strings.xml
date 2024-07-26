@@ -40,7 +40,7 @@
     <string name="loading_failed">فشل التحميل</string>
     <string name="application_desc">معرفة معلومات التطبيق المستخدمة في توليد قائمة النسخ الاحتياطية و معرفة حجم بيانات التطبيق</string>
     <string name="grant_root_access">منح صلاحيات الروت (الجذر)</string>
-    <string name="release_prebuilt_binaries">اطلاق الملفات المبنية مسبقا</string>
+    <string name="release_prebuilt_binaries">الإصدار</string>
     <string name="confirm">تأكيد</string>
     <string name="storage_desc">مُستخدمة من أجل إعدادات النسخ الاحتياطي، و عمليات القراءة و الكتابة على الارشيف (الملف المضغوط)</string>
     <string name="last_backup">اخر نسخة احتياطية</string>
