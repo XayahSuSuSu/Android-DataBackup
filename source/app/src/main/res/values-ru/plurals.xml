@@ -1,2 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_seconds_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> секунда</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> секунды</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> секунд</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> секунд</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> минута</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> минуты</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> минут</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> минут</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> час</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> часа</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> часов</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> часов</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> день</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> дня</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> дней</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> дней</item>
+    </plurals>
+</resources>
