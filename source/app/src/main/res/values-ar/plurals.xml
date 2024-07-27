@@ -1,2 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_days_ago">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> يوم</item>
+        <item quantity="one">يوم واحد</item>
+        <item quantity="two">يومان</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> ايام</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> يوماً</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> يوم</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> ساعة</item>
+        <item quantity="one">ساعة واحدة</item>
+        <item quantity="two">ساعتان</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> ساعات</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> ساعة</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> ساعة</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> شئ</item>
+        <item quantity="one">شئ واحد</item>
+        <item quantity="two">شيئان</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> اشياء</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> شئ</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> شئ</item>
+    </plurals>
+    <plurals name="num_seconds_ago">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> ثانية</item>
+        <item quantity="one">ثانية واحدة</item>
+        <item quantity="two">ثانيتين</item>
+        <item quantity="few">‏<xliff:g id="count">%d</xliff:g> ثوانٍ</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> ثانية</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> ثانية</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> دقيقة</item>
+        <item quantity="one">دقيقة واحدة</item>
+        <item quantity="two">دقيقتان</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> دقائق</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> دقيقة</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> دقيقة</item>
+    </plurals>
+</resources>
