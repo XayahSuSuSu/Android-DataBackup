@@ -153,7 +153,6 @@
     <string name="monet_desc">Farben aus dem Hintergrundbild generieren</string>
     <string name="premium_for_this_feature">Bitte laden Sie die Premium-Version für diese Funktion herunter</string>
     <string name="keep_screen_on">Bildschirm eingeschaltet lassen</string>
-    <string name="restore_dir"></string>
     <string name="compression_test">Kompressionstest</string>
     <string name="compression_test_desc">Prüfen, ob komprimierte Archive nach der Erstellung funktionieren</string>
     <string name="reset_restore_list">Wiederherstellungsliste zurücksetzen</string>
