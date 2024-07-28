@@ -1,0 +1,93 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+        Alpha:
+          description: 'Alpha'
+          required: true
+          default: 'true'
+        Premium:
+          description: 'Premium'
+          required: true
+          default: 'false'
+        Foss:
+          description: 'Foss'
+          required: true
+          default: 'false'
+
+jobs:
+  build:
+    name: "Build APKs"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: source
+
+    permissions:
+      contents: write
+
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      - name: Setup gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Setup gradlew
+        run: chmod +x gradlew
+
+      - name: Check build-logic
+        run: ./gradlew check -p build-logic
+
+      - name: Decode store file
+        env:
+            STORE_FILE: ${{ secrets.STORE_FILE }}
+            ENCODED_STRING: ${{ secrets.STORE_BASE64 }}
+        run: echo $ENCODED_STRING | base64 -di > "./app/${STORE_FILE}"
+
+      - name: Build with gradle
+        id: gradle
+        env:
+          STORE_FILE: ${{ secrets.STORE_FILE }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          BUILD_ALPHA: ${{ github.event.inputs.Alpha }}
+          BUILD_PREMIUM: ${{ github.event.inputs.Premium }}
+          BUILD_FOSS: ${{ github.event.inputs.Foss }}
+        run: |
+          TASKS=""
+          if [ ${BUILD_ALPHA} = 'true' ]; then
+            TASKS="$TASKS assembleArm64-v8aAlphaRelease assembleArmeabi-v7aAlphaRelease assembleX86AlphaRelease assembleX86_64AlphaRelease"
+          fi
+          if [ ${BUILD_PREMIUM} = 'true' ]; then
+            TASKS="$TASKS assembleArm64-v8aPremiumRelease assembleArmeabi-v7aPremiumRelease assembleX86PremiumRelease assembleX86_64PremiumRelease"
+          fi
+          if [ ${BUILD_FOSS} = 'true' ]; then
+            TASKS="$TASKS assembleArm64-v8aFossRelease assembleArmeabi-v7aFossRelease assembleX86FossRelease assembleX86_64FossRelease"
+          fi
+          if [ -z ${TASKS} ]; then
+            TASKS="assembleRelease"
+          fi
+          ./gradlew $TASKS --daemon --parallel
+
+      - name: Move APKs
+        run: mv ./*/build/outputs/apk/*/release/*.apk .
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: APKs
+          path: '**/*.apk'
