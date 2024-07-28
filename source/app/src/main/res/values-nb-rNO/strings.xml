@@ -174,4 +174,5 @@
     <string name="remote_not_set">Fjernenhet ikke satt</string>
     <string name="test_connection">Test tilkobling</string>
     <string name="connection_established">Tilkobling utført</string>
+    <string name="monet_desc">Generer farger fra bakgrunnsbilde</string>
 </resources>
