@@ -102,7 +102,7 @@ class MediumBackupUtil @Inject constructor(
                 exclusionList = listOf(),
                 h = if (context.readFollowSymlinks().first()) "-h" else "",
                 srcDir = srcDir,
-                src = src,// the name is not always the actual file name of the source,but the src does
+                src = PathUtil.getFileName(src),// the name is not always the actual file name of the source,but the src does contain
                 dst = dst,
                 extra = ct.compressPara
             ).also { result ->
