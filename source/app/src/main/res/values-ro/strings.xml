@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">DataBackup</string>
     <string name="welcome_to_use">Bine ati venit la DataBackup</string>
     <string name="update_records">Actualizați înregistrările</string>
@@ -101,4 +101,20 @@
     <string name="compression_test_desc">Verificați dacă arhivele comprimate funcționează după creare</string>
     <string name="reset_restore_list">Resetați lista de restaurare</string>
     <string name="reset_restore_list_desc">Deselectați selecțiile după restaurare</string>
+    <string name="compatible_mode">Mod compatibil</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Utilizați pipe în loc de parametru pentru introducerea de fisier tar. Comutați-l când spune „tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory</string>
+    <string name="clean_restoring">Restaurare curata</string>
+    <string name="clean_restoring_desc">Ștergeți directorul țintă înainte de restaurare</string>
+    <string name="installed">Instalat</string>
+    <string name="sooner_or_later">Mai devreme sau mai târziu</string>
+    <string name="delete">Șterge</string>
+    <string name="confirm_delete_selected_restoring_items">Ștergeți elementele selectate din baza de date și fișierele locale?</string>
+    <string name="app_crashed">Aplicația a dat eroare</string>
+    <string name="no_browser">Poate că nu există niciun browser care să-l deschidă</string>
+    <string name="supported_format">Format acceptat</string>
+    <string name="add">Adăuga</string>
+    <string name="custom_storage">Stocare personalizată</string>
+    <string name="select_target_directory">Selectați folderul țintă</string>
+    <string name="confirm_delete">Aceasta va șterge toate fișierele asociate pe care le-ați selectat</string>
+    <string name="backup_dir_as_media_error">Nu se poate adăuga directorul de rezervă ca media</string>
 </resources>
