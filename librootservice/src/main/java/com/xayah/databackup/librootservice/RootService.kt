@@ -147,17 +147,27 @@ class RootService {
         return getService().closeMemoryFile()
     }
 
-    fun readTextByDescriptor(path: String): String {
-        var text = ""
-        try {
-            val fileDescriptor = readByDescriptor(path)
-            val fileInputStream = FileInputStream(fileDescriptor.fileDescriptor)
-            text = String(fileInputStream.readBytes())
-            closeMemoryFile()
-        } catch (_: Exception) {
-        }
-        return text
+    private fun readFromParcel(pfd: ParcelFileDescriptor, onRead: (Parcel) -> Unit) = run {
+        val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
+        val bytes = stream.readBytes()
+        val parcel = Parcel.obtain()
+
+        parcel.unmarshall(bytes, 0, bytes.size)
+        parcel.setDataPosition(0)
+
+        onRead(parcel)
+
+        parcel.recycle()
     }
+
+    fun readTextByDescriptor(path: String): String = runCatching {
+        val pfd = getService().readByDescriptor(path)
+        var text: String? = null
+        readFromParcel(pfd) {
+            text = it.readString()
+        }
+        text ?: ""
+    }.getOrElse { "" }
 
     fun readBytesByDescriptor(path: String): ByteArray {
         var bytes = ByteArray(0)

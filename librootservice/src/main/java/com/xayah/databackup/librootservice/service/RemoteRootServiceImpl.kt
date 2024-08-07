@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.pm.*
 import android.content.pm.PackageManager.PackageInfoFlags
 import android.os.*
+import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.libhiddenapi.HiddenApiBypassUtil
 import com.xayah.databackup.librootservice.IRemoteRootService
 import com.xayah.databackup.librootservice.parcelables.StatFsParcelable
@@ -30,6 +31,32 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private val queuePollMaxSize = 50
 
     private lateinit var memoryFile: MemoryFile
+
+    companion object {
+        const val ParcelTmpFilePath = "/data/local/tmp"
+        const val ParcelTmpFileName = "data_backup_tmp"
+    }
+
+    init {
+        /**
+         * If [ParcelTmpFilePath] has incorrect SELinux context, the transaction will get failed:
+         * Fatal Exception: android.os.DeadObjectException: Transaction failed on small parcel; remote process probably died, but this could also be caused by running out of binder buffe
+         * Correct SELinux context should be: u:object_r:shell_data_file:s0
+         *
+         * If [ParcelTmpFilePath] doesn't exist, the transaction will failed:
+         * pfd must not be null
+         */
+        ShellUtils.fastCmd(
+            """
+            mkdir "$ParcelTmpFilePath/"
+            """.trimIndent()
+        )
+        ShellUtils.fastCmd(
+            """
+            chcon -hR "u:object_r:shell_data_file:s0" "$ParcelTmpFilePath/"
+            """.trimIndent()
+        )
+    }
 
     /**
      * 获取systemContext
@@ -136,7 +163,10 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
                     return FileVisitResult.CONTINUE
                 }
 
-                override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                override fun preVisitDirectory(
+                    dir: Path?,
+                    attrs: BasicFileAttributes?
+                ): FileVisitResult {
                     return FileVisitResult.CONTINUE
                 }
 
@@ -151,6 +181,22 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         } catch (_: Exception) {
         }
         return size.get()
+    }
+
+    private fun writeToParcel(onWrite: (Parcel) -> Unit) = run {
+        val parcel = Parcel.obtain()
+        parcel.setDataPosition(0)
+
+        onWrite(parcel)
+
+        val tmp = File(ParcelTmpFilePath, ParcelTmpFileName)
+        tmp.createNewFile()
+        tmp.writeBytes(parcel.marshall())
+        val pfd = ParcelFileDescriptor.open(tmp, ParcelFileDescriptor.MODE_READ_WRITE)
+        tmp.deleteRecursively()
+
+        parcel.recycle()
+        pfd
     }
 
     override fun readText(path: String): String {
@@ -173,11 +219,9 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun readByDescriptor(path: String): ParcelFileDescriptor {
         synchronized(this) {
-            val bytes = File(path).readBytes()
-            memoryFile = MemoryFile("memoryFileDataBackupRead", bytes.size).apply {
-                writeBytes(bytes, 0, 0, bytes.size)
+            return writeToParcel { parcel ->
+                parcel.writeString(runCatching { File(path).readText() }.getOrElse { "" })
             }
-            return ParcelFileDescriptor.dup(MemoryFileHidden.getFileDescriptor(memoryFile))
         }
     }
 
@@ -272,7 +316,11 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     override fun offerInstalledPackagesAsUser(flags: Int, userId: Int): Boolean {
         return try {
             packageInfoQueue.clear()
-            PackageManagerHidden.getInstalledPackagesAsUser(systemContext.packageManager, flags, userId).forEach {
+            PackageManagerHidden.getInstalledPackagesAsUser(
+                systemContext.packageManager,
+                flags,
+                userId
+            ).forEach {
                 packageInfoQueue.offer(it)
             }
             true
@@ -301,8 +349,16 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         val packages = mutableListOf<PackageInfo>()
         try {
             for (userId in UserManagerHidden.getUsers(userManager = userManager).toMutableList()) {
-                PackageManagerHidden.getInstalledPackagesAsUser(systemContext.packageManager, 0, userId.id).forEach {
-                    if (PackageManagerHidden.isPackageSuspended(systemContext.packageManager, it.packageName))
+                PackageManagerHidden.getInstalledPackagesAsUser(
+                    systemContext.packageManager,
+                    0,
+                    userId.id
+                ).forEach {
+                    if (PackageManagerHidden.isPackageSuspended(
+                            systemContext.packageManager,
+                            it.packageName
+                        )
+                    )
                         packages.add(it)
                 }
             }
@@ -312,7 +368,10 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun getPackageArchiveInfo(path: String): PackageInfo? {
-        return systemContext.packageManager.getPackageArchiveInfo(path, PackageInfoFlags.of(PackageManager.GET_ACTIVITIES.toLong()))?.apply {
+        return systemContext.packageManager.getPackageArchiveInfo(
+            path,
+            PackageInfoFlags.of(PackageManager.GET_ACTIVITIES.toLong())
+        )?.apply {
             applicationInfo?.sourceDir = path
             applicationInfo?.publicSourceDir = path
         }
@@ -320,7 +379,12 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun queryInstalled(packageName: String, userId: Int): Boolean {
         return try {
-            PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+            PackageManagerHidden.getPackageInfoAsUser(
+                systemContext.packageManager,
+                packageName,
+                0,
+                userId
+            )
             true
         } catch (_: Exception) {
             false
@@ -335,9 +399,18 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         )
     }
 
-    override fun grantRuntimePermission(packageName: String, permName: String, userId: Int): Boolean {
+    override fun grantRuntimePermission(
+        packageName: String,
+        permName: String,
+        userId: Int
+    ): Boolean {
         return try {
-            PackageManagerHidden.grantRuntimePermission(systemContext.packageManager, packageName, permName, getUserHandle(userId))
+            PackageManagerHidden.grantRuntimePermission(
+                systemContext.packageManager,
+                packageName,
+                permName,
+                getUserHandle(userId)
+            )
             true
         } catch (_: Exception) {
             false
@@ -347,7 +420,12 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     override fun displayPackageFilePath(packageName: String, userId: Int): List<String> {
         return try {
             val list = mutableListOf<String>()
-            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(
+                systemContext.packageManager,
+                packageName,
+                0,
+                userId
+            )
             list.add(packageInfo.applicationInfo.sourceDir)
             val splitSourceDirs = packageInfo.applicationInfo.splitSourceDirs
             if (splitSourceDirs != null && splitSourceDirs.isNotEmpty())
@@ -361,7 +439,14 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun setPackagesSuspended(packageNames: Array<String>, suspended: Boolean): Boolean {
         return try {
-            PackageManagerHidden.setPackagesSuspended(systemContext.packageManager, packageNames, suspended, null, null, null)
+            PackageManagerHidden.setPackagesSuspended(
+                systemContext.packageManager,
+                packageNames,
+                suspended,
+                null,
+                null,
+                null
+            )
             true
         } catch (_: Exception) {
             false
@@ -370,7 +455,12 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun getPackageUid(packageName: String, userId: Int): Int {
         return try {
-            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(
+                systemContext.packageManager,
+                packageName,
+                0,
+                userId
+            )
             packageInfo.applicationInfo.uid
         } catch (_: Exception) {
             -1
@@ -379,18 +469,30 @@ class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun getPackageLongVersionCode(packageName: String, userId: Int): Long {
         return try {
-            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(systemContext.packageManager, packageName, 0, userId)
+            val packageInfo = PackageManagerHidden.getPackageInfoAsUser(
+                systemContext.packageManager,
+                packageName,
+                0,
+                userId
+            )
             packageInfo.longVersionCode
         } catch (_: Exception) {
             -1L
         }
     }
 
-    override fun setApplicationEnabledSetting(packageName: String, newState: Int, flags: Int, userId: Int) {
-        IPackageManager.Stub.asInterface(serviceManager).setApplicationEnabledSetting(packageName, newState, flags, userId, null)
+    override fun setApplicationEnabledSetting(
+        packageName: String,
+        newState: Int,
+        flags: Int,
+        userId: Int
+    ) {
+        IPackageManager.Stub.asInterface(serviceManager)
+            .setApplicationEnabledSetting(packageName, newState, flags, userId, null)
     }
 
     override fun getApplicationEnabledSetting(packageName: String, userId: Int): Int {
-        return IPackageManager.Stub.asInterface(serviceManager).getApplicationEnabledSetting(packageName, userId)
+        return IPackageManager.Stub.asInterface(serviceManager)
+            .getApplicationEnabledSetting(packageName, userId)
     }
 }
