@@ -136,4 +136,12 @@
     <string name="none">없음</string>
     <string name="media">미디어</string>
     <string name="search_bar_hint_packages">이름 또는 패키지 검색…</string>
+    <string name="public_key">공개 키</string>
+    <string name="private_key">개인 키</string>
+    <string name="both">둘다</string>
+    <string name="idle"></string>
+    <string name="export">내보내기</string>
+    <string name="modify">수정하다</string>
+    <string name="cloud"></string>
+    <string name="settings"></string>
 </resources>
