@@ -6,11 +6,12 @@ import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
-import com.xayah.core.model.OperationState
 import com.xayah.core.model.TaskType
+import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.service.util.CommonBackupUtil
 import com.xayah.core.service.util.PackagesRestoreUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
@@ -18,76 +19,62 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class RestoreServiceLocalImpl @Inject constructor() : RestoreService() {
-    @Inject
-    override lateinit var rootService: RemoteRootService
+internal class RestoreServiceLocalImpl @Inject constructor() : AbstractRestoreService() {
+    override val mTAG: String = "RestoreServiceLocalImpl"
 
     @Inject
-    override lateinit var pathUtil: PathUtil
+    override lateinit var mRootService: RemoteRootService
 
     @Inject
-    override lateinit var taskDao: TaskDao
+    override lateinit var mPathUtil: PathUtil
 
     @Inject
-    override lateinit var packageDao: PackageDao
+    override lateinit var mCommonBackupUtil: CommonBackupUtil
 
     @Inject
-    override lateinit var packagesRestoreUtil: PackagesRestoreUtil
+    override lateinit var mTaskDao: TaskDao
 
     @Inject
-    override lateinit var taskRepository: TaskRepository
+    override lateinit var mTaskRepo: TaskRepository
 
-    @Inject
-    override lateinit var packageRepository: PackageRepository
-
-    override val taskEntity by lazy {
+    override val mTaskEntity by lazy {
         TaskEntity(
             id = 0,
             opType = OpType.RESTORE,
             taskType = TaskType.PACKAGE,
-            startTimestamp = startTimestamp,
-            endTimestamp = endTimestamp,
-            backupDir = context.localBackupSaveDir(),
+            startTimestamp = mStartTimestamp,
+            endTimestamp = mEndTimestamp,
+            backupDir = mRootDir,
             isProcessing = true,
         )
     }
 
-    override suspend fun createTargetDirs() {}
-
-    private val appsDir by lazy { pathUtil.getLocalBackupAppsDir() }
-
-    override suspend fun restorePackage(t: TaskDetailPackageEntity) {
-        t.apply {
-            state = OperationState.PROCESSING
-            taskDao.upsert(this)
-        }
-
-        val p = t.packageEntity
-        val srcDir = "${appsDir}/${p.archivesRelativeDir}"
-        val userId = if (restoreUser == -1) p.userId else restoreUser
-
-        packagesRestoreUtil.restoreApk(userId = userId, p = p, t = t, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_USER_DE, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = srcDir)
-        packagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = srcDir)
-        packagesRestoreUtil.restorePermissions(userId = userId, p = p)
-        packagesRestoreUtil.restoreSsaid(userId = userId, p = p)
-
-        t.apply {
-            t.apply {
-                state = if (isSuccess) OperationState.DONE else OperationState.ERROR
-                taskDao.upsert(this)
-            }
-            packageEntity = p
-            taskDao.upsert(this)
-        }
-        taskEntity.also {
-            if (t.isSuccess) it.successCount++ else it.failureCount++
-            taskDao.upsert(it)
-        }
+    override suspend fun getPackages(): List<PackageEntity> {
+        return mPackageRepo.filterRestore(
+            mPackageRepo.queryActivated(OpType.RESTORE, "", mRootDir)
+        )
     }
 
-    override suspend fun clear() {}
+    override suspend fun restore(type: DataType, userId: Int, p: PackageEntity, t: TaskDetailPackageEntity, srcDir: String) {
+        if (type == DataType.PACKAGE_APK) {
+            mPackagesRestoreUtil.restoreApk(userId = userId, p = p, t = t, srcDir = srcDir)
+        } else {
+            mPackagesRestoreUtil.restoreData(userId = userId, p = p, t = t, dataType = type, srcDir = srcDir)
+        }
+        t.update(dataType = type, progress = 1f)
+        t.update(processingIndex = t.processingIndex + 1)
+    }
+
+    @Inject
+    override lateinit var mPackageDao: PackageDao
+
+    @Inject
+    override lateinit var mPackageRepo: PackageRepository
+
+    @Inject
+    override lateinit var mPackagesRestoreUtil: PackagesRestoreUtil
+
+    override val mRootDir by lazy { mContext.localBackupSaveDir() }
+    override val mAppsDir by lazy { mPathUtil.getLocalBackupAppsDir() }
+    override val mConfigsDir by lazy { mPathUtil.getLocalBackupConfigsDir() }
 }

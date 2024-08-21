@@ -21,10 +21,10 @@ import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
 
 @Composable
-fun OperationState.StateView(enabled: Boolean = true, expanded: Boolean = false, progress: Float = -1f) {
+fun OperationState.StateView(enabled: Boolean = true, expanded: Boolean = false, isProcessing: Boolean = false) {
     when (this) {
         OperationState.PROCESSING -> {
-            if (progress == -1f) {
+            if (isProcessing) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(SizeTokens.Level24),
                     strokeCap = StrokeCap.Round,
@@ -33,7 +33,7 @@ fun OperationState.StateView(enabled: Boolean = true, expanded: Boolean = false,
                 CircularProgressIndicator(
                     modifier = Modifier.size(SizeTokens.Level24),
                     strokeCap = StrokeCap.Round,
-                    progress = progress,
+                    progress = 0f,
                 )
             }
         }

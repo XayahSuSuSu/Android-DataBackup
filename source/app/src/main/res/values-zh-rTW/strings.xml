@@ -257,6 +257,7 @@
     <string name="post_processing">後處理</string>
     <string name="apps">應用</string>
     <string name="args_apps_backed_up">已備份%1$s個應用</string>
+    <string name="args_apps_restored">已恢復%1$s個應用</string>
     <string name="advanced">高級</string>
     <string name="reload_desc">從本機或雲端重新載入備份</string>
     <string name="backed_up_apps">已備份應用</string>
@@ -318,6 +319,7 @@
     <string name="delete_desc">這將會被刪除</string>
     <string name="files">文件</string>
     <string name="args_files_backed_up">已備份%1$s個文件</string>
+    <string name="args_files_restored">已恢復%1$s個文件</string>
     <string name="backed_up_files">已備份文件</string>
     <string name="specify_a_path">請指定路徑</string>
     <string name="anonymous">匿名</string>

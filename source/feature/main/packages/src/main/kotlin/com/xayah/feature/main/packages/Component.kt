@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
@@ -33,6 +33,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import com.dotlottie.dlplayer.Mode
 import com.lottiefiles.dotlottie.core.compose.ui.DotLottieAnimation
@@ -44,9 +45,9 @@ import com.xayah.core.ui.component.Divider
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.LinearProgressIndicator
-import com.xayah.core.ui.component.SecondaryLargeTopBar
 import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.paddingBottom
+import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
@@ -114,24 +115,26 @@ fun ListScaffold(
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @Composable
 fun ProcessingSetupScaffold(
-    scrollBehavior: TopAppBarScrollBehavior, title: String,
+    scrollBehavior: TopAppBarScrollBehavior?,
+    title: String,
     snackbarHostState: SnackbarHostState,
     onBackClick: (() -> Unit)? = null,
     progress: Float = -1f,
     actions: @Composable RowScope.() -> Unit = {},
-    content: @Composable (BoxScope.() -> Unit)
+    content: @Composable (BoxScope.(bottomPadding: Dp) -> Unit)
 ) {
     var bottomBarSize by remember { mutableStateOf(IntSize.Zero) }
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier,
         topBar = {
             Column {
-                SecondaryLargeTopBar(
+                SecondaryTopBar(
                     scrollBehavior = scrollBehavior,
                     title = title,
                     onBackClick = onBackClick,
@@ -166,21 +169,30 @@ fun ProcessingSetupScaffold(
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                content()
-            }
+                with(LocalDensity.current) {
+                    content(bottomBarSize.height.toDp())
+                }
 
-            Divider()
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SizeTokens.Level16)
-                    .onSizeChanged { bottomBarSize = it },
-                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level12, Alignment.End),
-            ) {
-                actions()
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .wrapContentSize()
+                        .background(ThemedColorSchemeKeyTokens.SurfaceContainerLowest.value)
+                        .onSizeChanged { bottomBarSize = it }
+                ) {
+                    Divider()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .paddingHorizontal(SizeTokens.Level24)
+                            .paddingVertical(SizeTokens.Level8),
+                        horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level12, Alignment.End),
+                    ) {
+                        actions()
+                    }
+                    InnerBottomSpacer(innerPadding = innerPadding)
+                }
             }
-
-            InnerBottomSpacer(innerPadding = innerPadding)
         }
     }
 }

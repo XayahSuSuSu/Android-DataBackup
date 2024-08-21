@@ -164,7 +164,10 @@ fun PackageIcons(
                     interactionSource = interactionSource
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        LabelMediumText(text = "${packages[index].packageInfo.label.firstOrNull() ?: ""}", color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value)
+                        LabelMediumText(
+                            text = "${packages.getOrNull(index)?.packageInfo?.label?.firstOrNull() ?: ""}",
+                            color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value
+                        )
                     }
                 }
             } else {
@@ -193,7 +196,10 @@ fun PackageIcons(
                     interactionSource = interactionSource
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        LabelMediumText(text = "${packages[icons.lastIndex].packageInfo.label.firstOrNull() ?: ""}", color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value)
+                        LabelMediumText(
+                            text = "${packages.getOrNull(icons.lastIndex)?.packageInfo?.label?.firstOrNull() ?: ""}",
+                            color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value
+                        )
                     }
                 }
             } else {

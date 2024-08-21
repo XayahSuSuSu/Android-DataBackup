@@ -7,135 +7,101 @@ import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
-import com.xayah.core.model.OperationState
 import com.xayah.core.model.TaskType
 import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.service.util.CommonBackupUtil
 import com.xayah.core.service.util.PackagesRestoreUtil
 import com.xayah.core.util.PathUtil
-import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class RestoreServiceCloudImpl @Inject constructor() : RestoreService() {
-    @Inject
-    override lateinit var rootService: RemoteRootService
+internal class RestoreServiceCloudImpl @Inject constructor() : AbstractRestoreService() {
+    override val mTAG: String = "RestoreServiceCloudImpl"
 
     @Inject
-    override lateinit var pathUtil: PathUtil
+    override lateinit var mRootService: RemoteRootService
 
     @Inject
-    override lateinit var taskDao: TaskDao
+    override lateinit var mPathUtil: PathUtil
 
     @Inject
-    override lateinit var packageDao: PackageDao
+    override lateinit var mCommonBackupUtil: CommonBackupUtil
 
     @Inject
-    override lateinit var packagesRestoreUtil: PackagesRestoreUtil
+    override lateinit var mTaskDao: TaskDao
 
     @Inject
-    override lateinit var taskRepository: TaskRepository
+    override lateinit var mTaskRepo: TaskRepository
 
-    @Inject
-    lateinit var cloudRepository: CloudRepository
-
-    @Inject
-    override lateinit var packageRepository: PackageRepository
-
-    override val taskEntity by lazy {
+    override val mTaskEntity by lazy {
         TaskEntity(
             id = 0,
             opType = OpType.RESTORE,
             taskType = TaskType.PACKAGE,
-            startTimestamp = startTimestamp,
-            endTimestamp = endTimestamp,
-            backupDir = context.localBackupSaveDir(),
+            startTimestamp = mStartTimestamp,
+            endTimestamp = mEndTimestamp,
+            backupDir = mRootDir,
             isProcessing = true,
         )
     }
 
-    private val tmpAppsDir by lazy { pathUtil.getCloudTmpAppsDir() }
-    private val tmpDir by lazy { pathUtil.getCloudTmpDir() }
-
-    private lateinit var cloudEntity: CloudEntity
-    private lateinit var client: CloudClient
-    private lateinit var remote: String
-    private lateinit var remoteAppsDir: String
-    private lateinit var remoteConfigsDir: String
-
-    override suspend fun createTargetDirs() {
-        val pair = cloudRepository.getClient()
-        cloudEntity = pair.second
-        client = pair.first
-        remote = cloudEntity.remote
-        remoteAppsDir = pathUtil.getCloudRemoteAppsDir(remote)
-        remoteConfigsDir = pathUtil.getCloudRemoteConfigsDir(remote)
-        taskEntity.also {
-            it.cloud = cloudEntity.name
-            it.backupDir = remote
-            taskDao.upsert(it)
+    override suspend fun getPackages(): List<PackageEntity> {
+        mCloudRepo.getClient().also { (c, e) ->
+            mCloudEntity = e
+            mClient = c
         }
+
+        mRemotePath = mCloudEntity.remote
+        mRemoteAppsDir = mPathUtil.getCloudRemoteAppsDir(mRemotePath)
+        mRemoteConfigsDir = mPathUtil.getCloudRemoteConfigsDir(mRemotePath)
+        mTaskEntity.update(cloud = mCloudEntity.name, backupDir = mRemotePath)
+
+        return mPackageRepo.filterRestore(
+            mPackageRepo.queryActivated(OpType.RESTORE, mCloudEntity.name, mCloudEntity.remote)
+        )
     }
 
-    override suspend fun restorePackage(t: TaskDetailPackageEntity) {
-        t.apply {
-            state = OperationState.PROCESSING
-            taskDao.upsert(this)
-        }
+    private fun getRemoteAppDir(archivesRelativeDir: String) = "${mRemoteAppsDir}/${archivesRelativeDir}"
 
-        val p = t.packageEntity
-        val tmpDstDir = "${tmpAppsDir}/${p.archivesRelativeDir}"
-        val remoteSrcDir = "${remoteAppsDir}/${p.archivesRelativeDir}"
-        val userId = if (restoreUser == -1) p.userId else restoreUser
-
-        packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_APK, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, _, mPath ->
-            packagesRestoreUtil.restoreApk(userId = userId, p = mP, t = mT, srcDir = mPath)
-        }
-
-        packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
-        }
-
-        packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_USER_DE, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
-
-        }
-
-        packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_DATA, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
-        }
-
-        packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_OBB, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
-        }
-
-        packagesRestoreUtil.download(client = client, p = p, t = t, dataType = DataType.PACKAGE_MEDIA, srcDir = remoteSrcDir, dstDir = tmpDstDir) { mP, mT, mDataType, mPath ->
-            packagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = mDataType, srcDir = mPath)
-        }
-
-        packagesRestoreUtil.restorePermissions(userId = userId, p = p)
-        packagesRestoreUtil.restoreSsaid(userId = userId, p = p)
-
-        t.apply {
-            packageEntity = p
-            taskDao.upsert(this)
-        }
-        taskEntity.also {
-            t.apply {
-                state = if (isSuccess) OperationState.DONE else OperationState.ERROR
-                taskDao.upsert(this)
+    override suspend fun restore(type: DataType, userId: Int, p: PackageEntity, t: TaskDetailPackageEntity, srcDir: String) {
+        val remoteAppDir = getRemoteAppDir(p.archivesRelativeDir)
+        mPackagesRestoreUtil.download(client = mClient, p = p, t = t, dataType = type, srcDir = remoteAppDir, dstDir = srcDir) { mP, mT, _, mPath ->
+            if (type == DataType.PACKAGE_APK) {
+                mPackagesRestoreUtil.restoreApk(userId = userId, p = mP, t = mT, srcDir = mPath)
+            } else {
+                mPackagesRestoreUtil.restoreData(userId = userId, p = mP, t = mT, dataType = type, srcDir = mPath)
             }
-            if (t.isSuccess) it.successCount++ else it.failureCount++
-            taskDao.upsert(it)
         }
+
+        t.update(dataType = type, progress = 1f)
+        t.update(processingIndex = t.processingIndex + 1)
     }
 
-    override suspend fun clear() {
-        rootService.deleteRecursively(tmpDir)
-        client.disconnect()
-    }
+    @Inject
+    override lateinit var mPackageDao: PackageDao
+
+    @Inject
+    override lateinit var mPackageRepo: PackageRepository
+
+    @Inject
+    override lateinit var mPackagesRestoreUtil: PackagesRestoreUtil
+
+    override val mRootDir by lazy { mPathUtil.getCloudTmpDir() }
+    override val mAppsDir by lazy { mPathUtil.getCloudTmpAppsDir() }
+    override val mConfigsDir by lazy { mPathUtil.getCloudTmpConfigsDir() }
+
+    @Inject
+    lateinit var mCloudRepo: CloudRepository
+
+    private lateinit var mCloudEntity: CloudEntity
+    private lateinit var mClient: CloudClient
+    private lateinit var mRemotePath: String
+    private lateinit var mRemoteAppsDir: String
+    private lateinit var mRemoteConfigsDir: String
 }

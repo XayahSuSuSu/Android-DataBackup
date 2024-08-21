@@ -2,7 +2,7 @@ package com.xayah.core.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.intPreferencesKey
-import com.xayah.core.datastore.ConstantUtil.DEFAULT_TIMEOUT
+import com.xayah.core.datastore.ConstantUtil.DEFAULT_IDLE_TIMEOUT
 
 // -----------------------------------------Keys-----------------------------------------
 val KeyBackupFilterFlagIndex = intPreferencesKey("backup_filter_flag_index")
@@ -16,7 +16,7 @@ val KeyRestoreUser = intPreferencesKey("restore_user")
 fun Context.readBackupFilterFlagIndex() = readStoreInt(key = KeyBackupFilterFlagIndex, defValue = 1)
 fun Context.readRestoreFilterFlagIndex() = readStoreInt(key = KeyRestoreFilterFlagIndex, defValue = 1)
 fun Context.readScreenOffCountDown() = readStoreInt(key = KeyScreenOffCountDown, defValue = 0)
-fun Context.readScreenOffTimeout() = readStoreInt(key = KeyScreenOffTimeout, defValue = DEFAULT_TIMEOUT)
+fun Context.readScreenOffTimeout() = readStoreInt(key = KeyScreenOffTimeout, defValue = DEFAULT_IDLE_TIMEOUT)
 fun Context.readRestoreUser() = readStoreInt(key = KeyRestoreUser, defValue = -1)
 
 

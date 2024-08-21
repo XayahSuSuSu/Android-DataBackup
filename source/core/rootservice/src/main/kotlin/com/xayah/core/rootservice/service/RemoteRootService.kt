@@ -13,6 +13,7 @@ import android.os.RemoteException
 import android.os.UserHandle
 import com.google.gson.reflect.TypeToken
 import com.topjohnwu.superuser.ipc.RootService
+import com.xayah.core.datastore.ConstantUtil.DEFAULT_TIMEOUT
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.impl.RemoteRootServiceImpl
 import com.xayah.core.rootservice.parcelables.PathParcelable
@@ -288,7 +289,7 @@ class RemoteRootService(private val context: Context) {
         runCatching { getService().setDisplayPowerMode(mode) }.onFailure(onFailure)
 
     suspend fun getScreenOffTimeout() =
-        runCatching { getService().getScreenOffTimeout() }.onFailure(onFailure).getOrElse { 0 }
+        runCatching { getService().getScreenOffTimeout() }.onFailure(onFailure).getOrElse { DEFAULT_TIMEOUT }
 
     suspend fun setScreenOffTimeout(timeout: Int) =
         runCatching { getService().setScreenOffTimeout(timeout) }.onFailure(onFailure)

@@ -20,7 +20,7 @@ import android.os.UserManagerHidden
 import android.view.SurfaceControlHidden
 import com.android.server.display.DisplayControl
 import com.topjohnwu.superuser.ShellUtils
-import com.xayah.core.datastore.ConstantUtil.DEFAULT_TIMEOUT
+import com.xayah.core.datastore.ConstantUtil.DEFAULT_IDLE_TIMEOUT
 import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.parcelables.PathParcelable
@@ -478,7 +478,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun getScreenOffTimeout(): Int = synchronized(lock) {
-        ShellUtils.fastCmd("settings get system screen_off_timeout").toIntOrNull() ?: DEFAULT_TIMEOUT
+        ShellUtils.fastCmd("settings get system screen_off_timeout").toIntOrNull() ?: DEFAULT_IDLE_TIMEOUT
     }
 
     override fun setScreenOffTimeout(timeout: Int): Unit = synchronized(lock) {

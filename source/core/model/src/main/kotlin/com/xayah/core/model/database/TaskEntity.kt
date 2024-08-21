@@ -1,5 +1,6 @@
 package com.xayah.core.model.database
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.xayah.core.model.OpType
@@ -18,7 +19,9 @@ data class TaskEntity(
     var totalCount: Int = 0,
     var successCount: Int = 0,
     var failureCount: Int = 0,
+    @ColumnInfo(defaultValue = "0") var preprocessingIndex: Int = 0,
     var processingIndex: Int = 0,
+    @ColumnInfo(defaultValue = "0") var postProcessingIndex: Int = 0,
     var isProcessing: Boolean,
     var cloud: String = "",
     var backupDir: String,

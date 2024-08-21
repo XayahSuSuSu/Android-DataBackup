@@ -6,6 +6,7 @@ object ConstantUtil {
     const val DEFAULT_PATH_PARENT = "${DATA_MEDIA_PATH}/${DEFAULT_USER_ID}"
     const val DEFAULT_PATH_CHILD = "DataBackup"
     const val DEFAULT_PATH = "${DEFAULT_PATH_PARENT}/${DEFAULT_PATH_CHILD}"
+    const val DEFAULT_IDLE_TIMEOUT = -1
     const val DEFAULT_TIMEOUT = 30000
     const val CONFIGURATIONS_KEY_BLACKLIST = "blacklist"
     const val CONFIGURATIONS_KEY_CLOUD = "cloud"

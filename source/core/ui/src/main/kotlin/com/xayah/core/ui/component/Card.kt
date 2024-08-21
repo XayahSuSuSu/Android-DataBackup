@@ -1,5 +1,6 @@
 package com.xayah.core.ui.component
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,13 +17,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.ripple.rememberRipple
@@ -42,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -57,6 +60,7 @@ import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CardColors
 import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.material3.CardElevation
+import com.xayah.core.ui.material3.CircularProgressIndicator
 import com.xayah.core.ui.material3.ShapeDefaults
 import com.xayah.core.ui.material3.tokens.OutlinedCardTokens
 import com.xayah.core.ui.model.ProcessingCardItem
@@ -65,6 +69,7 @@ import com.xayah.core.ui.model.ReportFileItemInfo
 import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.theme.withState
+import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.StateView
 import kotlinx.coroutines.CoroutineScope
@@ -131,56 +136,23 @@ fun Card(
 fun ProcessingCard(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    progress: Float,
+    state: OperationState = OperationState.IDLE,
     title: String,
     packageName: String? = null,
-    defExpanded: Boolean = false,
-    expandable: Boolean = false,
-    maxDisplayNum: Int = -1,
+    expanded: Boolean = false,
     items: List<ProcessingCardItem>,
+    processingIndex: Int,
     actions: @Composable RowScope.() -> Unit = {},
+    onActionBarClick: () -> Unit = {},
 ) {
-    val context = LocalContext.current
-    var _expanded by remember { mutableStateOf(defExpanded || expandable.not()) }
     val successCount by remember(items) { mutableIntStateOf(items.count { it.state == OperationState.DONE || it.state == OperationState.SKIP }) }
     val failedCount by remember(items) { mutableIntStateOf(items.count { it.state == OperationState.ERROR }) }
     val totalCount by remember(items.size) { mutableIntStateOf(items.size) }
-    val _state by remember(successCount, failedCount, totalCount) {
-        mutableStateOf(
-            if (failedCount != 0) OperationState.ERROR
-            else if (successCount + failedCount == 0) OperationState.IDLE
-            else if (successCount == totalCount) OperationState.DONE
-            else OperationState.PROCESSING
-        )
-    }
-    val displayItems by remember(maxDisplayNum, items) {
-        mutableStateOf(
-            if (maxDisplayNum == -1 || items.size <= maxDisplayNum) {
-                items
-            } else {
-                val processingIndex = items.indexOfFirst { it.state == OperationState.PROCESSING }
-                val halfCount = (maxDisplayNum - 1) / 2
-                val startIndex: Int
-                val endIndex: Int
-                if (processingIndex - halfCount < 0) {
-                    startIndex = 0
-                    endIndex = maxDisplayNum
-                } else if (processingIndex + halfCount > items.size - 1) {
-                    startIndex = items.size - maxDisplayNum
-                    endIndex = items.size
-                } else {
-                    startIndex = processingIndex - halfCount
-                    endIndex = processingIndex + maxDisplayNum / 2 + 1
-                }
-                items.subList(startIndex, endIndex)
-            }
-        )
-    }
 
     Card(
         modifier = modifier,
         enabled = enabled,
-        colors = CardDefaults.cardColors(containerColor = (if (_expanded) ThemedColorSchemeKeyTokens.SurfaceVariantDim else ThemedColorSchemeKeyTokens.Transparent).value.withState(enabled)),
+        colors = CardDefaults.cardColors(containerColor = (if (expanded) ThemedColorSchemeKeyTokens.SurfaceVariantDim else ThemedColorSchemeKeyTokens.Transparent).value.withState(enabled)),
         indication = null,
     ) {
         Column {
@@ -188,16 +160,16 @@ fun ProcessingCard(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = enabled,
-                    color = (if (_expanded) ThemedColorSchemeKeyTokens.SurfaceVariant else ThemedColorSchemeKeyTokens.Surface).value.withState(enabled),
+                    color = if (expanded) ThemedColorSchemeKeyTokens.SurfaceVariant.value.withState(enabled) else ThemedColorSchemeKeyTokens.SurfaceContainerLowest.value,
                     shape = ShapeDefaults.Medium,
                     onClick = {
-                        if (totalCount != 0 && expandable) {
-                            _expanded = _expanded.not()
-                        }
+                        if (state == OperationState.DONE)
+                            onActionBarClick()
                     }
                 ) {
                     Row(modifier = Modifier.padding(SizeTokens.Level16), horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16), verticalAlignment = Alignment.CenterVertically) {
-                        _state.StateView(enabled = enabled, expanded = _expanded, progress = progress)
+                        if (packageName != null)
+                            PackageIconImage(packageName = packageName, size = SizeTokens.Level24)
 
                         TitleMediumText(
                             modifier = Modifier.weight(1f),
@@ -205,57 +177,60 @@ fun ProcessingCard(
                             color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
                         )
 
-                        if (packageName != null)
-                            PackageIconImage(packageName = packageName, size = SizeTokens.Level24)
-
                         actions()
                         if (totalCount != 0) {
-                            LabelSmallText(text = "${successCount + failedCount}/${totalCount}", color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
-                            if (expandable) Icon(
-                                imageVector = if (_expanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
-                                contentDescription = null,
-                                tint = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
-                            )
+                            if (state != OperationState.IDLE) {
+                                LabelSmallText(text = "${successCount + failedCount}/${totalCount}", color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
+                            }
+                            AnimatedContent(targetState = state, label = AnimationTokens.AnimatedContentLabel) {
+                                when (it) {
+                                    OperationState.DONE -> {
+                                        Icon(
+                                            imageVector = if (expanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+                                            contentDescription = null,
+                                            tint = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
+                                        )
+                                    }
+
+                                    OperationState.PROCESSING -> {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(SizeTokens.Level24),
+                                            strokeCap = StrokeCap.Round,
+                                        )
+                                    }
+
+                                    else -> {
+                                        Spacer(modifier = Modifier.width(SizeTokens.Level24))
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                AnimatedVisibility(_expanded) {
-                    LazyColumn(
+                AnimatedVisibility(expanded) {
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        items(count = displayItems.size, key = { "$it-${displayItems[it].title}" }) {
-                            val item = displayItems[it]
-                            var logExpanded by remember { mutableStateOf(false) }
-                            val log = item.log
+                        items.forEachIndexed { index, item ->
                             Surface(
-                                modifier = Modifier
-                                    .animateItemPlacement()
-                                    .fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth(),
                                 enabled = enabled,
                                 color = ThemedColorSchemeKeyTokens.Transparent.value.withState(enabled),
-                                onClick = {
-                                    if (log.isNotEmpty())
-                                        logExpanded = logExpanded.not()
-                                }
                             ) {
                                 Row(
                                     modifier = Modifier.padding(SizeTokens.Level16),
                                     horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    item.state.StateView(enabled = enabled, expanded = false, progress = item.progress)
+                                    item.state.StateView(enabled = enabled, expanded = false, isProcessing = processingIndex == index)
                                     TitleSmallText(modifier = Modifier.weight(1f), text = item.title, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
                                     LabelSmallText(text = item.content, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
-                                    if (log.isNotEmpty())
-                                        Icon(
-                                            imageVector = if (logExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
-                                            contentDescription = null,
-                                            tint = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
-                                        )
+                                    Icon(
+                                        imageVector = Icons.Rounded.Circle,
+                                        contentDescription = null,
+                                        tint = ThemedColorSchemeKeyTokens.Transparent.value
+                                    )
                                 }
-                            }
-                            AnimatedVisibility(logExpanded) {
-                                LabelSmallText(modifier = Modifier.paddingHorizontal(SizeTokens.Level56), text = item.log, color = ThemedColorSchemeKeyTokens.Outline.value.withState(enabled))
                             }
                         }
                     }
@@ -333,7 +308,7 @@ private fun ReportAppItem(enabled: Boolean, color: ThemedColorSchemeKeyTokens = 
             Spacer(modifier = Modifier.size(SizeTokens.Level24))
             LabelMediumText(modifier = Modifier.weight(1f), text = item.label, color = color.value.withState(enabled))
             LabelSmallText(text = item.user, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
-            PackageIconImage(enabled = enabled, packageName = item.packageName, size = SizeTokens.Level24)
+            PackageIconImage(packageName = item.packageName, size = SizeTokens.Level24)
         }
     }
 }

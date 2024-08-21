@@ -161,3 +161,12 @@ enum class KillAppOption {
 
     companion object
 }
+
+enum class ProcessingInfoType {
+    NONE,
+    NECESSARY_PREPARATIONS,
+    NECESSARY_REMAINING_DATA_PROCESSING,
+    BACKUP_ITSELF,
+    SAVE_ICONS,
+    SET_UP_INST_ENV,
+}

@@ -10,11 +10,12 @@ data class ProcessingCardItem(
     val log: String = "",
 )
 
-data class ProcessingPackageCardItem(
+data class ProcessingDataCardItem(
     val state: OperationState = OperationState.IDLE,
     val progress: Float = -1f,
+    val processingIndex: Int = 0,
     val title: String = "",
-    val packageName: String = "",
+    val key: String = "",
     val items: List<ProcessingCardItem> = listOf(),
 )
 

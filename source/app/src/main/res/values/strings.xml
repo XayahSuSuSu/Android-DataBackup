@@ -265,6 +265,7 @@
     <string name="post_processing">Post-processing</string>
     <string name="apps">Apps</string>
     <string name="args_apps_backed_up">%1$s apps backed up</string>
+    <string name="args_apps_restored">%1$s apps restored</string>
     <string name="advanced">Advanced</string>
     <string name="reload_desc">Reload backups from local or cloud</string>
     <string name="backed_up_apps">Backed up apps</string>
@@ -326,6 +327,7 @@
     <string name="delete_desc">This will be deleted</string>
     <string name="files">Files</string>
     <string name="args_files_backed_up">%1$s files backed up</string>
+    <string name="args_files_restored">%1$s files restored</string>
     <string name="backed_up_files">Backed up files</string>
     <string name="specify_a_path">Please specify a path</string>
     <string name="anonymous">Anonymous</string>

@@ -69,6 +69,9 @@
     <item name="confirm" type="string" />
     <item name="apk" type="string" />
     <item name="selected" type="string" />
+    <item name="args_apps_backed_up" type="string" />
+    <item name="args_apps_restored" type="string" />
+    <item name="necessary_remaining_data_processing" type="string" />
 
     <item name="backup_sort_type_items_apps" type="array" />
     <item name="flag_type_items" type="array" />

@@ -48,6 +48,7 @@ sshj = "0.38.0"
 guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
 sardine-next = "1.0.2"
 bountycastle = "1.76"
+animation-graphics = "1.6.8"
 
 # plugins
 android-gradle-plugin = "8.2.2"
@@ -61,6 +62,7 @@ accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 accompanist-placeholder = { module = "com.google.accompanist:accompanist-placeholder", version.ref = "accompanist" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+androidx-animation-graphics = { module = "androidx.compose.animation:animation-graphics", version.ref = "animation-graphics" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }

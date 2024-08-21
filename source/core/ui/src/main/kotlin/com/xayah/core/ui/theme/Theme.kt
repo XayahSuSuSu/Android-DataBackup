@@ -2,6 +2,7 @@ package com.xayah.core.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -10,6 +11,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -35,6 +37,19 @@ import kotlinx.coroutines.runBlocking
 fun darkTheme() = run {
     val themeType by observeCurrentTheme()
 
+    LaunchedEffect(themeType) {
+        // For colors.xml(night) switch.
+
+        AppCompatDelegate.setDefaultNightMode(
+            when (themeType) {
+                ThemeType.AUTO -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                ThemeType.LIGHT_THEME -> AppCompatDelegate.MODE_NIGHT_NO
+                ThemeType.DARK_THEME -> AppCompatDelegate.MODE_NIGHT_YES
+            }
+        )
+
+    }
+
     when (themeType) {
         ThemeType.AUTO -> isSystemInDarkTheme()
         else -> remember(themeType) { themeType != ThemeType.LIGHT_THEME }
@@ -47,6 +62,7 @@ fun DataBackupTheme(
 ) {
     val context = LocalContext.current
     val darkTheme = darkTheme()
+
     // Dynamic color is available on Android 12+
     val dynamicColor by observeMonetEnabled()
     val colorScheme = when {

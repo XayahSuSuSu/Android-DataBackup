@@ -99,8 +99,8 @@ interface MediaDao {
     @Query("SELECT COUNT(*) FROM MediaEntity")
     suspend fun count(): Long
 
-    @Query("UPDATE MediaEntity SET extraInfo_activated = 0")
-    suspend fun clearActivated()
+    @Query("UPDATE MediaEntity SET extraInfo_activated = 0 WHERE indexInfo_opType = :opType")
+    suspend fun clearActivated(opType: OpType)
 
     @Query("UPDATE MediaEntity SET extraInfo_blocked = 0")
     suspend fun clearBlocked()

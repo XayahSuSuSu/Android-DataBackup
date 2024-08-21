@@ -59,8 +59,8 @@ interface PackageDao {
     @Query("SELECT * FROM PackageEntity WHERE extraInfo_activated = 1 AND extraInfo_existed = 1 AND indexInfo_opType = :opType AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir")
     suspend fun queryActivated(opType: OpType, cloud: String, backupDir: String): List<PackageEntity>
 
-    @Query("UPDATE PackageEntity SET extraInfo_activated = 0")
-    suspend fun clearActivated()
+    @Query("UPDATE PackageEntity SET extraInfo_activated = 0 WHERE indexInfo_opType = :opType")
+    suspend fun clearActivated(opType: OpType)
 
     @Query("UPDATE PackageEntity SET extraInfo_existed = 0 WHERE indexInfo_opType = :opType")
     suspend fun clearExisted(opType: OpType)

@@ -1,0 +1,65 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="148dp"
+            android:height="148dp"
+            android:viewportWidth="148"
+            android:viewportHeight="148">
+            <group android:name="group">
+
+                <group
+                    android:name="background"
+                    android:pivotX="74"
+                    android:pivotY="74">
+                    <path
+                        android:fillColor="@color/colorPrimary"
+                        android:pathData="M 65.2 3.7 C 70.4 -0.3 77.6 -0.3 82.8 3.7 C 86.3 6.3 90.7 7.3 94.9 6.3 C 101.3 4.8 107.8 7.7 111 13.5 C 113.1 17.3 116.8 20 121 20.8 C 127.4 22 132.2 27.4 132.8 33.9 C 133.2 38.2 135.4 42.2 139 44.7 C 144.4 48.4 146.6 55.3 144.4 61.5 C 143 65.6 143.4 70.1 145.7 73.8 C 149.1 79.4 148.3 86.6 143.9 91.3 C 140.9 94.5 139.5 98.8 140.1 103.1 C 140.9 109.6 137.3 115.8 131.3 118.4 C 127.3 120.1 124.2 123.5 123 127.6 C 121.1 133.9 115.3 138.1 108.7 138 C 104.4 138 100.2 139.8 97.4 143.1 C 93.1 148.1 86.1 149.6 80.2 146.8 C 76.3 144.9 71.7 144.9 67.8 146.8 C 61.9 149.6 54.8 148.1 50.6 143.1 C 47.8 139.8 43.6 138 39.3 138 C 32.8 138.1 26.9 133.9 25 127.6 C 23.7 123.4 20.7 120.1 16.7 118.4 C 10.7 115.9 7.1 109.6 7.9 103.1 C 8.5 98.8 7 94.5 4.1 91.3 C -0.4 86.5 -1.1 79.4 2.3 73.8 C 4.6 70.1 5 65.6 3.6 61.5 C 1.4 55.3 3.6 48.5 9 44.7 C 12.6 42.2 14.9 38.3 15.2 33.9 C 15.7 27.4 20.6 22 27 20.8 C 31.3 20 35 17.3 37 13.5 C 40.1 7.8 46.7 4.8 53.1 6.3 C 57.3 7.3 61.8 6.3 65.2 3.7 Z"
+                        android:strokeWidth="1" />
+                </group>
+
+                <path
+                    android:name="tick"
+                    android:pathData="M 40.9 76.4 L 61.4 96.9 L 107.1 51.1"
+                    android:strokeWidth="12"
+                    android:strokeColor="@color/colorOnPrimary"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="tick">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="800"
+                android:interpolator="@anim/fast_out_extra_slow_in"
+                android:propertyName="trimPathEnd"
+                android:startOffset="800"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType" />
+        </aapt:attr>
+    </target>
+    <target android:name="background">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="800"
+                    android:interpolator="@anim/fast_out_extra_slow_in"
+                    android:propertyName="scaleX"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType" />
+                <objectAnimator
+                    android:duration="800"
+                    android:interpolator="@anim/fast_out_extra_slow_in"
+                    android:propertyName="scaleY"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType" />
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

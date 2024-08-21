@@ -4,11 +4,10 @@ import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.database.dao.TaskDao
-import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
-import com.xayah.core.model.OperationState
 import com.xayah.core.model.TaskType
+import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.rootservice.service.RemoteRootService
@@ -17,142 +16,59 @@ import com.xayah.core.service.util.PackagesBackupUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @AndroidEntryPoint
-internal class BackupServiceLocalImpl @Inject constructor() : BackupService() {
-    @Inject
-    override lateinit var rootService: RemoteRootService
+internal class BackupServiceLocalImpl @Inject constructor() : AbstractBackupService() {
+    override val mTAG: String = "BackupServiceLocalImpl"
 
     @Inject
-    override lateinit var pathUtil: PathUtil
+    override lateinit var mRootService: RemoteRootService
 
     @Inject
-    override lateinit var taskDao: TaskDao
+    override lateinit var mPathUtil: PathUtil
 
     @Inject
-    override lateinit var packageDao: PackageDao
+    override lateinit var mCommonBackupUtil: CommonBackupUtil
 
     @Inject
-    override lateinit var packagesBackupUtil: PackagesBackupUtil
+    override lateinit var mTaskDao: TaskDao
 
     @Inject
-    override lateinit var taskRepository: TaskRepository
+    override lateinit var mTaskRepo: TaskRepository
 
-    @Inject
-    override lateinit var commonBackupUtil: CommonBackupUtil
-
-    @Inject
-    override lateinit var packageRepository: PackageRepository
-
-    override val taskEntity by lazy {
+    override val mTaskEntity by lazy {
         TaskEntity(
             id = 0,
             opType = OpType.BACKUP,
             taskType = TaskType.PACKAGE,
-            startTimestamp = startTimestamp,
-            endTimestamp = endTimestamp,
-            backupDir = context.localBackupSaveDir(),
+            startTimestamp = mStartTimestamp,
+            endTimestamp = mEndTimestamp,
+            backupDir = mRootDir,
             isProcessing = true,
         )
     }
 
-    private val localBackupSaveDir by lazy { context.localBackupSaveDir() }
-    private val appsDir by lazy { pathUtil.getLocalBackupAppsDir() }
-    private val configsDir by lazy { pathUtil.getLocalBackupConfigsDir() }
-
-    override suspend fun createTargetDirs() {
-        log { "Trying to create: $appsDir." }
-        log { "Trying to create: $configsDir." }
-        rootService.mkdirs(appsDir)
-        rootService.mkdirs(configsDir)
+    override suspend fun backup(type: DataType, p: PackageEntity, r: PackageEntity?, t: TaskDetailPackageEntity, dstDir: String) {
+        if (type == DataType.PACKAGE_APK) {
+            mPackagesBackupUtil.backupApk(p = p, t = t, r = r, dstDir = dstDir)
+        } else {
+            mPackagesBackupUtil.backupData(p = p, t = t, r = r, dataType = type, dstDir = dstDir)
+        }
+        t.update(dataType = type, progress = 1f)
+        t.update(processingIndex = t.processingIndex + 1)
     }
 
-    override suspend fun backupPackage(t: TaskDetailPackageEntity) {
-        t.apply {
-            state = OperationState.PROCESSING
-            taskDao.upsert(this)
-        }
+    @Inject
+    override lateinit var mPackageDao: PackageDao
 
-        val p = t.packageEntity
-        val dstDir = "${appsDir}/${p.archivesRelativeDir}"
-        rootService.mkdirs(dstDir)
+    @Inject
+    override lateinit var mPackageRepo: PackageRepository
 
-        var restoreEntity = packageDao.query(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, "", localBackupSaveDir)
+    @Inject
+    override lateinit var mPackagesBackupUtil: PackagesBackupUtil
 
-        packagesBackupUtil.backupApk(p = p, t = t, r = restoreEntity, dstDir = dstDir)
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_USER, dstDir = dstDir)
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_USER_DE, dstDir = dstDir)
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_DATA, dstDir = dstDir)
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_OBB, dstDir = dstDir)
-        packagesBackupUtil.backupData(p = p, t = t, r = restoreEntity, dataType = DataType.PACKAGE_MEDIA, dstDir = dstDir)
-        packagesBackupUtil.backupPermissions(p = p)
-        packagesBackupUtil.backupSsaid(p = p)
-
-        if (t.isSuccess) {
-            // Save config
-            val id = restoreEntity?.id ?: 0
-            restoreEntity = p.copy(
-                id = id,
-                indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = "", backupDir = localBackupSaveDir),
-                extraInfo = p.extraInfo.copy(existed = true, activated = false)
-            )
-            rootService.writeJson(data = restoreEntity, dst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir))
-            packageDao.upsert(restoreEntity)
-            packageDao.upsert(p)
-            t.apply {
-                packageEntity = p
-                taskDao.upsert(this)
-            }
-            packageRepository.updateLocalPackageArchivesSize(restoreEntity.packageName, OpType.RESTORE, restoreEntity.userId)
-        }
-
-        taskEntity.also {
-            t.apply {
-                state = if (isSuccess) OperationState.DONE else OperationState.ERROR
-                taskDao.upsert(this)
-            }
-            if (t.isSuccess) it.successCount++ else it.failureCount++
-            taskDao.upsert(it)
-        }
-    }
-
-    override suspend fun backupItself() {
-        postBackupItselfEntity.also {
-            it.state = OperationState.PROCESSING
-            taskDao.upsert(it)
-        }
-
-        val dstDir = context.localBackupSaveDir()
-        val backupItself = context.readBackupItself().first()
-
-        postBackupItselfEntity.state = OperationState.SKIP
-        // Backup itself if enabled.
-        if (backupItself) {
-            log { "Backup itself enabled." }
-            commonBackupUtil.backupItself(dstDir = dstDir).apply {
-                postBackupItselfEntity.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
-                if (isSuccess.not()) postBackupItselfEntity.log = outString
-            }
-        }
-        taskDao.upsert(postBackupItselfEntity)
-    }
-
-    override suspend fun backupIcons() {
-        postSaveIconsEntity.also {
-            it.state = OperationState.PROCESSING
-            taskDao.upsert(it)
-        }
-
-        // Backup others.
-        log { "Save icons." }
-        packagesBackupUtil.backupIcons(dstDir = configsDir).apply {
-            postSaveIconsEntity.state = if (isSuccess) OperationState.DONE else OperationState.ERROR
-            if (isSuccess.not()) postSaveIconsEntity.log = outString
-        }
-        taskDao.upsert(postSaveIconsEntity)
-    }
-
-    override suspend fun clear() {}
+    override val mRootDir by lazy { mContext.localBackupSaveDir() }
+    override val mAppsDir by lazy { mPathUtil.getLocalBackupAppsDir() }
+    override val mConfigsDir by lazy { mPathUtil.getLocalBackupConfigsDir() }
 }

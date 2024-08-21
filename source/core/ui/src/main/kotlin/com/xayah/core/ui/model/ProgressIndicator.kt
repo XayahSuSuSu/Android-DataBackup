@@ -2,6 +2,7 @@ package com.xayah.core.ui.model
 
 import androidx.compose.ui.graphics.Color
 import com.xayah.core.model.util.formatSize
+import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 
 data class MultiColorProgress(
     val progress: Float,
@@ -21,3 +22,8 @@ data class SegmentProgress(
     val totalFormat: String
         get() = total.toDouble().formatSize()
 }
+
+data class SegmentCircleProgress(
+    val color: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.PrimaryContainer,
+    val trackColor: ThemedColorSchemeKeyTokens = ThemedColorSchemeKeyTokens.Primary,
+)
