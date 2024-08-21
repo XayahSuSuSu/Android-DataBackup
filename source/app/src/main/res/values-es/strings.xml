@@ -342,4 +342,6 @@
     <string name="disabled">Desactivada</string>
     <string name="args_update_from">Puede actualizar de la versión %1$s a la versión %2$s</string>
     <string name="kill_app_options_desc">Comportamiento antes de la copia de seguridad</string>
+    <string name="args_apps_restored">%1$s aplicaciones restauradas</string>
+    <string name="args_files_restored">%1$s archivos restaurados</string>
 </resources>
