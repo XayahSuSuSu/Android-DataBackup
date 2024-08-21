@@ -342,4 +342,6 @@
     <string name="download">Baixar</string>
     <string name="changelog">Changelog</string>
     <string name="args_update_from">Você pode atualizar da versão %1$s para a versão %2$s</string>
+    <string name="args_apps_restored">%1$s apps restaurados</string>
+    <string name="args_files_restored">%1$s arquivos restaurados</string>
 </resources>
