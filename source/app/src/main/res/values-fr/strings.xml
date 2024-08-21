@@ -73,4 +73,6 @@
     <string name="data">Données</string>
     <string name="remote_service_err_info">Veuillez essayer de réinstaller l\'appareil, ou réinstaller Magisk.</string>
     <string name="updating">Mise à jour</string>
+    <string name="app_name">DataBackup</string>
+    <string name="start_subtitle">Conformément aux règles applicables, vous devez lire attentivement et accepter les Conditions d\'utilisation ainsi que la Politique de confidentialité suivantes avant de commencer à utiliser cette application</string>
 </resources>
