@@ -342,4 +342,6 @@
     <string name="remote_path_desc">حيث يتم قراءة أو حفظ النسخ الاحتياطية</string>
     <string name="args_used_by_backups">%1$s%% مساحة مأخوذة من قِبل النسخ الاحتياطي</string>
     <string name="sync_to_cloud">مزامنة إلى السحابة</string>
+    <string name="args_apps_restored">تمت استعادة %1$s من التطبيقات</string>
+    <string name="args_files_restored">تمت استعادة %1$s من الملفات</string>
 </resources>
