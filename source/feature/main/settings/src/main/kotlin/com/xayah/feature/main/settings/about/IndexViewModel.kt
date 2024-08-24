@@ -7,6 +7,7 @@ import com.xayah.core.model.ContributorItem
 import com.xayah.core.model.MutableWeblateItems
 import com.xayah.core.model.TranslatorRevisionItem
 import com.xayah.core.model.WeblateItems
+import com.xayah.core.model.WeblateSrcItems
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
@@ -37,9 +38,9 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Load -> {
-                val translators: WeblateItems = gsonUtil.fromJson(
+                val translators: WeblateSrcItems = gsonUtil.fromJson(
                     context.resources.openRawResource(R.raw.translators).bufferedReader().readText(),
-                    object : TypeToken<WeblateItems>() {}.type
+                    object : TypeToken<WeblateSrcItems>() {}.type
                 )
                 val translatorsRevision: Map<String, TranslatorRevisionItem> = gsonUtil.fromJson(
                     context.resources.openRawResource(R.raw.translators_revision).bufferedReader().readText(),
@@ -51,7 +52,7 @@ class IndexViewModel @Inject constructor(
                     langMap.forEach { (lang, translatorList) ->
                         val mutableTranslatorList: MutableList<MutableList<String>> = mutableListOf()
                         translatorList.forEach { translator ->
-                            val email = translator.getOrNull(0) ?: ""
+                            val email = translator.email
                             if (translatorsRevision.containsKey(email)) {
                                 val revisionItem = translatorsRevision[email]!!
                                 if (revisionItem.actions.containsKey(lang)) {
@@ -59,7 +60,7 @@ class IndexViewModel @Inject constructor(
                                     when (translatorsRevision[email]!!.actions[lang]!!) {
                                         0 -> {
                                             // Replace
-                                            val newTranslator = translator.toMutableList()
+                                            val newTranslator = mutableListOf(translator.email, translator.fullName, translator.changeCount)
                                             newTranslator[1] = revisionItem.name
                                             newTranslator.add(revisionItem.avatar)
                                             newTranslator.add(revisionItem.link)
@@ -72,7 +73,7 @@ class IndexViewModel @Inject constructor(
                                     }
                                 }
                             } else {
-                                mutableTranslatorList.add(translator.toMutableList())
+                                mutableTranslatorList.add(mutableListOf(translator.email, translator.fullName, translator.changeCount))
                             }
                         }
                         mutableLangMap[lang] = mutableTranslatorList

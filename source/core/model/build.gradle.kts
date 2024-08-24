@@ -12,4 +12,7 @@ android {
 dependencies {
     // Core
     implementation(project(":core:common"))
+
+    // Gson
+    implementation(libs.gson)
 }

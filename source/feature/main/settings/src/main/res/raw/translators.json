@@ -1,436 +1,475 @@
 [
   {
     "Arabic": [
-      [
-        "zezomostafa120@gmail.com",
-        "ZG_DEV",
-        371
-      ],
-      [
-        "aimnhmnhjhm@gmail.com",
-        "Ayman Alz",
-        29
-      ],
-      [
-        "glmod199292@gmail.com",
-        "Ameen Khalil",
-        14
-      ],
-      [
-        "almutairi.sameer@hotmail.com",
-        "SaMuTa",
-        2
-      ],
-      [
-        "eqab199625@gmail.com",
-        "Mhmood Jad",
-        1
-      ],
-      [
-        "muhammad.bahaa1@gmail.com",
-        "Muhammad Bahaa",
-        1
-      ]
+      {
+        "email": "zezomostafa120@gmail.com",
+        "full_name": "ZG_DEV",
+        "change_count": 371
+      },
+      {
+        "email": "aimnhmnhjhm@gmail.com",
+        "full_name": "Ayman Alz",
+        "change_count": 29
+      },
+      {
+        "email": "glmod199292@gmail.com",
+        "full_name": "Ameen Khalil",
+        "change_count": 14
+      },
+      {
+        "email": "almutairi.sameer@hotmail.com",
+        "full_name": "SaMuTa",
+        "change_count": 2
+      },
+      {
+        "email": "kamel.sayed606@gmail.com",
+        "full_name": "عصابة الامبراطور",
+        "change_count": 2
+      },
+      {
+        "email": "eqab199625@gmail.com",
+        "full_name": "Mhmood Jad",
+        "change_count": 1
+      },
+      {
+        "email": "muhammad.bahaa1@gmail.com",
+        "full_name": "Muhammad Bahaa",
+        "change_count": 1
+      }
     ]
   },
   {
     "Bengali": [
-      [
-        "ahnafrahmanper@proton.me",
-        "Uruma Shun",
-        29
-      ],
-      [
-        "arcloverburner@gmail.com",
-        "Arduous Clover",
-        15
-      ]
+      {
+        "email": "ahnafrahmanper@proton.me",
+        "full_name": "Uruma Shun",
+        "change_count": 29
+      },
+      {
+        "email": "arcloverburner@gmail.com",
+        "full_name": "Arduous Clover",
+        "change_count": 15
+      }
     ]
   },
   {
     "Bosnian": [
-      [
-        "muhamed_5063@hotmail.com",
-        "Muhamed",
-        559
-      ]
+      {
+        "email": "muhamed_5063@hotmail.com",
+        "full_name": "Muhamed",
+        "change_count": 559
+      }
     ]
   },
   {
     "Chinese (Simplified)": [
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Chinese (Traditional)": [
-      [
-        "hugoalh@gmail.com",
-        "hugoalh",
-        63
-      ],
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "hugoalh@gmail.com",
+        "full_name": "hugoalh",
+        "change_count": 63
+      },
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Chinese (Traditional, Hong Kong)": [
-      [
-        "lamricky11@hotmail.com",
-        "Ricky From Hong Kong",
-        30
-      ],
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "lamricky11@hotmail.com",
+        "full_name": "Ricky From Hong Kong",
+        "change_count": 30
+      },
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Croatian": [
-      [
-        "mail@milotype.de",
-        "Milo Ivir",
-        168
-      ],
-      [
-        "muhamed_5063@hotmail.com",
-        "Muhamed",
-        138
-      ],
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "mail@milotype.de",
+        "full_name": "Milo Ivir",
+        "change_count": 168
+      },
+      {
+        "email": "muhamed_5063@hotmail.com",
+        "full_name": "Muhamed",
+        "change_count": 138
+      },
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "English": [
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "French": [
-      [
-        "bonnemainsnathan@gmail.com",
-        "Nathan",
-        27
-      ]
+      {
+        "email": "bonnemainsnathan@gmail.com",
+        "full_name": "Nathan",
+        "change_count": 27
+      },
+      {
+        "email": "jest1gabriel@gmail.com",
+        "full_name": "rznn",
+        "change_count": 3
+      }
     ]
   },
   {
     "German": [
-      [
-        "daffne23@oida.icu",
-        "Daffne",
-        42
-      ],
-      [
-        "paul.sebastian.scheffler@gmail.com",
-        "Paul S.",
-        13
-      ]
+      {
+        "email": "atalanttore@googlemail.com",
+        "full_name": "Ettore Atalan",
+        "change_count": 192
+      },
+      {
+        "email": "daffne23@oida.icu",
+        "full_name": "Daffne",
+        "change_count": 42
+      },
+      {
+        "email": "paul.sebastian.scheffler@gmail.com",
+        "full_name": "Paul S.",
+        "change_count": 13
+      }
     ]
   },
   {
     "Hungarian": [
-      [
-        "mestermc594@gmail.com",
-        "Zan 1456",
-        3
-      ]
+      {
+        "email": "mestermc594@gmail.com",
+        "full_name": "Zan 1456",
+        "change_count": 3
+      }
     ]
   },
   {
     "Indonesian": [
-      [
-        "awgss011@gmail.com",
-        "Muhammad Rafli",
-        234
-      ]
+      {
+        "email": "awgss011@gmail.com",
+        "full_name": "Muhammad Rafli",
+        "change_count": 234
+      },
+      {
+        "email": "huseinchafa@gmail.com",
+        "full_name": "MasFha",
+        "change_count": 176
+      }
     ]
   },
   {
     "Italian": [
-      [
-        "gabrimarzolla06@gmail.com",
-        "Gabriele Marzolla",
-        355
-      ],
-      [
-        "tekgercek73@gmail.com",
-        "Ömer Süsin",
-        1
-      ]
+      {
+        "email": "gabrimarzolla06@gmail.com",
+        "full_name": "Gabriele Marzolla",
+        "change_count": 355
+      },
+      {
+        "email": "tekgercek73@gmail.com",
+        "full_name": "Ömer Süsin",
+        "change_count": 1
+      }
     ]
   },
   {
     "Korean": [
-      [
-        "dodamby@ajou.ac.kr",
-        "구병우",
-        139
-      ]
+      {
+        "email": "dodamby@ajou.ac.kr",
+        "full_name": "구병우",
+        "change_count": 139
+      },
+      {
+        "email": "reilria77@gmail.com",
+        "full_name": "Balmunk",
+        "change_count": 15
+      }
     ]
   },
   {
     "Malayalam": [
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Norwegian Bokmål": [
-      [
-        "epost@anotheragency.no",
-        "Allan Nordhøy",
-        9
-      ],
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "epost@anotheragency.no",
+        "full_name": "Allan Nordhøy",
+        "change_count": 10
+      },
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Polish": [
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Portuguese (Brazil)": [
-      [
-        "igormczampola1@gmail.com",
-        "I g o r",
-        226
-      ],
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "igormczampola1@gmail.com",
+        "full_name": "I g o r",
+        "change_count": 228
+      },
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Romanian": [
-      [
-        "davidluca611@gmail.com",
-        "David Luca",
-        107
-      ]
+      {
+        "email": "davidluca611@gmail.com",
+        "full_name": "David Luca",
+        "change_count": 123
+      }
     ]
   },
   {
     "Russian": [
-      [
-        "vo.vu.00@mail.ru",
-        "tommynok",
-        123
-      ],
-      [
-        "firsan777@mail.ru",
-        "Andrey F.",
-        49
-      ],
-      [
-        "sabin.21011986@gmail.com",
-        "Сергей (MrSabin)",
-        38
-      ],
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "claymanoff@gmail.com",
-        "kaajjo",
-        6
-      ],
-      [
-        "yazuzia7080@gmail.com",
-        "tommynok",
-        1
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "vo.vu.00@mail.ru",
+        "full_name": "tommynok",
+        "change_count": 123
+      },
+      {
+        "email": "firsan777@mail.ru",
+        "full_name": "Andrey F.",
+        "change_count": 49
+      },
+      {
+        "email": "sabin.21011986@gmail.com",
+        "full_name": "Сергей (MrSabin)",
+        "change_count": 38
+      },
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "claymanoff@gmail.com",
+        "full_name": "kaajjo",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      },
+      {
+        "email": "yazuzia7080@gmail.com",
+        "full_name": "tommynok",
+        "change_count": 1
+      }
     ]
   },
   {
     "Serbian": [
-      [
-        "muhamed_5063@hotmail.com",
-        "Muhamed",
-        367
-      ]
+      {
+        "email": "muhamed_5063@hotmail.com",
+        "full_name": "Muhamed",
+        "change_count": 367
+      },
+      {
+        "email": "swillowhoe.precise538@passinbox.com",
+        "full_name": "Whiteowle",
+        "change_count": 1
+      }
     ]
   },
   {
     "Spanish": [
-      [
-        "fran-carro@hotmail.es",
-        "gallegonovato",
-        148
-      ],
-      [
-        "danyxdubstep@gmail.com",
-        "Dan Cruz",
-        88
-      ]
+      {
+        "email": "fran-carro@hotmail.es",
+        "full_name": "gallegonovato",
+        "change_count": 150
+      },
+      {
+        "email": "danyxdubstep@gmail.com",
+        "full_name": "Dan Cruz",
+        "change_count": 88
+      }
     ]
   },
   {
     "Swedish": [
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Turkish": [
-      [
-        "tekgercek73@gmail.com",
-        "Ömer Süsin",
-        236
-      ],
-      [
-        "cyberghosy@gmail.com",
-        "Muhammed13",
-        26
-      ],
-      [
-        "msalihpelit@gmail.com",
-        "Salih",
-        22
-      ],
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "tekgercek73@gmail.com",
+        "full_name": "Ömer Süsin",
+        "change_count": 236
+      },
+      {
+        "email": "cyberghosy@gmail.com",
+        "full_name": "Muhammed13",
+        "change_count": 26
+      },
+      {
+        "email": "msalihpelit@gmail.com",
+        "full_name": "Salih",
+        "change_count": 22
+      },
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
     ]
   },
   {
     "Ukrainian": [
-      [
-        "vo.vu.00@mail.ru",
-        "tommynok",
-        157
-      ],
-      [
-        "cakestwix1@gmail.com",
-        "CakesTwix",
-        7
-      ],
-      [
-        "bartosz.luka@skiff.com",
-        "Bartek Łuka",
-        6
-      ],
-      [
-        "zds1249475336@gmail.com",
-        "Xayah",
-        1
-      ]
+      {
+        "email": "vo.vu.00@mail.ru",
+        "full_name": "tommynok",
+        "change_count": 157
+      },
+      {
+        "email": "cakestwix1@gmail.com",
+        "full_name": "CakesTwix",
+        "change_count": 7
+      },
+      {
+        "email": "bartosz.luka@skiff.com",
+        "full_name": "Bartek Łuka",
+        "change_count": 6
+      },
+      {
+        "email": "zds1249475336@gmail.com",
+        "full_name": "Xayah",
+        "change_count": 1
+      }
+    ]
+  },
+  {
+    "Uzbek": [
+      {
+        "email": "01012000zm@gmail.com",
+        "full_name": "Mz X",
+        "change_count": 355
+      }
     ]
   },
   {
     "Vietnamese": [
-      [
-        "fukiame@proton.me",
-        "fukiame",
-        87
-      ],
-      [
-        "lightlord72@gmail.com",
-        "Light Lord",
-        21
-      ],
-      [
-        "ngocanh.tve@gmail.com",
-        "ngocanhtve",
-        1
-      ]
+      {
+        "email": "fukiame@proton.me",
+        "full_name": "fukiame",
+        "change_count": 87
+      },
+      {
+        "email": "lightlord72@gmail.com",
+        "full_name": "Light Lord",
+        "change_count": 21
+      },
+      {
+        "email": "ngocanh.tve@gmail.com",
+        "full_name": "ngocanhtve",
+        "change_count": 1
+      }
     ]
   }
 ]
