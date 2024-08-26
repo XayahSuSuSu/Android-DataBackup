@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="welcome_to_use">أهلاً وسهلاً في تطبيق DataBackup</string>
+    <string name="welcome_to_use">أهلاً وسهلاً بك في تطبيق DataBackup</string>
     <string name="update_records">تحديث السجلات</string>
     <string name="environment_detection">التأكد من بيئة العمل</string>
     <string name="start">إبدأ</string>
