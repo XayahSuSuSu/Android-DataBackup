@@ -22,38 +22,23 @@ fun DarkThemeSelectable() {
     val context = LocalContext.current
     val dialogState = LocalSlotScope.current!!.dialogSlot
     val items = remember {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            listOf(
-                DialogRadioItem(
-                    enum = ThemeType.AUTO,
-                    title = context.getString(R.string.theme_auto),
-                    desc = context.getString(R.string.theme_auto_desc),
-                ),
-                DialogRadioItem(
-                    enum = ThemeType.LIGHT_THEME,
-                    title = context.getString(R.string.theme_light),
-                    desc = context.getString(R.string.theme_light_desc),
-                ),
-                DialogRadioItem(
-                    enum = ThemeType.DARK_THEME,
-                    title = context.getString(R.string.theme_dark),
-                    desc = context.getString(R.string.theme_dark_desc),
-                ),
-            )
-        } else {
-            listOf(
-                DialogRadioItem(
-                    enum = ThemeType.LIGHT_THEME,
-                    title = context.getString(R.string.theme_light),
-                    desc = context.getString(R.string.theme_light_desc),
-                ),
-                DialogRadioItem(
-                    enum = ThemeType.DARK_THEME,
-                    title = context.getString(R.string.theme_dark),
-                    desc = context.getString(R.string.theme_dark_desc),
-                ),
-            )
-        }
+        listOf(
+            DialogRadioItem(
+                enum = ThemeType.AUTO,
+                title = context.getString(R.string.theme_auto),
+                desc = context.getString(R.string.theme_auto_desc),
+            ),
+            DialogRadioItem(
+                enum = ThemeType.LIGHT_THEME,
+                title = context.getString(R.string.theme_light),
+                desc = context.getString(R.string.theme_light_desc),
+            ),
+            DialogRadioItem(
+                enum = ThemeType.DARK_THEME,
+                title = context.getString(R.string.theme_dark),
+                desc = context.getString(R.string.theme_dark_desc),
+            ),
+        )
     }
     val currentType by observeCurrentTheme()
     val currentIndex by remember(currentType) { mutableIntStateOf(items.indexOfFirst { it.enum == currentType }) }
