@@ -25,18 +25,18 @@ fun DarkThemeSelectable() {
         listOf(
             DialogRadioItem(
                 enum = ThemeType.AUTO,
-                title = StringResourceToken.fromStringId(R.string.theme_auto),
-                desc = StringResourceToken.fromStringId(R.string.theme_auto_desc),
+                title = context.getString(R.string.theme_auto),
+                desc = context.getString(R.string.theme_auto_desc),
             ),
             DialogRadioItem(
                 enum = ThemeType.LIGHT_THEME,
-                title = StringResourceToken.fromStringId(R.string.theme_light),
-                desc = StringResourceToken.fromStringId(R.string.theme_light_desc),
+                title = context.getString(R.string.theme_light),
+                desc = context.getString(R.string.theme_light_desc),
             ),
             DialogRadioItem(
                 enum = ThemeType.DARK_THEME,
-                title = StringResourceToken.fromStringId(R.string.theme_dark),
-                desc = StringResourceToken.fromStringId(R.string.theme_dark_desc),
+                title = context.getString(R.string.theme_dark),
+                desc = context.getString(R.string.theme_dark_desc),
             ),
         )
     }
