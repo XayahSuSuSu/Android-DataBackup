@@ -8,9 +8,9 @@
     <string name="password">Lozinka</string>
     <string name="user">Korisnik</string>
     <string name="activities">Aktivnosti</string>
-    <string name="last_backup">Posljednja sigurnosna kopija</string>
+    <string name="last_backup">Zadnja sigurnosna kopija</string>
     <string name="confirm_reload">Ponovo učitati?</string>
-    <string name="internal_storage">Lokalno skladište</string>
+    <string name="internal_storage">Interna memorija</string>
     <string name="processing">U obradi</string>
     <string name="date">Datum</string>
     <string name="unsupported_format">Nepodržan format</string>
@@ -20,7 +20,7 @@
     <string name="not_installed">Nije instaliran</string>
     <string name="uploading">Prenošenje</string>
     <string name="reset_backup_list">Resetuj popis sigurnosnih kopija</string>
-    <string name="directory">Skladište</string>
+    <string name="directory">Memorija</string>
     <string name="edit">Uredi</string>
     <string name="restore">Obnovi</string>
     <string name="copy">Kopiraj</string>
@@ -52,7 +52,7 @@
     <string name="apk">APK</string>
     <string name="backup">Sigurnosna kopija</string>
     <string name="network">Mreža</string>
-    <string name="application">App</string>
+    <string name="application">Program</string>
     <string name="updating">Ažuriranje u tijeku</string>
     <string name="reset_restore_list">Resetiraj popis obnavljanja</string>
     <string name="reload">Učitaj ponovo</string>
@@ -224,7 +224,7 @@
     <string name="select_all">Odaberi sve</string>
     <string name="sort">Razvrstaj</string>
     <string name="args_loading_from_user">Učitavanje od korisnika %1$s</string>
-    <string name="storage">Skladište</string>
+    <string name="storage">Memorija</string>
     <string name="root_permission">Dozvola za root pristup</string>
     <string name="notification_permission">Dozvola za obavijesti</string>
     <string name="unknown">Nepoznato</string>
@@ -342,4 +342,6 @@
     <string name="download">Preuzmi</string>
     <string name="args_update_from">Možete ažurirati sa verzije %1$s na verziju %2$s</string>
     <string name="changelog">Izvješće izmijena</string>
+    <string name="args_apps_restored">Obnovljeno %1$s aplikacija</string>
+    <string name="args_files_restored">Obnovljeno %1$s datoteka</string>
 </resources>
