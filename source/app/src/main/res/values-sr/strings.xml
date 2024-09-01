@@ -342,4 +342,6 @@
     <string name="download">Preuzmi</string>
     <string name="changelog">Zapisnik promjena</string>
     <string name="args_update_from">Možete nadograditi sa verzije %1$s na verziju %2$s</string>
+    <string name="args_apps_restored">%1$s aplikacije su vraćene</string>
+    <string name="args_files_restored">%1$s fajlova je vraćeno</string>
 </resources>
