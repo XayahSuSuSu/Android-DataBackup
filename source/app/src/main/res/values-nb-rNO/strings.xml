@@ -93,7 +93,7 @@
     <string name="last_restore">Siste gjenoppretting</string>
     <string name="loading_failed">Innlasting mislyktes</string>
     <string name="start_subtitle">Du må lese og godta brukersamtykke og personvernspraksis først</string>
-    <string name="compatible_mode">Kompabilitetsmodus</string>
+    <string name="compatible_mode">Kompatibilitetsmodus</string>
     <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Bruk rør istedenfor parameter til inndata for Tar. Bytt til dette når det står \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Kan ikke kjørec: Ingen slik fil eller mappe\"</string>
     <string name="supported_format">Støttet format</string>
     <string name="update_records">Oppdater oppføringer</string>
