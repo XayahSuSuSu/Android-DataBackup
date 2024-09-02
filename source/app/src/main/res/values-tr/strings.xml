@@ -342,4 +342,6 @@
     <string name="download">İndir</string>
     <string name="changelog">Değişim günlüğü</string>
     <string name="args_update_from">Sürüm %1$s\'ten sürüm %2$s\'e güncelleme yapabilirsin</string>
+    <string name="args_files_restored">%1$sdosyalar geri yüklendi</string>
+    <string name="args_apps_restored">%1$suygulamar geri yüklendi</string>
 </resources>
