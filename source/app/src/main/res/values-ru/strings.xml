@@ -122,7 +122,7 @@
     <string name="save_directory_structure">Сохранить структуру папки</string>
     <string name="app_and_data">Приложения</string>
     <string name="compression_test">Тестирование сжатия</string>
-    <string name="failed">Сбои</string>
+    <string name="failed">Сбой</string>
     <string name="selected_both">Выбрано оба</string>
     <string name="restore_dir">Папка восстановления</string>
     <string name="set_remote">Настройка облака</string>
@@ -342,4 +342,6 @@
     <string name="args_update_from">Вы можете обновить приложение с версии %1$s до %2$s</string>
     <string name="download">Загрузить</string>
     <string name="changelog">Список изменений</string>
+    <string name="args_apps_restored">%1$s приложений восстановлено</string>
+    <string name="args_files_restored">%1$s файлов восстановлено</string>
 </resources>
