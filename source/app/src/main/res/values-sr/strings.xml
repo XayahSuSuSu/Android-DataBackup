@@ -344,4 +344,20 @@
     <string name="args_update_from">Možete nadograditi sa verzije %1$s na verziju %2$s</string>
     <string name="args_apps_restored">%1$s aplikacije su vraćene</string>
     <string name="args_files_restored">%1$s fajlova je vraćeno</string>
+    <string name="custom_selected">Прилагођене ставке изабране</string>
+    <string name="unselect_all">Поништи избор</string>
+    <string name="no_item_selected">Ниједна ставка није изабрана</string>
+    <string name="apk_selected">APK изабран</string>
+    <string name="data_selected">Подаци изабрани</string>
+    <string name="all_selected">Све ставке изабране</string>
+    <string name="data_items">Ставке података</string>
+    <string name="refresh">Освежи</string>
+    <string name="block">Блокирај</string>
+    <string name="reverse_selection">Изврни избор</string>
+    <string name="detailed_data_items">Детаљне ставке података</string>
+    <string name="updating_app_list">Ажурирање листе апликација</string>
+    <string name="for_selected">За изабрано…</string>
+    <string name="initializing_app_list">Иницијализација листе апликација</string>
+    <string name="updating_file_list">Ажурирање листе фајлова</string>
+    <string name="loading_backups">Учитавање резервних копија</string>
 </resources>
