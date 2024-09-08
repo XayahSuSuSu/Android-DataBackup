@@ -1,12 +1,10 @@
 package com.xayah.core.ui.component
 
-import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -25,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -38,21 +37,14 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.util.formatSize
@@ -62,11 +54,6 @@ import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
-import com.xayah.core.util.PathUtil
-import com.xayah.core.util.command.BaseUtil
-import com.xayah.core.util.iconDir
-import com.xayah.core.util.withIOContext
-import kotlin.math.min
 
 @ExperimentalMaterial3Api
 @Composable
@@ -138,98 +125,34 @@ fun PackageIcons(
     packages: List<PackageEntity>,
     maxDisplayNum: Int = 6,
     size: Dp = SizeTokens.Level24,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    onClick: () -> Unit,
 ) {
-    val context = LocalContext.current
-    var icons by remember { mutableStateOf(listOf<Drawable?>()) }
-    LaunchedEffect(packages) {
-        // Read icon from cached internal dir.
-        withIOContext {
-            val tmp = mutableListOf<Drawable?>()
-            for (i in 0 until min(maxDisplayNum, packages.size)) {
-                tmp.add(BaseUtil.readIcon(context, "${context.iconDir()}/${PathUtil.getPackageIconRelativePath(packages[i].packageName)}"))
-            }
-            icons = tmp
-        }
-    }
-
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(-SizeTokens.Level4)) {
-        for ((index, icon) in icons.withIndex()) {
-            if (index == icons.size - 1) break
-            if (icon == null) {
-                Surface(
-                    modifier = Modifier.size(size),
-                    shape = ClippedCircleShape,
-                    color = ThemedColorSchemeKeyTokens.PrimaryContainer.value,
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = interactionSource
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        LabelMediumText(
-                            text = "${packages.getOrNull(index)?.packageInfo?.label?.firstOrNull() ?: ""}",
-                            color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value
-                        )
-                    }
-                }
-            } else {
-                AsyncImage(
-                    modifier = Modifier
-                        .size(size)
-                        .clip(ClippedCircleShape),
-                    model = ImageRequest.Builder(context)
-                        .data(icon)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null
-                )
-            }
+        for (index in 0 until packages.size) {
+            if (index == packages.size - 1) break
+            PackageIconImage(
+                packageName = packages[index].packageName,
+                inCircleShape = true,
+                fromLocal = true,
+                size = size,
+                shape = ClippedCircleShape,
+            )
         }
 
-        if (packages.size <= maxDisplayNum && icons.isNotEmpty()) {
-            val last = icons.last()
-            if (last == null) {
-                Surface(
-                    modifier = Modifier.size(size),
-                    shape = CircleShape,
-                    color = ThemedColorSchemeKeyTokens.PrimaryContainer.value,
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = interactionSource
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        LabelMediumText(
-                            text = "${packages.getOrNull(icons.lastIndex)?.packageInfo?.label?.firstOrNull() ?: ""}",
-                            color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value
-                        )
-                    }
-                }
-            } else {
-                AsyncImage(
-                    modifier = Modifier
-                        .size(size)
-                        .clip(CircleShape),
-                    model = ImageRequest.Builder(context)
-                        .data(last)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null
-                )
-            }
-        } else if (packages.size - maxDisplayNum > 0) {
-            Surface(
-                modifier = Modifier.size(size),
-                shape = CircleShape,
-                color = ThemedColorSchemeKeyTokens.PrimaryContainer.value,
-                onClick = onClick,
-                indication = null,
-                interactionSource = interactionSource
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    LabelMediumText(text = "+${packages.size - maxDisplayNum + 1}", color = ThemedColorSchemeKeyTokens.OnPrimaryContainer.value)
-                }
-            }
+        // Last item
+        if (packages.size <= maxDisplayNum && packages.isNotEmpty()) {
+            PackageIconImage(
+                packageName = packages.last().packageName,
+                inCircleShape = true,
+                fromLocal = true,
+                size = size,
+            )
+        } else if (packages.size > maxDisplayNum) {
+            PackageIconImage(
+                icon = Icons.Rounded.MoreHoriz,
+                packageName = "",
+                inCircleShape = true,
+                size = size,
+            )
         }
     }
 }

@@ -162,9 +162,7 @@ fun PageRestore() {
                 interactionSource = appsInteractionSource,
                 content = if (uiState.packages.isEmpty()) null else {
                     {
-                        PackageIcons(modifier = Modifier.paddingTop(SizeTokens.Level8), packages = uiState.packages, interactionSource = appsInteractionSource) {
-                            viewModel.emitIntentOnIO(IndexUiIntent.ToAppList(navController))
-                        }
+                        PackageIcons(modifier = Modifier.paddingTop(SizeTokens.Level8), packages = uiState.packages)
                     }
                 }
             ) {

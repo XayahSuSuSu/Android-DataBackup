@@ -160,7 +160,7 @@ fun PagePackagesBackupProcessingSetup(localNavController: NavHostController, vie
                     leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_apps),
                     interactionSource = interactionSource,
                     content = {
-                        PackageIcons(modifier = Modifier.paddingTop(SizeTokens.Level8), packages = packages, interactionSource = interactionSource) {}
+                        PackageIcons(modifier = Modifier.paddingTop(SizeTokens.Level8), packages = packages)
                     }
                 )
             }

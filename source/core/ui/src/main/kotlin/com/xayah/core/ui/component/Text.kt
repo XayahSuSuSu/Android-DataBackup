@@ -200,6 +200,8 @@ fun LabelMediumText(
     textAlign: TextAlign? = null,
     fontWeight: FontWeight? = null,
     textDecoration: TextDecoration? = null,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    maxLines: Int = Int.MAX_VALUE,
     enabled: Boolean = true,
 ) {
     Text(
@@ -210,6 +212,8 @@ fun LabelMediumText(
         textAlign = textAlign,
         fontWeight = fontWeight,
         textDecoration = textDecoration,
+        overflow = overflow,
+        maxLines = maxLines,
     )
 }
 
