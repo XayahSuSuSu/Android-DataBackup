@@ -344,4 +344,20 @@
     <string name="changelog">Список изменений</string>
     <string name="args_apps_restored">%1$s приложений восстановлено</string>
     <string name="args_files_restored">%1$s файлов восстановлено</string>
+    <string name="apk_selected">APK-файл выбран</string>
+    <string name="data_selected">Данные выбраны</string>
+    <string name="custom_selected">Выбраны пользовательские элементы</string>
+    <string name="unselect_all">Отменить выбор</string>
+    <string name="reverse_selection">Инвертировать выбор</string>
+    <string name="for_selected">Для выбранных…</string>
+    <string name="block">Заблокировать</string>
+    <string name="detailed_data_items">Подробности элементов данных</string>
+    <string name="refresh">Обновить</string>
+    <string name="updating_app_list">Обновление списка приложений</string>
+    <string name="loading_backups">Загрузка резервных копий</string>
+    <string name="updating_file_list">Обновление списка файлов</string>
+    <string name="no_item_selected">Ни один элемент не выбран</string>
+    <string name="initializing_app_list">Инициализация списка приложений</string>
+    <string name="all_selected">Все элементы выбраны</string>
+    <string name="data_items">Элементы данных</string>
 </resources>
