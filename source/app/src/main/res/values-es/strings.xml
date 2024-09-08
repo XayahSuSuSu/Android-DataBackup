@@ -344,4 +344,20 @@
     <string name="kill_app_options_desc">Comportamiento antes de la copia de seguridad</string>
     <string name="args_apps_restored">%1$s aplicaciones restauradas</string>
     <string name="args_files_restored">%1$s archivos restaurados</string>
+    <string name="data_selected">Datos seleccionados</string>
+    <string name="data_items">Elementos de datos</string>
+    <string name="unselect_all">Deseleccionar todo</string>
+    <string name="reverse_selection">Invertir selección</string>
+    <string name="block">Bloquear</string>
+    <string name="for_selected">Para seleccionados…</string>
+    <string name="detailed_data_items">Datos detallados</string>
+    <string name="refresh">Recargar</string>
+    <string name="initializing_app_list">Inicializando la lista de aplicaciones</string>
+    <string name="updating_app_list">Actualizando la lista de aplicaciones</string>
+    <string name="loading_backups">Cargando copias de seguridad</string>
+    <string name="apk_selected">APK seleccionado</string>
+    <string name="all_selected">Todos los elementos seleccionados</string>
+    <string name="custom_selected">Elementos personalizados seleccionados</string>
+    <string name="no_item_selected">Ningún elemento seleccionado</string>
+    <string name="updating_file_list">Actualizando la lista de archivos</string>
 </resources>
