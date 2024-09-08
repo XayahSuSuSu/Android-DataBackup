@@ -63,6 +63,7 @@ class PathUtil @Inject constructor(
         fun getPackageMediaDir(userId: Int): String = "${getDataMediaDir()}/${userId}/Android/media"
 
         fun getPackageIconRelativePath(packageName: String): String = "${packageName}.png"
+        fun getPackageAdaptiveIconRelativePath(packageName: String): String = "adaptive@${getPackageIconRelativePath(packageName)}"
         fun getConfigsRelativeDir(): String = ConfigsRelativeDir
 
         fun getAppsRelativeDir(): String = AppsRelativeDir
@@ -79,10 +80,12 @@ class PathUtil @Inject constructor(
         }
 
         fun getSsaidPath(userId: Int) = "/data/system/users/$userId/settings_ssaid.xml"
+
+        fun getPackageIconPath(context: Context, packageName: String, adaptive: Boolean): String = "${context.iconDir()}/${if (adaptive) getPackageAdaptiveIconRelativePath(packageName) else getPackageIconRelativePath(packageName)}"
     }
 
     fun getCloudTmpDir(): String = context.cloudTmpAbsoluteDir()
-    fun getPackageIconPath(packageName: String): String = "${context.iconDir()}/${getPackageIconRelativePath(packageName)}"
+    fun getPackageIconPath(packageName: String, adaptive: Boolean): String = getPackageIconPath(context, packageName, adaptive)
     private fun getConfigsDir(parent: String): String = "${parent}/${getConfigsRelativeDir()}"
     fun getLocalBackupConfigsDir(): String = getConfigsDir(parent = context.localBackupSaveDir())
     fun getCloudTmpConfigsDir(): String = getConfigsDir(parent = context.cloudTmpAbsoluteDir())

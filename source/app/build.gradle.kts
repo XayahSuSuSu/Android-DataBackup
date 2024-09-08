@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 plugins {
     alias(libs.plugins.application.common)
     alias(libs.plugins.application.hilt)
+    alias(libs.plugins.application.hilt.work)
     alias(libs.plugins.application.compose)
     alias(libs.plugins.refine)
 }
@@ -122,6 +123,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:datastore"))
     implementation(project(":core:util"))
+    implementation(project(":core:work"))
     compileOnly(project(":core:hiddenapi"))
     implementation(project(":core:rootservice"))
 
@@ -138,6 +140,7 @@ dependencies {
     implementation(project(":feature:main:settings"))
     implementation(project(":feature:main:configurations"))
     implementation(project(":feature:main:processing"))
+    implementation(project(":feature:main:list"))
     implementation(project(":feature:main:packages"))
     implementation(project(":feature:main:medium"))
     implementation(project(":feature:main:directory"))

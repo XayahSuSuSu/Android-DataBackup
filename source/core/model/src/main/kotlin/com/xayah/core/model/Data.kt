@@ -55,3 +55,8 @@ data class TranslatorRevisionItem(
     var link: String,
     var actions: Map<String, Int>,
 )
+
+data class UserInfo(
+    var id: Int,
+    var name: String,
+)

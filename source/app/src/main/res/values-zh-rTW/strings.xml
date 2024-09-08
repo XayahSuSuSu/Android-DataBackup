@@ -344,4 +344,20 @@
     <string name="download">下載</string>
     <string name="changelog">更新日志</string>
     <string name="args_update_from">你可以從%1$s版本更新到%2$s版本</string>
+    <string name="no_item_selected">沒有選取任何資料項目</string>
+    <string name="apk_selected">僅選擇了安裝套件</string>
+    <string name="data_selected">僅選擇了資料</string>
+    <string name="all_selected">選擇了所有資料項</string>
+    <string name="custom_selected">選擇了自訂資料項</string>
+    <string name="data_items">數據項</string>
+    <string name="unselect_all">全部不選</string>
+    <string name="reverse_selection">反選選擇項</string>
+    <string name="for_selected">對於已選擇的…</string>
+    <string name="block">停用</string>
+    <string name="detailed_data_items">詳細數據項</string>
+    <string name="refresh">刷新</string>
+    <string name="initializing_app_list">正在初始化應用列表</string>
+    <string name="updating_app_list">正在更新應用列表</string>
+    <string name="loading_backups">正在加載備份</string>
+    <string name="updating_file_list">正在更新文件列表</string>
 </resources>

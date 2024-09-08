@@ -15,9 +15,9 @@ val KeyFollowSymlinks = booleanPreferencesKey("follow_symlinks")
 val KeyCleanRestoring = booleanPreferencesKey("clean_restoring")
 val KeyResetRestoreList = booleanPreferencesKey("reset_restore_list")
 val KeyCheckKeystore = booleanPreferencesKey("check_keystore")
-val KeyLoadSystemApps = booleanPreferencesKey("load_system_apps")
 val KeyReloadDumpApk = booleanPreferencesKey("reload_dump_apk")
 val KeyAutoScreenOff = booleanPreferencesKey("auto_screen_off")
+val KeyLoadSystemApps = booleanPreferencesKey("load_system_apps")
 
 // -----------------------------------------Read-----------------------------------------
 fun Context.readMonet() = readStoreBoolean(key = KeyMonet, defValue = true)

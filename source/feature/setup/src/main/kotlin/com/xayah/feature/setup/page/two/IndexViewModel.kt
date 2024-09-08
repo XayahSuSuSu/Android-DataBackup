@@ -9,6 +9,7 @@ import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.ActivityUtil
+import com.xayah.core.work.WorkManagerInitializer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -25,6 +26,7 @@ class IndexViewModel @Inject constructor() : BaseViewModel<IndexUiState, IndexUi
         when (intent) {
             is IndexUiIntent.ToMain -> {
                 val context = intent.context
+                WorkManagerInitializer.fullInitialize(context)
                 context.saveAppVersionName()
                 context.startActivity(Intent(context, ActivityUtil.classMainActivity))
                 context.finish()

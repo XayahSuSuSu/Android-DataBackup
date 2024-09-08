@@ -117,4 +117,46 @@ interface MediaDao {
 
     @Query("DELETE FROM MediaEntity WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Query(
+        "SELECT * FROM MediaEntity WHERE" +
+                " indexInfo_opType = :opType AND extraInfo_existed = :existed AND extraInfo_blocked = :blocked"
+    )
+    fun queryFilesFlow(opType: OpType, existed: Boolean, blocked: Boolean): Flow<List<MediaEntity>>
+
+    @Query(
+        "SELECT * FROM MediaEntity WHERE" +
+                " indexInfo_opType = :opType AND extraInfo_existed = 1 AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
+    )
+    fun queryFilesFlow(opType: OpType, cloud: String, backupDir: String): Flow<List<MediaEntity>>
+
+    @Query(
+        "SELECT COUNT(*) FROM MediaEntity WHERE" +
+                " indexInfo_opType = :opType AND extraInfo_existed = :existed AND extraInfo_blocked = :blocked"
+    )
+    fun countFilesFlow(opType: OpType, existed: Boolean, blocked: Boolean): Flow<Long>
+
+    @Query(
+        "SELECT COUNT(*) FROM MediaEntity WHERE" +
+                " indexInfo_opType = :opType AND extraInfo_existed = :existed AND extraInfo_blocked = :blocked AND extraInfo_activated = 1"
+    )
+    fun countActivatedFilesFlow(opType: OpType, existed: Boolean, blocked: Boolean): Flow<Long>
+
+    @Query("UPDATE MediaEntity SET extraInfo_activated = :activated WHERE id = :id")
+    suspend fun activateById(id: Long, activated: Boolean)
+
+    @Query("UPDATE MediaEntity SET extraInfo_activated = :activated WHERE id in (:ids)")
+    suspend fun activateByIds(ids: List<Long>, activated: Boolean)
+
+    @Query("UPDATE MediaEntity SET extraInfo_activated = NOT extraInfo_activated WHERE id in (:ids)")
+    suspend fun reverseActivatedByIds(ids: List<Long>)
+
+    @Query("UPDATE MediaEntity SET extraInfo_activated = 0, extraInfo_blocked = 1 WHERE id in (:ids)")
+    suspend fun blockByIds(ids: List<Long>)
+
+    @Query("SELECT * FROM MediaEntity WHERE id = :id")
+    suspend fun queryById(id: Long): MediaEntity?
+
+    @Query("DELETE FROM MediaEntity WHERE id in (:ids)")
+    suspend fun deleteByIds(ids: List<Long>)
 }

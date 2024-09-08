@@ -37,5 +37,11 @@
                 android:name="autoStoreLocales"
                 android:value="true" />
         </service>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove">
+        </provider>
     </application>
 </manifest>

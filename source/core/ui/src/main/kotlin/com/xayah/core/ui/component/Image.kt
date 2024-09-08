@@ -38,23 +38,24 @@ import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.SizeTokens
+import com.xayah.core.util.PathUtil
+import com.xayah.core.util.command.BaseUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.sqrt
 
 @ExperimentalFoundationApi
 @Composable
-fun PackageIconImage(icon: ImageVector? = null, packageName: String, inCircleShape: Boolean = false, size: Dp = SizeTokens.Level32) {
+fun PackageIconImage(icon: ImageVector? = null, packageName: String, inCircleShape: Boolean = false, fromLocal: Boolean = false, size: Dp = SizeTokens.Level32) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var iconForeground by remember(packageName, icon) { mutableStateOf<Drawable?>(null) }
     var iconBackground by remember(packageName, icon) { mutableStateOf<Drawable?>(null) }
-    val sizeForeground by remember(size) { mutableStateOf(size.div(sqrt(2F))) }
+    val sizeForeground by remember(size, inCircleShape) { mutableStateOf(if (inCircleShape) size.div(sqrt(2.2F)) else size) }
     LaunchedEffect(packageName, icon) {
         if (icon == null) {
-            // Read icon from cached internal dir.
             scope.launch(Dispatchers.IO) {
-                val iconDrawable = runCatching { context.packageManager.getApplicationIcon(packageName) }.getOrElse { AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon) }
+                val iconDrawable = runCatching { context.packageManager.getApplicationIcon(packageName) }.getOrNull()
                 if (inCircleShape) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && iconDrawable is AdaptiveIconDrawable) {
                         iconBackground = LayerDrawable(arrayOf(iconDrawable.background, iconDrawable.foreground))
@@ -66,6 +67,20 @@ fun PackageIconImage(icon: ImageVector? = null, packageName: String, inCircleSha
                     iconForeground = iconDrawable
                 }
 
+                if (fromLocal) {
+                    if (iconForeground == null && iconBackground == null) {
+                        var localDrawable = BaseUtil.readIcon(context, PathUtil.getPackageIconPath(context, packageName, true))
+                        if (localDrawable != null) {
+                            iconBackground = localDrawable
+                        } else {
+                            localDrawable = BaseUtil.readIcon(context, PathUtil.getPackageIconPath(context, packageName, false))
+                            iconForeground = localDrawable
+                        }
+                    }
+                }
+                if (iconForeground == null && iconBackground == null) {
+                    iconForeground = AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
+                }
             }
         }
     }

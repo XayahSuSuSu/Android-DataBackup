@@ -11,6 +11,7 @@ import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveCloudActivatedAccountName
 import com.xayah.core.model.OpType
 import com.xayah.core.model.StorageMode
+import com.xayah.core.model.Target
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.PackageEntity
@@ -22,6 +23,7 @@ import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.encodeURL
+import com.xayah.core.util.encodedURLWithSpace
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.navigateSingle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -120,15 +122,23 @@ class IndexViewModel @Inject constructor(
                 withMainContext {
                     when (state.storageType) {
                         StorageMode.Local -> {
-                            intent.navController.navigateSingle(MainRoutes.PackagesRestoreList.getRoute(" ".encodeURL(), context.localBackupSaveDir().encodeURL()))
+                            intent.navController.navigateSingle(
+                                MainRoutes.List.getRoute(
+                                    target = Target.Apps,
+                                    opType = OpType.RESTORE,
+                                    backupDir = context.localBackupSaveDir().encodeURL()
+                                )
+                            )
                         }
 
                         StorageMode.Cloud -> {
                             if (state.cloudEntity != null) {
                                 intent.navController.navigateSingle(
-                                    MainRoutes.PackagesRestoreList.getRoute(
-                                        state.cloudEntity.name.encodeURL(),
-                                        state.cloudEntity.remote.encodeURL()
+                                    MainRoutes.List.getRoute(
+                                        target = Target.Apps,
+                                        opType = OpType.RESTORE,
+                                        cloudName = state.cloudEntity.name.encodeURL(),
+                                        backupDir = state.cloudEntity.remote.encodeURL()
                                     )
                                 )
                             }
@@ -141,15 +151,23 @@ class IndexViewModel @Inject constructor(
                 withMainContext {
                     when (state.storageType) {
                         StorageMode.Local -> {
-                            intent.navController.navigateSingle(MainRoutes.MediumRestoreList.getRoute(" ".encodeURL(), context.localBackupSaveDir().encodeURL()))
+                            intent.navController.navigateSingle(
+                                MainRoutes.List.getRoute(
+                                    target = Target.Files,
+                                    opType = OpType.RESTORE,
+                                    backupDir = context.localBackupSaveDir().encodeURL()
+                                )
+                            )
                         }
 
                         StorageMode.Cloud -> {
                             if (state.cloudEntity != null) {
                                 intent.navController.navigateSingle(
-                                    MainRoutes.MediumRestoreList.getRoute(
-                                        state.cloudEntity.name.encodeURL(),
-                                        state.cloudEntity.remote.encodeURL()
+                                    MainRoutes.List.getRoute(
+                                        target = Target.Files,
+                                        opType = OpType.RESTORE,
+                                        cloudName = state.cloudEntity.name.encodeURL(),
+                                        backupDir = state.cloudEntity.remote.encodeURL()
                                     )
                                 )
                             }
@@ -162,7 +180,7 @@ class IndexViewModel @Inject constructor(
                 withMainContext {
                     when (state.storageType) {
                         StorageMode.Local -> {
-                            intent.navController.navigateSingle(MainRoutes.Reload.getRoute(" ".encodeURL(), context.localBackupSaveDir().encodeURL()))
+                            intent.navController.navigateSingle(MainRoutes.Reload.getRoute(encodedURLWithSpace, context.localBackupSaveDir().encodeURL()))
                         }
 
                         StorageMode.Cloud -> {

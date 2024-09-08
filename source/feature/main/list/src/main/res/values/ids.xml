@@ -1,0 +1,29 @@
+<resources>
+    <item name="loading" type="string" />
+    <item name="select_apps" type="string" />
+    <item name="backed_up_apps" type="string" />
+    <item name="select_files" type="string" />
+    <item name="backed_up_files" type="string" />
+    <item name="filters" type="string" />
+    <item name="load_system_apps" type="string" />
+    <item name="sort" type="string" />
+    <item name="select_all" type="string" />
+    <item name="unselect_all" type="string" />
+    <item name="reverse_selection" type="string" />
+    <item name="for_selected" type="string" />
+    <item name="block" type="string" />
+    <item name="detailed_data_items" type="string" />
+    <item name="delete" type="string" />
+    <item name="refresh" type="string" />
+    <item name="search_bar_hint_packages" type="string" />
+    <item name="search_bar_hint_medium" type="string" />
+    <item name="prompt" type="string" />
+    <item name="confirm_add_to_blacklist" type="string" />
+    <item name="data_items" type="string" />
+    <item name="confirm" type="string" />
+    <item name="confirm_delete" type="string" />
+    <item name="_continue" type="string" />
+
+    <item name="backup_sort_type_items_apps" type="array" />
+    <item name="backup_sort_type_items_files" type="array" />
+</resources>

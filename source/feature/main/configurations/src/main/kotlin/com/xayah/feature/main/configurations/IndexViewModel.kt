@@ -2,7 +2,6 @@ package com.xayah.feature.main.configurations
 
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.res.stringResource
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.data.repository.PackageRepository
@@ -198,7 +197,7 @@ class IndexViewModel @Inject constructor(
                                                             ssaid = "",
                                                             blocked = true,
                                                             activated = false,
-                                                            existed = false
+                                                            firstUpdated = true
                                                         ),
                                                         dataStats = PackageDataStats(),
                                                         dataStates = PackageDataStates(),

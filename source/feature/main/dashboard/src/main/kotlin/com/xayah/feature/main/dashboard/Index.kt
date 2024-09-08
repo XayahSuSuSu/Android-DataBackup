@@ -31,6 +31,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.common.util.BuildConfigUtil
+import com.xayah.core.model.OpType
+import com.xayah.core.model.Target
 import com.xayah.core.ui.component.DismissState
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LocalSlotScope
@@ -148,7 +150,7 @@ fun PageDashboard() {
                         colorL80D20 = ThemedColorSchemeKeyTokens.RedL80D20,
                         onColorContainer = ThemedColorSchemeKeyTokens.RedOnPrimaryContainer
                     ) {
-                        navController.navigateSingle(MainRoutes.PackagesBackupList.route)
+                        navController.navigateSingle(MainRoutes.List.getRoute(target = Target.Apps, opType = OpType.BACKUP))
                     }
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),
@@ -159,7 +161,7 @@ fun PageDashboard() {
                         colorL80D20 = ThemedColorSchemeKeyTokens.YellowL80D20,
                         onColorContainer = ThemedColorSchemeKeyTokens.YellowOnPrimaryContainer
                     ) {
-                        navController.navigateSingle(MainRoutes.MediumBackupList.route)
+                        navController.navigateSingle(MainRoutes.List.getRoute(target = Target.Files, opType = OpType.BACKUP))
                     }
                     // TODO MMS/SMS, Contacts backup/restore
 //                    QuickActionsButton(

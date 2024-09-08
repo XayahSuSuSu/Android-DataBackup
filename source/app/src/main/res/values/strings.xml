@@ -354,4 +354,20 @@
     <string name="download">Download</string>
     <string name="changelog">Changelog</string>
     <string name="args_update_from">You can update from version %1$s to version %2$s</string>
+    <string name="no_item_selected">No item selected</string>
+    <string name="apk_selected">APK selected</string>
+    <string name="data_selected">Data selected</string>
+    <string name="all_selected">All items selected</string>
+    <string name="custom_selected">Custom items selected</string>
+    <string name="data_items">Data items</string>
+    <string name="unselect_all">Unselect all</string>
+    <string name="reverse_selection">Reverse selection</string>
+    <string name="for_selected">For selected…</string>
+    <string name="block">Block</string>
+    <string name="detailed_data_items">Detailed data items</string>
+    <string name="refresh">Refresh</string>
+    <string name="initializing_app_list">Initializing app list</string>
+    <string name="updating_app_list">Updating app list</string>
+    <string name="loading_backups">Loading backups</string>
+    <string name="updating_file_list">Updating file list</string>
 </resources>

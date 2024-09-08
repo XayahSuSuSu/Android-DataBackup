@@ -18,7 +18,7 @@ data class ActionMenuItem(
     val countdown: Int = 0,
     val dismissOnClick: Boolean = false,
     val secondaryMenu: List<ActionMenuItem>,
-    val onClick: (suspend () -> Unit)?,
+    val onClick: (suspend () -> Unit)? = null,
 )
 
 fun getActionMenuReturnItem(context: Context, onClick: (suspend () -> Unit)? = null) = ActionMenuItem(

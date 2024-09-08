@@ -316,6 +316,28 @@ fun ModalStringListMultipleSelectionDropdownMenu(
 }
 
 @Composable
+fun <S> AnimatedModalDropdownMenu(
+    targetState: S,
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    offset: DpOffset = DpOffset(0.dp, 0.dp),
+    properties: PopupProperties = PopupProperties(focusable = true),
+    content: @Composable ColumnScope.(targetState: S) -> Unit,
+) {
+    ModalDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest, modifier = modifier, offset = offset, properties = properties) {
+        AnimatedContent(
+            targetState = targetState,
+            label = AnimationTokens.AnimatedContentLabel
+        ) { targetState ->
+            Column {
+                content(targetState)
+            }
+        }
+    }
+}
+
+@Composable
 fun ModalDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,

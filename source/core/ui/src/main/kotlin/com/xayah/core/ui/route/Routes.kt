@@ -1,5 +1,9 @@
 package com.xayah.core.ui.route
 
+import com.xayah.core.model.OpType
+import com.xayah.core.model.Target
+import com.xayah.core.util.encodedURLWithSpace
+
 sealed class MainRoutes(val route: String) {
     companion object {
         const val ARG_PACKAGE_NAME = "pkgName"
@@ -8,6 +12,8 @@ sealed class MainRoutes(val route: String) {
         const val ARG_PRESERVE_ID = "preserveId"
         const val ARG_ACCOUNT_NAME = "accountName"
         const val ARG_ACCOUNT_REMOTE = "accountRemote"
+        const val ARG_TARGET = "target"
+        const val ARG_OP_TYPE = "opType"
     }
 
     data object Dashboard : MainRoutes(route = "main_dashboard")
@@ -41,6 +47,11 @@ sealed class MainRoutes(val route: String) {
     data object About : MainRoutes(route = "main_about")
     data object Translators : MainRoutes(route = "main_translators")
 
+    data object List : MainRoutes(route = "main_list/{$ARG_TARGET}/{$ARG_OP_TYPE}/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
+        fun getRoute(target: Target, opType: OpType, cloudName: String = encodedURLWithSpace, backupDir: String = encodedURLWithSpace) =
+            "main_list/${target}/${opType}/${cloudName}/${backupDir}"
+    }
+
     data object PackagesBackupList : MainRoutes(route = "main_packages_backup_list")
     data object PackagesBackupDetail : MainRoutes(route = "main_packages_backup_detail/{$ARG_PACKAGE_NAME}/{$ARG_USER_ID}") {
         fun getRoute(packageName: String, userId: Int) = "main_packages_backup_detail/${packageName}/${userId}"
@@ -58,7 +69,7 @@ sealed class MainRoutes(val route: String) {
     }
 
     data object PackagesRestoreProcessingGraph : MainRoutes(route = "main_packages_restore_processing_graph/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
-        fun getRoute(name: String, remote: String) = "main_packages_restore_processing_graph/${name}/${remote}"
+        fun getRoute(cloudName: String = encodedURLWithSpace, backupDir: String = encodedURLWithSpace) = "main_packages_restore_processing_graph/${cloudName}/${backupDir}"
     }
     data object PackagesRestoreProcessing : MainRoutes(route = "main_packages_restore_processing")
     data object PackagesRestoreProcessingSetup : MainRoutes(route = "main_packages_restore_processing_setup")
@@ -80,7 +91,7 @@ sealed class MainRoutes(val route: String) {
     }
 
     data object MediumRestoreProcessingGraph : MainRoutes(route = "main_medium_restore_processing_graph/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
-        fun getRoute(name: String, remote: String) = "main_medium_restore_processing_graph/${name}/${remote}"
+        fun getRoute(cloudName: String = encodedURLWithSpace, backupDir: String = encodedURLWithSpace) = "main_medium_restore_processing_graph/${cloudName}/${backupDir}"
     }
 
     data object MediumRestoreProcessing : MainRoutes(route = "main_medium_restore_processing")

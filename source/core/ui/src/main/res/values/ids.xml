@@ -19,6 +19,11 @@
     <item name="apk" type="string" />
     <item name="data" type="string" />
     <item name="update_available" type="string" />
+    <item name="no_item_selected" type="string" />
+    <item name="apk_selected" type="string" />
+    <item name="data_selected" type="string" />
+    <item name="all_selected" type="string" />
+    <item name="custom_selected" type="string" />
 
     <item name="jetbrains_mono_regular" type="font" />
     <item name="ic_rounded_check_circle" type="drawable" />
@@ -29,11 +34,15 @@
     <item name="ic_rounded_arrow_circle_down" type="drawable" />
     <item name="ic_launcher_foreground_tonal" type="drawable" />
     <item name="ic_rounded_android" type="drawable" />
+    <item name="ic_rounded_android_circle" type="drawable" />
     <item name="ic_rounded_person" type="drawable" />
     <item name="ic_rounded_manage_accounts" type="drawable" />
     <item name="ic_rounded_database" type="drawable" />
+    <item name="ic_rounded_database_circle" type="drawable" />
     <item name="ic_rounded_stadia_controller" type="drawable" />
     <item name="ic_rounded_image" type="drawable" />
+    <item name="ic_rounded_package_2" type="drawable" />
+    <item name="ic_rounded_package_2_circle" type="drawable" />
 
     <item name="ic_launcher_background" type="color" />
 

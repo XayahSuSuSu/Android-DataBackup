@@ -6,11 +6,9 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.UserHandle
-import com.xayah.core.data.R
 import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.datastore.readBackupFilterFlagIndex
-import com.xayah.core.datastore.readBackupUserIdIndex
 import com.xayah.core.datastore.readCheckKeystore
 import com.xayah.core.datastore.readCompressionType
 import com.xayah.core.datastore.readCustomSUFile
@@ -43,7 +41,6 @@ import com.xayah.core.model.database.PackageStorageStats
 import com.xayah.core.model.util.suffixOf
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.ui.model.RefreshState
 import com.xayah.core.util.ConfigsPackageRestoreName
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.IconRelativeDir
@@ -58,7 +55,6 @@ import com.xayah.core.util.iconDir
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.withLog
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import java.text.Collator
@@ -83,8 +79,7 @@ class PackageRepository @Inject constructor(
 
     fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long) = packageDao.queryFlow(packageName, opType, userId, preserveId).distinctUntilChanged()
     suspend fun getPackage(packageName: String, opType: OpType, userId: Int) = packageDao.query(packageName, opType, userId)
-    fun queryPackagesFlow(opType: OpType) = packageDao.queryPackagesFlow(opType).distinctUntilChanged()
-    fun queryPackagesFlow(opType: OpType, existed: Boolean, blocked: Boolean) = packageDao.queryPackagesFlow(opType, existed, blocked).distinctUntilChanged()
+    fun queryPackagesFlow(opType: OpType, existed: Boolean, blocked: Boolean) = packageDao.queryPackagesFlow(opType, blocked).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType, blocked: Boolean) = packageDao.queryPackagesFlow(opType, blocked).distinctUntilChanged()
     fun queryPackagesFlow(opType: OpType, cloud: String, backupDir: String) = packageDao.queryPackagesFlow(opType, cloud, backupDir).distinctUntilChanged()
     suspend fun queryUserIds(opType: OpType) = packageDao.queryUserIds(opType)
@@ -109,18 +104,18 @@ class PackageRepository @Inject constructor(
 
     suspend fun updateLocalPackageDataSize(packageName: String, opType: OpType, userId: Int, preserveId: Long) {
         getPackage(packageName, opType, userId, preserveId, "", "").also {
-            if (it != null) {
-                it.extraInfo.existed = rootService.queryInstalled(packageName = packageName, userId = userId)
-                if (it.extraInfo.existed) {
-                    it.displayStats.apkBytes = calculateDataSize(it, DataType.PACKAGE_APK)
-                    it.displayStats.userBytes = calculateDataSize(it, DataType.PACKAGE_USER)
-                    it.displayStats.userDeBytes = calculateDataSize(it, DataType.PACKAGE_USER_DE)
-                    it.displayStats.dataBytes = calculateDataSize(it, DataType.PACKAGE_DATA)
-                    it.displayStats.obbBytes = calculateDataSize(it, DataType.PACKAGE_OBB)
-                    it.displayStats.mediaBytes = calculateDataSize(it, DataType.PACKAGE_MEDIA)
-                }
-                upsert(it)
-            }
+//            if (it != null) {
+//                it.extraInfo.existed = rootService.queryInstalled(packageName = packageName, userId = userId)
+//                if (it.extraInfo.existed) {
+//                    it.displayStats.apkBytes = calculateDataSize(it, DataType.PACKAGE_APK)
+//                    it.displayStats.userBytes = calculateDataSize(it, DataType.PACKAGE_USER)
+//                    it.displayStats.userDeBytes = calculateDataSize(it, DataType.PACKAGE_USER_DE)
+//                    it.displayStats.dataBytes = calculateDataSize(it, DataType.PACKAGE_DATA)
+//                    it.displayStats.obbBytes = calculateDataSize(it, DataType.PACKAGE_OBB)
+//                    it.displayStats.mediaBytes = calculateDataSize(it, DataType.PACKAGE_MEDIA)
+//                }
+//                upsert(it)
+//            }
         }
     }
 
@@ -167,12 +162,19 @@ class PackageRepository @Inject constructor(
         }
     }
 
+    fun getShowSystemAppsPredicate(value: Boolean): (PackageEntity) -> Boolean = { p ->
+        value || p.isSystemApp.not()
+    }
+
     fun getUserIdPredicateNew(indexList: List<Int>, userIdList: List<Int>): (PackageEntity) -> Boolean = { p ->
         runCatching { p.userId in indexList.map { userIdList[it] } }.getOrDefault(p.userId == 0)
     }
 
+    fun getUserIdPredicateNew(userId: Int?): (PackageEntity) -> Boolean = { p ->
+        runCatching { p.userId == userId }.getOrDefault(false)
+    }
+
     suspend fun filterBackup(packages: List<PackageEntity>) = packages.filter(getFlagPredicateNew(index = context.readBackupFilterFlagIndex().first()))
-        .filter(getUserIdPredicateNew(indexList = context.readBackupUserIdIndex().first(), userIdList = rootService.getUsers().map { it.id }))
 
     suspend fun filterRestore(packages: List<PackageEntity>) = packages.filter(getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
         .filter(getUserIdPredicateNew(indexList = context.readRestoreUserIdIndex().first(), userIdList = queryUserIds(OpType.RESTORE)))
@@ -234,7 +236,7 @@ class PackageRepository @Inject constructor(
         val uid = info.applicationInfo.uid
         val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid) else false
         val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
-        val iconPath = pathUtil.getPackageIconPath(info.packageName)
+        val iconPath = pathUtil.getPackageIconPath(info.packageName, false)
         val iconExists = rootService.exists(iconPath)
         if (iconExists.not() || (iconExists && hasPassedOneDay)) {
             runCatching {
@@ -261,7 +263,7 @@ class PackageRepository @Inject constructor(
             ssaid = ssaid,
             blocked = false,
             activated = false,
-            existed = true,
+            firstUpdated = true,
         )
         val indexInfo = PackageIndexInfo(
             opType = OpType.BACKUP,
@@ -291,7 +293,6 @@ class PackageRepository @Inject constructor(
             this.extraInfo.hasKeystore = hasKeystore
             this.extraInfo.permissions = permissions
             this.extraInfo.ssaid = ssaid
-            this.extraInfo.existed = true
         }
         if (userHandle != null) {
             rootService.queryStatsForPackage(info, userHandle).also { stats ->
@@ -309,15 +310,13 @@ class PackageRepository @Inject constructor(
     }
 
     @SuppressLint("StringFormatInvalid")
-    suspend fun refresh(refreshState: MutableStateFlow<RefreshState>) = run {
-        packageDao.clearExisted(opType = OpType.BACKUP)
+    suspend fun refresh() = run {
         val checkKeystore = context.readCheckKeystore().first()
         val loadSystemApps = context.readLoadSystemApps().first()
         val pm = context.packageManager
         val userInfoList = rootService.getUsers()
         for (userInfo in userInfoList) {
             val userId = userInfo.id
-            refreshState.emit(refreshState.value.copy(user = context.getString(R.string.args_loading_from_user, userId)))
             val userHandle = rootService.getUserHandle(userId)
             val installedPackages = getInstalledPackages(userId)
             val installedPackagesCount = (installedPackages.size - 1).coerceAtLeast(1)
@@ -336,15 +335,9 @@ class PackageRepository @Inject constructor(
                 if (loadSystemApps || isSystemApp.not()) {
                     val packageEntity = handlePackage(pm, info, checkKeystore, userId, userHandle, hasPassedOneDay)
                     upsert(packageEntity)
-
-                    refreshState.emit(refreshState.value.copy(pkg = info.packageName))
                 }
-
-                if (index % epoch == 0) refreshState.emit(refreshState.value.copy(progress = index.toFloat() / installedPackagesCount))
             }
-            refreshState.emit(RefreshState(progress = 1f, pkg = ""))
         }
-        refreshState.emit(RefreshState(progress = 1f, pkg = ""))
     }
 
     @SuppressLint("StringFormatInvalid")
@@ -386,7 +379,7 @@ class PackageRepository @Inject constructor(
 
             // For those uninstalled packages, we hide them.
             outdatedPackages.forEach {
-                packageDao.setExisted(OpType.BACKUP, it, userId, false)
+//                packageDao.setExisted(OpType.BACKUP, it, userId, false)
             }
         }
     }
@@ -400,7 +393,6 @@ class PackageRepository @Inject constructor(
                 runCatching {
                     val stored = rootService.readJson<PackageEntity>(it.pathString).also { p ->
                         p?.id = 0
-                        p?.extraInfo?.existed = true
                         p?.extraInfo?.activated = false
                         p?.indexInfo?.cloud = ""
                         p?.indexInfo?.backupDir = localBackupSaveDir
@@ -438,7 +430,6 @@ class PackageRepository @Inject constructor(
                             cloudRepository.download(client = client, src = it.pathString, dstDir = tmpDir) { path ->
                                 val stored = rootService.readJson<PackageEntity>(path).also { p ->
                                     p?.id = 0
-                                    p?.extraInfo?.existed = true
                                     p?.extraInfo?.activated = false
                                     p?.indexInfo?.cloud = entity.name
                                     p?.indexInfo?.backupDir = remote
@@ -954,7 +945,6 @@ class PackageRepository @Inject constructor(
                         p?.indexInfo?.packageName = packageName
                         p?.indexInfo?.userId = userId
                         p?.indexInfo?.preserveId = if (mainBackup) 0L else preserveId
-                        p?.extraInfo?.existed = true
                         p?.extraInfo?.activated = false
                         p?.indexInfo?.cloud = ""
                         p?.indexInfo?.backupDir = localBackupSaveDir
@@ -988,7 +978,7 @@ class PackageRepository @Inject constructor(
                         ssaid = "",
                         blocked = false,
                         activated = false,
-                        existed = true,
+                        firstUpdated = true,
                     ),
                     dataStates = dataStates,
                     storageStats = PackageStorageStats(),
@@ -1027,7 +1017,7 @@ class PackageRepository @Inject constructor(
                                                         versionCode.toLong()
                                                     }
                                                     packageEntity.packageInfo.flags = applicationInfo.flags
-                                                    val iconPath = pathUtil.getPackageIconPath(packageName)
+                                                    val iconPath = pathUtil.getPackageIconPath(packageName, false)
                                                     val iconExists = rootService.exists(iconPath)
                                                     if (iconExists.not()) {
                                                         val icon = applicationInfo.loadIcon(packageManager)
@@ -1290,7 +1280,6 @@ class PackageRepository @Inject constructor(
                                     p?.indexInfo?.packageName = packageName
                                     p?.indexInfo?.userId = userId
                                     p?.indexInfo?.preserveId = if (mainBackup) 0L else preserveId
-                                    p?.extraInfo?.existed = true
                                     p?.extraInfo?.activated = false
                                     p?.indexInfo?.cloud = cloud
                                     p?.indexInfo?.backupDir = cloudEntity.remote
@@ -1325,7 +1314,7 @@ class PackageRepository @Inject constructor(
                                 ssaid = "",
                                 blocked = false,
                                 activated = false,
-                                existed = true,
+                                firstUpdated = true,
                             ),
                             dataStates = dataStates,
                             storageStats = PackageStorageStats(),
@@ -1366,7 +1355,7 @@ class PackageRepository @Inject constructor(
                                                                     versionCode.toLong()
                                                                 }
                                                                 packageEntity.packageInfo.flags = applicationInfo.flags
-                                                                val iconPath = pathUtil.getPackageIconPath(packageName)
+                                                                val iconPath = pathUtil.getPackageIconPath(packageName, false)
                                                                 val iconExists = rootService.exists(iconPath)
                                                                 if (iconExists.not()) {
                                                                     val icon = applicationInfo.loadIcon(packageManager)

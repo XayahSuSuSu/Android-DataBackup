@@ -37,7 +37,7 @@ import com.xayah.core.model.database.TaskEntity
         AutoMigration(from = 2, to = 3, spec = DatabaseMigrations.Schema2to3::class),
         AutoMigration(from = 3, to = 4, spec = DatabaseMigrations.Schema3to4::class),
         AutoMigration(from = 4, to = 5),
-        AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 5, to = 6, spec = DatabaseMigrations.Schema5to6::class),
     ]
 )
 @TypeConverters(StringListConverters::class)

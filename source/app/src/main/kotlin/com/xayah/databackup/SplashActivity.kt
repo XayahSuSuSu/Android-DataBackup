@@ -9,6 +9,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.xayah.core.datastore.getCurrentAppVersionName
 import com.xayah.core.datastore.readAppVersionName
+import com.xayah.core.work.WorkManagerInitializer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -29,6 +30,7 @@ class SplashActivity : AppCompatActivity() {
             // There is an update
             startActivity(Intent(this, SetupActivity::class.java))
         } else {
+            WorkManagerInitializer.fullInitialize(this)
             startActivity(Intent(this, MainActivity::class.java))
         }
         finish()

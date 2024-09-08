@@ -1,0 +1,7 @@
+<resources>
+    <item name="initializing_app_list" type="string" />
+    <item name="updating_app_list" type="string" />
+    <item name="loading_backups" type="string" />
+    <item name="updating_file_list" type="string" />
+    <item name="wait_for_remaining_data_processing" type="string" />
+</resources>

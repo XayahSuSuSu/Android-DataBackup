@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.work.ForegroundInfo
 
 
 object NotificationUtil {
@@ -63,18 +64,7 @@ object NotificationUtil {
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                ForegroundServiceChannelId,
-                ForegroundServiceChannelName,
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = ForegroundServiceChannelDesc
-            }
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
+        createChannelIfNecessary(context)
         NotificationCompat.Builder(context, ForegroundServiceChannelId).setContentIntent(pendingIntent).build()
     }
 
@@ -97,5 +87,48 @@ object NotificationUtil {
 
     fun cancel(context: Context) {
         (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(progressNotificationId)
+    }
+
+
+    private fun createChannelIfNecessary(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                ForegroundServiceChannelId,
+                ForegroundServiceChannelName,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = ForegroundServiceChannelDesc
+            }
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun createForegroundInfo(
+        context: Context,
+        builder: NotificationCompat.Builder,
+        title: String,
+        content: String,
+        max: Int = 0,
+        progress: Int = 0,
+        indeterminate: Boolean = false,
+        ongoing: Boolean = true,
+    ): ForegroundInfo {
+        createChannelIfNecessary(context)
+        val notification = builder.setContentTitle(title).setContentText(content).setProgress(max, progress, indeterminate).setOngoing(ongoing)
+        return ForegroundInfo(progressNotificationId, notification.build())
+    }
+
+    fun createForegroundInfo(
+        context: Context,
+        builder: NotificationCompat.Builder,
+        title: String,
+        content: String,
+        ongoing: Boolean = true,
+    ): ForegroundInfo {
+        createChannelIfNecessary(context)
+        val notification = builder.setContentTitle(title).setContentText(content).setOngoing(ongoing)
+        return ForegroundInfo(progressNotificationId, notification.build())
     }
 }

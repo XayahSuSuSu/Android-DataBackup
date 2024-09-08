@@ -107,6 +107,39 @@ class DialogState {
             }
         }
     }
+
+    fun open(
+        title: String,
+        icon: ImageVector? = null,
+        confirmText: @Composable () -> String,
+        dismissText: @Composable () -> String,
+        onConfirm: () -> Unit,
+        block: @Composable () -> Unit,
+    ) {
+        content = {
+            AlertDialog(
+                onDismissRequest = {
+                    dismiss()
+                },
+                confirmButton = {
+                    TextButton(text = confirmText(), onClick = {
+                        onConfirm()
+                        dismiss()
+                    })
+                },
+                dismissButton = {
+                    TextButton(text = dismissText(), onClick = {
+                        dismiss()
+                    })
+                },
+                title = { Text(text = title) },
+                icon = icon?.let { { Icon(imageVector = icon, contentDescription = null) } },
+                text = {
+                    block()
+                },
+            )
+        }
+    }
 }
 
 suspend fun DialogState.confirm(title: String, text: String) = open(
@@ -115,6 +148,15 @@ suspend fun DialogState.confirm(title: String, text: String) = open(
     icon = null,
     block = { _ -> Text(text = text) }
 ).first.isConfirm
+
+fun DialogState.confirm(title: String, text: String, onConfirm: () -> Unit) = open(
+    title = title,
+    icon = null,
+    confirmText = { stringResource(id = R.string.confirm) },
+    dismissText = { stringResource(id = R.string.cancel) },
+    onConfirm = onConfirm,
+    block = { Text(text = text) }
+)
 
 @Composable
 fun RadioItem(enabled: Boolean = true, selected: Boolean, title: String, desc: String?, onClick: () -> Unit) {

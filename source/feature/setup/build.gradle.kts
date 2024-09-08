@@ -15,6 +15,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:datastore"))
     implementation(project(":core:data"))
+    implementation(project(":core:work"))
     implementation(project(":feature:main:directory"))
     implementation(project(":feature:main:configurations"))
 

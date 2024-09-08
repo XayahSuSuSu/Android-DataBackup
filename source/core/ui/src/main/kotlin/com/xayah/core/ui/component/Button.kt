@@ -69,11 +69,17 @@ fun ArrowBackButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-fun TextButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
+fun TextButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    fontWeight: FontWeight? = null,
+    color: Color = Color.Unspecified,
+    onClick: () -> Unit
+) {
     TextButton(
         modifier = modifier,
         onClick = onClick,
-        content = { Text(text = text, fontWeight = FontWeight.Bold) },
+        content = { Text(text = text, fontWeight = fontWeight, color = color) },
         contentPadding = ButtonDefaults.ContentPadding
     )
 }

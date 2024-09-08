@@ -39,6 +39,10 @@ gradlePlugin {
             id = "application.hilt"
             implementationClass = "ApplicationHiltConventionPlugin"
         }
+        register("applicationHiltWork") {
+            id = "application.hilt.work"
+            implementationClass = "ApplicationHiltWorkConventionPlugin"
+        }
 
         register("libraryCommon") {
             id = "library.common"
@@ -47,6 +51,10 @@ gradlePlugin {
         register("libraryHilt") {
             id = "library.hilt"
             implementationClass = "LibraryHiltConventionPlugin"
+        }
+        register("libraryHiltWork") {
+            id = "library.hilt.work"
+            implementationClass = "LibraryHiltWorkConventionPlugin"
         }
         register("libraryRoom") {
             id = "library.room"

@@ -4,40 +4,35 @@ import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.navigation.NavHostController
 import com.xayah.core.data.repository.PackageRepository
-import com.xayah.core.datastore.readBackupFilterFlagIndex
-import com.xayah.core.datastore.readBackupUserIdIndex
-import com.xayah.core.datastore.readUserIdList
-import com.xayah.core.datastore.saveBackupFilterFlagIndex
-import com.xayah.core.datastore.saveBackupUserIdIndex
-import com.xayah.core.datastore.saveUserIdList
+import com.xayah.core.datastore.readLoadSystemApps
 import com.xayah.core.model.DataState
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
+import com.xayah.core.model.UserInfo
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
-import com.xayah.core.ui.model.RefreshState
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.encodeURL
-import com.xayah.core.util.module.combine
 import com.xayah.core.util.navigateSingle
+import com.xayah.feature.main.packages.selectAll
+import com.xayah.feature.main.packages.selectApkOnly
+import com.xayah.feature.main.packages.selectDataOnly
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import java.util.UUID
 import javax.inject.Inject
 
 data class IndexUiState(
-    val isRefreshing: Boolean,
-    val selectAll: Boolean,
     val uuid: UUID,
     val isLoading: Boolean,
 ) : UiState
@@ -45,14 +40,16 @@ data class IndexUiState(
 sealed class IndexUiIntent : UiIntent {
     data object OnRefresh : IndexUiIntent()
     data object OnFastRefresh : IndexUiIntent()
-    data object GetUserIds : IndexUiIntent()
-    data class SetUserIdIndexList(val list: List<Int>) : IndexUiIntent()
-    data class FilterByFlag(val index: Int) : IndexUiIntent()
-    data class Sort(val index: Int, val type: SortType) : IndexUiIntent()
+    data class SetUserId(val userId: Int) : IndexUiIntent()
+    data object GetUsers : IndexUiIntent()
+    data class SortByIndex(val index: Int) : IndexUiIntent()
+    data class SortByType(val type: SortType) : IndexUiIntent()
     data class FilterByKey(val key: String) : IndexUiIntent()
     data object ClearKey : IndexUiIntent()
     data class Select(val entity: PackageEntity) : IndexUiIntent()
     data class SelectAll(val selected: Boolean) : IndexUiIntent()
+    data object Reverse : IndexUiIntent()
+    data class ChangeFlag(val flag: Int, val entity: PackageEntity) : IndexUiIntent()
     data object BlockSelected : IndexUiIntent()
     data class BatchSelectData(val apk: Boolean, val user: Boolean, val userDe: Boolean, val data: Boolean, val obb: Boolean, val media: Boolean) : IndexUiIntent()
     data class ToPageDetail(val navController: NavHostController, val packageEntity: PackageEntity) : IndexUiIntent()
@@ -66,10 +63,8 @@ class IndexViewModel @Inject constructor(
     private val rootService: RemoteRootService,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
-        isRefreshing = false,
-        selectAll = false,
         uuid = UUID.randomUUID(),
-        isLoading = false
+        isLoading = false,
     )
 ) {
     init {
@@ -84,10 +79,9 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.OnRefresh -> {
-                _refreshState.value = RefreshState()
-                emitState(state.copy(isRefreshing = true))
-                packageRepo.refresh(refreshState = _refreshState)
-                emitState(state.copy(isRefreshing = false, uuid = UUID.randomUUID()))
+                emitState(state.copy(isLoading = true))
+                packageRepo.refresh()
+                emitState(state.copy(isLoading = false, uuid = UUID.randomUUID()))
             }
 
             is IndexUiIntent.OnFastRefresh -> {
@@ -96,26 +90,23 @@ class IndexViewModel @Inject constructor(
                 emitState(state.copy(isLoading = false))
             }
 
-            is IndexUiIntent.GetUserIds -> {
-                context.saveUserIdList(rootService.getUsers().map { it.id })
+            is IndexUiIntent.SetUserId -> {
+                _userIdIndex.value = intent.userId
             }
 
-            is IndexUiIntent.SetUserIdIndexList -> {
-                context.saveBackupUserIdIndex(intent.list)
+            is IndexUiIntent.GetUsers -> {
+                _userList.value = rootService.getUsers().map { UserInfo(it.id, it.name) }
             }
 
-            is IndexUiIntent.FilterByFlag -> {
-                context.saveBackupFilterFlagIndex(intent.index)
-            }
-
-            is IndexUiIntent.Sort -> {
-                var type = intent.type
+            is IndexUiIntent.SortByIndex -> {
                 val index = intent.index
-                if (_sortIndexState.value == index) {
-                    type = if (type == SortType.ASCENDING) SortType.DESCENDING else SortType.ASCENDING
-                    _sortTypeState.value = type
-                }
                 _sortIndexState.value = index
+            }
+
+            is IndexUiIntent.SortByType -> {
+                var type = intent.type
+                type = if (type == SortType.ASCENDING) SortType.DESCENDING else SortType.ASCENDING
+                _sortTypeState.value = type
             }
 
             is IndexUiIntent.FilterByKey -> {
@@ -131,7 +122,27 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.SelectAll -> {
-                packageRepo.upsert(packagesState.value.onEach { it.extraInfo.activated = intent.selected })
+                packageRepo.upsert(displayPackagesState.value.onEach { it.extraInfo.activated = intent.selected })
+            }
+
+            is IndexUiIntent.Reverse -> {
+                packageRepo.upsert(displayPackagesState.value.onEach { it.extraInfo.activated = it.extraInfo.activated.not() })
+            }
+
+            is IndexUiIntent.ChangeFlag -> {
+                when (intent.flag) {
+                    PackageEntity.FLAG_APK -> {
+                        packageRepo.upsert(intent.entity.selectDataOnly())
+                    }
+
+                    PackageEntity.FLAG_ALL -> {
+                        packageRepo.upsert(intent.entity.selectApkOnly())
+                    }
+
+                    else -> {
+                        packageRepo.upsert(intent.entity.selectAll())
+                    }
+                }
             }
 
             is IndexUiIntent.ToPageDetail -> {
@@ -142,55 +153,71 @@ class IndexViewModel @Inject constructor(
             }
 
             is IndexUiIntent.BlockSelected -> {
-                val packages = packageRepo.filterBackup(packageRepo.queryActivated(OpType.BACKUP))
-                packages.forEach {
+                val filtered = displayPackagesState.value.filter { it.extraInfo.activated }
+                packageRepo.upsert(filtered.onEach {
                     it.extraInfo.blocked = true
                     it.extraInfo.activated = false
-                }
-                packageRepo.upsert(packages)
+                })
             }
 
             is IndexUiIntent.BatchSelectData -> {
-                val packages = packageRepo.filterBackup(packageRepo.queryActivated(OpType.BACKUP))
-                packages.forEach {
+                val filtered = displayPackagesState.value.filter { it.extraInfo.activated }
+                packageRepo.upsert(filtered.onEach {
                     it.dataStates.apkState = if (intent.apk) DataState.Selected else DataState.NotSelected
                     it.dataStates.userState = if (intent.user) DataState.Selected else DataState.NotSelected
                     it.dataStates.userDeState = if (intent.userDe) DataState.Selected else DataState.NotSelected
                     it.dataStates.dataState = if (intent.data) DataState.Selected else DataState.NotSelected
                     it.dataStates.obbState = if (intent.obb) DataState.Selected else DataState.NotSelected
                     it.dataStates.mediaState = if (intent.media) DataState.Selected else DataState.NotSelected
-                }
-                packageRepo.upsert(packages)
+                })
             }
         }
     }
 
-    private val _refreshState: MutableStateFlow<RefreshState> =
-        MutableStateFlow(RefreshState())
-    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(opType = OpType.BACKUP, existed = true, blocked = false).flowOnIO()
+    private val _packages: Flow<List<PackageEntity>> = packageRepo.queryPackagesFlow(opType = OpType.BACKUP, blocked = false).flowOnIO()
     private var _keyState: MutableStateFlow<String> = MutableStateFlow("")
-    private var _flagIndex: Flow<Int> = context.readBackupFilterFlagIndex().flowOnIO()
-    private var _userIdList: Flow<List<Int>> = context.readUserIdList().flowOnIO()
-    private var _userIdIndexList: Flow<List<Int>> = context.readBackupUserIdIndex().flowOnIO()
+    private var _loadSystemApps: Flow<Boolean> = context.readLoadSystemApps().flowOnIO()
+    private var _userIdIndex: MutableStateFlow<Int> = MutableStateFlow(0)
+    private var _userList: MutableStateFlow<List<UserInfo>> = MutableStateFlow(listOf())
     private var _sortIndexState: MutableStateFlow<Int> = MutableStateFlow(0)
     private var _sortTypeState: MutableStateFlow<SortType> = MutableStateFlow(SortType.ASCENDING)
     private val _packagesState: Flow<List<PackageEntity>> =
-        combine(_packages, _keyState, _flagIndex, _sortIndexState, _sortTypeState, _userIdIndexList, _userIdList) { packages, key, flagIndex, sortIndex, sortType, userIdIndexList, userIdList ->
-            packages.filter(packageRepo.getKeyPredicateNew(key = key))
-                .filter(packageRepo.getFlagPredicateNew(index = flagIndex))
-                .filter(packageRepo.getUserIdPredicateNew(indexList = userIdIndexList, userIdList = userIdList))
+        combine(
+            _packages,
+            _keyState,
+            _loadSystemApps,
+            _sortIndexState,
+            _sortTypeState,
+        ) { packages, key, loadSystemApps, sortIndex, sortType ->
+            packages.asSequence()
+                .filter(packageRepo.getKeyPredicateNew(key = key))
+                .filter(packageRepo.getShowSystemAppsPredicate(value = loadSystemApps))
                 .sortedWith(packageRepo.getSortComparatorNew(sortIndex = sortIndex, sortType = sortType))
-                .sortedByDescending { it.extraInfo.activated }
+                .sortedByDescending { it.extraInfo.activated }.toList()
+        }.flowOnIO()
+    private val _displayPackagesState: Flow<List<PackageEntity>> =
+        combine(_packagesState, _userIdIndex, _userList) { packages, userIdIndex, userIdList ->
+            packages.filter(packageRepo.getUserIdPredicateNew(userId = userIdList.getOrNull(userIdIndex)?.id))
         }.flowOnIO()
     private val _srcPackagesEmptyState: Flow<Boolean> = _packages.map { packages -> packages.isEmpty() }.flowOnIO()
     private val _packagesSelectedState: Flow<Int> = _packagesState.map { packages -> packages.count { it.extraInfo.activated } }.flowOnIO()
+    private val _displayPackagesSelectedState: Flow<Map<Int, Int?>> =
+        combine(_packagesState, _userList) { packages, userList ->
+            val map = mutableMapOf<Int, Int?>()
+            userList.forEach { user ->
+                val count = packages.count { it.extraInfo.activated && it.indexInfo.userId == user.id }
+                map[user.id] = if (count == 0) null else count
+            }
+            map
+        }.flowOnIO()
 
     val packagesState: StateFlow<List<PackageEntity>> = _packagesState.stateInScope(listOf())
+    val displayPackagesState: StateFlow<List<PackageEntity>> = _displayPackagesState.stateInScope(listOf())
     val packagesSelectedState: StateFlow<Int> = _packagesSelectedState.stateInScope(0)
-    val refreshState: StateFlow<RefreshState> = _refreshState.asStateFlow()
-    val flagIndexState: StateFlow<Int> = _flagIndex.stateInScope(1)
-    val userIdListState: StateFlow<List<Int>> = _userIdList.stateInScope(listOf(0))
-    val userIdIndexListState: StateFlow<List<Int>> = _userIdIndexList.stateInScope(listOf(0))
+    val displayPackagesSelectedState: StateFlow<Map<Int, Int?>> = _displayPackagesSelectedState.stateInScope(mapOf())
+    val loadSystemApps: StateFlow<Boolean> = _loadSystemApps.stateInScope(false)
+    val userListState: StateFlow<List<UserInfo>> = _userList.stateInScope(listOf())
+    val userIdIndexState: StateFlow<Int> = _userIdIndex.stateInScope(0)
     val sortIndexState: StateFlow<Int> = _sortIndexState.stateInScope(0)
     val sortTypeState: StateFlow<SortType> = _sortTypeState.stateInScope(SortType.ASCENDING)
     val srcPackagesEmptyState: StateFlow<Boolean> = _srcPackagesEmptyState.stateInScope(true)

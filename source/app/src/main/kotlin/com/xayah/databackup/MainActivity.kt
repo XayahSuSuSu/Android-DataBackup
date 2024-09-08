@@ -25,6 +25,7 @@ import com.xayah.feature.main.cloud.add.PageWebDAVSetup
 import com.xayah.feature.main.configurations.PageConfigurations
 import com.xayah.feature.main.dashboard.PageDashboard
 import com.xayah.feature.main.directory.PageDirectory
+import com.xayah.feature.main.list.ListRoute
 import com.xayah.feature.main.medium.backup.detail.PageMediumBackupDetail
 import com.xayah.feature.main.medium.backup.list.PageMediumBackupList
 import com.xayah.feature.main.medium.restore.detail.PageMediumRestoreDetail
@@ -101,6 +102,9 @@ class MainActivity : AppCompatActivity() {
                         }
                         composable(MainRoutes.PackagesBackupList.route) {
                             PagePackagesBackupList()
+                        }
+                        composable(MainRoutes.List.route) {
+                            ListRoute()
                         }
                         composable(MainRoutes.PackagesBackupDetail.route) {
                             PagePackagesBackupDetail()

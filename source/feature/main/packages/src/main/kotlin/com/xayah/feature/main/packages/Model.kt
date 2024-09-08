@@ -15,7 +15,6 @@ fun PackageEntity.reverseSsaid() = if (ssaidSelected)
 else
     copy(dataStates = dataStates.copy(ssaidState = DataState.Selected))
 
-
 fun PackageEntity.reversedPackage(dataType: DataType): PackageEntity = when (dataType) {
     DataType.PACKAGE_APK -> if (apkSelected)
         copy(dataStates = dataStates.copy(apkState = DataState.NotSelected))
@@ -49,6 +48,51 @@ fun PackageEntity.reversedPackage(dataType: DataType): PackageEntity = when (dat
 
     else -> this
 }
+
+fun PackageEntity.selectApkOnly(): PackageEntity = copy(
+    dataStates = dataStates.copy(
+        apkState = DataState.Selected,
+        userState = DataState.NotSelected,
+        userDeState = DataState.NotSelected,
+        dataState = DataState.NotSelected,
+        obbState = DataState.NotSelected,
+        mediaState = DataState.NotSelected,
+    )
+)
+
+fun PackageEntity.selectDataOnly(): PackageEntity = copy(
+    dataStates = dataStates.copy(
+        apkState = DataState.NotSelected,
+        userState = DataState.Selected,
+        userDeState = DataState.Selected,
+        dataState = DataState.Selected,
+        obbState = DataState.Selected,
+        mediaState = DataState.Selected,
+    )
+)
+
+fun PackageEntity.selectAll(): PackageEntity = copy(
+    dataStates = dataStates.copy(
+        apkState = DataState.Selected,
+        userState = DataState.Selected,
+        userDeState = DataState.Selected,
+        dataState = DataState.Selected,
+        obbState = DataState.Selected,
+        mediaState = DataState.Selected,
+    )
+)
+
+fun PackageEntity.selectNone(): PackageEntity = copy(
+    dataStates = dataStates.copy(
+        apkState = DataState.NotSelected,
+        userState = DataState.NotSelected,
+        userDeState = DataState.NotSelected,
+        dataState = DataState.NotSelected,
+        obbState = DataState.NotSelected,
+        mediaState = DataState.NotSelected,
+    )
+)
+
 
 fun countItems(context: Context, count: Int) = run {
     String.format(context.resources.getQuantityString(R.plurals.items, count), count)

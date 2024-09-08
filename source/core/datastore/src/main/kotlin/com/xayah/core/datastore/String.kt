@@ -12,7 +12,6 @@ import com.xayah.core.model.util.of
 import kotlinx.coroutines.flow.map
 
 // -----------------------------------------Keys-----------------------------------------
-val KeyCompressionType = stringPreferencesKey("compression_type")
 val KeyBackupSavePath = stringPreferencesKey("backup_save_path")
 val KeyAppVersionName = stringPreferencesKey("app_version_name")
 val KeyCloudActivatedAccountName = stringPreferencesKey("cloud_activated_account_name")

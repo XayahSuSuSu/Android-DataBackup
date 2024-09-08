@@ -18,4 +18,5 @@
     <item name="args_backup" type="string"/>
     <item name="args_restore" type="string"/>
     <item name="backup_dir_as_media_error" type="string"/>
+    <item name="user" type="string"/>
 </resources>

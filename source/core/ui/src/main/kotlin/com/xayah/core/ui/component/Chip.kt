@@ -363,18 +363,53 @@ fun DataChip(
 @ExperimentalFoundationApi
 @Composable
 fun PackageDataChip(modifier: Modifier = Modifier, enabled: Boolean = true, dataType: DataType, selected: Boolean, subtitle: String? = null, onClick: () -> Unit) {
+    ActionChip(
+        modifier = modifier,
+        enabled = enabled,
+        icon = dataType.icon,
+        selected = selected,
+        title = dataType.type.uppercase(),
+        subtitle = subtitle,
+        onClick = onClick
+    )
+}
+
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
+@Composable
+fun ActionChip(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    icon: ImageVector,
+    selected: Boolean,
+    title: String,
+    subtitle: String? = null,
+    onClick: () -> Unit
+) {
     ActionButton(
         modifier = modifier,
         enabled = enabled,
-        icon = if (selected) Icons.Rounded.Check else dataType.icon,
+        icon = if (selected) Icons.Rounded.Check else icon,
         colorContainer = if (selected) ThemedColorSchemeKeyTokens.PrimaryContainer else ThemedColorSchemeKeyTokens.SurfaceContainerHigh,
         colorL80D20 = if (selected) ThemedColorSchemeKeyTokens.OnPrimaryContainer else ThemedColorSchemeKeyTokens.SurfaceDim,
         onColorContainer = if (selected) ThemedColorSchemeKeyTokens.PrimaryContainer else ThemedColorSchemeKeyTokens.OnSurface,
         onClick = onClick
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            LabelLargeText(text = dataType.type.uppercase(), color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled), maxLines = 1, enabled = enabled)
-            AnimatedVisibility(subtitle != null) { LabelSmallText(modifier = Modifier.basicMarquee(), text = subtitle!!, maxLines = 1, enabled = enabled) }
+            LabelLargeText(
+                text = title,
+                color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled),
+                maxLines = 1,
+                enabled = enabled
+            )
+            AnimatedVisibility(subtitle != null) {
+                LabelSmallText(
+                    modifier = Modifier.basicMarquee(),
+                    text = subtitle!!,
+                    maxLines = 1,
+                    enabled = enabled
+                )
+            }
         }
     }
 }

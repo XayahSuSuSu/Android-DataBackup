@@ -204,4 +204,14 @@ object DatabaseMigrations {
         tableName = "CloudEntity"
     )
     class Schema3to4 : AutoMigrationSpec
+
+    @DeleteColumn(
+        tableName = "TaskDetailPackageEntity",
+        columnName = "packageEntity_extraInfo_existed"
+    )
+    @DeleteColumn(
+        tableName = "PackageEntity",
+        columnName = "extraInfo_existed"
+    )
+    class Schema5to6 : AutoMigrationSpec
 }

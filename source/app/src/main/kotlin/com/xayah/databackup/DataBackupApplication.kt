@@ -1,13 +1,15 @@
 package com.xayah.databackup
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
-
+import javax.inject.Inject
 
 @HiltAndroidApp
-class DataBackupApplication : Application() {
+class DataBackupApplication : Application(), Configuration.Provider {
     companion object {
         lateinit var application: Application
     }
@@ -34,4 +36,13 @@ class DataBackupApplication : Application() {
         Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME)
         Security.insertProviderAt(BouncyCastleProvider(), 1)
     }
+
+    // Hilt: Inject HiltWorkFactory instance
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 }

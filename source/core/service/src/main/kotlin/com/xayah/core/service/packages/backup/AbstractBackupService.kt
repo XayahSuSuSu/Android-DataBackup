@@ -173,7 +173,7 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
                         restoreEntity = p.copy(
                             id = id,
                             indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = mTaskEntity.cloud, backupDir = mTaskEntity.backupDir),
-                            extraInfo = p.extraInfo.copy(existed = true, activated = false)
+                            extraInfo = p.extraInfo.copy(activated = false)
                         )
                         val configDst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir)
                         mRootService.writeJson(data = restoreEntity, dst = configDst)
