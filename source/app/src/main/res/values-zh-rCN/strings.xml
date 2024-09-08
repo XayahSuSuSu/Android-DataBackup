@@ -6,7 +6,7 @@
     <string name="environment_detection">环境检测</string>
     <string name="start">开始</string>
     <string name="start_subtitle">根据相关政策规定，你需要先仔细阅读并同意以下《用户协议》与《隐私政策》后才能开始使用本应用</string>
-    <string name="start_desc">本应用产生的所有数据均用于备份/恢复功能本身，仅存于本地，严禁非法倒卖</string>
+    <string name="start_desc">本应用产生的所有数据均用于备份/恢复功能本身，仅存于本地，严禁非法倒卖。</string>
     <string name="network">网络</string>
     <string name="network_desc">用于获取应用更新信息, 应用分析</string>
     <string name="application">应用</string>
@@ -19,7 +19,7 @@
     <string name="release_prebuilt_binaries">释放预编译二进制文件</string>
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
-    <string name="overlook">一览</string>
+    <string name="overlook">总览</string>
     <string name="last_backup">上次备份</string>
     <string name="none">无</string>
     <string name="utilities">工具</string>
@@ -45,14 +45,14 @@
     <string name="search_bar_hint_packages">搜索应用名称或包名…</string>
     <string name="apk">安装包</string>
     <string name="data">数据</string>
-    <string name="remote_service_err_info">请尝试重启设备或重装Magisk</string>
+    <string name="remote_service_err_info">请尝试重启设备或重装Magisk。</string>
     <string name="updating">更新中</string>
     <string name="both">全部</string>
     <string name="manifest">清单</string>
     <string name="selected_apks">已选安装包</string>
     <string name="selected_data">已选数据</string>
     <string name="idle">空闲</string>
-    <string name="backing_up">备份中</string>
+    <string name="backing_up">备份中……</string>
     <string name="failed_and_terminated">失败, 终止</string>
     <string name="not_exist">不存在</string>
     <string name="not_exist_and_skip">不存在, 跳过</string>
@@ -74,7 +74,7 @@
     <string name="reload">重载</string>
     <string name="databases_reload_failed">数据库重载失败</string>
     <string name="icon_reload_failed">图标重载失败</string>
-    <string name="restart_failed">重启失败, 请手动重启本应用</string>
+    <string name="restart_failed">重启失败, 请手动重启本应用。</string>
     <string name="confirm_reload">确定要重载吗？</string>
     <string name="version">版本</string>
     <string name="feature">特性</string>
@@ -85,7 +85,7 @@
     <string name="keep_screen_on">保持屏幕常亮</string>
     <string name="keep_screen_on_desc">在备份/恢复时保持设备处于唤醒状态</string>
     <string name="compression_type">压缩方式</string>
-    <string name="compression_type_desc">压缩算法，这会同时影响到备份与恢复。如果您不清楚此选项的用途，请不要随意更改</string>
+    <string name="compression_type_desc">压缩算法，这会同时影响到备份与恢复。如果您不清楚此选项的用途，请不要随意更改。</string>
     <string name="backup_user">备份用户</string>
     <string name="backup_user_desc">读取备份列表/备份数据时的目标用户</string>
     <string name="user">用户</string>
@@ -108,7 +108,7 @@
     <string name="installed">已安装</string>
     <string name="sooner_or_later">即将到来</string>
     <string name="delete">删除</string>
-    <string name="confirm_delete_selected_restoring_items">确定要从数据库以及本地文件中删除所选项吗</string>
+    <string name="confirm_delete_selected_restoring_items">确定要从数据库以及本地文件中删除所选项吗？</string>
     <string name="app_crashed">应用发生崩溃</string>
     <string name="no_browser">也许没有浏览器能够打开它</string>
     <string name="supported_format">支持的格式</string>
@@ -117,7 +117,7 @@
     <string name="select_target_directory">选择目标目录</string>
     <string name="confirm_delete">这将删除你选择的所有相关文件</string>
     <string name="backup_dir_as_media_error">无法添加备份目录作为媒体资料</string>
-    <string name="media_target_path_missing">目标目录丢失，请手动设置</string>
+    <string name="media_target_path_missing">目标目录丢失，请手动设置。</string>
     <string name="media_set_path">设置路径</string>
     <string name="update_available">更新可用</string>
     <string name="not_installed">未安装</string>
