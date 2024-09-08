@@ -27,6 +27,8 @@ import com.xayah.core.util.PathUtil
 import com.xayah.core.util.model.ShellResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
@@ -39,6 +41,7 @@ import kotlin.coroutines.suspendCoroutine
 class RemoteRootService(private val context: Context) {
     private var mService: IRemoteRootService? = null
     private var mConnection: ServiceConnection? = null
+    private var mutex = Mutex()
     private var retries = 0
     private val intent by lazy {
         Intent().apply {
@@ -117,7 +120,7 @@ class RemoteRootService(private val context: Context) {
         mService = null
     }
 
-    private suspend fun getService(): IRemoteRootService {
+    private suspend fun getService(): IRemoteRootService = mutex.withLock {
         return tryOnScope(
             block = {
                 withMainContext {
