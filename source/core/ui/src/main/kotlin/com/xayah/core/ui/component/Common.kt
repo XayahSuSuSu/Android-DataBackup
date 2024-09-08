@@ -54,6 +54,7 @@ import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.theme.withState
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
+import kotlin.math.min
 
 @ExperimentalMaterial3Api
 @Composable
@@ -127,7 +128,7 @@ fun PackageIcons(
     size: Dp = SizeTokens.Level24,
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(-SizeTokens.Level4)) {
-        for (index in 0 until packages.size) {
+        for (index in 0 until min(maxDisplayNum, packages.size)) {
             if (index == packages.size - 1) break
             PackageIconImage(
                 packageName = packages[index].packageName,
