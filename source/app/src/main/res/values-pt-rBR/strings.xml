@@ -344,4 +344,20 @@
     <string name="args_update_from">Você pode atualizar da versão %1$s para a versão %2$s</string>
     <string name="args_apps_restored">%1$s apps restaurados</string>
     <string name="args_files_restored">%1$s arquivos restaurados</string>
+    <string name="unselect_all">Desmarcar todos</string>
+    <string name="reverse_selection">Seleção reversa</string>
+    <string name="for_selected">Para selecionados…</string>
+    <string name="block">Bloquear</string>
+    <string name="detailed_data_items">Itens de dados detalhados</string>
+    <string name="refresh">Atualizar</string>
+    <string name="initializing_app_list">Inicializando lista de apps</string>
+    <string name="updating_app_list">Atualizando lista de apps</string>
+    <string name="loading_backups">Carregando backups</string>
+    <string name="updating_file_list">Atualizando lista de arquivos</string>
+    <string name="no_item_selected">Nenhum item selecionado</string>
+    <string name="all_selected">Todos os itens selecionados</string>
+    <string name="data_items">Itens de dados</string>
+    <string name="apk_selected">APK selecionado</string>
+    <string name="data_selected">Dados selecionados</string>
+    <string name="custom_selected">Itens personalizados selecionados</string>
 </resources>
