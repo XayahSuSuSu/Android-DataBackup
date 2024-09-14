@@ -49,6 +49,7 @@ class ListViewModel @Inject constructor(
             Success.Apps(
                 opType = opType,
                 selected = listData.selected,
+                isUpdating = listData.isUpdating,
                 cloudName = cloudName,
                 backupDir = backupDir,
             )
@@ -59,6 +60,7 @@ class ListViewModel @Inject constructor(
             Success.Files(
                 opType = opType,
                 selected = listData.selected,
+                isUpdating = listData.isUpdating,
                 cloudName = cloudName,
                 backupDir = backupDir,
             )
@@ -71,26 +73,34 @@ class ListViewModel @Inject constructor(
 
     fun onResume() {
         viewModelScope.launch {
-            when (target) {
-                Target.Apps -> {
+            when (uiState.value) {
+                is Success.Apps -> {
                     when (opType) {
                         OpType.BACKUP -> {
-                            WorkManagerInitializer.fastInitializeAndUpdateApps(context)
+                            val state = uiState.value.castTo<Success.Apps>()
+                            if (state.isUpdating.not()) {
+                                WorkManagerInitializer.fastInitializeAndUpdateApps(context)
+                            }
                         }
 
                         OpType.RESTORE -> {}
                     }
                 }
 
-                Target.Files -> {
+                is Success.Files -> {
                     when (opType) {
                         OpType.BACKUP -> {
-                            WorkManagerInitializer.fastInitializeAndUpdateFiles(context)
+                            val state = uiState.value.castTo<Success.Files>()
+                            if (state.isUpdating.not()) {
+                                WorkManagerInitializer.fastInitializeAndUpdateFiles(context)
+                            }
                         }
 
                         OpType.RESTORE -> {}
                     }
                 }
+
+                else -> {}
             }
         }
     }
@@ -139,21 +149,24 @@ sealed interface ListUiState {
     sealed class Success(
         open val opType: OpType,
         open val selected: Long,
+        open val isUpdating: Boolean,
         open val cloudName: String,
         open val backupDir: String,
     ) : ListUiState {
         data class Apps(
             override val opType: OpType,
             override val selected: Long,
+            override val isUpdating: Boolean,
             override val cloudName: String,
             override val backupDir: String,
-        ) : Success(opType, selected, cloudName, backupDir)
+        ) : Success(opType, selected, isUpdating, cloudName, backupDir)
 
         data class Files(
             override val opType: OpType,
             override val selected: Long,
+            override val isUpdating: Boolean,
             override val cloudName: String,
             override val backupDir: String,
-        ) : Success(opType, selected, cloudName, backupDir)
+        ) : Success(opType, selected, isUpdating, cloudName, backupDir)
     }
 }
