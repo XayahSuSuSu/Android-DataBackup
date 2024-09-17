@@ -34,13 +34,13 @@ data class PackageInfo(
 @Serializable
 data class PackageExtraInfo(
     var uid: Int,
-    var labels: List<String>,
     var hasKeystore: Boolean,
     var permissions: List<PackagePermission>,
     var ssaid: String,
     var blocked: Boolean,
     var activated: Boolean,
     @ColumnInfo(defaultValue = "1") var firstUpdated: Boolean,
+    @ColumnInfo(defaultValue = "1") var enabled: Boolean,
 )
 
 @Serializable
@@ -74,6 +74,17 @@ data class PackageDataStates(
             DataType.PACKAGE_MEDIA -> states.copy(mediaState = if (selected) DataState.Selected else DataState.NotSelected)
             else -> states
         }
+
+        fun DataType.getDisplayStats(displayStats: PackageDataStats?): Long? = if (displayStats == null) null else
+            when (this) {
+                DataType.PACKAGE_APK -> displayStats.apkBytes
+                DataType.PACKAGE_USER -> displayStats.userBytes
+                DataType.PACKAGE_USER_DE -> displayStats.userDeBytes
+                DataType.PACKAGE_DATA -> displayStats.dataBytes
+                DataType.PACKAGE_OBB -> displayStats.obbBytes
+                DataType.PACKAGE_MEDIA -> displayStats.mediaBytes
+                else -> null
+            }
     }
 }
 
@@ -208,6 +219,7 @@ fun PackageEntity.asExternalModel() = App(
     id = id,
     packageName = packageName,
     label = packageInfo.label,
+    preserveId = preserveId,
     isSystemApp = isSystemApp,
     selectionFlag = selectionFlag,
     selected = extraInfo.activated

@@ -1,13 +1,18 @@
 package com.xayah.core.data.repository
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Build
 import android.os.UserHandle
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import com.xayah.core.data.R
+import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.datastore.di.DbDispatchers.Default
 import com.xayah.core.datastore.di.Dispatcher
@@ -18,6 +23,7 @@ import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.model.App
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataState
+import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SettingsData
@@ -31,8 +37,10 @@ import com.xayah.core.model.database.PackageInfo
 import com.xayah.core.model.database.PackageStorageStats
 import com.xayah.core.model.database.PackageUpdateEntity
 import com.xayah.core.model.database.asExternalModel
+import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.ConfigsPackageRestoreName
+import com.xayah.core.util.DateUtil
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.PermissionUtil
@@ -108,6 +116,14 @@ class AppsRepo @Inject constructor(
 
     suspend fun blockSelected(ids: List<Long>) {
         appsDao.blockByIds(ids)
+    }
+
+    suspend fun setBlocked(id: Long, blocked: Boolean) {
+        appsDao.setBlocked(id, blocked)
+    }
+
+    suspend fun setEnabled(id: Long, enabled: Boolean) {
+        appsDao.setEnabled(id, enabled)
     }
 
     suspend fun deleteSelected(ids: List<Long>) {
@@ -223,13 +239,13 @@ class AppsRepo @Inject constructor(
             ),
             extraInfo = PackageExtraInfo(
                 uid = info.applicationInfo.uid,
-                labels = listOf(),
                 hasKeystore = false,
                 permissions = listOf(),
                 ssaid = "",
                 blocked = false,
                 activated = false,
                 firstUpdated = false,
+                enabled = true,
             ),
             dataStates = PackageDataStates(),
             storageStats = PackageStorageStats(),
@@ -276,6 +292,15 @@ class AppsRepo @Inject constructor(
         appsDao.update(updateList)
     }
 
+    suspend fun updateApp(pkg: PackageEntity, userId: Int) {
+        val pm = context.packageManager
+        val userHandle = rootService.getUserHandle(userId)
+        val updateEntity = updateApp(pm, pkg, userId, userHandle)
+        if (updateEntity != null) {
+            appsDao.update(updateEntity)
+        }
+    }
+
     private suspend fun updateApp(pm: PackageManager, pkg: PackageEntity, userId: Int, userHandle: UserHandle?): PackageUpdateEntity? {
         val info = rootService.getPackageInfoAsUser(pkg.packageName, PackageManager.GET_PERMISSIONS, userId)
         val updateEntity = PackageUpdateEntity(pkg.id, pkg.extraInfo, pkg.storageStats)
@@ -302,6 +327,7 @@ class AppsRepo @Inject constructor(
             updateEntity.extraInfo.permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
             updateEntity.extraInfo.hasKeystore = PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid)
             updateEntity.extraInfo.ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
+            updateEntity.extraInfo.enabled = info.applicationInfo.enabled
 
             if (userHandle != null) {
                 rootService.queryStatsForPackage(info, userHandle).also { stats ->
@@ -368,6 +394,24 @@ class AppsRepo @Inject constructor(
         }
     }.withLog()
 
+    private fun parsePreserveAndUserId(pathParcelable: PathParcelable): Pair<Long, Int>? {
+        runCatching {
+            val userPath = pathParcelable.pathList[pathParcelable.pathList.size - 2]
+            if (userPath.contains("@")) {
+                val userIdWithPreserveId = userPath.split("@")
+                val preserveId = userIdWithPreserveId.lastOrNull()?.toLongOrNull() ?: 0L
+                val userId = userIdWithPreserveId.first().split("_").lastOrNull()?.toIntOrNull() ?: 0
+                return preserveId to userId
+            } else {
+                // Main backup
+                val preserveId = 0L
+                val userId = userPath.split("_").lastOrNull()?.toIntOrNull() ?: 0
+                return preserveId to userId
+            }
+        }
+        return null
+    }
+
     private suspend fun loadLocalApps(onLoad: suspend (cur: Int, max: Int, content: String) -> Unit) {
         val path = pathUtil.getLocalBackupAppsDir()
         val paths = rootService.walkFileTree(path)
@@ -381,6 +425,12 @@ class AppsRepo @Inject constructor(
                         p?.extraInfo?.activated = false
                         p?.indexInfo?.cloud = ""
                         p?.indexInfo?.backupDir = context.localBackupSaveDir()
+                        parsePreserveAndUserId(pathParcelable).also { result ->
+                            result?.also { (pId, uId) ->
+                                p?.indexInfo?.preserveId = pId
+                                p?.indexInfo?.userId = uId
+                            }
+                        }
                     }?.apply {
                         if (appsDao.query(packageName, indexInfo.opType, userId, preserveId, indexInfo.compressionType, indexInfo.cloud, indexInfo.backupDir) == null) {
                             appsDao.upsert(this)
@@ -389,14 +439,21 @@ class AppsRepo @Inject constructor(
                 }
             }
         }
+        rootService.clearEmptyDirectoriesRecursively(path)
+        appsDao.queryPackages(OpType.RESTORE, "", context.localBackupSaveDir()).forEach {
+            val src = "${path}/${it.archivesRelativeDir}"
+            if (rootService.exists(src).not()) {
+                appsDao.delete(it.id)
+            }
+        }
     }
 
     private suspend fun loadCloudApps(cloudName: String, onLoad: suspend (cur: Int, max: Int, content: String) -> Unit) = runCatching {
         cloudRepo.withClient(cloudName) { client, entity ->
             val remote = entity.remote
-            val src = pathUtil.getCloudRemoteAppsDir(remote)
-            if (client.exists(src)) {
-                val paths = client.walkFileTree(src)
+            val path = pathUtil.getCloudRemoteAppsDir(remote)
+            if (client.exists(path)) {
+                val paths = client.walkFileTree(path)
                 val tmpDir = pathUtil.getCloudTmpDir()
                 paths.forEachIndexed { index, pathParcelable ->
                     val fileName = PathUtil.getFileName(pathParcelable.pathString)
@@ -409,6 +466,12 @@ class AppsRepo @Inject constructor(
                                     p?.extraInfo?.activated = false
                                     p?.indexInfo?.cloud = entity.name
                                     p?.indexInfo?.backupDir = remote
+                                    parsePreserveAndUserId(pathParcelable).also { result ->
+                                        result?.also { (pId, uId) ->
+                                            p?.indexInfo?.preserveId = pId
+                                            p?.indexInfo?.userId = uId
+                                        }
+                                    }
                                 }?.apply {
                                     if (appsDao.query(packageName, indexInfo.opType, userId, preserveId, indexInfo.compressionType, indexInfo.cloud, indexInfo.backupDir) == null) {
                                         appsDao.upsert(this)
@@ -417,6 +480,151 @@ class AppsRepo @Inject constructor(
                             }
                         }
                     }
+                }
+                client.clearEmptyDirectoriesRecursively(path)
+                appsDao.queryPackages(OpType.RESTORE, entity.name, entity.remote).forEach {
+                    val src = "${path}/${it.archivesRelativeDir}"
+                    if (client.exists(src).not()) {
+                        appsDao.delete(it.id)
+                    }
+                }
+            }
+        }
+    }.withLog()
+
+    suspend fun calculateLocalAppSize(app: PackageEntity) {
+        app.displayStats.apkBytes = calculateLocalAppDataSize(app, DataType.PACKAGE_APK)
+        app.displayStats.userBytes = calculateLocalAppDataSize(app, DataType.PACKAGE_USER)
+        app.displayStats.userDeBytes = calculateLocalAppDataSize(app, DataType.PACKAGE_USER_DE)
+        app.displayStats.dataBytes = calculateLocalAppDataSize(app, DataType.PACKAGE_DATA)
+        app.displayStats.obbBytes = calculateLocalAppDataSize(app, DataType.PACKAGE_OBB)
+        app.displayStats.mediaBytes = calculateLocalAppDataSize(app, DataType.PACKAGE_MEDIA)
+        appsDao.upsert(app)
+    }
+
+    private suspend fun calculateLocalAppDataSize(p: PackageEntity, dataType: DataType): Long {
+        val src = getLocalAppDataSrcDir(p, dataType)
+        return if (rootService.exists(src)) rootService.calculateSize(src) else 0
+    }
+
+    private fun getDataSrcDir(dataType: DataType, userId: Int) = dataType.srcDir(userId)
+
+    private fun getDataSrc(srcDir: String, packageName: String) = "$srcDir/$packageName"
+
+    private suspend fun getPackageSourceDir(packageName: String, userId: Int) = rootService.getPackageSourceDir(packageName, userId).let { list ->
+        if (list.isNotEmpty()) PathUtil.getParentPath(list[0]) else ""
+    }
+
+    private suspend fun getLocalAppDataSrcDir(p: PackageEntity, dataType: DataType) =
+        if (dataType == DataType.PACKAGE_APK) getPackageSourceDir(packageName = p.packageName, userId = p.userId) else getDataSrc(srcDir = getDataSrcDir(dataType = dataType, userId = p.userId), packageName = p.packageName)
+
+    /**
+     * @author <a href="https://github.com/MuntashirAkon">@MuntashirAkon</a>
+     */
+    suspend fun launchApp(packageName: String, userId: Int) {
+        val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+        val user = rootService.getUserHandle(userId)
+        if (launcherApps.isPackageEnabled(packageName, user).not()) {
+            // Package not enabled
+            Toast.makeText(context, context.getString(R.string.app_is_frozen), Toast.LENGTH_SHORT).show()
+            return
+        }
+        val activityInfoList = launcherApps.getActivityList(packageName, user)
+        if (activityInfoList.isEmpty()) {
+            // No activities
+            Toast.makeText(context, context.getString(R.string.no_activities_found), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Return the first openable activity
+        val info = activityInfoList[0]
+        val intent = Intent(Intent.ACTION_MAIN)
+            .addCategory(Intent.CATEGORY_LAUNCHER)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+            .setComponent(info.componentName)
+
+        context.startActivity(intent)
+    }
+
+    private fun getArchiveSrc(dstDir: String, dataType: DataType, ct: CompressionType) = "${dstDir}/${dataType.type}.${ct.suffix}"
+
+    private suspend fun calculateLocalAppArchiveSize(p: PackageEntity, dataType: DataType) = rootService.calculateSize(
+        getArchiveSrc("${pathUtil.getLocalBackupAppsDir()}/${p.archivesRelativeDir}", dataType, p.indexInfo.compressionType)
+    )
+
+    suspend fun calculateLocalAppArchiveSize(app: PackageEntity) {
+        app.displayStats.apkBytes = calculateLocalAppArchiveSize(app, DataType.PACKAGE_APK)
+        app.displayStats.userBytes = calculateLocalAppArchiveSize(app, DataType.PACKAGE_USER)
+        app.displayStats.userDeBytes = calculateLocalAppArchiveSize(app, DataType.PACKAGE_USER_DE)
+        app.displayStats.dataBytes = calculateLocalAppArchiveSize(app, DataType.PACKAGE_DATA)
+        app.displayStats.obbBytes = calculateLocalAppArchiveSize(app, DataType.PACKAGE_OBB)
+        app.displayStats.mediaBytes = calculateLocalAppArchiveSize(app, DataType.PACKAGE_MEDIA)
+        appsDao.upsert(app)
+    }
+
+    suspend fun protectApp(cloudName: String?, app: PackageEntity) {
+        if (cloudName.isNullOrEmpty().not()) {
+            cloudName?.apply {
+                protectCloudApp(this, app)
+            }
+        } else {
+            protectLocalApp(app)
+        }
+    }
+
+    private suspend fun protectLocalApp(app: PackageEntity) {
+        val protectedApp = app.copy(indexInfo = app.indexInfo.copy(preserveId = DateUtil.getTimestamp()))
+        val appsDir = pathUtil.getLocalBackupAppsDir()
+        val src = "${appsDir}/${app.archivesRelativeDir}"
+        val dst = "${appsDir}/${protectedApp.archivesRelativeDir}"
+        rootService.writeJson(data = protectedApp, dst = PathUtil.getPackageRestoreConfigDst(src))
+        rootService.renameTo(src, dst)
+        appsDao.update(protectedApp)
+    }
+
+    private suspend fun protectCloudApp(cloudName: String, app: PackageEntity) = runCatching {
+        cloudRepo.withClient(cloudName) { client, entity ->
+            val protectedApp = app.copy(indexInfo = app.indexInfo.copy(preserveId = DateUtil.getTimestamp()))
+            val remote = entity.remote
+            val remoteAppsDir = pathUtil.getCloudRemoteAppsDir(remote)
+            val src = "${remoteAppsDir}/${app.archivesRelativeDir}"
+            val dst = "${remoteAppsDir}/${protectedApp.archivesRelativeDir}"
+            val tmpDir = pathUtil.getCloudTmpDir()
+            val tmpJsonPath = PathUtil.getPackageRestoreConfigDst(tmpDir)
+            rootService.writeJson(data = protectedApp, dst = tmpJsonPath)
+            cloudRepo.upload(client = client, src = tmpJsonPath, dstDir = src)
+            rootService.deleteRecursively(tmpDir)
+            client.renameTo(src, dst)
+        }
+    }.withLog()
+
+    suspend fun deleteApp(cloudName: String?, app: PackageEntity) {
+        if (cloudName.isNullOrEmpty().not()) {
+            cloudName?.apply {
+                deleteCloudApp(this, app)
+            }
+        } else {
+            deleteLocalApp(app)
+        }
+    }
+
+    private suspend fun deleteLocalApp(app: PackageEntity) {
+        val appsDir = pathUtil.getLocalBackupAppsDir()
+        val src = "${appsDir}/${app.archivesRelativeDir}"
+        if (rootService.deleteRecursively(src)) {
+            appsDao.delete(app.id)
+        }
+    }
+
+    private suspend fun deleteCloudApp(cloudName: String, app: PackageEntity) = runCatching {
+        cloudRepo.withClient(cloudName) { client, entity ->
+            val remote = entity.remote
+            val remoteAppsDir = pathUtil.getCloudRemoteAppsDir(remote)
+            val src = "${remoteAppsDir}/${app.archivesRelativeDir}"
+            if (client.exists(src)) {
+                client.deleteRecursively(src)
+                if (client.exists(src).not()) {
+                    appsDao.delete(app.id)
                 }
             }
         }

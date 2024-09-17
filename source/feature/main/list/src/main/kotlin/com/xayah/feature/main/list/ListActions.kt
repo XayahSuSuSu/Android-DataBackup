@@ -15,9 +15,6 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Rule
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,6 +30,7 @@ import com.xayah.core.model.OpType
 import com.xayah.core.model.Target
 import com.xayah.core.ui.component.AnimatedModalDropdownMenu
 import com.xayah.core.ui.component.Divider
+import com.xayah.core.ui.component.DropdownMenuItem
 import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.ModalDropdownMenu
@@ -232,31 +229,6 @@ private fun FilesListActions(
             }
         }
     }
-}
-
-@Composable
-private fun DropdownMenuItem(
-    text: String,
-    leadingIcon: ImageVector? = null,
-    trailingIcon: ImageVector? = null,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    DropdownMenuItem(
-        text = { Text(text = text) },
-        enabled = enabled,
-        onClick = onClick,
-        leadingIcon = if (leadingIcon != null) {
-            { Icon(imageVector = leadingIcon, contentDescription = null) }
-        } else {
-            null
-        },
-        trailingIcon = if (trailingIcon != null) {
-            { Icon(imageVector = trailingIcon, contentDescription = null) }
-        } else {
-            null
-        },
-    )
 }
 
 @Composable

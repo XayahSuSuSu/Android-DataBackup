@@ -385,3 +385,28 @@ fun ContentWithActions(modifier: Modifier = Modifier, actions: (MutableState<Boo
         ModalActionDropdownMenu(expanded = expanded.value, actionList = actions(expanded), onDismissRequest = { expanded.value = false })
     }
 }
+
+@Composable
+fun DropdownMenuItem(
+    text: String,
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(text = text) },
+        enabled = enabled,
+        onClick = onClick,
+        leadingIcon = if (leadingIcon != null) {
+            { Icon(imageVector = leadingIcon, contentDescription = null) }
+        } else {
+            null
+        },
+        trailingIcon = if (trailingIcon != null) {
+            { Icon(imageVector = trailingIcon, contentDescription = null) }
+        } else {
+            null
+        },
+    )
+}

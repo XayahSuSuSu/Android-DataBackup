@@ -237,6 +237,33 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         diskShare.rmdir(src, true)
     }
 
+    private fun clearEmptyDirectoriesRecursivelyInternal(src: String): Boolean {
+        var isEmpty = true
+
+        withDiskShare { diskShare ->
+            if (diskShare.folderExists(src)) {
+                val files = listFiles("/${shareName}/$src")
+                if (files.files.isNotEmpty()) {
+                    isEmpty = false
+                }
+                for (i in files.directories) {
+                    if (clearEmptyDirectoriesRecursivelyInternal("${src}/${i.name}").not()) {
+                        isEmpty = false
+                    }
+                }
+                if (isEmpty) {
+                    removeDirectory(src)
+                }
+            }
+        }
+        return isEmpty
+    }
+
+
+    override fun clearEmptyDirectoriesRecursively(src: String) {
+        clearEmptyDirectoriesRecursivelyInternal(src)
+    }
+
     override fun deleteRecursively(src: String) = withDiskShare { diskShare ->
         if (diskShare.fileExists(src)) deleteFile(src)
         else if (diskShare.folderExists(src)) removeDirectory(src)

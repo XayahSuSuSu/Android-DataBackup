@@ -27,7 +27,6 @@ data class MediaInfo(
 
 @Serializable
 data class MediaExtraInfo(
-    var labels: List<String>,
     var blocked: Boolean,
     var activated: Boolean,
     var existed: Boolean,

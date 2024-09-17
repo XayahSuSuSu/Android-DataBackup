@@ -257,13 +257,13 @@ class PackageRepository @Inject constructor(
         )
         val extraInfo = PackageExtraInfo(
             uid = uid,
-            labels = listOf(),
             hasKeystore = hasKeystore,
             permissions = permissions,
             ssaid = ssaid,
             blocked = false,
             activated = false,
             firstUpdated = true,
+            enabled = true,
         )
         val indexInfo = PackageIndexInfo(
             opType = OpType.BACKUP,
@@ -972,13 +972,13 @@ class PackageRepository @Inject constructor(
                     ),
                     extraInfo = PackageExtraInfo(
                         uid = -1,
-                        labels = listOf(),
                         hasKeystore = false,
                         permissions = listOf(),
                         ssaid = "",
                         blocked = false,
                         activated = false,
                         firstUpdated = true,
+                        enabled = true,
                     ),
                     dataStates = dataStates,
                     storageStats = PackageStorageStats(),
@@ -1165,7 +1165,6 @@ class PackageRepository @Inject constructor(
                         displayBytes = 0L,
                     ),
                     extraInfo = MediaExtraInfo(
-                        labels = listOf(),
                         blocked = false,
                         activated = false,
                         existed = true,
@@ -1308,13 +1307,13 @@ class PackageRepository @Inject constructor(
                             ),
                             extraInfo = PackageExtraInfo(
                                 uid = -1,
-                                labels = listOf(),
                                 hasKeystore = false,
                                 permissions = listOf(),
                                 ssaid = "",
                                 blocked = false,
                                 activated = false,
                                 firstUpdated = true,
+                                enabled = true
                             ),
                             dataStates = dataStates,
                             storageStats = PackageStorageStats(),
@@ -1517,7 +1516,6 @@ class PackageRepository @Inject constructor(
                                 displayBytes = 0L,
                             ),
                             extraInfo = MediaExtraInfo(
-                                labels = listOf(),
                                 blocked = false,
                                 activated = false,
                                 existed = true,

@@ -353,11 +353,24 @@
     <string name="unselect_all">全部不選</string>
     <string name="reverse_selection">反選選擇項</string>
     <string name="for_selected">對於已選擇的…</string>
-    <string name="block">停用</string>
+    <string name="block">禁用</string>
+    <string name="unblock">取消禁用</string>
     <string name="detailed_data_items">詳細數據項</string>
     <string name="refresh">刷新</string>
     <string name="initializing_app_list">正在初始化應用列表</string>
     <string name="updating_app_list">正在更新應用列表</string>
     <string name="loading_backups">正在加載備份</string>
     <string name="updating_file_list">正在更新文件列表</string>
+    <string name="labels">標簽</string>
+    <string name="label">標簽</string>
+    <string name="add_label">添加標簽</string>
+    <string name="freeze">凍結</string>
+    <string name="unfreeze">解凍</string>
+    <string name="confirm_freeze">凍結此應用?</string>
+    <string name="confirm_unfreeze">解凍此應用?</string>
+    <string name="launch">啓動</string>
+    <string name="app_is_frozen">應用已被凍結！</string>
+    <string name="no_activities_found">沒有找到可啓動的Activity！</string>
+    <string name="granted">已授予</string>
+    <string name="denied">未授予</string>
 </resources>

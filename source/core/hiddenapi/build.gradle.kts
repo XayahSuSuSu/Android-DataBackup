@@ -10,6 +10,10 @@ android {
             isMinifyEnabled = false
         }
     }
+
+    buildFeatures {
+        aidl = true
+    }
 }
 
 dependencies {

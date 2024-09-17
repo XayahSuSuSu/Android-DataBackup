@@ -191,13 +191,13 @@ class IndexViewModel @Inject constructor(
                                                         packageInfo = PackageInfo(label = "", versionName = "", versionCode = 0L, flags = 0, firstInstallTime = 0L),
                                                         extraInfo = PackageExtraInfo(
                                                             uid = 0,
-                                                            labels = listOf(),
                                                             hasKeystore = false,
                                                             permissions = listOf(),
                                                             ssaid = "",
                                                             blocked = true,
                                                             activated = false,
-                                                            firstUpdated = true
+                                                            firstUpdated = true,
+                                                            enabled = true,
                                                         ),
                                                         dataStats = PackageDataStats(),
                                                         dataStates = PackageDataStates(),
@@ -229,7 +229,6 @@ class IndexViewModel @Inject constructor(
                                                             displayBytes = 0,
                                                         ),
                                                         extraInfo = MediaExtraInfo(
-                                                            labels = listOf(),
                                                             blocked = true,
                                                             activated = false,
                                                             existed = false,

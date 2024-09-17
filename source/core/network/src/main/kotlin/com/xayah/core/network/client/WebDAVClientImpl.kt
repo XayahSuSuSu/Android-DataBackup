@@ -13,10 +13,12 @@ import com.xayah.libpickyou.parcelables.DirChildrenParcelable
 import com.xayah.libpickyou.parcelables.FileParcelable
 import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PickerType
+import com.xayah.libsardine.DavResource
 import com.xayah.libsardine.impl.OkHttpSardine
 import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.TimeUnit
+
 
 class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     private var client: OkHttpSardine? = null
@@ -97,6 +99,34 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     override fun removeDirectory(src: String) = withClient { client ->
         log { "removeDirectory: ${getPath(src)}" }
         client.delete(getPath(src))
+    }
+
+    private fun clearEmptyDirectoriesRecursivelyInternal(src: String): Boolean {
+        var isEmpty = true
+        withClient { client ->
+            val resources: List<DavResource> = client.list(src)
+
+            for (res in resources) {
+                if (!res.isDirectory) {
+                    isEmpty = false
+                } else {
+                    if (clearEmptyDirectoriesRecursivelyInternal(res.path).not()) {
+                        isEmpty = false
+                    }
+                }
+            }
+
+            if (isEmpty) {
+                client.delete(src)
+            }
+
+        }
+        return isEmpty
+    }
+
+
+    override fun clearEmptyDirectoriesRecursively(src: String) {
+        clearEmptyDirectoriesRecursivelyInternal(getPath(src))
     }
 
     override fun deleteRecursively(src: String) = removeDirectory(src)

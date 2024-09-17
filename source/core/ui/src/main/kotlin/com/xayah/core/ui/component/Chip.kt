@@ -8,8 +8,11 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -40,9 +43,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.xayah.core.model.DataType
 import com.xayah.core.model.SortType
+import com.xayah.core.model.database.PackageDataStates
+import com.xayah.core.model.database.PackageDataStates.Companion.getDisplayStats
+import com.xayah.core.model.database.PackageDataStates.Companion.getSelected
+import com.xayah.core.model.database.PackageDataStats
+import com.xayah.core.model.util.formatSize
+import com.xayah.core.ui.R
 import com.xayah.core.ui.material3.CardDefaults
 import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 import com.xayah.core.ui.theme.value
@@ -51,6 +61,7 @@ import com.xayah.core.ui.token.ModalMenuTokens
 import com.xayah.core.ui.token.PaddingTokens
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.icon
+import com.xayah.core.util.SymbolUtil
 
 @Composable
 fun AssistChip(
@@ -430,6 +441,45 @@ fun RoundChip(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, labe
                 contentAlignment = Alignment.Center
             ) {
                 label.invoke()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@Composable
+fun DataChips(selections: PackageDataStates, displayStats: PackageDataStats? = null, isCalculating: Boolean = false, onItemClick: (DataType, Boolean) -> Unit) {
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .paddingHorizontal(SizeTokens.Level24),
+        horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+        verticalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+        maxItemsInEachRow = 2
+    ) {
+        val items = remember {
+            listOf(
+                DataType.PACKAGE_APK,
+                DataType.PACKAGE_USER,
+                DataType.PACKAGE_USER_DE,
+                DataType.PACKAGE_DATA,
+                DataType.PACKAGE_OBB,
+                DataType.PACKAGE_MEDIA
+            )
+        }
+
+        items.forEach {
+            val selected = it.getSelected(selections)
+            PackageDataChip(
+                modifier = Modifier.weight(1f),
+                dataType = it,
+                selected = selected,
+                subtitle = if (isCalculating)
+                    it.getDisplayStats(displayStats)?.toDouble()?.formatSize()?.let { size -> "$size${SymbolUtil.DOT}${stringResource(id = R.string.calculating)}" }
+                else
+                    it.getDisplayStats(displayStats)?.toDouble()?.formatSize()
+            ) {
+                onItemClick(it, selected)
             }
         }
     }

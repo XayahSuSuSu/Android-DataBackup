@@ -122,7 +122,6 @@ class MediaRepository @Inject constructor(
                             displayBytes = 0,
                         ),
                         extraInfo = MediaExtraInfo(
-                            labels = listOf(),
                             blocked = false,
                             activated = true,
                             existed = true,
@@ -212,7 +211,6 @@ class MediaRepository @Inject constructor(
                             displayBytes = 0,
                         ),
                         extraInfo = MediaExtraInfo(
-                            labels = listOf(),
                             activated = true,
                             blocked = false,
                             existed = true

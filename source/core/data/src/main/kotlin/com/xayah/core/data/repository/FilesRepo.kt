@@ -124,7 +124,6 @@ class FilesRepo @Inject constructor(
                             displayBytes = 0,
                         ),
                         extraInfo = MediaExtraInfo(
-                            labels = listOf(),
                             blocked = false,
                             activated = true,
                             existed = true,

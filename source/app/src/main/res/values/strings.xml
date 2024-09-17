@@ -364,10 +364,23 @@
     <string name="reverse_selection">Reverse selection</string>
     <string name="for_selected">For selected…</string>
     <string name="block">Block</string>
+    <string name="unblock">Unblock</string>
     <string name="detailed_data_items">Detailed data items</string>
     <string name="refresh">Refresh</string>
     <string name="initializing_app_list">Initializing app list</string>
     <string name="updating_app_list">Updating app list</string>
     <string name="loading_backups">Loading backups</string>
     <string name="updating_file_list">Updating file list</string>
+    <string name="labels">Labels</string>
+    <string name="label">Label</string>
+    <string name="add_label">Add label</string>
+    <string name="freeze">Freeze</string>
+    <string name="unfreeze">Unfreeze</string>
+    <string name="confirm_freeze">Freeze this app?</string>
+    <string name="confirm_unfreeze">Unfreeze this app?</string>
+    <string name="launch">Launch</string>
+    <string name="app_is_frozen">App is frozen!</string>
+    <string name="no_activities_found">No activities found!</string>
+    <string name="granted">Granted</string>
+    <string name="denied">Denied</string>
 </resources>

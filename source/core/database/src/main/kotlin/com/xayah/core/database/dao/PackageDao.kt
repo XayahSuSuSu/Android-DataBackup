@@ -104,11 +104,20 @@ interface PackageDao {
     @Query("SELECT * FROM PackageEntity WHERE id = :id")
     suspend fun queryById(id: Long): PackageEntity?
 
+    @Query("SELECT * FROM PackageEntity WHERE id = :id")
+    fun queryFlowById(id: Long): Flow<PackageEntity?>
+
     @Update(PackageEntity::class)
     suspend fun updatePackageDataStates(items: List<PackageDataStatesEntity>)
 
     @Update(PackageEntity::class)
     suspend fun update(items: List<PackageUpdateEntity>)
+
+    @Update(PackageEntity::class)
+    suspend fun update(item: PackageUpdateEntity)
+
+    @Update(PackageEntity::class)
+    suspend fun update(item: PackageEntity)
 
     @Query(
         "UPDATE PackageEntity" +
@@ -185,6 +194,13 @@ interface PackageDao {
                 " WHERE id = :id"
     )
     suspend fun setBlocked(id: Long, blocked: Boolean)
+
+    @Query(
+        "UPDATE PackageEntity" +
+                " SET extraInfo_enabled = :enabled" +
+                " WHERE id = :id"
+    )
+    suspend fun setEnabled(id: Long, enabled: Boolean)
 
     @Query(
         "UPDATE PackageEntity SET extraInfo_blocked = 0"

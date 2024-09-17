@@ -19,4 +19,6 @@
     <item name="args_restore" type="string"/>
     <item name="backup_dir_as_media_error" type="string"/>
     <item name="user" type="string"/>
+    <item name="app_is_frozen" type="string" />
+    <item name="no_activities_found" type="string" />
 </resources>

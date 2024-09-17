@@ -20,6 +20,7 @@ interface CloudClient {
     fun download(src: String, dst: String, onDownloading: (written: Long, total: Long) -> Unit)
     fun deleteFile(src: String)
     fun removeDirectory(src: String)
+    fun clearEmptyDirectoriesRecursively(src: String)
     fun deleteRecursively(src: String)
     fun listFiles(src: String): DirChildrenParcelable
     fun walkFileTree(src: String): List<PathParcelable>

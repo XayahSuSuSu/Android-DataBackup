@@ -1,0 +1,39 @@
+<resources>
+    <item name="details" type="string" />
+    <item name="permissions" type="string" />
+    <item name="backup_parts" type="string" />
+    <item name="labels" type="string" />
+    <item name="label" type="string" />
+    <item name="add_label" type="string" />
+    <item name="confirm" type="string" />
+    <item name="failed" type="string" />
+    <item name="delete" type="string" />
+    <item name="prompt" type="string" />
+    <item name="confirm_add_to_blacklist" type="string" />
+    <item name="confirm_remove_from_blacklist" type="string" />
+    <item name="block" type="string" />
+    <item name="unblock" type="string" />
+    <item name="disabled" type="string" />
+    <item name="keystore" type="string" />
+    <item name="ssaid" type="string" />
+    <item name="freeze" type="string" />
+    <item name="unfreeze" type="string" />
+    <item name="confirm_freeze" type="string" />
+    <item name="confirm_unfreeze" type="string" />
+    <item name="refresh" type="string" />
+    <item name="blacklist" type="string" />
+    <item name="launch" type="string" />
+    <item name="info" type="string" />
+    <item name="user" type="string" />
+    <item name="uid" type="string" />
+    <item name="version" type="string" />
+    <item name="first_install" type="string" />
+    <item name="granted" type="string" />
+    <item name="denied" type="string" />
+    <item name="_protected" type="string" />
+    <item name="protect" type="string" />
+    <item name="protect_desc" type="string" />
+    <item name="delete_desc" type="string" />
+
+    <item name="ic_rounded_person" type="drawable" />
+</resources>

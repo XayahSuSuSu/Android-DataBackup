@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,8 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
@@ -33,6 +37,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.model.OpType
+import com.xayah.core.model.Target
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.ui.R
 import com.xayah.core.ui.component.BodyMediumText
@@ -40,10 +45,13 @@ import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.PackageIconImage
 import com.xayah.core.ui.component.Surface
 import com.xayah.core.ui.component.TitleLargeText
+import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
 import com.xayah.core.ui.theme.value
 import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
+import com.xayah.core.ui.util.LocalNavController
+import com.xayah.core.util.navigateSingle
 
 @Composable
 fun ListItems(
@@ -73,14 +81,18 @@ fun LazyListScope.listItems(
         is ListItemsUiState.Success.Apps -> {
             items(items = uiState.appList, key = { it.id }) { item ->
                 Row(modifier = Modifier.animateItemPlacement()) {
+                    val navController = LocalNavController.current!!
                     AppItem(
                         opType = uiState.opType,
                         id = item.id,
                         packageName = item.packageName,
                         label = item.label,
+                        preserveId = item.preserveId,
                         flag = item.selectionFlag,
                         selected = item.selected,
-                        onClick = {},
+                        onClick = {
+                            navController.navigateSingle(MainRoutes.Details.getRoute(Target.Apps, uiState.opType, item.id))
+                        },
                         onChangeFlag = viewModel::onChangeFlag,
                         onSelectedChanged = viewModel::onSelectedChanged
                     )
@@ -114,6 +126,7 @@ fun AppItem(
     id: Long,
     packageName: String,
     label: String,
+    preserveId: Long,
     flag: Int,
     selected: Boolean,
     onChangeFlag: (Long, Int) -> Unit,
@@ -135,8 +148,13 @@ fun AppItem(
                 BodyMediumText(text = packageName, color = ThemedColorSchemeKeyTokens.Outline.value, maxLines = 1)
             }
 
-            AnimatedDataIndicator(flag) {
-                onChangeFlag(id, flag)
+            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+                if (preserveId != 0L) {
+                    Icon(modifier = Modifier.fillMaxHeight(), imageVector = Icons.Outlined.Shield, contentDescription = null)
+                }
+                AnimatedDataIndicator(flag) {
+                    onChangeFlag(id, flag)
+                }
             }
             VerticalDivider(
                 modifier = Modifier.height(SizeTokens.Level32)

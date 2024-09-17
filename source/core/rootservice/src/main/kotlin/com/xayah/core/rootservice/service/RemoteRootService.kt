@@ -300,6 +300,12 @@ class RemoteRootService(private val context: Context) {
     suspend fun forceStopPackageAsUser(packageName: String, userId: Int) =
         runCatching { getService().forceStopPackageAsUser(packageName, userId) }.onFailure(onFailure)
 
+    suspend fun setApplicationEnabledSetting(packageName: String, newState: Int, flags: Int, userId: Int, callingPackage: String?) =
+        runCatching { getService().setApplicationEnabledSetting(packageName, newState, flags, userId, callingPackage) }.onFailure(onFailure)
+
+    suspend fun getApplicationEnabledSetting(packageName: String, userId: Int): Int? =
+        runCatching { getService().getApplicationEnabledSetting(packageName, userId) }.onFailure(onFailure).getOrNull()
+
     suspend fun calculateMD5(src: String): String? =
         runCatching { getService().calculateMD5(src) }.onFailure(onFailure).getOrNull()
 

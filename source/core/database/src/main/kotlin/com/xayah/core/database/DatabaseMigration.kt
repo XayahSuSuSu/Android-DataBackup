@@ -213,5 +213,21 @@ object DatabaseMigrations {
         tableName = "PackageEntity",
         columnName = "extraInfo_existed"
     )
+    @DeleteColumn(
+        tableName = "PackageEntity",
+        columnName = "extraInfo_labels"
+    )
+    @DeleteColumn(
+        tableName = "MediaEntity",
+        columnName = "extraInfo_labels"
+    )
+    @DeleteColumn(
+        tableName = "TaskDetailPackageEntity",
+        columnName = "packageEntity_extraInfo_labels"
+    )
+    @DeleteColumn(
+        tableName = "TaskDetailMediaEntity",
+        columnName = "mediaEntity_extraInfo_labels"
+    )
     class Schema5to6 : AutoMigrationSpec
 }

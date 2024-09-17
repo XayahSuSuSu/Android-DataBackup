@@ -14,6 +14,7 @@ sealed class MainRoutes(val route: String) {
         const val ARG_ACCOUNT_REMOTE = "accountRemote"
         const val ARG_TARGET = "target"
         const val ARG_OP_TYPE = "opType"
+        const val ARG_ID = "id"
     }
 
     data object Dashboard : MainRoutes(route = "main_dashboard")
@@ -50,6 +51,10 @@ sealed class MainRoutes(val route: String) {
     data object List : MainRoutes(route = "main_list/{$ARG_TARGET}/{$ARG_OP_TYPE}/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
         fun getRoute(target: Target, opType: OpType, cloudName: String = encodedURLWithSpace, backupDir: String = encodedURLWithSpace) =
             "main_list/${target}/${opType}/${cloudName}/${backupDir}"
+    }
+
+    data object Details : MainRoutes(route = "main_details/{$ARG_TARGET}/{$ARG_OP_TYPE}/{$ARG_ID}") {
+        fun getRoute(target: Target, opType: OpType, id: Long) = "main_details/${target}/${opType}/${id}"
     }
 
     data object PackagesBackupList : MainRoutes(route = "main_packages_backup_list")

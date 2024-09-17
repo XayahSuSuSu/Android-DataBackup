@@ -126,6 +126,32 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
         if (client.removeDirectory(src).not()) throw IOException("Failed to remove dir: $src.")
     }
 
+    override fun clearEmptyDirectoriesRecursively(src: String) = withClient { client ->
+        val srcFile = listFile(src)
+        if (srcFile.isDirectory) {
+            val emptyDirs = mutableListOf<String>()
+            val paths = mutableListOf(src)
+
+            while (paths.isNotEmpty()) {
+                val dir = paths.removeFirst()
+                val files = client.listFiles(dir)
+                if (files.isEmpty()) {
+                    emptyDirs.add(dir)
+                } else {
+                    for (file in files) {
+                        val path = "${dir}/${file.name}"
+                        if (file.isDirectory) {
+                            paths.add(path)
+                        }
+                    }
+                }
+            }
+
+            // Remove reversed empty dirs.
+            for (path in emptyDirs.reversed()) removeDirectory(path)
+        }
+    }
+
     private fun listFile(src: String): FTPFile {
         var srcFile: FTPFile? = null
         withClient { client ->

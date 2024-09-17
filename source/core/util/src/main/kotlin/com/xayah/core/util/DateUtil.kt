@@ -20,7 +20,8 @@ object DateUtil {
     private const val HOUR_IN_MILLIS = MINUTE_IN_MILLIS * 60
     private const val DAY_IN_MILLIS = HOUR_IN_MILLIS * 24
     private const val WEEK_IN_MILLIS = DAY_IN_MILLIS * 7
-    const val PATTERN_DEFAULT = "yyyy-MM-dd HH:mm:ss.SSS"
+    private const val PATTERN_DEFAULT = "yyyy-MM-dd HH:mm:ss.SSS"
+    const val PATTERN_YMD = "yyyy-MM-dd"
     const val PATTERN_FINISH = "MMMM dd yyyy HH:mm a"
 
     fun getTimestamp(): Long = System.currentTimeMillis()

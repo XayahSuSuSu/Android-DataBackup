@@ -151,6 +151,29 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
         withSFTPClient { it.rmdir(src) }
     }
 
+    override fun clearEmptyDirectoriesRecursively(src: String) = withSFTPClient { client ->
+        val emptyDirs = mutableListOf<String>()
+        val paths = mutableListOf(src)
+
+        while (paths.isNotEmpty()) {
+            val dir = paths.removeFirst()
+            val files = client.ls(dir)
+            if (files.isEmpty()) {
+                emptyDirs.add(dir)
+            } else {
+                for (file in files) {
+                    val path = "${dir}/${file.name}"
+                    if (file.isDirectory) {
+                        paths.add(path)
+                    }
+                }
+            }
+        }
+
+        // Remove reversed empty dirs.
+        for (path in emptyDirs.reversed()) removeDirectory(path)
+    }
+
     override fun deleteRecursively(src: String) {
         withSFTPClient {
             for (item in it.ls(src)) {

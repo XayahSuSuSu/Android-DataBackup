@@ -24,6 +24,7 @@
     <item name="data_selected" type="string" />
     <item name="all_selected" type="string" />
     <item name="custom_selected" type="string" />
+    <item name="calculating" type="string" />
 
     <item name="jetbrains_mono_regular" type="font" />
     <item name="ic_rounded_check_circle" type="drawable" />
