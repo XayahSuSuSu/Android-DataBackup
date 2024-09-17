@@ -3,6 +3,7 @@ package com.xayah.core.work.workers
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkerParameters
@@ -30,6 +31,11 @@ internal class AppsUpdateWorker @AssistedInject constructor(
     private val settingsDataRepo: SettingsDataRepo,
 ) : CoroutineWorker(appContext, workerParams) {
     private val mNotificationBuilder by lazy { NotificationUtil.getProgressNotificationBuilder(appContext) }
+    private var mNotificationInfo: ForegroundInfo? = null
+
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return mNotificationInfo!!
+    }
 
     override suspend fun doWork(): Result = withContext(defaultDispatcher) {
         val regular = inputData.getBoolean(INPUT_DATA_KEY_REGULAR, true)
@@ -39,15 +45,16 @@ internal class AppsUpdateWorker @AssistedInject constructor(
         if (regular.not() || hasPassedOneDay) {
             settingsDataRepo.setAppsUpdateTime(curTime)
             appsRepo.fullUpdate { cur, max, content ->
+                mNotificationInfo = NotificationUtil.createForegroundInfo(
+                    appContext,
+                    mNotificationBuilder,
+                    appContext.getString(R.string.updating_app_list),
+                    content,
+                    max,
+                    cur
+                )
                 setForeground(
-                    NotificationUtil.createForegroundInfo(
-                        appContext,
-                        mNotificationBuilder,
-                        appContext.getString(R.string.updating_app_list),
-                        content,
-                        max,
-                        cur
-                    )
+                    mNotificationInfo!!
                 )
             }
         }

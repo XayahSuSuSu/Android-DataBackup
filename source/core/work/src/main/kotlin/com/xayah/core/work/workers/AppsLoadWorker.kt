@@ -3,6 +3,7 @@ package com.xayah.core.work.workers
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkerParameters
@@ -26,19 +27,25 @@ internal class AppsLoadWorker @AssistedInject constructor(
     private val appsRepo: AppsRepo,
 ) : CoroutineWorker(appContext, workerParams) {
     private val mNotificationBuilder by lazy { NotificationUtil.getProgressNotificationBuilder(appContext) }
+    private var mNotificationInfo: ForegroundInfo? = null
+
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return mNotificationInfo!!
+    }
 
     override suspend fun doWork(): Result = withContext(defaultDispatcher) {
         val cloudName = inputData.getString(INPUT_DATA_KEY_CLOUD_NAME)
         appsRepo.load(cloudName) { cur, max, content ->
+            mNotificationInfo = NotificationUtil.createForegroundInfo(
+                appContext,
+                mNotificationBuilder,
+                appContext.getString(R.string.loading_backups),
+                content,
+                max,
+                cur
+            )
             setForeground(
-                NotificationUtil.createForegroundInfo(
-                    appContext,
-                    mNotificationBuilder,
-                    appContext.getString(R.string.loading_backups),
-                    content,
-                    max,
-                    cur
-                )
+                mNotificationInfo!!
             )
         }
         Result.success()
