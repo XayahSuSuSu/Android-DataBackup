@@ -360,4 +360,17 @@
     <string name="apk_selected">APK selecionado</string>
     <string name="data_selected">Dados selecionados</string>
     <string name="custom_selected">Itens personalizados selecionados</string>
+    <string name="label">Rótulo</string>
+    <string name="labels">Rótulos</string>
+    <string name="freeze">Congelar</string>
+    <string name="unfreeze">Descongelar</string>
+    <string name="add_label">Adicionar rótulo</string>
+    <string name="confirm_freeze">Congelar este app?</string>
+    <string name="confirm_unfreeze">Descongelar este app?</string>
+    <string name="launch">Iniciar</string>
+    <string name="app_is_frozen">O app está congelado!</string>
+    <string name="no_activities_found">Nenhuma atividade encontrada!</string>
+    <string name="granted">Permitido</string>
+    <string name="denied">Negado</string>
+    <string name="unblock">Desbloquear</string>
 </resources>
