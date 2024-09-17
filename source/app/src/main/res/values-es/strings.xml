@@ -360,4 +360,17 @@
     <string name="custom_selected">Elementos personalizados seleccionados</string>
     <string name="no_item_selected">Ningún elemento seleccionado</string>
     <string name="updating_file_list">Actualizando la lista de archivos</string>
+    <string name="add_label">Añadir etiqueta</string>
+    <string name="unfreeze">Descongelar</string>
+    <string name="unblock">Desbloquear</string>
+    <string name="label">Etiqueta</string>
+    <string name="labels">Etiquetas</string>
+    <string name="freeze">Congelar</string>
+    <string name="no_activities_found">¡Sin actividad!</string>
+    <string name="confirm_freeze">¿Congelar esta aplicación?</string>
+    <string name="confirm_unfreeze">¿Descongelar esta aplicación?</string>
+    <string name="launch">Iniciar</string>
+    <string name="app_is_frozen">¡La aplicación está congelada!</string>
+    <string name="granted">Concedida</string>
+    <string name="denied">Denegada</string>
 </resources>
