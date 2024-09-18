@@ -30,6 +30,15 @@ internal class AppsLoadWorker @AssistedInject constructor(
     private var mNotificationInfo: ForegroundInfo? = null
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
+        if (mNotificationInfo == null) {
+            mNotificationInfo = NotificationUtil.createForegroundInfo(
+                appContext,
+                mNotificationBuilder,
+                appContext.getString(R.string.loading_backups),
+                ""
+            )
+        }
+
         return mNotificationInfo!!
     }
 

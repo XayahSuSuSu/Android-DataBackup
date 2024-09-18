@@ -28,19 +28,20 @@ internal class FilesUpdateWorker @AssistedInject constructor(
     private var mNotificationInfo: ForegroundInfo? = null
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
+        if (mNotificationInfo == null) {
+            mNotificationInfo = NotificationUtil.createForegroundInfo(
+                appContext,
+                mNotificationBuilder,
+                appContext.getString(R.string.updating_file_list),
+                appContext.getString(R.string.wait_for_remaining_data_processing),
+            )
+        }
+
         return mNotificationInfo!!
     }
 
     override suspend fun doWork(): Result = withContext(defaultDispatcher) {
-        mNotificationInfo = NotificationUtil.createForegroundInfo(
-            appContext,
-            mNotificationBuilder,
-            appContext.getString(R.string.updating_file_list),
-            appContext.getString(R.string.wait_for_remaining_data_processing),
-        )
-        setForeground(
-            mNotificationInfo!!
-        )
+        setForeground(getForegroundInfo())
         filesRepo.initialize()
         Result.success()
     }

@@ -28,6 +28,15 @@ internal class AppsFastInitWorker @AssistedInject constructor(
     private var mNotificationInfo: ForegroundInfo? = null
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
+        if (mNotificationInfo == null) {
+            mNotificationInfo = NotificationUtil.createForegroundInfo(
+                appContext,
+                mNotificationBuilder,
+                appContext.getString(R.string.initializing_app_list),
+                ""
+            )
+        }
+
         return mNotificationInfo!!
     }
 

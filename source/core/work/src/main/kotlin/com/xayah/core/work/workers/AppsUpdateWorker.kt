@@ -34,6 +34,15 @@ internal class AppsUpdateWorker @AssistedInject constructor(
     private var mNotificationInfo: ForegroundInfo? = null
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
+        if (mNotificationInfo == null) {
+            mNotificationInfo = NotificationUtil.createForegroundInfo(
+                appContext,
+                mNotificationBuilder,
+                appContext.getString(R.string.updating_app_list),
+                ""
+            )
+        }
+
         return mNotificationInfo!!
     }
 
