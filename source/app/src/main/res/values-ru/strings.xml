@@ -360,4 +360,17 @@
     <string name="initializing_app_list">Инициализация списка приложений</string>
     <string name="all_selected">Все элементы выбраны</string>
     <string name="data_items">Элементы данных</string>
+    <string name="unblock">Разблокировать</string>
+    <string name="labels">Метки</string>
+    <string name="label">Метка</string>
+    <string name="add_label">Добавить метку</string>
+    <string name="freeze">Заморозить</string>
+    <string name="unfreeze">Разморозить</string>
+    <string name="confirm_freeze">Заморозить это приложение?</string>
+    <string name="confirm_unfreeze">Разморозить это приложение?</string>
+    <string name="launch">Запуск</string>
+    <string name="app_is_frozen">Приложение заморожено!</string>
+    <string name="no_activities_found">Действий не найдено!</string>
+    <string name="granted">Предоставлено</string>
+    <string name="denied">Запрещено</string>
 </resources>
