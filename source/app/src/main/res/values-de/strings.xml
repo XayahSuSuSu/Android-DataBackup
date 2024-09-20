@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="start_subtitle">Bevor Sie beginnen, diese App nutzen, stimmen Sie bitte der folgenden Nutzungserklärung und Datenschutzerklärung zu, nachdem Sie diese sorgfältig gelesen haben.</string>
+    <string name="start_subtitle">Aus rechtlichen Gründen sind sie verpflichtet, die Nutzungsvereinbarung gründlich und sorgfältig zu lesen, bevor sie diese Anwendung verwenden.</string>
     <string name="start_desc">Die von dieser App generierten Daten werden nur zur Sicherung/ Wiederherstellung genutzt und werden nur lokal gespeichert.</string>
-    <string name="network_desc">Wird sowohl für Analyse als auch zum Erhalten von Informationen zum Aktualisieren der App genutzt.</string>
+    <string name="network_desc">Wird sowohl für Analyse als auch zum Erhalten von Informationen zum Aktualisieren der App genutzt</string>
     <string name="application">App</string>
     <string name="storage">Speicher</string>
     <string name="loading">Lädt</string>
@@ -16,7 +16,7 @@
     <string name="activities">Aktivitäten</string>
     <string name="directory">Speicher</string>
     <string name="structure">Dateibaum</string>
-    <string name="app_and_data">Apps</string>
+    <string name="app_and_data">Anwendungen</string>
     <string name="media">Medien</string>
     <string name="telephony">Anrufsverlauf</string>
     <string name="internal_storage">Interner Speicher</string>
@@ -24,12 +24,12 @@
     <string name="succeed">Erfolg</string>
     <string name="failed">Fehlgeschlagen</string>
     <string name="save_directory_structure">Verzeichnisstruktur speichern</string>
-    <string name="app_name">DataBackup</string>
+    <string name="app_name">Datensicherung</string>
     <string name="welcome_to_use">Willkomen bei DataBackup</string>
     <string name="environment_detection">Umgebungserkennung</string>
     <string name="start">Starten</string>
     <string name="network">Netzwerk</string>
-    <string name="application_desc">Informationen zum Applikationspaket erhalten, die zum Generieren einer Sicherungsliste und zur Bestimmung der Größe der Applikationsdaten genutzt werden.</string>
+    <string name="application_desc">Informationen zum Applikationspaket erhalten, die zum Generieren einer Sicherungsliste und zur Bestimmung der Größe der Applikationsdaten genutzt werden</string>
     <string name="unsupported_format">Format wird nicht unterstützt</string>
     <string name="storage_desc">Wird für die Konfiguration von Sicherungen und für den Lese-/Bearbeitungszugriff auf Archive genutzt</string>
     <string name="external_storage">Externer Speicher</string>
@@ -233,4 +233,12 @@
     <string name="donate">Spenden</string>
     <string name="download">Herunterladen</string>
     <string name="changelog">Änderungsprotokoll</string>
+    <string name="release_prebuilt_binaries">Veröffentlichung der vorgefertigten Binärdateien</string>
+    <string name="granted">Genehmigt</string>
+    <string name="confirm_unfreeze">Diese App entsperren?</string>
+    <string name="unfreeze">Entsperren</string>
+    <string name="freeze">Sperren</string>
+    <string name="add_label">Label hinzufügen</string>
+    <string name="confirm_freeze">Diese App einfrieren?</string>
+    <string name="finish">Beende</string>
 </resources>
