@@ -3,6 +3,7 @@ package com.xayah.core.database.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.OpType
@@ -118,6 +119,9 @@ interface MediaDao {
     @Query("DELETE FROM MediaEntity WHERE id = :id")
     suspend fun delete(id: Long)
 
+    @Query("DELETE FROM MediaEntity WHERE id in (:ids)")
+    suspend fun delete(ids: List<Long>)
+
     @Query(
         "SELECT * FROM MediaEntity WHERE" +
                 " indexInfo_opType = :opType AND extraInfo_existed = :existed AND extraInfo_blocked = :blocked"
@@ -159,4 +163,7 @@ interface MediaDao {
 
     @Query("DELETE FROM MediaEntity WHERE id in (:ids)")
     suspend fun deleteByIds(ids: List<Long>)
+
+    @Update(MediaEntity::class)
+    suspend fun update(item: MediaEntity)
 }

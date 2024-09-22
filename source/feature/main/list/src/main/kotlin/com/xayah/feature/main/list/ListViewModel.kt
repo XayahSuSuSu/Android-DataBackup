@@ -14,6 +14,7 @@ import com.xayah.core.model.util.of
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.util.decodeURL
 import com.xayah.core.util.ifEmptyEncodeURLWithSpace
+import com.xayah.core.util.launchOnDefault
 import com.xayah.core.util.navigateSingle
 import com.xayah.core.work.WorkManagerInitializer
 import com.xayah.feature.main.list.ListUiState.Loading
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,7 +72,7 @@ class ListViewModel @Inject constructor(
     )
 
     fun onResume() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (uiState.value) {
                 is Success.Apps -> {
                     when (opType) {

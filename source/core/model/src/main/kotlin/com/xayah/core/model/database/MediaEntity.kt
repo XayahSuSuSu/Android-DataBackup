@@ -69,5 +69,6 @@ fun MediaEntity.asExternalModel() = File(
     id = id,
     name = name,
     path = path,
+    preserveId = preserveId,
     selected = extraInfo.activated
 )

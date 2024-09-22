@@ -23,6 +23,8 @@
     <item name="confirm" type="string" />
     <item name="confirm_delete" type="string" />
     <item name="_continue" type="string" />
+    <item name="add" type="string" />
+    <item name="select_target_directory" type="string" />
 
     <item name="backup_sort_type_items_apps" type="array" />
     <item name="backup_sort_type_items_files" type="array" />

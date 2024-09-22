@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -80,8 +81,8 @@ fun LazyListScope.listItems(
     when (uiState) {
         is ListItemsUiState.Success.Apps -> {
             items(items = uiState.appList, key = { it.id }) { item ->
+                val navController = LocalNavController.current!!
                 Row(modifier = Modifier.animateItemPlacement()) {
-                    val navController = LocalNavController.current!!
                     AppItem(
                         opType = uiState.opType,
                         id = item.id,
@@ -102,13 +103,17 @@ fun LazyListScope.listItems(
 
         is ListItemsUiState.Success.Files -> {
             items(items = uiState.fileList, key = { it.id }) { item ->
+                val navController = LocalNavController.current!!
                 Row(modifier = Modifier.animateItemPlacement()) {
                     FileItem(
                         id = item.id,
                         name = item.name,
                         path = item.path,
+                        preserveId = item.preserveId,
                         selected = item.selected,
-                        onClick = {},
+                        onClick = {
+                            navController.navigateSingle(MainRoutes.Details.getRoute(Target.Files, uiState.opType, item.id))
+                        },
                         onSelectedChanged = viewModel::onSelectedChanged
                     )
                 }
@@ -173,6 +178,7 @@ fun FileItem(
     id: Long,
     name: String,
     path: String,
+    preserveId: Long,
     selected: Boolean,
     onSelectedChanged: (Long, Boolean) -> Unit,
     onClick: () -> Unit,
@@ -185,11 +191,18 @@ fun FileItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
         ) {
+            PackageIconImage(icon = Icons.Rounded.Folder, packageName = "", inCircleShape = true, size = SizeTokens.Level32)
+
             Column(modifier = Modifier.weight(1f)) {
                 TitleLargeText(text = name.ifEmpty { stringResource(id = R.string.unknown) }, maxLines = 1)
                 BodyMediumText(text = path, color = ThemedColorSchemeKeyTokens.Outline.value, maxLines = 1)
             }
 
+            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+                if (preserveId != 0L) {
+                    Icon(modifier = Modifier.fillMaxHeight(), imageVector = Icons.Outlined.Shield, contentDescription = null)
+                }
+            }
             VerticalDivider(
                 modifier = Modifier.height(SizeTokens.Level32)
             )

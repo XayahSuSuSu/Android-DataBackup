@@ -35,5 +35,6 @@ dependencies {
     // dotLottie
     implementation(libs.dotlottie.android)
 
-    implementation(libs.androidx.animation.graphics)
+    // PickYou
+    implementation(libs.pickyou)
 }

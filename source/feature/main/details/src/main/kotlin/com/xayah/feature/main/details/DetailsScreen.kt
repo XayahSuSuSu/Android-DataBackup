@@ -71,7 +71,17 @@ internal fun AppDetailsScreen(uiState: DetailsUiState, viewModel: DetailsViewMod
                             )
                         }
 
-                        is DetailsUiState.Success.File -> {}
+                        is DetailsUiState.Success.File -> {
+                            FileDetails(
+                                uiState = uiState,
+                                onAddLabel = viewModel::addLabel,
+                                onDeleteLabel = viewModel::deleteLabel,
+                                onSelectLabel = viewModel::selectLabel,
+                                onBlock = viewModel::block,
+                                onProtect = viewModel::protect,
+                                onDelete = viewModel::delete,
+                            )
+                        }
                         else -> {}
                     }
                 }

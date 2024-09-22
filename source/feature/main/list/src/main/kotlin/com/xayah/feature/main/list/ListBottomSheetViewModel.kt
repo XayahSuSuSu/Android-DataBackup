@@ -16,6 +16,7 @@ import com.xayah.core.model.database.PackageDataStates
 import com.xayah.core.model.util.of
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.util.decodeURL
+import com.xayah.core.util.launchOnDefault
 import com.xayah.feature.main.list.ListBottomSheetUiState.Loading
 import com.xayah.feature.main.list.ListBottomSheetUiState.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,19 +72,19 @@ class ListBottomSheetViewModel @Inject constructor(
     )
 
     fun setShowFilterSheet(value: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             listDataRepo.setShowFilterSheet(value)
         }
     }
 
     fun setShowDataItemsSheet(value: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             listDataRepo.setShowDataItemsSheet(value)
         }
     }
 
     fun setShowSystemApps() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             if (uiState.value is Success.Apps) {
                 var isShow = false
                 listDataRepo.setShowSystemApps {
@@ -100,19 +100,19 @@ class ListBottomSheetViewModel @Inject constructor(
     }
 
     fun setSortByType() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             listDataRepo.setSortType { if (it == SortType.ASCENDING) SortType.DESCENDING else SortType.ASCENDING }
         }
     }
 
     fun setSortByIndex(index: Int) {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             listDataRepo.setSortIndex { index }
         }
     }
 
     fun setDataItems(selections: PackageDataStates) {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             if (uiState.value is Success.Apps) {
                 val state = uiState.value.castTo<Success.Apps>()
                 appsRepo.setDataItems(state.appList.filter { it.selected }.map { it.id }, selections)

@@ -5,9 +5,12 @@ import com.xayah.core.database.dao.LabelDao
 import com.xayah.core.datastore.di.DbDispatchers.Default
 import com.xayah.core.datastore.di.Dispatcher
 import com.xayah.core.model.database.AppWithLabels
+import com.xayah.core.model.database.FileWithLabels
 import com.xayah.core.model.database.LabelAppCrossRefEntity
 import com.xayah.core.model.database.LabelEntity
+import com.xayah.core.model.database.LabelFileCrossRefEntity
 import com.xayah.core.model.database.LabelWithAppIds
+import com.xayah.core.model.database.LabelWithFileIds
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -20,8 +23,10 @@ class LabelsRepo @Inject constructor(
     private val labelDao: LabelDao,
 ) {
     fun getLabelWithAppIds(): Flow<List<LabelWithAppIds>> = labelDao.queryLabelWithAppIdsFlow().flowOn(defaultDispatcher)
+    fun getLabelWithFileIds(): Flow<List<LabelWithFileIds>> = labelDao.queryLabelWithFileIdsFlow().flowOn(defaultDispatcher)
 
     fun getAppWithLabels(id: Long): Flow<AppWithLabels?> = labelDao.queryAppWithLabelsFlow(id)
+    fun getFileWithLabels(id: Long): Flow<FileWithLabels?> = labelDao.queryFileWithLabelsFlow(id)
 
     /**
      * Add a unique label
@@ -33,11 +38,20 @@ class LabelsRepo @Inject constructor(
      */
     suspend fun addLabelAppCrossRef(labelId: Long, appId: Long) = labelDao.upsert(LabelAppCrossRefEntity(labelId = labelId, appId = appId))
 
+    /**
+     * Add a unique label file cross ref
+     */
+    suspend fun addLabelFileCrossRef(labelId: Long, fileId: Long) = labelDao.upsert(LabelFileCrossRefEntity(labelId = labelId, fileId = fileId))
+
     suspend fun deleteLabel(id: Long) {
-        labelDao.delete(id)
+        labelDao.deleteAppRef(id)
     }
 
     suspend fun deleteLabelAppCrossRef(labelId: Long, appId: Long) {
-        labelDao.delete(labelId, appId)
+        labelDao.deleteAppRef(labelId, appId)
+    }
+
+    suspend fun deleteLabelFileCrossRef(labelId: Long, fileId: Long) {
+        labelDao.deleteFileRef(labelId, fileId)
     }
 }

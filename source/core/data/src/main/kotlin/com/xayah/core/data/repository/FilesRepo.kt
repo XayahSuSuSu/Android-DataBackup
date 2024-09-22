@@ -7,6 +7,7 @@ import com.xayah.core.datastore.di.DbDispatchers.Default
 import com.xayah.core.datastore.di.Dispatcher
 import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.model.CompressionType
+import com.xayah.core.model.DataType
 import com.xayah.core.model.File
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.MediaEntity
@@ -16,6 +17,8 @@ import com.xayah.core.model.database.MediaInfo
 import com.xayah.core.model.database.asExternalModel
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.ConfigsMediaRestoreName
+import com.xayah.core.util.DateUtil
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.withLog
@@ -35,6 +38,12 @@ class FilesRepo @Inject constructor(
     private val rootService: RemoteRootService,
     private val cloudRepo: CloudRepository,
 ) {
+    companion object {
+        private val TAG = this::class.simpleName!!
+    }
+
+    private fun log(block: () -> String): String = block().also { LogUtil.log { TAG to it } }
+
     fun getFiles(
         opType: OpType,
         listData: Flow<ListData>,
@@ -202,6 +211,153 @@ class FilesRepo @Inject constructor(
                             }
                         }
                     }
+                }
+            }
+        }
+    }.withLog()
+
+    private fun renameDuplicateFile(name: String): String {
+        val nameList = name.split("_").toMutableList()
+        val index = nameList.first().toIntOrNull()
+        if (index == null) {
+            nameList.add("0")
+        } else {
+            nameList[nameList.lastIndex] = (index + 1).toString()
+        }
+        return nameList.joinToString(separator = "_")
+    }
+
+    suspend fun addFiles(pathList: List<String>) {
+        val files = mutableListOf<MediaEntity>()
+        var failure = 0
+        pathList.forEach { pathString ->
+            if (pathString.isNotEmpty()) {
+                var name = PathUtil.getFileName(pathString)
+                filesDao.query(opType = OpType.BACKUP, preserveId = 0, cloud = "", backupDir = "").forEach {
+                    if (it.name == name && it.path != pathString) name = renameDuplicateFile(name)
+                }
+                files.forEach {
+                    if (it.name == name && it.path != pathString) name = renameDuplicateFile(name)
+                }
+                val exists = filesDao.query(opType = OpType.BACKUP, preserveId = 0, name = name, cloud = "", backupDir = "") != null
+                if (exists) {
+                    failure++
+                    log { "$name:${pathString} has already existed." }
+                } else files.add(
+                    MediaEntity(
+                        id = 0,
+                        indexInfo = MediaIndexInfo(
+                            opType = OpType.BACKUP,
+                            name = name,
+                            compressionType = CompressionType.TAR,
+                            preserveId = 0,
+                            cloud = "",
+                            backupDir = ""
+                        ),
+                        mediaInfo = MediaInfo(
+                            path = pathString,
+                            dataBytes = 0,
+                            displayBytes = 0,
+                        ),
+                        extraInfo = MediaExtraInfo(
+                            activated = true,
+                            blocked = false,
+                            existed = true
+                        ),
+                    )
+                )
+            }
+        }
+        filesDao.upsert(files)
+    }
+
+    suspend fun calculateLocalFileSize(file: MediaEntity) {
+        file.mediaInfo.displayBytes = rootService.calculateSize(file.path)
+        filesDao.upsert(file)
+    }
+
+    private fun getArchiveSrc(dstDir: String, ct: CompressionType) = "${dstDir}/${DataType.MEDIA_MEDIA.type}.${ct.suffix}"
+
+    suspend fun calculateLocalFileArchiveSize(file: MediaEntity) {
+        file.mediaInfo.displayBytes = rootService.calculateSize(getArchiveSrc("${pathUtil.getLocalBackupFilesDir()}/${file.archivesRelativeDir}", file.indexInfo.compressionType))
+        filesDao.upsert(file)
+    }
+
+    suspend fun setBlocked(id: Long, blocked: Boolean) {
+        filesDao.setBlocked(id, blocked)
+    }
+
+    suspend fun delete(id: Long) {
+        filesDao.delete(id)
+    }
+
+    suspend fun delete(ids: List<Long>) {
+        filesDao.delete(ids)
+    }
+
+    suspend fun protectFile(cloudName: String?, file: MediaEntity) {
+        if (cloudName.isNullOrEmpty().not()) {
+            cloudName?.apply {
+                protectCloudFile(this, file)
+            }
+        } else {
+            protectLocalFile(file)
+        }
+    }
+
+    private suspend fun protectLocalFile(file: MediaEntity) {
+        val protectedFile = file.copy(indexInfo = file.indexInfo.copy(preserveId = DateUtil.getTimestamp()))
+        val fileDir = pathUtil.getLocalBackupFilesDir()
+        val src = "${fileDir}/${file.archivesRelativeDir}"
+        val dst = "${fileDir}/${protectedFile.archivesRelativeDir}"
+        rootService.writeJson(data = protectedFile, dst = PathUtil.getMediaRestoreConfigDst(src))
+        rootService.renameTo(src, dst)
+        filesDao.update(protectedFile)
+    }
+
+    private suspend fun protectCloudFile(cloudName: String, file: MediaEntity) = runCatching {
+        cloudRepo.withClient(cloudName) { client, entity ->
+            val protectedFile = file.copy(indexInfo = file.indexInfo.copy(preserveId = DateUtil.getTimestamp()))
+            val remote = entity.remote
+            val remoteFilesDir = pathUtil.getCloudRemoteFilesDir(remote)
+            val src = "${remoteFilesDir}/${file.archivesRelativeDir}"
+            val dst = "${remoteFilesDir}/${protectedFile.archivesRelativeDir}"
+            val tmpDir = pathUtil.getCloudTmpDir()
+            val tmpJsonPath = PathUtil.getMediaRestoreConfigDst(tmpDir)
+            rootService.writeJson(data = protectedFile, dst = tmpJsonPath)
+            cloudRepo.upload(client = client, src = tmpJsonPath, dstDir = src)
+            rootService.deleteRecursively(tmpDir)
+            client.renameTo(src, dst)
+        }
+    }.withLog()
+
+    suspend fun deleteFile(cloudName: String?, file: MediaEntity) {
+        if (cloudName.isNullOrEmpty().not()) {
+            cloudName?.apply {
+                deleteCloudFile(this, file)
+            }
+        } else {
+            deleteLocalFile(file)
+        }
+    }
+
+    private suspend fun deleteLocalFile(file: MediaEntity) {
+        val filesDir = pathUtil.getLocalBackupFilesDir()
+        val src = "${filesDir}/${file.archivesRelativeDir}"
+        if (rootService.deleteRecursively(src)) {
+            filesDao.delete(file.id)
+        }
+    }
+
+    private suspend fun deleteCloudFile(cloudName: String, file: MediaEntity) = runCatching {
+        cloudRepo.withClient(cloudName) { client, entity ->
+            val remote = entity.remote
+            val remoteFilesDir = pathUtil.getCloudRemoteFilesDir(remote)
+            val src = "${remoteFilesDir}/${file.archivesRelativeDir}"
+            if (client.exists(src)) {
+                client.deleteRecursively(src)
+                if (client.exists(src).not()) {
+                    filesDao.delete(file.id)
                 }
             }
         }

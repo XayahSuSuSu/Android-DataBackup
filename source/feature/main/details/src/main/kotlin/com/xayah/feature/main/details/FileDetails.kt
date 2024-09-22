@@ -19,15 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Shield
-import androidx.compose.material.icons.rounded.AcUnit
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.DeleteForever
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.RemoveRedEye
-import androidx.compose.material.icons.rounded.RocketLaunch
-import androidx.compose.material.icons.rounded._123
+import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -53,21 +48,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import com.xayah.core.common.util.toLineString
 import com.xayah.core.model.OpType
-import com.xayah.core.model.database.AppWithLabels
-import com.xayah.core.model.database.LabelWithAppIds
-import com.xayah.core.model.database.PackageDataStates
-import com.xayah.core.model.database.PackageDataStates.Companion.setSelected
-import com.xayah.core.model.database.PackageEntity
-import com.xayah.core.model.database.PackagePermission
+import com.xayah.core.model.database.FileWithLabels
+import com.xayah.core.model.database.LabelWithFileIds
+import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.ui.component.ActionSegmentedButton
 import com.xayah.core.ui.component.AnimatedModalDropdownMenu
 import com.xayah.core.ui.component.BodyLargeText
 import com.xayah.core.ui.component.BottomButton
 import com.xayah.core.ui.component.Clickable
-import com.xayah.core.ui.component.DataChips
 import com.xayah.core.ui.component.DropdownMenuItem
 import com.xayah.core.ui.component.HeadlineMediumText
 import com.xayah.core.ui.component.LocalSlotScope
@@ -89,16 +78,13 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun AppDetails(
+internal fun FileDetails(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    uiState: DetailsUiState.Success.App,
-    onSetDataStates: (Long, PackageDataStates) -> Unit,
+    uiState: DetailsUiState.Success.File,
     onAddLabel: (String) -> Unit,
     onDeleteLabel: (Long) -> Unit,
     onSelectLabel: (Boolean, Long, Long) -> Unit,
     onBlock: (Boolean) -> Unit,
-    onFreeze: (Boolean) -> Unit,
-    onLaunch: () -> Unit,
     onProtect: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -111,39 +97,35 @@ internal fun AppDetails(
             }
         }
     }
-    val app = uiState.appWithLabels.app
-    val opType = uiState.appWithLabels.app.indexInfo.opType
+    val file = uiState.fileWithLabels.file
+    val opType = uiState.fileWithLabels.file.indexInfo.opType
 
-    LabelsBottomSheet(isShow, sheetState, onDismissRequest, uiState.appWithLabels, uiState.labelWithAppIds, onAddLabel, onDeleteLabel, onSelectLabel)
+    LabelsBottomSheet(isShow, sheetState, onDismissRequest, uiState.fileWithLabels, uiState.labelWithFileIds, onAddLabel, onDeleteLabel, onSelectLabel)
 
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.height(SizeTokens.Level12))
 
-        PackageIconImage(packageName = app.packageName, size = SizeTokens.Level128)
+        PackageIconImage(icon = Icons.Rounded.Folder, packageName = "", inCircleShape = true, size = SizeTokens.Level128)
 
         Spacer(Modifier.height(SizeTokens.Level12))
 
-        HeadlineMediumText(text = app.packageInfo.label, color = ThemedColorSchemeKeyTokens.OnSurface.value)
-        BodyLargeText(text = app.packageName, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
-        LabelsFlow(opType = opType, appWithLabels = uiState.appWithLabels) { isShow = true }
+        HeadlineMediumText(text = file.name, color = ThemedColorSchemeKeyTokens.OnSurface.value)
+        BodyLargeText(text = file.path, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
+        LabelsFlow(opType = opType, fileWithLabels = uiState.fileWithLabels) { isShow = true }
 
         Spacer(Modifier.height(SizeTokens.Level12))
 
-        ActionsRow(opType = opType, blocked = app.extraInfo.blocked, frozen = app.extraInfo.enabled.not(), protected = app.preserveId != 0L, onBlock = onBlock, onFreeze = onFreeze, onLaunch = onLaunch, onProtect = onProtect, onDelete = onDelete)
+        ActionsRow(opType = opType, blocked = file.extraInfo.blocked, protected = file.preserveId != 0L, onBlock = onBlock, onProtect = onProtect, onDelete = onDelete)
 
         Spacer(Modifier.height(SizeTokens.Level12))
 
-        BackupParts(app = app, isCalculating = uiState.isRefreshing, onSetDataStates = onSetDataStates)
-
-        Info(app = app)
-
-        Permissions(permissions = app.extraInfo.permissions)
+        Info(file = file)
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun LabelsFlow(opType: OpType, appWithLabels: AppWithLabels, onAdd: () -> Unit) {
+private fun LabelsFlow(opType: OpType, fileWithLabels: FileWithLabels, onAdd: () -> Unit) {
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,15 +135,7 @@ private fun LabelsFlow(opType: OpType, appWithLabels: AppWithLabels, onAdd: () -
     ) {
         when (opType) {
             OpType.BACKUP -> {
-                if (appWithLabels.app.extraInfo.enabled.not()) {
-                    FilterChip(
-                        onClick = { },
-                        selected = true,
-                        colors = FilterChipDefaults.filterChipColors(selectedContainerColor = ThemedColorSchemeKeyTokens.ErrorContainer.value, selectedLabelColor = ThemedColorSchemeKeyTokens.OnErrorContainer.value),
-                        label = { Text(stringResource(R.string.disabled)) },
-                    )
-                }
-                if (appWithLabels.app.extraInfo.blocked) {
+                if (fileWithLabels.file.extraInfo.blocked) {
                     FilterChip(
                         onClick = { },
                         selected = true,
@@ -172,7 +146,7 @@ private fun LabelsFlow(opType: OpType, appWithLabels: AppWithLabels, onAdd: () -
             }
 
             OpType.RESTORE -> {
-                if (appWithLabels.app.preserveId != 0L) {
+                if (fileWithLabels.file.preserveId != 0L) {
                     FilterChip(
                         onClick = { },
                         selected = true,
@@ -183,24 +157,7 @@ private fun LabelsFlow(opType: OpType, appWithLabels: AppWithLabels, onAdd: () -
             }
         }
 
-        if (appWithLabels.app.extraInfo.hasKeystore) {
-            FilterChip(
-                onClick = { },
-                selected = true,
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = ThemedColorSchemeKeyTokens.BluePrimaryContainer.value, selectedLabelColor = ThemedColorSchemeKeyTokens.BlueOnPrimaryContainer.value),
-                label = { Text(stringResource(R.string.keystore)) },
-            )
-        }
-        if (appWithLabels.app.extraInfo.ssaid.isNotEmpty()) {
-            FilterChip(
-                onClick = { },
-                selected = true,
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = ThemedColorSchemeKeyTokens.BluePrimaryContainer.value, selectedLabelColor = ThemedColorSchemeKeyTokens.BlueOnPrimaryContainer.value),
-                label = { Text(stringResource(R.string.ssaid)) },
-            )
-        }
-
-        appWithLabels.labels.forEach { item ->
+        fileWithLabels.labels.forEach { item ->
             AssistChip(
                 onClick = { },
                 label = { Text(item.label) },
@@ -218,8 +175,8 @@ private fun LabelsBottomSheet(
     isShow: Boolean,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
-    appWithLabels: AppWithLabels,
-    labelWithAppIds: List<LabelWithAppIds>,
+    fileWithLabels: FileWithLabels,
+    labelWithFileIds: List<LabelWithFileIds>,
     onAddLabel: (String) -> Unit,
     onDeleteLabel: (Long) -> Unit,
     onSelectLabel: (Boolean, Long, Long) -> Unit,
@@ -228,7 +185,7 @@ private fun LabelsBottomSheet(
     val dialogState = LocalSlotScope.current!!.dialogSlot
     if (isShow) {
         ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
-            val selectedIds by remember(appWithLabels.labels) { mutableStateOf(appWithLabels.labels.map { it.id }) }
+            val selectedIds by remember(fileWithLabels.labels) { mutableStateOf(fileWithLabels.labels.map { it.id }) }
 
             Title(text = stringResource(id = R.string.labels))
             FlowRow(
@@ -238,7 +195,7 @@ private fun LabelsBottomSheet(
                 horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
                 verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8)
             ) {
-                labelWithAppIds.forEach { item ->
+                labelWithFileIds.forEach { item ->
                     var expanded by remember { mutableStateOf(false) }
                     Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
                         val interactionSource = remember { MutableInteractionSource() }
@@ -266,7 +223,7 @@ private fun LabelsBottomSheet(
                                     .matchParentSize()
                                     .combinedClickable(
                                         onLongClick = { expanded = true },
-                                        onClick = { onSelectLabel(selected, item.label.id, appWithLabels.app.id) },
+                                        onClick = { onSelectLabel(selected, item.label.id, fileWithLabels.file.id) },
                                         interactionSource = interactionSource,
                                         indication = null,
                                     )
@@ -327,11 +284,8 @@ private fun SingleChoiceSegmentedButtonRowScope.ActionItem(
 private fun ActionsRow(
     opType: OpType,
     blocked: Boolean,
-    frozen: Boolean,
     protected: Boolean,
     onBlock: (Boolean) -> Unit,
-    onFreeze: (Boolean) -> Unit,
-    onLaunch: () -> Unit,
     onProtect: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -344,7 +298,7 @@ private fun ActionsRow(
     ) {
         when (opType) {
             OpType.BACKUP -> {
-                BackupActions(blocked, frozen, onBlock, onFreeze, onLaunch)
+                BackupActions(blocked, onBlock, onDelete)
             }
 
             OpType.RESTORE -> {
@@ -356,12 +310,12 @@ private fun ActionsRow(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SingleChoiceSegmentedButtonRowScope.BackupActions(blocked: Boolean, frozen: Boolean, onBlock: (Boolean) -> Unit, onFreeze: (Boolean) -> Unit, onLaunch: () -> Unit) {
+private fun SingleChoiceSegmentedButtonRowScope.BackupActions(blocked: Boolean, onBlock: (Boolean) -> Unit, onDelete: () -> Unit) {
     val context = LocalContext.current
     val dialogState = LocalSlotScope.current!!.dialogSlot
     ActionItem(
         index = 0,
-        count = 3,
+        count = 2,
         title = stringResource(if (blocked) R.string.unblock else R.string.block),
         icon = Icons.Rounded.Block
     ) {
@@ -375,26 +329,18 @@ private fun SingleChoiceSegmentedButtonRowScope.BackupActions(blocked: Boolean, 
     }
     ActionItem(
         index = 1,
-        count = 3,
-        title = stringResource(if (frozen) R.string.unfreeze else R.string.freeze),
-        icon = Icons.Rounded.AcUnit
+        count = 2,
+        title = stringResource(R.string.delete),
+        icon = Icons.Outlined.DeleteForever,
+        containerColor = ThemedColorSchemeKeyTokens.ErrorContainer.value
     ) {
         dialogState.confirm(
-            title = context.getString(R.string.prompt),
-            text = context.getString(if (frozen) R.string.confirm_unfreeze else R.string.confirm_freeze),
+            title = context.getString(R.string.delete),
+            text = context.getString(R.string.delete_desc),
             onConfirm = {
-                onFreeze(frozen)
+                onDelete()
             }
         )
-    }
-    ActionItem(
-        enabled = frozen.not(),
-        index = 2,
-        count = 3,
-        title = context.getString(R.string.launch),
-        icon = Icons.Rounded.RocketLaunch
-    ) {
-        onLaunch()
     }
 }
 
@@ -435,76 +381,16 @@ private fun SingleChoiceSegmentedButtonRowScope.RestoreActions(protected: Boolea
     }
 }
 
-@Composable
-private fun BackupParts(app: PackageEntity, isCalculating: Boolean, onSetDataStates: (Long, PackageDataStates) -> Unit) {
-    Title(title = stringResource(id = R.string.backup_parts)) {
-        DataChips(selections = app.dataStates, displayStats = app.displayStats, isCalculating = isCalculating) { type, selected ->
-            onSetDataStates(app.id, type.setSelected(app.dataStates, selected.not()))
-        }
-        Spacer(Modifier.height(SizeTokens.Level12))
-    }
-}
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun Info(app: PackageEntity) {
-    Title(title = stringResource(id = R.string.info)) {
-        Clickable(
-            icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_person),
-            title = stringResource(id = R.string.user),
-            value = app.userId.toString()
-        )
-        Clickable(
-            icon = Icons.Rounded._123,
-            title = stringResource(id = R.string.uid),
-            value = app.extraInfo.uid.toString()
-        )
-        Clickable(
-            icon = Icons.Rounded.Apps,
-            title = stringResource(id = R.string.version),
-            value = app.packageInfo.versionName
-        )
-        Clickable(
-            icon = Icons.Rounded.Download,
-            title = stringResource(id = R.string.first_install),
-            value = DateUtil.formatTimestamp(app.packageInfo.firstInstallTime, DateUtil.PATTERN_YMD),
-        )
-        if (app.extraInfo.ssaid.isNotEmpty()) {
-            Clickable(
-                icon = Icons.Rounded.RemoveRedEye,
-                title = stringResource(id = R.string.ssaid),
-                value = app.extraInfo.ssaid,
-            )
-        }
-        if (app.preserveId != 0L) {
+private fun Info(file: MediaEntity) {
+    if (file.preserveId != 0L) {
+        Title(title = stringResource(id = R.string.info)) {
             Clickable(
                 icon = Icons.Outlined.Shield,
                 title = stringResource(id = R.string._protected),
-                value = DateUtil.formatTimestamp(app.preserveId, DateUtil.PATTERN_FINISH),
+                value = DateUtil.formatTimestamp(file.preserveId, DateUtil.PATTERN_FINISH),
             )
-        }
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-private fun Permissions(permissions: List<PackagePermission>) {
-    val granted by remember(permissions) { mutableStateOf(permissions.filter { it.isGranted }.map { it.name }) }
-    val denied by remember(permissions) { mutableStateOf(permissions.filter { it.isGranted.not() }.map { it.name }) }
-    if (granted.isNotEmpty() || denied.isNotEmpty()) {
-        Title(title = stringResource(id = R.string.permissions)) {
-            if (granted.isNotEmpty()) {
-                Clickable(
-                    title = stringResource(R.string.granted),
-                    value = granted.toLineString(),
-                )
-            }
-            if (denied.isNotEmpty()) {
-                Clickable(
-                    title = stringResource(R.string.denied),
-                    value = denied.toLineString(),
-                )
-            }
         }
     }
 }

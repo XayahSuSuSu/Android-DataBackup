@@ -5,9 +5,12 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import com.xayah.core.model.database.AppWithLabels
+import com.xayah.core.model.database.FileWithLabels
 import com.xayah.core.model.database.LabelAppCrossRefEntity
 import com.xayah.core.model.database.LabelEntity
+import com.xayah.core.model.database.LabelFileCrossRefEntity
 import com.xayah.core.model.database.LabelWithAppIds
+import com.xayah.core.model.database.LabelWithFileIds
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,6 +21,9 @@ interface LabelDao {
     @Upsert(entity = LabelAppCrossRefEntity::class)
     suspend fun upsert(item: LabelAppCrossRefEntity): Long
 
+    @Upsert(entity = LabelFileCrossRefEntity::class)
+    suspend fun upsert(item: LabelFileCrossRefEntity): Long
+
     @Query("SELECT * FROM LabelEntity")
     fun queryLabelsFlow(): Flow<List<LabelEntity>>
 
@@ -26,12 +32,23 @@ interface LabelDao {
     fun queryAppWithLabelsFlow(id: Long): Flow<AppWithLabels?>
 
     @Transaction
+    @Query("SELECT * FROM MediaEntity WHERE id = :id")
+    fun queryFileWithLabelsFlow(id: Long): Flow<FileWithLabels?>
+
+    @Transaction
     @Query("SELECT * FROM LabelEntity")
     fun queryLabelWithAppIdsFlow(): Flow<List<LabelWithAppIds>>
 
+    @Transaction
+    @Query("SELECT * FROM LabelEntity")
+    fun queryLabelWithFileIdsFlow(): Flow<List<LabelWithFileIds>>
+
     @Query("DELETE FROM LabelEntity WHERE id = :id")
-    suspend fun delete(id: Long)
+    suspend fun deleteAppRef(id: Long)
 
     @Query("DELETE FROM LabelAppCrossRefEntity WHERE labelId = :labelId AND appId = :appId")
-    suspend fun delete(labelId: Long, appId: Long)
+    suspend fun deleteAppRef(labelId: Long, appId: Long)
+
+    @Query("DELETE FROM LabelFileCrossRefEntity WHERE labelId = :labelId AND fileId = :fileId")
+    suspend fun deleteFileRef(labelId: Long, fileId: Long)
 }

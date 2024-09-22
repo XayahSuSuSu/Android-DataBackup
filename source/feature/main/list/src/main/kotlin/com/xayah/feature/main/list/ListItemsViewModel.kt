@@ -15,6 +15,7 @@ import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.util.of
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.util.decodeURL
+import com.xayah.core.util.launchOnDefault
 import com.xayah.feature.main.list.ListItemsUiState.Loading
 import com.xayah.feature.main.list.ListItemsUiState.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -57,7 +57,7 @@ class ListItemsViewModel @Inject constructor(
     )
 
     fun onSelectedChanged(id: Long, selected: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (target) {
                 Target.Apps -> appsRepo.selectApp(id, selected)
                 Target.Files -> filesRepo.selectFile(id, selected)
@@ -66,7 +66,7 @@ class ListItemsViewModel @Inject constructor(
     }
 
     fun onChangeFlag(id: Long, flag: Int) {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (flag) {
                 PackageEntity.FLAG_APK -> {
                     appsRepo.selectDataItems(

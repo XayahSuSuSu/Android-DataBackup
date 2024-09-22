@@ -16,6 +16,7 @@ import com.xayah.core.model.Target
 import com.xayah.core.model.util.of
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.util.decodeURL
+import com.xayah.core.util.launchOnDefault
 import com.xayah.core.work.WorkManagerInitializer
 import com.xayah.feature.main.list.ListActionsUiState.Loading
 import com.xayah.feature.main.list.ListActionsUiState.Success
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -74,7 +74,7 @@ class ListActionsViewModel @Inject constructor(
     )
 
     fun refresh() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (uiState.value) {
                 is Success.Apps -> {
                     when (opType) {
@@ -106,13 +106,13 @@ class ListActionsViewModel @Inject constructor(
     }
 
     fun showFilterSheet() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             listDataRepo.setShowFilterSheet(true)
         }
     }
 
     fun selectAll() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (uiState.value) {
                 is Success.Apps -> {
                     val state = uiState.value.castTo<Success.Apps>()
@@ -131,7 +131,7 @@ class ListActionsViewModel @Inject constructor(
     }
 
     fun unselectAll() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (uiState.value) {
                 is Success.Apps -> {
                     val state = uiState.value.castTo<Success.Apps>()
@@ -150,7 +150,7 @@ class ListActionsViewModel @Inject constructor(
     }
 
     fun reverseAll() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (uiState.value) {
                 is Success.Apps -> {
                     val state = uiState.value.castTo<Success.Apps>()
@@ -169,7 +169,7 @@ class ListActionsViewModel @Inject constructor(
     }
 
     fun blockSelected() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (uiState.value) {
                 is Success.Apps -> {
                     val state = uiState.value.castTo<Success.Apps>()
@@ -188,13 +188,13 @@ class ListActionsViewModel @Inject constructor(
     }
 
     fun showDataItemsSheet() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             listDataRepo.setShowDataItemsSheet(true)
         }
     }
 
     fun deleteSelected() {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             when (uiState.value) {
                 is Success.Apps -> {
                     val state = uiState.value.castTo<Success.Apps>()
@@ -203,12 +203,26 @@ class ListActionsViewModel @Inject constructor(
 
                 is Success.Files -> {
                     val state = uiState.value.castTo<Success.Files>()
-                    filesRepo.deleteSelected(state.fileList.filter { it.selected }.map { it.id })
+                    when (opType) {
+                        OpType.BACKUP -> {
+                            filesRepo.delete(state.fileList.filter { it.selected }.map { it.id })
+                        }
+
+                        OpType.RESTORE -> {
+                            filesRepo.deleteSelected(state.fileList.filter { it.selected }.map { it.id })
+                        }
+                    }
                 }
 
                 else -> {}
             }
 
+        }
+    }
+
+    fun addFiles(pathList: List<String>) {
+        viewModelScope.launchOnDefault {
+            filesRepo.addFiles(pathList)
         }
     }
 }

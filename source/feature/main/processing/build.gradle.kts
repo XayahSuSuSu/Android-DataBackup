@@ -34,5 +34,6 @@ dependencies {
     // dotLottie
     implementation(libs.dotlottie.android)
 
+    // Vector animation
     implementation(libs.androidx.animation.graphics)
 }

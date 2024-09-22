@@ -74,6 +74,16 @@ data class AppWithLabels(
     val labels: List<LabelEntity>
 )
 
+data class FileWithLabels(
+    @Embedded val file: MediaEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(LabelFileCrossRefEntity::class, parentColumn = "fileId", entityColumn = "labelId")
+    )
+    val labels: List<LabelEntity>
+)
+
 data class LabelWithAppIds(
     @Embedded val label: LabelEntity,
     @Relation(
@@ -81,6 +91,18 @@ data class LabelWithAppIds(
         entityColumn = "id",
         entity = PackageEntity::class,
         associateBy = Junction(LabelAppCrossRefEntity::class, parentColumn = "labelId", entityColumn = "appId"),
+        projection = ["id"]
+    )
+    val ids: List<Long>
+)
+
+data class LabelWithFileIds(
+    @Embedded val label: LabelEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id",
+        entity = MediaEntity::class,
+        associateBy = Junction(LabelFileCrossRefEntity::class, parentColumn = "labelId", entityColumn = "fileId"),
         projection = ["id"]
     )
     val ids: List<Long>

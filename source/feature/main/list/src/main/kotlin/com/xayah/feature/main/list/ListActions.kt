@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowRight
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.CheckBox
@@ -35,6 +36,9 @@ import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.ModalDropdownMenu
 import com.xayah.core.ui.component.confirm
+import com.xayah.libpickyou.ui.PickYouLauncher
+import com.xayah.libpickyou.ui.model.PermissionType
+import com.xayah.libpickyou.ui.model.PickerType
 
 @Composable
 internal fun ListActions(
@@ -51,13 +55,20 @@ internal fun ListActions(
     viewModel: ListActionsViewModel,
 ) {
     if (uiState is ListActionsUiState.Success) {
+        val context = LocalContext.current
+        val target by remember(uiState) {
+            mutableStateOf(
+                when (uiState) {
+                    is ListActionsUiState.Success.Apps -> Target.Apps
+                    is ListActionsUiState.Success.Files -> Target.Files
+                }
+            )
+        }
+
         FilterAction(viewModel::showFilterSheet)
 
         ListAction(
-            target = when (uiState) {
-                is ListActionsUiState.Success.Apps -> Target.Apps
-                is ListActionsUiState.Success.Files -> Target.Files
-            },
+            target = target,
             opType = uiState.opType,
             selected = uiState.selected,
             viewModel = viewModel,
@@ -76,10 +87,30 @@ internal fun ListActions(
                     moreExpanded = false
                     viewModel.refresh()
                 }
+
+                when (target) {
+                    Target.Apps -> {}
+
+                    Target.Files -> {
+                        if (uiState.opType == OpType.BACKUP) {
+                            AddItem(enabled = uiState.isUpdating.not()) {
+                                moreExpanded = false
+                                PickYouLauncher().apply {
+                                    setTitle(context.getString(R.string.select_target_directory))
+                                    setType(PickerType.DIRECTORY)
+                                    setLimitation(0)
+                                    setPermissionType(PermissionType.ROOT)
+                                    launch(context) {
+                                        viewModel.addFiles(it)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-
 }
 
 @Composable
@@ -215,6 +246,15 @@ private fun FilesListActions(
                     onBlockSelected()
                 }
             }
+            DeleteItem(enabled) {
+                checkListExpanded()
+                dialogState.confirm(
+                    title = context.getString(R.string.prompt),
+                    text = context.getString(R.string.confirm_delete)
+                ) {
+                    onDeleteSelected()
+                }
+            }
         }
 
         OpType.RESTORE -> {
@@ -303,6 +343,16 @@ private fun RefreshItem(enabled: Boolean, onClick: () -> Unit) {
     DropdownMenuItem(
         text = stringResource(id = R.string.refresh),
         leadingIcon = Icons.Rounded.Refresh,
+        onClick = onClick,
+        enabled = enabled,
+    )
+}
+
+@Composable
+private fun AddItem(enabled: Boolean, onClick: () -> Unit) {
+    DropdownMenuItem(
+        text = stringResource(id = R.string.add),
+        leadingIcon = Icons.Rounded.Add,
         onClick = onClick,
         enabled = enabled,
     )

@@ -12,6 +12,7 @@ import com.xayah.core.model.UserInfo
 import com.xayah.core.model.util.of
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.util.decodeURL
+import com.xayah.core.util.launchOnDefault
 import com.xayah.feature.main.list.ListTopBarUiState.Loading
 import com.xayah.feature.main.list.ListTopBarUiState.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -60,13 +60,13 @@ class ListTopBarViewModel @Inject constructor(
     )
 
     fun search(text: String) {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             listDataRepo.setSearchQuery(text)
         }
     }
 
     fun setUser(index: Int) {
-        viewModelScope.launch {
+        viewModelScope.launchOnDefault {
             listDataRepo.setUserIndex(index)
         }
     }
