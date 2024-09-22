@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xayah.core.data.repository.AppsRepo
+import com.xayah.core.data.repository.LabelsRepo
 import com.xayah.core.data.repository.ListData
 import com.xayah.core.data.repository.ListDataRepo
 import com.xayah.core.hiddenapi.castTo
@@ -12,6 +13,7 @@ import com.xayah.core.model.File
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.Target
+import com.xayah.core.model.database.LabelEntity
 import com.xayah.core.model.database.PackageDataStates
 import com.xayah.core.model.util.of
 import com.xayah.core.ui.route.MainRoutes
@@ -30,7 +32,8 @@ import javax.inject.Inject
 class ListBottomSheetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val listDataRepo: ListDataRepo,
-    private val appsRepo: AppsRepo
+    private val appsRepo: AppsRepo,
+    labelsRepo: LabelsRepo
 ) : ViewModel() {
     private val target: Target = Target.valueOf(savedStateHandle.get<String>(MainRoutes.ARG_TARGET)!!.decodeURL().trim())
     private val opType: OpType = OpType.of(savedStateHandle.get<String>(MainRoutes.ARG_OP_TYPE)?.decodeURL()?.trim())
@@ -38,30 +41,36 @@ class ListBottomSheetViewModel @Inject constructor(
     val uiState: StateFlow<ListBottomSheetUiState> = when (target) {
         Target.Apps -> combine(
             listDataRepo.getListData(),
-            listDataRepo.getAppList()
-        ) { lData, aList ->
+            listDataRepo.getAppList(),
+            labelsRepo.getLabels()
+        ) { lData, aList, labels ->
             val listData = lData.castTo<ListData.Apps>()
             Success.Apps(
                 opType = opType,
                 showFilterSheet = listData.showFilterSheet,
-                showDataItemsSheet = listData.showDataItemsSheet,
-                showSystemApps = listData.showSystemApps,
                 sortIndex = listData.sortIndex,
                 sortType = listData.sortType,
+                labels = labels,
+                labelIds = listData.labelIds,
+                showDataItemsSheet = listData.showDataItemsSheet,
+                showSystemApps = listData.showSystemApps,
                 appList = aList,
             )
         }
 
         Target.Files -> combine(
             listDataRepo.getListData(),
-            listDataRepo.getFileList()
-        ) { lData, fList ->
+            listDataRepo.getFileList(),
+            labelsRepo.getLabels()
+        ) { lData, fList, labels ->
             val listData = lData.castTo<ListData.Files>()
             Success.Files(
                 opType = opType,
                 showFilterSheet = listData.showFilterSheet,
                 sortIndex = listData.sortIndex,
                 sortType = listData.sortType,
+                labels = labels,
+                labelIds = listData.labelIds,
                 fileList = fList,
             )
         }
@@ -111,6 +120,19 @@ class ListBottomSheetViewModel @Inject constructor(
         }
     }
 
+    fun addOrRemoveLabelId(id: Long) {
+        viewModelScope.launchOnDefault {
+            if (uiState.value is Success) {
+                val state = uiState.value.castTo<Success>()
+                if (id in state.labelIds) {
+                    listDataRepo.removeLabelId(id)
+                } else {
+                    listDataRepo.addLabelId(id)
+                }
+            }
+        }
+    }
+
     fun setDataItems(selections: PackageDataStates) {
         viewModelScope.launchOnDefault {
             if (uiState.value is Success.Apps) {
@@ -126,23 +148,31 @@ sealed interface ListBottomSheetUiState {
     sealed class Success(
         open val opType: OpType,
         open val showFilterSheet: Boolean,
+        open val sortIndex: Int,
+        open val sortType: SortType,
+        open val labels: List<LabelEntity>,
+        open val labelIds: Set<Long>,
     ) : ListBottomSheetUiState {
         data class Apps(
             override val opType: OpType,
             override val showFilterSheet: Boolean,
+            override val sortIndex: Int,
+            override val sortType: SortType,
+            override val labels: List<LabelEntity>,
+            override val labelIds: Set<Long>,
             val showDataItemsSheet: Boolean,
             val showSystemApps: Boolean,
-            val sortIndex: Int,
-            val sortType: SortType,
             val appList: List<App>,
-        ) : Success(opType, showFilterSheet)
+        ) : Success(opType, showFilterSheet, sortIndex, sortType, labels, labelIds)
 
         data class Files(
             override val opType: OpType,
             override val showFilterSheet: Boolean,
-            val sortIndex: Int,
-            val sortType: SortType,
+            override val sortIndex: Int,
+            override val sortType: SortType,
+            override val labels: List<LabelEntity>,
+            override val labelIds: Set<Long>,
             val fileList: List<File>,
-        ) : Success(opType, showFilterSheet)
+        ) : Success(opType, showFilterSheet, sortIndex, sortType, labels, labelIds)
     }
 }

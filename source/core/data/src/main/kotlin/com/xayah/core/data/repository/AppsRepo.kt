@@ -72,20 +72,25 @@ class AppsRepo @Inject constructor(
     fun getApps(
         opType: OpType,
         listData: Flow<ListData>,
+        refIds: Flow<List<Long>>,
+        labelIds: Flow<Set<Long>>,
         cloudName: String,
         backupDir: String
     ): Flow<List<App>> = combine(
         listData,
+        refIds,
+        labelIds,
         when (opType) {
             OpType.BACKUP -> appsDao.queryPackagesFlow(opType = opType, blocked = false)
             OpType.RESTORE -> appsDao.queryPackagesFlow(opType = opType, cloud = cloudName, backupDir = backupDir)
         }
-    ) { lData, apps ->
+    ) { lData, rIds, lIds, apps ->
         val data = lData.castTo<ListData.Apps>()
         apps.asSequence()
             .filter(packageRepo.getKeyPredicateNew(key = data.searchQuery))
             .filter(packageRepo.getShowSystemAppsPredicate(value = data.showSystemApps))
             .filter(packageRepo.getUserIdPredicateNew(userId = data.userList.getOrNull(data.userIndex)?.id))
+            .filter { if (lIds.isNotEmpty()) it.id in rIds else true }
             .sortedWith(packageRepo.getSortComparatorNew(sortIndex = data.sortIndex, sortType = data.sortType))
             .sortedByDescending { p -> p.extraInfo.activated }.toList()
             .map(PackageEntity::asExternalModel)

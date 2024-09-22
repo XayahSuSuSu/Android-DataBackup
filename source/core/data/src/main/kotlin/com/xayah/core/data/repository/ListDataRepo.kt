@@ -7,9 +7,11 @@ import com.xayah.core.model.SortType
 import com.xayah.core.model.Target
 import com.xayah.core.model.UserInfo
 import com.xayah.core.util.module.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +20,7 @@ class ListDataRepo @Inject constructor(
     private val usersRepo: UsersRepo,
     private val appsRepo: AppsRepo,
     private val filesRepo: FilesRepo,
+    private val labelsRepo: LabelsRepo,
     private val workRepo: WorkRepo,
 ) {
     private lateinit var listData: Flow<ListData>
@@ -29,6 +32,8 @@ class ListDataRepo @Inject constructor(
     private lateinit var sortIndex: MutableStateFlow<Int>
     private lateinit var sortType: MutableStateFlow<SortType>
     private lateinit var isUpdating: Flow<Boolean>
+    private lateinit var labelIds: MutableStateFlow<Set<Long>>
+    private lateinit var refIds: Flow<List<Long>> // Labels filtered app/file ids
 
     // Apps
     private lateinit var showDataItemsSheet: MutableStateFlow<Boolean>
@@ -41,6 +46,7 @@ class ListDataRepo @Inject constructor(
     // Files
     private lateinit var fileList: Flow<List<File>>
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun initialize(target: Target, opType: OpType, cloudName: String, backupDir: String) {
         when (target) {
             Target.Apps -> {
@@ -54,6 +60,10 @@ class ListDataRepo @Inject constructor(
                     OpType.BACKUP -> combine(workRepo.isFullInitRunning(), workRepo.isFullInitAndUpdateAppsRunning(), workRepo.isFastInitAndUpdateAppsRunning()) { fInit, full, fast -> fInit || full || fast }
                     OpType.RESTORE -> combine(workRepo.isFullInitRunning(), workRepo.isLoadAppBackupsRunning()) { fInit, lAppBackups -> fInit || lAppBackups }
                 }
+                labelIds = MutableStateFlow(setOf())
+                refIds = labelIds.map {
+                    labelsRepo.getAppIdsFlow(it)
+                }
 
                 showDataItemsSheet = MutableStateFlow(false)
                 showSystemApps = MutableStateFlow(false)
@@ -62,7 +72,7 @@ class ListDataRepo @Inject constructor(
                 userMap = usersRepo.getUsersMap(opType)
 
                 listData = getAppListData()
-                appList = appsRepo.getApps(opType = opType, listData = listData, cloudName = cloudName, backupDir = backupDir)
+                appList = appsRepo.getApps(opType = opType, listData = listData, refIds = refIds, labelIds = labelIds, cloudName = cloudName, backupDir = backupDir)
             }
 
             Target.Files -> {
@@ -76,9 +86,13 @@ class ListDataRepo @Inject constructor(
                     OpType.BACKUP -> combine(workRepo.isFullInitRunning(), workRepo.isFastInitAndUpdateFilesRunning()) { fInit, fast -> fInit || fast }
                     OpType.RESTORE -> combine(workRepo.isFullInitRunning(), workRepo.isLoadFileBackupsRunning()) { fInit, lFileBackups -> fInit || lFileBackups }
                 }
+                labelIds = MutableStateFlow(setOf())
+                refIds = labelIds.map {
+                    labelsRepo.getFileIdsFlow(it)
+                }
 
                 listData = getFileListData()
-                fileList = filesRepo.getFiles(opType = opType, listData = listData, cloudName = cloudName, backupDir = backupDir)
+                fileList = filesRepo.getFiles(opType = opType, listData = listData, refIds = refIds, labelIds = labelIds, cloudName = cloudName, backupDir = backupDir)
             }
         }
     }
@@ -91,13 +105,14 @@ class ListDataRepo @Inject constructor(
         sortIndex,
         sortType,
         isUpdating,
+        labelIds,
         showDataItemsSheet,
         showSystemApps,
         userIndex,
         userList,
         userMap,
-    ) { s, t, sQuery, sFSheet, sIndex, sType, iUpdating, sDISheet, sSystemApps, uIndex, uList, uMap ->
-        ListData.Apps(s, t, sQuery, sFSheet, sIndex, sType, iUpdating, sDISheet, sSystemApps, uIndex, uList, uMap)
+    ) { s, t, sQuery, sFSheet, sIndex, sType, iUpdating, lIds, sDISheet, sSystemApps, uIndex, uList, uMap ->
+        ListData.Apps(s, t, sQuery, sFSheet, sIndex, sType, iUpdating, lIds, sDISheet, sSystemApps, uIndex, uList, uMap)
     }
 
     private fun getFileListData(): Flow<ListData.Files> = combine(
@@ -108,8 +123,9 @@ class ListDataRepo @Inject constructor(
         sortIndex,
         sortType,
         isUpdating,
-    ) { s, t, sQuery, sFSheet, sIndex, sType, iUpdating ->
-        ListData.Files(s, t, sQuery, sFSheet, sIndex, sType, iUpdating)
+        labelIds,
+    ) { s, t, sQuery, sFSheet, sIndex, sType, iUpdating, lIds ->
+        ListData.Files(s, t, sQuery, sFSheet, sIndex, sType, iUpdating, lIds)
     }
 
     fun getListData(): Flow<ListData> = listData
@@ -145,6 +161,18 @@ class ListDataRepo @Inject constructor(
     suspend fun setShowDataItemsSheet(value: Boolean) {
         showDataItemsSheet.emit(value)
     }
+
+    suspend fun addLabelId(id: Long) {
+        val ids = labelIds.value.toMutableSet()
+        ids.add(id)
+        labelIds.emit(ids)
+    }
+
+    suspend fun removeLabelId(id: Long) {
+        val ids = labelIds.value.toMutableSet()
+        ids.remove(id)
+        labelIds.emit(ids)
+    }
 }
 
 sealed class ListData(
@@ -155,6 +183,7 @@ sealed class ListData(
     open val sortIndex: Int,
     open val sortType: SortType,
     open val isUpdating: Boolean,
+    open val labelIds: Set<Long>,
 ) {
     data class Apps(
         override val selected: Long,
@@ -164,12 +193,13 @@ sealed class ListData(
         override val sortIndex: Int,
         override val sortType: SortType,
         override val isUpdating: Boolean,
+        override val labelIds: Set<Long>,
         val showDataItemsSheet: Boolean,
         val showSystemApps: Boolean,
         val userIndex: Int,
         val userList: List<UserInfo>,
         val userMap: Map<Int, Long>,
-    ) : ListData(selected, total, searchQuery, showFilterSheet, sortIndex, sortType, isUpdating)
+    ) : ListData(selected, total, searchQuery, showFilterSheet, sortIndex, sortType, isUpdating, labelIds)
 
     data class Files(
         override val selected: Long,
@@ -179,5 +209,6 @@ sealed class ListData(
         override val sortIndex: Int,
         override val sortType: SortType,
         override val isUpdating: Boolean,
-    ) : ListData(selected, total, searchQuery, showFilterSheet, sortIndex, sortType, isUpdating)
+        override val labelIds: Set<Long>,
+    ) : ListData(selected, total, searchQuery, showFilterSheet, sortIndex, sortType, isUpdating, labelIds)
 }

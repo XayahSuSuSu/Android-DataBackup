@@ -47,18 +47,23 @@ class FilesRepo @Inject constructor(
     fun getFiles(
         opType: OpType,
         listData: Flow<ListData>,
+        refIds: Flow<List<Long>>,
+        labelIds: Flow<Set<Long>>,
         cloudName: String,
         backupDir: String
     ): Flow<List<File>> = combine(
         listData,
+        refIds,
+        labelIds,
         when (opType) {
             OpType.BACKUP -> filesDao.queryFilesFlow(opType = opType, existed = true, blocked = false)
             OpType.RESTORE -> filesDao.queryFilesFlow(opType = opType, cloud = cloudName, backupDir = backupDir)
         }
-    ) { lData, files ->
+    ) { lData, rIds, lIds, files ->
         val data = lData.castTo<ListData.Files>()
         files.asSequence()
             .filter(mediaRepo.getKeyPredicateNew(key = data.searchQuery))
+            .filter { if (lIds.isNotEmpty()) it.id in rIds else true }
             .sortedWith(mediaRepo.getSortComparatorNew(sortIndex = data.sortIndex, sortType = data.sortType))
             .sortedByDescending { p -> p.extraInfo.activated }.toList()
             .map(MediaEntity::asExternalModel)
