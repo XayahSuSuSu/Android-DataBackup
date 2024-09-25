@@ -354,7 +354,7 @@
     <string name="detailed_data_items">Подробности элементов данных</string>
     <string name="refresh">Обновить</string>
     <string name="updating_app_list">Обновление списка приложений</string>
-    <string name="loading_backups">Загрузка резервных копий</string>
+    <string name="loading_backups">Загрузка бекапов</string>
     <string name="updating_file_list">Обновление списка файлов</string>
     <string name="no_item_selected">Ни один элемент не выбран</string>
     <string name="initializing_app_list">Инициализация списка приложений</string>
@@ -368,9 +368,9 @@
     <string name="unfreeze">Разморозить</string>
     <string name="confirm_freeze">Заморозить это приложение?</string>
     <string name="confirm_unfreeze">Разморозить это приложение?</string>
-    <string name="launch">Запуск</string>
+    <string name="launch">Открыть</string>
     <string name="app_is_frozen">Приложение заморожено!</string>
-    <string name="no_activities_found">Действий не найдено!</string>
+    <string name="no_activities_found">Активити не найдено!</string>
     <string name="granted">Предоставлено</string>
     <string name="denied">Запрещено</string>
 </resources>
