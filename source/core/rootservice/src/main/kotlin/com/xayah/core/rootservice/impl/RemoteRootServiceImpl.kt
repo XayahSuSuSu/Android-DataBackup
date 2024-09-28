@@ -30,6 +30,7 @@ import com.xayah.core.rootservice.parcelables.StatFsParcelable
 import com.xayah.core.rootservice.parcelables.StorageStatsParcelable
 import com.xayah.core.rootservice.util.ExceptionUtil.tryOn
 import com.xayah.core.rootservice.util.ExceptionUtil.tryWithBoolean
+import com.xayah.core.rootservice.util.NativeLib
 import com.xayah.core.rootservice.util.SsaidUtil
 import com.xayah.core.util.FileUtil
 import com.xayah.core.util.HashUtil
@@ -180,7 +181,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         }
 
     override fun calculateSize(path: String): Long = synchronized(lock) {
-        FileUtil.calculateSize(path = path)
+        NativeLib.calculateSize(path)
     }
 
     override fun clearEmptyDirectoriesRecursively(path: String) = synchronized(lock) {

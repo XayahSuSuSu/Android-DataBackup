@@ -9,6 +9,7 @@ import android.content.pm.UserInfo
 import android.os.IBinder
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
+import android.os.Process
 import android.os.RemoteException
 import android.os.UserHandle
 import com.google.gson.reflect.TypeToken
@@ -56,6 +57,11 @@ class RemoteRootService(private val context: Context) {
     private fun log(msg: () -> String) = LogUtil.log { "RemoteRootService" to msg() }
 
     class RemoteRootService : RootService() {
+        init {
+            if (Process.myUid() == 0)
+                System.loadLibrary("nativelib")
+        }
+
         override fun onBind(intent: Intent): IBinder = RemoteRootServiceImpl()
     }
 
