@@ -238,6 +238,10 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun setAllPermissions(src: String): Unit = synchronized(lock) { File(src).setAllPermissions() }
 
+    override fun getUidGid(path: String): IntArray = synchronized(lock) {
+        NativeLib.getUidGid(path)
+    }
+
     /**
      * AIDL limits transaction to 1M which means it may throw [android.os.TransactionTooLargeException]
      * when the package list is too large. So we just make it parcelable and write into tmp file to avoid that.

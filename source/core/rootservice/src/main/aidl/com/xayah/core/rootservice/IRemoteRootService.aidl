@@ -18,6 +18,7 @@ interface IRemoteRootService {
     long calculateSize(String path);
     void clearEmptyDirectoriesRecursively(String path);
     void setAllPermissions(String src);
+    int[] getUidGid(String path);
 
     ParcelFileDescriptor getInstalledPackagesAsUser(int flags, int userId);
     PackageInfo getPackageInfoAsUser(String packageName, int flags, int userId);

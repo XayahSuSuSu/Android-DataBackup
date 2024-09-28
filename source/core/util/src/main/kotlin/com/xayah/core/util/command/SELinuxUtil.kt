@@ -18,12 +18,12 @@ object SELinux {
         )
     }
 
-    suspend fun chown(uid: Int, path: String): ShellResult = run {
+    suspend fun chown(uid: UInt, gid: UInt, path: String): ShellResult = run {
         // chown -hR "$uid:$uid" "$path/"
         execute(
             "chown",
             "-hR",
-            "$QUOTE$uid:$uid$QUOTE",
+            "$QUOTE$uid:$gid$QUOTE",
             "$QUOTE$path/$QUOTE",
         )
     }

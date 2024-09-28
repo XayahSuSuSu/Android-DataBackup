@@ -4,6 +4,7 @@ import android.content.Context
 import com.xayah.core.common.util.toLineString
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageRepository
+import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.datastore.readCleanRestoring
 import com.xayah.core.datastore.readSelectionType
@@ -306,7 +307,12 @@ class PackagesRestoreUtil @Inject constructor(
 
                 // Restore SELinux context.
                 if (uid != -1) {
-                    SELinux.chown(uid = uid, path = dst).also { result ->
+                    var gid: UInt = uid.toUInt()
+                    if (dataType == DataType.PACKAGE_DATA || dataType == DataType.PACKAGE_OBB || dataType == DataType.PACKAGE_MEDIA) {
+                        val (_, pathGid) = rootService.getUidGid(dataType.srcDir(userId))
+                        gid = pathGid
+                    }
+                    SELinux.chown(uid = uid.toUInt(), gid = gid, path = dst).also { result ->
                         isSuccess = result.isSuccess
                         out.addAll(result.out)
                     }

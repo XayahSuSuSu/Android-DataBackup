@@ -76,7 +76,8 @@ class PathUtil @Inject constructor(
         suspend fun setFilesDirSELinux(context: Context) = SELinux.getContext(path = context.filesDir()).also { result ->
             val pathContext = if (result.isSuccess) result.outString else ""
             SELinux.chcon(context = pathContext, path = context.filesDir())
-            SELinux.chown(uid = context.applicationInfo.uid, path = context.filesDir())
+            val uidGid = context.applicationInfo.uid.toUInt()
+            SELinux.chown(uid = uidGid, gid = uidGid, path = context.filesDir())
         }
 
         fun getSsaidPath(userId: Int) = "/data/system/users/$userId/settings_ssaid.xml"

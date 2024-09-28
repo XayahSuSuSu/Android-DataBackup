@@ -237,6 +237,14 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun setAllPermissions(src: String) = runCatching { getService().setAllPermissions(src) }.onFailure(onFailure)
 
+    /**
+     * Get the uid and gid of the file/directory
+     *
+     * @param path
+     * @return Uid to Gid
+     */
+    suspend fun getUidGid(path: String): Pair<UInt, UInt> = runCatching { getService().getUidGid(path).let { it[0].toUInt() to it[1].toUInt() } }.onFailure(onFailure).getOrElse { UInt.MAX_VALUE to UInt.MAX_VALUE }
+
     suspend fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> = runCatching {
         val pfd = getService().getInstalledPackagesAsUser(flags, userId)
         val packages = mutableListOf<PackageInfo>()
