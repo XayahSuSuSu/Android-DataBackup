@@ -71,9 +71,17 @@ Thanks to all these wonderful people!
 ## Support
 If you enjoy this app and want to help it become better, feel free to sponsor me!
 
-[<img src="./docs/static/img/bmc-button.svg"
+<!-- [<img src="./docs/static/img/bmc-button.svg"
      alt="Buy Me a Coffee"
      height="60">](https://www.buymeacoffee.com/XayahSuSuSu)[<img src="./docs/static/img/afdian.svg"
+     alt=爱发电
+     height="60">](https://afdian.net/a/XayahSuSuSu) -->
+
+[<img src="./docs/static/img/pp_h_rgb.svg"
+     alt="PayPal"
+     height="60">](https://paypal.me/XayahSuSuSu)
+
+[<img src="./docs/static/img/afdian.svg"
      alt=爱发电
      height="60">](https://afdian.net/a/XayahSuSuSu)
 

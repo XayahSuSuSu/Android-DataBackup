@@ -112,12 +112,20 @@ fun PageAboutSettings() {
                             expanded = true
                         }
                         ModalActionDropdownMenu(expanded = expanded, actionList = listOf(
+//                            ActionMenuItem(
+//                                title = stringResource(id = R.string.buymeacoffee),
+//                                enabled = true,
+//                                secondaryMenu = listOf(),
+//                                onClick = {
+//                                    viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, ConstantUtil.DONATE_BMAC_LINK))
+//                                }
+//                            ),
                             ActionMenuItem(
-                                title = stringResource(id = R.string.buymeacoffee),
+                                title = stringResource(id = R.string.paypal),
                                 enabled = true,
                                 secondaryMenu = listOf(),
                                 onClick = {
-                                    viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, ConstantUtil.DONATE_BMAC_LINK))
+                                    viewModel.emitIntentOnIO(IndexUiIntent.ToBrowser(context, ConstantUtil.DONATE_PAYPAL_LINK))
                                 }
                             ),
                             ActionMenuItem(

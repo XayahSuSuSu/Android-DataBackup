@@ -50,6 +50,7 @@
     <item name="no_browser" type="string" />
     <item name="donate" type="string" />
     <item name="buymeacoffee" type="string" />
+    <item name="paypal" type="string" />
     <item name="afdian" type="string" />
     <item name="github" type="string" />
     <item name="contact" type="string" />

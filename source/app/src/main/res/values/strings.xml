@@ -338,6 +338,7 @@
     <string name="about_app">About application</string>
     <string name="donate">Donate</string>
     <string name="buymeacoffee" translatable="false">Buy me a coffee</string>
+    <string name="paypal" translatable="false">PayPal</string>
     <string name="afdian">AFDIAN</string>
     <string name="github" translatable="false">GitHub</string>
     <string name="contact">Contact</string>
