@@ -350,7 +350,8 @@
     <string name="confirm_add_to_blacklist">Zur Blacklist hinzufügen?</string>
     <string name="afdian">AFDIAN</string>
     <string name="args_update_from">Sie können die Version %1$s zu Version %2$s Aktualisieren</string>
-    <string name="no_item_selected">Keine Dateien ausgewählt</string>
+    <string name="no_item_selected">Nichts ausgewählt</string>
     <string name="apk_selected">APK ausgewählt</string>
     <string name="all_selected">Alle Elemente Ausgewählt</string>
+    <string name="data_selected">Daten ausgewählt</string>
 </resources>
