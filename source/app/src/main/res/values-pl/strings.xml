@@ -17,9 +17,11 @@
     <string name="confirm">Potwierdź</string>
     <string name="loading">Ładowanie</string>
     <string name="app_name">Kopia zapasowa</string>
-    <string name="welcome_to_use">Witamy w kopii zapasowej</string>
+    <string name="welcome_to_use">Witamy w DataBackup</string>
     <string name="update_records">Aktualizuj rekordy</string>
     <string name="environment_detection">Wykrywanie środowiska</string>
     <string name="start_subtitle">Zgodnie z odpowiednimi zasadami, musisz dokładnie przeczytać i zgodzić się na następujące Umowę Użytkownika oraz Politykę Prywatności przed rozpoczęciem korzystania z tej aplikacji</string>
     <string name="start_desc">Wszystkie dane generowane przez tę aplikację są używane wyłącznie do tworzenia kopii zapasowych/przywracania i są przechowywane tylko lokalnie.</string>
+    <string name="grant_root_access">Dostęp do root\'a</string>
+    <string name="network_desc">Służy do uzyskiwania informacji o aktualizacjach aplikacji, oraz analizy aplikacji</string>
 </resources>
