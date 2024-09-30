@@ -257,7 +257,7 @@
     <string name="integral">Integral</string>
     <string name="prompt">Fördern</string>
     <string name="monet">Geld</string>
-    <string name="backup_user_desc">Zielbenutzer beim Laden der Sicherungsliste oder beim Sichern</string>
+    <string name="backup_user_desc">Zielbenutzer beim Laden der Backup-Liste oder beim Sichern</string>
     <string name="backup">Sicherung</string>
     <string name="backup_itself">Selbst Sicherung</string>
     <string name="backup_itself_desc">Kopieren Sie die APK nach dem Sichern in den Backup-Ordner</string>
@@ -349,4 +349,5 @@
     <string name="blacklist_desc">Gesperrte Einträge verwalten</string>
     <string name="confirm_add_to_blacklist">Zur Blacklist hinzufügen?</string>
     <string name="afdian">AFDIAN</string>
+    <string name="args_update_from">Sie können die Version %1$s zu Version %2$s Updaten</string>
 </resources>
