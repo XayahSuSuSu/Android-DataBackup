@@ -364,5 +364,5 @@
     <string name="unblock">Entsperren</string>
     <string name="initializing_app_list">Initialisiere Anwendungsliste</string>
     <string name="refresh">Aktualisieren</string>
-    <string name="updating_app_list">Anwendungsliste wird geupdatet</string>
+    <string name="updating_app_list">Anwendungsliste aktualisieren</string>
 </resources>
