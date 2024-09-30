@@ -354,4 +354,12 @@
     <string name="apk_selected">APK ausgewählt</string>
     <string name="all_selected">Alle Elemente Ausgewählt</string>
     <string name="data_selected">Daten ausgewählt</string>
+    <string name="data_items">Datenelemente</string>
+    <string name="unselect_all">Auswahl aufheben</string>
+    <string name="reverse_selection">Auswahl umkehren</string>
+    <string name="for_selected">Für ausgewählte…</string>
+    <string name="block">Sperren</string>
+    <string name="detailed_data_items">Detaillierte Dateneinheiten</string>
+    <string name="custom_selected">Benutzerdefinierte Elemente ausgewählt</string>
+    <string name="unblock">Entsperren</string>
 </resources>
