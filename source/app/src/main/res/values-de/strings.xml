@@ -362,6 +362,6 @@
     <string name="detailed_data_items">Detaillierte Datenelemente</string>
     <string name="custom_selected">Benutzerdefinierte Elemente ausgewählt</string>
     <string name="unblock">Entsperren</string>
-    <string name="initializing_app_list">Installiere Anwendungsliste</string>
+    <string name="initializing_app_list">Initialisiere Anwendungsliste</string>
     <string name="refresh">Aktualisieren</string>
 </resources>
