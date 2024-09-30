@@ -359,7 +359,7 @@
     <string name="reverse_selection">Auswahl umkehren</string>
     <string name="for_selected">Für ausgewählte…</string>
     <string name="block">Sperren</string>
-    <string name="detailed_data_items">Detaillierte Dateneinheiten</string>
+    <string name="detailed_data_items">Detaillierte Datenelemente</string>
     <string name="custom_selected">Benutzerdefinierte Elemente ausgewählt</string>
     <string name="unblock">Entsperren</string>
     <string name="initializing_app_list">Installiere Anwendungsliste</string>
