@@ -368,4 +368,9 @@
     <string name="no_activities_found">Aktivnosti nisu pronađene!</string>
     <string name="granted">Odobreno</string>
     <string name="denied">Odbijeno</string>
+    <string name="add_label">Додај ознаку</string>
+    <string name="unblock">Деблокирај</string>
+    <string name="labels">Ознаке</string>
+    <string name="label">Ознака</string>
+    <string name="freeze">Замрзни</string>
 </resources>
