@@ -6,7 +6,7 @@
     <string name="failed_and_terminated">Neuspelo i prekinuto</string>
     <string name="databases_reload_failed">Neuspešno ponovno učitavanje baze podataka</string>
     <string name="installation_time">Vreme instalacije</string>
-    <string name="start_subtitle">U skladu s relevantnim pravilima, pažljivo pročitaj i prihvati sljedeći „Korisnički ugovor” i „Pravila o privatnosti” prije korištenja ove aplikacije</string>
+    <string name="start_subtitle">U skladu sa relevantnim politikama, potrebno je da pažljivo pročitate i da se složite sa sledećim korisničkim ugovorom i Politikom privatnosti pre nego što počnete da koristite ovu aplikaciju</string>
     <string name="network">Mreža</string>
     <string name="network_desc">Koristi se za dobijanje informacija o ažuriranju aplikacije i analitiku aplikacije</string>
     <string name="application">App</string>
@@ -270,12 +270,12 @@
     <string name="share">Deli</string>
     <string name="theme_dark_desc">Uvek tamni način</string>
     <string name="grant_ntfy_perm_manually">Ručno dodeli dozvolu za obavesti</string>
-    <string name="app_name">DataBackup</string>
-    <string name="welcome_to_use">Dobro došli u DataBackup</string>
+    <string name="app_name">Sigurnosna kopija podataka</string>
+    <string name="welcome_to_use">Dobro došli u Sigurnosnu kopiju podataka</string>
     <string name="update_records">Aktualiziraj zapise</string>
     <string name="environment_detection">Prepoznavanje okruženja</string>
     <string name="start">Pokreni</string>
-    <string name="start_desc">Svi podaci generirani ovom aplikacijom koriste se samo za sigurnosno kopiranje/obnavljanje i čuvaju se samo lokalno.</string>
+    <string name="start_desc">Svi podaci koje generiše ova aplikacija koriste se samo za pravljenje rezervnih kopija/restauracija i čuvaju se samo lokalno.</string>
     <string name="application_desc">Dobijte informacije o paketu aplikacije, koriste se za generiranje liste sigurnosnih kopija i dobijanje veličine app podataka</string>
     <string name="storage">Skladište</string>
     <string name="loading">Učitavanje</string>
@@ -360,4 +360,12 @@
     <string name="initializing_app_list">Иницијализација листе апликација</string>
     <string name="updating_file_list">Ажурирање листе фајлова</string>
     <string name="loading_backups">Учитавање резервних копија</string>
+    <string name="unfreeze">Odmrznuti</string>
+    <string name="confirm_freeze">Zamrznuti ovu aplikaciju?</string>
+    <string name="confirm_unfreeze">Odmrznuti ovu aplikaciju?</string>
+    <string name="launch">Pokreni</string>
+    <string name="app_is_frozen">Aplikacija je zamrznuta!</string>
+    <string name="no_activities_found">Aktivnosti nisu pronađene!</string>
+    <string name="granted">Odobreno</string>
+    <string name="denied">Odbijeno</string>
 </resources>
