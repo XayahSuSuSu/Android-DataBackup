@@ -373,4 +373,8 @@
     <string name="app_is_frozen">¡La aplicación está congelada!</string>
     <string name="granted">Concedida</string>
     <string name="denied">Denegada</string>
+    <string name="args_apps_backed_up_and_failed">%1$s aplicaciones copiadas, %2$s fallidas</string>
+    <string name="args_apps_restored_and_failed">%1$s aplicaciones restauradas, %2$s fallidas</string>
+    <string name="args_files_backed_up_and_failed">%1$s archivos respaldados, %2$s fallaron</string>
+    <string name="args_files_restored_and_failed">%1$s archivos restaurados, %2$s fallidos</string>
 </resources>
