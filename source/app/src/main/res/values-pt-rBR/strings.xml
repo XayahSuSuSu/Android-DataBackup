@@ -373,4 +373,8 @@
     <string name="granted">Permitido</string>
     <string name="denied">Negado</string>
     <string name="unblock">Desbloquear</string>
+    <string name="args_apps_restored_and_failed">%1$s apps restaurados, %2$s falharam</string>
+    <string name="args_files_backed_up_and_failed">Foi feito backup de %1$s arquivos, %2$s falhou</string>
+    <string name="args_apps_backed_up_and_failed">Foi feito backup de %1$s apps, %2$s falhou</string>
+    <string name="args_files_restored_and_failed">%1$s arquivos restaurados, %2$s falhou</string>
 </resources>
