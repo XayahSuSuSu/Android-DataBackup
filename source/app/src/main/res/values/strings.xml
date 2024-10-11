@@ -384,4 +384,8 @@
     <string name="no_activities_found">No activities found!</string>
     <string name="granted">Granted</string>
     <string name="denied">Denied</string>
+    <string name="args_apps_backed_up_and_failed">%1$s apps backed up, %2$s failed</string>
+    <string name="args_apps_restored_and_failed">%1$s apps restored, %2$s failed</string>
+    <string name="args_files_backed_up_and_failed">%1$s files backed up, %2$s failed</string>
+    <string name="args_files_restored_and_failed">%1$s files restored, %2$s failed</string>
 </resources>

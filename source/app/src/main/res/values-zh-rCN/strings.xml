@@ -373,4 +373,8 @@
     <string name="no_activities_found">没有找到可启动的Activity！</string>
     <string name="granted">已授予</string>
     <string name="denied">未授予</string>
+    <string name="args_apps_backed_up_and_failed">已备份%1$s个应用，%2$s个应用备份失败</string>
+    <string name="args_apps_restored_and_failed">已恢复%1$s个应用，%2$s个应用恢复失败</string>
+    <string name="args_files_backed_up_and_failed">已备份%1$s个文件，%2$s个文件备份失败</string>
+    <string name="args_files_restored_and_failed">已恢复%1$s个文件，%2$s个文件恢复失败</string>
 </resources>

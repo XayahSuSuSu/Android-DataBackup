@@ -70,9 +70,13 @@
     <item name="apk" type="string" />
     <item name="selected" type="string" />
     <item name="args_apps_backed_up" type="string" />
+    <item name="args_apps_backed_up_and_failed" type="string" />
     <item name="args_apps_restored" type="string" />
+    <item name="args_apps_restored_and_failed" type="string" />
     <item name="args_files_backed_up" type="string" />
+    <item name="args_files_backed_up_and_failed" type="string" />
     <item name="args_files_restored" type="string" />
+    <item name="args_files_restored_and_failed" type="string" />
     <item name="necessary_remaining_data_processing" type="string" />
     <item name="files" type="string" />
 

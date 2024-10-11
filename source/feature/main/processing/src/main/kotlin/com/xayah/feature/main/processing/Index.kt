@@ -80,6 +80,7 @@ fun PageProcessing(
     topBarTitleId: (state: OperationState) -> Int,
     finishedTitleId: Int,
     finishedSubtitleId: Int,
+    finishedWithErrorsSubtitleId: Int,
     viewModel: AbstractProcessingViewModel
 ) {
     val context = LocalContext.current
@@ -225,7 +226,15 @@ fun PageProcessing(
                                 dataItems.size + 2 -> {
                                     // Finished
                                     title = stringResource(id = finishedTitleId)
-                                    subtitle = remember { context.getString(finishedSubtitleId, dataItems.size) }
+                                    subtitle = if (task != null) {
+                                        if (task!!.totalCount == task!!.successCount) {
+                                            remember { context.getString(finishedSubtitleId, task!!.totalCount) }
+                                        } else {
+                                            remember { context.getString(finishedWithErrorsSubtitleId, task!!.successCount, task!!.failureCount) }
+                                        }
+                                    } else {
+                                        remember { context.getString(finishedSubtitleId, dataItems.size) }
+                                    }
                                 }
 
                                 else -> {

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -142,7 +141,6 @@ fun ProcessingCard(
     expanded: Boolean = false,
     items: List<ProcessingCardItem>,
     processingIndex: Int,
-    actions: @Composable RowScope.() -> Unit = {},
     onActionBarClick: () -> Unit = {},
 ) {
     val successCount by remember(items) { mutableIntStateOf(items.count { it.state == OperationState.DONE || it.state == OperationState.SKIP }) }
@@ -177,7 +175,12 @@ fun ProcessingCard(
                             color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled)
                         )
 
-                        actions()
+                        AnimatedContent(targetState = state, label = AnimationTokens.AnimatedContentLabel) {
+                            if (it == OperationState.DONE || it == OperationState.ERROR) {
+                                it.StateView(enabled = enabled)
+                            }
+                        }
+
                         if (totalCount != 0) {
                             if (state != OperationState.IDLE) {
                                 LabelSmallText(text = "${successCount + failedCount}/${totalCount}", color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value.withState(enabled))
