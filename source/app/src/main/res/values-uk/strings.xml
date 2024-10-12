@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="storage">Сховище</string>
+    <string name="storage">Зберігання</string>
     <string name="save">Зберегти</string>
     <string name="restoring">Відновлення</string>
     <string name="both">Обидва</string>
@@ -63,7 +63,7 @@
     <string name="succeed">Успішно</string>
     <string name="word_return">Повернутися</string>
     <string name="time">Час</string>
-    <string name="welcome_to_use">Ласкаво просимо</string>
+    <string name="welcome_to_use">Ласкаво просимо до DataBackup</string>
     <string name="external_storage">Зовнішнє сховище</string>
     <string name="save_directory_structure">Зберегти структуру директорій</string>
     <string name="app_and_data">Додатки</string>
@@ -157,7 +157,7 @@
     <string name="connection_established">З\'єднання було успішно створено</string>
     <string name="apk_only">Тільки АРК</string>
     <string name="existing_files">Існуючі файли</string>
-    <string name="main_account_not_set">Основний обліковий запис не налаштовано</string>
+    <string name="main_account_not_set">Основний обліковий запис не встановлено</string>
     <string name="remote_not_set">Хмара не налаштована</string>
     <string name="remain">Залишилось</string>
     <string name="clear_all">Очистити все</string>
@@ -176,7 +176,7 @@
     <string name="url">URL-адреса</string>
     <string name="search_bar_hint_medium">Пошук за назвою або шляхом…</string>
     <string name="home">Головна</string>
-    <string name="keystore">Keystore</string>
+    <string name="keystore">Сховище ключів</string>
     <string name="keystore_desc">Ця програма використовує Android Keystore, відновлення може спричинити непередбачувані помилки</string>
     <string name="back_up_to_local">Створити резервну копію на лок. диск</string>
     <string name="preprocessing">Попередня обробка</string>
@@ -324,7 +324,7 @@
     <string name="kill_app_options">Варіанти зупинки додатку</string>
     <string name="kill_app_options_desc">Дії перед створенням бекапів</string>
     <string name="no_root_directory">Будь ласка, не обирайте корінь директорії</string>
-    <string name="restore_user_desc">Якого користувача ви хочете відновити?</string>
+    <string name="restore_user_desc">Для якого користувача ви хочете відновити?</string>
     <string name="check_keystore">Відмітити keystore</string>
     <string name="args_backup">Бекап %1$s</string>
     <string name="setup">Налаштування</string>
