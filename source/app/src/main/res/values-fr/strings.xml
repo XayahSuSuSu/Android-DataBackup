@@ -90,4 +90,25 @@
     <string name="compression_type_desc">Agis sur les sauvegardes et la restauration. Devrait uniquement être changé par les utilisateurs confirmés.</string>
     <string name="backup_user">Utilisateur de sauvegarde</string>
     <string name="restore_user">Restaurer l\'utilisateur</string>
+    <string name="monet">Monet</string>
+    <string name="not_installed">Non installé</string>
+    <string name="delete">Supprimer</string>
+    <string name="mounted">Monté</string>
+    <string name="modify">Modifier</string>
+    <string name="settings">Paramètres</string>
+    <string name="selected">Sélectionné</string>
+    <string name="not_selected">Non sélectionné</string>
+    <string name="system">Système</string>
+    <string name="main_account">Compte principal</string>
+    <string name="reset_backup_list">Réinitialiser la liste des sauvegardes</string>
+    <string name="backup_itself_desc">Ajouter l\'APK au dossier de sauvegarde à la fin de la sauvegarde</string>
+    <string name="compression_test">Test de compression</string>
+    <string name="account">Compte</string>
+    <string name="not_exist_and_skip">Ignorer et passer</string>
+    <string name="clean_restoring_desc">Vider le dossier de destination avant restauration</string>
+    <string name="installed">Installé</string>
+    <string name="add">Ajouter</string>
+    <string name="update_available">Mise à jour disponible</string>
+    <string name="create_account">Créer un compte</string>
+    <string name="port">Port</string>
 </resources>
