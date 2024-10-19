@@ -12,6 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DataBackup"
         android:usesCleartextTraffic="true"
+        android:enableOnBackInvokedCallback="false"
+        tools:replace="android:enableOnBackInvokedCallback"
         tools:targetApi="31">
 
         <activity
