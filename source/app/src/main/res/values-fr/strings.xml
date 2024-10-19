@@ -111,4 +111,6 @@
     <string name="update_available">Mise à jour disponible</string>
     <string name="create_account">Créer un compte</string>
     <string name="port">Port</string>
+    <string name="backup_itself">La sauvegarde elle-même</string>
+    <string name="backup_user_desc">Cibler l\'utilisateur lors du chargement de la liste de sauvegarde ou de la sauvegarde.</string>
 </resources>
