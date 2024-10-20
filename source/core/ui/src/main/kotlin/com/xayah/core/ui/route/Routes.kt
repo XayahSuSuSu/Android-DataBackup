@@ -57,6 +57,11 @@ sealed class MainRoutes(val route: String) {
         fun getRoute(target: Target, opType: OpType, id: Long) = "main_details/${target}/${opType}/${id}"
     }
 
+    data object History : MainRoutes(route = "main_history")
+    data object TaskDetails : MainRoutes(route = "main_task_details/{$ARG_ID}") {
+        fun getRoute(id: Long) = "main_task_details/${id}"
+    }
+
     data object PackagesBackupList : MainRoutes(route = "main_packages_backup_list")
     data object PackagesBackupDetail : MainRoutes(route = "main_packages_backup_detail/{$ARG_PACKAGE_NAME}/{$ARG_USER_ID}") {
         fun getRoute(packageName: String, userId: Int) = "main_packages_backup_detail/${packageName}/${userId}"

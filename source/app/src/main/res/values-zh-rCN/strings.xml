@@ -377,4 +377,9 @@
     <string name="args_apps_restored_and_failed">已恢复%1$s个应用，%2$s个应用恢复失败</string>
     <string name="args_files_backed_up_and_failed">已备份%1$s个文件，%2$s个文件备份失败</string>
     <string name="args_files_restored_and_failed">已恢复%1$s个文件，%2$s个文件恢复失败</string>
+    <string name="history">历史</string>
+    <string name="args_backed_up_at">备份于%1$s</string>
+    <string name="args_restored_at">恢复于%1$s</string>
+    <string name="task_details">任务详情</string>
+    <string name="visit_details">查看详情</string>
 </resources>

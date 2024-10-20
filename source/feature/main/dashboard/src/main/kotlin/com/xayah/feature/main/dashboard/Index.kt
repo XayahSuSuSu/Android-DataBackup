@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.ListAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -187,9 +189,9 @@ fun PageDashboard() {
                         enabled = nullBackupDir.not(),
                         title = stringResource(id = R.string.cloud),
                         icon = Icons.Outlined.Cloud,
-                        colorContainer = ThemedColorSchemeKeyTokens.PrimaryContainer,
-                        colorL80D20 = ThemedColorSchemeKeyTokens.PrimaryL80D20,
-                        onColorContainer = ThemedColorSchemeKeyTokens.OnPrimaryContainer,
+                        colorContainer = ThemedColorSchemeKeyTokens.PurplePrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.PurpleL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.PurpleOnPrimaryContainer,
                         actionIcon = Icons.Rounded.KeyboardArrowRight
                     ) {
                         navController.navigateSingle(MainRoutes.Cloud.route)
@@ -199,13 +201,26 @@ fun PageDashboard() {
                         enabled = nullBackupDir.not(),
                         title = stringResource(id = R.string.restore),
                         icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_history),
-                        colorContainer = ThemedColorSchemeKeyTokens.SecondaryContainer,
-                        colorL80D20 = ThemedColorSchemeKeyTokens.SecondaryL80D20,
-                        onColorContainer = ThemedColorSchemeKeyTokens.OnSecondaryContainer,
+                        colorContainer = ThemedColorSchemeKeyTokens.OrangePrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.OrangeL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.OrangeOnPrimaryContainer,
                         actionIcon = Icons.Rounded.KeyboardArrowRight
                     ) {
                         navController.navigateSingle(MainRoutes.Restore.route)
                     }
+                    QuickActionsButton(
+                        modifier = Modifier.weight(1f),
+                        enabled = nullBackupDir.not(),
+                        title = stringResource(R.string.history),
+                        icon = Icons.Rounded.ListAlt,
+                        colorContainer = ThemedColorSchemeKeyTokens.PinkPrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.PinkL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.PinkOnPrimaryContainer,
+                        actionIcon = Icons.Rounded.KeyboardArrowRight
+                    ) {
+                        navController.navigateSingle(MainRoutes.History.route)
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }

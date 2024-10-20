@@ -163,6 +163,35 @@ fun Clickable(
     }
 }
 
+@ExperimentalAnimationApi
+@Composable
+fun Clickable(
+    enabled: Boolean = true,
+    title: String, value: String? = null,
+    desc: String? = null,
+    leadingIcon: @Composable (RowScope.() -> Unit)? = null,
+    trailingIcon: @Composable (RowScope.() -> Unit)? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    content: @Composable (ColumnScope.() -> Unit)? = null,
+    onClick: () -> Unit = {}
+) {
+    Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
+            leadingIcon?.invoke(this)
+            Column(modifier = Modifier.weight(1f)) {
+                AnimatedTextContainer(targetState = title) { text ->
+                    TitleLargeText(enabled = enabled, text = text, color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled), fontWeight = FontWeight.Normal)
+                }
+                if (value != null) AnimatedTextContainer(targetState = value) { text ->
+                    TitleSmallText(enabled = enabled, text = text, color = ThemedColorSchemeKeyTokens.Outline.value.withState(enabled), fontWeight = FontWeight.Normal)
+                }
+                content?.invoke(this)
+            }
+            trailingIcon?.invoke(this)
+        }
+    }
+}
+
 
 @ExperimentalAnimationApi
 @Composable

@@ -1,0 +1,13 @@
+<resources>
+    <item name="history" type="string" />
+    <item name="apps" type="string" />
+    <item name="files" type="string" />
+    <item name="args_backed_up_at" type="string" />
+    <item name="args_restored_at" type="string" />
+    <item name="preprocessing" type="string" />
+    <item name="post_processing" type="string" />
+    <item name="task_details" type="string" />
+
+    <item name="ic_rounded_acute" type="drawable" />
+    <item name="ic_rounded_history" type="drawable" />
+</resources>

@@ -26,6 +26,8 @@ import com.xayah.feature.main.configurations.PageConfigurations
 import com.xayah.feature.main.dashboard.PageDashboard
 import com.xayah.feature.main.details.DetailsRoute
 import com.xayah.feature.main.directory.PageDirectory
+import com.xayah.feature.main.history.HistoryRoute
+import com.xayah.feature.main.history.TaskDetailsRoute
 import com.xayah.feature.main.list.ListRoute
 import com.xayah.feature.main.medium.backup.detail.PageMediumBackupDetail
 import com.xayah.feature.main.medium.backup.list.PageMediumBackupList
@@ -109,6 +111,12 @@ class MainActivity : AppCompatActivity() {
                         }
                         composable(MainRoutes.Details.route) {
                             DetailsRoute()
+                        }
+                        composable(MainRoutes.History.route) {
+                            HistoryRoute()
+                        }
+                        composable(MainRoutes.TaskDetails.route) {
+                            TaskDetailsRoute()
                         }
                         composable(MainRoutes.PackagesBackupDetail.route) {
                             PagePackagesBackupDetail()

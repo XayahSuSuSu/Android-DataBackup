@@ -142,6 +142,7 @@ dependencies {
     implementation(project(":feature:main:processing"))
     implementation(project(":feature:main:list"))
     implementation(project(":feature:main:details"))
+    implementation(project(":feature:main:history"))
     implementation(project(":feature:main:packages"))
     implementation(project(":feature:main:medium"))
     implementation(project(":feature:main:directory"))

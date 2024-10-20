@@ -73,6 +73,9 @@ class ThemedColorScheme(
     val blue: ColorFamily,
     val green: ColorFamily,
     val red: ColorFamily,
+    val pink: ColorFamily,
+    val purple: ColorFamily,
+    val orange: ColorFamily,
 )
 
 @Stable
@@ -144,6 +147,18 @@ fun ThemedColorScheme.fromToken(value: ThemedColorSchemeKeyTokens): Color {
         ThemedColorSchemeKeyTokens.RedPrimaryContainer -> red.primaryContainer
         ThemedColorSchemeKeyTokens.RedOnPrimaryContainer -> red.onPrimaryContainer
         ThemedColorSchemeKeyTokens.RedL80D20 -> red.l80d20
+        ThemedColorSchemeKeyTokens.PinkPrimary -> pink.primary
+        ThemedColorSchemeKeyTokens.PinkPrimaryContainer -> pink.primaryContainer
+        ThemedColorSchemeKeyTokens.PinkOnPrimaryContainer -> pink.onPrimaryContainer
+        ThemedColorSchemeKeyTokens.PinkL80D20 -> pink.l80d20
+        ThemedColorSchemeKeyTokens.PurplePrimary -> purple.primary
+        ThemedColorSchemeKeyTokens.PurplePrimaryContainer -> purple.primaryContainer
+        ThemedColorSchemeKeyTokens.PurpleOnPrimaryContainer -> purple.onPrimaryContainer
+        ThemedColorSchemeKeyTokens.PurpleL80D20 -> purple.l80d20
+        ThemedColorSchemeKeyTokens.OrangePrimary -> orange.primary
+        ThemedColorSchemeKeyTokens.OrangePrimaryContainer -> orange.primaryContainer
+        ThemedColorSchemeKeyTokens.OrangeOnPrimaryContainer -> orange.onPrimaryContainer
+        ThemedColorSchemeKeyTokens.OrangeL80D20 -> orange.l80d20
 
         ThemedColorSchemeKeyTokens.Transparent -> Color.Transparent
         ThemedColorSchemeKeyTokens.Unspecified -> Color.Unspecified
@@ -271,6 +286,24 @@ fun lightThemedColorScheme(
             Red10,
             Red80,
         ),
+        pink = ColorFamily(
+            Pink40,
+            Pink90,
+            Pink10,
+            Pink80,
+        ),
+        purple = ColorFamily(
+            Purple40,
+            Purple90,
+            Purple10,
+            Purple80,
+        ),
+        orange = ColorFamily(
+            Orange40,
+            Orange90,
+            Orange10,
+            Orange80,
+        ),
     )
 
 fun darkThemedColorScheme(
@@ -388,6 +421,24 @@ fun darkThemedColorScheme(
             Red30,
             Red90,
             Red20,
+        ),
+        pink = ColorFamily(
+            Pink80,
+            Pink30,
+            Pink90,
+            Pink20,
+        ),
+        purple = ColorFamily(
+            Purple80,
+            Purple30,
+            Purple90,
+            Purple20,
+        ),
+        orange = ColorFamily(
+            Orange80,
+            Orange30,
+            Orange90,
+            Orange20,
         ),
     )
 

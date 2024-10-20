@@ -3,9 +3,12 @@ package com.xayah.feature.main.processing.packages.restore
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -19,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -35,7 +39,9 @@ import com.xayah.core.ui.component.PackageIcons
 import com.xayah.core.ui.component.Selectable
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
+import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingTop
+import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.component.select
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.feature.main.processing.FinishSetup
@@ -71,11 +77,19 @@ fun PagePackagesRestoreProcessingSetup(localNavController: NavHostController, vi
         snackbarHostState = viewModel.snackbarHostState,
         title = stringResource(id = R.string.setup),
         actions = {
-            Button(
-                onClick = {
-                    viewModel.emitIntentOnIO(FinishSetup(navController = localNavController))
-                }) {
-                Text(text = stringResource(id = R.string._continue))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .paddingHorizontal(SizeTokens.Level24)
+                    .paddingVertical(SizeTokens.Level8),
+                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level12, Alignment.End),
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.emitIntentOnIO(FinishSetup(navController = localNavController))
+                    }) {
+                    Text(text = stringResource(id = R.string._continue))
+                }
             }
         }
     ) {

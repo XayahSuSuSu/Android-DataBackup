@@ -388,4 +388,9 @@
     <string name="args_apps_restored_and_failed">%1$s apps restored, %2$s failed</string>
     <string name="args_files_backed_up_and_failed">%1$s files backed up, %2$s failed</string>
     <string name="args_files_restored_and_failed">%1$s files restored, %2$s failed</string>
+    <string name="history">History</string>
+    <string name="args_backed_up_at">Backed up at %1$s</string>
+    <string name="args_restored_at">Restored at %1$s</string>
+    <string name="task_details">Task details</string>
+    <string name="visit_details">Visit details</string>
 </resources>

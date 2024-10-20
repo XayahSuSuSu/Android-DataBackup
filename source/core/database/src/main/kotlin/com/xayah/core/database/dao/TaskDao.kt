@@ -27,8 +27,14 @@ interface TaskDao {
     @Query("SELECT * FROM TaskEntity WHERE id = :id LIMIT 1")
     fun queryTaskFlow(id: Long): Flow<TaskEntity?>
 
+    @Query("SELECT * FROM TaskEntity")
+    fun queryTasksFlow(): Flow<List<TaskEntity>>
+
     @Query("SELECT * FROM ProcessingInfoEntity WHERE taskId = :taskId AND type = :type")
     fun queryProcessingInfoFlow(taskId: Long, type: ProcessingType): Flow<List<ProcessingInfoEntity>>
+
+    @Query("SELECT * FROM ProcessingInfoEntity WHERE taskId = :taskId")
+    fun queryProcessingInfoFlow(taskId: Long): Flow<List<ProcessingInfoEntity>>
 
     @Query("SELECT * FROM TaskDetailPackageEntity WHERE taskId = :taskId")
     fun queryPackageFlow(taskId: Long): Flow<List<TaskDetailPackageEntity>>

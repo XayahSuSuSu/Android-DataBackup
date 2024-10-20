@@ -5,12 +5,10 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,8 +33,6 @@ import com.xayah.core.ui.component.InnerTopSpacer
 import com.xayah.core.ui.component.LinearProgressIndicator
 import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.paddingBottom
-import com.xayah.core.ui.component.paddingHorizontal
-import com.xayah.core.ui.component.paddingVertical
 import com.xayah.core.ui.material3.SnackbarHost
 import com.xayah.core.ui.material3.SnackbarHostState
 import com.xayah.core.ui.theme.ThemedColorSchemeKeyTokens
@@ -54,7 +50,7 @@ fun ProcessingSetupScaffold(
     snackbarHostState: SnackbarHostState,
     onBackClick: (() -> Unit)? = null,
     progress: Float = -1f,
-    actions: @Composable RowScope.() -> Unit = {},
+    actions: @Composable ColumnScope.() -> Unit = {},
     content: @Composable (BoxScope.(bottomPadding: Dp) -> Unit)
 ) {
     var bottomBarSize by remember { mutableStateOf(IntSize.Zero) }
@@ -110,15 +106,7 @@ fun ProcessingSetupScaffold(
                         .onSizeChanged { bottomBarSize = it }
                 ) {
                     Divider()
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .paddingHorizontal(SizeTokens.Level24)
-                            .paddingVertical(SizeTokens.Level8),
-                        horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level12, Alignment.End),
-                    ) {
-                        actions()
-                    }
+                    actions()
                     InnerBottomSpacer(innerPadding = innerPadding)
                 }
             }
