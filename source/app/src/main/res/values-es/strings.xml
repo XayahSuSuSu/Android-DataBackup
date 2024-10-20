@@ -377,4 +377,9 @@
     <string name="args_apps_restored_and_failed">%1$s aplicaciones restauradas, %2$s fallidas</string>
     <string name="args_files_backed_up_and_failed">%1$s archivos respaldados, %2$s fallaron</string>
     <string name="args_files_restored_and_failed">%1$s archivos restaurados, %2$s fallidos</string>
+    <string name="history">Historial</string>
+    <string name="visit_details">Detalles de la visita</string>
+    <string name="args_backed_up_at">Respaldado en %1$s</string>
+    <string name="args_restored_at">Restaurado en %1$s</string>
+    <string name="task_details">Detalles de la tarea</string>
 </resources>
