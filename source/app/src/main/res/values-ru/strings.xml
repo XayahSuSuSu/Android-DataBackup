@@ -373,4 +373,8 @@
     <string name="no_activities_found">Активити не найдено!</string>
     <string name="granted">Предоставлено</string>
     <string name="denied">Запрещено</string>
+    <string name="args_files_restored_and_failed">%1$s файлов восстановлено, %2$s не удалось</string>
+    <string name="args_apps_backed_up_and_failed">%1$s приложений зарезервированы, %2$s не удалось</string>
+    <string name="args_apps_restored_and_failed">%1$s приложений восстановлено, %2$s не удалось</string>
+    <string name="args_files_backed_up_and_failed">%1$s файлов зарезервированы, %2$s не удалось</string>
 </resources>
