@@ -377,4 +377,9 @@
     <string name="args_files_backed_up_and_failed">Foi feito backup de %1$s arquivos, %2$s falhou</string>
     <string name="args_apps_backed_up_and_failed">Foi feito backup de %1$s apps, %2$s falhou</string>
     <string name="args_files_restored_and_failed">%1$s arquivos restaurados, %2$s falhou</string>
+    <string name="task_details">Detalhes da tarefa</string>
+    <string name="history">Histórico</string>
+    <string name="args_backed_up_at">Backup feito em %1$s</string>
+    <string name="args_restored_at">Restaurado em %1$s</string>
+    <string name="visit_details">Detalhes da visita</string>
 </resources>
