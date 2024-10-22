@@ -373,4 +373,13 @@
     <string name="labels">Ознаке</string>
     <string name="label">Ознака</string>
     <string name="freeze">Замрзни</string>
+    <string name="history">Историја</string>
+    <string name="args_backed_up_at">Сачувано у %1$s</string>
+    <string name="args_restored_at">Враћено у %1$s</string>
+    <string name="task_details">Детаљи задатка</string>
+    <string name="visit_details">Посетити детаље</string>
+    <string name="args_apps_backed_up_and_failed">%1$s апликација је сачувана, %2$s није успело</string>
+    <string name="args_apps_restored_and_failed">%1$s апликација је враћена, %2$s није успело</string>
+    <string name="args_files_backed_up_and_failed">%1$s фајлова је сачувано, %2$s није успело</string>
+    <string name="args_files_restored_and_failed">%1$s фајлова је враћено, %2$s није успело</string>
 </resources>
