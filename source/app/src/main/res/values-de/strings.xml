@@ -236,8 +236,8 @@
     <string name="release_prebuilt_binaries">Veröffentlichung der vorgefertigten Binärdateien</string>
     <string name="granted">Genehmigt</string>
     <string name="confirm_unfreeze">Diese App entsperren?</string>
-    <string name="unfreeze">Entsperren</string>
-    <string name="freeze">Sperren</string>
+    <string name="unfreeze">Auftauen</string>
+    <string name="freeze">Einfrieren</string>
     <string name="add_label">Label hinzufügen</string>
     <string name="confirm_freeze">Diese App einfrieren?</string>
     <string name="finish">Beende</string>
@@ -256,7 +256,7 @@
     <string name="compression_type_desc">Betrifft sowohl die Sicherung als auch die Wiederherstellung. Sollte nur von erfahrenen Benutzern geändert werden.</string>
     <string name="integral">Integral</string>
     <string name="prompt">Fördern</string>
-    <string name="monet">Geld</string>
+    <string name="monet">Monet</string>
     <string name="backup_user_desc">Zielbenutzer beim Laden der Backup-Liste oder beim Sichern</string>
     <string name="backup">Sicherung</string>
     <string name="backup_itself">Selbst Sicherung</string>
@@ -372,5 +372,11 @@
     <string name="labels">Labels</string>
     <string name="label">Label</string>
     <string name="launch">Starten</string>
-    <string name="app_is_frozen">Anwendung ist abgestürzt!</string>
+    <string name="app_is_frozen">App ist eingefroren!</string>
+    <string name="task_details">Aufgabendetails</string>
+    <string name="history">Verlauf</string>
+    <string name="args_apps_backed_up_and_failed">%1$s Apps gesichert, %2$s fehlgeschlagen</string>
+    <string name="args_apps_restored_and_failed">%1$s Apps wiederhergestellt, %2$s fehlgeschlagen</string>
+    <string name="args_files_backed_up_and_failed">%1$s Dateien gesichert, %2$s fehlgeschlagen</string>
+    <string name="args_files_restored_and_failed">%1$s Dateien wiederhergestellt, %2$s fehlgeschlagen</string>
 </resources>
