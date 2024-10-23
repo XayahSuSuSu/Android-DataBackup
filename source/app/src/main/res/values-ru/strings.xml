@@ -48,7 +48,7 @@
     <string name="utilities">Утилиты</string>
     <string name="restore_user">Восстановление пользователя</string>
     <string name="idle">Ожидание</string>
-    <string name="delete">Удаление</string>
+    <string name="delete">Удалить</string>
     <string name="start">Начать</string>
     <string name="premium_for_this_feature">Пожалуйста, загрузите премиум версию для этой функции</string>
     <string name="media_set_path">Настроить путь</string>
@@ -283,7 +283,7 @@
     <string name="_protected">Защищен</string>
     <string name="calculating">Вычисление</string>
     <string name="blacklist">Черный список</string>
-    <string name="blacklist_desc">Управление списком заблокированных</string>
+    <string name="blacklist_desc">Управление списком блокированных</string>
     <string name="confirm_add_to_blacklist">Добавить в черный список?</string>
     <string name="confirm_remove_from_blacklist">Удалить из черного списка?</string>
     <string name="it_is_empty">Пусто</string>
@@ -350,7 +350,7 @@
     <string name="unselect_all">Отменить выбор</string>
     <string name="reverse_selection">Инвертировать выбор</string>
     <string name="for_selected">Для выбранных…</string>
-    <string name="block">Заблокировать</string>
+    <string name="block">Блокировать</string>
     <string name="detailed_data_items">Подробности элементов данных</string>
     <string name="refresh">Обновить</string>
     <string name="updating_app_list">Обновление списка приложений</string>
