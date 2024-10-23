@@ -381,5 +381,5 @@
     <string name="task_details">Görev detayları</string>
     <string name="history">Geçmiş</string>
     <string name="args_backed_up_at">%1$s\'de yedeklendi</string>
-    <string name="visit_details">Ziyaret detayları</string>
+    <string name="visit_details">Detayları görüntüle</string>
 </resources>
