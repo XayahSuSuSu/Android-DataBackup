@@ -363,7 +363,7 @@
     <string name="label">Etiket</string>
     <string name="add_label">Etiket ekle</string>
     <string name="freeze">Dondur</string>
-    <string name="unfreeze">Dondurmayı kaldır</string>
+    <string name="unfreeze">Çöz</string>
     <string name="confirm_freeze">Bu uygulama dondurulsun mu?</string>
     <string name="confirm_unfreeze">Bu uygulamanın dondurulması kaldırılsın mı?</string>
     <string name="launch">Başlat</string>
@@ -377,4 +377,9 @@
     <string name="updating_app_list">Uygulama listesi güncelleniyor</string>
     <string name="initializing_app_list">Uygulama listesi başlatılıyor</string>
     <string name="args_files_restored_and_failed">%1$s dosyalar geri yüklendi, %2$s başarısız oldu</string>
+    <string name="args_restored_at">%1$s\'de geri yüklendi</string>
+    <string name="task_details">Görev detayları</string>
+    <string name="history">Geçmiş</string>
+    <string name="args_backed_up_at">%1$s\'de yedeklendi</string>
+    <string name="visit_details">Ziyaret detayları</string>
 </resources>
