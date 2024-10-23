@@ -1,2 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> dakika</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> dakikalar</item>
+    </plurals>
+    <plurals name="num_seconds_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> saniye</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> saniyeler</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> gün</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> günler</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> öğe</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> öğeler</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> saat</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> saatler</item>
+    </plurals>
+</resources>
