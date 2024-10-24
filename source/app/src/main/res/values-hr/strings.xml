@@ -78,7 +78,7 @@
     <string name="fetch_failed">Preuzimanje neuspjelo</string>
     <string name="directory_structure">Struktura direktorija</string>
     <string name="loading">Učitavanje</string>
-    <string name="app_crashed">Aplikacija se sružila</string>
+    <string name="app_crashed">Aplikacija se srušila</string>
     <string name="compression_type">Vrsta komprimiranja</string>
     <string name="backup_user">Backup korisnik</string>
     <string name="mounted">Montirano</string>
@@ -96,7 +96,7 @@
     <string name="failed">Neuspjelo</string>
     <string name="restore_dir">Obnovi direktorij</string>
     <string name="home">Početna</string>
-    <string name="keystore_desc">Ova aplikacija koristi Android Keystore uslugu, obnavljanje može izazvati neočekivane greške.</string>
+    <string name="keystore_desc">Ova aplikacija koristi Android Keystore uslugu, obnavljanje može izazvati neočekivane greške</string>
     <string name="details">Detalji</string>
     <string name="back_up_to_local">Spremi sigurnosnu kopiju lokalno</string>
     <string name="keystore">Keystore</string>
@@ -114,7 +114,7 @@
     <string name="overlook">Pregled</string>
     <string name="welcome_to_use">Dobro došli u DataBackup</string>
     <string name="start_subtitle">U skladu s relevantnim pravilima, pažljivo pročitaj i prihvati sljedeći „Korisnički ugovor” i „Pravila o privatnosti” prije korištenja ove aplikacije</string>
-    <string name="start_desc">Svi podaci generirani ovom aplikacijom koriste se samo za sigurnosno kopiranje/obnavljanje i čuvaju se samo lokalno.</string>
+    <string name="start_desc">Svi podaci koje ova aplikacija generira koriste se samo za sigurnosne kopije/obnavljanje i spremaju se samo lokalno.</string>
     <string name="network_desc">Koristi se za dobijanje informacija o ažuriranju aplikacije i analitiku aplikacije</string>
     <string name="application_desc">Dobijte informacije o paketu aplikacije, koriste se za generiranje liste sigurnosnih kopija i dobijanje veličine app podataka</string>
     <string name="storage_desc">Koristi se za konfiguraciju sigurnosnog kopiranja, čitanje i pisanje arhiva</string>
@@ -149,7 +149,7 @@
     <string name="clean_restoring">Potpuno obnavljanje</string>
     <string name="clean_restoring_desc">Očistite ciljni direktorij prije obnavljanja</string>
     <string name="no_browser">Možda ne postoji preglednik za otvaranje</string>
-    <string name="custom_storage">Prilagođeno skladište</string>
+    <string name="custom_storage">Prilagođena memorija</string>
     <string name="select_target_directory">Odaberite ciljni direktorij</string>
     <string name="backup_dir_as_media_error">Nije moguće dodati direktorij za sigurnosne kopije kao medij</string>
     <string name="media_target_path_missing">Ciljni direktorij nedostaje. Molimo postavite ga ručno.</string>
@@ -195,7 +195,7 @@
     <string name="recommend">Preporučeno</string>
     <string name="limited_4gb">Ograničeno na 4 GB</string>
     <string name="outdated_fs_warning">Datotečni sustav ne podržava datoteke veće od 4 GB.</string>
-    <string name="check_keystore_desc">Provjerite koristi li aplikacija Keystore prilikom osvježavanja, što može značajno usporiti proces.</string>
+    <string name="check_keystore_desc">Provjerite koristi li aplikacija Keystore prilikom osvježavanja, što može značajno usporiti proces</string>
     <string name="check_keystore">Provjerite keystore</string>
     <string name="restore_from_cloud">Obnovi iz oblaka</string>
     <string name="no_available_cloud_accounts">Nema dostupnih računa u oblaku</string>
