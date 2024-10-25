@@ -377,4 +377,5 @@
     <string name="args_apps_backed_up_and_failed">%1$s приложений зарезервированы, %2$s не удалось</string>
     <string name="args_apps_restored_and_failed">%1$s приложений восстановлено, %2$s не удалось</string>
     <string name="args_files_backed_up_and_failed">%1$s файлов зарезервированы, %2$s не удалось</string>
+    <string name="history">История</string>
 </resources>
